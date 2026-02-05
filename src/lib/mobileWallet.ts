@@ -25,10 +25,28 @@ export async function signAndSendWithMWA(
     log('MWA session started');
     
     // Authorize if needed
-    const authResult = await wallet.authorize({
-      cluster: 'devnet',
-      identity: APP_IDENTITY,
-    });
+    log('Calling authorize...');
+    let authResult;
+    try {
+      authResult = await wallet.authorize({
+        cluster: 'devnet',
+        identity: APP_IDENTITY,
+      });
+      log(`Auth result keys: ${Object.keys(authResult || {}).join(', ')}`);
+      log(`Accounts: ${JSON.stringify(authResult?.accounts?.length)}`);
+      if (authResult?.accounts?.[0]) {
+        const acc = authResult.accounts[0];
+        log(`Account keys: ${Object.keys(acc).join(', ')}`);
+        log(`Address type: ${typeof acc.address}, isArray: ${Array.isArray(acc.address)}`);
+        if (acc.address && typeof acc.address === 'object') {
+          log(`Address length: ${(acc.address as any).length || (acc.address as any).byteLength}`);
+        }
+      }
+    } catch (authErr) {
+      const errMsg = authErr instanceof Error ? authErr.message : String(authErr);
+      log(`authorize() threw: ${errMsg}`);
+      throw authErr;
+    }
     
     // Address can be Uint8Array or base58 string
     const addressRaw = authResult.accounts[0]?.address as Uint8Array | string;
