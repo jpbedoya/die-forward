@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { resetGameState } from '@/lib/gameState';
 
 const stakeOptions = [
   { amount: 0.01, label: 'Timid', desc: 'Dip your toes' },
@@ -23,9 +24,10 @@ export default function StakeScreen() {
   const handleEnter = () => {
     if (!selectedStake) return;
     setConfirming(true);
-    // Simulate transaction
+    // Initialize game state and simulate transaction
+    resetGameState(selectedStake);
     setTimeout(() => {
-      window.location.href = '/';
+      window.location.href = '/play';
     }, 1500);
   };
 
@@ -34,7 +36,7 @@ export default function StakeScreen() {
       
       {/* Header */}
       <header className="border-b border-[var(--border-dim)] px-4 py-3">
-        <Link href="/title" className="text-[var(--text-muted)] text-xs hover:text-[var(--text-secondary)]">
+        <Link href="/" className="text-[var(--text-muted)] text-xs hover:text-[var(--text-secondary)]">
           ← Back
         </Link>
       </header>

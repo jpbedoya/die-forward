@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { getGameState, saveGameState } from '@/lib/gameState';
 
 type CombatPhase = 'choose' | 'resolve' | 'enemy-turn' | 'victory' | 'death';
 
@@ -10,14 +11,9 @@ const mockEnemy = {
   maxHealth: 100,
 };
 
-const mockPlayer = {
+const defaultPlayer = {
   maxHealth: 100,
   maxStamina: 3,
-  inventory: [
-    { id: '1', name: 'Rusty Blade', emoji: '🗡️' },
-    { id: '2', name: 'Herbs', emoji: '🌿' },
-  ],
-  stakeAmount: 0.05,
 };
 
 const combatOptions = [
@@ -83,14 +79,25 @@ function StaminaBar({ current, max }: { current: number; max: number }) {
 export default function CombatScreen() {
   const [phase, setPhase] = useState<CombatPhase>('choose');
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [playerHealth, setPlayerHealth] = useState(73);
-  const [playerStamina, setPlayerStamina] = useState(2);
+  const [playerHealth, setPlayerHealth] = useState(100);
+  const [playerStamina, setPlayerStamina] = useState(3);
+  const [playerInventory, setPlayerInventory] = useState<{id: string; name: string; emoji: string}[]>([]);
+  const [stakeAmount, setStakeAmount] = useState(0.05);
   const [enemyHealth, setEnemyHealth] = useState(65);
   const [narrative, setNarrative] = useState(`The creature rises from the murky water, hollow eyes fixed on you. Water streams from its bloated form as it lurches forward.
 
 It lunges, claws extended, aiming for your throat.`);
   const [enemyIntent, setEnemyIntent] = useState({ type: "AGGRESSIVE", desc: "Lunging forward, claws extended" });
   const [lastResolution, setLastResolution] = useState<{ playerDmg: number; enemyDmg: number; heal?: number } | null>(null);
+
+  // Load game state on mount
+  useEffect(() => {
+    const state = getGameState();
+    setPlayerHealth(state.health);
+    setPlayerStamina(state.stamina);
+    setPlayerInventory(state.inventory);
+    setStakeAmount(state.stakeAmount);
+  }, []);
 
   const handleExecute = () => {
     if (!selectedOption) return;
@@ -256,7 +263,16 @@ It lunges, claws extended, aiming for your throat.`);
           <div className="text-center">
             <div className="text-[var(--green)] text-2xl mb-4">⚔️ VICTORY</div>
             <button 
-              onClick={() => window.location.href = '/'}
+              onClick={() => {
+                // Save state and return to game
+                const state = getGameState();
+                saveGameState({
+                  health: playerHealth,
+                  stamina: Math.min(defaultPlayer.maxStamina, playerStamina + 1),
+                  currentRoom: state.currentRoom + 1,
+                });
+                window.location.href = '/play';
+              }}
               className="px-6 py-3 bg-[var(--green)]/20 border border-[var(--green)] text-[var(--green-bright)] hover:bg-[var(--green)]/30 transition-all"
             >
               ▶ Continue to Next Room
@@ -287,7 +303,7 @@ It lunges, claws extended, aiming for your throat.`);
               {combatOptions.map((option) => {
                 const canAfford = option.cost <= playerStamina;
                 // Hide herbs if not in inventory
-                if (option.id === 'herbs' && !mockPlayer.inventory.find(i => i.name === 'Herbs')) {
+                if (option.id === 'herbs' && !playerInventory.find(i => i.name === 'Herbs')) {
                   return null;
                 }
                 return (
@@ -347,13 +363,13 @@ It lunges, claws extended, aiming for your throat.`);
           </div>
           <div className="flex items-center gap-1">
             <span className="text-[var(--amber)]">◎</span>
-            <span className="text-[var(--amber-bright)]">{mockPlayer.stakeAmount} SOL</span>
+            <span className="text-[var(--amber-bright)]">{stakeAmount} SOL</span>
           </div>
         </div>
         
         <div className="flex items-center gap-2 text-xs overflow-x-auto">
           <span className="text-[var(--text-dim)]">🎒</span>
-          {mockPlayer.inventory.map((item) => (
+          {playerInventory.map((item) => (
             <span 
               key={item.id} 
               className="text-[var(--text-muted)] bg-[var(--bg-surface)] px-2 py-0.5 whitespace-nowrap"

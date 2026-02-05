@@ -127,7 +127,7 @@ export default function VictoryScreen() {
                 ▶ Enter Again
               </Link>
               <Link
-                href="/title"
+                href="/"
                 className="px-4 py-3 bg-[var(--bg-surface)] border border-[var(--border-default)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-all text-center"
               >
                 Return to Title
