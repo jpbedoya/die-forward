@@ -97,7 +97,7 @@ export default function TitleScreen() {
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-8">
         
         {/* Logo */}
-        <pre className="text-[var(--amber)] text-[8px] sm:text-[10px] leading-none mb-4 text-center overflow-x-auto max-w-full">
+        <pre className="text-[var(--amber)] text-[8px] sm:text-[10px] leading-none mb-4 text-center overflow-hidden max-w-full">
 {ASCII_LOGO}
         </pre>
 
