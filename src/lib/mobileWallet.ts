@@ -50,7 +50,7 @@ export async function signAndSendWithMWA(
       throw authErr;
     }
     
-    // Address can be Uint8Array or base58 string
+    // Address can be Uint8Array, base58 string, or base64 string
     const addressRaw = authResult.accounts[0]?.address as Uint8Array | string;
     let pubkey: PublicKey;
     
@@ -59,8 +59,18 @@ export async function signAndSendWithMWA(
       pubkey = new PublicKey(addressRaw as Uint8Array);
       log(`Authorized (bytes): ${pubkey.toBase58().slice(0, 8)}...`);
     } else if (typeof addressRaw === 'string') {
-      pubkey = new PublicKey(addressRaw);
-      log(`Authorized (string): ${addressRaw.slice(0, 8)}...`);
+      // Check if it's base64 (contains +, /, or ends with =)
+      if (addressRaw.includes('+') || addressRaw.includes('/') || addressRaw.endsWith('=')) {
+        // Decode from base64
+        log('Address is base64, decoding...');
+        const bytes = Uint8Array.from(atob(addressRaw), c => c.charCodeAt(0));
+        pubkey = new PublicKey(bytes);
+        log(`Authorized (base64→bytes): ${pubkey.toBase58().slice(0, 8)}...`);
+      } else {
+        // Assume base58
+        pubkey = new PublicKey(addressRaw);
+        log(`Authorized (base58): ${addressRaw.slice(0, 8)}...`);
+      }
     } else {
       throw new Error(`Unknown address format: ${typeof addressRaw}`);
     }
