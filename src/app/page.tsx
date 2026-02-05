@@ -248,12 +248,12 @@ export default function GameScreen() {
           {/* Stake */}
           <div className="flex items-center gap-1">
             <span className="text-amber-500">◎</span>
-            <span className="text-amber-400">{mockPlayer.stakeAmount}</span>
+            <span className="text-amber-400">{mockPlayer.stakeAmount} SOL</span>
           </div>
         </div>
         
         {/* Inventory Row */}
-        <div className="flex items-center gap-2 text-xs overflow-x-auto pb-1">
+        <div className="flex items-center gap-2 text-xs overflow-x-auto">
           <span className="text-[#444]">🎒</span>
           {mockPlayer.inventory.map((item) => (
             <span 
@@ -263,13 +263,6 @@ export default function GameScreen() {
               {item.emoji} {item.name}
             </span>
           ))}
-        </div>
-        
-        {/* Death Counter */}
-        <div className="text-center text-[10px] text-[#444] mt-2 pt-2 border-t border-[#1a1a1a]">
-          <span className="text-red-500/50">☠</span> {deathsToday} lost today
-          <span className="text-[#222] mx-2">│</span>
-          <span className="text-[#333]">DIE FORWARD</span>
         </div>
       </footer>
     </div>
