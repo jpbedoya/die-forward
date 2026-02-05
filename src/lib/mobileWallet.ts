@@ -38,8 +38,10 @@ export async function signAndSendWithMWA(
         const acc = authResult.accounts[0];
         log(`Account keys: ${Object.keys(acc).join(', ')}`);
         log(`Address type: ${typeof acc.address}, isArray: ${Array.isArray(acc.address)}`);
+        log(`Address value: ${String(acc.address).slice(0, 50)}`);
+        log(`Address length: ${String(acc.address).length}`);
         if (acc.address && typeof acc.address === 'object') {
-          log(`Address length: ${(acc.address as any).length || (acc.address as any).byteLength}`);
+          log(`Address byteLength: ${(acc.address as any).length || (acc.address as any).byteLength}`);
         }
       }
     } catch (authErr) {
