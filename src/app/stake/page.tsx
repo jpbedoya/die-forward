@@ -32,7 +32,7 @@ const POOL_WALLET = new PublicKey(
 
 export default function StakeScreen() {
   const router = useRouter();
-  const { publicKey, connected, signTransaction } = useWallet();
+  const { publicKey, connected, signTransaction, sendTransaction } = useWallet();
   const { connection } = useConnection();
   const [balance, setBalance] = useState<number | null>(null);
   const [selectedStake, setSelectedStake] = useState<number | null>(null);
@@ -59,7 +59,13 @@ export default function StakeScreen() {
   }, [publicKey, connection]);
 
   const handleEnter = async () => {
-    if (!selectedStake || !publicKey || !signTransaction) return;
+    if (!selectedStake || !publicKey) return;
+    
+    // Need either signTransaction or sendTransaction
+    if (!signTransaction && !sendTransaction) {
+      setError('Wallet does not support transactions');
+      return;
+    }
     
     // Check balance (need extra for fees)
     if (balance !== null && selectedStake + 0.001 > balance) {
@@ -69,6 +75,8 @@ export default function StakeScreen() {
 
     setConfirming(true);
     setError(null);
+    
+    let signature: string;
     
     try {
       // 1. Create transaction to transfer SOL to pool
@@ -85,13 +93,29 @@ export default function StakeScreen() {
       transaction.recentBlockhash = blockhash;
       transaction.feePayer = publicKey;
 
-      // 2. User signs transaction (this prompts the wallet)
-      const signedTx = await signTransaction(transaction);
+      // 2. Try sendTransaction first (works better with Mobile Wallet Adapter)
+      if (sendTransaction) {
+        try {
+          signature = await sendTransaction(transaction, connection);
+        } catch (sendErr) {
+          console.log('sendTransaction failed, trying signTransaction:', sendErr);
+          // Fall back to sign + send raw if sendTransaction fails
+          if (signTransaction) {
+            const signedTx = await signTransaction(transaction);
+            signature = await connection.sendRawTransaction(signedTx.serialize());
+          } else {
+            throw sendErr;
+          }
+        }
+      } else if (signTransaction) {
+        // Fallback: sign then send raw
+        const signedTx = await signTransaction(transaction);
+        signature = await connection.sendRawTransaction(signedTx.serialize());
+      } else {
+        throw new Error('No signing method available');
+      }
       
-      // 3. Send the signed transaction
-      const signature = await connection.sendRawTransaction(signedTx.serialize());
-      
-      // 4. Wait for confirmation
+      // 3. Wait for confirmation
       await connection.confirmTransaction({
         signature,
         blockhash,
