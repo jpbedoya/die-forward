@@ -7,6 +7,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { resetGameState } from '@/lib/gameState';
+import { usePoolStats } from '@/lib/instant';
 
 const stakeOptions = [
   { amount: 0.01, label: 'Timid', desc: 'Dip your toes' },
@@ -14,12 +15,6 @@ const stakeOptions = [
   { amount: 0.1, label: 'Reckless', desc: 'Fortune favors...' },
   { amount: 0.25, label: 'Degenerate', desc: 'All or nothing' },
 ];
-
-const mockPoolData = {
-  totalStaked: 42.5,
-  deaths: 1247,
-  avgReward: 0.34,
-};
 
 function shortenAddress(address: string): string {
   return `${address.slice(0, 4)}...${address.slice(-4)}`;
@@ -33,6 +28,9 @@ export default function StakeScreen() {
   const [selectedStake, setSelectedStake] = useState<number | null>(null);
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Real pool stats from InstantDB
+  const { totalDeaths, totalStaked, isLoading: statsLoading } = usePoolStats();
 
   // Redirect if not connected
   useEffect(() => {
@@ -117,15 +115,21 @@ export default function StakeScreen() {
         {/* Pool stats */}
         <div className="flex gap-6 text-xs text-[var(--text-muted)] mb-8">
           <div className="text-center">
-            <div className="text-[var(--amber-bright)] text-lg">{mockPoolData.totalStaked}</div>
+            <div className="text-[var(--amber-bright)] text-lg">
+              {statsLoading ? '...' : totalStaked.toFixed(2)}
+            </div>
             <div>SOL in pool</div>
           </div>
           <div className="text-center">
-            <div className="text-[var(--red-bright)] text-lg">{mockPoolData.deaths}</div>
+            <div className="text-[var(--red-bright)] text-lg">
+              {statsLoading ? '...' : totalDeaths}
+            </div>
             <div>deaths</div>
           </div>
           <div className="text-center">
-            <div className="text-[var(--green-bright)] text-lg">{mockPoolData.avgReward}</div>
+            <div className="text-[var(--green-bright)] text-lg">
+              {statsLoading || totalDeaths === 0 ? '--' : (Number(totalStaked) / Math.max(Number(totalDeaths), 1) * 1.5).toFixed(2)}
+            </div>
             <div>avg reward</div>
           </div>
         </div>

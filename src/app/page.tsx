@@ -6,14 +6,13 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { useDeathFeed, usePoolStats, type Death } from '@/lib/instant';
 
-// Mock data
+// Fallback mock data when DB is empty
 const mockDeathFeed = [
-  { player: 'cryptoKnight', zone: 'Sunken Crypt', room: 4, message: "the water... it's rising...", timeAgo: '2m' },
-  { player: 'sol_survivor', zone: 'Sunken Crypt', room: 9, message: "so close...", timeAgo: '5m' },
-  { player: 'degen_dave', zone: 'Sunken Crypt', room: 2, message: "lmao first room", timeAgo: '8m' },
-  { player: 'hollowknight', zone: 'Sunken Crypt', room: 7, message: "should have dodged...", timeAgo: '12m' },
-  { player: 'abysswatcher', zone: 'Sunken Crypt', room: 11, message: "ONE MORE HIT", timeAgo: '15m' },
+  { playerName: 'cryptoKnight', zone: 'Sunken Crypt', room: 4, finalMessage: "the water... it's rising...", createdAt: Date.now() - 120000 },
+  { playerName: 'sol_survivor', zone: 'Sunken Crypt', room: 9, finalMessage: "so close...", createdAt: Date.now() - 300000 },
+  { playerName: 'degen_dave', zone: 'Sunken Crypt', room: 2, finalMessage: "lmao first room", createdAt: Date.now() - 480000 },
 ];
 
 const mockLeaderboard = [
@@ -23,6 +22,17 @@ const mockLeaderboard = [
   { rank: 4, player: 'dungeon_lord', clears: 5, earned: 1.9 },
   { rank: 5, player: 'degen_king', clears: 4, earned: 1.2 },
 ];
+
+function timeAgo(timestamp: number): string {
+  const seconds = Math.floor((Date.now() - timestamp) / 1000);
+  if (seconds < 60) return `${seconds}s`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h`;
+  const days = Math.floor(hours / 24);
+  return `${days}d`;
+}
 
 const ASCII_LOGO = `
  ██████╗ ██╗███████╗
@@ -38,22 +48,21 @@ const ASCII_LOGO = `
  ██║     ╚██████╔╝██║  ██║╚███╔███╔╝██║  ██║██║  ██║██████╔╝
  ╚═╝      ╚═════╝ ╚═╝  ╚═╝ ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ `;
 
-function DeathFeedItem({ player, zone, room, message, timeAgo }: {
-  player: string;
-  zone: string;
+function DeathFeedItem({ playerName, room, finalMessage, createdAt }: {
+  playerName: string;
   room: number;
-  message: string;
-  timeAgo: string;
+  finalMessage: string;
+  createdAt: number;
 }) {
   return (
     <div className="text-xs py-2 border-b border-[var(--border-dim)] opacity-70 hover:opacity-100 transition-opacity">
       <div className="flex items-center gap-2 mb-1">
         <span className="text-[var(--red)]">☠</span>
-        <span className="text-[var(--purple-bright)]">@{player}</span>
+        <span className="text-[var(--purple-bright)]">@{playerName}</span>
         <span className="text-[var(--text-muted)]">room {room}</span>
-        <span className="text-[var(--text-dim)] ml-auto">{timeAgo}</span>
+        <span className="text-[var(--text-dim)] ml-auto">{timeAgo(createdAt)}</span>
       </div>
-      <div className="text-[var(--text-muted)] italic pl-5">"{message}"</div>
+      <div className="text-[var(--text-muted)] italic pl-5">"{finalMessage}"</div>
     </div>
   );
 }
@@ -91,6 +100,13 @@ export default function TitleScreen() {
   const { connection } = useConnection();
   const [balance, setBalance] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<'deaths' | 'leaders'>('deaths');
+  
+  // Real-time death feed from InstantDB
+  const { deaths: dbDeaths, isLoading: deathsLoading } = useDeathFeed(10);
+  const { totalDeaths, totalStaked, isLoading: statsLoading } = usePoolStats();
+
+  // Use real data if available, fall back to mock
+  const deathFeed = dbDeaths.length > 0 ? dbDeaths : mockDeathFeed;
 
   // Fetch balance when connected
   useEffect(() => {
@@ -175,13 +191,13 @@ export default function TitleScreen() {
         {/* Stats bar */}
         <div className="flex items-center gap-6 text-xs text-[var(--text-muted)] mb-8">
           <div>
-            <span className="text-[var(--red)]">☠</span> 1,247 deaths
+            <span className="text-[var(--red)]">☠</span> {statsLoading ? '...' : totalDeaths.toLocaleString()} deaths
           </div>
           <div>
-            <span className="text-[var(--amber)]">◎</span> 42.5 SOL
+            <span className="text-[var(--amber)]">◎</span> {statsLoading ? '...' : totalStaked.toFixed(2)} SOL
           </div>
           <div>
-            <span className="text-[var(--green)]">✓</span> 89 clears
+            <span className="text-[var(--green)]">✓</span> -- clears
           </div>
         </div>
 
@@ -214,9 +230,21 @@ export default function TitleScreen() {
       {/* Tab content */}
       <div className="px-4 py-3 max-h-48 overflow-y-auto">
         {activeTab === 'deaths' ? (
-          mockDeathFeed.map((death, i) => (
-            <DeathFeedItem key={i} {...death} />
-          ))
+          deathsLoading ? (
+            <div className="text-[var(--text-dim)] text-xs py-4 text-center animate-pulse">Loading deaths...</div>
+          ) : deathFeed.length === 0 ? (
+            <div className="text-[var(--text-dim)] text-xs py-4 text-center">No deaths yet. Be the first to fall...</div>
+          ) : (
+            deathFeed.map((death, i: number) => (
+              <DeathFeedItem 
+                key={(death as Death).id || i} 
+                playerName={death.playerName}
+                room={death.room}
+                finalMessage={death.finalMessage}
+                createdAt={death.createdAt}
+              />
+            ))
+          )
         ) : (
           mockLeaderboard.map((entry) => (
             <LeaderboardItem key={entry.rank} {...entry} />
