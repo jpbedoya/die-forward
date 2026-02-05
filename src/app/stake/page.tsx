@@ -32,7 +32,7 @@ const POOL_WALLET = new PublicKey(
 
 export default function StakeScreen() {
   const router = useRouter();
-  const { publicKey, connected, sendTransaction } = useWallet();
+  const { publicKey, connected, signTransaction } = useWallet();
   const { connection } = useConnection();
   const [balance, setBalance] = useState<number | null>(null);
   const [selectedStake, setSelectedStake] = useState<number | null>(null);
@@ -59,7 +59,7 @@ export default function StakeScreen() {
   }, [publicKey, connection]);
 
   const handleEnter = async () => {
-    if (!selectedStake || !publicKey || !sendTransaction) return;
+    if (!selectedStake || !publicKey || !signTransaction) return;
     
     // Check balance (need extra for fees)
     if (balance !== null && selectedStake + 0.001 > balance) {
@@ -81,15 +81,22 @@ export default function StakeScreen() {
       );
 
       // Get recent blockhash
-      const { blockhash } = await connection.getLatestBlockhash();
+      const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
       transaction.recentBlockhash = blockhash;
       transaction.feePayer = publicKey;
 
-      // 2. User signs and sends transaction
-      const signature = await sendTransaction(transaction, connection);
+      // 2. User signs transaction (this prompts the wallet)
+      const signedTx = await signTransaction(transaction);
       
-      // 3. Wait for confirmation
-      await connection.confirmTransaction(signature, 'confirmed');
+      // 3. Send the signed transaction
+      const signature = await connection.sendRawTransaction(signedTx.serialize());
+      
+      // 4. Wait for confirmation
+      await connection.confirmTransaction({
+        signature,
+        blockhash,
+        lastValidBlockHeight,
+      }, 'confirmed');
 
       // 4. Start game session via API (with tx signature as proof)
       const response = await fetch('/api/session/start', {
