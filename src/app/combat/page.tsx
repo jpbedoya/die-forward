@@ -104,7 +104,7 @@ export default function CombatScreen() {
         </div>
 
         {/* Combat Actions */}
-        <div className="text-[#555] text-xs mb-2 uppercase tracking-wider">
+        <div className="text-[#999] text-xs mb-2 uppercase tracking-wider">
           ▼ Choose Your Action
         </div>
         <div className="grid grid-cols-2 gap-2 mb-4">
@@ -129,7 +129,7 @@ export default function CombatScreen() {
                     <span className="text-blue-400 text-xs">⚡{option.cost}</span>
                   )}
                 </div>
-                <div className="text-[10px] text-[#555] mt-1">{option.desc}</div>
+                <div className="text-[10px] text-[#888] mt-1">{option.desc}</div>
               </button>
             );
           })}
