@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { getGameState, clearGameState } from '@/lib/gameState';
-import { recordDeath } from '@/lib/instant';
 
 function shortenAddress(address: string): string {
   return `${address.slice(0, 4)}...${address.slice(-4)}`;
@@ -21,6 +20,7 @@ export default function DeathScreen() {
     totalRooms: 7,
     stakeLost: 0.05,
     inventory: [] as { name: string; emoji: string }[],
+    sessionToken: null as string | null,
   });
   const [loaded, setLoaded] = useState(false);
   const maxChars = 50;
@@ -34,6 +34,7 @@ export default function DeathScreen() {
       totalRooms: 7,
       stakeLost: state.stakeAmount,
       inventory: state.inventory,
+      sessionToken: state.sessionToken,
     });
     setLoaded(true);
   }, []);
@@ -49,16 +50,26 @@ export default function DeathScreen() {
         ? shortenAddress(publicKey.toBase58())
         : `anon_${Math.random().toString(36).slice(2, 6)}`;
 
-      // Record death to InstantDB
-      await recordDeath({
-        walletAddress: publicKey?.toBase58() || 'unknown',
-        playerName,
-        zone: deathData.zone,
-        room: deathData.room,
-        stakeAmount: deathData.stakeLost,
-        finalMessage: finalMessage.trim(),
-        inventory: deathData.inventory,
-      });
+      // Record death via API (validates session token)
+      if (deathData.sessionToken) {
+        const response = await fetch('/api/session/death', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sessionToken: deathData.sessionToken,
+            room: deathData.room,
+            finalMessage: finalMessage.trim(),
+            inventory: deathData.inventory,
+            playerName,
+          }),
+        });
+
+        if (!response.ok) {
+          const data = await response.json();
+          console.warn('Failed to record death:', data.error);
+          // Continue anyway - don't block the player
+        }
+      }
 
       // Clear game state
       clearGameState();
@@ -66,7 +77,7 @@ export default function DeathScreen() {
       setSubmitted(true);
     } catch (error) {
       console.error('Failed to record death:', error);
-      // Still allow proceeding even if DB fails
+      // Still allow proceeding even if API fails
       clearGameState();
       setSubmitted(true);
     } finally {

@@ -1,7 +1,8 @@
 import { init, tx, id } from '@instantdb/react';
 
 // Initialize InstantDB
-const APP_ID = process.env.NEXT_PUBLIC_INSTANT_APP_ID || '0700b913-585c-4de8-abdf-0bc81a0f5920';
+// App ID should be set in environment variables
+const APP_ID = process.env.NEXT_PUBLIC_INSTANT_APP_ID!;
 
 // Schema types
 export interface Death {

@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
-import { resetGameState } from '@/lib/gameState';
+import { resetGameState, getGameState, saveGameState } from '@/lib/gameState';
 import { usePoolStats } from '@/lib/instant';
 
 const stakeOptions = [
@@ -60,20 +60,39 @@ export default function StakeScreen() {
     setConfirming(true);
     setError(null);
     
-    // TODO: Implement actual staking transaction
-    // For MVP, we'll simulate the transaction
     try {
-      // Simulate transaction delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Start a game session via API
+      const response = await fetch('/api/session/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          walletAddress: publicKey.toBase58(),
+          stakeAmount: selectedStake,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to start session');
+      }
+
+      const { sessionToken } = await response.json();
       
-      // Initialize game state
+      // Initialize game state with session token
       resetGameState(selectedStake);
+      // Save session info
+      const state = getGameState();
+      saveGameState({
+        ...state,
+        sessionToken,
+        walletAddress: publicKey.toBase58(),
+      });
       
       // Navigate to game
       router.push('/play');
     } catch (err) {
-      console.error('Staking failed:', err);
-      setError('Transaction failed. Please try again.');
+      console.error('Failed to start game:', err);
+      setError(err instanceof Error ? err.message : 'Failed to start game. Please try again.');
       setConfirming(false);
     }
   };

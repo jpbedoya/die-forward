@@ -6,6 +6,8 @@ export interface GameState {
   stamina: number;
   inventory: { id: string; name: string; emoji: string }[];
   stakeAmount: number;
+  sessionToken: string | null;
+  walletAddress: string | null;
 }
 
 const STORAGE_KEY = 'die-forward-game';
@@ -19,6 +21,8 @@ const defaultState: GameState = {
     { id: '2', name: 'Herbs', emoji: '🌿' },
   ],
   stakeAmount: 0.05,
+  sessionToken: null,
+  walletAddress: null,
 };
 
 export function getGameState(): GameState {
