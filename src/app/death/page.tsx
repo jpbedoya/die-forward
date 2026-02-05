@@ -33,7 +33,16 @@ export default function DeathScreen() {
         
         {/* Death announcement */}
         <div className="text-center mb-8">
-          <div className="text-[var(--red)] text-4xl mb-2">☠</div>
+          <pre className="text-[var(--text-muted)] text-xs leading-tight mb-4 inline-block">
+{`    __________
+   |          |
+   |  R.I.P.  |
+   |          |
+   |    ☠     |
+   |__________|
+  /____________\\
+     |      |`}
+          </pre>
           <h1 className="text-[var(--red-bright)] text-2xl tracking-widest mb-2">YOU DIED</h1>
           <p className="text-[var(--text-secondary)] text-sm">
             Slain by <span className="text-[var(--red-bright)]">{mockDeathData.killedBy}</span>
