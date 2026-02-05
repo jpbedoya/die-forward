@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 // Menu overlay component
 function Menu({ 
@@ -20,13 +21,10 @@ function Menu({
   
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-black/80"
         onClick={onClose}
       />
-      
-      {/* Menu panel */}
       <div className="relative bg-[var(--bg-surface)] border border-[var(--border-default)] w-[90%] max-w-xs p-4">
         <div className="text-[var(--amber)] text-xs mb-4 flex items-center justify-between">
           <span className="tracking-wider">◈ DIE FORWARD</span>
@@ -34,16 +32,12 @@ function Menu({
             [X]
           </button>
         </div>
-        
-        {/* Wallet */}
         <div className="mb-4 text-xs">
           <div className="text-[var(--text-muted)] mb-1">CONNECTED</div>
           <div className="text-[var(--text-secondary)] font-mono truncate">
             {walletAddress}
           </div>
         </div>
-        
-        {/* Audio toggle */}
         <button 
           onClick={onToggleAudio}
           className="w-full text-left px-3 py-2 text-sm bg-[var(--bg-base)] border border-[var(--border-dim)] mb-2 flex items-center justify-between"
@@ -53,9 +47,8 @@ function Menu({
             {audioEnabled ? '♪ ON' : '♪ OFF'}
           </span>
         </button>
-        
-        {/* Abandon run */}
         <button 
+          onClick={() => window.location.href = '/title'}
           className="w-full text-left px-3 py-2 text-sm bg-[var(--bg-base)] border border-[var(--red-dim)] text-[var(--red-bright)] hover:bg-[var(--red-dim)]/20"
         >
           ☠ Abandon Run
@@ -65,50 +58,92 @@ function Menu({
   );
 }
 
-// Mockup data
-const mockRoom = {
-  zone: "THE SUNKEN CRYPT",
-  roomNumber: 7,
-  totalRooms: 12,
-};
+type RoomType = 'explore' | 'combat' | 'corpse' | 'cache' | 'exit';
 
-const mockNarrative = `You descend into a flooded chamber. Water laps at your knees, cold and dark.
+interface Room {
+  type: RoomType;
+  narrative: string;
+  options: { id: string; text: string; action: string }[];
+  corpse?: { player: string; message: string; loot: string };
+}
 
-In the corner, a corpse slumps against the moss-covered wall — someone who came before.
+const rooms: Room[] = [
+  {
+    type: 'explore',
+    narrative: `You descend stone steps into darkness. The air grows cold and damp. Water drips somewhere ahead.
 
-They died 2 hours ago.
+The Sunken Crypt awaits.`,
+    options: [
+      { id: '1', text: 'Light your torch and proceed', action: 'next' },
+      { id: '2', text: 'Move carefully in darkness', action: 'next' },
+    ],
+  },
+  {
+    type: 'corpse',
+    narrative: `A flooded chamber stretches before you. In the corner, a body slumps against the wall.
 
-Something moves in the water behind you.`;
+Someone who came before you. They didn't make it.`,
+    options: [
+      { id: '1', text: 'Search the corpse', action: 'loot' },
+      { id: '2', text: 'Pay respects and move on', action: 'next' },
+    ],
+    corpse: { player: 'hollowknight', message: 'should have dodged...', loot: 'Rusty Sword' },
+  },
+  {
+    type: 'combat',
+    narrative: `Something stirs in the water. A shape rises — bloated, dripping, hungry.
 
-const mockPlayer = {
-  health: 73,
-  maxHealth: 100,
-  stamina: 2,
-  maxStamina: 3,
-  inventory: [
-    { id: '1', name: 'Torch', emoji: '🔦' },
-    { id: '2', name: 'Rusty Blade', emoji: '🗡️' },
-    { id: '3', name: 'Herbs', emoji: '🌿' },
-  ],
-  stakeAmount: 0.05,
-};
+The Drowned One blocks your path.`,
+    options: [
+      { id: '1', text: 'Ready your weapon', action: 'combat' },
+      { id: '2', text: 'Try to flee past it', action: 'flee' },
+    ],
+  },
+  {
+    type: 'cache',
+    narrative: `A small alcove, untouched by water. Old supplies rest on a stone shelf.
 
-const mockOptions = [
-  { id: '1', text: 'Search the corpse' },
-  { id: '2', text: 'Ready your blade' },
-  { id: '3', text: 'Wade to the exit' },
-  { id: '4', text: 'Scan with torch' },
+A moment of respite in the darkness.`,
+    options: [
+      { id: '1', text: 'Take the supplies', action: 'heal' },
+      { id: '2', text: 'Continue deeper', action: 'next' },
+    ],
+  },
+  {
+    type: 'explore',
+    narrative: `The passage narrows. Water rises to your waist now. The cold seeps into your bones.
+
+Ahead, you see a faint light.`,
+    options: [
+      { id: '1', text: 'Wade toward the light', action: 'next' },
+      { id: '2', text: 'Search for another path', action: 'next' },
+    ],
+  },
+  {
+    type: 'combat',
+    narrative: `Two more creatures emerge from the depths. Smaller than before, but faster.
+
+Drowned Wretches surround you.`,
+    options: [
+      { id: '1', text: 'Stand and fight', action: 'combat' },
+      { id: '2', text: 'Push through them', action: 'flee' },
+    ],
+  },
+  {
+    type: 'exit',
+    narrative: `Light breaks through the darkness. Stone steps lead upward.
+
+You've found the exit. The surface awaits.`,
+    options: [
+      { id: '1', text: 'Ascend to victory', action: 'victory' },
+    ],
+  },
 ];
-
-const corpsePlayer = 'hollowknight';
-const corpseMessage = "should have dodged...";
 
 const mockWallet = "8xH4...k9Qz";
 
-// Simple ASCII health bar
 function HealthBar({ current, max }: { current: number; max: number }) {
-  const pct = current / max;
-  const filled = Math.round(pct * 8);
+  const filled = Math.round((current / max) * 8);
   const empty = 8 - filled;
   return (
     <span className="font-mono tracking-tighter">
@@ -139,14 +174,70 @@ function ProgressBar({ current, total }: { current: number; total: number }) {
 }
 
 export default function GameScreen() {
+  const router = useRouter();
+  const [currentRoom, setCurrentRoom] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [audioEnabled, setAudioEnabled] = useState(true);
+  const [health, setHealth] = useState(100);
+  const [stamina, setStamina] = useState(3);
+  const [inventory, setInventory] = useState([
+    { id: '1', name: 'Torch', emoji: '🔦' },
+    { id: '2', name: 'Herbs', emoji: '🌿' },
+  ]);
+  const [showCorpse, setShowCorpse] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
+  const room = rooms[currentRoom];
+
+  const handleAction = (action: string) => {
+    setMessage(null);
+    
+    switch (action) {
+      case 'next':
+        if (currentRoom < rooms.length - 1) {
+          setCurrentRoom(currentRoom + 1);
+          setSelectedOption(null);
+          setShowCorpse(false);
+          setStamina(Math.min(3, stamina + 1)); // Regen stamina between rooms
+        }
+        break;
+      case 'combat':
+        router.push('/combat');
+        break;
+      case 'flee':
+        // Take some damage but skip combat
+        setHealth(health - 15);
+        setMessage('You take a hit while fleeing!');
+        if (health - 15 <= 0) {
+          router.push('/death');
+        } else {
+          setCurrentRoom(currentRoom + 1);
+          setSelectedOption(null);
+        }
+        break;
+      case 'loot':
+        setShowCorpse(true);
+        if (room.corpse && !inventory.find(i => i.name === room.corpse!.loot)) {
+          setInventory([...inventory, { id: Date.now().toString(), name: room.corpse.loot, emoji: '🗡️' }]);
+          setMessage(`Found: ${room.corpse.loot}`);
+        }
+        break;
+      case 'heal':
+        setHealth(Math.min(100, health + 30));
+        setMessage('You feel restored. +30 HP');
+        setCurrentRoom(currentRoom + 1);
+        setSelectedOption(null);
+        break;
+      case 'victory':
+        router.push('/victory');
+        break;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[var(--bg-base)] flex flex-col font-mono">
       
-      {/* Menu Overlay */}
       <Menu 
         isOpen={menuOpen}
         onClose={() => setMenuOpen(false)}
@@ -155,7 +246,7 @@ export default function GameScreen() {
         onToggleAudio={() => setAudioEnabled(!audioEnabled)}
       />
 
-      {/* Fixed Header */}
+      {/* Header */}
       <header className="bg-[var(--bg-base)] border-b border-[var(--amber-dim)] px-3 py-2 sticky top-0 z-10">
         <div className="flex items-center justify-between text-xs">
           <div className="flex items-center gap-2">
@@ -167,50 +258,59 @@ export default function GameScreen() {
             </button>
             <span className="text-[var(--amber)]">◈</span>
             <span className="text-[var(--amber-bright)] uppercase tracking-wide">
-              {mockRoom.zone}
+              THE SUNKEN CRYPT
             </span>
           </div>
-          <ProgressBar current={mockRoom.roomNumber} total={mockRoom.totalRooms} />
+          <ProgressBar current={currentRoom + 1} total={rooms.length} />
         </div>
       </header>
 
-      {/* Scrollable Content */}
+      {/* Content */}
       <main className="flex-1 overflow-y-auto px-3 pt-4 pb-20">
         
         {/* Narrative */}
         <div className="text-[var(--text-primary)] text-sm leading-relaxed mb-4 whitespace-pre-line">
-          {mockNarrative}
+          {room.narrative}
         </div>
 
-        {/* Corpse Callout */}
-        <div className="bg-[var(--purple-dim)]/20 border border-[var(--purple-dim)] p-3 mb-4">
-          <div className="flex items-center gap-2 text-sm mb-1">
-            <span className="text-[var(--purple)]">☠</span>
-            <span className="text-[var(--purple-bright)] font-bold">@{corpsePlayer}</span>
-            <span className="text-[var(--text-muted)] text-xs">2h ago</span>
+        {/* Message */}
+        {message && (
+          <div className="bg-[var(--amber-dim)]/20 border border-[var(--amber-dim)] p-3 mb-4 text-[var(--amber-bright)] text-sm">
+            {message}
           </div>
-          <div className="text-[var(--text-secondary)] text-sm italic mb-2">
-            "{corpseMessage}"
+        )}
+
+        {/* Corpse callout */}
+        {room.corpse && showCorpse && (
+          <div className="bg-[var(--purple-dim)]/20 border border-[var(--purple-dim)] p-3 mb-4">
+            <div className="flex items-center gap-2 text-sm mb-1">
+              <span className="text-[var(--purple)]">☠</span>
+              <span className="text-[var(--purple-bright)] font-bold">@{room.corpse.player}</span>
+            </div>
+            <div className="text-[var(--text-secondary)] text-sm italic mb-2">
+              "{room.corpse.message}"
+            </div>
+            <div className="text-[var(--text-muted)] text-xs">
+              └─ 🗡️ {room.corpse.loot}
+            </div>
           </div>
-          <div className="text-[var(--text-muted)] text-xs">
-            ├─ 🗡️ Rusty Sword
-            <br />
-            └─ ◎ 0.02 SOL
-          </div>
-        </div>
+        )}
 
         {/* Divider */}
         <div className="text-[var(--border-default)] text-xs mb-4">
           ────────────────────────
         </div>
 
-        {/* Actions */}
+        {/* Options */}
         <div className="space-y-2 pb-4">
           <div className="text-[var(--text-muted)] text-xs mb-2">▼ WHAT DO YOU DO?</div>
-          {mockOptions.map((option, i) => (
+          {room.options.map((option, i) => (
             <button
               key={option.id}
-              onClick={() => setSelectedOption(option.id)}
+              onClick={() => {
+                setSelectedOption(option.id);
+                handleAction(option.action);
+              }}
               className={`w-full text-left px-3 py-3 text-sm transition-all active:scale-[0.98] ${
                 selectedOption === option.id
                   ? 'bg-[var(--amber-dim)]/30 text-[var(--amber-bright)] border-l-2 border-[var(--amber)]'
@@ -219,42 +319,47 @@ export default function GameScreen() {
             >
               <span className="text-[var(--text-muted)] mr-2">{i + 1}.</span>
               {option.text}
-              {selectedOption === option.id && (
-                <span className="text-[var(--amber)] float-right">◄</span>
-              )}
             </button>
           ))}
+          
+          {/* Continue after looting */}
+          {showCorpse && (
+            <button
+              onClick={() => handleAction('next')}
+              className="w-full text-left px-3 py-3 text-sm bg-[var(--bg-surface)] text-[var(--text-secondary)] border-l-2 border-[var(--border-dim)]"
+            >
+              <span className="text-[var(--text-muted)] mr-2">→</span>
+              Continue onward
+            </button>
+          )}
         </div>
       </main>
 
-      {/* Fixed Bottom Stats Bar */}
+      {/* Footer */}
       <footer className="bg-[var(--bg-base)] border-t border-[var(--border-dim)] px-3 py-2 sticky bottom-0">
-        {/* Stats Row */}
         <div className="flex items-center justify-between text-xs mb-2">
           <div className="flex items-center gap-3">
-            {/* Health */}
             <div className="flex items-center gap-1">
               <span className="text-[var(--red)]">♥</span>
-              <HealthBar current={mockPlayer.health} max={mockPlayer.maxHealth} />
-              <span className="text-[var(--red-bright)] text-[10px]">{mockPlayer.health}</span>
+              <HealthBar current={health} max={100} />
+              <span className={`text-[10px] ${health < 30 ? 'text-[var(--red-bright)] animate-pulse' : 'text-[var(--red-bright)]'}`}>
+                {health}
+              </span>
             </div>
-            {/* Stamina */}
             <div className="flex items-center gap-1">
               <span className="text-[var(--blue)]">⚡</span>
-              <StaminaBar current={mockPlayer.stamina} max={mockPlayer.maxStamina} />
+              <StaminaBar current={stamina} max={3} />
             </div>
           </div>
-          {/* Stake */}
           <div className="flex items-center gap-1">
             <span className="text-[var(--amber)]">◎</span>
-            <span className="text-[var(--amber-bright)]">{mockPlayer.stakeAmount} SOL</span>
+            <span className="text-[var(--amber-bright)]">0.05 SOL</span>
           </div>
         </div>
         
-        {/* Inventory Row */}
         <div className="flex items-center gap-2 text-xs overflow-x-auto">
           <span className="text-[var(--text-dim)]">🎒</span>
-          {mockPlayer.inventory.map((item) => (
+          {inventory.map((item) => (
             <span 
               key={item.id} 
               className="text-[var(--text-muted)] bg-[var(--bg-surface)] px-2 py-0.5 whitespace-nowrap"
