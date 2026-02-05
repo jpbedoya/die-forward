@@ -38,6 +38,9 @@ export default function StakeScreen() {
   const [selectedStake, setSelectedStake] = useState<number | null>(null);
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [debugLog, setDebugLog] = useState<string[]>([]);
+  
+  const log = (msg: string) => setDebugLog(prev => [...prev, `${new Date().toLocaleTimeString()}: ${msg}`]);
   
   // Real pool stats from InstantDB
   const { totalDeaths, totalStaked, isLoading: statsLoading } = usePoolStats();
@@ -78,8 +81,10 @@ export default function StakeScreen() {
     
     let signature: string;
     
+    setDebugLog([]); // Clear previous logs
+    
     try {
-      setError('Creating transaction...');
+      log('Creating transaction...');
       
       // 1. Create transaction to transfer SOL to pool
       const transaction = new Transaction().add(
@@ -90,43 +95,44 @@ export default function StakeScreen() {
         })
       );
 
-      // Get recent blockhash
+      log('Getting blockhash...');
       const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
       transaction.recentBlockhash = blockhash;
       transaction.feePayer = publicKey;
 
-      setError(`Wallet caps: send=${!!sendTransaction}, sign=${!!signTransaction}`);
+      log(`Wallet caps: send=${!!sendTransaction}, sign=${!!signTransaction}`);
 
       // 2. Try sendTransaction first (works better with Mobile Wallet Adapter)
       if (sendTransaction) {
         try {
-          setError('Requesting signature via sendTransaction...');
+          log('Calling sendTransaction...');
           signature = await sendTransaction(transaction, connection);
-          setError(`Got signature: ${signature.slice(0, 20)}...`);
+          log(`Got signature: ${signature.slice(0, 20)}...`);
         } catch (sendErr: unknown) {
           const errMsg = sendErr instanceof Error ? sendErr.message : String(sendErr);
-          setError(`sendTransaction failed: ${errMsg.slice(0, 100)}`);
+          log(`sendTransaction FAILED: ${errMsg.slice(0, 150)}`);
           
           // Fall back to sign + send raw if sendTransaction fails
           if (signTransaction) {
-            setError('Trying signTransaction fallback...');
+            log('Trying signTransaction fallback...');
             const signedTx = await signTransaction(transaction);
-            setError('Got signed tx, sending raw...');
+            log('Got signed tx, sending raw...');
             signature = await connection.sendRawTransaction(signedTx.serialize());
+            log(`Raw tx sent: ${signature.slice(0, 20)}...`);
           } else {
             throw sendErr;
           }
         }
       } else if (signTransaction) {
-        // Fallback: sign then send raw
-        setError('Using signTransaction...');
+        log('Using signTransaction (no sendTransaction)...');
         const signedTx = await signTransaction(transaction);
+        log('Signed, sending raw...');
         signature = await connection.sendRawTransaction(signedTx.serialize());
       } else {
         throw new Error('No signing method available');
       }
       
-      setError('Waiting for confirmation...');
+      log('Waiting for confirmation...');
       
       // 3. Wait for confirmation
       await connection.confirmTransaction({
@@ -135,7 +141,7 @@ export default function StakeScreen() {
         lastValidBlockHeight,
       }, 'confirmed');
       
-      setError(null); // Clear debug messages on success
+      log('✓ Confirmed!');
 
       // 4. Start game session via API (with tx signature as proof)
       const response = await fetch('/api/session/start', {
@@ -167,8 +173,9 @@ export default function StakeScreen() {
       // 6. Navigate to game
       router.push('/play');
     } catch (err) {
-      console.error('Failed to start game:', err);
-      setError(err instanceof Error ? err.message : 'Failed to start game. Please try again.');
+      const errMsg = err instanceof Error ? err.message : String(err);
+      log(`ERROR: ${errMsg}`);
+      setError(errMsg.slice(0, 200));
       setConfirming(false);
     }
   };
@@ -267,9 +274,20 @@ export default function StakeScreen() {
           </div>
         </div>
 
+        {/* Debug log */}
+        {debugLog.length > 0 && (
+          <div className="w-full max-w-xs mb-4 px-3 py-2 border border-[var(--border-dim)] bg-[var(--bg-surface)] text-[10px] font-mono max-h-40 overflow-y-auto">
+            {debugLog.map((msg, i) => (
+              <div key={i} className={msg.includes('ERROR') || msg.includes('FAILED') ? 'text-[var(--red-bright)]' : 'text-[var(--text-muted)]'}>
+                {msg}
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Error message */}
         {error && (
-          <div className="text-[var(--red-bright)] text-xs mb-4 px-4 py-2 border border-[var(--red-dim)] bg-[var(--red-dim)]/20">
+          <div className="w-full max-w-xs text-[var(--red-bright)] text-xs mb-4 px-4 py-2 border border-[var(--red-dim)] bg-[var(--red-dim)]/20">
             {error}
           </div>
         )}
