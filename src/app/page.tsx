@@ -27,18 +27,18 @@ function Menu({
       />
       
       {/* Menu panel */}
-      <div className="relative bg-[#111] border border-[#333] w-[90%] max-w-xs p-4">
-        <div className="text-amber-500 text-xs mb-4 flex items-center justify-between">
+      <div className="relative bg-[--bg-surface] border border-[--border-default] w-[90%] max-w-xs p-4">
+        <div className="text-[--amber] text-xs mb-4 flex items-center justify-between">
           <span className="tracking-wider">◈ DIE FORWARD</span>
-          <button onClick={onClose} className="text-[#555] hover:text-[#888]">
+          <button onClick={onClose} className="text-[--text-muted] hover:text-[--text-secondary]">
             [X]
           </button>
         </div>
         
         {/* Wallet */}
         <div className="mb-4 text-xs">
-          <div className="text-[#555] mb-1">CONNECTED</div>
-          <div className="text-[#888] font-mono truncate">
+          <div className="text-[--text-muted] mb-1">CONNECTED</div>
+          <div className="text-[--text-secondary] font-mono truncate">
             {walletAddress}
           </div>
         </div>
@@ -46,17 +46,17 @@ function Menu({
         {/* Audio toggle */}
         <button 
           onClick={onToggleAudio}
-          className="w-full text-left px-3 py-2 text-sm bg-[#0a0a0a] border border-[#222] mb-2 flex items-center justify-between"
+          className="w-full text-left px-3 py-2 text-sm bg-[--bg-base] border border-[--border-dim] mb-2 flex items-center justify-between"
         >
-          <span className="text-[#888]">Audio</span>
-          <span className={audioEnabled ? 'text-green-500' : 'text-red-500'}>
+          <span className="text-[--text-secondary]">Audio</span>
+          <span className={audioEnabled ? 'text-[--green]' : 'text-[--red]'}>
             {audioEnabled ? '♪ ON' : '♪ OFF'}
           </span>
         </button>
         
         {/* Abandon run */}
         <button 
-          className="w-full text-left px-3 py-2 text-sm bg-[#0a0a0a] border border-red-500/30 text-red-400 hover:bg-red-500/10"
+          className="w-full text-left px-3 py-2 text-sm bg-[--bg-base] border border-[--red-dim] text-[--red-bright] hover:bg-[--red-dim]/20"
         >
           ☠ Abandon Run
         </button>
@@ -100,9 +100,10 @@ const mockOptions = [
   { id: '4', text: 'Scan with torch' },
 ];
 
-const deathsToday = 12;
 const corpsePlayer = 'hollowknight';
 const corpseMessage = "should have dodged...";
+
+const mockWallet = "8xH4...k9Qz";
 
 // Simple ASCII health bar
 function HealthBar({ current, max }: { current: number; max: number }) {
@@ -111,8 +112,8 @@ function HealthBar({ current, max }: { current: number; max: number }) {
   const empty = 8 - filled;
   return (
     <span className="font-mono tracking-tighter">
-      <span className="text-red-500">{'█'.repeat(filled)}</span>
-      <span className="text-red-900">{'█'.repeat(empty)}</span>
+      <span className="text-[--red]">{'█'.repeat(filled)}</span>
+      <span className="text-[--red-dim]">{'█'.repeat(empty)}</span>
     </span>
   );
 }
@@ -120,8 +121,8 @@ function HealthBar({ current, max }: { current: number; max: number }) {
 function StaminaBar({ current, max }: { current: number; max: number }) {
   return (
     <span className="font-mono">
-      <span className="text-blue-400">{'◆'.repeat(current)}</span>
-      <span className="text-blue-900">{'◇'.repeat(max - current)}</span>
+      <span className="text-[--blue-bright]">{'◆'.repeat(current)}</span>
+      <span className="text-[--blue-dim]">{'◇'.repeat(max - current)}</span>
     </span>
   );
 }
@@ -131,13 +132,11 @@ function ProgressBar({ current, total }: { current: number; total: number }) {
   const empty = 12 - filled;
   return (
     <span className="font-mono text-xs">
-      <span className="text-amber-400">{'▓'.repeat(filled)}</span>
-      <span className="text-[#888]">{'░'.repeat(empty)}</span>
+      <span className="text-[--amber]">{'▓'.repeat(filled)}</span>
+      <span className="text-[--text-muted]">{'░'.repeat(empty)}</span>
     </span>
   );
 }
-
-const mockWallet = "8xH4...k9Qz";
 
 export default function GameScreen() {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
@@ -145,7 +144,7 @@ export default function GameScreen() {
   const [audioEnabled, setAudioEnabled] = useState(true);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex flex-col font-mono">
+    <div className="min-h-screen bg-[--bg-base] flex flex-col font-mono">
       
       {/* Menu Overlay */}
       <Menu 
@@ -157,17 +156,17 @@ export default function GameScreen() {
       />
 
       {/* Fixed Header */}
-      <header className="bg-[#0a0a0a] border-b border-amber-500/30 px-3 py-2 sticky top-0 z-10">
+      <header className="bg-[--bg-base] border-b border-[--amber-dim] px-3 py-2 sticky top-0 z-10">
         <div className="flex items-center justify-between text-xs">
           <div className="flex items-center gap-2">
             <button 
               onClick={() => setMenuOpen(true)}
-              className="text-[#555] hover:text-amber-500 transition-colors"
+              className="text-[--text-muted] hover:text-[--amber] transition-colors"
             >
               [≡]
             </button>
-            <span className="text-amber-500">◈</span>
-            <span className="text-amber-400/80 uppercase tracking-wide">
+            <span className="text-[--amber]">◈</span>
+            <span className="text-[--amber-bright] uppercase tracking-wide">
               {mockRoom.zone}
             </span>
           </div>
@@ -179,21 +178,21 @@ export default function GameScreen() {
       <main className="flex-1 overflow-y-auto px-3 py-4">
         
         {/* Narrative */}
-        <div className="text-[#c0c0c0] text-sm leading-relaxed mb-4 whitespace-pre-line">
+        <div className="text-[--text-primary] text-sm leading-relaxed mb-4 whitespace-pre-line">
           {mockNarrative}
         </div>
 
         {/* Corpse Callout */}
-        <div className="bg-[#110a14] border border-purple-500/30 p-3 mb-4">
+        <div className="bg-[--purple-dim]/20 border border-[--purple-dim] p-3 mb-4">
           <div className="flex items-center gap-2 text-sm mb-1">
-            <span className="text-purple-400">☠</span>
-            <span className="text-purple-300 font-bold">@{corpsePlayer}</span>
-            <span className="text-purple-400/50 text-xs">2h ago</span>
+            <span className="text-[--purple]">☠</span>
+            <span className="text-[--purple-bright] font-bold">@{corpsePlayer}</span>
+            <span className="text-[--text-muted] text-xs">2h ago</span>
           </div>
-          <div className="text-[#888] text-sm italic mb-2">
+          <div className="text-[--text-secondary] text-sm italic mb-2">
             "{corpseMessage}"
           </div>
-          <div className="text-[#555] text-xs">
+          <div className="text-[--text-muted] text-xs">
             ├─ 🗡️ Rusty Sword
             <br />
             └─ ◎ 0.02 SOL
@@ -201,27 +200,27 @@ export default function GameScreen() {
         </div>
 
         {/* Divider */}
-        <div className="text-[#333] text-xs mb-4">
+        <div className="text-[--border-default] text-xs mb-4">
           ────────────────────────
         </div>
 
         {/* Actions */}
         <div className="space-y-2 mb-4">
-          <div className="text-[#555] text-xs mb-2">▼ WHAT DO YOU DO?</div>
+          <div className="text-[--text-muted] text-xs mb-2">▼ WHAT DO YOU DO?</div>
           {mockOptions.map((option, i) => (
             <button
               key={option.id}
               onClick={() => setSelectedOption(option.id)}
               className={`w-full text-left px-3 py-3 text-sm transition-all active:scale-[0.98] ${
                 selectedOption === option.id
-                  ? 'bg-amber-500/20 text-amber-100 border-l-2 border-amber-500'
-                  : 'bg-[#111] text-[#999] border-l-2 border-[#222] active:bg-[#1a1a1a]'
+                  ? 'bg-[--amber-dim]/30 text-[--amber-bright] border-l-2 border-[--amber]'
+                  : 'bg-[--bg-surface] text-[--text-secondary] border-l-2 border-[--border-dim] active:bg-[--bg-elevated]'
               }`}
             >
-              <span className="text-[#555] mr-2">{i + 1}.</span>
+              <span className="text-[--text-muted] mr-2">{i + 1}.</span>
               {option.text}
               {selectedOption === option.id && (
-                <span className="text-amber-500 float-right">◄</span>
+                <span className="text-[--amber] float-right">◄</span>
               )}
             </button>
           ))}
@@ -229,36 +228,36 @@ export default function GameScreen() {
       </main>
 
       {/* Fixed Bottom Stats Bar */}
-      <footer className="bg-[#0a0a0a] border-t border-[#222] px-3 py-2 sticky bottom-0">
+      <footer className="bg-[--bg-base] border-t border-[--border-dim] px-3 py-2 sticky bottom-0">
         {/* Stats Row */}
         <div className="flex items-center justify-between text-xs mb-2">
           <div className="flex items-center gap-3">
             {/* Health */}
             <div className="flex items-center gap-1">
-              <span className="text-red-500">♥</span>
+              <span className="text-[--red]">♥</span>
               <HealthBar current={mockPlayer.health} max={mockPlayer.maxHealth} />
-              <span className="text-red-400/70 text-[10px]">{mockPlayer.health}</span>
+              <span className="text-[--red-bright] text-[10px]">{mockPlayer.health}</span>
             </div>
             {/* Stamina */}
             <div className="flex items-center gap-1">
-              <span className="text-blue-400">⚡</span>
+              <span className="text-[--blue]">⚡</span>
               <StaminaBar current={mockPlayer.stamina} max={mockPlayer.maxStamina} />
             </div>
           </div>
           {/* Stake */}
           <div className="flex items-center gap-1">
-            <span className="text-amber-500">◎</span>
-            <span className="text-amber-400">{mockPlayer.stakeAmount} SOL</span>
+            <span className="text-[--amber]">◎</span>
+            <span className="text-[--amber-bright]">{mockPlayer.stakeAmount} SOL</span>
           </div>
         </div>
         
         {/* Inventory Row */}
         <div className="flex items-center gap-2 text-xs overflow-x-auto">
-          <span className="text-[#444]">🎒</span>
+          <span className="text-[--text-dim]">🎒</span>
           {mockPlayer.inventory.map((item) => (
             <span 
               key={item.id} 
-              className="text-[#666] bg-[#111] px-2 py-0.5 whitespace-nowrap"
+              className="text-[--text-muted] bg-[--bg-surface] px-2 py-0.5 whitespace-nowrap"
             >
               {item.emoji} {item.name}
             </span>
