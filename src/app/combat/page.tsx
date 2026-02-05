@@ -111,7 +111,7 @@ It lunges, claws extended, aiming for your throat.`);
     let newStamina = playerStamina - (option?.cost || 0);
     
     // Clamp values
-    newPlayerHealth = Math.max(0, Math.min(mockPlayer.maxHealth, newPlayerHealth));
+    newPlayerHealth = Math.max(0, Math.min(defaultPlayer.maxHealth, newPlayerHealth));
     newEnemyHealth = Math.max(0, newEnemyHealth);
     newStamina = Math.max(0, newStamina);
     
@@ -147,7 +147,7 @@ It lunges, claws extended, aiming for your throat.`);
     setEnemyIntent(newIntent);
     
     // Restore 1 stamina
-    setPlayerStamina(Math.min(mockPlayer.maxStamina, playerStamina + 1));
+    setPlayerStamina(Math.min(defaultPlayer.maxStamina, playerStamina + 1));
     
     setNarrative(`The ${mockEnemy.name} recovers and faces you again.\n\n${newIntent.desc}...`);
     setPhase('choose');
@@ -351,14 +351,14 @@ It lunges, claws extended, aiming for your throat.`);
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1">
               <span className="text-[var(--red)]">♥</span>
-              <HealthBar current={playerHealth} max={mockPlayer.maxHealth} />
+              <HealthBar current={playerHealth} max={defaultPlayer.maxHealth} />
               <span className={`text-[10px] ${playerHealth < 30 ? 'text-[var(--red-bright)] animate-pulse' : 'text-[var(--red-bright)]'}`}>
                 {playerHealth}
               </span>
             </div>
             <div className="flex items-center gap-1">
               <span className="text-[var(--blue)]">⚡</span>
-              <StaminaBar current={playerStamina} max={mockPlayer.maxStamina} />
+              <StaminaBar current={playerStamina} max={defaultPlayer.maxStamina} />
             </div>
           </div>
           <div className="flex items-center gap-1">
