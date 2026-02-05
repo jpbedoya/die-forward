@@ -79,6 +79,8 @@ export default function StakeScreen() {
     let signature: string;
     
     try {
+      setError('Creating transaction...');
+      
       // 1. Create transaction to transfer SOL to pool
       const transaction = new Transaction().add(
         SystemProgram.transfer({
@@ -93,15 +95,23 @@ export default function StakeScreen() {
       transaction.recentBlockhash = blockhash;
       transaction.feePayer = publicKey;
 
+      setError(`Wallet caps: send=${!!sendTransaction}, sign=${!!signTransaction}`);
+
       // 2. Try sendTransaction first (works better with Mobile Wallet Adapter)
       if (sendTransaction) {
         try {
+          setError('Requesting signature via sendTransaction...');
           signature = await sendTransaction(transaction, connection);
-        } catch (sendErr) {
-          console.log('sendTransaction failed, trying signTransaction:', sendErr);
+          setError(`Got signature: ${signature.slice(0, 20)}...`);
+        } catch (sendErr: unknown) {
+          const errMsg = sendErr instanceof Error ? sendErr.message : String(sendErr);
+          setError(`sendTransaction failed: ${errMsg.slice(0, 100)}`);
+          
           // Fall back to sign + send raw if sendTransaction fails
           if (signTransaction) {
+            setError('Trying signTransaction fallback...');
             const signedTx = await signTransaction(transaction);
+            setError('Got signed tx, sending raw...');
             signature = await connection.sendRawTransaction(signedTx.serialize());
           } else {
             throw sendErr;
@@ -109,11 +119,14 @@ export default function StakeScreen() {
         }
       } else if (signTransaction) {
         // Fallback: sign then send raw
+        setError('Using signTransaction...');
         const signedTx = await signTransaction(transaction);
         signature = await connection.sendRawTransaction(signedTx.serialize());
       } else {
         throw new Error('No signing method available');
       }
+      
+      setError('Waiting for confirmation...');
       
       // 3. Wait for confirmation
       await connection.confirmTransaction({
@@ -121,6 +134,8 @@ export default function StakeScreen() {
         blockhash,
         lastValidBlockHeight,
       }, 'confirmed');
+      
+      setError(null); // Clear debug messages on success
 
       // 4. Start game session via API (with tx signature as proof)
       const response = await fetch('/api/session/start', {
