@@ -11,6 +11,7 @@ import {
   Transaction, 
   SystemProgram 
 } from '@solana/web3.js';
+import { signAndSendWithMWA } from '@/lib/mobileWallet';
 import { resetGameState, getGameState, saveGameState } from '@/lib/gameState';
 import { usePoolStats } from '@/lib/instant';
 
@@ -101,11 +102,23 @@ export default function StakeScreen() {
       transaction.feePayer = publicKey;
 
       log(`Wallet caps: send=${!!sendTransaction}, sign=${!!signTransaction}`);
-      log(`Wallet name: ${wallet?.adapter?.name || 'unknown'}`);
+      const walletName = wallet?.adapter?.name || 'unknown';
+      log(`Wallet name: ${walletName}`);
       log(`Wallet readyState: ${wallet?.adapter?.readyState || 'unknown'}`);
 
-      // 2. Try sendTransaction first (works better with Mobile Wallet Adapter)
-      if (sendTransaction) {
+      // 2. Check if using Mobile Wallet Adapter - use native MWA protocol
+      if (walletName === 'Mobile Wallet Adapter') {
+        log('Detected MWA - using native protocol...');
+        try {
+          signature = await signAndSendWithMWA(transaction, connection, log);
+        } catch (mwaErr: unknown) {
+          const errMsg = mwaErr instanceof Error ? mwaErr.message : String(mwaErr);
+          log(`MWA FAILED: ${errMsg}`);
+          throw mwaErr;
+        }
+      }
+      // Standard wallet adapter flow for desktop/in-app browsers
+      else if (sendTransaction) {
         try {
           log('Calling sendTransaction...');
           signature = await sendTransaction(transaction, connection);
