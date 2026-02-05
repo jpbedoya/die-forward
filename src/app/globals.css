@@ -1,32 +1,50 @@
 @import "tailwindcss";
 
 :root {
-  /* Terminal color scheme */
-  --bg-dark: #0a0a0a;
-  --bg-panel: #111111;
-  --bg-hover: #1a1a1a;
-  --border: #2a2a2a;
-  --border-bright: #3a3a3a;
+  /* ══════════════════════════════════════════
+     DIE FORWARD — COLOR THEME
+     ══════════════════════════════════════════ */
   
-  /* Text colors */
-  --text-primary: #e0e0e0;
-  --text-dim: #888888;
-  --text-muted: #555555;
+  /* Backgrounds */
+  --bg-base: #0a0a0a;
+  --bg-surface: #111111;
+  --bg-elevated: #1a1a1a;
   
-  /* Accent colors */
+  /* Borders */
+  --border-dim: #222222;
+  --border-default: #333333;
+  --border-bright: #444444;
+  
+  /* Text hierarchy */
+  --text-primary: #e0e0e0;    /* Main content */
+  --text-secondary: #bbbbbb;  /* Secondary info */
+  --text-muted: #888888;      /* Labels, hints */
+  --text-dim: #666666;        /* Disabled, subtle */
+  
+  /* Accent: Amber (gold, treasure, UI highlights) */
+  --amber-bright: #fbbf24;
   --amber: #f59e0b;
-  --amber-dim: #92400e;
+  --amber-dim: #b45309;
+  
+  /* Health: Red */
+  --red-bright: #f87171;
   --red: #ef4444;
-  --red-dim: #7f1d1d;
+  --red-dim: #991b1b;
+  
+  /* Stamina: Blue */
+  --blue-bright: #60a5fa;
+  --blue: #3b82f6;
+  --blue-dim: #1e3a8a;
+  
+  /* Corpse/Ghost: Purple */
+  --purple-bright: #c084fc;
+  --purple: #a855f7;
+  --purple-dim: #581c87;
+  
+  /* Success: Green */
+  --green-bright: #4ade80;
   --green: #22c55e;
   --green-dim: #166534;
-  --blue: #3b82f6;
-  --purple: #a855f7;
-  
-  /* Game-specific */
-  --health: #ef4444;
-  --stamina: #3b82f6;
-  --gold: #f59e0b;
 }
 
 @theme inline {
@@ -44,7 +62,7 @@ html, body {
 }
 
 body {
-  background: var(--bg-dark);
+  background: var(--bg-base);
   color: var(--text-primary);
   font-family: var(--font-mono), 'Courier New', monospace;
   font-size: 14px;
@@ -73,7 +91,7 @@ body::before {
 /* Selection */
 ::selection {
   background: var(--amber);
-  color: var(--bg-dark);
+  color: var(--bg-base);
 }
 
 /* Scrollbar */
@@ -83,11 +101,11 @@ body::before {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-dark);
+  background: var(--bg-base);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
+  background: var(--border-default);
   border-radius: 4px;
 }
 
@@ -95,34 +113,33 @@ body::before {
   background: var(--border-bright);
 }
 
-/* Custom utility classes */
-.terminal-box {
-  background: var(--bg-panel);
-  border: 1px solid var(--border);
-  padding: 1rem;
-}
+/* ══════════════════════════════════════════
+   UTILITY CLASSES
+   ══════════════════════════════════════════ */
 
-.terminal-box-bright {
-  background: var(--bg-panel);
-  border: 1px solid var(--border-bright);
-  padding: 1rem;
-}
+/* Text colors */
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-muted { color: var(--text-muted); }
+.text-dim { color: var(--text-dim); }
 
-.glow-text {
-  text-shadow: 0 0 10px currentColor;
-}
+/* Accents */
+.text-amber { color: var(--amber); }
+.text-amber-bright { color: var(--amber-bright); }
+.text-red { color: var(--red); }
+.text-red-bright { color: var(--red-bright); }
+.text-blue { color: var(--blue); }
+.text-blue-bright { color: var(--blue-bright); }
+.text-purple { color: var(--purple); }
+.text-purple-bright { color: var(--purple-bright); }
+.text-green { color: var(--green); }
 
-.blink {
-  animation: blink 1s step-end infinite;
-}
+/* Backgrounds */
+.bg-base { background: var(--bg-base); }
+.bg-surface { background: var(--bg-surface); }
+.bg-elevated { background: var(--bg-elevated); }
 
-@keyframes blink {
-  50% { opacity: 0; }
-}
-
-/* Typing cursor */
-.cursor::after {
-  content: '▊';
-  animation: blink 1s step-end infinite;
-  margin-left: 2px;
-}
+/* Borders */
+.border-dim { border-color: var(--border-dim); }
+.border-default { border-color: var(--border-default); }
+.border-bright { border-color: var(--border-bright); }
