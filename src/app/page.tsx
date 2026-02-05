@@ -17,18 +17,29 @@ function Menu({
   audioEnabled: boolean;
   onToggleAudio: () => void;
 }) {
+  const [confirmingAbandon, setConfirmingAbandon] = useState(false);
+
   if (!isOpen) return null;
   
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div 
         className="absolute inset-0 bg-black/80"
-        onClick={onClose}
+        onClick={() => {
+          setConfirmingAbandon(false);
+          onClose();
+        }}
       />
       <div className="relative bg-[var(--bg-surface)] border border-[var(--border-default)] w-[90%] max-w-xs p-4">
         <div className="text-[var(--amber)] text-xs mb-4 flex items-center justify-between">
           <span className="tracking-wider">◈ DIE FORWARD</span>
-          <button onClick={onClose} className="text-[var(--text-muted)] hover:text-[var(--text-secondary)]">
+          <button 
+            onClick={() => {
+              setConfirmingAbandon(false);
+              onClose();
+            }} 
+            className="text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
+          >
             [X]
           </button>
         </div>
@@ -47,12 +58,35 @@ function Menu({
             {audioEnabled ? '♪ ON' : '♪ OFF'}
           </span>
         </button>
-        <button 
-          onClick={() => window.location.href = '/title'}
-          className="w-full text-left px-3 py-2 text-sm bg-[var(--bg-base)] border border-[var(--red-dim)] text-[var(--red-bright)] hover:bg-[var(--red-dim)]/20"
-        >
-          ☠ Abandon Run
-        </button>
+        
+        {!confirmingAbandon ? (
+          <button 
+            onClick={() => setConfirmingAbandon(true)}
+            className="w-full text-left px-3 py-2 text-sm bg-[var(--bg-base)] border border-[var(--red-dim)] text-[var(--red-bright)] hover:bg-[var(--red-dim)]/20"
+          >
+            ☠ Abandon Run
+          </button>
+        ) : (
+          <div className="border border-[var(--red-dim)] bg-[var(--red-dim)]/10 p-3">
+            <p className="text-[var(--text-secondary)] text-xs mb-3">
+              Abandon run? Your stake will be lost.
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setConfirmingAbandon(false)}
+                className="flex-1 px-3 py-2 text-xs bg-[var(--bg-base)] border border-[var(--border-dim)] text-[var(--text-muted)]"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => window.location.href = '/title'}
+                className="flex-1 px-3 py-2 text-xs bg-[var(--red-dim)]/30 border border-[var(--red)] text-[var(--red-bright)]"
+              >
+                Abandon
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
