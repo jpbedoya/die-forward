@@ -4,6 +4,7 @@ import {
   PublicKey, 
   Transaction,
 } from '@solana/web3.js';
+import base58 from 'bs58';
 
 const APP_IDENTITY = {
   name: 'Die Forward',
@@ -28,12 +29,26 @@ export async function signAndSendWithMWA(
       cluster: 'devnet',
       identity: APP_IDENTITY,
     });
-    log(`Authorized: ${authResult.accounts[0]?.address?.slice(0, 8)}...`);
+    
+    // Address can be Uint8Array or base58 string
+    const addressRaw = authResult.accounts[0]?.address as Uint8Array | string;
+    let pubkey: PublicKey;
+    
+    if (typeof addressRaw === 'object' && addressRaw !== null && 'byteLength' in addressRaw) {
+      // It's a Uint8Array or similar
+      pubkey = new PublicKey(addressRaw as Uint8Array);
+      log(`Authorized (bytes): ${pubkey.toBase58().slice(0, 8)}...`);
+    } else if (typeof addressRaw === 'string') {
+      pubkey = new PublicKey(addressRaw);
+      log(`Authorized (string): ${addressRaw.slice(0, 8)}...`);
+    } else {
+      throw new Error(`Unknown address format: ${typeof addressRaw}`);
+    }
     
     // Get fresh blockhash
     const { blockhash } = await connection.getLatestBlockhash();
     transaction.recentBlockhash = blockhash;
-    transaction.feePayer = new PublicKey(authResult.accounts[0].address);
+    transaction.feePayer = pubkey;
     
     log('Requesting signature...');
     
@@ -42,9 +57,19 @@ export async function signAndSendWithMWA(
       transactions: [transaction],
     });
     
-    log(`Got signature: ${signatures[0]?.slice(0, 20)}...`);
+    // Signature can also be Uint8Array
+    const sigRaw = signatures[0] as Uint8Array | string;
+    let sigString: string;
     
-    return signatures[0];
+    if (typeof sigRaw === 'object' && sigRaw !== null && 'byteLength' in sigRaw) {
+      sigString = base58.encode(sigRaw as Uint8Array);
+    } else {
+      sigString = sigRaw as string;
+    }
+    
+    log(`Got signature: ${sigString.slice(0, 20)}...`);
+    
+    return sigString;
   });
   
   if (!result) {
