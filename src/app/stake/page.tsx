@@ -32,7 +32,7 @@ const POOL_WALLET = new PublicKey(
 
 export default function StakeScreen() {
   const router = useRouter();
-  const { publicKey, connected, signTransaction, sendTransaction } = useWallet();
+  const { publicKey, connected, signTransaction, sendTransaction, wallet } = useWallet();
   const { connection } = useConnection();
   const [balance, setBalance] = useState<number | null>(null);
   const [selectedStake, setSelectedStake] = useState<number | null>(null);
@@ -101,6 +101,8 @@ export default function StakeScreen() {
       transaction.feePayer = publicKey;
 
       log(`Wallet caps: send=${!!sendTransaction}, sign=${!!signTransaction}`);
+      log(`Wallet name: ${wallet?.adapter?.name || 'unknown'}`);
+      log(`Wallet readyState: ${wallet?.adapter?.readyState || 'unknown'}`);
 
       // 2. Try sendTransaction first (works better with Mobile Wallet Adapter)
       if (sendTransaction) {
@@ -116,6 +118,15 @@ export default function StakeScreen() {
           if (signTransaction) {
             log('Trying signTransaction fallback...');
             const signedTx = await signTransaction(transaction);
+            
+            // Check if transaction was actually signed
+            const sigCount = signedTx.signatures.filter(s => s.signature !== null).length;
+            log(`Signatures on tx: ${sigCount}/${signedTx.signatures.length}`);
+            
+            if (sigCount === 0) {
+              throw new Error('Transaction was not signed by wallet');
+            }
+            
             log('Got signed tx, sending raw...');
             signature = await connection.sendRawTransaction(signedTx.serialize());
             log(`Raw tx sent: ${signature.slice(0, 20)}...`);
