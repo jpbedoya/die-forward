@@ -13,7 +13,7 @@ const VALID_STAKES = [0.01, 0.05, 0.1, 0.25];
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { walletAddress, stakeAmount } = body;
+    const { walletAddress, stakeAmount, txSignature } = body;
 
     // Validate inputs
     if (!walletAddress || typeof walletAddress !== 'string') {
@@ -23,6 +23,9 @@ export async function POST(request: NextRequest) {
     if (!VALID_STAKES.includes(stakeAmount)) {
       return NextResponse.json({ error: 'Invalid stake amount' }, { status: 400 });
     }
+
+    // txSignature is optional for now (devnet testing)
+    // In production, we'd verify the transaction on-chain
 
     // Generate session token
     const sessionToken = id();
@@ -34,6 +37,7 @@ export async function POST(request: NextRequest) {
         token: sessionToken,
         walletAddress,
         stakeAmount,
+        txSignature: txSignature || null,
         zone: 'THE SUNKEN CRYPT',
         startedAt: Date.now(),
         status: 'active', // active, completed, dead

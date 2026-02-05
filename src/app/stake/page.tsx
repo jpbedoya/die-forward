@@ -5,7 +5,12 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useConnection } from '@solana/wallet-adapter-react';
-import { LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { 
+  LAMPORTS_PER_SOL, 
+  PublicKey, 
+  Transaction, 
+  SystemProgram 
+} from '@solana/web3.js';
 import { resetGameState, getGameState, saveGameState } from '@/lib/gameState';
 import { usePoolStats } from '@/lib/instant';
 
@@ -20,9 +25,14 @@ function shortenAddress(address: string): string {
   return `${address.slice(0, 4)}...${address.slice(-4)}`;
 }
 
+// Pool wallet address
+const POOL_WALLET = new PublicKey(
+  process.env.NEXT_PUBLIC_POOL_WALLET || 'D7NdNbJTL7s6Z7Wu8nGe5SBc64FiFQAH3iPvRZw15qSL'
+);
+
 export default function StakeScreen() {
   const router = useRouter();
-  const { publicKey, connected } = useWallet();
+  const { publicKey, connected, sendTransaction } = useWallet();
   const { connection } = useConnection();
   const [balance, setBalance] = useState<number | null>(null);
   const [selectedStake, setSelectedStake] = useState<number | null>(null);
@@ -49,11 +59,11 @@ export default function StakeScreen() {
   }, [publicKey, connection]);
 
   const handleEnter = async () => {
-    if (!selectedStake || !publicKey) return;
+    if (!selectedStake || !publicKey || !sendTransaction) return;
     
-    // Check balance
-    if (balance !== null && selectedStake > balance) {
-      setError('Insufficient balance');
+    // Check balance (need extra for fees)
+    if (balance !== null && selectedStake + 0.001 > balance) {
+      setError('Insufficient balance (need extra for fees)');
       return;
     }
 
@@ -61,13 +71,34 @@ export default function StakeScreen() {
     setError(null);
     
     try {
-      // Start a game session via API
+      // 1. Create transaction to transfer SOL to pool
+      const transaction = new Transaction().add(
+        SystemProgram.transfer({
+          fromPubkey: publicKey,
+          toPubkey: POOL_WALLET,
+          lamports: Math.floor(selectedStake * LAMPORTS_PER_SOL),
+        })
+      );
+
+      // Get recent blockhash
+      const { blockhash } = await connection.getLatestBlockhash();
+      transaction.recentBlockhash = blockhash;
+      transaction.feePayer = publicKey;
+
+      // 2. User signs and sends transaction
+      const signature = await sendTransaction(transaction, connection);
+      
+      // 3. Wait for confirmation
+      await connection.confirmTransaction(signature, 'confirmed');
+
+      // 4. Start game session via API (with tx signature as proof)
       const response = await fetch('/api/session/start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           walletAddress: publicKey.toBase58(),
           stakeAmount: selectedStake,
+          txSignature: signature,
         }),
       });
 
@@ -78,9 +109,8 @@ export default function StakeScreen() {
 
       const { sessionToken } = await response.json();
       
-      // Initialize game state with session token
+      // 5. Initialize game state with session token
       resetGameState(selectedStake);
-      // Save session info
       const state = getGameState();
       saveGameState({
         ...state,
@@ -88,7 +118,7 @@ export default function StakeScreen() {
         walletAddress: publicKey.toBase58(),
       });
       
-      // Navigate to game
+      // 6. Navigate to game
       router.push('/play');
     } catch (err) {
       console.error('Failed to start game:', err);
