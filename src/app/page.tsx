@@ -175,7 +175,7 @@ export default function GameScreen() {
       </header>
 
       {/* Scrollable Content */}
-      <main className="flex-1 overflow-y-auto px-3 py-4">
+      <main className="flex-1 overflow-y-auto px-3 pt-4 pb-20">
         
         {/* Narrative */}
         <div className="text-[--text-primary] text-sm leading-relaxed mb-4 whitespace-pre-line">
@@ -205,7 +205,7 @@ export default function GameScreen() {
         </div>
 
         {/* Actions */}
-        <div className="space-y-2 mb-4">
+        <div className="space-y-2 pb-4">
           <div className="text-[--text-muted] text-xs mb-2">▼ WHAT DO YOU DO?</div>
           {mockOptions.map((option, i) => (
             <button
