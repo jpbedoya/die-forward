@@ -27,18 +27,18 @@ function Menu({
       />
       
       {/* Menu panel */}
-      <div className="relative bg-[--bg-surface] border border-[--border-default] w-[90%] max-w-xs p-4">
-        <div className="text-[--amber] text-xs mb-4 flex items-center justify-between">
+      <div className="relative bg-[var(--bg-surface)] border border-[var(--border-default)] w-[90%] max-w-xs p-4">
+        <div className="text-[var(--amber)] text-xs mb-4 flex items-center justify-between">
           <span className="tracking-wider">◈ DIE FORWARD</span>
-          <button onClick={onClose} className="text-[--text-muted] hover:text-[--text-secondary]">
+          <button onClick={onClose} className="text-[var(--text-muted)] hover:text-[var(--text-secondary)]">
             [X]
           </button>
         </div>
         
         {/* Wallet */}
         <div className="mb-4 text-xs">
-          <div className="text-[--text-muted] mb-1">CONNECTED</div>
-          <div className="text-[--text-secondary] font-mono truncate">
+          <div className="text-[var(--text-muted)] mb-1">CONNECTED</div>
+          <div className="text-[var(--text-secondary)] font-mono truncate">
             {walletAddress}
           </div>
         </div>
@@ -46,17 +46,17 @@ function Menu({
         {/* Audio toggle */}
         <button 
           onClick={onToggleAudio}
-          className="w-full text-left px-3 py-2 text-sm bg-[--bg-base] border border-[--border-dim] mb-2 flex items-center justify-between"
+          className="w-full text-left px-3 py-2 text-sm bg-[var(--bg-base)] border border-[var(--border-dim)] mb-2 flex items-center justify-between"
         >
-          <span className="text-[--text-secondary]">Audio</span>
-          <span className={audioEnabled ? 'text-[--green]' : 'text-[--red]'}>
+          <span className="text-[var(--text-secondary)]">Audio</span>
+          <span className={audioEnabled ? 'text-[var(--green)]' : 'text-[var(--red)]'}>
             {audioEnabled ? '♪ ON' : '♪ OFF'}
           </span>
         </button>
         
         {/* Abandon run */}
         <button 
-          className="w-full text-left px-3 py-2 text-sm bg-[--bg-base] border border-[--red-dim] text-[--red-bright] hover:bg-[--red-dim]/20"
+          className="w-full text-left px-3 py-2 text-sm bg-[var(--bg-base)] border border-[var(--red-dim)] text-[var(--red-bright)] hover:bg-[var(--red-dim)]/20"
         >
           ☠ Abandon Run
         </button>
@@ -112,8 +112,8 @@ function HealthBar({ current, max }: { current: number; max: number }) {
   const empty = 8 - filled;
   return (
     <span className="font-mono tracking-tighter">
-      <span className="text-[--red]">{'█'.repeat(filled)}</span>
-      <span className="text-[--red-dim]">{'█'.repeat(empty)}</span>
+      <span className="text-[var(--red)]">{'█'.repeat(filled)}</span>
+      <span className="text-[var(--red-dim)]">{'█'.repeat(empty)}</span>
     </span>
   );
 }
@@ -121,8 +121,8 @@ function HealthBar({ current, max }: { current: number; max: number }) {
 function StaminaBar({ current, max }: { current: number; max: number }) {
   return (
     <span className="font-mono">
-      <span className="text-[--blue-bright]">{'◆'.repeat(current)}</span>
-      <span className="text-[--blue-dim]">{'◇'.repeat(max - current)}</span>
+      <span className="text-[var(--blue-bright)]">{'◆'.repeat(current)}</span>
+      <span className="text-[var(--blue-dim)]">{'◇'.repeat(max - current)}</span>
     </span>
   );
 }
@@ -132,8 +132,8 @@ function ProgressBar({ current, total }: { current: number; total: number }) {
   const empty = 12 - filled;
   return (
     <span className="font-mono text-xs">
-      <span className="text-[--amber]">{'▓'.repeat(filled)}</span>
-      <span className="text-[--text-muted]">{'░'.repeat(empty)}</span>
+      <span className="text-[var(--amber)]">{'▓'.repeat(filled)}</span>
+      <span className="text-[var(--text-muted)]">{'░'.repeat(empty)}</span>
     </span>
   );
 }
@@ -144,7 +144,7 @@ export default function GameScreen() {
   const [audioEnabled, setAudioEnabled] = useState(true);
 
   return (
-    <div className="min-h-screen bg-[--bg-base] flex flex-col font-mono">
+    <div className="min-h-screen bg-[var(--bg-base)] flex flex-col font-mono">
       
       {/* Menu Overlay */}
       <Menu 
@@ -156,17 +156,17 @@ export default function GameScreen() {
       />
 
       {/* Fixed Header */}
-      <header className="bg-[--bg-base] border-b border-[--amber-dim] px-3 py-2 sticky top-0 z-10">
+      <header className="bg-[var(--bg-base)] border-b border-[var(--amber-dim)] px-3 py-2 sticky top-0 z-10">
         <div className="flex items-center justify-between text-xs">
           <div className="flex items-center gap-2">
             <button 
               onClick={() => setMenuOpen(true)}
-              className="text-[--text-muted] hover:text-[--amber] transition-colors"
+              className="text-[var(--text-muted)] hover:text-[var(--amber)] transition-colors"
             >
               [≡]
             </button>
-            <span className="text-[--amber]">◈</span>
-            <span className="text-[--amber-bright] uppercase tracking-wide">
+            <span className="text-[var(--amber)]">◈</span>
+            <span className="text-[var(--amber-bright)] uppercase tracking-wide">
               {mockRoom.zone}
             </span>
           </div>
@@ -178,21 +178,21 @@ export default function GameScreen() {
       <main className="flex-1 overflow-y-auto px-3 pt-4 pb-20">
         
         {/* Narrative */}
-        <div className="text-[--text-primary] text-sm leading-relaxed mb-4 whitespace-pre-line">
+        <div className="text-[var(--text-primary)] text-sm leading-relaxed mb-4 whitespace-pre-line">
           {mockNarrative}
         </div>
 
         {/* Corpse Callout */}
-        <div className="bg-[--purple-dim]/20 border border-[--purple-dim] p-3 mb-4">
+        <div className="bg-[var(--purple-dim)]/20 border border-[var(--purple-dim)] p-3 mb-4">
           <div className="flex items-center gap-2 text-sm mb-1">
-            <span className="text-[--purple]">☠</span>
-            <span className="text-[--purple-bright] font-bold">@{corpsePlayer}</span>
-            <span className="text-[--text-muted] text-xs">2h ago</span>
+            <span className="text-[var(--purple)]">☠</span>
+            <span className="text-[var(--purple-bright)] font-bold">@{corpsePlayer}</span>
+            <span className="text-[var(--text-muted)] text-xs">2h ago</span>
           </div>
-          <div className="text-[--text-secondary] text-sm italic mb-2">
+          <div className="text-[var(--text-secondary)] text-sm italic mb-2">
             "{corpseMessage}"
           </div>
-          <div className="text-[--text-muted] text-xs">
+          <div className="text-[var(--text-muted)] text-xs">
             ├─ 🗡️ Rusty Sword
             <br />
             └─ ◎ 0.02 SOL
@@ -200,27 +200,27 @@ export default function GameScreen() {
         </div>
 
         {/* Divider */}
-        <div className="text-[--border-default] text-xs mb-4">
+        <div className="text-[var(--border-default)] text-xs mb-4">
           ────────────────────────
         </div>
 
         {/* Actions */}
         <div className="space-y-2 pb-4">
-          <div className="text-[--text-muted] text-xs mb-2">▼ WHAT DO YOU DO?</div>
+          <div className="text-[var(--text-muted)] text-xs mb-2">▼ WHAT DO YOU DO?</div>
           {mockOptions.map((option, i) => (
             <button
               key={option.id}
               onClick={() => setSelectedOption(option.id)}
               className={`w-full text-left px-3 py-3 text-sm transition-all active:scale-[0.98] ${
                 selectedOption === option.id
-                  ? 'bg-[--amber-dim]/30 text-[--amber-bright] border-l-2 border-[--amber]'
-                  : 'bg-[--bg-surface] text-[--text-secondary] border-l-2 border-[--border-dim] active:bg-[--bg-elevated]'
+                  ? 'bg-[var(--amber-dim)]/30 text-[var(--amber-bright)] border-l-2 border-[var(--amber)]'
+                  : 'bg-[var(--bg-surface)] text-[var(--text-secondary)] border-l-2 border-[var(--border-dim)] active:bg-[var(--bg-elevated)]'
               }`}
             >
-              <span className="text-[--text-muted] mr-2">{i + 1}.</span>
+              <span className="text-[var(--text-muted)] mr-2">{i + 1}.</span>
               {option.text}
               {selectedOption === option.id && (
-                <span className="text-[--amber] float-right">◄</span>
+                <span className="text-[var(--amber)] float-right">◄</span>
               )}
             </button>
           ))}
@@ -228,36 +228,36 @@ export default function GameScreen() {
       </main>
 
       {/* Fixed Bottom Stats Bar */}
-      <footer className="bg-[--bg-base] border-t border-[--border-dim] px-3 py-2 sticky bottom-0">
+      <footer className="bg-[var(--bg-base)] border-t border-[var(--border-dim)] px-3 py-2 sticky bottom-0">
         {/* Stats Row */}
         <div className="flex items-center justify-between text-xs mb-2">
           <div className="flex items-center gap-3">
             {/* Health */}
             <div className="flex items-center gap-1">
-              <span className="text-[--red]">♥</span>
+              <span className="text-[var(--red)]">♥</span>
               <HealthBar current={mockPlayer.health} max={mockPlayer.maxHealth} />
-              <span className="text-[--red-bright] text-[10px]">{mockPlayer.health}</span>
+              <span className="text-[var(--red-bright)] text-[10px]">{mockPlayer.health}</span>
             </div>
             {/* Stamina */}
             <div className="flex items-center gap-1">
-              <span className="text-[--blue]">⚡</span>
+              <span className="text-[var(--blue)]">⚡</span>
               <StaminaBar current={mockPlayer.stamina} max={mockPlayer.maxStamina} />
             </div>
           </div>
           {/* Stake */}
           <div className="flex items-center gap-1">
-            <span className="text-[--amber]">◎</span>
-            <span className="text-[--amber-bright]">{mockPlayer.stakeAmount} SOL</span>
+            <span className="text-[var(--amber)]">◎</span>
+            <span className="text-[var(--amber-bright)]">{mockPlayer.stakeAmount} SOL</span>
           </div>
         </div>
         
         {/* Inventory Row */}
         <div className="flex items-center gap-2 text-xs overflow-x-auto">
-          <span className="text-[--text-dim]">🎒</span>
+          <span className="text-[var(--text-dim)]">🎒</span>
           {mockPlayer.inventory.map((item) => (
             <span 
               key={item.id} 
-              className="text-[--text-muted] bg-[--bg-surface] px-2 py-0.5 whitespace-nowrap"
+              className="text-[var(--text-muted)] bg-[var(--bg-surface)] px-2 py-0.5 whitespace-nowrap"
             >
               {item.emoji} {item.name}
             </span>
