@@ -33,9 +33,12 @@ export default function DeathScreen() {
         
         {/* Death announcement */}
         <div className="text-center mb-8">
-          <pre className="text-[var(--text-muted)] text-[10px] leading-tight mb-4 inline-block text-left">
+          <pre 
+            className="text-[var(--text-muted)] text-[10px] leading-tight mb-4 inline-block text-left"
+            style={{ fontFamily: 'Courier New, Courier, monospace' }}
+          >
 {` ,-=-.                   _
- / + \\     ______       |†|
+ / + \\     ______       |+|
  | ~~~ |   />--->       _|_|_
  |R.I.P|  //           |_ H _|
  |_____|_//___/VvV,v,v,|_____|,vhjwv/,`}
