@@ -9,7 +9,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Die Forward",
-  description: "Your death becomes treasure for others.",
+  description: "Death is Treasure.",
   icons: {
     icon: "/favicon.ico",
   },
