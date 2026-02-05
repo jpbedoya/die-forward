@@ -24,7 +24,7 @@ const combatOptions = [
   { id: 'flee', text: 'Flee', desc: 'Try to escape', cost: 1, emoji: '🏃' },
 ];
 
-const resolutions: Record<string, { narrative: string; playerDmg: number; enemyDmg: number; heal?: number }> = {
+const resolutions: Record<string, { narrative: string; playerDmg: number; enemyDmg: number; heal?: number; consumeHerbs?: boolean }> = {
   strike: {
     narrative: "You swing your blade in a wide arc. Steel meets rotted flesh with a sickening thud. The creature staggers — but its claws rake across your arm.",
     playerDmg: 12,
@@ -45,6 +45,7 @@ const resolutions: Record<string, { narrative: string; playerDmg: number; enemyD
     playerDmg: 15,
     enemyDmg: 0,
     heal: 25,
+    consumeHerbs: true,
   },
   flee: {
     narrative: "You turn and run. A claw catches your back as you flee, but you escape into the darkness.",
@@ -88,7 +89,8 @@ export default function CombatScreen() {
 
 It lunges, claws extended, aiming for your throat.`);
   const [enemyIntent, setEnemyIntent] = useState({ type: "AGGRESSIVE", desc: "Lunging forward, claws extended" });
-  const [lastResolution, setLastResolution] = useState<{ playerDmg: number; enemyDmg: number; heal?: number } | null>(null);
+  const [lastResolution, setLastResolution] = useState<{ playerDmg: number; enemyDmg: number; heal?: number; consumeHerbs?: boolean } | null>(null);
+  const [loaded, setLoaded] = useState(false);
 
   // Load game state on mount
   useEffect(() => {
@@ -97,6 +99,7 @@ It lunges, claws extended, aiming for your throat.`);
     setPlayerStamina(state.stamina);
     setPlayerInventory(state.inventory);
     setStakeAmount(state.stakeAmount);
+    setLoaded(true);
   }, []);
 
   const handleExecute = () => {
@@ -120,6 +123,12 @@ It lunges, claws extended, aiming for your throat.`);
     setPlayerStamina(newStamina);
     setNarrative(resolution.narrative);
     setLastResolution(resolution);
+    
+    // Remove herbs if used
+    if (resolution.consumeHerbs) {
+      setPlayerInventory(playerInventory.filter(i => i.name !== 'Herbs'));
+    }
+    
     setPhase('resolve');
     setSelectedOption(null);
   };
@@ -152,6 +161,15 @@ It lunges, claws extended, aiming for your throat.`);
     setNarrative(`The ${mockEnemy.name} recovers and faces you again.\n\n${newIntent.desc}...`);
     setPhase('choose');
   };
+
+  // Show loading until state is loaded
+  if (!loaded) {
+    return (
+      <div className="min-h-screen bg-[var(--bg-base)] flex items-center justify-center font-mono">
+        <div className="text-[var(--amber)] animate-pulse">◈ Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[var(--bg-base)] flex flex-col font-mono">
@@ -270,6 +288,7 @@ It lunges, claws extended, aiming for your throat.`);
                   health: playerHealth,
                   stamina: Math.min(defaultPlayer.maxStamina, playerStamina + 1),
                   currentRoom: state.currentRoom + 1,
+                  inventory: playerInventory,
                 });
                 window.location.href = '/play';
               }}

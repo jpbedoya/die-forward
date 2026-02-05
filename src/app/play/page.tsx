@@ -245,6 +245,15 @@ export default function GameScreen() {
 
   const room = rooms[currentRoom] || rooms[rooms.length - 1];
 
+  // Show loading until state is loaded
+  if (!loaded) {
+    return (
+      <div className="min-h-screen bg-[var(--bg-base)] flex items-center justify-center font-mono">
+        <div className="text-[var(--amber)] animate-pulse">◈ Loading...</div>
+      </div>
+    );
+  }
+
   const handleAction = (action: string) => {
     setMessage(null);
     
