@@ -82,7 +82,7 @@ export default function TitleScreen() {
         </pre>
 
         {/* Tagline */}
-        <p className="text-[#888] text-sm mb-8 text-center tracking-wider">
+        <p className="text-[#ccc] text-sm mb-8 text-center tracking-wider">
           Death is Treasure.
         </p>
 
