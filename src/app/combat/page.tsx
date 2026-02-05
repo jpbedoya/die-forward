@@ -196,41 +196,49 @@ It lunges, claws extended, aiming for your throat.`);
         {phase === 'resolve' && lastResolution && (
           <div className="mb-4">
             {/* Damage summary */}
-            <div className="flex justify-between gap-3 mb-4 text-sm">
+            <div className="space-y-3 mb-4">
               {lastResolution.enemyDmg > 0 && (
-                <div className="flex-1 bg-[var(--green)]/10 border border-[var(--green)]/30 p-3 text-center">
-                  <pre className="text-[var(--green)] text-[10px] leading-tight mb-1">
-{`  />
- />  HIT!
+                <div className="flex items-center gap-4">
+                  <pre className="text-[var(--green)] text-xs leading-none">{`  />
+ /> 
 />`}</pre>
-                  <div className="text-[var(--green-bright)] text-xl font-bold">-{lastResolution.enemyDmg}</div>
+                  <div>
+                    <span className="text-[var(--green-bright)] text-2xl font-bold">-{lastResolution.enemyDmg}</span>
+                    <span className="text-[var(--green)] text-sm ml-2">damage dealt</span>
+                  </div>
                 </div>
               )}
               {lastResolution.playerDmg > 0 && (
-                <div className="flex-1 bg-[var(--red)]/10 border border-[var(--red)]/30 p-3 text-center">
-                  <pre className="text-[var(--red)] text-[10px] leading-tight mb-1">
-{` \\|/
---*--
- /|\\`}</pre>
-                  <div className="text-[var(--red-bright)] text-xl font-bold">-{lastResolution.playerDmg}</div>
+                <div className="flex items-center gap-4">
+                  <pre className="text-[var(--red)] text-xs leading-none">{`\\|/
+-*-
+/|\\`}</pre>
+                  <div>
+                    <span className="text-[var(--red-bright)] text-2xl font-bold">-{lastResolution.playerDmg}</span>
+                    <span className="text-[var(--red)] text-sm ml-2">damage taken</span>
+                  </div>
                 </div>
               )}
               {lastResolution.heal && lastResolution.heal > 0 && (
-                <div className="flex-1 bg-[var(--green)]/10 border border-[var(--green)]/30 p-3 text-center">
-                  <pre className="text-[var(--green)] text-[10px] leading-tight mb-1">
-{` ,-, 
-(   )
- \`-'`}</pre>
-                  <div className="text-[var(--green-bright)] text-xl font-bold">+{lastResolution.heal}</div>
+                <div className="flex items-center gap-4">
+                  <pre className="text-[var(--green)] text-xs leading-none">{` _ 
+|+|
+ ¯`}</pre>
+                  <div>
+                    <span className="text-[var(--green-bright)] text-2xl font-bold">+{lastResolution.heal}</span>
+                    <span className="text-[var(--green)] text-sm ml-2">healed</span>
+                  </div>
                 </div>
               )}
               {lastResolution.enemyDmg === 0 && lastResolution.playerDmg === 0 && !lastResolution.heal && (
-                <div className="flex-1 bg-[var(--blue)]/10 border border-[var(--blue)]/30 p-3 text-center">
-                  <pre className="text-[var(--blue-bright)] text-[10px] leading-tight mb-1">
-{`  ~  ~
-~  *  ~
-  ~  ~`}</pre>
-                  <div className="text-[var(--blue-bright)] text-sm">EVADE!</div>
+                <div className="flex items-center gap-4">
+                  <pre className="text-[var(--blue-bright)] text-xs leading-none">{` ~ 
+~*~
+ ~`}</pre>
+                  <div>
+                    <span className="text-[var(--blue-bright)] text-2xl font-bold">EVADE!</span>
+                    <span className="text-[var(--blue)] text-sm ml-2">no damage</span>
+                  </div>
                 </div>
               )}
             </div>
