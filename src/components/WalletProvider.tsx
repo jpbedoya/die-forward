@@ -4,6 +4,7 @@ import { FC, ReactNode, useMemo } from 'react';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
+import { createDefaultAddressSelector, createDefaultAuthorizationResultCache, SolanaMobileWalletAdapter } from '@solana-mobile/wallet-adapter-mobile';
 import { clusterApiUrl } from '@solana/web3.js';
 
 // Default styles for wallet modal
@@ -22,6 +23,22 @@ export const SolanaWalletProvider: FC<Props> = ({ children }) => {
 
   const wallets = useMemo(
     () => [
+      // Mobile Wallet Adapter for Android/Seeker
+      new SolanaMobileWalletAdapter({
+        appIdentity: {
+          name: 'Die Forward',
+          uri: typeof window !== 'undefined' ? window.location.origin : 'https://die-forward.vercel.app',
+          icon: '/favicon.ico',
+        },
+        addressSelector: createDefaultAddressSelector(),
+        authorizationResultCache: createDefaultAuthorizationResultCache(),
+        cluster: 'devnet',
+        onWalletNotFound: async () => {
+          // Could open app store link here
+          console.log('Mobile wallet not found');
+        },
+      }),
+      // Desktop wallets
       new PhantomWalletAdapter(),
       new SolflareWalletAdapter(),
     ],
