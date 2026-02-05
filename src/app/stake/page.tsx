@@ -1,7 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { useConnection } from '@solana/wallet-adapter-react';
+import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { resetGameState } from '@/lib/gameState';
 
 const stakeOptions = [
@@ -17,19 +21,73 @@ const mockPoolData = {
   avgReward: 0.34,
 };
 
+function shortenAddress(address: string): string {
+  return `${address.slice(0, 4)}...${address.slice(-4)}`;
+}
+
 export default function StakeScreen() {
+  const router = useRouter();
+  const { publicKey, connected } = useWallet();
+  const { connection } = useConnection();
+  const [balance, setBalance] = useState<number | null>(null);
   const [selectedStake, setSelectedStake] = useState<number | null>(null);
   const [confirming, setConfirming] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleEnter = () => {
-    if (!selectedStake) return;
+  // Redirect if not connected
+  useEffect(() => {
+    if (!connected) {
+      router.push('/');
+    }
+  }, [connected, router]);
+
+  // Fetch balance
+  useEffect(() => {
+    if (publicKey && connection) {
+      connection.getBalance(publicKey).then((bal) => {
+        setBalance(bal / LAMPORTS_PER_SOL);
+      }).catch(console.error);
+    }
+  }, [publicKey, connection]);
+
+  const handleEnter = async () => {
+    if (!selectedStake || !publicKey) return;
+    
+    // Check balance
+    if (balance !== null && selectedStake > balance) {
+      setError('Insufficient balance');
+      return;
+    }
+
     setConfirming(true);
-    // Initialize game state and simulate transaction
-    resetGameState(selectedStake);
-    setTimeout(() => {
-      window.location.href = '/play';
-    }, 1500);
+    setError(null);
+    
+    // TODO: Implement actual staking transaction
+    // For MVP, we'll simulate the transaction
+    try {
+      // Simulate transaction delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Initialize game state
+      resetGameState(selectedStake);
+      
+      // Navigate to game
+      router.push('/play');
+    } catch (err) {
+      console.error('Staking failed:', err);
+      setError('Transaction failed. Please try again.');
+      setConfirming(false);
+    }
   };
+
+  // Loading state while checking connection
+  if (!connected || !publicKey) {
+    return (
+      <div className="min-h-screen bg-[var(--bg-base)] flex items-center justify-center font-mono">
+        <div className="text-[var(--amber)] animate-pulse">◈ Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[var(--bg-base)] flex flex-col font-mono">
@@ -78,30 +136,44 @@ export default function StakeScreen() {
             Choose Your Stake
           </div>
           <div className="space-y-2">
-            {stakeOptions.map((option) => (
-              <button
-                key={option.amount}
-                onClick={() => setSelectedStake(option.amount)}
-                className={`w-full text-left px-4 py-3 transition-all ${
-                  selectedStake === option.amount
-                    ? 'bg-[var(--amber-dim)]/30 border border-[var(--amber)] text-[var(--amber-bright)]'
-                    : 'bg-[var(--bg-surface)] border border-[var(--border-dim)] text-[var(--text-secondary)]'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-[var(--amber)]">◎</span>
-                    <span className="ml-2 font-bold">{option.amount} SOL</span>
+            {stakeOptions.map((option) => {
+              const canAfford = balance !== null && option.amount <= balance;
+              return (
+                <button
+                  key={option.amount}
+                  onClick={() => canAfford && setSelectedStake(option.amount)}
+                  disabled={!canAfford}
+                  className={`w-full text-left px-4 py-3 transition-all ${
+                    selectedStake === option.amount
+                      ? 'bg-[var(--amber-dim)]/30 border border-[var(--amber)] text-[var(--amber-bright)]'
+                      : canAfford
+                      ? 'bg-[var(--bg-surface)] border border-[var(--border-dim)] text-[var(--text-secondary)]'
+                      : 'bg-[var(--bg-base)] border border-[var(--border-dim)] text-[var(--text-dim)] opacity-50 cursor-not-allowed'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-[var(--amber)]">◎</span>
+                      <span className="ml-2 font-bold">{option.amount} SOL</span>
+                      {!canAfford && <span className="text-[var(--red)] text-[10px] ml-2">(insufficient)</span>}
+                    </div>
+                    <span className={selectedStake === option.amount ? 'text-[var(--amber)]' : 'text-[var(--text-muted)]'}>
+                      {option.label}
+                    </span>
                   </div>
-                  <span className={selectedStake === option.amount ? 'text-[var(--amber)]' : 'text-[var(--text-muted)]'}>
-                    {option.label}
-                  </span>
-                </div>
-                <div className="text-[10px] text-[var(--text-muted)] mt-1">{option.desc}</div>
-              </button>
-            ))}
+                  <div className="text-[10px] text-[var(--text-muted)] mt-1">{option.desc}</div>
+                </button>
+              );
+            })}
           </div>
         </div>
+
+        {/* Error message */}
+        {error && (
+          <div className="text-[var(--red-bright)] text-xs mb-4 px-4 py-2 border border-[var(--red-dim)] bg-[var(--red-dim)]/20">
+            {error}
+          </div>
+        )}
 
         {/* Enter button */}
         <button
@@ -132,9 +204,9 @@ export default function StakeScreen() {
       {/* Wallet display */}
       <footer className="border-t border-[var(--border-dim)] px-4 py-3 text-center">
         <div className="text-xs text-[var(--text-muted)]">
-          Connected: <span className="text-[var(--text-secondary)]">8xH4...k9Qz</span>
+          Connected: <span className="text-[var(--text-secondary)]">{shortenAddress(publicKey.toBase58())}</span>
           <span className="text-[var(--text-dim)] mx-2">•</span>
-          Balance: <span className="text-[var(--amber)]">2.45 SOL</span>
+          Balance: <span className="text-[var(--amber)]">{balance !== null ? `${balance.toFixed(4)} SOL` : '...'}</span>
         </div>
       </footer>
 

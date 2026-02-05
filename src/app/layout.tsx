@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { SolanaWalletProvider } from "@/components/WalletProvider";
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -23,7 +24,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${geistMono.variable} antialiased`}>
-        {children}
+        <SolanaWalletProvider>
+          {children}
+        </SolanaWalletProvider>
       </body>
     </html>
   );

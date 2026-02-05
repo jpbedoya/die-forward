@@ -1,7 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { useWalletModal } from '@solana/wallet-adapter-react-ui';
+import { useConnection } from '@solana/wallet-adapter-react';
+import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 
 // Mock data
 const mockDeathFeed = [
@@ -77,17 +81,30 @@ function LeaderboardItem({ rank, player, clears, earned }: {
   );
 }
 
+function shortenAddress(address: string): string {
+  return `${address.slice(0, 4)}...${address.slice(-4)}`;
+}
+
 export default function TitleScreen() {
-  const [walletConnected, setWalletConnected] = useState(false);
-  const [connecting, setConnecting] = useState(false);
+  const { publicKey, connected, connecting, disconnect } = useWallet();
+  const { setVisible } = useWalletModal();
+  const { connection } = useConnection();
+  const [balance, setBalance] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<'deaths' | 'leaders'>('deaths');
 
+  // Fetch balance when connected
+  useEffect(() => {
+    if (publicKey && connection) {
+      connection.getBalance(publicKey).then((bal) => {
+        setBalance(bal / LAMPORTS_PER_SOL);
+      }).catch(console.error);
+    } else {
+      setBalance(null);
+    }
+  }, [publicKey, connection]);
+
   const handleConnect = () => {
-    setConnecting(true);
-    setTimeout(() => {
-      setConnecting(false);
-      setWalletConnected(true);
-    }, 1500);
+    setVisible(true);
   };
 
   return (
@@ -108,7 +125,7 @@ export default function TitleScreen() {
 
         {/* Connect / Enter button */}
         <div className="mb-8">
-          {!walletConnected ? (
+          {!connected ? (
             <button
               onClick={handleConnect}
               disabled={connecting}
@@ -138,9 +155,20 @@ export default function TitleScreen() {
         </div>
 
         {/* Wallet status */}
-        {walletConnected && (
-          <div className="text-xs text-[var(--text-muted)] mb-8">
-            Connected: <span className="text-[var(--text-secondary)]">8xH4...k9Qz</span>
+        {connected && publicKey && (
+          <div className="text-xs text-[var(--text-muted)] mb-4 flex flex-col items-center gap-2">
+            <div>
+              Connected: <span className="text-[var(--text-secondary)]">{shortenAddress(publicKey.toBase58())}</span>
+              {balance !== null && (
+                <span className="text-[var(--amber)] ml-2">◎ {balance.toFixed(4)}</span>
+              )}
+            </div>
+            <button 
+              onClick={() => disconnect()}
+              className="text-[var(--text-dim)] hover:text-[var(--red)] transition-colors text-[10px]"
+            >
+              [disconnect]
+            </button>
           </div>
         )}
 
