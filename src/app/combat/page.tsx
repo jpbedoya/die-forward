@@ -196,28 +196,41 @@ It lunges, claws extended, aiming for your throat.`);
         {phase === 'resolve' && lastResolution && (
           <div className="mb-4">
             {/* Damage summary */}
-            <div className="flex justify-between gap-4 mb-4 text-sm">
+            <div className="flex justify-between gap-3 mb-4 text-sm">
               {lastResolution.enemyDmg > 0 && (
                 <div className="flex-1 bg-[var(--green)]/10 border border-[var(--green)]/30 p-3 text-center">
-                  <div className="text-[var(--green)] text-xs uppercase mb-1">You dealt</div>
+                  <pre className="text-[var(--green)] text-[10px] leading-tight mb-1">
+{`  />
+ />  HIT!
+/>`}</pre>
                   <div className="text-[var(--green-bright)] text-xl font-bold">-{lastResolution.enemyDmg}</div>
                 </div>
               )}
               {lastResolution.playerDmg > 0 && (
                 <div className="flex-1 bg-[var(--red)]/10 border border-[var(--red)]/30 p-3 text-center">
-                  <div className="text-[var(--red)] text-xs uppercase mb-1">You took</div>
+                  <pre className="text-[var(--red)] text-[10px] leading-tight mb-1">
+{` \\|/
+--*--
+ /|\\`}</pre>
                   <div className="text-[var(--red-bright)] text-xl font-bold">-{lastResolution.playerDmg}</div>
                 </div>
               )}
               {lastResolution.heal && lastResolution.heal > 0 && (
                 <div className="flex-1 bg-[var(--green)]/10 border border-[var(--green)]/30 p-3 text-center">
-                  <div className="text-[var(--green)] text-xs uppercase mb-1">Healed</div>
+                  <pre className="text-[var(--green)] text-[10px] leading-tight mb-1">
+{` ,-, 
+(   )
+ \`-'`}</pre>
                   <div className="text-[var(--green-bright)] text-xl font-bold">+{lastResolution.heal}</div>
                 </div>
               )}
               {lastResolution.enemyDmg === 0 && lastResolution.playerDmg === 0 && !lastResolution.heal && (
                 <div className="flex-1 bg-[var(--blue)]/10 border border-[var(--blue)]/30 p-3 text-center">
-                  <div className="text-[var(--blue-bright)] text-sm">Evaded!</div>
+                  <pre className="text-[var(--blue-bright)] text-[10px] leading-tight mb-1">
+{`  ~  ~
+~  *  ~
+  ~  ~`}</pre>
+                  <div className="text-[var(--blue-bright)] text-sm">EVADE!</div>
                 </div>
               )}
             </div>
