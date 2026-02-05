@@ -90,6 +90,7 @@ export default function CombatScreen() {
 
 It lunges, claws extended, aiming for your throat.`);
   const [enemyIntent, setEnemyIntent] = useState({ type: "AGGRESSIVE", desc: "Lunging forward, claws extended" });
+  const [lastResolution, setLastResolution] = useState<{ playerDmg: number; enemyDmg: number; heal?: number } | null>(null);
 
   const handleExecute = () => {
     if (!selectedOption) return;
@@ -111,6 +112,7 @@ It lunges, claws extended, aiming for your throat.`);
     setEnemyHealth(newEnemyHealth);
     setPlayerStamina(newStamina);
     setNarrative(resolution.narrative);
+    setLastResolution(resolution);
     setPhase('resolve');
     setSelectedOption(null);
   };
@@ -191,13 +193,42 @@ It lunges, claws extended, aiming for your throat.`);
         )}
 
         {/* Resolution phase */}
-        {phase === 'resolve' && (
-          <button 
-            onClick={handleContinue}
-            className="w-full py-3 bg-[var(--bg-surface)] border border-[var(--border-default)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all"
-          >
-            ▶ Continue
-          </button>
+        {phase === 'resolve' && lastResolution && (
+          <div className="mb-4">
+            {/* Damage summary */}
+            <div className="flex justify-between gap-4 mb-4 text-sm">
+              {lastResolution.enemyDmg > 0 && (
+                <div className="flex-1 bg-[var(--green)]/10 border border-[var(--green)]/30 p-3 text-center">
+                  <div className="text-[var(--green)] text-xs uppercase mb-1">You dealt</div>
+                  <div className="text-[var(--green-bright)] text-xl font-bold">-{lastResolution.enemyDmg}</div>
+                </div>
+              )}
+              {lastResolution.playerDmg > 0 && (
+                <div className="flex-1 bg-[var(--red)]/10 border border-[var(--red)]/30 p-3 text-center">
+                  <div className="text-[var(--red)] text-xs uppercase mb-1">You took</div>
+                  <div className="text-[var(--red-bright)] text-xl font-bold">-{lastResolution.playerDmg}</div>
+                </div>
+              )}
+              {lastResolution.heal && lastResolution.heal > 0 && (
+                <div className="flex-1 bg-[var(--green)]/10 border border-[var(--green)]/30 p-3 text-center">
+                  <div className="text-[var(--green)] text-xs uppercase mb-1">Healed</div>
+                  <div className="text-[var(--green-bright)] text-xl font-bold">+{lastResolution.heal}</div>
+                </div>
+              )}
+              {lastResolution.enemyDmg === 0 && lastResolution.playerDmg === 0 && !lastResolution.heal && (
+                <div className="flex-1 bg-[var(--blue)]/10 border border-[var(--blue)]/30 p-3 text-center">
+                  <div className="text-[var(--blue-bright)] text-sm">Evaded!</div>
+                </div>
+              )}
+            </div>
+            
+            <button 
+              onClick={handleContinue}
+              className="w-full py-3 bg-[var(--bg-surface)] border border-[var(--border-default)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all"
+            >
+              ▶ Continue
+            </button>
+          </div>
         )}
 
         {/* Victory phase */}
