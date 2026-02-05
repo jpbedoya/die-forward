@@ -34,16 +34,11 @@ export default function DeathScreen() {
         {/* Death announcement */}
         <div className="text-center mb-8">
           <pre className="text-[var(--text-muted)] text-[10px] leading-tight mb-4 inline-block">
-{`       .-.
-      (   )
-    .-'   '-.
-   /         \\
-  |   R.I.P.  |
-  |           |
-  |     ☠     |
-  |           |
- .|           |.
-'|_|_________|_|'`}
+{`  ,-=-.     ______           _
+ / + \\    />----->       _|1|_
+ | ~~~ |  //   -/-  /    |_ H _|
+ |R.I.P| //   / /       |S|
+ \\vV,,|___|V,//_____/VvV,v,|_|/,,vhjwv/,`}
           </pre>
           <h1 className="text-[var(--red-bright)] text-2xl tracking-widest mb-2">YOU DIED</h1>
           <p className="text-[var(--text-secondary)] text-sm">
