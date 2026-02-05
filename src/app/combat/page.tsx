@@ -124,9 +124,19 @@ It lunges, claws extended, aiming for your throat.`);
     setNarrative(resolution.narrative);
     setLastResolution(resolution);
     
-    // Remove herbs if used
+    // Remove herbs if used and save immediately
     if (resolution.consumeHerbs) {
-      setPlayerInventory(playerInventory.filter(i => i.name !== 'Herbs'));
+      const herbItem = playerInventory.find(i => i.name === 'Herbs');
+      if (herbItem) {
+        const newInventory = playerInventory.filter(i => i.id !== herbItem.id);
+        setPlayerInventory(newInventory);
+        // Save immediately so refresh doesn't restore herbs
+        saveGameState({ 
+          health: newPlayerHealth, 
+          stamina: newStamina,
+          inventory: newInventory 
+        });
+      }
     }
     
     setPhase('resolve');
@@ -322,7 +332,8 @@ It lunges, claws extended, aiming for your throat.`);
               {combatOptions.map((option) => {
                 const canAfford = option.cost <= playerStamina;
                 // Hide herbs if not in inventory
-                if (option.id === 'herbs' && !playerInventory.find(i => i.name === 'Herbs')) {
+                const hasHerbs = playerInventory.some(i => i.name === 'Herbs');
+                if (option.id === 'herbs' && !hasHerbs) {
                   return null;
                 }
                 return (
