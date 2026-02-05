@@ -1,0 +1,128 @@
+@import "tailwindcss";
+
+:root {
+  /* Terminal color scheme */
+  --bg-dark: #0a0a0a;
+  --bg-panel: #111111;
+  --bg-hover: #1a1a1a;
+  --border: #2a2a2a;
+  --border-bright: #3a3a3a;
+  
+  /* Text colors */
+  --text-primary: #e0e0e0;
+  --text-dim: #888888;
+  --text-muted: #555555;
+  
+  /* Accent colors */
+  --amber: #f59e0b;
+  --amber-dim: #92400e;
+  --red: #ef4444;
+  --red-dim: #7f1d1d;
+  --green: #22c55e;
+  --green-dim: #166534;
+  --blue: #3b82f6;
+  --purple: #a855f7;
+  
+  /* Game-specific */
+  --health: #ef4444;
+  --stamina: #3b82f6;
+  --gold: #f59e0b;
+}
+
+@theme inline {
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: var(--font-mono), 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Subtle scanline effect */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.03),
+    rgba(0, 0, 0, 0.03) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  z-index: 1000;
+}
+
+/* Selection */
+::selection {
+  background: var(--amber);
+  color: var(--bg-dark);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-bright);
+}
+
+/* Custom utility classes */
+.terminal-box {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  padding: 1rem;
+}
+
+.terminal-box-bright {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-bright);
+  padding: 1rem;
+}
+
+.glow-text {
+  text-shadow: 0 0 10px currentColor;
+}
+
+.blink {
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+/* Typing cursor */
+.cursor::after {
+  content: '▊';
+  animation: blink 1s step-end infinite;
+  margin-left: 2px;
+}
