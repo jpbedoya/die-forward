@@ -93,40 +93,110 @@ Escape to victory.
 
 ## Bestiary
 
-### The Drowned
-**Tier 1 — Common**
+---
 
+### Tier 1 — Common Horrors
+
+Encountered frequently. Individually manageable, but draining over time.
+
+#### The Drowned
 Once human. Now waterlogged husks animated by the underworld's hunger. They move wrong — joints bending backward, mouths open in silent screams.
 
-**Behavior patterns:**
-- AGGRESSIVE — Lunging, grasping, hungry
-- DEFENSIVE — Circling, watching, waiting for weakness
-- ERRATIC — Twitching, unpredictable, broken
+**Behavior:** AGGRESSIVE (lunging), DEFENSIVE (circling), ERRATIC (twitching)
 
-**Sample descriptions:**
 > It rises from the water. Bloated. Pale. Its eyes are gone but it sees you anyway.
 
-> The shape was human once. Now it moves like a puppet with tangled strings.
+#### Pale Crawlers
+Things that skitter in the dark. Too many limbs. They cling to walls and ceilings, dropping when you pass beneath. Were they ever human? You can't tell anymore.
 
-### The Hollow Clergy
-**Tier 2 — Uncommon**
+**Behavior:** STALKING (following from shadows), AMBUSH (dropping from above), SWARMING (they're never alone)
 
+> You hear it before you see it — wet clicks on stone. Then another. Then more.
+
+#### The Hollow
+Empty shells. No face, no features — just the outline of a person carved from shadow. They mimic your movements a half-second late.
+
+**Behavior:** MIRRORING (copying your stance), ADVANCING (slow, inevitable), REACHING (arms too long)
+
+> It stands where you stood a moment ago. Facing where you faced. It has no eyes but you feel it watching.
+
+#### Bloated Ones
+Corpses swollen with dark water. They burst when struck, releasing something worse — a cloud of choking memory, visions of how they died.
+
+**Behavior:** SHAMBLING (slow approach), RUPTURING (explosive death), LEAKING (trail of corruption)
+
+> The body blocks the passage. Distended. Taut. Something moves beneath its skin.
+
+---
+
+### Tier 2 — Uncommon Threats
+
+Dangerous encounters. Require strategy or resource expenditure.
+
+#### Hollow Clergy
 The priests who once tended this place. They still perform their rituals, but the god they serve has no name. Their prayers are static. Their blessings are curses.
 
-**Behavior patterns:**
-- CHANTING — Building power, preparing something terrible
-- CONDEMNING — Pointing, judging, cursing
-- BECKONING — Inviting you closer. Don't.
+**Behavior:** CHANTING (building power), CONDEMNING (cursing), BECKONING (don't approach)
 
-### The Unnamed
-**Tier 3 — Rare/Boss**
+> It kneels before an altar of black stone, speaking words that hurt to hear.
 
+#### The Bound
+Souls that refused to pass on, now wrapped in chains of their own regret. They drag their burdens through the halls, seeking others to share the weight.
+
+**Behavior:** PURSUING (relentless), BINDING (grasping chains), PLEADING (asking for help)
+
+> Chains rattle in the dark. Something whispers your name. How does it know your name?
+
+#### Forgotten Guardians
+Stone sentinels animated by old magic. They protected something once — a tomb, a treasure, a secret. They no longer remember what, but they remember *how*.
+
+**Behavior:** DORMANT (statue-still until triggered), AWAKENING (slow, grinding), RELENTLESS (feels no pain)
+
+> You thought it was a statue. Then it turned its head.
+
+#### The Weeping
+Spirits of grief given form. They drift, wailing silently, and their touch brings sorrow so deep it wounds the body.
+
+**Behavior:** DRIFTING (floating aimlessly), MOURNING (drawn to pain), EMBRACING (cold, draining touch)
+
+> Tears run down a face with no eyes. It reaches for you like a lost child.
+
+---
+
+### Tier 3 — Rare Terrors / Bosses
+
+Major encounters. Zone-defining threats.
+
+#### The Unnamed
 You cannot see it clearly. Your mind refuses. It exists in the corner of your vision, in the space between thoughts. It has always been here. It will always be here.
 
-**Behavior patterns:**
-- WATCHING — Unmoving. Waiting. You feel its attention.
-- REACHING — Reality bends. Distance lies.
-- SPEAKING — Not in words. In certainty. In dread.
+**Behavior:** WATCHING (unmoving attention), REACHING (reality bends), SPEAKING (not in words)
+
+> Something is here. You can't see it. You can't describe it. But you know. You *know*.
+
+#### The Throne Keeper
+It sits where no throne exists, in a hall you can't remember entering. It was a king once, or a god. Now it is just *waiting*. It has been waiting for you specifically. It knew you would come.
+
+**Behavior:** JUDGING (weighing your worth), COMMANDING (compelling obedience), RISING (when judgment is passed)
+
+> "Approach." You don't want to. Your legs move anyway.
+
+#### The Memory
+Not a creature — an event. A moment that keeps happening. You see yourself dying, over and over, in ways that haven't happened yet. Is it a warning? A threat? A promise?
+
+**Behavior:** SHOWING (visions of death), LOOPING (time stutters), BECOMING (it starts to look like you)
+
+> You see yourself fall. You see yourself drown. You see yourself standing exactly where you stand now. The other you waves.
+
+---
+
+### Creature Design Principles
+
+1. **Imply, don't explain** — What *was* it? Players should wonder.
+2. **Movement matters** — How they move tells their story.
+3. **Sound defines presence** — You hear them before you see them.
+4. **Behavior over stats** — "It's circling" is scarier than "10 damage."
+5. **Death isn't victory** — Killing them should feel necessary, not triumphant.
 
 ---
 
