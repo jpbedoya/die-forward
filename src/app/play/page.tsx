@@ -428,6 +428,15 @@ export default function GameScreen() {
         {/* Narrative */}
         <div className="text-[var(--text-primary)] text-sm leading-relaxed mb-4 whitespace-pre-line">
           {room.narrative}
+          {/* For corpse rooms, show the final message inline if available */}
+          {room.type === 'corpse' && !showCorpse && (
+            <span className="text-[var(--purple-bright)] italic">
+              {realCorpse 
+                ? `\n\n"${realCorpse.finalMessage}"\n\n— @${realCorpse.playerName}`
+                : '\n\n"...the darkness took me before I could finish..."'
+              }
+            </span>
+          )}
         </div>
 
         {/* Message */}
