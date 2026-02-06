@@ -4,8 +4,8 @@
 
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│    Frontend     │────▶│  Agent Backend  │────▶│     Solana      │
-│   (Next.js)     │     │  (Vercel Edge)  │     │   (Transfers)   │
+│    Frontend     │────▶│   API Routes    │────▶│     Solana      │
+│   (Next.js)     │     │   (Next.js)     │     │    (Devnet)     │
 └─────────────────┘     └─────────────────┘     └─────────────────┘
          │                      │
          │               ┌──────▼──────┐
@@ -18,77 +18,67 @@
 
 ### Frontend
 
-| Tech | Purpose |
-|------|---------|
-| **Next.js 14+** | React framework, App Router |
-| **Tailwind CSS** | Styling, terminal aesthetic |
-| **@solana/wallet-adapter** | Phantom, Solflare, etc. |
-| **Howler.js** | Audio playback |
-| **InstantDB React** | Real-time data binding |
+| Tech | Purpose | Status |
+|------|---------|--------|
+| **Next.js 16** | React framework, App Router | ✅ |
+| **Tailwind CSS** | Terminal aesthetic styling | ✅ |
+| **@solana/wallet-adapter-react** | Wallet connection UI | ✅ |
+| **@solana-mobile/wallet-adapter-mobile** | Mobile Wallet Adapter | ✅ |
+| **@instantdb/react** | Real-time data binding | ✅ |
+| **Howler.js** | Audio playback | 🚧 |
 
 ### Backend
 
-| Tech | Purpose |
-|------|---------|
-| **Vercel Edge Functions** | Low-latency API routes |
-| **Claude API** | Content generation, game master |
-| **InstantDB** | Real-time database |
+| Tech | Purpose | Status |
+|------|---------|--------|
+| **Next.js API Routes** | Game session management | ✅ |
+| **@instantdb/admin** | Server-side DB writes | ✅ |
+| **@solana/web3.js** | Transaction handling | ✅ |
+| **Claude API** | Content generation | 🚧 |
 
 ### Infrastructure
 
-| Tech | Purpose |
-|------|---------|
-| **Vercel** | Hosting, deploys |
-| **InstantDB** | Managed real-time DB |
-| **Solana Mainnet/Devnet** | Payments |
+| Tech | Purpose | Status |
+|------|---------|--------|
+| **Vercel** | Hosting, deploys | ✅ |
+| **InstantDB** | Real-time database | ✅ |
+| **Solana Devnet** | Payments (testing) | ✅ |
 
 ## Database Schema (InstantDB)
 
-### Players
+### Sessions (Game Runs)
 
 ```typescript
-interface Player {
-  id: string;              // InstantDB generated
-  walletAddress: string;   // Solana pubkey
-  createdAt: number;
-  
-  // Lifetime stats
-  totalDeaths: number;
-  totalClears: number;
-  totalEarned: number;     // lamports
-  totalStaked: number;     // lamports
-  enemiesKilled: number;
-  timesLooted: number;     // how many found your corpse
-}
-```
-
-### Runs
-
-```typescript
-interface Run {
+interface Session {
   id: string;
-  playerId: string;
+  token: string;              // Unique session token
+  walletAddress: string;
+  stakeAmount: number;
+  txSignature: string | null; // Stake transaction
   zone: string;
   startedAt: number;
   endedAt: number | null;
-  
-  // State
-  currentRoom: number;
-  totalRooms: number;
-  health: number;
-  maxHealth: number;
-  stamina: number;
-  maxStamina: number;
-  inventory: Item[];
-  
-  // Stake
-  stakeAmount: number;     // lamports
-  stakeTxHash: string;
-  
-  // Outcome
-  status: 'active' | 'dead' | 'cleared';
-  deathRoom: number | null;
-  finalMessage: string | null;
+  status: 'active' | 'dead' | 'completed';
+  finalRoom: number | null;
+  reward: number | null;
+  payoutStatus: string | null;
+  payoutTx: string | null;
+}
+```
+
+### Deaths
+
+```typescript
+interface Death {
+  id: string;
+  walletAddress: string;
+  playerName: string;
+  zone: string;
+  room: number;
+  stakeAmount: number;
+  finalMessage: string;
+  inventory: string;          // JSON serialized
+  createdAt: number;
 }
 ```
 
@@ -97,223 +87,208 @@ interface Run {
 ```typescript
 interface Corpse {
   id: string;
-  runId: string;
-  playerId: string;
-  walletAddress: string;   // for tips
-  
+  deathId: string;
   zone: string;
   room: number;
-  diedAt: number;
-  
+  playerName: string;
   finalMessage: string;
-  inventory: Item[];
-  
-  // Interaction tracking
-  timesLooted: number;
-  tipsReceived: number;    // lamports
-}
-```
-
-### MemorialPools
-
-```typescript
-interface MemorialPool {
-  id: string;
-  zone: string;
-  
-  totalStaked: number;     // lamports accumulated
-  totalDeaths: number;
-  lastClearedAt: number | null;
-  lastClearedBy: string | null;  // playerId
-}
-```
-
-### Leaderboard (computed/cached)
-
-```typescript
-interface LeaderboardEntry {
-  playerId: string;
-  walletAddress: string;
-  
-  // Various rankings
-  deepestRoom: number;
-  totalClears: number;
-  totalDeaths: number;
-  totalEarned: number;
-  mostLooted: number;      // "helpful deaths"
+  loot: string;
+  lootEmoji: string;
+  discovered: boolean;
+  discoveredBy: string | null;
+  createdAt: number;
 }
 ```
 
 ## API Routes
 
-### Game Flow
+### Session Management
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/api/run/start` | POST | Begin new run, process stake |
-| `/api/run/action` | POST | Submit player choice |
-| `/api/run/end` | POST | End run (death/clear) |
+| `/api/session/start` | POST | Start game, create session token |
+| `/api/session/death` | POST | Record death (validates token) |
+| `/api/session/victory` | POST | Process victory payout |
 
-### Data
+### Request/Response Examples
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/player/:wallet` | GET | Player stats |
-| `/api/leaderboard` | GET | Top players |
-| `/api/feed` | GET | Recent deaths (SSE) |
-| `/api/zone/:id` | GET | Zone info + death count |
-
-### Solana
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/stake/prepare` | POST | Generate stake transaction |
-| `/api/stake/confirm` | POST | Verify stake landed |
-| `/api/claim/prepare` | POST | Generate claim transaction |
-| `/api/tip/prepare` | POST | Generate tip transaction |
-
-## Agent Integration
-
-### Role
-
-The agent (Claude) serves as:
-- **Game Master**: Generates room descriptions, encounters
-- **Narrator**: Describes combat, discoveries, deaths
-- **World Weaver**: Incorporates player deaths into narrative
-
-### Prompt Structure
-
+**Start Session:**
 ```typescript
-interface GamePrompt {
-  systemPrompt: string;     // Game rules, tone, constraints
-  worldState: {
-    zone: string;
-    recentDeaths: Corpse[];
-    dangerLevel: number;
-  };
-  playerState: {
-    health: number;
-    stamina: number;
-    inventory: Item[];
-    roomNumber: number;
-  };
-  action: string;           // Player's choice
+// POST /api/session/start
+Request: {
+  walletAddress: string;
+  stakeAmount: number;      // 0.01, 0.05, 0.1, or 0.25
+  txSignature: string;      // Stake transaction signature
+}
+
+Response: {
+  success: boolean;
+  sessionToken: string;
+  zone: string;
 }
 ```
 
-### Response Format
-
+**Record Death:**
 ```typescript
-interface GameResponse {
-  narrative: string;        // What the player sees
-  stateChanges: {
-    health?: number;
-    stamina?: number;
-    addItems?: Item[];
-    removeItems?: string[];
-  };
-  encounter?: {
-    type: 'combat' | 'trap' | 'ghost' | 'cache' | 'mystery';
-    enemy?: Enemy;
-    corpse?: Corpse;
-    loot?: Item[];
-  };
-  options: {
-    id: string;
-    text: string;
-  }[];
-  isDeath: boolean;
-  isClear: boolean;
+// POST /api/session/death
+Request: {
+  sessionToken: string;
+  room: number;
+  finalMessage: string;
+  inventory: Item[];
+  playerName: string;
+}
+
+Response: {
+  success: boolean;
+  deathId: string;
+  corpseId: string;
 }
 ```
 
-## Solana Integration (Phase 1: Simple Transfers)
+**Victory Payout:**
+```typescript
+// POST /api/session/victory
+Request: {
+  sessionToken: string;
+}
 
-### Flow
-
-```
-Player connects wallet
-        ↓
-Click "Start Run" → prompted to sign transfer
-        ↓
-SOL sent to backend treasury wallet
-        ↓
-Backend records stake, starts run
-        ↓
-On death: backend moves funds to memorial pool wallet
-On clear: backend sends pool share to player
+Response: {
+  success: boolean;
+  reward: number;
+  payoutStatus: 'paid' | 'pending';
+  txSignature?: string;
+}
 ```
 
-### Security Considerations
+## Solana Integration
 
-- Backend wallet keys in environment variables
-- Rate limiting on all endpoints
-- Verify wallet signatures on actions
-- Transaction confirmation before state changes
-
-### Future: On-Chain Program
-
-Phase 2 will replace simple transfers with an Anchor program:
-- Escrow PDA for stakes
-- Pool PDA per zone
-- Trustless claim mechanics
-- Composable for future features
-
-## Real-Time Features (InstantDB)
-
-### Live Updates
-
-- **Death Feed**: New corpses appear instantly
-- **Leaderboard**: Rankings update in real-time
-- **Zone Danger**: Death counts tick up live
-- **Active Runs**: See how many currently playing
-
-### Subscriptions
+### Wallet Adapters
 
 ```typescript
-// Subscribe to recent deaths
-db.subscribeQuery({
-  corpses: {
-    $: { order: { diedAt: 'desc' }, limit: 10 }
-  }
-});
+// Desktop
+- PhantomWalletAdapter
+- SolflareWalletAdapter
 
-// Subscribe to zone state
-db.subscribeQuery({
-  memorialPools: {
-    $: { where: { zone: currentZone } }
-  }
-});
+// Mobile (Android)
+- SolanaMobileWalletAdapter
 ```
 
-## Development Setup
+### Pool Wallet
+
+- **Address**: Stored in `NEXT_PUBLIC_POOL_WALLET`
+- **Secret**: Stored in `POOL_WALLET_SECRET` (backend only)
+- **Purpose**: Receives stakes, pays out victories
+
+### Transaction Flow
+
+```
+STAKE:
+Player → signs transfer → SOL goes to pool wallet
+       → backend creates session token
+
+DEATH:
+Stakes stay in pool (accumulate)
+
+VICTORY:
+Backend → signs transfer → SOL from pool to player
+       → stake + 50% bonus
+```
+
+## Mobile Wallet Adapter (MWA)
+
+### Challenge
+
+MWA uses session-based connections (not persistent like browser extensions). Each `transact()` creates a new session requiring authorization.
+
+### Solution
+
+1. **Auth Token Caching**: Read from wallet adapter's localStorage cache
+   - Key: `SolanaMobileWalletAdapterDefaultAuthorizationCache`
+   - Contains: `auth_token`, `accounts`, etc.
+
+2. **Reauthorize Flow**:
+   ```typescript
+   const cached = getCachedAuth();
+   if (cached) {
+     await wallet.reauthorize({ auth_token: cached.authToken });
+   } else {
+     await wallet.authorize({ cluster: 'devnet', identity: APP_IDENTITY });
+   }
+   ```
+
+3. **Address Encoding**: MWA returns base64-encoded addresses
+   ```typescript
+   // Decode base64 to bytes, then to PublicKey
+   const bytes = Uint8Array.from(atob(addressRaw), c => c.charCodeAt(0));
+   const pubkey = new PublicKey(bytes);
+   ```
+
+### Files
+
+- `src/lib/mobileWallet.ts` — MWA transaction handling
+- `src/lib/mwaAuthCache.ts` — Auth token caching
+- `src/components/WalletProvider.tsx` — Adapter configuration
+
+## Game State Management
+
+### Client-Side (localStorage)
+
+```typescript
+interface GameState {
+  currentRoom: number;
+  health: number;
+  stamina: number;
+  inventory: Item[];
+  stakeAmount: number;
+  sessionToken: string | null;
+  walletAddress: string | null;
+}
+```
+
+**Key**: `die-forward-game`
+
+### Functions
+
+- `getGameState()` — Read current state
+- `saveGameState(partial)` — Merge and save
+- `resetGameState(stake)` — Start fresh run
+- `clearGameState()` — Remove all state
+
+## Environment Variables
+
+### Required for Vercel
 
 ```bash
-# Clone repo
-git clone <repo-url>
-cd die-forward
+# InstantDB
+NEXT_PUBLIC_INSTANT_APP_ID=xxx
+INSTANT_ADMIN_KEY=xxx
 
-# Install dependencies
+# Solana
+NEXT_PUBLIC_SOLANA_RPC=https://api.devnet.solana.com
+NEXT_PUBLIC_POOL_WALLET=xxx
+POOL_WALLET_SECRET=[...bytes...]
+```
+
+## Development
+
+```bash
+# Install
 npm install
 
-# Set up environment
-cp .env.example .env.local
-# Add: ANTHROPIC_API_KEY, INSTANTDB_APP_ID, SOLANA_TREASURY_KEY
-
-# Run dev server
+# Dev server
 npm run dev
+
+# Build
+npm run build
+
+# Note: If npm cache issues, use:
+npm install --cache /tmp/npm-cache-fresh
 ```
 
 ## Deployment
 
-```bash
-# Deploy to Vercel
-vercel --prod
+Automatic via Vercel on push to `main`.
 
-# Environment variables needed:
-# - ANTHROPIC_API_KEY
-# - INSTANTDB_APP_ID  
-# - SOLANA_TREASURY_KEY
-# - SOLANA_RPC_URL
-# - NEXT_PUBLIC_SOLANA_NETWORK (devnet/mainnet)
-```
+GitHub: https://github.com/jpbedoya/die-forward
+Live: https://die-forward.vercel.app

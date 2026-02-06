@@ -2,161 +2,125 @@
 
 ## Hackathon Constraints
 
-- **Timeline**: ~1 week (Colosseum Agent Hackathon)
-- **Team**: Solo/small
+- **Timeline**: ~1 week (Colosseum Agent Hackathon, deadline Feb 12, 2026)
 - **Goal**: Playable demo that demonstrates core concept
 
-## What's IN (MVP)
+## Implementation Status
 
 ### Core Game
 
-- [ ] **1 Zone**: "The Sunken Crypt" (5-7 rooms)
-- [ ] **Core loop**: Start → Navigate → Choose → Die/Clear
-- [ ] **3 encounter types**: Combat, Ghost (corpse), Cache (loot)
-- [ ] **Combat system**: Intent-reading, 4-5 actions
-- [ ] **Death flow**: Final message → become corpse
-- [ ] **Corpse discovery**: Find others, loot them, read messages
+- [x] **1 Zone**: "The Sunken Crypt" (7 rooms)
+- [x] **Core loop**: Start → Navigate → Choose → Die/Clear
+- [x] **3 encounter types**: Combat, Corpse (ghost), Cache (loot)
+- [x] **Combat system**: Intent-reading, 5 actions (Strike, Dodge, Brace, Herbs, Flee)
+- [x] **Death flow**: Final message → become corpse → saved to DB
+- [ ] **Corpse discovery**: Find others' corpses in gameplay (DB ready, UI not wired)
 
 ### Solana
 
-- [ ] **Wallet connect**: Phantom, Solflare via adapter
-- [ ] **Stake on start**: Simple transfer to treasury
-- [ ] **Memorial pool**: Backend tracks per-zone totals
-- [ ] **Claim on clear**: Backend sends pool share
+- [x] **Wallet connect**: Phantom, Solflare via adapter
+- [x] **Mobile Wallet Adapter**: Full MWA support for Android/Seeker
+- [x] **Auth caching**: Reauthorize without popup after first connect
+- [x] **Stake on start**: Real SOL transfer to pool wallet
+- [x] **Memorial pool**: Backend tracks stakes in pool
+- [x] **Claim on clear**: Backend sends pool share (stake + 50% bonus)
 
 ### Social
 
-- [ ] **Leaderboard**: Top players by clears, deaths, earned
-- [ ] **Live death feed**: Real-time corpse appearances
-- [ ] **Death counter**: "X adventurers died here today"
+- [x] **Live death feed**: Real-time deaths from InstantDB
+- [x] **Pool stats**: Total staked, death count (real data)
+- [ ] **Leaderboard**: Currently mock data (needs clears tracking)
+
+### Database
+
+- [x] **Sessions**: Game run tracking with tokens
+- [x] **Deaths**: Recorded with final message, inventory
+- [x] **Corpses**: Created on death for future discovery
+- [x] **Security**: Session tokens validated on API
 
 ### Audio
 
-- [ ] **3 music states**: Explore, tension, combat
-- [ ] **Zone ambient**: Water drips/echoes for Crypt
-- [ ] **Core SFX**: Hit, hurt, death, loot, ghost found
-- [ ] **1 stinger**: Enemy appears
+- [ ] **Music states**: Not implemented
+- [ ] **Ambient**: Not implemented
+- [ ] **SFX**: Not implemented
 
 ### UI
 
-- [ ] **Terminal aesthetic**: Text-based, minimal graphics
-- [ ] **Game screen**: Narrative + stats + choices
-- [ ] **Wallet status**: Connected address, stake amount
-- [ ] **Basic responsive**: Works on desktop + mobile
+- [x] **Terminal aesthetic**: CRT-style, ASCII art, monospace
+- [x] **Game screens**: Title, Stake, Play, Combat, Death, Victory
+- [x] **Wallet status**: Connected address, balance display
+- [x] **Mobile responsive**: Works on mobile browsers
+- [x] **Debug logging**: Visible transaction progress on stake screen
 
-### Tech
+## What's Left
 
-- [ ] **Next.js app**: Single-page game flow
-- [ ] **InstantDB**: Player, runs, corpses, pools
-- [ ] **Vercel Edge**: Game API + Claude integration
-- [ ] **Deployed**: Live on Vercel
+### Must Have (for demo)
 
-## What's OUT (Post-Hackathon)
-
-### Game Expansion
-
-- Multiple zones with different themes
-- More encounter types (traps, mysteries, NPCs)
-- Boss encounters
-- Branching paths / room choices
-- Enemy variety (currently: 2-3 enemy types)
-
-### Progression
-
-- Meta unlocks (knowledge, zone access)
-- Player profiles / history
-- Achievement system
-- Seasonal resets
-
-### Solana V2
-
-- On-chain Anchor program
-- Trustless escrow/claims
-- Ghost tipping system
-- NFT corpse markers (optional)
-- Token integration (if applicable)
-
-### Social V2
-
-- Global chat / emotes
-- Guilds / teams
-- Spectator mode
-- Run replays
-- Social sharing (Twitter cards, etc.)
-
-### Audio V2
-
-- Per-zone music tracks
-- Dynamic layering system
-- TTS for ghost messages
-- More SFX variety
-
-### Polish
-
-- Animations / transitions
-- Sound design pass
-- Mobile optimization
-- Accessibility features
-- Localization
-
-## MVP Success Criteria
-
-### Must Work
-
-1. Player can connect wallet
-2. Player can stake and start a run
-3. Player navigates rooms with choices
-4. Combat is playable and tense
-5. Player can die and leave a message
-6. Future players find that corpse
-7. Player can clear and claim rewards
-8. Leaderboard shows top players
-9. Live feed shows recent deaths
+1. ~~Mobile wallet signing~~ ✅ Fixed with MWA native protocol
+2. Wire corpse discovery into `/play` screen
+3. Test full flow on devnet with real SOL
 
 ### Nice to Have
 
-- Smooth audio transitions
-- Polished UI animations
-- Mobile fully working
-- Multiple enemy types
+- Claude API for dynamic narrative
+- Audio system
+- Real leaderboard from clears data
+- Polish animations
 
-### Demo Flow (for judges)
+## Demo Flow (for judges)
 
 ```
-1. Connect wallet
-2. Stake 0.01 SOL
-3. Play through 3-4 rooms
-4. Find a corpse, read message, loot
-5. Die in combat
-6. Leave final message
-7. New session: start another run
-8. Find your own corpse
-9. Clear the zone
-10. Claim from pool
-11. Show leaderboard
+1. Connect wallet (MWA on mobile, Phantom on desktop)
+2. See real death feed + pool stats
+3. Stake 0.01 SOL (real transfer)
+4. Play through rooms, find corpses
+5. Enter combat, use abilities
+6. Die → leave final message → appears in feed
+7. Or clear → claim stake + bonus
+8. Show transaction on Solana explorer
 ```
 
-## Time Estimates
+## File Structure
 
-| Component | Days |
-|-----------|------|
-| Project setup + DB schema | 0.5 |
-| Game UI (screens, components) | 1.5 |
-| Agent integration (prompts, API) | 1 |
-| Combat system | 1 |
-| Death/corpse flow | 0.5 |
-| Solana integration | 1 |
-| Audio system | 0.5 |
-| Leaderboard + feed | 0.5 |
-| Polish + testing | 1 |
-| **Total** | **~7 days** |
+```
+src/
+├── app/
+│   ├── page.tsx           # Title screen
+│   ├── stake/page.tsx     # Stake selection
+│   ├── play/page.tsx      # Main game
+│   ├── combat/page.tsx    # Combat system
+│   ├── death/page.tsx     # Death screen
+│   ├── victory/page.tsx   # Victory screen
+│   └── api/
+│       └── session/
+│           ├── start/     # Create game session
+│           ├── death/     # Record death
+│           └── victory/   # Process payout
+├── components/
+│   └── WalletProvider.tsx # Solana wallet setup
+└── lib/
+    ├── gameState.ts       # localStorage state
+    ├── instant.ts         # InstantDB client
+    ├── mobileWallet.ts    # MWA transaction handling
+    └── mwaAuthCache.ts    # Auth token caching
+```
 
-## Risk Mitigation
+## Known Issues
 
-| Risk | Mitigation |
-|------|------------|
-| Agent responses too slow | Cache common encounters, stream responses |
-| InstantDB issues | Fallback to Supabase if needed |
-| Solana tx failures | Clear error handling, retry logic |
-| Combat not fun | Playtest early, iterate on prompts |
-| Scope creep | Ruthlessly cut to MVP list above |
+1. **First-time MWA**: First transaction still requires authorize (cached after)
+2. **Leaderboard**: Currently mock data
+3. **Corpse discovery**: Not wired to UI yet
+4. **No audio**: Placeholder for post-hackathon
+
+## Testing Checklist
+
+- [x] Desktop wallet connect (Phantom)
+- [x] Mobile wallet connect (MWA)
+- [x] Balance displays correctly
+- [x] Stake transaction prompts and executes
+- [x] Game state persists between screens
+- [x] Combat works (damage, healing, victory/death)
+- [x] Death records to InstantDB
+- [x] Death appears in live feed
+- [ ] Victory payout executes
+- [ ] Pool wallet has funds for payout
