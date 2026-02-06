@@ -307,9 +307,12 @@ export default function GameScreen() {
           const lootName = realCorpse ? realCorpse.loot : corpseToLoot.loot;
           const lootEmoji = realCorpse ? realCorpse.lootEmoji : '🗡️';
           
-          if (!inventory.find(i => i.name === lootName)) {
+          // Don't add "Nothing" to inventory
+          if (lootName && lootName !== 'Nothing' && !inventory.find(i => i.name === lootName)) {
             setInventory([...inventory, { id: Date.now().toString(), name: lootName, emoji: lootEmoji }]);
             setMessage(`Found: ${lootName}`);
+          } else if (lootName === 'Nothing') {
+            setMessage('The corpse has nothing of value.');
           }
           
           // Mark real corpse as discovered
