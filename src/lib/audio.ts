@@ -147,9 +147,11 @@ class AudioManager {
     });
   }
 
-  // Stop ambient
-  stopAmbient() {
-    this.pendingAmbientId = null;
+  // Stop ambient (keepPending = true keeps the ID so toggle can restart it)
+  stopAmbient(keepPending: boolean = false) {
+    if (!keepPending) {
+      this.pendingAmbientId = null;
+    }
     if (this.currentAmbient) {
       const fadeOut = this.currentAmbient;
       const fadeOutInterval = setInterval(() => {
@@ -181,9 +183,13 @@ class AudioManager {
     }
     
     if (!this.enabled) {
-      this.stopAmbient();
+      // Remember what was playing so we can restart it
+      if (this.currentAmbientId) {
+        this.pendingAmbientId = this.currentAmbientId;
+      }
+      this.stopAmbient(true); // keepPending = true
     } else if (this.pendingAmbientId) {
-      // Re-enable: try to play pending ambient
+      // Re-enable: restart the ambient that was playing
       this.playAmbient(this.pendingAmbientId);
     }
     
