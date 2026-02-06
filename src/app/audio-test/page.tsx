@@ -30,7 +30,8 @@ const presets: SoundPreset[] = [
   { id: 'player-death', name: 'Player Death', prompt: 'dark dramatic death final breath soul leaving body haunting echo fade', duration: 3, category: 'Player' },
   { id: 'victory', name: 'Victory Resolve (v2)', prompt: 'silence then single deep resolution tone low drone relief tension release fading echo solemn', duration: 4, category: 'Player' },
   { id: 'victory-v1', name: 'Victory Chime (v1)', prompt: 'eerie triumphant chime dark victory ancient bell reverb mystical success', duration: 3, category: 'Player' },
-  { id: 'heal', name: 'Heal Swallow (v2)', prompt: 'drinking liquid gulp swallow bitter potion exhale breath relief subtle wet', duration: 2, category: 'Player' },
+  { id: 'heal', name: 'Heal (v3 sheen+exhale)', prompt: 'soft magical shimmer gentle restoration subtle glow followed by relieved exhale breath out calm recovery', duration: 2, category: 'Player' },
+  { id: 'heal-v2', name: 'Heal Swallow (v2)', prompt: 'drinking liquid gulp swallow bitter potion exhale breath relief subtle wet', duration: 2, category: 'Player' },
   { id: 'heal-v1', name: 'Heal Magic (v1)', prompt: 'magical healing restore shimmer warm glow mystical recovery gentle', duration: 2, category: 'Player' },
   
   // Environment
