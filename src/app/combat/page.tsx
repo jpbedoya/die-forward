@@ -323,41 +323,49 @@ export default function CombatScreen() {
     newEnemyHealth = Math.max(0, newEnemyHealth);
     newStamina = Math.max(0, newStamina);
     
-    // Play SFX based on action and outcome
+    // Play SFX FIRST, then update state after short delay for audio sync
     if (selectedOption === 'strike' && resolution.enemyDmg > 0) {
       playSFX('sword-slash');
+    } else if (selectedOption === 'dodge') {
+      playSFX('footstep'); // Quick movement sound
     } else if (selectedOption === 'herbs') {
       playSFX('heal');
-    }
-    if (resolution.playerDmg > 0) {
-      setTimeout(() => playSFX('damage-taken'), 300);
+    } else if (selectedOption === 'brace') {
+      playSFX('footstep'); // Brace/stance sound
     }
     
-    setPlayerHealth(newPlayerHealth);
-    setEnemyHealth(newEnemyHealth);
-    setPlayerStamina(newStamina);
-    setNarrative(resolution.narrative);
-    setLastResolution(resolution);
-    
-    // Remove herbs if used and save immediately
-    if (resolution.consumeHerbs) {
-      const herbItem = playerInventory.find(i => i.name === 'Herbs');
-      if (herbItem) {
-        const newInventory = playerInventory.filter(i => i.id !== herbItem.id);
-        setPlayerInventory(newInventory);
-        // Recalculate item effects after inventory change
-        setItemEffects(getItemEffects(newInventory));
-        // Save immediately so refresh doesn't restore herbs
-        saveGameState({ 
-          health: newPlayerHealth, 
-          stamina: newStamina,
-          inventory: newInventory 
-        });
+    // Delay damage sound and state updates so attack sound plays first
+    setTimeout(() => {
+      if (resolution.playerDmg > 0) {
+        playSFX('damage-taken');
       }
-    }
-    
-    setPhase('resolve');
-    setSelectedOption(null);
+      
+      setPlayerHealth(newPlayerHealth);
+      setEnemyHealth(newEnemyHealth);
+      setPlayerStamina(newStamina);
+      setNarrative(resolution.narrative);
+      setLastResolution(resolution);
+      
+      // Remove herbs if used and save immediately
+      if (resolution.consumeHerbs) {
+        const herbItem = playerInventory.find(i => i.name === 'Herbs');
+        if (herbItem) {
+          const newInventory = playerInventory.filter(i => i.id !== herbItem.id);
+          setPlayerInventory(newInventory);
+          // Recalculate item effects after inventory change
+          setItemEffects(getItemEffects(newInventory));
+          // Save immediately so refresh doesn't restore herbs
+          saveGameState({ 
+            health: newPlayerHealth, 
+            stamina: newStamina,
+            inventory: newInventory 
+          });
+        }
+      }
+      
+      setPhase('resolve');
+      setSelectedOption(null);
+    }, 250); // 250ms delay lets attack sound play before screen changes
   };
 
   const handleContinue = () => {
