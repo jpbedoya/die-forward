@@ -290,9 +290,10 @@ export default function GameScreen() {
         break;
       case 'flee':
         // Take some damage but skip combat
-        setHealth(health - 15);
-        setMessage('You take a hit while fleeing!');
-        if (health - 15 <= 0) {
+        const fleeDamage = 15;
+        setHealth(health - fleeDamage);
+        setMessage(`You take a hit while fleeing! -${fleeDamage} HP`);
+        if (health - fleeDamage <= 0) {
           router.push('/death');
         } else {
           setCurrentRoom(currentRoom + 1);
