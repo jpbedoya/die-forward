@@ -291,9 +291,27 @@ It lunges, claws extended, aiming for your throat.`);
           <div className="text-center">
             <div className="text-[var(--green)] text-2xl mb-4">⚔️ VICTORY</div>
             <button 
-              onClick={() => {
-                // Save state and return to game
+              onClick={async () => {
+                // Advance room on server first (anti-cheat)
                 const state = getGameState();
+                if (state.sessionToken) {
+                  try {
+                    const response = await fetch('/api/session/advance', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        sessionToken: state.sessionToken,
+                        fromRoom: state.currentRoom + 1, // 1-indexed
+                      }),
+                    });
+                    if (!response.ok) {
+                      console.error('Failed to advance room on server');
+                    }
+                  } catch (err) {
+                    console.error('Advance API error:', err);
+                  }
+                }
+                // Save state and return to game
                 saveGameState({
                   health: playerHealth,
                   stamina: Math.min(defaultPlayer.maxStamina, playerStamina + 1),

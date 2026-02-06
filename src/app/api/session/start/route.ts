@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     const sessionToken = id();
     const sessionId = id();
 
-    // Store session in database
+    // Store session in database with server-tracked room progress
     await db.transact([
       tx.sessions[sessionId].update({
         token: sessionToken,
@@ -41,6 +41,8 @@ export async function POST(request: NextRequest) {
         zone: 'THE SUNKEN CRYPT',
         startedAt: Date.now(),
         status: 'active', // active, completed, dead
+        currentRoom: 1, // Server-tracked room (1-indexed)
+        maxRooms: 7, // Total rooms in dungeon
       }),
     ]);
 

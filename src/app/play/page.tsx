@@ -238,6 +238,8 @@ export default function GameScreen() {
   const [showCorpse, setShowCorpse] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [sessionToken, setSessionToken] = useState<string | null>(null);
+  const [advancing, setAdvancing] = useState(false);
 
   // Fetch real corpses from DB for the current room
   const { corpses: realCorpses } = useCorpseForRoom('THE SUNKEN CRYPT', currentRoom + 1);
@@ -252,6 +254,7 @@ export default function GameScreen() {
     setInventory(state.inventory);
     setStakeAmount(state.stakeAmount);
     setWalletAddress(state.walletAddress);
+    setSessionToken(state.sessionToken);
     setLoaded(true);
   }, []);
 
@@ -264,6 +267,41 @@ export default function GameScreen() {
 
   const room = rooms[currentRoom] || rooms[rooms.length - 1];
 
+  // Advance room via server API (anti-cheat)
+  const advanceRoom = async (): Promise<boolean> => {
+    if (!sessionToken) {
+      console.warn('No session token, skipping server advance');
+      return true; // Allow offline/test play
+    }
+    
+    setAdvancing(true);
+    try {
+      const response = await fetch('/api/session/advance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionToken,
+          fromRoom: currentRoom + 1, // Server uses 1-indexed
+        }),
+      });
+      
+      if (!response.ok) {
+        const data = await response.json();
+        console.error('Failed to advance:', data.error);
+        setMessage('Server sync failed. Please try again.');
+        return false;
+      }
+      
+      return true;
+    } catch (err) {
+      console.error('Advance API error:', err);
+      setMessage('Connection error. Please try again.');
+      return false;
+    } finally {
+      setAdvancing(false);
+    }
+  };
+
   // Show loading until state is loaded
   if (!loaded) {
     return (
@@ -273,12 +311,14 @@ export default function GameScreen() {
     );
   }
 
-  const handleAction = (action: string) => {
+  const handleAction = async (action: string) => {
     setMessage(null);
     
     switch (action) {
       case 'next':
         if (currentRoom < rooms.length - 1) {
+          const ok = await advanceRoom();
+          if (!ok) return;
           setCurrentRoom(currentRoom + 1);
           setSelectedOption(null);
           setShowCorpse(false);
@@ -296,6 +336,8 @@ export default function GameScreen() {
         if (health - fleeDamage <= 0) {
           router.push('/death');
         } else {
+          const ok = await advanceRoom();
+          if (!ok) return;
           setCurrentRoom(currentRoom + 1);
           setSelectedOption(null);
         }
@@ -325,8 +367,12 @@ export default function GameScreen() {
       case 'heal':
         setHealth(Math.min(100, health + 30));
         setMessage('You feel restored. +30 HP');
-        setCurrentRoom(currentRoom + 1);
-        setSelectedOption(null);
+        {
+          const ok = await advanceRoom();
+          if (!ok) return;
+          setCurrentRoom(currentRoom + 1);
+          setSelectedOption(null);
+        }
         break;
       case 'victory':
         router.push('/victory');

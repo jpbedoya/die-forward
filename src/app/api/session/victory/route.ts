@@ -57,6 +57,18 @@ export async function POST(request: NextRequest) {
 
     const session = sessions[0];
 
+    // Validate room progress - must have reached final room
+    const currentRoom = session.currentRoom || 1;
+    const maxRooms = session.maxRooms || 7;
+    
+    if (currentRoom < maxRooms) {
+      return NextResponse.json({ 
+        error: 'Dungeon not completed',
+        currentRoom,
+        required: maxRooms,
+      }, { status: 403 });
+    }
+
     // Calculate reward (stake back + bonus from pool)
     // For now: return stake + 50% bonus (simple formula)
     const stakeAmount = session.stakeAmount || 0;
