@@ -51,8 +51,7 @@ export function getCachedAuth(log?: (msg: string) => void): CachedAuth | null {
 
 export function setCachedAuth(authToken: string, publicKey: string): void {
   // We don't need to set - the wallet adapter handles this
-  // But we could update its cache if needed
-  console.log('Auth token cached by wallet adapter');
+  // The wallet adapter manages the cache automatically
 }
 
 export function clearCachedAuth(): void {

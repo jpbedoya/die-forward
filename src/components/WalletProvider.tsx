@@ -34,8 +34,8 @@ export const SolanaWalletProvider: FC<Props> = ({ children }) => {
         authorizationResultCache: createDefaultAuthorizationResultCache(),
         cluster: 'devnet',
         onWalletNotFound: async () => {
-          // Could open app store link here
-          console.log('Mobile wallet not found');
+          // Could open app store link here or show a helpful message
+          // Silent fail - user will see wallet not available in the modal
         },
       }),
       // Desktop wallets

@@ -149,12 +149,8 @@ export default function TitleScreen() {
 
   // Cache MWA auth token when connected via Mobile Wallet Adapter
   useEffect(() => {
-    const walletName = wallet?.adapter?.name;
-    if (connected && walletName === 'Mobile Wallet Adapter' && publicKey) {
-      // Store public key in cache format for MWA reauthorize
-      // The actual auth_token will be cached on first transaction
-      console.log('MWA connected, auth will be cached on first transaction');
-    }
+    // MWA auth will be cached on first transaction
+    // No action needed here, just keeping the effect for future use
   }, [connected, wallet, publicKey]);
 
   const handleConnect = () => {

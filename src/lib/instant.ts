@@ -102,7 +102,7 @@ export async function recordClear(data: {
   // Update player stats on clear
   // This would need to be done with a proper upsert pattern
   // For MVP, we'll just track it
-  console.log('Clear recorded:', data);
+  // TODO: Implement clears table for leaderboard
 }
 
 export async function discoverCorpse(corpseId: string, discoveredBy: string) {
@@ -135,11 +135,6 @@ export function useCorpseForRoom(zone: string, room: number) {
     return corpseRoom >= room - 1 && corpseRoom <= room + 1;
   });
 
-  // Debug logging
-  if (typeof window !== 'undefined') {
-    console.log(`[Corpses] Zone: ${zone}, Room: ${room}, Found: ${nearbyCorpses.length}`, nearbyCorpses);
-  }
-
   return {
     corpses: nearbyCorpses,
     isLoading,
@@ -161,14 +156,6 @@ export function useDeathFeed(limit = 10) {
   const sortedDeaths = [...(data?.deaths || [])].sort((a, b) => 
     (b.createdAt || 0) - (a.createdAt || 0)
   );
-
-  // Debug logging
-  if (error) {
-    console.error('Death feed error:', error);
-  }
-  if (data) {
-    console.log('Death feed data:', data?.deaths?.length, 'deaths');
-  }
 
   return {
     deaths: sortedDeaths,

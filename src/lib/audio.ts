@@ -70,7 +70,6 @@ class AudioManager {
       const unlock = () => {
         if (!this.unlocked) {
           this.unlocked = true;
-          console.log('[audio] Unlocked by user interaction');
           // Try to play pending ambient
           if (this.pendingAmbientId && this.enabled) {
             this.playAmbient(this.pendingAmbientId);
@@ -91,8 +90,8 @@ class AudioManager {
     
     const audio = new Audio(SOUND_PATHS[id]);
     audio.volume = this.sfxVolume;
-    audio.play().catch((e) => {
-      console.log('[audio] SFX blocked:', id, e.message);
+    audio.play().catch(() => {
+      // SFX blocked by autoplay policy - silent fail
     });
   }
 
@@ -130,7 +129,6 @@ class AudioManager {
     this.currentAmbientId = id;
     
     audio.play().then(() => {
-      console.log('[audio] Ambient playing:', id);
       this.unlocked = true;
       // Fade in
       const fadeInInterval = setInterval(() => {
@@ -141,9 +139,8 @@ class AudioManager {
           clearInterval(fadeInInterval);
         }
       }, 50);
-    }).catch((e) => {
-      console.log('[audio] Ambient blocked (waiting for interaction):', id, e.message);
-      // Will retry on user interaction via pendingAmbientId
+    }).catch(() => {
+      // Ambient blocked (waiting for interaction) - will retry via pendingAmbientId
     });
   }
 
