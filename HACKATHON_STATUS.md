@@ -1,6 +1,6 @@
 # Die Forward — Hackathon Status
 
-**Last Updated**: Feb 6, 2026  
+**Last Updated**: Feb 6, 2026 (2:00 AM)  
 **Deadline**: Feb 12, 2026  
 **Days Remaining**: 6
 
@@ -43,6 +43,11 @@
 - [x] Health/stamina/inventory display
 - [x] Progress bar through dungeon
 - [x] Loading states
+- [x] **Title screen "How It Works" section** ← NEW
+- [x] **Dramatic death feed with LIVE indicator** ← NEW
+- [x] **Enhanced corpse discovery UI** ← NEW
+- [x] **Improved death screen with epitaph reveal** ← NEW
+- [x] **Background glow effects and gradients** ← NEW
 
 ### Content
 - [x] 1 zone: "The Sunken Crypt"
@@ -51,6 +56,10 @@
 - [x] Multiple enemy types with varied intents
 - [x] Dynamic combat narration
 - [x] Death epitaph templates
+- [x] **20+ unique creatures in bestiary** ← NEW
+- [x] **Creature-specific health values (Tier 1-3)** ← NEW
+- [x] **Creature-specific behaviors/intents** ← NEW
+- [x] **Creature descriptions and emojis in combat** ← NEW
 
 ### Documentation
 - [x] Game design doc
@@ -64,7 +73,7 @@
 ## 🚧 IN PROGRESS / NEEDS WORK
 
 ### High Priority (Before Submission)
-- [ ] **Corpse discovery in gameplay** — DB ready, need to wire into `/play` UI
+- [x] **Corpse discovery in gameplay** — Wired into `/play` UI with dramatic styling ← DONE
 - [ ] **Test full flow on devnet** — End-to-end with real SOL
 - [ ] **Victory payout testing** — Ensure pool wallet has funds
 - [ ] **Record demo video** — Using DEMO_SCRIPT.md
