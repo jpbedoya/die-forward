@@ -510,26 +510,56 @@ export default function CombatScreen() {
           </div>
         )}
 
-        {/* Combat modifiers display */}
-        {phase === 'choose' && (itemEffects.damageBonus > 0 || itemEffects.defenseBonus > 0) && (
+        {/* Combat modifiers display - show which items provide bonuses */}
+        {phase === 'choose' && (itemEffects.damageBonus > 0 || itemEffects.defenseBonus > 0 || itemEffects.fleeBonus > 0 || intentEffects.fleeMod !== 0) && (
           <div className="flex gap-2 mb-4 text-[10px] flex-wrap">
-            {itemEffects.damageBonus > 0 && (
-              <span className="px-2 py-1 bg-[var(--green-dim)]/20 border border-[var(--green-dim)] text-[var(--green-bright)]">
-                ⚔️ +{Math.round(itemEffects.damageBonus * 100)}% DMG
-              </span>
-            )}
-            {itemEffects.defenseBonus > 0 && (
-              <span className="px-2 py-1 bg-[var(--blue-dim)]/20 border border-[var(--blue-dim)] text-[var(--blue-bright)]">
-                🛡️ -{Math.round(itemEffects.defenseBonus * 100)}% DMG TAKEN
-              </span>
-            )}
-            {(itemEffects.fleeBonus > 0 || intentEffects.fleeMod !== 0) && (
+            {/* Show each item's combat effect */}
+            {playerInventory.map(item => {
+              if (item.name === 'Torch') {
+                return (
+                  <span key={item.id} className="px-2 py-1 bg-[var(--green-dim)]/20 border border-[var(--green-dim)] text-[var(--green-bright)]">
+                    🔦 Torch: +25% DMG
+                  </span>
+                );
+              }
+              if (item.name === 'Dagger') {
+                return (
+                  <span key={item.id} className="px-2 py-1 bg-[var(--green-dim)]/20 border border-[var(--green-dim)] text-[var(--green-bright)]">
+                    🗡️ Dagger: +35% DMG
+                  </span>
+                );
+              }
+              if (item.name === 'Rusty Blade') {
+                return (
+                  <span key={item.id} className="px-2 py-1 bg-[var(--green-dim)]/20 border border-[var(--green-dim)] text-[var(--green-bright)]">
+                    🗡️ Rusty Blade: +20% DMG
+                  </span>
+                );
+              }
+              if (item.name === 'Shield' || item.name === 'Tattered Shield') {
+                return (
+                  <span key={item.id} className="px-2 py-1 bg-[var(--blue-dim)]/20 border border-[var(--blue-dim)] text-[var(--blue-bright)]">
+                    🛡️ {item.name}: -25% DMG
+                  </span>
+                );
+              }
+              if (item.name === 'Cloak') {
+                return (
+                  <span key={item.id} className="px-2 py-1 bg-[var(--purple-dim)]/20 border border-[var(--purple-dim)] text-[var(--purple-bright)]">
+                    🧥 Cloak: +15% FLEE
+                  </span>
+                );
+              }
+              return null;
+            })}
+            {/* Show flee modifier from enemy intent */}
+            {intentEffects.fleeMod !== 0 && (
               <span className={`px-2 py-1 border ${
-                (itemEffects.fleeBonus + intentEffects.fleeMod) >= 0 
+                intentEffects.fleeMod >= 0 
                   ? 'bg-[var(--purple-dim)]/20 border-[var(--purple-dim)] text-[var(--purple-bright)]'
                   : 'bg-[var(--red-dim)]/20 border-[var(--red-dim)] text-[var(--red-bright)]'
               }`}>
-                🏃 {(itemEffects.fleeBonus + intentEffects.fleeMod) >= 0 ? '+' : ''}{Math.round((itemEffects.fleeBonus + intentEffects.fleeMod) * 100)}% FLEE
+                {intentEffects.fleeMod >= 0 ? '🏃' : '⚠️'} Intent: {intentEffects.fleeMod >= 0 ? '+' : ''}{Math.round(intentEffects.fleeMod * 100)}% FLEE
               </span>
             )}
           </div>
