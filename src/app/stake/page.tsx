@@ -241,13 +241,13 @@ export default function StakeScreen() {
           <p className="text-[var(--text-muted)] text-xs">5-7 rooms • Water-themed horrors</p>
         </div>
 
-        {/* Pool stats */}
+        {/* Stats */}
         <div className="flex gap-6 text-xs text-[var(--text-muted)] mb-6">
           <div className="text-center">
-            <div className="text-[var(--amber-bright)] text-lg">
-              {statsLoading ? '...' : totalStaked.toFixed(2)}
+            <div className="text-[var(--green-bright)] text-lg">
+              {selectedStake ? (selectedStake * 1.5).toFixed(3) : '--'}
             </div>
-            <div>SOL in pool</div>
+            <div>potential win</div>
           </div>
           <div className="text-center">
             <div className="text-[var(--red-bright)] text-lg">
@@ -256,10 +256,10 @@ export default function StakeScreen() {
             <div>deaths</div>
           </div>
           <div className="text-center">
-            <div className="text-[var(--green-bright)] text-lg">
-              {statsLoading || totalDeaths === 0 ? '--' : (Number(totalStaked) / Math.max(Number(totalDeaths), 1) * 1.5).toFixed(2)}
+            <div className="text-[var(--amber-bright)] text-lg">
+              {selectedStake ? `${((1.5 - 1) * 100).toFixed(0)}%` : '--'}
             </div>
-            <div>avg reward</div>
+            <div>bonus</div>
           </div>
         </div>
 
