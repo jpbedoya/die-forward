@@ -341,7 +341,7 @@ It lunges, claws extended, aiming for your throat.`);
                     key={option.id}
                     onClick={() => canAfford && setSelectedOption(option.id)}
                     disabled={!canAfford}
-                    className={`text-left px-3 py-3 text-sm transition-all ${
+                    className={`text-left px-3 py-2.5 text-sm transition-all ${
                       selectedOption === option.id
                         ? 'bg-[var(--amber-dim)]/30 border border-[var(--amber)] text-[var(--amber-bright)]'
                         : canAfford
@@ -355,7 +355,6 @@ It lunges, claws extended, aiming for your throat.`);
                         <span className="text-[var(--blue-bright)] text-xs">⚡{option.cost}</span>
                       )}
                     </div>
-                    <div className="text-[10px] text-[var(--text-muted)] mt-1">{option.desc}</div>
                   </button>
                 );
               })}
