@@ -39,9 +39,14 @@ export default function StakeScreen() {
   const [selectedStake, setSelectedStake] = useState<number | null>(null);
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [debugLog, setDebugLog] = useState<string[]>([]);
   
-  const log = (msg: string) => setDebugLog(prev => [...prev, `${new Date().toLocaleTimeString()}: ${msg}`]);
+  // Debug logging - set to false for production
+  const DEBUG = false;
+  const [debugLog, setDebugLog] = useState<string[]>([]);
+  const log = (msg: string) => {
+    if (DEBUG) setDebugLog(prev => [...prev, `${new Date().toLocaleTimeString()}: ${msg}`]);
+    console.log(`[stake] ${msg}`);
+  };
   
   // Real pool stats from InstantDB
   const { totalDeaths, totalStaked, isLoading: statsLoading } = usePoolStats();
@@ -298,8 +303,8 @@ export default function StakeScreen() {
           </div>
         </div>
 
-        {/* Debug log */}
-        {debugLog.length > 0 && (
+        {/* Debug log - only shown when DEBUG=true */}
+        {DEBUG && debugLog.length > 0 && (
           <div className="w-full max-w-xs mb-4 px-3 py-2 border border-[var(--border-dim)] bg-[var(--bg-surface)] text-[10px] font-mono max-h-40 overflow-y-auto">
             {debugLog.map((msg, i) => (
               <div key={i} className={msg.includes('ERROR') || msg.includes('FAILED') ? 'text-[var(--red-bright)]' : 'text-[var(--text-muted)]'}>
