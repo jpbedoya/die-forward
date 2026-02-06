@@ -20,24 +20,19 @@ const presets: SoundPreset[] = [
   { id: 'ambient-victory', name: 'Victory Loop', prompt: 'triumphant victory ambient relief success emerged from darkness hopeful yet eerie dungeon conquered mystical ascending', duration: 12, category: 'Ambient' },
   
   // Combat
-  { id: 'sword-slash', name: 'Attack Impact (v2)', prompt: 'heavy blunt impact thud bone cracking wet flesh thump weapon hitting body cave echo', duration: 1.5, category: 'Combat' },
-  { id: 'sword-slash-v1', name: 'Sword Slash (v1)', prompt: 'sharp sword slash swoosh metal blade cutting air fast attack', duration: 1.5, category: 'Combat' },
+  { id: 'sword-slash', name: 'Attack Impact', prompt: 'heavy blunt impact thud bone cracking wet flesh thump weapon hitting body cave echo', duration: 1.5, category: 'Combat' },
   { id: 'blunt-hit', name: 'Blunt Impact', prompt: 'heavy blunt impact thud flesh bone crushing hit meaty punch', duration: 1.5, category: 'Combat' },
   { id: 'damage-taken', name: 'Damage Taken', prompt: 'painful grunt impact wound flesh tear visceral hurt', duration: 1.5, category: 'Combat' },
   { id: 'enemy-death', name: 'Enemy Death', prompt: 'monster death gurgle creature dying last breath grotesque wet', duration: 2, category: 'Combat' },
   
   // Player
   { id: 'player-death', name: 'Player Death', prompt: 'dark dramatic death final breath soul leaving body haunting echo fade', duration: 3, category: 'Player' },
-  { id: 'victory', name: 'Victory Resolve (v2)', prompt: 'silence then single deep resolution tone low drone relief tension release fading echo solemn', duration: 4, category: 'Player' },
-  { id: 'victory-v1', name: 'Victory Chime (v1)', prompt: 'eerie triumphant chime dark victory ancient bell reverb mystical success', duration: 3, category: 'Player' },
-  { id: 'heal', name: 'Heal (v3 sheen+exhale)', prompt: 'soft magical shimmer gentle restoration subtle glow followed by relieved exhale breath out calm recovery', duration: 2, category: 'Player' },
-  { id: 'heal-v2', name: 'Heal Swallow (v2)', prompt: 'drinking liquid gulp swallow bitter potion exhale breath relief subtle wet', duration: 2, category: 'Player' },
-  { id: 'heal-v1', name: 'Heal Magic (v1)', prompt: 'magical healing restore shimmer warm glow mystical recovery gentle', duration: 2, category: 'Player' },
+  { id: 'victory', name: 'Victory Resolve', prompt: 'silence then single deep resolution tone low drone relief tension release fading echo solemn', duration: 4, category: 'Player' },
+  { id: 'heal', name: 'Heal', prompt: 'soft magical shimmer gentle restoration subtle glow followed by relieved exhale breath out calm recovery', duration: 2, category: 'Player' },
   
   // Environment
   { id: 'footstep', name: 'Footstep (Stone)', prompt: 'single footstep wet stone cave dungeon echo drip', duration: 1, category: 'Environment' },
-  { id: 'item-pickup', name: 'Item Discover (v2)', prompt: 'muted subtle chime low resonance ancient artifact pickup soft not bright understated', duration: 1.5, category: 'Environment' },
-  { id: 'item-pickup-v1', name: 'Item Pickup (v1)', prompt: 'metallic clink pickup treasure coin pouch rustle ancient artifact', duration: 1.5, category: 'Environment' },
+  { id: 'item-pickup', name: 'Item Discover', prompt: 'muted subtle chime low resonance ancient artifact pickup soft not bright understated', duration: 1.5, category: 'Environment' },
   { id: 'corpse-discover', name: 'Corpse Discover', prompt: 'silence then single mournful sustained tone somber discovery fading slowly dark ambient', duration: 3, category: 'Environment' },
   { id: 'door-creak', name: 'Door Creak', prompt: 'heavy stone door creak grind ancient dungeon ominous slow', duration: 2.5, category: 'Environment' },
   { id: 'water-drip', name: 'Water Drip', prompt: 'cave water drip echo underground pool splash ambient', duration: 2, category: 'Environment' },

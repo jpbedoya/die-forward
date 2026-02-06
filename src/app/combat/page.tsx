@@ -11,6 +11,7 @@ import {
   getEnemyIntent,
   IntentType 
 } from '@/lib/content';
+import { useAudio } from '@/lib/audio';
 
 // Demo mode flag
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
@@ -139,6 +140,14 @@ export default function CombatScreen() {
   const [enemyIntent, setEnemyIntent] = useState({ type: "AGGRESSIVE" as IntentType, description: "Preparing to attack" });
   const [lastResolution, setLastResolution] = useState<Resolution | null>(null);
   const [loaded, setLoaded] = useState(false);
+  
+  // Audio
+  const { playAmbient, playSFX } = useAudio();
+  
+  // Play combat ambient on mount
+  useEffect(() => {
+    playAmbient('ambient-combat');
+  }, [playAmbient]);
 
   // Load game state on mount
   useEffect(() => {
@@ -184,6 +193,16 @@ export default function CombatScreen() {
     newEnemyHealth = Math.max(0, newEnemyHealth);
     newStamina = Math.max(0, newStamina);
     
+    // Play SFX based on action and outcome
+    if (selectedOption === 'strike' && resolution.enemyDmg > 0) {
+      playSFX('sword-slash');
+    } else if (selectedOption === 'herbs') {
+      playSFX('heal');
+    }
+    if (resolution.playerDmg > 0) {
+      setTimeout(() => playSFX('damage-taken'), 300);
+    }
+    
     setPlayerHealth(newPlayerHealth);
     setEnemyHealth(newEnemyHealth);
     setPlayerStamina(newStamina);
@@ -211,12 +230,15 @@ export default function CombatScreen() {
 
   const handleContinue = () => {
     if (enemyHealth <= 0) {
+      playSFX('enemy-death');
       setPhase('victory');
       setNarrative("The creature collapses. Silence returns to the chamber.\n\nYou catch your breath. The path ahead is clear.");
       return;
     }
     
     if (playerHealth <= 0) {
+      playSFX('player-death');
+      playAmbient('ambient-death');
       setPhase('death');
       setNarrative("The world grows dark. Cold water rises around you.\n\nYour journey ends here.");
       return;

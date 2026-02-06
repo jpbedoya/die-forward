@@ -7,6 +7,7 @@ import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { useDeathFeed, usePoolStats, type Death } from '@/lib/instant';
+import { useAudio } from '@/lib/audio';
 
 // Fallback mock data when DB is empty
 const mockDeathFeed = [
@@ -94,6 +95,14 @@ export default function TitleScreen() {
   const { connection } = useConnection();
   const [balance, setBalance] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<'deaths' | 'leaders'>('deaths');
+  
+  // Audio
+  const { playAmbient, playSFX } = useAudio();
+  
+  // Play title ambient on mount
+  useEffect(() => {
+    playAmbient('ambient-title');
+  }, [playAmbient]);
   
   // Real-time death feed from InstantDB
   const { deaths: dbDeaths, isLoading: deathsLoading } = useDeathFeed(10);

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { getGameState, clearGameState } from '@/lib/gameState';
+import { useAudio } from '@/lib/audio';
 
 // Demo mode flag
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
@@ -27,6 +28,15 @@ export default function DeathScreen() {
   });
   const [loaded, setLoaded] = useState(false);
   const maxChars = 50;
+  
+  // Audio
+  const { playAmbient, playSFX } = useAudio();
+  
+  // Play death ambient and SFX on mount
+  useEffect(() => {
+    playAmbient('ambient-death');
+    playSFX('player-death');
+  }, [playAmbient, playSFX]);
 
   // Load game state on mount
   useEffect(() => {

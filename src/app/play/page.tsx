@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { getGameState, saveGameState, DungeonRoomState } from '@/lib/gameState';
 import { useCorpseForRoom, discoverCorpse, Corpse } from '@/lib/instant';
 import { getExploreRoom, getCombatRoom, getCacheRoom, getExitRoom } from '@/lib/content';
+import { useAudio } from '@/lib/audio';
 
 // Demo mode flag
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
@@ -217,7 +218,7 @@ export default function GameScreen() {
   const [currentRoom, setCurrentRoom] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [audioEnabled, setAudioEnabled] = useState(true);
+  const { enabled: audioEnabled, toggle: toggleAudio, playAmbient, playSFX } = useAudio();
   const [health, setHealth] = useState(100);
   const [stamina, setStamina] = useState(3);
   const [stakeAmount, setStakeAmount] = useState(0.05);
@@ -236,6 +237,11 @@ export default function GameScreen() {
   // Fetch real corpses from DB for the current room
   const { corpses: realCorpses } = useCorpseForRoom('THE SUNKEN CRYPT', currentRoom + 1);
   const realCorpse = realCorpses[0] as Corpse | undefined; // Get first undiscovered corpse
+
+  // Play exploration ambient on mount
+  useEffect(() => {
+    playAmbient('ambient-explore');
+  }, [playAmbient]);
 
   // Load game state on mount
   useEffect(() => {
@@ -314,6 +320,7 @@ export default function GameScreen() {
         if (currentRoom < rooms.length - 1) {
           const ok = await advanceRoom();
           if (!ok) return;
+          playSFX('footstep');
           setCurrentRoom(currentRoom + 1);
           setSelectedOption(null);
           setShowCorpse(false);
@@ -321,11 +328,13 @@ export default function GameScreen() {
         }
         break;
       case 'combat':
+        playAmbient('ambient-combat');
         router.push('/combat');
         break;
       case 'flee':
         // Take some damage but skip combat
         const fleeDamage = 15;
+        playSFX('damage-taken');
         setHealth(health - fleeDamage);
         setMessage(`You take a hit while fleeing! -${fleeDamage} HP`);
         if (health - fleeDamage <= 0) {
@@ -339,6 +348,7 @@ export default function GameScreen() {
         break;
       case 'loot':
         setShowCorpse(true);
+        playSFX('corpse-discover');
         // Use real corpse if available, otherwise fall back to room's mock corpse
         const corpseToLoot = realCorpse || room.corpse;
         if (corpseToLoot) {
@@ -348,6 +358,7 @@ export default function GameScreen() {
           // Don't add "Nothing" to inventory
           if (lootName && lootName !== 'Nothing' && !inventory.find(i => i.name === lootName)) {
             setInventory([...inventory, { id: Date.now().toString(), name: lootName, emoji: lootEmoji }]);
+            playSFX('item-pickup');
             setMessage(`Found: ${lootName}`);
           } else if (lootName === 'Nothing') {
             setMessage('The corpse has nothing of value.');
@@ -360,6 +371,7 @@ export default function GameScreen() {
         }
         break;
       case 'heal':
+        playSFX('heal');
         setHealth(Math.min(100, health + 30));
         setMessage('You feel restored. +30 HP');
         {
@@ -383,7 +395,7 @@ export default function GameScreen() {
         onClose={() => setMenuOpen(false)}
         walletAddress={mockWallet}
         audioEnabled={audioEnabled}
-        onToggleAudio={() => setAudioEnabled(!audioEnabled)}
+        onToggleAudio={toggleAudio}
       />
 
       {/* Header */}

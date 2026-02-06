@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getGameState, clearGameState } from '@/lib/gameState';
+import { useAudio } from '@/lib/audio';
 
 // Demo mode flag
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
@@ -21,6 +22,15 @@ export default function VictoryScreen() {
     sessionToken: null as string | null,
     txSignature: null as string | null,
   });
+  
+  // Audio
+  const { playAmbient, playSFX } = useAudio();
+  
+  // Play victory ambient and SFX on mount
+  useEffect(() => {
+    playAmbient('ambient-victory');
+    playSFX('victory');
+  }, [playAmbient, playSFX]);
 
   // Load game state on mount
   useEffect(() => {
