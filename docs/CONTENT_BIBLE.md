@@ -331,6 +331,41 @@ It built this place. Not the temple — the underworld itself. It is still build
 
 ---
 
+## Combat System
+
+### Enemy Intents
+
+Enemies telegraph their next action through visible intent. Players read the intent and choose their response.
+
+| Intent | Description | Best Counter |
+|--------|-------------|--------------|
+| **AGGRESSIVE** | Lunging, attacking, fully committed | Dodge or Strike |
+| **DEFENSIVE** | Circling, guarding, watching for weakness | Strike or wait |
+| **CHARGING** | Building power for a big attack | Strike now or prepare to dodge |
+| **ERRATIC** | Twitching, unpredictable, broken patterns | Brace (safest option) |
+| **HUNTING** | Stalking, patient, waiting for mistakes | Don't give openings |
+| **STALKING** | Matching movements, learning patterns | Force engagement |
+| **RETREATING** | Backing away, possibly baiting | Pursue carefully or heal |
+
+### Player Actions
+
+| Action | Description | Outcomes |
+|--------|-------------|----------|
+| **Strike** | Attack the enemy | Success (damage), Mutual (trade), Weak (miss/glance) |
+| **Dodge** | Evade the attack | Success (clean), Close (grazed), Fail (hit) |
+| **Brace** | Reduce incoming damage | Success (reduced), Broken (partial), Fail (full hit) |
+| **Herbs** | Heal during combat | Heal (success), Interrupted (heal + damage) |
+| **Flee** | Escape the fight | Success (clean), Hurt (escape + damage), Fail (trapped) |
+
+### Combat Narration Philosophy
+
+- **Visceral, not clinical** — "Steel meets corruption" not "You deal 25 damage"
+- **Consequences feel real** — Pain, exhaustion, fear
+- **No guaranteed outcomes** — Sometimes you miss, sometimes you get hit
+- **Mutual destruction** — Trading blows should feel costly for both sides
+
+---
+
 ## Items
 
 ### Consumables
