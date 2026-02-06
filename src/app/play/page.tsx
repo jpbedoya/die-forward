@@ -289,8 +289,11 @@ export default function GameScreen() {
       
       if (!response.ok) {
         const data = await response.json();
-        console.error('Failed to advance:', data.error);
-        setMessage('Server sync failed. Please try again.');
+        console.error('Failed to advance:', data);
+        // Show more specific error in demo for debugging
+        const errorDetail = data.error || 'Unknown error';
+        const roomInfo = data.expected ? ` (expected room ${data.expected}, got ${data.received})` : '';
+        setMessage(`Server sync failed: ${errorDetail}${roomInfo}`);
         return false;
       }
       
