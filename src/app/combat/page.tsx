@@ -592,9 +592,9 @@ export default function CombatScreen() {
             <div className="text-[var(--green)] text-2xl mb-4">⚔️ VICTORY</div>
             <button 
               onClick={async () => {
-                // Advance room on server first (anti-cheat)
+                // Advance room on server first (anti-cheat) - skip in demo mode
                 const state = getGameState();
-                if (state.sessionToken) {
+                if (!DEMO_MODE && state.sessionToken) {
                   try {
                     const response = await fetch('/api/session/advance', {
                       method: 'POST',

@@ -270,8 +270,9 @@ export default function GameScreen() {
 
   // Advance room via server API (anti-cheat)
   const advanceRoom = async (): Promise<boolean> => {
-    if (!sessionToken) {
-      console.warn('No session token, skipping server advance');
+    // Skip server sync in demo mode or if no session token
+    if (DEMO_MODE || !sessionToken) {
+      console.warn('Demo mode or no session token, skipping server advance');
       return true; // Allow offline/test play
     }
     
