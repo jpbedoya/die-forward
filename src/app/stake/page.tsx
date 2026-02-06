@@ -12,7 +12,8 @@ import {
   SystemProgram 
 } from '@solana/web3.js';
 import { signAndSendWithMWA } from '@/lib/mobileWallet';
-import { resetGameState, getGameState, saveGameState } from '@/lib/gameState';
+import { resetGameState, getGameState, saveGameState, DungeonRoomState } from '@/lib/gameState';
+import { generateRandomDungeon } from '@/lib/content';
 import { usePoolStats } from '@/lib/instant';
 
 const stakeOptions = [
@@ -190,8 +191,16 @@ export default function StakeScreen() {
 
       const { sessionToken } = await response.json();
       
-      // 5. Initialize game state with session token
-      resetGameState(selectedStake);
+      // 5. Generate dungeon and initialize game state
+      const dungeonLayout = generateRandomDungeon();
+      const dungeonState: DungeonRoomState[] = dungeonLayout.map(room => ({
+        type: room.type,
+        template: room.template,
+        narrative: room.content.narrative,
+        enemy: room.content.enemy,
+      }));
+      
+      resetGameState(selectedStake, dungeonState);
       const state = getGameState();
       saveGameState({
         ...state,

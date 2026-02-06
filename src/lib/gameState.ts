@@ -1,5 +1,12 @@
 // Simple game state management using localStorage
 
+export interface DungeonRoomState {
+  type: 'explore' | 'combat' | 'corpse' | 'cache' | 'exit';
+  template: string;
+  narrative: string;
+  enemy?: string;
+}
+
 export interface GameState {
   currentRoom: number;
   health: number;
@@ -8,6 +15,7 @@ export interface GameState {
   stakeAmount: number;
   sessionToken: string | null;
   walletAddress: string | null;
+  dungeon: DungeonRoomState[] | null;
 }
 
 const STORAGE_KEY = 'die-forward-game';
@@ -23,6 +31,7 @@ const defaultState: GameState = {
   stakeAmount: 0.05,
   sessionToken: null,
   walletAddress: null,
+  dungeon: null,
 };
 
 export function getGameState(): GameState {
@@ -46,12 +55,13 @@ export function saveGameState(state: Partial<GameState>): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
 }
 
-export function resetGameState(stakeAmount: number = 0.05): void {
+export function resetGameState(stakeAmount: number = 0.05, dungeon?: DungeonRoomState[]): void {
   if (typeof window === 'undefined') return;
   
   const fresh: GameState = {
     ...defaultState,
     stakeAmount,
+    dungeon: dungeon || null,
   };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(fresh));
 }

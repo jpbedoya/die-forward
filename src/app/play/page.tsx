@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { getGameState, saveGameState } from '@/lib/gameState';
+import { getGameState, saveGameState, DungeonRoomState } from '@/lib/gameState';
 import { useCorpseForRoom, discoverCorpse, Corpse } from '@/lib/instant';
+import { getExploreRoom, getCombatRoom, getCacheRoom, getExitRoom } from '@/lib/content';
 
 // Menu overlay component
 function Menu({ 
@@ -96,85 +97,72 @@ function Menu({
 
 type RoomType = 'explore' | 'combat' | 'corpse' | 'cache' | 'exit';
 
+interface RoomOption {
+  id: string;
+  text: string;
+  action: string;
+}
+
 interface Room {
   type: RoomType;
   narrative: string;
-  options: { id: string; text: string; action: string }[];
+  options: RoomOption[];
   corpse?: { player: string; message: string; loot: string };
+  enemy?: string;
 }
 
-const rooms: Room[] = [
-  {
-    type: 'explore',
-    narrative: `You descend stone steps into darkness. The air grows cold and damp. Water drips somewhere ahead.
+// Generate options based on room type
+function getOptionsForRoom(type: RoomType): RoomOption[] {
+  switch (type) {
+    case 'explore':
+      return [
+        { id: '1', text: 'Press forward', action: 'next' },
+        { id: '2', text: 'Proceed carefully', action: 'next' },
+      ];
+    case 'combat':
+      return [
+        { id: '1', text: 'Ready your weapon', action: 'combat' },
+        { id: '2', text: 'Try to flee', action: 'flee' },
+      ];
+    case 'corpse':
+      return [
+        { id: '1', text: 'Search the corpse', action: 'loot' },
+        { id: '2', text: 'Pay respects and move on', action: 'next' },
+      ];
+    case 'cache':
+      return [
+        { id: '1', text: 'Take the supplies', action: 'heal' },
+        { id: '2', text: 'Continue deeper', action: 'next' },
+      ];
+    case 'exit':
+      return [
+        { id: '1', text: 'Ascend to victory', action: 'victory' },
+      ];
+    default:
+      return [{ id: '1', text: 'Continue', action: 'next' }];
+  }
+}
 
-The Sunken Crypt awaits.`,
-    options: [
-      { id: '1', text: 'Light your torch and proceed', action: 'next' },
-      { id: '2', text: 'Move carefully in darkness', action: 'next' },
-    ],
-  },
-  {
-    type: 'corpse',
-    narrative: `A flooded chamber stretches before you. In the corner, a body slumps against the wall.
-
-Someone who came before you. They didn't make it.`,
-    options: [
-      { id: '1', text: 'Search the corpse', action: 'loot' },
-      { id: '2', text: 'Pay respects and move on', action: 'next' },
-    ],
-    corpse: { player: 'hollowknight', message: 'should have dodged...', loot: 'Rusty Sword' },
-  },
-  {
-    type: 'combat',
-    narrative: `Something stirs in the water. A shape rises — bloated, dripping, hungry.
-
-The Drowned One blocks your path.`,
-    options: [
-      { id: '1', text: 'Ready your weapon', action: 'combat' },
-      { id: '2', text: 'Try to flee past it', action: 'flee' },
-    ],
-  },
-  {
-    type: 'cache',
-    narrative: `A small alcove, untouched by water. Old supplies rest on a stone shelf.
-
-A moment of respite in the darkness.`,
-    options: [
-      { id: '1', text: 'Take the supplies', action: 'heal' },
-      { id: '2', text: 'Continue deeper', action: 'next' },
-    ],
-  },
-  {
-    type: 'explore',
-    narrative: `The passage narrows. Water rises to your waist now. The cold seeps into your bones.
-
-Ahead, you see a faint light.`,
-    options: [
-      { id: '1', text: 'Wade toward the light', action: 'next' },
-      { id: '2', text: 'Search for another path', action: 'next' },
-    ],
-  },
-  {
-    type: 'combat',
-    narrative: `Two more creatures emerge from the depths. Smaller than before, but faster.
-
-Drowned Wretches surround you.`,
-    options: [
-      { id: '1', text: 'Stand and fight', action: 'combat' },
-      { id: '2', text: 'Push through them', action: 'flee' },
-    ],
-  },
-  {
-    type: 'exit',
-    narrative: `Light breaks through the darkness. Stone steps lead upward.
-
-You've found the exit. The surface awaits.`,
-    options: [
-      { id: '1', text: 'Ascend to victory', action: 'victory' },
-    ],
-  },
-];
+// Convert dungeon state to Room format
+function dungeonToRooms(dungeon: DungeonRoomState[] | null): Room[] {
+  if (!dungeon || dungeon.length === 0) {
+    // Fallback to a simple dungeon if none exists
+    return [
+      { type: 'explore', narrative: 'You descend into darkness. The air grows cold.', options: getOptionsForRoom('explore') },
+      { type: 'combat', narrative: 'Something stirs ahead. Prepare yourself.', options: getOptionsForRoom('combat'), enemy: 'The Drowned' },
+      { type: 'cache', narrative: 'A moment of respite. Supplies rest on a shelf.', options: getOptionsForRoom('cache') },
+      { type: 'combat', narrative: 'Another creature blocks your path.', options: getOptionsForRoom('combat'), enemy: 'Pale Crawler' },
+      { type: 'exit', narrative: 'Light breaks through. The exit awaits.', options: getOptionsForRoom('exit') },
+    ];
+  }
+  
+  return dungeon.map(room => ({
+    type: room.type,
+    narrative: room.narrative,
+    options: getOptionsForRoom(room.type),
+    enemy: room.enemy,
+  }));
+}
 
 const mockWallet = "8xH4...k9Qz";
 
@@ -240,6 +228,7 @@ export default function GameScreen() {
   const [loaded, setLoaded] = useState(false);
   const [sessionToken, setSessionToken] = useState<string | null>(null);
   const [advancing, setAdvancing] = useState(false);
+  const [rooms, setRooms] = useState<Room[]>([]);
 
   // Fetch real corpses from DB for the current room
   const { corpses: realCorpses } = useCorpseForRoom('THE SUNKEN CRYPT', currentRoom + 1);
@@ -255,6 +244,9 @@ export default function GameScreen() {
     setStakeAmount(state.stakeAmount);
     setWalletAddress(state.walletAddress);
     setSessionToken(state.sessionToken);
+    // Convert dungeon to rooms
+    const dungeonRooms = dungeonToRooms(state.dungeon);
+    setRooms(dungeonRooms);
     setLoaded(true);
   }, []);
 
@@ -265,7 +257,7 @@ export default function GameScreen() {
     }
   }, [currentRoom, health, stamina, inventory, loaded]);
 
-  const room = rooms[currentRoom] || rooms[rooms.length - 1];
+  const room = rooms.length > 0 ? (rooms[currentRoom] || rooms[rooms.length - 1]) : null;
 
   // Advance room via server API (anti-cheat)
   const advanceRoom = async (): Promise<boolean> => {
@@ -303,7 +295,7 @@ export default function GameScreen() {
   };
 
   // Show loading until state is loaded
-  if (!loaded) {
+  if (!loaded || !room) {
     return (
       <div className="min-h-screen bg-[var(--bg-base)] flex items-center justify-center font-mono">
         <div className="text-[var(--amber)] animate-pulse">◈ Loading...</div>
