@@ -437,43 +437,92 @@ export default function GameScreen() {
           </div>
         )}
 
-        {/* Real corpse discovery prompt */}
+        {/* Real corpse discovery prompt - dramatic entrance */}
         {realCorpse && !showCorpse && room.type !== 'corpse' && (
-          <div className="bg-[var(--purple-dim)]/20 border border-[var(--purple-dim)] p-3 mb-4">
-            <div className="text-[var(--purple-bright)] text-sm mb-2">
-              ☠ You notice a body in the shadows...
+          <div className="relative mb-4 animate-pulse">
+            {/* Glow effect */}
+            <div className="absolute inset-0 bg-[var(--purple)]/10 blur-xl rounded-lg" />
+            
+            <div className="relative bg-gradient-to-r from-[var(--purple-dim)]/30 via-[var(--bg-surface)] to-[var(--purple-dim)]/30 border border-[var(--purple-dim)] p-4">
+              {/* Header with skull */}
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-2xl drop-shadow-[0_0_10px_rgba(168,85,247,0.5)]">💀</span>
+                <div>
+                  <div className="text-[var(--purple-bright)] text-sm font-bold tracking-wide">
+                    A body lies in the shadows...
+                  </div>
+                  <div className="text-[var(--text-dim)] text-[10px] uppercase tracking-wider">
+                    Someone fell here before you
+                  </div>
+                </div>
+              </div>
+              
+              {/* Teaser of final words */}
+              <div className="text-[var(--text-muted)] text-xs italic mb-3 pl-9 border-l border-[var(--purple-dim)]/50">
+                You can almost make out words scratched into the stone beside them...
+              </div>
+              
+              <button
+                onClick={() => handleAction('loot')}
+                className="ml-9 text-sm text-[var(--purple)] hover:text-[var(--purple-bright)] transition-colors flex items-center gap-2 group"
+              >
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
+                <span>Investigate the remains</span>
+              </button>
             </div>
-            <div className="text-[var(--text-muted)] text-xs mb-2 italic">
-              Someone fell here before you.
-            </div>
-            <button
-              onClick={() => handleAction('loot')}
-              className="text-xs text-[var(--purple)] hover:text-[var(--purple-bright)] transition-colors"
-            >
-              → Investigate the corpse
-            </button>
           </div>
         )}
 
-        {/* Corpse callout - use real corpse if available */}
+        {/* Corpse callout - dramatic reveal of the fallen */}
         {showCorpse && (realCorpse || room.corpse) && (
-          <div className="bg-[var(--purple-dim)]/20 border border-[var(--purple-dim)] p-3 mb-4">
-            <div className="flex items-center gap-2 text-sm mb-1">
-              <span className="text-[var(--purple)]">☠</span>
-              <span className="text-[var(--purple-bright)] font-bold">
-                @{realCorpse ? realCorpse.playerName : room.corpse?.player}
-              </span>
-            </div>
-            <div className="text-[var(--text-secondary)] text-sm italic mb-2">
-              "{realCorpse ? realCorpse.finalMessage : room.corpse?.message}"
-            </div>
-            <div className="text-[var(--text-muted)] text-xs flex items-center gap-2">
-              <span>└─ {realCorpse ? realCorpse.lootEmoji : '🗡️'} {realCorpse ? realCorpse.loot : room.corpse?.loot}</span>
-              {realCorpse && realCorpse.createdAt && (
-                <span className="text-[var(--text-dim)]">
-                  · {formatTimeAgo(realCorpse.createdAt)}
-                </span>
-              )}
+          <div className="relative mb-4">
+            {/* Outer glow */}
+            <div className="absolute inset-0 bg-[var(--purple)]/5 blur-lg rounded-lg" />
+            
+            <div className="relative bg-gradient-to-b from-[var(--bg-surface)] to-[var(--purple-dim)]/20 border border-[var(--purple)] p-4">
+              {/* Header - the fallen one */}
+              <div className="flex items-start gap-3 mb-3">
+                <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-[var(--purple-dim)]/30 rounded border border-[var(--purple-dim)]">
+                  <span className="text-xl">💀</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-[var(--purple-bright)] font-bold text-base">
+                      @{realCorpse ? realCorpse.playerName : room.corpse?.player}
+                    </span>
+                    <span className="text-[var(--text-dim)] text-[10px]">•</span>
+                    <span className="text-[var(--red-dim)] text-xs">FALLEN</span>
+                  </div>
+                  {realCorpse && realCorpse.createdAt && (
+                    <div className="text-[var(--text-dim)] text-[10px] mt-0.5">
+                      Died {formatTimeAgo(realCorpse.createdAt)}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Final words - the centerpiece */}
+              <div className="bg-[var(--bg-base)]/50 border-l-2 border-[var(--purple)] px-4 py-3 mb-3">
+                <div className="text-[var(--text-dim)] text-[10px] uppercase tracking-wider mb-1">
+                  Final Words
+                </div>
+                <div className="text-[var(--text-primary)] text-base italic leading-relaxed">
+                  "{realCorpse ? realCorpse.finalMessage : room.corpse?.message}"
+                </div>
+              </div>
+
+              {/* Loot section */}
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <span className="text-[var(--text-dim)]">They carried:</span>
+                  <span className="px-2 py-1 bg-[var(--amber-dim)]/20 border border-[var(--amber-dim)] text-[var(--amber)]">
+                    {realCorpse ? realCorpse.lootEmoji : '🗡️'} {realCorpse ? realCorpse.loot : room.corpse?.loot}
+                  </span>
+                </div>
+                <div className="text-[var(--text-dim)] text-[10px]">
+                  Their loss, your gain.
+                </div>
+              </div>
             </div>
           </div>
         )}

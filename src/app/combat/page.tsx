@@ -9,6 +9,9 @@ import {
   getHerbsNarration, 
   getFleeNarration,
   getEnemyIntent,
+  getCreatureInfo,
+  getCreatureHealth,
+  getCreatureIntent,
   IntentType 
 } from '@/lib/content';
 import { useAudio } from '@/lib/audio';
@@ -136,6 +139,8 @@ export default function CombatScreen() {
   const [enemyHealth, setEnemyHealth] = useState(65);
   const [enemyName, setEnemyName] = useState('THE DROWNED');
   const [enemyMaxHealth, setEnemyMaxHealth] = useState(100);
+  const [enemyDescription, setEnemyDescription] = useState('');
+  const [enemyEmoji, setEnemyEmoji] = useState('👹');
   const [narrative, setNarrative] = useState('');
   const [enemyIntent, setEnemyIntent] = useState({ type: "AGGRESSIVE" as IntentType, description: "Preparing to attack" });
   const [lastResolution, setLastResolution] = useState<Resolution | null>(null);
@@ -161,18 +166,36 @@ export default function CombatScreen() {
     if (state.dungeon && state.dungeon[state.currentRoom]) {
       const currentDungeonRoom = state.dungeon[state.currentRoom];
       if (currentDungeonRoom.enemy) {
-        setEnemyName(currentDungeonRoom.enemy.toUpperCase());
+        const enemyNameRaw = currentDungeonRoom.enemy;
+        setEnemyName(enemyNameRaw.toUpperCase());
+        
+        // Get creature info for stats
+        const creatureInfo = getCreatureInfo(enemyNameRaw);
+        if (creatureInfo) {
+          const health = getCreatureHealth(enemyNameRaw);
+          setEnemyHealth(health);
+          setEnemyMaxHealth(health);
+          setEnemyDescription(creatureInfo.description);
+          setEnemyEmoji(creatureInfo.emoji);
+          
+          // Use creature-specific intent
+          const initialIntent = getCreatureIntent(enemyNameRaw);
+          setEnemyIntent(initialIntent);
+        } else {
+          // Fallback for unknown creatures
+          const initialIntent = getEnemyIntent('AGGRESSIVE');
+          setEnemyIntent(initialIntent);
+        }
+        
         // Set narrative from room content
         setNarrative(currentDungeonRoom.narrative || 'A creature blocks your path.');
       }
     } else {
       // Fallback
       setNarrative('A creature rises from the darkness. It blocks your path.');
+      const initialIntent = getEnemyIntent('AGGRESSIVE');
+      setEnemyIntent(initialIntent);
     }
-    
-    // Generate initial intent
-    const initialIntent = getEnemyIntent('AGGRESSIVE');
-    setEnemyIntent(initialIntent);
     
     setLoaded(true);
   }, []);
@@ -244,10 +267,10 @@ export default function CombatScreen() {
       return;
     }
     
-    // Enemy turn - set new intent dynamically
-    const intentTypes: IntentType[] = ['AGGRESSIVE', 'DEFENSIVE', 'CHARGING', 'ERRATIC', 'HUNTING'];
-    const randomType = intentTypes[Math.floor(Math.random() * intentTypes.length)];
-    const newIntent = getEnemyIntent(randomType);
+    // Enemy turn - set new intent based on creature type
+    const state = getGameState();
+    const currentEnemy = state.dungeon?.[state.currentRoom]?.enemy;
+    const newIntent = currentEnemy ? getCreatureIntent(currentEnemy) : getEnemyIntent();
     setEnemyIntent(newIntent);
     
     // Restore 1 stamina
@@ -273,27 +296,39 @@ export default function CombatScreen() {
       <header className="bg-[var(--bg-base)] border-b border-[var(--red-dim)] px-3 py-3 sticky top-0 z-10">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <span className="text-[var(--red)]">⚔️</span>
-            <span className="text-[var(--red-bright)] uppercase tracking-wide text-sm">
-              {enemyName}
-            </span>
-            {DEMO_MODE && (
-              <span className="text-[10px] px-1.5 py-0.5 bg-[var(--amber-dim)]/30 border border-[var(--amber-dim)] text-[var(--amber)] tracking-wider">
-                DEMO
+            <span className="text-xl drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]">{enemyEmoji}</span>
+            <div>
+              <span className="text-[var(--red-bright)] uppercase tracking-wide text-sm font-bold">
+                {enemyName}
               </span>
-            )}
+              {DEMO_MODE && (
+                <span className="text-[10px] px-1.5 py-0.5 bg-[var(--amber-dim)]/30 border border-[var(--amber-dim)] text-[var(--amber)] tracking-wider ml-2">
+                  DEMO
+                </span>
+              )}
+            </div>
           </div>
-          <span className={`text-xs ${enemyHealth <= 0 ? 'text-[var(--text-dim)]' : 'text-[var(--red-bright)]'}`}>
+          <span className={`text-xs font-bold ${enemyHealth <= 0 ? 'text-[var(--text-dim)]' : 'text-[var(--red-bright)]'}`}>
             {enemyHealth}/{enemyMaxHealth}
           </span>
         </div>
+        
+        {/* Creature description */}
+        {enemyDescription && phase === 'choose' && (
+          <div className="text-[var(--text-dim)] text-[10px] italic mb-2">
+            {enemyDescription}
+          </div>
+        )}
+        
         <HealthBar current={enemyHealth} max={enemyMaxHealth} />
         
         {/* Intent */}
         {phase === 'choose' && enemyHealth > 0 && (
-          <div className="mt-2 text-xs">
-            <span className="text-[var(--text-muted)]">Intent: </span>
-            <span className="text-[var(--amber-bright)]">{enemyIntent.type}</span>
+          <div className="mt-2 text-xs flex items-center gap-2">
+            <span className="text-[var(--text-muted)]">Intent:</span>
+            <span className="px-2 py-0.5 bg-[var(--amber-dim)]/20 border border-[var(--amber-dim)] text-[var(--amber-bright)] text-[10px] uppercase tracking-wider">
+              {enemyIntent.type}
+            </span>
           </div>
         )}
       </header>

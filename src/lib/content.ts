@@ -168,6 +168,206 @@ export function generateDungeon(): DungeonRoom[] {
   ];
 }
 
+// Creature bestiary with stats and info
+export interface CreatureInfo {
+  name: string;
+  tier: 1 | 2 | 3;
+  health: { min: number; max: number };
+  behaviors: IntentType[];
+  description: string;
+  emoji: string;
+}
+
+const BESTIARY: Record<string, CreatureInfo> = {
+  // Tier 1 - Common Horrors
+  'The Drowned': {
+    name: 'The Drowned',
+    tier: 1,
+    health: { min: 45, max: 65 },
+    behaviors: ['AGGRESSIVE', 'ERRATIC', 'DEFENSIVE'],
+    description: 'Waterlogged husks animated by the underworld\'s hunger. They move wrong.',
+    emoji: '🧟',
+  },
+  'Pale Crawler': {
+    name: 'Pale Crawler',
+    tier: 1,
+    health: { min: 35, max: 50 },
+    behaviors: ['STALKING', 'AGGRESSIVE', 'HUNTING'],
+    description: 'Too many limbs. They cling to walls and ceilings, dropping when you pass.',
+    emoji: '🕷️',
+  },
+  'The Hollow': {
+    name: 'The Hollow',
+    tier: 1,
+    health: { min: 40, max: 55 },
+    behaviors: ['STALKING', 'ERRATIC', 'CHARGING'],
+    description: 'No face, no features. Just the outline of a person carved from shadow.',
+    emoji: '👤',
+  },
+  'Bloated One': {
+    name: 'Bloated One',
+    tier: 1,
+    health: { min: 55, max: 75 },
+    behaviors: ['AGGRESSIVE', 'CHARGING', 'ERRATIC'],
+    description: 'Corpses swollen with dark water. They burst when struck.',
+    emoji: '🫧',
+  },
+  'Flickering Shade': {
+    name: 'Flickering Shade',
+    tier: 1,
+    health: { min: 30, max: 45 },
+    behaviors: ['ERRATIC', 'STALKING', 'RETREATING'],
+    description: 'Afterimages of the dead. Here, then there, then gone.',
+    emoji: '👻',
+  },
+  'The Hunched': {
+    name: 'The Hunched',
+    tier: 1,
+    health: { min: 50, max: 70 },
+    behaviors: ['HUNTING', 'AGGRESSIVE', 'STALKING'],
+    description: 'Bent figures that move on all fours, sniffing the air. They seek warmth.',
+    emoji: '🐺',
+  },
+  'Tideborn': {
+    name: 'Tideborn',
+    tier: 1,
+    health: { min: 60, max: 80 },
+    behaviors: ['CHARGING', 'AGGRESSIVE', 'DEFENSIVE'],
+    description: 'Creatures of living water. They rise from puddles, take form, then collapse.',
+    emoji: '🌊',
+  },
+  'Echo Husks': {
+    name: 'Echo Husks',
+    tier: 1,
+    health: { min: 35, max: 50 },
+    behaviors: ['STALKING', 'ERRATIC', 'AGGRESSIVE'],
+    description: 'They repeat the last words of the dead. Over and over.',
+    emoji: '🗣️',
+  },
+  'Bone Weavers': {
+    name: 'Bone Weavers',
+    tier: 1,
+    health: { min: 40, max: 55 },
+    behaviors: ['AGGRESSIVE', 'CHARGING', 'STALKING'],
+    description: 'Skeletal hands that emerge from walls and floors. Just hands.',
+    emoji: '🦴',
+  },
+  'Ash Children': {
+    name: 'Ash Children',
+    tier: 1,
+    health: { min: 25, max: 40 },
+    behaviors: ['STALKING', 'DEFENSIVE', 'CHARGING'],
+    description: 'Small. Gray. They don\'t attack — they suffocate.',
+    emoji: '👶',
+  },
+  
+  // Tier 2 - Uncommon Threats
+  'Hollow Clergy': {
+    name: 'Hollow Clergy',
+    tier: 2,
+    health: { min: 70, max: 90 },
+    behaviors: ['CHARGING', 'DEFENSIVE', 'AGGRESSIVE'],
+    description: 'Priests of a nameless god. Their prayers are curses.',
+    emoji: '🧙',
+  },
+  'The Bound': {
+    name: 'The Bound',
+    tier: 2,
+    health: { min: 80, max: 100 },
+    behaviors: ['HUNTING', 'AGGRESSIVE', 'CHARGING'],
+    description: 'Souls wrapped in chains of their own regret. They want company.',
+    emoji: '⛓️',
+  },
+  'Forgotten Guardian': {
+    name: 'Forgotten Guardian',
+    tier: 2,
+    health: { min: 90, max: 110 },
+    behaviors: ['DEFENSIVE', 'AGGRESSIVE', 'CHARGING'],
+    description: 'Stone sentinels animated by old magic. They remember how to kill.',
+    emoji: '🗿',
+  },
+  'The Weeping': {
+    name: 'The Weeping',
+    tier: 2,
+    health: { min: 60, max: 80 },
+    behaviors: ['STALKING', 'ERRATIC', 'CHARGING'],
+    description: 'Spirits of grief. Their touch brings sorrow so deep it wounds.',
+    emoji: '😢',
+  },
+  'Carrion Knight': {
+    name: 'Carrion Knight',
+    tier: 2,
+    health: { min: 85, max: 105 },
+    behaviors: ['AGGRESSIVE', 'DEFENSIVE', 'CHARGING'],
+    description: 'Warriors who refused to stop fighting. They salute before they kill.',
+    emoji: '⚔️',
+  },
+  'Pale Oracle': {
+    name: 'Pale Oracle',
+    tier: 2,
+    health: { min: 55, max: 70 },
+    behaviors: ['CHARGING', 'RETREATING', 'STALKING'],
+    description: 'Eyeless seers who speak truths you don\'t want to hear.',
+    emoji: '🔮',
+  },
+  'The Congregation': {
+    name: 'The Congregation',
+    tier: 2,
+    health: { min: 100, max: 130 },
+    behaviors: ['AGGRESSIVE', 'CHARGING', 'STALKING'],
+    description: 'Pilgrims fused at the edges, moving as one. Join them, they whisper.',
+    emoji: '👥',
+  },
+  
+  // Tier 3 - Rare Terrors / Bosses
+  'The Unnamed': {
+    name: 'The Unnamed',
+    tier: 3,
+    health: { min: 120, max: 150 },
+    behaviors: ['ERRATIC', 'CHARGING', 'STALKING'],
+    description: 'You cannot see it clearly. Your mind refuses.',
+    emoji: '❓',
+  },
+  'Mother of Tides': {
+    name: 'Mother of Tides',
+    tier: 3,
+    health: { min: 130, max: 160 },
+    behaviors: ['CHARGING', 'AGGRESSIVE', 'DEFENSIVE'],
+    description: 'The water itself, given will. Everything that drowns belongs to her.',
+    emoji: '🌊',
+  },
+  'Pale Crawler Swarm': {
+    name: 'Pale Crawler Swarm',
+    tier: 2,
+    health: { min: 75, max: 95 },
+    behaviors: ['AGGRESSIVE', 'HUNTING', 'CHARGING'],
+    description: 'One wouldn\'t be a threat. But there isn\'t one. Dozens. More coming.',
+    emoji: '🕷️',
+  },
+};
+
+// Get creature info by name
+export function getCreatureInfo(name: string): CreatureInfo | null {
+  return BESTIARY[name] || null;
+}
+
+// Get random creature health based on their tier
+export function getCreatureHealth(name: string): number {
+  const info = BESTIARY[name];
+  if (!info) return 65; // Default fallback
+  return info.health.min + Math.floor(Math.random() * (info.health.max - info.health.min));
+}
+
+// Get creature's preferred intent types
+export function getCreatureIntent(name: string): { type: IntentType; description: string } {
+  const info = BESTIARY[name];
+  if (!info) return getEnemyIntent();
+  
+  // Pick from creature's preferred behaviors
+  const preferredType = pick(info.behaviors);
+  return getEnemyIntent(preferredType);
+}
+
 // Generate randomized dungeon (more variety)
 export function generateRandomDungeon(): DungeonRoom[] {
   const exploreTemplates = ['descent', 'corridor', 'flooded', 'chamber', 'shrine', 'crossroads'];

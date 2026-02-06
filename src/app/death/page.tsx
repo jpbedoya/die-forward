@@ -9,6 +9,17 @@ import { useAudio } from '@/lib/audio';
 // Demo mode flag
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
 
+const ASCII_TOMBSTONE = `
+    ▄▄▄▄▄▄▄▄▄▄▄
+   █           █
+   █   R.I.P   █
+   █           █
+   █  ░░░░░░░  █
+   █  ░░░░░░░  █
+   █           █
+  ███████████████
+ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀`;
+
 function shortenAddress(address: string): string {
   return `${address.slice(0, 4)}...${address.slice(-4)}`;
 }
@@ -18,6 +29,7 @@ export default function DeathScreen() {
   const [finalMessage, setFinalMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [showEtching, setShowEtching] = useState(false);
   const [deathData, setDeathData] = useState({
     zone: "THE SUNKEN CRYPT",
     room: 1,
@@ -44,7 +56,7 @@ export default function DeathScreen() {
     setDeathData({
       zone: "THE SUNKEN CRYPT",
       room: state.currentRoom + 1, // 0-indexed to 1-indexed
-      totalRooms: 7,
+      totalRooms: state.dungeon?.length || 7,
       stakeLost: state.stakeAmount,
       inventory: state.inventory,
       sessionToken: state.sessionToken,
@@ -56,6 +68,7 @@ export default function DeathScreen() {
     if (!finalMessage.trim() || submitting) return;
     
     setSubmitting(true);
+    setShowEtching(true);
     
     try {
       // Generate player name from wallet or random
@@ -80,9 +93,11 @@ export default function DeathScreen() {
         if (!response.ok) {
           const data = await response.json();
           console.warn('Failed to record death:', data.error);
-          // Continue anyway - don't block the player
         }
       }
+
+      // Dramatic pause for the etching animation
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
       // Clear game state
       clearGameState();
@@ -90,7 +105,6 @@ export default function DeathScreen() {
       setSubmitted(true);
     } catch (error) {
       console.error('Failed to record death:', error);
-      // Still allow proceeding even if API fails
       clearGameState();
       setSubmitted(true);
     } finally {
@@ -107,116 +121,178 @@ export default function DeathScreen() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] flex flex-col font-mono">
+    <div className="min-h-screen bg-[var(--bg-base)] flex flex-col font-mono relative overflow-hidden">
       
-      <main className="flex-1 flex flex-col items-center justify-center px-4 py-8">
+      {/* Background effects */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-[var(--red)]/5 rounded-full blur-[100px]" />
+        <div className="absolute bottom-0 left-1/4 w-[300px] h-[300px] bg-[var(--purple)]/5 rounded-full blur-[80px]" />
+      </div>
+
+      <main className="flex-1 flex flex-col items-center justify-center px-4 py-8 relative z-10">
         
         {/* Demo mode indicator */}
         {DEMO_MODE && (
-          <div className="mb-4">
+          <div className="absolute top-4 right-4">
             <span className="text-[10px] px-2 py-1 bg-[var(--amber-dim)]/30 border border-[var(--amber-dim)] text-[var(--amber)] tracking-wider">
-              DEMO MODE
+              DEMO
             </span>
           </div>
         )}
 
-        {/* Death announcement */}
-        <div className="text-center mb-8">
-          <pre 
-            className="text-[var(--text-muted)] text-[10px] leading-tight mb-4 inline-block text-left"
-            style={{ fontFamily: 'Courier New, Courier, monospace' }}
-          >
-{`  ,-=-.     ______            _
- / + \\    />------>       _|1|_
- | ~~~ |  //    -/-  /    |_ H _|
- |R.I.P| //    / /        |S|
-\\vV,,|___|V,//_____/VvV,v,|_|/,,vhjwv/,`}
+        {/* Death announcement - dramatic reveal */}
+        <div className="text-center mb-6">
+          {/* Tombstone ASCII art */}
+          <pre className="text-[var(--text-dim)]/50 text-[8px] sm:text-[10px] leading-[0.9] mb-4 inline-block">
+{ASCII_TOMBSTONE}
           </pre>
-          <h1 className="text-[var(--red-bright)] text-2xl tracking-widest mb-2">YOU DIED</h1>
-          <p className="text-[var(--text-secondary)] text-sm">
-            Fallen in <span className="text-[var(--red-bright)]">{deathData.zone}</span>
-          </p>
-          <p className="text-[var(--text-muted)] text-xs mt-1">
-            Room {deathData.room}/{deathData.totalRooms}
+
+          {/* YOU DIED with glow effect */}
+          <h1 className="text-[var(--red-bright)] text-3xl sm:text-4xl tracking-[0.3em] font-bold mb-2 drop-shadow-[0_0_30px_rgba(239,68,68,0.5)]">
+            YOU DIED
+          </h1>
+          
+          {/* Location */}
+          <div className="flex items-center justify-center gap-2 text-sm">
+            <span className="text-[var(--text-dim)]">Fallen in</span>
+            <span className="text-[var(--red)] font-medium">{deathData.zone}</span>
+          </div>
+          <p className="text-[var(--text-dim)] text-xs mt-1">
+            Room {deathData.room} of {deathData.totalRooms}
           </p>
         </div>
 
-        {/* Stats */}
-        <div className="w-full max-w-xs mb-8">
-          <div className="border border-[var(--border-dim)] bg-[var(--bg-surface)] p-4 text-sm">
-            <div className="flex justify-between py-1 border-b border-[var(--border-dim)]">
-              <span className="text-[var(--text-muted)]">Stake Lost</span>
-              <span className="text-[var(--amber)]">◎ {deathData.stakeLost} SOL</span>
+        {/* Stats - what was lost */}
+        <div className="w-full max-w-xs mb-6">
+          <div className="text-center text-[var(--text-dim)] text-[10px] uppercase tracking-[0.2em] mb-2">
+            What You Lost
+          </div>
+          <div className="border border-[var(--red-dim)]/50 bg-[var(--bg-surface)]/50 p-4">
+            <div className="flex justify-between py-1.5 border-b border-[var(--border-dim)]/50">
+              <span className="text-[var(--text-muted)] text-sm">Stake</span>
+              <span className="text-[var(--amber)] font-bold">◎ {deathData.stakeLost} SOL</span>
             </div>
-            <div className="flex justify-between py-1 border-b border-[var(--border-dim)]">
-              <span className="text-[var(--text-muted)]">Rooms Cleared</span>
-              <span className="text-[var(--text-primary)]">{deathData.room - 1}</span>
+            <div className="flex justify-between py-1.5 border-b border-[var(--border-dim)]/50">
+              <span className="text-[var(--text-muted)] text-sm">Progress</span>
+              <span className="text-[var(--text-primary)]">{deathData.room - 1} rooms cleared</span>
             </div>
-            <div className="flex justify-between py-1">
-              <span className="text-[var(--text-muted)]">Items Lost</span>
-              <span className="text-[var(--purple-bright)]">{deathData.inventory.length}</span>
+            <div className="flex justify-between py-1.5">
+              <span className="text-[var(--text-muted)] text-sm">Items</span>
+              <div className="flex items-center gap-1">
+                {deathData.inventory.slice(0, 3).map((item, i) => (
+                  <span key={i} className="text-sm">{item.emoji}</span>
+                ))}
+                {deathData.inventory.length > 3 && (
+                  <span className="text-[var(--text-dim)] text-xs">+{deathData.inventory.length - 3}</span>
+                )}
+                {deathData.inventory.length === 0 && (
+                  <span className="text-[var(--text-dim)] text-sm">Nothing</span>
+                )}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Final message input */}
+        {/* Final message input - the important moment */}
         {!submitted ? (
           <div className="w-full max-w-xs">
-            <label className="block text-[var(--text-muted)] text-xs mb-2 uppercase tracking-wider">
-              Your Final Words
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                value={finalMessage}
-                onChange={(e) => setFinalMessage(e.target.value.slice(0, maxChars))}
-                placeholder="Leave a message for those who follow..."
-                className="w-full bg-[var(--bg-surface)] border border-[var(--border-default)] px-3 py-3 text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--amber-dim)] focus:outline-none"
-                disabled={submitting}
-              />
-              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-[var(--text-dim)]">
-                {finalMessage.length}/{maxChars}
-              </span>
+            {/* Dramatic framing */}
+            <div className="text-center mb-4">
+              <div className="text-[var(--purple-bright)] text-xs uppercase tracking-[0.2em] mb-1">
+                Your Final Words
+              </div>
+              <p className="text-[var(--text-dim)] text-xs italic">
+                What wisdom will you leave for those who follow?
+              </p>
             </div>
+
+            {/* Input area with special styling */}
+            <div className="relative">
+              <div className="absolute inset-0 bg-[var(--purple)]/5 blur-xl rounded-lg" />
+              <div className="relative bg-[var(--bg-surface)] border-2 border-[var(--purple-dim)] p-4">
+                <textarea
+                  value={finalMessage}
+                  onChange={(e) => setFinalMessage(e.target.value.slice(0, maxChars))}
+                  placeholder="Leave a message..."
+                  rows={2}
+                  className="w-full bg-transparent text-[var(--text-primary)] text-base placeholder-[var(--text-dim)] focus:outline-none resize-none leading-relaxed"
+                  disabled={submitting}
+                  autoFocus
+                />
+                <div className="flex items-center justify-between mt-2 pt-2 border-t border-[var(--border-dim)]/50">
+                  <span className="text-[10px] text-[var(--text-dim)]">
+                    These words will echo through the crypt
+                  </span>
+                  <span className={`text-[10px] ${finalMessage.length > 40 ? 'text-[var(--amber)]' : 'text-[var(--text-dim)]'}`}>
+                    {finalMessage.length}/{maxChars}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Submit button */}
             <button
               onClick={handleSubmit}
               disabled={!finalMessage.trim() || submitting}
-              className="w-full mt-3 px-4 py-3 bg-[var(--bg-surface)] border border-[var(--border-default)] text-[var(--text-secondary)] hover:border-[var(--amber-dim)] hover:text-[var(--amber-bright)] transition-all disabled:opacity-30 disabled:hover:border-[var(--border-default)] disabled:hover:text-[var(--text-secondary)]"
+              className="w-full mt-4 px-4 py-4 bg-gradient-to-b from-[var(--purple-dim)]/30 to-[var(--purple-dim)]/10 border-2 border-[var(--purple)] text-[var(--purple-bright)] hover:from-[var(--purple-dim)]/50 hover:to-[var(--purple-dim)]/30 transition-all disabled:opacity-30 disabled:cursor-not-allowed text-lg tracking-wider"
             >
-              {submitting ? (
-                <span className="flex items-center justify-center gap-2">
+              {showEtching ? (
+                <span className="flex items-center justify-center gap-3">
                   <span className="animate-pulse">◈</span>
-                  Recording...
+                  <span>Etching into stone...</span>
                 </span>
               ) : (
-                'Etch Into Stone'
+                <span className="flex items-center justify-center gap-2">
+                  <span>✦</span>
+                  <span>Etch Into Stone</span>
+                </span>
               )}
             </button>
           </div>
         ) : (
           <div className="w-full max-w-xs text-center">
-            <div className="border border-[var(--purple-dim)] bg-[var(--purple-dim)]/20 p-4 mb-6">
-              <div className="text-[var(--purple-bright)] text-xs mb-2 uppercase tracking-wider">
-                Your Epitaph
+            {/* The epitaph reveal - dramatic */}
+            <div className="relative mb-6">
+              <div className="absolute inset-0 bg-[var(--purple)]/10 blur-xl rounded-lg" />
+              <div className="relative bg-gradient-to-b from-[var(--bg-surface)] to-[var(--purple-dim)]/20 border-2 border-[var(--purple)] p-6">
+                <div className="text-[var(--purple)] text-[10px] uppercase tracking-[0.3em] mb-3">
+                  Your Epitaph
+                </div>
+                <div className="text-[var(--text-primary)] text-lg italic leading-relaxed mb-4">
+                  "{finalMessage}"
+                </div>
+                <div className="w-16 h-px bg-[var(--purple-dim)] mx-auto mb-3" />
+                <div className="text-[var(--text-dim)] text-xs">
+                  — A fallen adventurer
+                </div>
               </div>
-              <div className="text-[var(--text-primary)] italic">"{finalMessage}"</div>
             </div>
-            
-            <p className="text-[var(--text-muted)] text-xs mb-6">
-              Your corpse now rests in the crypt.<br/>
-              Others will find you.
-            </p>
 
-            <div className="flex flex-col gap-2">
+            {/* What happens next */}
+            <div className="mb-6">
+              <p className="text-[var(--text-muted)] text-sm leading-relaxed">
+                Your corpse now rests in <span className="text-[var(--red)]">{deathData.zone}</span>.
+              </p>
+              <p className="text-[var(--purple-bright)] text-sm mt-2">
+                Others will find you. Others will read your words.
+              </p>
+              <p className="text-[var(--text-dim)] text-xs mt-2 italic">
+                Death is treasure.
+              </p>
+            </div>
+
+            {/* Actions */}
+            <div className="flex flex-col gap-3">
               <Link
                 href="/stake"
-                className="px-4 py-3 bg-[var(--amber-dim)]/30 border border-[var(--amber)] text-[var(--amber-bright)] hover:bg-[var(--amber-dim)]/50 transition-all text-center"
+                className="px-6 py-4 bg-gradient-to-b from-[var(--amber-dim)]/30 to-[var(--amber-dim)]/10 border-2 border-[var(--amber)] text-[var(--amber-bright)] hover:from-[var(--amber-dim)]/50 hover:to-[var(--amber-dim)]/30 transition-all text-center text-lg tracking-wider flex items-center justify-center gap-2"
               >
-                ▶ Try Again
+                <span>▶</span>
+                <span>Descend Again</span>
               </Link>
               <Link
                 href="/"
-                className="px-4 py-3 bg-[var(--bg-surface)] border border-[var(--border-default)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-all text-center"
+                className="px-4 py-3 bg-[var(--bg-surface)] border border-[var(--border-dim)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] hover:border-[var(--border-default)] transition-all text-center"
               >
                 Return to Title
               </Link>
@@ -226,9 +302,14 @@ export default function DeathScreen() {
 
       </main>
 
-      {/* Footer hint */}
-      <footer className="text-center text-[10px] text-[var(--text-muted)] py-4">
-        Your stake has been added to the Memorial Pool
+      {/* Footer */}
+      <footer className="text-center py-4 relative z-10">
+        <div className="text-[var(--amber-dim)] text-xs">
+          <span className="text-[var(--amber)]">◎</span> Your stake has been added to the Memorial Pool
+        </div>
+        <div className="text-[var(--text-dim)] text-[10px] mt-1">
+          Winners claim the spoils of the fallen
+        </div>
       </footer>
 
     </div>
