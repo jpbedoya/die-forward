@@ -46,7 +46,7 @@ export default function StakeScreen() {
   const [error, setError] = useState<string | null>(null);
   
   // Audio - continue title ambient on stake screen
-  const { playAmbient } = useAudio();
+  const { playAmbient, playSFX } = useAudio();
   
   useEffect(() => {
     playAmbient('ambient-title');
@@ -309,7 +309,12 @@ export default function StakeScreen() {
               return (
                 <button
                   key={option.amount}
-                  onClick={() => canAfford && setSelectedStake(option.amount)}
+                  onClick={() => {
+                    if (canAfford) {
+                      playSFX('ui-click');
+                      setSelectedStake(option.amount);
+                    }
+                  }}
                   disabled={!canAfford}
                   className={`w-full text-left px-4 py-2.5 transition-all ${
                     selectedStake === option.amount
@@ -355,7 +360,10 @@ export default function StakeScreen() {
 
         {/* Enter button */}
         <button
-          onClick={handleEnter}
+          onClick={() => {
+            playSFX('ui-click');
+            handleEnter();
+          }}
           disabled={!selectedStake || confirming}
           className="w-full max-w-xs px-6 py-4 bg-[var(--amber-dim)]/30 border border-[var(--amber)] text-[var(--amber-bright)] hover:bg-[var(--amber-dim)]/50 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
         >

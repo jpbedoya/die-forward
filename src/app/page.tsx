@@ -97,7 +97,7 @@ export default function TitleScreen() {
   const [activeTab, setActiveTab] = useState<'deaths' | 'leaders'>('deaths');
   
   // Audio
-  const { enabled: audioEnabled, toggle: toggleAudio, playAmbient } = useAudio();
+  const { enabled: audioEnabled, toggle: toggleAudio, playAmbient, playSFX } = useAudio();
   
   // Play title ambient on mount
   useEffect(() => {
@@ -158,6 +158,7 @@ export default function TitleScreen() {
   }, [connected, wallet, publicKey]);
 
   const handleConnect = () => {
+    playSFX('ui-click');
     setVisible(true);
   };
 
@@ -166,7 +167,10 @@ export default function TitleScreen() {
       
       {/* Audio toggle */}
       <button
-        onClick={toggleAudio}
+        onClick={() => {
+          playSFX('ui-click');
+          toggleAudio();
+        }}
         className="absolute top-4 right-4 p-2 text-[var(--text-muted)] hover:text-[var(--amber)] transition-colors z-10"
         title={audioEnabled ? 'Mute audio' : 'Unmute audio'}
       >
@@ -209,6 +213,7 @@ export default function TitleScreen() {
           ) : (
             <Link
               href="/stake"
+              onClick={() => playSFX('ui-click')}
               className="px-6 py-3 bg-[var(--amber-dim)]/30 border border-[var(--amber)] text-[var(--amber-bright)] hover:bg-[var(--amber-dim)]/50 transition-all inline-flex items-center gap-2"
             >
               <span>▶</span>
