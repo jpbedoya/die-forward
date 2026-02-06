@@ -54,44 +54,59 @@ class AudioManager {
   private sounds: Map<string, HTMLAudioElement> = new Map();
   private currentAmbient: HTMLAudioElement | null = null;
   private currentAmbientId: SoundId | null = null;
+  private pendingAmbientId: SoundId | null = null;
   private enabled: boolean = true;
+  private unlocked: boolean = false;
   private sfxVolume: number = 0.7;
   private ambientVolume: number = 0.4;
 
   constructor() {
-    // Load enabled state from localStorage
     if (typeof window !== 'undefined') {
+      // Load enabled state from localStorage
       const saved = localStorage.getItem('audio-enabled');
       this.enabled = saved !== 'false';
+      
+      // Set up unlock listener for autoplay policy
+      const unlock = () => {
+        if (!this.unlocked) {
+          this.unlocked = true;
+          console.log('[audio] Unlocked by user interaction');
+          // Try to play pending ambient
+          if (this.pendingAmbientId && this.enabled) {
+            this.playAmbient(this.pendingAmbientId);
+          }
+        }
+      };
+      
+      // Listen for first interaction
+      document.addEventListener('click', unlock, { once: false });
+      document.addEventListener('touchstart', unlock, { once: false });
+      document.addEventListener('keydown', unlock, { once: false });
     }
-  }
-
-  // Preload a sound
-  private getSound(id: SoundId): HTMLAudioElement {
-    if (!this.sounds.has(id)) {
-      const audio = new Audio(SOUND_PATHS[id]);
-      audio.preload = 'auto';
-      this.sounds.set(id, audio);
-    }
-    return this.sounds.get(id)!;
   }
 
   // Play a one-shot SFX
   playSFX(id: SoundId) {
     if (!this.enabled || typeof window === 'undefined') return;
     
-    // Create new audio instance for overlapping sounds
     const audio = new Audio(SOUND_PATHS[id]);
     audio.volume = this.sfxVolume;
-    audio.play().catch(() => {
-      // Ignore autoplay errors
+    audio.play().catch((e) => {
+      console.log('[audio] SFX blocked:', id, e.message);
     });
   }
 
   // Play ambient loop (crossfade from current)
   playAmbient(id: SoundId) {
     if (typeof window === 'undefined') return;
-    if (this.currentAmbientId === id) return; // Already playing
+    if (this.currentAmbientId === id && this.currentAmbient && !this.currentAmbient.paused) {
+      return; // Already playing this ambient
+    }
+
+    // Store as pending in case we're not unlocked yet
+    this.pendingAmbientId = id;
+
+    if (!this.enabled) return;
 
     // Fade out current ambient
     if (this.currentAmbient) {
@@ -101,37 +116,40 @@ class AudioManager {
           fadeOut.volume -= 0.05;
         } else {
           fadeOut.pause();
+          fadeOut.currentTime = 0;
           clearInterval(fadeOutInterval);
         }
       }, 50);
     }
 
     // Start new ambient
-    if (this.enabled) {
-      const audio = new Audio(SOUND_PATHS[id]);
-      audio.loop = true;
-      audio.volume = 0;
-      this.currentAmbient = audio;
-      this.currentAmbientId = id;
-      
-      audio.play().then(() => {
-        // Fade in
-        const fadeInInterval = setInterval(() => {
-          if (audio.volume < this.ambientVolume - 0.05) {
-            audio.volume += 0.05;
-          } else {
-            audio.volume = this.ambientVolume;
-            clearInterval(fadeInInterval);
-          }
-        }, 50);
-      }).catch(() => {
-        // Ignore autoplay errors
-      });
-    }
+    const audio = new Audio(SOUND_PATHS[id]);
+    audio.loop = true;
+    audio.volume = 0;
+    this.currentAmbient = audio;
+    this.currentAmbientId = id;
+    
+    audio.play().then(() => {
+      console.log('[audio] Ambient playing:', id);
+      this.unlocked = true;
+      // Fade in
+      const fadeInInterval = setInterval(() => {
+        if (audio.volume < this.ambientVolume - 0.05) {
+          audio.volume += 0.05;
+        } else {
+          audio.volume = this.ambientVolume;
+          clearInterval(fadeInInterval);
+        }
+      }, 50);
+    }).catch((e) => {
+      console.log('[audio] Ambient blocked (waiting for interaction):', id, e.message);
+      // Will retry on user interaction via pendingAmbientId
+    });
   }
 
   // Stop ambient
   stopAmbient() {
+    this.pendingAmbientId = null;
     if (this.currentAmbient) {
       const fadeOut = this.currentAmbient;
       const fadeOutInterval = setInterval(() => {
@@ -139,11 +157,19 @@ class AudioManager {
           fadeOut.volume -= 0.05;
         } else {
           fadeOut.pause();
+          fadeOut.currentTime = 0;
           clearInterval(fadeOutInterval);
         }
       }, 50);
       this.currentAmbient = null;
       this.currentAmbientId = null;
+    }
+  }
+
+  // Resume current ambient (call after user interaction)
+  tryResume() {
+    if (this.pendingAmbientId && this.enabled) {
+      this.playAmbient(this.pendingAmbientId);
     }
   }
 
@@ -156,6 +182,9 @@ class AudioManager {
     
     if (!this.enabled) {
       this.stopAmbient();
+    } else if (this.pendingAmbientId) {
+      // Re-enable: try to play pending ambient
+      this.playAmbient(this.pendingAmbientId);
     }
     
     return this.enabled;

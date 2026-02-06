@@ -15,6 +15,7 @@ import { signAndSendWithMWA } from '@/lib/mobileWallet';
 import { resetGameState, getGameState, saveGameState, DungeonRoomState } from '@/lib/gameState';
 import { generateRandomDungeon } from '@/lib/content';
 import { usePoolStats } from '@/lib/instant';
+import { useAudio } from '@/lib/audio';
 
 const stakeOptions = [
   { amount: 0.01, label: 'Timid' },
@@ -43,6 +44,13 @@ export default function StakeScreen() {
   const [selectedStake, setSelectedStake] = useState<number | null>(null);
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Audio - continue title ambient on stake screen
+  const { playAmbient } = useAudio();
+  
+  useEffect(() => {
+    playAmbient('ambient-title');
+  }, [playAmbient]);
   
   // Debug logging - set to false for production
   const DEBUG = false;
