@@ -234,7 +234,7 @@ export default function StakeScreen() {
         <div className="text-center mb-6">
           <div className="text-[var(--text-muted)] text-xs tracking-widest mb-1 flex items-center justify-center gap-2">
             <span className="text-[var(--amber-dim)]">═══╣</span>
-            <span>ENTER THE</span>
+            <span>ENTER</span>
             <span className="text-[var(--amber-dim)]">╠═══</span>
           </div>
           <h1 className="text-[var(--amber-bright)] text-xl tracking-wider mb-1">THE SUNKEN CRYPT</h1>
