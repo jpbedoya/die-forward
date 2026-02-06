@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getGameState, saveGameState } from '@/lib/gameState';
-import { useCorpseForRoom, discoverCorpse } from '@/lib/instant';
+import { useCorpseForRoom, discoverCorpse, Corpse } from '@/lib/instant';
 
 // Menu overlay component
 function Menu({ 
@@ -178,6 +178,18 @@ You've found the exit. The surface awaits.`,
 
 const mockWallet = "8xH4...k9Qz";
 
+// Format timestamp as relative time
+function formatTimeAgo(timestamp: number): string {
+  const seconds = Math.floor((Date.now() - timestamp) / 1000);
+  if (seconds < 60) return 'just now';
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
+
 function HealthBar({ current, max }: { current: number; max: number }) {
   const filled = Math.round((current / max) * 8);
   const empty = 8 - filled;
@@ -229,7 +241,7 @@ export default function GameScreen() {
 
   // Fetch real corpses from DB for the current room
   const { corpses: realCorpses } = useCorpseForRoom('THE SUNKEN CRYPT', currentRoom + 1);
-  const realCorpse = realCorpses[0]; // Get first undiscovered corpse
+  const realCorpse = realCorpses[0] as Corpse | undefined; // Get first undiscovered corpse
 
   // Load game state on mount
   useEffect(() => {
@@ -369,6 +381,9 @@ export default function GameScreen() {
             <div className="text-[var(--purple-bright)] text-sm mb-2">
               ☠ You notice a body in the shadows...
             </div>
+            <div className="text-[var(--text-muted)] text-xs mb-2 italic">
+              Someone fell here before you.
+            </div>
             <button
               onClick={() => handleAction('loot')}
               className="text-xs text-[var(--purple)] hover:text-[var(--purple-bright)] transition-colors"
@@ -386,15 +401,17 @@ export default function GameScreen() {
               <span className="text-[var(--purple-bright)] font-bold">
                 @{realCorpse ? realCorpse.playerName : room.corpse?.player}
               </span>
-              {realCorpse && (
-                <span className="text-[var(--text-dim)] text-xs">(real player)</span>
-              )}
             </div>
             <div className="text-[var(--text-secondary)] text-sm italic mb-2">
               "{realCorpse ? realCorpse.finalMessage : room.corpse?.message}"
             </div>
-            <div className="text-[var(--text-muted)] text-xs">
-              └─ {realCorpse ? realCorpse.lootEmoji : '🗡️'} {realCorpse ? realCorpse.loot : room.corpse?.loot}
+            <div className="text-[var(--text-muted)] text-xs flex items-center gap-2">
+              <span>└─ {realCorpse ? realCorpse.lootEmoji : '🗡️'} {realCorpse ? realCorpse.loot : room.corpse?.loot}</span>
+              {realCorpse && realCorpse.createdAt && (
+                <span className="text-[var(--text-dim)]">
+                  · {formatTimeAgo(realCorpse.createdAt)}
+                </span>
+              )}
             </div>
           </div>
         )}

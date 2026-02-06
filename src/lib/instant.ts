@@ -114,23 +114,34 @@ export async function discoverCorpse(corpseId: string, discoveredBy: string) {
   ]);
 }
 
-// Get a random undiscovered corpse for a zone/room
+// Get undiscovered corpses for a zone (checks current room and nearby)
 export function useCorpseForRoom(zone: string, room: number) {
+  // Fetch all undiscovered corpses in the zone
   const { data, isLoading, error } = db.useQuery({
     corpses: {
       $: {
         where: {
           zone,
-          room,
           discovered: false,
         },
-        limit: 5,
+        limit: 20,
       },
     },
   });
 
+  // Filter client-side for nearby rooms (room-1, room, room+1)
+  const nearbyCorpses = (data?.corpses || []).filter((c) => {
+    const corpseRoom = (c as unknown as Corpse).room;
+    return corpseRoom >= room - 1 && corpseRoom <= room + 1;
+  });
+
+  // Debug logging
+  if (typeof window !== 'undefined') {
+    console.log(`[Corpses] Zone: ${zone}, Room: ${room}, Found: ${nearbyCorpses.length}`, nearbyCorpses);
+  }
+
   return {
-    corpses: data?.corpses || [],
+    corpses: nearbyCorpses,
     isLoading,
     error,
   };
