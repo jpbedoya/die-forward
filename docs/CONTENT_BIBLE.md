@@ -272,6 +272,53 @@ Not a creature — an event. A moment that keeps happening. You see yourself dyi
 
 > You see yourself fall. You see yourself drown. You see yourself standing exactly where you stand now. The other you waves.
 
+#### The Choir of Endings
+A mass of voices given form. Every death cry ever uttered in the underworld, woven into a single screaming entity. It doesn't attack — it *remembers* you to death.
+
+**Behavior:** RESONATING (building sonic pressure), REMEMBERING (speaking your fears), CRESCENDO (overwhelming release)
+
+> A thousand voices speak at once. One of them is yours. It's saying something you haven't said yet.
+
+#### The First Pilgrim
+The very first to descend. They found what lies at the bottom. It changed them. Now they guard the path, not to keep others out — but to keep something in.
+
+**Behavior:** WARNING (trying to make you leave), BLOCKING (reluctant combat), SACRIFICING (letting you pass at a cost)
+
+> "Turn back," they say. Their voice is tired. Ancient. "I cannot let you see what I saw."
+
+#### Mother of Tides
+The water itself, given will. She was here before the temple, before the prayers, before the name was forgotten. Everything that drowns belongs to her.
+
+**Behavior:** RISING (flood surges), EMBRACING (pulling into depths), CLAIMING (you are already hers)
+
+> The water rises. Not flowing — *reaching*. It wants you. It has always wanted you.
+
+---
+
+### Tier 4 — Apex / Super Boss
+
+**Appears randomly. Extremely rare. Not meant to be defeated — meant to be survived.**
+
+#### The Architect
+It built this place. Not the temple — the underworld itself. It is still building. It looks at you and sees raw material. Rooms shift when it moves. Walls become doors. Doors become mouths.
+
+**Behavior:** 
+- RESHAPING (environment transforms around it)
+- INCORPORATING (absorbing the fallen into the structure)
+- DESIGNING (you are part of its plan now)
+
+**Special rules:**
+- Can appear in any room after the third
+- Escape is the only victory
+- If it kills you, your corpse becomes part of the architecture
+- Finding a corpse "built into the walls" means The Architect has visited
+
+> The walls are breathing. No — *building*. Stone flows like water. The room is smaller than it was. It sees you. It has ideas.
+
+**Audio cue:** Reality groaning. Stone singing. The sound of geometry being wrong.
+
+**Why it exists:** The ultimate "oh shit" moment. Players who encounter it and survive have a story. Players who die to it become legend — their corpses literally embedded in the dungeon for others to find.
+
 ---
 
 ### Creature Design Principles
