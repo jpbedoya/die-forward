@@ -487,7 +487,7 @@ export default function GameScreen() {
         )}
 
         {/* Corpse callout - dramatic reveal of the fallen */}
-        {showCorpse && (realCorpse || room.corpse) && (
+        {showCorpse && room.type === 'corpse' && (
           <div className="relative mb-4">
             {/* Outer glow */}
             <div className="absolute inset-0 bg-[var(--purple)]/5 blur-lg rounded-lg" />
@@ -501,7 +501,7 @@ export default function GameScreen() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-[var(--purple-bright)] font-bold text-base">
-                      @{realCorpse ? realCorpse.playerName : room.corpse?.player}
+                      @{realCorpse ? realCorpse.playerName : 'Unknown Wanderer'}
                     </span>
                     <span className="text-[var(--text-dim)] text-[10px]">•</span>
                     <span className="text-[var(--red-dim)] text-xs">FALLEN</span>
@@ -520,7 +520,7 @@ export default function GameScreen() {
                   Final Words
                 </div>
                 <div className="text-[var(--text-primary)] text-base italic leading-relaxed">
-                  "{realCorpse ? realCorpse.finalMessage : room.corpse?.message}"
+                  "{realCorpse ? realCorpse.finalMessage : '...the darkness took me before I could finish...'}"
                 </div>
               </div>
 
@@ -529,11 +529,11 @@ export default function GameScreen() {
                 <div className="flex items-center gap-2">
                   <span className="text-[var(--text-dim)]">They carried:</span>
                   <span className="px-2 py-1 bg-[var(--amber-dim)]/20 border border-[var(--amber-dim)] text-[var(--amber)]">
-                    {realCorpse ? realCorpse.lootEmoji : '🗡️'} {realCorpse ? realCorpse.loot : room.corpse?.loot}
+                    {realCorpse ? realCorpse.lootEmoji : '💀'} {realCorpse ? realCorpse.loot : 'Nothing'}
                   </span>
                 </div>
                 <div className="text-[var(--text-dim)] text-[10px]">
-                  Their loss, your gain.
+                  {realCorpse ? 'Their loss, your gain.' : 'The underworld claimed everything.'}
                 </div>
               </div>
             </div>
