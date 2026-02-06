@@ -622,6 +622,48 @@ Example:
 Example:
 > The doorway ahead is older than the walls around it. Beyond, the air tastes different — copper and salt. The scratches on the frame point backward. Someone tried to claw their way out.
 
+**Descent:**
+> [Downward path]. [How far]. [What changes as you go]. [Point of no return].
+
+Example:
+> The stairs spiral down. And down. And down. The walls grow wetter, the air heavier. At some point, you realize you can't remember how many steps you've taken.
+
+**Flooded Passage:**
+> [Water level]. [What's beneath]. [Movement difficulty]. [What's floating].
+
+Example:
+> Water to your waist. Black, still, cold. Your feet find steps you can't see. Something brushes your leg. It might be debris. It might not.
+
+**Collapse/Unstable:**
+> [Structural damage]. [Danger signs]. [Time pressure]. [Path through].
+
+Example:
+> Cracks web the ceiling. Dust falls in streams. This place wants to come down. You can hear it groaning, debating. Move quickly.
+
+**Shrine/Altar:**
+> [Religious remnant]. [What was worshipped]. [Current state]. [Lingering presence].
+
+Example:
+> An altar to something forgotten. Offerings rot at its base — flowers, coins, teeth. The idol's face has been scratched away, but you feel it watching.
+
+**Graveyard/Ossuary:**
+> [Scale of death]. [How arranged]. [What's disturbed]. [The weight of it].
+
+Example:
+> Bones. Sorted by type — skulls here, femurs there, ribs stacked like kindling. Someone organized this. Recently. There are gaps in the arrangement. Spaces waiting to be filled.
+
+**Crossroads:**
+> [Multiple paths]. [How they differ]. [Hints about each]. [Choice pressure].
+
+Example:
+> Three passages. Left breathes cold air. Right echoes with distant water. Center shows scratch marks, claw marks, drag marks. All leading in. None leading out.
+
+**Witness Room:**
+> [Something happened here]. [Evidence remains]. [Can't identify what]. [Unsettling].
+
+Example:
+> The walls are scorched in a pattern. Circular. Precise. At the center, the stone has melted and reformed. Whatever was here is gone. You hope it's gone.
+
 ---
 
 ### COMBAT Room Templates
@@ -643,6 +685,42 @@ Example:
 
 Example:
 > Bones are stacked here. Arranged. This is a nest. And you've just woken what lives in it.
+
+**Pursuit:**
+> [Already being followed]. [It's catching up]. [Nowhere to hide]. [Must face it].
+
+Example:
+> You hear it behind you. Closer each time you look. Running isn't working. It knows these passages better than you ever will. Time to stop running.
+
+**Swarm:**
+> [Many of them]. [Individually weak]. [Together dangerous]. [Overwhelming].
+
+Example:
+> One wouldn't be a threat. But there isn't one. They pour from cracks in the walls, gaps in the floor. Dozens. More coming.
+
+**Feeding:**
+> [Creature occupied]. [Disturbing meal]. [Hasn't noticed you yet]. [Your choice].
+
+Example:
+> It's eating something. The sounds are wet, methodical. It hasn't seen you. You could sneak past. You could strike first. It will finish soon.
+
+**Guardian:**
+> [Protecting something]. [Won't move]. [Must be defeated]. [What it guards].
+
+Example:
+> It stands before the door. It has always stood before this door. It will die before this door. So will you, if you want what's behind it.
+
+**Arena:**
+> [Space designed for combat]. [Something watching]. [Spectators unseen]. [Performance expected].
+
+Example:
+> The chamber is round. Smooth. Designed for this. You feel eyes on you — from where? The thing across from you doesn't care about the audience. Only about you.
+
+**Wounded Creature:**
+> [Already hurt]. [Desperate]. [Unpredictable]. [Mercy is a choice].
+
+Example:
+> It's bleeding. Dragging itself. The wounds aren't yours — someone else tried. Someone else failed. It sees you. Teeth bared. Fear and fury in equal measure.
 
 ---
 
@@ -666,6 +744,42 @@ Example:
 Example:
 > They didn't die fighting. They died waiting. Sitting against the wall, hands folded, patient. As if they knew. The message beside them: [FINAL MESSAGE].
 
+**Peaceful Death:**
+> [Acceptance]. [Preparation]. [Final arrangements]. [Grace in ending].
+
+Example:
+> They made themselves comfortable. Arranged their belongings neatly. Faced the direction of the exit they'd never reach. Their message is careful, considered: [FINAL MESSAGE].
+
+**Group Death:**
+> [Multiple bodies]. [What happened]. [Died together]. [One message speaks for all].
+
+Example:
+> Three of them. Huddled together at the end. Whatever came, they faced it as one. Only one had time to write. The words are for everyone: [FINAL MESSAGE].
+
+**Heroic Death:**
+> [Died fighting]. [Took something with them]. [Last stand]. [Victory in defeat].
+
+Example:
+> The creature lies beside them. They killed it. It killed them. A fair trade? Their blade is still in its skull. Their message is short, satisfied: [FINAL MESSAGE].
+
+**Trapped Death:**
+> [Couldn't escape]. [Slow realization]. [Desperation visible]. [Final acceptance].
+
+Example:
+> The collapse sealed them in. Scratch marks cover the debris. They tried for a long time. Then they stopped. Their message, written in the dark: [FINAL MESSAGE].
+
+**Posed Death:**
+> [Arranged by something else]. [Unnatural position]. [Message for you]. [Warning].
+
+Example:
+> Someone arranged this body. Propped it up. Turned its face toward the entrance. Toward you. The message isn't theirs — something else wrote it: [FINAL MESSAGE].
+
+**Legendary Death:**
+> [Famous player]. [Many have seen this corpse]. [Known throughout]. [Their words echo].
+
+Example:
+> You've heard of this one. Everyone has. They made it further than anyone before. Their corpse has become a landmark. A pilgrimage site. Their words, copied and shared: [FINAL MESSAGE].
+
 ---
 
 ### CACHE Room Templates
@@ -688,6 +802,42 @@ Example:
 Example:
 > Marks on the wall. Counting days? There are hundreds. Whoever was here survived longer than seems possible. They left everything behind. Did they escape, or simply give up?
 
+**Natural Spring:**
+> [Clean water]. [Life exists here]. [Anomaly in the dark]. [Healing but wrong].
+
+Example:
+> Water trickles from the stone. Clear, not black. Something green grows at its edges — the only living thing you've seen. Drinking feels like hope. The aftertaste lingers.
+
+**Abandoned Camp:**
+> [Recent occupation]. [Left in hurry]. [Supplies scattered]. [What scared them].
+
+Example:
+> A bedroll. Cold ashes. Food half-eaten. They left fast. The supplies remain, but so does the question: what made someone abandon their only safe place?
+
+**Forgotten Armory:**
+> [Weapons stored]. [Ancient purpose]. [Still functional]. [War never ended here].
+
+Example:
+> Racks of weapons, pitted with age. An army was equipped here once. For what war? Against what enemy? Some blades still hold an edge. Help yourself.
+
+**Merchant Hollow:**
+> [NPC present]. [Trading possible]. [Prices steep]. [Economy of desperation].
+
+Example:
+> A figure in the dark. They have supplies. They have prices. Both are non-negotiable. In the underworld, commerce continues. The dead still deal.
+
+**Trophy Room:**
+> [Creature remains]. [Someone's victories]. [Warnings]. [Loot among the dead].
+
+Example:
+> Skulls mounted on the walls. Claws displayed. Someone hunted here, successfully. Their trophies tell you what's ahead. Their supplies might help you survive it.
+
+**Hermit's Cell:**
+> [Long-term survival]. [Madness or wisdom]. [Knowledge shared]. [Supplies offered].
+
+Example:
+> They've been here years. Decades? Alone. Surviving. They don't want company, but they'll share what they know. And what they no longer need.
+
 ---
 
 ### EXIT Room Templates
@@ -703,6 +853,36 @@ Example:
 
 Example:
 > The darkness recedes behind you. The water doesn't follow past this point. The underworld releases you — not defeated, just... satisfied. For now. You carry something out with you. You're not sure what.
+
+**The Earned Exit:**
+> [Trial completed]. [Proved worthy]. [Door opens]. [Respect from the deep].
+
+Example:
+> The final door. It was sealed. Now it opens. You earned this. Whatever judges in the dark has weighed you and found you sufficient. Step through, survivor.
+
+**The Reluctant Exit:**
+> [Leaving something behind]. [Unfinished business]. [Partial victory]. [You'll return].
+
+Example:
+> The exit is here. Safety is here. But something remains undone. Someone remains unfound. You leave, but not completely. Part of you stays. You'll be back for it.
+
+**The Changed Exit:**
+> [You're different now]. [Can you go back]. [The world hasn't changed]. [You have].
+
+Example:
+> The surface waits above. But can you return to it? You've seen what lies beneath. You've become someone who knows. The world above seems smaller now. Less real.
+
+**The Invitation:**
+> [Exit offered freely]. [Suspiciously easy]. [The underworld wants you back]. [See you soon].
+
+Example:
+> The door stands open. Sunlight spills through. No guardian, no trial, no price. Just... permission. It wants you to leave. It knows you'll return. They always return.
+
+**The False Exit:**
+> [Looks like escape]. [Something wrong]. [Trap revealed]. [Deeper instead of out].
+
+Example:
+> Light ahead. Stairs leading up. Relief floods through you. Then you notice — the stairs are going down. They were always going down. The "light" grins with too many teeth.
 
 ---
 
