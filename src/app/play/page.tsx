@@ -460,33 +460,38 @@ export default function GameScreen() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-[var(--bg-base)] border-t border-[var(--border-dim)] px-3 py-2 sticky bottom-0">
-        <div className="flex items-center justify-between text-xs mb-2">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1">
-              <span className="text-[var(--red)]">♥</span>
+      <footer className="bg-[var(--bg-base)] border-t border-[var(--border-dim)] px-3 py-3 sticky bottom-0">
+        {/* Top row: Stats */}
+        <div className="flex items-center justify-between text-sm mb-3">
+          <div className="flex items-center gap-4">
+            {/* Health */}
+            <div className="flex items-center gap-2">
+              <span className="text-[var(--red)] text-base">♥</span>
               <HealthBar current={health} max={100} />
-              <span className={`text-[10px] ${health < 30 ? 'text-[var(--red-bright)] animate-pulse' : 'text-[var(--red-bright)]'}`}>
+              <span className={`text-sm font-bold ${health < 30 ? 'text-[var(--red-bright)] animate-pulse' : 'text-[var(--red-bright)]'}`}>
                 {health}
               </span>
             </div>
-            <div className="flex items-center gap-1">
-              <span className="text-[var(--blue)]">⚡</span>
+            {/* Stamina */}
+            <div className="flex items-center gap-2">
+              <span className="text-[var(--blue)] text-base">⚡</span>
               <StaminaBar current={stamina} max={3} />
             </div>
           </div>
+          {/* Stake */}
           <div className="flex items-center gap-1">
-            <span className="text-[var(--amber)]">◎</span>
-            <span className="text-[var(--amber-bright)]">{stakeAmount} SOL</span>
+            <span className="text-[var(--amber)] text-base">◎</span>
+            <span className="text-[var(--amber-bright)] font-bold">{stakeAmount} SOL</span>
           </div>
         </div>
         
-        <div className="flex items-center gap-2 text-xs overflow-x-auto">
-          <span className="text-[var(--text-dim)]">🎒</span>
+        {/* Bottom row: Inventory */}
+        <div className="flex items-center gap-2 text-sm overflow-x-auto pb-1">
+          <span className="text-[var(--text-muted)]">🎒</span>
           {inventory.map((item) => (
             <span 
               key={item.id} 
-              className="text-[var(--text-muted)] bg-[var(--bg-surface)] px-2 py-0.5 whitespace-nowrap"
+              className="text-[var(--text-secondary)] bg-[var(--bg-surface)] px-2 py-1 whitespace-nowrap border border-[var(--border-dim)]"
             >
               {item.emoji} {item.name}
             </span>
