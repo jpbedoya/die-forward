@@ -127,6 +127,62 @@ Corpses swollen with dark water. They burst when struck, releasing something wor
 
 > The body blocks the passage. Distended. Taut. Something moves beneath its skin.
 
+#### Flickering Shades
+Afterimages of the dead. They exist in stutters — here, then there, then gone. They don't attack so much as *coincide* with you.
+
+**Behavior:** BLINKING (teleporting short distances), PHASING (passing through walls), OVERLAPPING (occupying your space)
+
+> For a moment, you have two shadows. One of them moves on its own.
+
+#### Bone Weavers
+Skeletal hands that emerge from walls and floors, grasping. There is no body — just hands, endless hands, reaching from the stone itself.
+
+**Behavior:** GRASPING (grabbing ankles), PULLING (toward walls), MULTIPLYING (more appear when you linger)
+
+> The wall has fingers. They're reaching for you.
+
+#### Throat Singers
+Mouths without bodies. They float in the dark, humming frequencies that loosen your grip on reality. The sound is almost beautiful.
+
+**Behavior:** DRONING (disorienting hum), SCREAMING (sonic burst), HARMONIZING (calling others)
+
+> A sound in the dark. A note held too long. Your vision blurs at the edges.
+
+#### Ash Children
+Small. Gray. They look like children made of cinders. They don't attack — they just watch. But where they gather, the air grows thin and cold.
+
+**Behavior:** WATCHING (unnerving stillness), GATHERING (more appear), SUFFOCATING (draining presence)
+
+> A child stands in the water. Gray. Still. More join it. They don't blink.
+
+#### The Hunched
+Bent figures that move on all fours, sniffing the air. They were seekers once — treasure hunters, grave robbers. Now they seek only warmth.
+
+**Behavior:** SNIFFING (tracking), POUNCING (sudden burst), FEEDING (draining warmth)
+
+> It smells you before it sees you. Its head snaps toward you. It smiles.
+
+#### Tideborn
+Creatures of living water. They rise from puddles, take vaguely human shape, and collapse back into liquid when struck. But water is everywhere down here.
+
+**Behavior:** FORMING (rising from water), CRASHING (wave attack), REFORMING (reconstituting after "death")
+
+> The puddle at your feet isn't a puddle. It's standing up.
+
+#### Echo Husks
+They repeat the last words of the dead. Over and over. The same plea, the same scream, the same prayer. They stumble toward sound, seeking new words to learn.
+
+**Behavior:** REPEATING (looping phrases), LISTENING (drawn to noise), COLLECTING (touching to absorb final words)
+
+> "Help me," it says. "Help me. Help me. Help me." The voice isn't its own.
+
+#### The Unfinished
+Bodies that stopped mid-transformation. Half-formed. Asymmetrical. One arm too long, one eye too many. They move like they're still learning how.
+
+**Behavior:** LURCHING (unbalanced movement), ADAPTING (learning from damage), GROWING (adding mass from surroundings)
+
+> It has too many parts. None of them fit together. It's still trying to become something.
+
 ---
 
 ### Tier 2 — Uncommon Threats
@@ -160,6 +216,34 @@ Spirits of grief given form. They drift, wailing silently, and their touch bring
 **Behavior:** DRIFTING (floating aimlessly), MOURNING (drawn to pain), EMBRACING (cold, draining touch)
 
 > Tears run down a face with no eyes. It reaches for you like a lost child.
+
+#### Undertow Wyrms
+Serpentine things that swim through stone as easily as water. They surface only to feed, pulling victims down into the floor itself.
+
+**Behavior:** CIRCLING (ripples in solid stone), BREACHING (sudden emergence), DRAGGING (pulling under)
+
+> The floor ripples. Something vast moves beneath. A fin of black stone breaks the surface.
+
+#### The Congregation
+They were pilgrims once. Now they move as one — a crowd of bodies fused at the edges, shambling together, praying in unison. Join them, they whisper. Join.
+
+**Behavior:** PROCESSING (slow march), ABSORBING (pulling victims into the mass), CHANTING (unified drone)
+
+> They move together. Speak together. They want you to be together too.
+
+#### Pale Oracles
+Eyeless seers who float above the water. They speak truths you don't want to hear — when you'll die, how you'll fail, what you've already lost.
+
+**Behavior:** PROPHESYING (demoralizing truths), REVEALING (showing hidden things), CURSING (words that wound)
+
+> "You will die here," it says. It sounds like a fact, not a threat.
+
+#### Carrion Knights
+Warriors who fell in some ancient battle and refused to stop fighting. Their armor is rusted, their weapons notched, but their skill remains. They salute before they kill you.
+
+**Behavior:** CHALLENGING (honorable combat), STRIKING (precise attacks), SALUTING (respecting worthy foes)
+
+> It raises a rusted blade in salute. It expects you to fight well. It will be disappointed.
 
 ---
 
