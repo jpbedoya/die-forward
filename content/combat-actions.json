@@ -19,7 +19,10 @@
       "weak": [
         "The blow glances off. Not enough. It barely notices, already lunging for you.",
         "You strike, but the angle is wrong. It absorbs the hit and keeps coming. This will take more.",
-        "Your weapon connects, but weakly. The creature laughs — or makes the sound where laughter should be."
+        "Your weapon connects, but weakly. The creature laughs — or makes the sound where laughter should be.",
+        "Your swing goes wide. Fatigue? Fear? The creature doesn't care about reasons. It cares about the opening.",
+        "The hit lands, but on hardened flesh. Like striking stone. Your arm reverberates. It doesn't even flinch.",
+        "You miss. Completely. The momentum carries you off balance. This is going to cost you."
       ]
     },
     "dodge": {
@@ -33,7 +36,15 @@
       "close": [
         "Almost. You almost dodge cleanly. A claw catches your shoulder — grazing, not gutting. Still stings.",
         "You move, but not quite fast enough. The edge of the attack finds you. Pain, but survivable.",
-        "Close enough to feel the air pressure. Close enough that it rips cloth but not flesh. Next time, be faster."
+        "Close enough to feel the air pressure. Close enough that it rips cloth but not flesh. Next time, be faster.",
+        "You dodge into the wall. Solid stone stops your escape. The creature's strike finds you, glancing but real.",
+        "Too slow. Slower than last time. The exhaustion is showing. The creature notices. It clips you on the way past.",
+        "You slip on wet stone. The dodge becomes a stumble. Not a clean hit, but a hit nonetheless."
+      ],
+      "fail": [
+        "You move the wrong direction. Into the attack. Full force. You feel things break.",
+        "The dodge that worked before doesn't work now. It learned. It adapted. You didn't.",
+        "Your legs betray you. Frozen. The attack connects with everything it has."
       ]
     },
     "brace": {
@@ -46,7 +57,14 @@
       ],
       "broken": [
         "You brace, but it's stronger than you expected. Your guard breaks. Not all the damage gets through. Enough does.",
-        "The force is overwhelming. Your stance holds, barely, but something in your arm pops. Still better than the alternative."
+        "The force is overwhelming. Your stance holds, barely, but something in your arm pops. Still better than the alternative.",
+        "Your guard crumbles. The blow finds you anyway, diminished but not defeated. Everything hurts.",
+        "You brace with everything you have. It's not enough. The impact sends you sprawling, gasping."
+      ],
+      "fail": [
+        "You brace too late. The attack is already inside your guard. Full damage. Full regret.",
+        "Your arms won't cooperate. Too slow. Too tired. The hit lands like you weren't even trying.",
+        "You flinch instead of brace. The worst response. It capitalizes on your weakness."
       ]
     },
     "herbs": {
@@ -73,7 +91,14 @@
       "hurt": [
         "You run. A claw catches your back — parting gift. Blood flows, but so do your legs. Distance grows.",
         "Escape isn't free. It takes a chunk of you as you go. The price of flight. Still cheaper than the price of failure.",
-        "You flee, but not fast enough. Not clean enough. It marks you before you're gone. A reminder."
+        "You flee, but not fast enough. Not clean enough. It marks you before you're gone. A reminder.",
+        "Running is painful. Every step costs something. But staying costs more. You pay the price and go.",
+        "It gets a piece of you. A deep gash, a trophy. But you're alive. Alive and moving. That's what matters."
+      ],
+      "fail": [
+        "You turn to run and hit the wall. Wrong direction. No direction. It's on you before you can correct.",
+        "Your legs give out. Too much. Too fast. You collapse before you can flee. The creature looms.",
+        "There's nowhere to run. You realize this as you try. Dead end. Dead you."
       ]
     }
   },
@@ -127,6 +152,26 @@
       "Positioning for the kill",
       "Stalking, step by careful step",
       "Watching. Learning. Waiting."
+    ],
+    "STALKING": [
+      "Matching your movements from the shadows",
+      "Keeping perfect distance, never closer, never further",
+      "Following without pursuing",
+      "Its patience is terrifying",
+      "Always at the edge of your torchlight",
+      "You can feel its attention like a weight",
+      "Moving when you move, stopping when you stop",
+      "It's learning your patterns"
+    ],
+    "RETREATING": [
+      "Backing away, wounded but watching",
+      "Creating distance, planning something",
+      "Fading into shadows, not fleeing — repositioning",
+      "Its retreat feels like a trap",
+      "Pulling back toward something",
+      "Limping away but not defeated",
+      "Drawing you somewhere specific",
+      "This isn't surrender — it's strategy"
     ]
   }
 }
