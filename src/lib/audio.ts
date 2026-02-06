@@ -98,8 +98,23 @@ class AudioManager {
   // Play ambient loop (crossfade from current, gapless looping)
   playAmbient(id: SoundId) {
     if (typeof window === 'undefined') return;
-    if (this.currentAmbientId === id && this.currentAmbient && !this.currentAmbient.paused) {
-      return; // Already playing this ambient
+    
+    // If already playing this ambient (or it's pending), don't restart
+    if (this.currentAmbientId === id) {
+      // Check if it's actually playing
+      if (this.currentAmbient && !this.currentAmbient.paused) {
+        return; // Already playing
+      }
+      // If paused but same track, try to resume instead of restart
+      if (this.currentAmbient && this.currentAmbient.paused) {
+        this.currentAmbient.play().catch(() => {});
+        return;
+      }
+    }
+    
+    // If this is already the pending ambient, don't re-queue
+    if (this.pendingAmbientId === id && !this.currentAmbient) {
+      return;
     }
 
     // Store as pending in case we're not unlocked yet

@@ -390,7 +390,8 @@ export default function CombatScreen() {
     }
     
     if (playerHealth <= 0) {
-      playSFX('player-death');
+      // Start death ambient now for seamless transition
+      // SFX will play on death page to avoid double-play
       playAmbient('ambient-death');
       setPhase('death');
       setNarrative("The world grows dark. Cold water rises around you.\n\nYour journey ends here.");

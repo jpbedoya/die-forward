@@ -45,6 +45,7 @@ export default function DeathScreen() {
   const { enabled: audioEnabled, toggle: toggleAudio, playAmbient, playSFX } = useAudio();
   
   // Play death ambient and SFX on mount
+  // Ambient will skip if already playing (e.g., started in combat)
   useEffect(() => {
     playAmbient('ambient-death');
     playSFX('player-death');
