@@ -1,48 +1,46 @@
 // MWA Auth Token Cache
-// Stores authorization result for seamless re-authorization
+// Reads from wallet adapter's cache for seamless re-authorization
 
-const CACHE_KEY = 'mwa-auth-cache';
+// This is the key used by @solana-mobile/wallet-adapter-mobile
+const WALLET_ADAPTER_CACHE_KEY = 'SolanaMobileWalletAdapterDefaultAuthorizationCache';
 
 interface CachedAuth {
   authToken: string;
   publicKey: string;
-  timestamp: number;
 }
 
 export function getCachedAuth(): CachedAuth | null {
   if (typeof window === 'undefined') return null;
   
   try {
-    const cached = localStorage.getItem(CACHE_KEY);
-    if (!cached) return null;
-    
-    const data = JSON.parse(cached) as CachedAuth;
-    
-    // Expire after 24 hours
-    if (Date.now() - data.timestamp > 24 * 60 * 60 * 1000) {
-      localStorage.removeItem(CACHE_KEY);
-      return null;
+    // Try to read from wallet adapter's cache first
+    const adapterCache = localStorage.getItem(WALLET_ADAPTER_CACHE_KEY);
+    if (adapterCache) {
+      const data = JSON.parse(adapterCache);
+      // The adapter stores: { authorizationResult: { auth_token, accounts, ... } }
+      if (data?.authorizationResult?.auth_token) {
+        const authResult = data.authorizationResult;
+        return {
+          authToken: authResult.auth_token,
+          publicKey: authResult.accounts?.[0]?.address || '',
+        };
+      }
     }
     
-    return data;
-  } catch {
+    return null;
+  } catch (e) {
+    console.error('Failed to read MWA cache:', e);
     return null;
   }
 }
 
 export function setCachedAuth(authToken: string, publicKey: string): void {
-  if (typeof window === 'undefined') return;
-  
-  const data: CachedAuth = {
-    authToken,
-    publicKey,
-    timestamp: Date.now(),
-  };
-  
-  localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+  // We don't need to set - the wallet adapter handles this
+  // But we could update its cache if needed
+  console.log('Auth token cached by wallet adapter');
 }
 
 export function clearCachedAuth(): void {
   if (typeof window === 'undefined') return;
-  localStorage.removeItem(CACHE_KEY);
+  localStorage.removeItem(WALLET_ADAPTER_CACHE_KEY);
 }
