@@ -333,23 +333,376 @@ It built this place. Not the temple — the underworld itself. It is still build
 
 ## Items
 
-### Torch
-> A flickering flame. It pushes back the dark, but the dark pushes back.
+### Consumables
 
-### Herbs
+#### Herbs
 > Bitter leaves that numb pain and slow bleeding. They taste like regret.
+**Effect:** Restore health. Common.
 
-### Bone Charm
-> Carved from something's finger. It hums when danger is near. It never stops humming.
+#### Pale Rations
+> Food from below. It sustains, but you try not to think about what it was.
+**Effect:** Restore stamina. Common.
 
-### Rusted Blade
+#### Bone Dust
+> Ground remains of something old. Inhale it to see what it saw.
+**Effect:** Reveal hidden paths. Uncommon.
+
+#### Tears of the Drowned
+> Collected grief, bottled. Drinking it lets you breathe underwater — but the sadness lingers.
+**Effect:** Water breathing for one room. Uncommon.
+
+#### Void Salt
+> Black crystals that burn on contact. Creatures of water fear it.
+**Effect:** Damage boost vs. aquatic enemies. Uncommon.
+
+#### Pilgrim's Last Breath
+> A vial of air from the surface. Precious beyond measure down here.
+**Effect:** Full heal. Very rare.
+
+---
+
+### Weapons
+
+#### Rusted Blade
 > Pitted with age and old blood. Still sharp enough.
+**Type:** Basic melee. Reliable.
 
-### Pale Coin
+#### Bone Hook
+> Carved from a rib. Meant for pulling things closer. Or keeping them away.
+**Type:** Reach weapon. Can create distance.
+
+#### Drowned Man's Anchor
+> Heavy. Brutal. Slow. When it hits, things stay down.
+**Type:** Heavy melee. High damage, costs stamina.
+
+#### Pilgrim's Knife
+> Small, ceremonial. It was meant for offerings, not combat. It works anyway.
+**Type:** Fast melee. Low damage, low cost.
+
+#### Tooth of the Deep
+> A fang from something vast. It pulses in your hand like a heartbeat.
+**Type:** Rare melee. Heals on hit.
+
+#### Chain of the Bound
+> Taken from one of them. It still tries to wrap around things.
+**Type:** Whip/chain. Area control.
+
+---
+
+### Artifacts (Passive Effects)
+
+#### Torch
+> A flickering flame. It pushes back the dark, but the dark pushes back.
+**Effect:** Light source. Creatures avoid direct light.
+
+#### Bone Charm
+> Carved from something's finger. It hums when danger is near. It never stops humming.
+**Effect:** Warning of nearby enemies.
+
+#### Pale Coin
 > Currency of the dead. Worth nothing above. Worth everything below.
+**Effect:** Can be offered to certain entities for passage.
 
-### Drowned Scripture
+#### Drowned Scripture
 > Waterlogged pages in a language you almost understand. Reading it feels like remembering something you never knew.
+**Effect:** Can decipher ancient inscriptions.
+
+#### Eye of the Hollow
+> It blinks when you're not looking. But it shows you things you'd otherwise miss.
+**Effect:** Reveals hidden corpses and caches.
+
+#### Heartstone
+> Cold to the touch. Warm when death is near. Yours or someone else's.
+**Effect:** Shows when you're close to dying.
+
+#### Choir Fragment
+> A sliver of crystallized sound. Holding it, you hear whispers of the recently dead.
+**Effect:** Can hear echoes of player deaths in the area.
+
+#### Veil of Forgetting
+> Wrapped around your face, things have trouble remembering you exist.
+**Effect:** Reduced enemy aggression.
+
+#### First Pilgrim's Mark
+> A brand that never healed. It burns when you stray from the path.
+**Effect:** Guidance toward the exit.
+
+#### Architect's Nail
+> Black iron, impossibly heavy for its size. The walls lean away from it.
+**Effect:** Prevents room-shifting when The Architect appears.
+
+---
+
+### Loot Tiers
+
+| Tier | Drop Rate | Examples |
+|------|-----------|----------|
+| Common | 60% | Herbs, Pale Rations, Rusted Blade |
+| Uncommon | 30% | Bone Dust, Void Salt, Bone Hook |
+| Rare | 8% | Tooth of the Deep, Eye of the Hollow |
+| Legendary | 2% | Pilgrim's Last Breath, Architect's Nail |
+
+---
+
+## NPCs & Allies
+
+Not all who wander the depths are enemies. Some are trapped. Some are guides. Some are something else.
+
+---
+
+### The Ferryman
+Appears at water crossings. Will carry you across — for a price. The price is never SOL.
+
+**Dialogue style:** Patient, transactional, unsettling courtesy.
+
+> "A crossing, then? I accept what you value most. You'd be surprised what people offer."
+
+**Function:** Safe passage past certain obstacles. Cost = item sacrifice.
+
+---
+
+### Whisper Keeper
+A figure made of collected final words. It hoards the messages of the dead, trading them for memories.
+
+**Dialogue style:** Speaks in fragments. Other people's sentences.
+
+> "They said — 'should have dodged' — and before that — 'tell my family' — you have words too. I can smell them."
+
+**Function:** Can reveal other players' final messages. Gives hints about what killed them.
+
+---
+
+### The Cartographer
+Blind, but knows every inch of the underworld. They've been mapping it for centuries. The map is never finished because the place keeps changing.
+
+**Dialogue style:** Obsessive, helpful, slightly mad.
+
+> "Room seven connects to room three now. It didn't yesterday. Nothing is where it should be. Isn't that wonderful?"
+
+**Function:** Can reveal room layouts, warn of dangers ahead.
+
+---
+
+### Echo of a Victor
+A projection of someone who made it out. Not really here — just a memory the underworld couldn't digest.
+
+**Dialogue style:** Confident, encouraging, slightly faded.
+
+> "I made it. You can too. Don't trust the water. Don't answer the whispers. And whatever you do — keep moving."
+
+**Function:** Gives gameplay tips. Reminds players escape is possible.
+
+---
+
+### The Collector
+A figure draped in relics. They trade items — but only items taken from corpses. The economy of the dead.
+
+**Dialogue style:** Businesslike, amoral, pragmatic.
+
+> "That blade belonged to someone. Now it belongs to you. Soon it will belong to someone else. I can expedite that."
+
+**Function:** Item trading. Can upgrade weapons for a cost.
+
+---
+
+### The Mourner
+Sits beside corpses. Weeps for them. Knows their names somehow. Will tell you who they were if you ask.
+
+**Dialogue style:** Sorrowful, gentle, uncomfortably knowing.
+
+> "This one was brave. They made it further than most. Their family will never know what happened. But I will remember."
+
+**Function:** Gives backstory to discovered corpses. Adds emotional weight.
+
+---
+
+### Child of the Architect
+Small, curious, wrong. Claims to be the Architect's creation — or child — or mistake. Follows you sometimes. Doesn't understand why you're afraid.
+
+**Dialogue style:** Innocent questions that reveal horrible truths.
+
+> "Father is building something new. Do you want to see? You'll be part of it. Everyone becomes part of it eventually."
+
+**Function:** Warns of Architect's presence. Sometimes helpful, sometimes leads you to danger.
+
+---
+
+## Lore & History
+
+### The Three Descents
+
+**The First Descent — The Naming**
+Long ago, priests came to name the underworld. To give it boundaries. To make it known. They failed. It has no name. It refuses names. The Hollow Clergy are what remains of them.
+
+**The Second Descent — The Claiming**
+A king led an army below, intending to conquer death itself. They found the Throne Keeper instead. The army became the first Drowned. The king... became something else.
+
+**The Third Descent — The Opening**
+Someone opened a path that was never meant to be opened. Now mortals descend freely. The underworld allows this. It is hungry, and the dead are delicious.
+
+---
+
+### The Underworld's Nature
+
+The underworld is not a place — it's a process. It digests. Everything that enters becomes part of it eventually. The walls are compressed corpses. The water is liquefied memory. The darkness is forgotten thoughts.
+
+**It wants you here.**
+
+Not to kill you — that's just a side effect. It wants your stories, your final words, your despair. Death is how it feeds. Every corpse makes it larger. Every message etched in stone is a new tooth in its countless mouths.
+
+---
+
+### The Staking Ritual
+
+The SOL you stake is not just currency — it's a binding. By offering something of value, you become visible to the underworld. Without the stake, you'd simply pass through unseen, unchanged.
+
+The stake makes you real down there.
+
+It also makes you *edible*.
+
+---
+
+### Why People Descend
+
+**The Desperate:** Nothing left to lose. The underworld offers a chance.
+
+**The Grieving:** Seeking lost loved ones. They never find them. They usually join them.
+
+**The Greedy:** Rumors of treasure. Ancient relics. Wealth beyond measure. Mostly rumors.
+
+**The Curious:** Scholars, seekers, fools. They want to understand. Understanding is not rewarded.
+
+**The Compelled:** Some hear a call. A whisper. An invitation. They have no choice.
+
+---
+
+### The Truth About Corpses
+
+When you find another player's corpse, you're not just finding a body. You're finding a *story that ended*. The underworld keeps them visible on purpose — to show you what happens, to make you afraid, to feed on your reaction.
+
+Their final words are prayers the underworld answered wrong.
+
+---
+
+### The Exit
+
+The exit is real. You can leave. Some do.
+
+But the underworld lets you leave. That's the disturbing part. It opens the door. It watches you climb toward the light.
+
+It knows you'll come back.
+
+They always come back.
+
+---
+
+## Room Description Templates
+
+Use these as starting points for generating room content.
+
+---
+
+### EXPLORE Room Templates
+
+**Corridor/Passage:**
+> [Sensory detail]. The passage [direction] stretches [distance/visibility]. [Environmental detail]. [Subtle tension].
+
+Example:
+> Water drips from somewhere above. The passage ahead bends into darkness, the stone walls slick with moisture. Something scraped against this wall recently. The marks are fresh.
+
+**Chamber/Hall:**
+> [Size impression]. [Architectural detail]. [What's wrong here]. [What draws attention].
+
+Example:
+> A vast chamber opens before you, pillars rising into shadow. This was built for gatherings. Now it gathers only silence. At the far end, something glints.
+
+**Threshold/Transition:**
+> [Boundary description]. [What changes]. [Warning sign]. [Choice implication].
+
+Example:
+> The doorway ahead is older than the walls around it. Beyond, the air tastes different — copper and salt. The scratches on the frame point backward. Someone tried to claw their way out.
+
+---
+
+### COMBAT Room Templates
+
+**Ambush:**
+> [False calm]. [Sudden awareness]. [Creature reveal]. [Threat established].
+
+Example:
+> The room seems empty. Still water, still air. Then you see it — the surface rippling where nothing moved. Rising.
+
+**Confrontation:**
+> [Creature already present]. [Its behavior]. [Its attention on you]. [The moment before violence].
+
+Example:
+> It stands in your path. Waiting. Its head tracks your movement with patient hunger. There is no way around. Only through.
+
+**Territorial:**
+> [Creature's space]. [Why it's here]. [Your intrusion]. [Its response].
+
+Example:
+> Bones are stacked here. Arranged. This is a nest. And you've just woken what lives in it.
+
+---
+
+### CORPSE Room Templates
+
+**Fresh Death:**
+> [Recent signs]. [Body position]. [What they were doing]. [Their final words frame].
+
+Example:
+> The blood hasn't dried. They fell here moments ago — or years. Time lies down here. Their hand still reaches toward the wall, where words are scratched: [FINAL MESSAGE].
+
+**Old Death:**
+> [Decay state]. [Integration with environment]. [What remains]. [Their message endures].
+
+Example:
+> Almost part of the wall now. The water has claimed most of them. But the words carved in stone remain, patient as grief: [FINAL MESSAGE].
+
+**Disturbing Death:**
+> [Something wrong]. [Death wasn't natural]. [Implication]. [Their warning].
+
+Example:
+> They didn't die fighting. They died waiting. Sitting against the wall, hands folded, patient. As if they knew. The message beside them: [FINAL MESSAGE].
+
+---
+
+### CACHE Room Templates
+
+**Alcove:**
+> [Hidden space]. [Safety implication]. [What's here]. [Brief respite].
+
+Example:
+> A gap in the wall, above the waterline. Dry. Almost warm. Someone left supplies here. Maybe they made it out. Maybe they just left these behind.
+
+**Offering Site:**
+> [Religious remnant]. [What was worshipped]. [What's left for you]. [Unease despite gift].
+
+Example:
+> An altar to something nameless. Offerings rot at its base — but among them, something useful. Taking it feels like accepting a contract.
+
+**Survivor's Stash:**
+> [Signs of habitation]. [Someone lived here]. [They're gone now]. [Their legacy].
+
+Example:
+> Marks on the wall. Counting days? There are hundreds. Whoever was here survived longer than seems possible. They left everything behind. Did they escape, or simply give up?
+
+---
+
+### EXIT Room Templates
+
+**The Threshold:**
+> [Light]. [The world above]. [Escape real]. [Bittersweet].
+
+Example:
+> Light. Actual light, not torchlight — daylight, filtering through a crack above. Stone stairs lead upward. The air smells like the world you remember. You made it. This time.
+
+**The Release:**
+> [Underworld letting go]. [Feeling of transition]. [What you're leaving]. [What you're taking with you].
+
+Example:
+> The darkness recedes behind you. The water doesn't follow past this point. The underworld releases you — not defeated, just... satisfied. For now. You carry something out with you. You're not sure what.
 
 ---
 
