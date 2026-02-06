@@ -22,15 +22,22 @@ export function getCachedAuth(log?: (msg: string) => void): CachedAuth | null {
     if (adapterCache) {
       const data = JSON.parse(adapterCache);
       _log(`Cache keys: ${Object.keys(data || {}).join(', ')}`);
-      _log(`Has authorizationResult: ${!!data?.authorizationResult}`);
-      _log(`Has auth_token: ${!!data?.authorizationResult?.auth_token}`);
       
-      // The adapter stores: { authorizationResult: { auth_token, accounts, ... } }
-      if (data?.authorizationResult?.auth_token) {
-        const authResult = data.authorizationResult;
+      // The adapter stores flat: { auth_token, accounts, wallet_icon, ... }
+      if (data?.auth_token) {
+        _log(`Found auth_token in cache!`);
         return {
-          authToken: authResult.auth_token,
-          publicKey: authResult.accounts?.[0]?.address || '',
+          authToken: data.auth_token,
+          publicKey: data.accounts?.[0]?.address || '',
+        };
+      }
+      
+      // Fallback: check nested structure (older versions?)
+      if (data?.authorizationResult?.auth_token) {
+        _log(`Found nested auth_token`);
+        return {
+          authToken: data.authorizationResult.auth_token,
+          publicKey: data.authorizationResult.accounts?.[0]?.address || '',
         };
       }
     }
