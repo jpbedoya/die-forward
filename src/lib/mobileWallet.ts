@@ -42,7 +42,8 @@ export async function signAndSendWithMWA(
     log('MWA session started');
     
     // Check for cached auth token
-    const cached = getCachedAuth();
+    log('Checking for cached auth...');
+    const cached = getCachedAuth(log);
     let pubkey: PublicKey;
     let authToken: string;
     

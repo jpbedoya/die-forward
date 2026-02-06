@@ -9,14 +9,22 @@ interface CachedAuth {
   publicKey: string;
 }
 
-export function getCachedAuth(): CachedAuth | null {
+export function getCachedAuth(log?: (msg: string) => void): CachedAuth | null {
   if (typeof window === 'undefined') return null;
+  
+  const _log = log || console.log;
   
   try {
     // Try to read from wallet adapter's cache first
     const adapterCache = localStorage.getItem(WALLET_ADAPTER_CACHE_KEY);
+    _log(`Adapter cache exists: ${!!adapterCache}`);
+    
     if (adapterCache) {
       const data = JSON.parse(adapterCache);
+      _log(`Cache keys: ${Object.keys(data || {}).join(', ')}`);
+      _log(`Has authorizationResult: ${!!data?.authorizationResult}`);
+      _log(`Has auth_token: ${!!data?.authorizationResult?.auth_token}`);
+      
       // The adapter stores: { authorizationResult: { auth_token, accounts, ... } }
       if (data?.authorizationResult?.auth_token) {
         const authResult = data.authorizationResult;
@@ -29,7 +37,7 @@ export function getCachedAuth(): CachedAuth | null {
     
     return null;
   } catch (e) {
-    console.error('Failed to read MWA cache:', e);
+    _log(`Failed to read MWA cache: ${e}`);
     return null;
   }
 }
