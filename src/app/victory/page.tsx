@@ -94,20 +94,11 @@ export default function VictoryScreen() {
         
         {/* Victory announcement */}
         <div className="text-center mb-8">
-          <pre 
-            className="text-[var(--green)] text-[10px] leading-tight mb-4 inline-block"
-            style={{ fontFamily: 'Courier New, Courier, monospace' }}
-          >
-{`     .     .
-    _|_____|_
-   | ~~~~~~~ |
-   |  CLEAR  |
-   | ~~~~~~~ |
-   |_________|
-  /___________\\
-      | |
-   ___|_|___`}
-          </pre>
+          <div className="text-[var(--text-muted)] text-xs tracking-widest mb-2 flex items-center justify-center gap-2">
+            <span className="text-[var(--green-dim)]">═══╣</span>
+            <span className="text-[var(--green)]">✦</span>
+            <span className="text-[var(--green-dim)]">╠═══</span>
+          </div>
           <h1 className="text-[var(--green-bright)] text-2xl tracking-widest mb-2">VICTORY</h1>
           <p className="text-[var(--text-secondary)] text-sm">
             You conquered <span className="text-[var(--amber-bright)]">{victoryData.zone}</span>
