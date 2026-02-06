@@ -185,22 +185,185 @@ Players write their own, but the surrounding text should frame it:
 
 ---
 
-## Audio Direction (for implementation)
+## Audio Direction
 
-### Ambient
-- Constant: Slow dripping water, distant echoes
-- Occasional: Stone grinding, water movement, whispers at edge of hearing
+The soundscape is as important as the words. Audio should feel **ancient, wet, and wrong** — like being somewhere you shouldn't be.
+
+---
+
+### Philosophy
+
+- **Less is more** — Silence builds tension. Don't fill every moment.
+- **Diegetic first** — Sounds that exist in the world (drips, echoes) over "soundtrack"
+- **Unease over shock** — No jump scares. Slow creeping dread.
+- **Water is ever-present** — It's the zone's element. You should always sense it.
+
+---
+
+### Ambient Layers
+
+**Base layer (constant, low):**
+- Slow, irregular water drips — never rhythmic, unpredictable
+- Deep room tone — cavernous emptiness, almost subsonic
+- Distant echoes — unclear source, could be footsteps, could be nothing
+
+**Mid layer (occasional):**
+- Water movement — something displaced it. What?
+- Stone settling — groans, cracks, the place is old
+- Wind from nowhere — there shouldn't be wind down here
+
+**Unsettling layer (rare, triggered):**
+- Whispers at edge of hearing — not words, just the shape of voices
+- Breathing that isn't yours — or is it?
+- A sound that stops exactly when you notice it
+
+---
 
 ### Music
-- Minimal, drone-based
-- Low frequencies, unsettling harmonics
-- Silence is also a tool
 
-### SFX
-- Footsteps on wet stone
-- Water disturbed
-- Combat: Impact sounds, not slashing (thuds, cracks)
-- UI: Subtle, stone-like clicks
+**Style:** Dark ambient / drone
+- **Instruments:** Low strings, bowed metal, waterphone, processed voices
+- **No melody** — Texture and atmosphere only
+- **Key:** Minor, but often atonal or microtonal
+- **Tempo:** None. Timeless.
+
+**Layers by game state:**
+
+| State | Music Feel |
+|-------|-----------|
+| Exploring | Near-silence, occasional deep tones, room tone |
+| Approaching combat | Low drone builds, dissonance creeps in |
+| In combat | Rhythmic pulse (heartbeat), tension, still minimal |
+| Victory | Drone fades, brief moment of silence, then resolution tone |
+| Death | Music drops out. Just water. Then nothing. |
+| Finding corpse | Single sustained note, mournful, fades slowly |
+
+**Reference artists:**
+- Lustmord (dark ambient)
+- Atrium Carceri (dungeon atmosphere)
+- Ben Frost (tension, dread)
+- Akira Yamaoka (Silent Hill — emotional horror)
+
+---
+
+### Sound Effects
+
+**Movement:**
+- Footsteps on wet stone — squelch, echo, weight
+- Wading through water — resistance, cold implied
+- Climbing/scrambling — scraping, effort
+
+**Combat:**
+- Player attacks — thuds, impacts, bone cracking (not slashing)
+- Enemy attacks — wet sounds, grasping, unnatural movement
+- Damage taken — gasp, stumble, visceral but not gory
+- Dodge — water splash, quick movement, relief
+- Brace — held breath, impact absorbed
+- Healing — liquid, bitter swallow, exhale
+
+**Environment:**
+- Doors/passages — stone grinding, ancient mechanisms
+- Discovering items — small chime, but muted (not "video gamey")
+- Discovering corpse — silence falls, then a single tone
+
+**UI (minimal):**
+- Menu select — soft stone tap
+- Confirm — deeper tap
+- Error/invalid — dull, blocked sound (not harsh)
+- Text appearing — subtle, like water drops (or nothing)
+
+---
+
+### Creature Audio
+
+**The Drowned:**
+- Movement: Wet dragging, joints popping wrong
+- Idle: Gurgling, water in lungs, almost-moaning
+- Attack: Sudden splash, grasping, desperate
+- Death: Collapse into water, bubbling, then still
+
+**Hollow Clergy:**
+- Movement: Robes dragging on wet stone
+- Idle: Chanting — monotone, language unknown, unsettling rhythm
+- Attack: Chant peaks, discordant, painful to hear
+- Death: Chant cuts off mid-word. Silence.
+
+**The Unnamed:**
+- Movement: You don't hear it move. It's just... closer.
+- Presence: Static, pressure, your own heartbeat loud
+- Attack: Reality distortion — sounds stretch, reverse, layer
+- "Death": Sound returns to normal. Was it ever there?
+
+---
+
+### Room-Specific Audio
+
+**EXPLORE rooms:**
+- Full ambient layers
+- Music minimal, almost absent
+- Emphasize isolation
+
+**COMBAT rooms:**
+- Ambient pulls back
+- Music tension builds
+- Creature sounds dominate
+
+**CORPSE rooms:**
+- Ambient softens
+- Single mournful tone
+- Respectful silence for reading final words
+
+**CACHE rooms:**
+- Brief safety — ambient lightens slightly
+- Almost warm (but not quite)
+- Don't let them relax fully
+
+**EXIT room:**
+- Distant light sound? Wind from above?
+- Music resolves (rare moment of harmony)
+- Ambient fades as you ascend
+
+---
+
+### Technical Notes
+
+- **Format:** .mp3 for music, .wav for SFX (or .ogg for web)
+- **Looping:** Ambient layers should loop seamlessly
+- **Ducking:** Music should duck under SFX, especially combat
+- **Randomization:** Multiple variants for common sounds (footsteps, drips)
+- **Silence:** Literal silence is a tool. Use it at death, corpse discovery.
+
+---
+
+### Audio Asset List (to source/create)
+
+**Ambient:**
+- [ ] Water drip variations (5-10)
+- [ ] Deep room tone loop
+- [ ] Distant echo variations (3-5)
+- [ ] Water movement (3-5)
+- [ ] Stone settling (3-5)
+- [ ] Whisper layer (1-2, subtle)
+
+**Music:**
+- [ ] Exploration drone (loopable, 2-3 min)
+- [ ] Combat tension (loopable, 1-2 min)
+- [ ] Death sting (5-10 sec)
+- [ ] Victory resolution (10-15 sec)
+- [ ] Corpse discovery tone (5 sec)
+
+**SFX:**
+- [ ] Footsteps wet stone (5+ variations)
+- [ ] Combat impacts (5+ variations)
+- [ ] Player damage (3 variations)
+- [ ] Heal sound
+- [ ] Dodge/splash
+- [ ] UI clicks (2-3)
+
+**Creatures:**
+- [ ] Drowned ambient/attack/death
+- [ ] Clergy chant loop/attack/death
+- [ ] Unnamed presence (abstract, unsettling)
 
 ---
 
