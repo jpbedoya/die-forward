@@ -141,14 +141,26 @@ export function useDeathFeed(limit = 10) {
   const { data, isLoading, error } = db.useQuery({
     deaths: {
       $: {
-        order: { createdAt: 'desc' },
         limit,
       },
     },
   });
 
+  // Sort client-side by createdAt desc
+  const sortedDeaths = [...(data?.deaths || [])].sort((a, b) => 
+    (b.createdAt || 0) - (a.createdAt || 0)
+  );
+
+  // Debug logging
+  if (error) {
+    console.error('Death feed error:', error);
+  }
+  if (data) {
+    console.log('Death feed data:', data?.deaths?.length, 'deaths');
+  }
+
   return {
-    deaths: data?.deaths || [],
+    deaths: sortedDeaths,
     isLoading,
     error,
   };
