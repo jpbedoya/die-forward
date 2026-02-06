@@ -2,14 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import { getGameState, saveGameState } from '@/lib/gameState';
+import { 
+  getStrikeNarration, 
+  getDodgeNarration, 
+  getBraceNarration, 
+  getHerbsNarration, 
+  getFleeNarration,
+  getEnemyIntent,
+  IntentType 
+} from '@/lib/content';
 
 type CombatPhase = 'choose' | 'resolve' | 'enemy-turn' | 'victory' | 'death';
-
-// Mock data
-const mockEnemy = {
-  name: "DROWNED ONE",
-  maxHealth: 100,
-};
 
 const defaultPlayer = {
   maxHealth: 100,
@@ -17,42 +20,84 @@ const defaultPlayer = {
 };
 
 const combatOptions = [
-  { id: 'strike', text: 'Strike', desc: 'Trade blows', cost: 1, emoji: '⚔️' },
-  { id: 'dodge', text: 'Dodge', desc: 'Evade attack', cost: 1, emoji: '💨' },
-  { id: 'brace', text: 'Brace', desc: 'Reduce damage', cost: 0, emoji: '🛡️' },
-  { id: 'herbs', text: 'Herbs', desc: 'Heal, take hit', cost: 0, emoji: '🌿' },
-  { id: 'flee', text: 'Flee', desc: 'Try to escape', cost: 1, emoji: '🏃' },
+  { id: 'strike', text: 'Strike', cost: 1, emoji: '⚔️' },
+  { id: 'dodge', text: 'Dodge', cost: 1, emoji: '💨' },
+  { id: 'brace', text: 'Brace', cost: 0, emoji: '🛡️' },
+  { id: 'herbs', text: 'Herbs', cost: 0, emoji: '🌿' },
+  { id: 'flee', text: 'Flee', cost: 1, emoji: '🏃' },
 ];
 
-const resolutions: Record<string, { narrative: string; playerDmg: number; enemyDmg: number; heal?: number; consumeHerbs?: boolean }> = {
-  strike: {
-    narrative: "You swing your blade in a wide arc. Steel meets rotted flesh with a sickening thud. The creature staggers — but its claws rake across your arm.",
-    playerDmg: 12,
-    enemyDmg: 25,
-  },
-  dodge: {
-    narrative: "You twist aside at the last moment. Claws slice through empty air. The creature stumbles past, exposed.",
-    playerDmg: 0,
-    enemyDmg: 0,
-  },
-  brace: {
-    narrative: "You raise your guard. The impact rattles your bones, but you hold firm. Reduced damage.",
-    playerDmg: 6,
-    enemyDmg: 0,
-  },
-  herbs: {
-    narrative: "You crush the herbs and press them to your wounds. Warmth spreads through you — but the creature strikes while you're distracted.",
-    playerDmg: 15,
-    enemyDmg: 0,
-    heal: 25,
-    consumeHerbs: true,
-  },
-  flee: {
-    narrative: "You turn and run. A claw catches your back as you flee, but you escape into the darkness.",
-    playerDmg: 10,
-    enemyDmg: 0,
-  },
-};
+// Get dynamic narration based on action and outcome
+function getActionNarration(action: string, outcome: 'success' | 'fail' | 'partial'): string {
+  switch (action) {
+    case 'strike':
+      return outcome === 'success' ? getStrikeNarration('success') : 
+             outcome === 'partial' ? getStrikeNarration('mutual') : getStrikeNarration('weak');
+    case 'dodge':
+      return outcome === 'success' ? getDodgeNarration('success') : 
+             outcome === 'partial' ? getDodgeNarration('close') : getDodgeNarration('fail');
+    case 'brace':
+      return outcome === 'success' ? getBraceNarration('success') : 
+             outcome === 'partial' ? getBraceNarration('broken') : getBraceNarration('fail');
+    case 'herbs':
+      return outcome === 'success' ? getHerbsNarration('heal') : getHerbsNarration('interrupted');
+    case 'flee':
+      return outcome === 'success' ? getFleeNarration('success') : 
+             outcome === 'partial' ? getFleeNarration('hurt') : getFleeNarration('fail');
+    default:
+      return "You act.";
+  }
+}
+
+// Resolution data structure
+interface Resolution {
+  narrative: string;
+  playerDmg: number;
+  enemyDmg: number;
+  heal?: number;
+  consumeHerbs?: boolean;
+}
+
+// Generate dynamic resolution based on action
+function getResolution(action: string): Resolution {
+  switch (action) {
+    case 'strike':
+      return {
+        narrative: getActionNarration('strike', 'partial'), // Usually mutual exchange
+        playerDmg: 10 + Math.floor(Math.random() * 8), // 10-17 damage
+        enemyDmg: 20 + Math.floor(Math.random() * 10), // 20-29 damage
+      };
+    case 'dodge':
+      const dodgeSuccess = Math.random() > 0.3; // 70% success
+      return {
+        narrative: getActionNarration('dodge', dodgeSuccess ? 'success' : 'partial'),
+        playerDmg: dodgeSuccess ? 0 : 5 + Math.floor(Math.random() * 5),
+        enemyDmg: 0,
+      };
+    case 'brace':
+      return {
+        narrative: getActionNarration('brace', 'success'),
+        playerDmg: 3 + Math.floor(Math.random() * 5), // Reduced: 3-7
+        enemyDmg: 0,
+      };
+    case 'herbs':
+      return {
+        narrative: getActionNarration('herbs', 'success'),
+        playerDmg: 12 + Math.floor(Math.random() * 6), // Take hit while healing
+        enemyDmg: 0,
+        heal: 20 + Math.floor(Math.random() * 10), // Heal 20-29
+        consumeHerbs: true,
+      };
+    case 'flee':
+      return {
+        narrative: getActionNarration('flee', 'partial'), // Usually take some damage
+        playerDmg: 8 + Math.floor(Math.random() * 7), // 8-14 damage
+        enemyDmg: 0,
+      };
+    default:
+      return { narrative: "Nothing happens.", playerDmg: 0, enemyDmg: 0 };
+  }
+}
 
 function HealthBar({ current, max, color = 'red' }: { current: number; max: number; color?: string }) {
   const pct = current / max;
@@ -85,11 +130,11 @@ export default function CombatScreen() {
   const [playerInventory, setPlayerInventory] = useState<{id: string; name: string; emoji: string}[]>([]);
   const [stakeAmount, setStakeAmount] = useState(0.05);
   const [enemyHealth, setEnemyHealth] = useState(65);
-  const [narrative, setNarrative] = useState(`The creature rises from the murky water, hollow eyes fixed on you. Water streams from its bloated form as it lurches forward.
-
-It lunges, claws extended, aiming for your throat.`);
-  const [enemyIntent, setEnemyIntent] = useState({ type: "AGGRESSIVE", desc: "Lunging forward, claws extended" });
-  const [lastResolution, setLastResolution] = useState<{ playerDmg: number; enemyDmg: number; heal?: number; consumeHerbs?: boolean } | null>(null);
+  const [enemyName, setEnemyName] = useState('THE DROWNED');
+  const [enemyMaxHealth, setEnemyMaxHealth] = useState(100);
+  const [narrative, setNarrative] = useState('');
+  const [enemyIntent, setEnemyIntent] = useState({ type: "AGGRESSIVE" as IntentType, description: "Preparing to attack" });
+  const [lastResolution, setLastResolution] = useState<Resolution | null>(null);
   const [loaded, setLoaded] = useState(false);
 
   // Load game state on mount
@@ -99,13 +144,31 @@ It lunges, claws extended, aiming for your throat.`);
     setPlayerStamina(state.stamina);
     setPlayerInventory(state.inventory);
     setStakeAmount(state.stakeAmount);
+    
+    // Get current room's enemy from dungeon
+    if (state.dungeon && state.dungeon[state.currentRoom]) {
+      const currentDungeonRoom = state.dungeon[state.currentRoom];
+      if (currentDungeonRoom.enemy) {
+        setEnemyName(currentDungeonRoom.enemy.toUpperCase());
+        // Set narrative from room content
+        setNarrative(currentDungeonRoom.narrative || 'A creature blocks your path.');
+      }
+    } else {
+      // Fallback
+      setNarrative('A creature rises from the darkness. It blocks your path.');
+    }
+    
+    // Generate initial intent
+    const initialIntent = getEnemyIntent('AGGRESSIVE');
+    setEnemyIntent(initialIntent);
+    
     setLoaded(true);
   }, []);
 
   const handleExecute = () => {
     if (!selectedOption) return;
     
-    const resolution = resolutions[selectedOption];
+    const resolution = getResolution(selectedOption);
     const option = combatOptions.find(o => o.id === selectedOption);
     
     // Apply effects
@@ -146,7 +209,7 @@ It lunges, claws extended, aiming for your throat.`);
   const handleContinue = () => {
     if (enemyHealth <= 0) {
       setPhase('victory');
-      setNarrative("The creature collapses into the murky water. Silence returns to the chamber.\n\nYou catch your breath. The path ahead is clear.");
+      setNarrative("The creature collapses. Silence returns to the chamber.\n\nYou catch your breath. The path ahead is clear.");
       return;
     }
     
@@ -156,19 +219,16 @@ It lunges, claws extended, aiming for your throat.`);
       return;
     }
     
-    // Enemy turn - set new intent
-    const intents = [
-      { type: "AGGRESSIVE", desc: "Preparing to lunge at you" },
-      { type: "DEFENSIVE", desc: "Circling warily, watching" },
-      { type: "CHARGING", desc: "Gathering dark energy" },
-    ];
-    const newIntent = intents[Math.floor(Math.random() * intents.length)];
+    // Enemy turn - set new intent dynamically
+    const intentTypes: IntentType[] = ['AGGRESSIVE', 'DEFENSIVE', 'CHARGING', 'ERRATIC', 'HUNTING'];
+    const randomType = intentTypes[Math.floor(Math.random() * intentTypes.length)];
+    const newIntent = getEnemyIntent(randomType);
     setEnemyIntent(newIntent);
     
     // Restore 1 stamina
     setPlayerStamina(Math.min(defaultPlayer.maxStamina, playerStamina + 1));
     
-    setNarrative(`The ${mockEnemy.name} recovers and faces you again.\n\n${newIntent.desc}...`);
+    setNarrative(`The ${enemyName} recovers and faces you again.\n\n${newIntent.description}...`);
     setPhase('choose');
   };
 
@@ -190,14 +250,14 @@ It lunges, claws extended, aiming for your throat.`);
           <div className="flex items-center gap-2">
             <span className="text-[var(--red)]">⚔️</span>
             <span className="text-[var(--red-bright)] uppercase tracking-wide text-sm">
-              {mockEnemy.name}
+              {enemyName}
             </span>
           </div>
           <span className={`text-xs ${enemyHealth <= 0 ? 'text-[var(--text-dim)]' : 'text-[var(--red-bright)]'}`}>
-            {enemyHealth}/{mockEnemy.maxHealth}
+            {enemyHealth}/{enemyMaxHealth}
           </span>
         </div>
-        <HealthBar current={enemyHealth} max={mockEnemy.maxHealth} />
+        <HealthBar current={enemyHealth} max={enemyMaxHealth} />
         
         {/* Intent */}
         {phase === 'choose' && enemyHealth > 0 && (
@@ -222,7 +282,7 @@ It lunges, claws extended, aiming for your throat.`);
               ⚠ Enemy Intent
             </div>
             <div className="text-[var(--amber-bright)] text-sm">
-              {enemyIntent.desc}
+              {enemyIntent.description}
             </div>
           </div>
         )}
