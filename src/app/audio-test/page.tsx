@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 
 interface SoundPreset {
@@ -12,6 +12,13 @@ interface SoundPreset {
 }
 
 const presets: SoundPreset[] = [
+  // Ambient (loops)
+  { id: 'ambient-explore', name: 'Exploration Loop', prompt: 'dark cave ambient atmosphere water dripping echoes distant rumble underground dungeon mysterious low drone', duration: 15, category: 'Ambient' },
+  { id: 'ambient-combat', name: 'Combat Loop', prompt: 'tense combat music pulsing danger heartbeat drums aggressive dark battle tension rising stakes fight', duration: 15, category: 'Ambient' },
+  { id: 'ambient-title', name: 'Title Loop', prompt: 'mysterious title screen ambient dark fantasy dungeon crawler ominous anticipation ancient evil lurking ethereal choir low', duration: 15, category: 'Ambient' },
+  { id: 'ambient-death', name: 'Death Loop', prompt: 'somber death ambient dark mourning low drone despair fading hope final moments haunting ethereal sad', duration: 12, category: 'Ambient' },
+  { id: 'ambient-victory', name: 'Victory Loop', prompt: 'triumphant victory ambient relief success emerged from darkness hopeful yet eerie dungeon conquered mystical ascending', duration: 12, category: 'Ambient' },
+  
   // Combat
   { id: 'sword-slash', name: 'Sword Slash', prompt: 'sharp sword slash swoosh metal blade cutting air fast attack', duration: 1.5, category: 'Combat' },
   { id: 'blunt-hit', name: 'Blunt Impact', prompt: 'heavy blunt impact thud flesh bone crushing hit meaty punch', duration: 1.5, category: 'Combat' },
@@ -50,6 +57,33 @@ export default function AudioTestPage() {
   const [customName, setCustomName] = useState('');
   const [customDuration, setCustomDuration] = useState(2);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Check for existing audio files on mount
+  React.useEffect(() => {
+    const checkExisting = async () => {
+      const existing: GeneratedSound[] = [];
+      for (const preset of presets) {
+        try {
+          const res = await fetch(`/audio/${preset.id}.mp3`, { method: 'HEAD' });
+          if (res.ok) {
+            const size = parseInt(res.headers.get('content-length') || '0');
+            existing.push({
+              id: preset.id,
+              name: preset.name,
+              path: `/audio/${preset.id}.mp3`,
+              size,
+            });
+          }
+        } catch {
+          // File doesn't exist
+        }
+      }
+      if (existing.length > 0) {
+        setGenerated(existing);
+      }
+    };
+    checkExisting();
+  }, []);
 
   // Check if a sound already exists (generated this session)
   const isGenerated = (id: string) => generated.some(s => s.id === id);
@@ -104,17 +138,18 @@ export default function AudioTestPage() {
     setCustomName('');
   };
 
-  const playSound = (path: string, id: string) => {
+  const playSound = (path: string, id: string, loop: boolean = false) => {
     if (audioRef.current) {
       audioRef.current.pause();
     }
     
     const audio = new Audio(path);
+    audio.loop = loop;
     audioRef.current = audio;
     setPlaying(id);
     
     audio.play();
-    audio.onended = () => setPlaying(null);
+    audio.onended = () => !loop && setPlaying(null);
   };
 
   const stopSound = () => {
@@ -188,14 +223,14 @@ export default function AudioTestPage() {
                     {sound ? (
                       <>
                         <button
-                          onClick={() => isPlaying ? stopSound() : playSound(sound.path, sound.id)}
+                          onClick={() => isPlaying ? stopSound() : playSound(sound.path, sound.id, preset.category === 'Ambient')}
                           className={`px-3 py-1.5 text-xs border ${
                             isPlaying 
                               ? 'bg-[var(--red-dim)]/30 border-[var(--red)] text-[var(--red-bright)]' 
                               : 'bg-[var(--green-dim)]/30 border-[var(--green)] text-[var(--green-bright)]'
                           }`}
                         >
-                          {isPlaying ? '■ Stop' : '▶ Play'}
+                          {isPlaying ? '■ Stop' : preset.category === 'Ambient' ? '🔁 Loop' : '▶ Play'}
                         </button>
                         <span className="text-[var(--green)] text-[10px]">
                           {Math.round(sound.size / 1024)}KB
