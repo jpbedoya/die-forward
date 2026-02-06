@@ -13,7 +13,13 @@ import {
   getCreatureInfo,
   getCreatureHealth,
   getCreatureIntent,
-  IntentType 
+  getTierDamageMultiplier,
+  getCreatureTier,
+  getIntentEffects,
+  getItemEffects,
+  IntentType,
+  IntentEffects,
+  ItemEffects,
 } from '@/lib/content';
 import { useAudio } from '@/lib/audio';
 
@@ -67,56 +73,106 @@ interface Resolution {
   fleeSuccess?: boolean;
 }
 
-// Generate dynamic resolution based on action
-function getResolution(action: string): Resolution {
+// Combat context for calculating damage
+interface CombatContext {
+  enemyName: string;
+  intentEffects: IntentEffects;
+  itemEffects: ItemEffects;
+  wasCharging: boolean;      // Enemy was charging last turn
+  playerTriedFlee: boolean;  // Player tried to flee last turn
+}
+
+// Generate dynamic resolution based on action with full combat mechanics
+function getResolution(action: string, ctx: CombatContext): Resolution {
+  const tierMult = getTierDamageMultiplier(ctx.enemyName);
+  const intentMult = ctx.intentEffects.damageDealtMod;
+  const defenseMult = 1 - ctx.itemEffects.defenseBonus;
+  const attackMult = 1 + ctx.itemEffects.damageBonus;
+  
+  // If enemy was charging last turn and player didn't dodge/brace, double damage!
+  const chargeMult = ctx.wasCharging && action !== 'dodge' && action !== 'brace' ? 2.0 : 1.0;
+  
+  // Calculate base enemy damage with all modifiers
+  const calcEnemyDamage = (baseDmg: number) => {
+    let dmg = baseDmg * tierMult * intentMult * defenseMult * chargeMult;
+    return Math.round(dmg);
+  };
+  
+  // Calculate player damage with item bonuses
+  const calcPlayerDamage = (baseDmg: number) => {
+    let dmg = baseDmg * attackMult;
+    // If enemy is defensive, they take less damage
+    dmg = dmg * ctx.intentEffects.damageTakenMod;
+    return Math.round(dmg);
+  };
+
   switch (action) {
-    case 'strike':
+    case 'strike': {
+      const baseEnemyHit = 10 + Math.floor(Math.random() * 8); // 10-17 base
+      const basePlayerHit = 20 + Math.floor(Math.random() * 10); // 20-29 base
       return {
-        narrative: getActionNarration('strike', 'partial'), // Usually mutual exchange
-        playerDmg: 10 + Math.floor(Math.random() * 8), // 10-17 damage
-        enemyDmg: 20 + Math.floor(Math.random() * 10), // 20-29 damage
+        narrative: getActionNarration('strike', 'partial'),
+        playerDmg: calcEnemyDamage(baseEnemyHit),
+        enemyDmg: calcPlayerDamage(basePlayerHit),
       };
-    case 'dodge':
+    }
+    case 'dodge': {
       const dodgeSuccess = Math.random() > 0.3; // 70% success
+      // Dodging negates charge damage!
+      const baseHit = dodgeSuccess ? 0 : 5 + Math.floor(Math.random() * 5);
       return {
         narrative: getActionNarration('dodge', dodgeSuccess ? 'success' : 'partial'),
-        playerDmg: dodgeSuccess ? 0 : 5 + Math.floor(Math.random() * 5),
+        playerDmg: dodgeSuccess ? 0 : calcEnemyDamage(baseHit),
         enemyDmg: 0,
       };
-    case 'brace':
+    }
+    case 'brace': {
+      // Brace heavily reduces damage, and negates charge bonus
+      const baseHit = 3 + Math.floor(Math.random() * 5); // 3-7 base
+      const bracedDmg = calcEnemyDamage(baseHit) * 0.5; // Brace halves after mods
       return {
         narrative: getActionNarration('brace', 'success'),
-        playerDmg: 3 + Math.floor(Math.random() * 5), // Reduced: 3-7
+        playerDmg: Math.round(bracedDmg),
         enemyDmg: 0,
       };
-    case 'herbs':
+    }
+    case 'herbs': {
+      const baseHit = 12 + Math.floor(Math.random() * 6); // Take hit while healing
       return {
         narrative: getActionNarration('herbs', 'success'),
-        playerDmg: 12 + Math.floor(Math.random() * 6), // Take hit while healing
+        playerDmg: calcEnemyDamage(baseHit),
         enemyDmg: 0,
         heal: 20 + Math.floor(Math.random() * 10), // Heal 20-29
         consumeHerbs: true,
       };
+    }
     case 'flee': {
+      // Base 50% flee chance, modified by intent and items
+      const baseFlee = 0.5;
+      const fleeChance = Math.min(0.9, Math.max(0.1, 
+        baseFlee + ctx.intentEffects.fleeMod + ctx.itemEffects.fleeBonus
+      ));
+      
       const roll = Math.random();
-      if (roll < 0.5) {
-        // 50% - Success: escape!
+      if (roll < fleeChance) {
+        // Success: escape!
         return {
           narrative: getActionNarration('flee', 'success'),
           playerDmg: 0,
           enemyDmg: 0,
           fleeSuccess: true,
         };
-      } else if (roll < 0.8) {
-        // 30% - Fail with damage
+      } else if (roll < fleeChance + 0.3) {
+        // Fail with damage
+        const baseHit = 5 + Math.floor(Math.random() * 10);
         return {
           narrative: getActionNarration('flee', 'partial'),
-          playerDmg: 5 + Math.floor(Math.random() * 10), // 5-14 damage
+          playerDmg: calcEnemyDamage(baseHit),
           enemyDmg: 0,
           fleeSuccess: false,
         };
       } else {
-        // 20% - Fail but no damage (lucky)
+        // Fail but no damage (lucky)
         return {
           narrative: getActionNarration('flee', 'fail'),
           playerDmg: 0,
@@ -168,6 +224,11 @@ export default function CombatScreen() {
   const [enemyEmoji, setEnemyEmoji] = useState('👹');
   const [narrative, setNarrative] = useState('');
   const [enemyIntent, setEnemyIntent] = useState({ type: "AGGRESSIVE" as IntentType, description: "Preparing to attack" });
+  const [intentEffects, setIntentEffects] = useState<IntentEffects>(getIntentEffects('AGGRESSIVE'));
+  const [itemEffects, setItemEffects] = useState<ItemEffects>({ damageBonus: 0, defenseBonus: 0, fleeBonus: 0 });
+  const [wasCharging, setWasCharging] = useState(false);
+  const [playerTriedFlee, setPlayerTriedFlee] = useState(false);
+  const [enemyTier, setEnemyTier] = useState(1);
   const [lastResolution, setLastResolution] = useState<Resolution | null>(null);
   const [loaded, setLoaded] = useState(false);
   
@@ -187,6 +248,9 @@ export default function CombatScreen() {
     setPlayerInventory(state.inventory);
     setStakeAmount(state.stakeAmount);
     
+    // Calculate item effects from inventory
+    setItemEffects(getItemEffects(state.inventory));
+    
     // Get current room's enemy from dungeon
     if (state.dungeon && state.dungeon[state.currentRoom]) {
       const currentDungeonRoom = state.dungeon[state.currentRoom];
@@ -202,14 +266,17 @@ export default function CombatScreen() {
           setEnemyMaxHealth(health);
           setEnemyDescription(creatureInfo.description);
           setEnemyEmoji(creatureInfo.emoji);
+          setEnemyTier(getCreatureTier(enemyNameRaw));
           
           // Use creature-specific intent
           const initialIntent = getCreatureIntent(enemyNameRaw);
           setEnemyIntent(initialIntent);
+          setIntentEffects(getIntentEffects(initialIntent.type));
         } else {
           // Fallback for unknown creatures
           const initialIntent = getEnemyIntent('AGGRESSIVE');
           setEnemyIntent(initialIntent);
+          setIntentEffects(getIntentEffects('AGGRESSIVE'));
         }
         
         // Set narrative from room content
@@ -220,6 +287,7 @@ export default function CombatScreen() {
       setNarrative('A creature rises from the darkness. It blocks your path.');
       const initialIntent = getEnemyIntent('AGGRESSIVE');
       setEnemyIntent(initialIntent);
+      setIntentEffects(getIntentEffects('AGGRESSIVE'));
     }
     
     setLoaded(true);
@@ -228,8 +296,22 @@ export default function CombatScreen() {
   const handleExecute = () => {
     if (!selectedOption) return;
     
-    const resolution = getResolution(selectedOption);
+    // Build combat context with all modifiers
+    const state = getGameState();
+    const currentEnemy = state.dungeon?.[state.currentRoom]?.enemy || 'Unknown';
+    const ctx: CombatContext = {
+      enemyName: currentEnemy,
+      intentEffects,
+      itemEffects,
+      wasCharging,
+      playerTriedFlee,
+    };
+    
+    const resolution = getResolution(selectedOption, ctx);
     const option = combatOptions.find(o => o.id === selectedOption);
+    
+    // Track if player tried to flee (for HUNTING intent)
+    setPlayerTriedFlee(selectedOption === 'flee' && !resolution.fleeSuccess);
     
     // Apply effects
     let newPlayerHealth = playerHealth - resolution.playerDmg + (resolution.heal || 0);
@@ -263,6 +345,8 @@ export default function CombatScreen() {
       if (herbItem) {
         const newInventory = playerInventory.filter(i => i.id !== herbItem.id);
         setPlayerInventory(newInventory);
+        // Recalculate item effects after inventory change
+        setItemEffects(getItemEffects(newInventory));
         // Save immediately so refresh doesn't restore herbs
         saveGameState({ 
           health: newPlayerHealth, 
@@ -305,16 +389,23 @@ export default function CombatScreen() {
       return;
     }
     
+    // Track if enemy was charging this turn (for next turn's damage)
+    setWasCharging(intentEffects.isCharging);
+    
     // Enemy turn - set new intent based on creature type
     const state = getGameState();
     const currentEnemy = state.dungeon?.[state.currentRoom]?.enemy;
     const newIntent = currentEnemy ? getCreatureIntent(currentEnemy) : getEnemyIntent();
+    const newIntentEffects = getIntentEffects(newIntent.type);
     setEnemyIntent(newIntent);
+    setIntentEffects(newIntentEffects);
     
     // Restore 1 stamina
     setPlayerStamina(Math.min(defaultPlayer.maxStamina, playerStamina + 1));
     
-    setNarrative(`The ${enemyName} recovers and faces you again.\n\n${newIntent.description}...`);
+    // Show narrative with intent effect description
+    const chargeWarning = newIntentEffects.isCharging ? '\n\n⚠️ IT\'S CHARGING UP!' : '';
+    setNarrative(`The ${enemyName} recovers and faces you again.\n\n${newIntentEffects.description}${chargeWarning}`);
     setPhase('choose');
   };
 
@@ -360,12 +451,23 @@ export default function CombatScreen() {
         
         <HealthBar current={enemyHealth} max={enemyMaxHealth} />
         
-        {/* Intent */}
+        {/* Intent + Tier */}
         {phase === 'choose' && enemyHealth > 0 && (
-          <div className="mt-2 text-xs flex items-center gap-2">
+          <div className="mt-2 text-xs flex items-center gap-2 flex-wrap">
             <span className="text-[var(--text-muted)]">Intent:</span>
-            <span className="px-2 py-0.5 bg-[var(--amber-dim)]/20 border border-[var(--amber-dim)] text-[var(--amber-bright)] text-[10px] uppercase tracking-wider">
+            <span className={`px-2 py-0.5 border text-[10px] uppercase tracking-wider ${
+              intentEffects.isCharging 
+                ? 'bg-[var(--red-dim)]/30 border-[var(--red)] text-[var(--red-bright)] animate-pulse'
+                : 'bg-[var(--amber-dim)]/20 border-[var(--amber-dim)] text-[var(--amber-bright)]'
+            }`}>
               {enemyIntent.type}
+            </span>
+            <span className={`px-2 py-0.5 border text-[10px] uppercase tracking-wider ${
+              enemyTier === 3 ? 'bg-[var(--purple-dim)]/30 border-[var(--purple)] text-[var(--purple-bright)]' :
+              enemyTier === 2 ? 'bg-[var(--amber-dim)]/30 border-[var(--amber)] text-[var(--amber-bright)]' :
+              'bg-[var(--text-dim)]/20 border-[var(--text-dim)] text-[var(--text-muted)]'
+            }`}>
+              TIER {enemyTier}
             </span>
           </div>
         )}
@@ -380,13 +482,48 @@ export default function CombatScreen() {
 
         {/* Intent callout - only in choose phase */}
         {phase === 'choose' && enemyHealth > 0 && (
-          <div className="bg-[var(--amber-dim)]/20 border border-[var(--amber-dim)] p-3 mb-6">
-            <div className="text-[var(--amber-bright)] text-xs uppercase tracking-wider mb-1">
-              ⚠ Enemy Intent
+          <div className={`p-3 mb-4 border ${
+            intentEffects.isCharging 
+              ? 'bg-[var(--red-dim)]/20 border-[var(--red)]'
+              : wasCharging
+              ? 'bg-[var(--red-dim)]/30 border-[var(--red)] animate-pulse'
+              : 'bg-[var(--amber-dim)]/20 border-[var(--amber-dim)]'
+          }`}>
+            <div className={`text-xs uppercase tracking-wider mb-1 ${
+              intentEffects.isCharging || wasCharging ? 'text-[var(--red-bright)]' : 'text-[var(--amber-bright)]'
+            }`}>
+              {wasCharging ? '⚠️ CHARGED ATTACK INCOMING!' : '⚠ Enemy Intent'}
             </div>
-            <div className="text-[var(--amber-bright)] text-sm">
-              {enemyIntent.description}
+            <div className={`text-sm ${
+              intentEffects.isCharging || wasCharging ? 'text-[var(--red-bright)]' : 'text-[var(--amber-bright)]'
+            }`}>
+              {wasCharging ? 'DODGE or BRACE to avoid double damage!' : intentEffects.description}
             </div>
+          </div>
+        )}
+
+        {/* Combat modifiers display */}
+        {phase === 'choose' && (itemEffects.damageBonus > 0 || itemEffects.defenseBonus > 0) && (
+          <div className="flex gap-2 mb-4 text-[10px] flex-wrap">
+            {itemEffects.damageBonus > 0 && (
+              <span className="px-2 py-1 bg-[var(--green-dim)]/20 border border-[var(--green-dim)] text-[var(--green-bright)]">
+                ⚔️ +{Math.round(itemEffects.damageBonus * 100)}% DMG
+              </span>
+            )}
+            {itemEffects.defenseBonus > 0 && (
+              <span className="px-2 py-1 bg-[var(--blue-dim)]/20 border border-[var(--blue-dim)] text-[var(--blue-bright)]">
+                🛡️ -{Math.round(itemEffects.defenseBonus * 100)}% DMG TAKEN
+              </span>
+            )}
+            {(itemEffects.fleeBonus > 0 || intentEffects.fleeMod !== 0) && (
+              <span className={`px-2 py-1 border ${
+                (itemEffects.fleeBonus + intentEffects.fleeMod) >= 0 
+                  ? 'bg-[var(--purple-dim)]/20 border-[var(--purple-dim)] text-[var(--purple-bright)]'
+                  : 'bg-[var(--red-dim)]/20 border-[var(--red-dim)] text-[var(--red-bright)]'
+              }`}>
+                🏃 {(itemEffects.fleeBonus + intentEffects.fleeMod) >= 0 ? '+' : ''}{Math.round((itemEffects.fleeBonus + intentEffects.fleeMod) * 100)}% FLEE
+              </span>
+            )}
           </div>
         )}
 

@@ -351,6 +351,23 @@ export function getCreatureInfo(name: string): CreatureInfo | null {
   return BESTIARY[name] || null;
 }
 
+// Get creature tier (1, 2, or 3)
+export function getCreatureTier(name: string): number {
+  const info = BESTIARY[name];
+  return info?.tier || 1;
+}
+
+// Get damage multiplier based on tier
+export function getTierDamageMultiplier(name: string): number {
+  const tier = getCreatureTier(name);
+  switch (tier) {
+    case 1: return 1.0;
+    case 2: return 1.5;
+    case 3: return 2.0;
+    default: return 1.0;
+  }
+}
+
 // Get random creature health based on their tier
 export function getCreatureHealth(name: string): number {
   const info = BESTIARY[name];
@@ -366,6 +383,120 @@ export function getCreatureIntent(name: string): { type: IntentType; description
   // Pick from creature's preferred behaviors
   const preferredType = pick(info.behaviors);
   return getEnemyIntent(preferredType);
+}
+
+// Intent combat effects
+export interface IntentEffects {
+  damageDealtMod: number;    // Multiplier on enemy's damage to you
+  damageTakenMod: number;    // Multiplier on damage enemy takes
+  fleeMod: number;           // Modifier to flee chance (-0.3 = 30% harder)
+  isCharging: boolean;       // Will deal double damage next turn
+  description: string;       // Combat tooltip
+}
+
+export function getIntentEffects(intentType: IntentType): IntentEffects {
+  switch (intentType) {
+    case 'AGGRESSIVE':
+      return {
+        damageDealtMod: 1.0,
+        damageTakenMod: 1.0,
+        fleeMod: 0,
+        isCharging: false,
+        description: 'Attacking normally',
+      };
+    case 'CHARGING':
+      return {
+        damageDealtMod: 0.5,  // Low damage this turn
+        damageTakenMod: 1.0,
+        fleeMod: 0,
+        isCharging: true,     // WILL HIT HARD NEXT TURN
+        description: '⚠️ CHARGING — will deal DOUBLE damage next turn!',
+      };
+    case 'DEFENSIVE':
+      return {
+        damageDealtMod: 0.5,
+        damageTakenMod: 0.5,  // Harder to hurt
+        fleeMod: 0.2,         // Easier to flee
+        isCharging: false,
+        description: 'Guarding — takes less damage',
+      };
+    case 'STALKING':
+      return {
+        damageDealtMod: 1.0,
+        damageTakenMod: 1.0,
+        fleeMod: -0.3,        // Harder to flee
+        isCharging: false,
+        description: 'Watching you — harder to escape',
+      };
+    case 'HUNTING':
+      return {
+        damageDealtMod: 1.3,  // Bonus damage (hunting you down)
+        damageTakenMod: 1.0,
+        fleeMod: -0.2,
+        isCharging: false,
+        description: 'Hunting — deals bonus damage',
+      };
+    case 'ERRATIC':
+      const erraticMod = 0.5 + Math.random() * 1.5; // 0.5x to 2x
+      return {
+        damageDealtMod: erraticMod,
+        damageTakenMod: 1.0,
+        fleeMod: 0.1,
+        isCharging: false,
+        description: 'Unpredictable — damage varies wildly',
+      };
+    case 'RETREATING':
+      return {
+        damageDealtMod: 0.5,
+        damageTakenMod: 1.2,  // More vulnerable
+        fleeMod: 0.3,         // Much easier to flee
+        isCharging: false,
+        description: 'Retreating — easier to escape or damage',
+      };
+    default:
+      return {
+        damageDealtMod: 1.0,
+        damageTakenMod: 1.0,
+        fleeMod: 0,
+        isCharging: false,
+        description: 'Unknown intent',
+      };
+  }
+}
+
+// Item combat effects
+export interface ItemEffects {
+  damageBonus: number;       // Flat % bonus to damage dealt
+  defenseBonus: number;      // Flat % reduction to damage taken
+  fleeBonus: number;         // Bonus to flee chance
+}
+
+export function getItemEffects(inventory: {name: string}[]): ItemEffects {
+  let effects: ItemEffects = { damageBonus: 0, defenseBonus: 0, fleeBonus: 0 };
+  
+  for (const item of inventory) {
+    switch (item.name) {
+      case 'Torch':
+        effects.damageBonus += 0.25;  // +25% damage (see better)
+        break;
+      case 'Dagger':
+        effects.damageBonus += 0.35;  // +35% damage
+        break;
+      case 'Rusty Blade':
+        effects.damageBonus += 0.20;  // +20% damage
+        break;
+      case 'Shield':
+      case 'Tattered Shield':
+        effects.defenseBonus += 0.25; // -25% damage taken
+        break;
+      case 'Cloak':
+        effects.fleeBonus += 0.15;    // +15% flee chance
+        effects.defenseBonus += 0.10; // +10% defense
+        break;
+    }
+  }
+  
+  return effects;
 }
 
 // Generate randomized dungeon (more variety)
