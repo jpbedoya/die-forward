@@ -97,7 +97,7 @@ export default function TitleScreen() {
   const [activeTab, setActiveTab] = useState<'deaths' | 'leaders'>('deaths');
   
   // Audio
-  const { playAmbient, playSFX } = useAudio();
+  const { enabled: audioEnabled, toggle: toggleAudio, playAmbient } = useAudio();
   
   // Play title ambient on mount
   useEffect(() => {
@@ -162,7 +162,16 @@ export default function TitleScreen() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] flex flex-col font-mono">
+    <div className="min-h-screen bg-[var(--bg-base)] flex flex-col font-mono relative">
+      
+      {/* Audio toggle */}
+      <button
+        onClick={toggleAudio}
+        className="absolute top-4 right-4 p-2 text-[var(--text-muted)] hover:text-[var(--amber)] transition-colors z-10"
+        title={audioEnabled ? 'Mute audio' : 'Unmute audio'}
+      >
+        {audioEnabled ? '🔊' : '🔇'}
+      </button>
       
       {/* Main content */}
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-8">
