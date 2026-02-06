@@ -335,21 +335,28 @@ export default function GameScreen() {
         playAmbient('ambient-combat');
         router.push('/combat');
         break;
-      case 'flee':
+      case 'flee': {
         // Take some damage but skip combat
         const fleeDamage = 15;
+        const newHealth = health - fleeDamage;
         playSFX('damage-taken');
-        setHealth(health - fleeDamage);
         setMessage(`You take a hit while fleeing! -${fleeDamage} HP`);
-        if (health - fleeDamage <= 0) {
+        
+        if (newHealth <= 0) {
+          // Die - navigate immediately without state update to avoid re-render issues
+          setHealth(0);
           router.push('/death');
-        } else {
-          const ok = await advanceRoom();
-          if (!ok) return;
-          setCurrentRoom(currentRoom + 1);
-          setSelectedOption(null);
+          return; // Exit early to prevent further processing
         }
+        
+        // Survived - update health and advance
+        setHealth(newHealth);
+        const ok = await advanceRoom();
+        if (!ok) return;
+        setCurrentRoom(currentRoom + 1);
+        setSelectedOption(null);
         break;
+      }
       case 'loot':
         setShowCorpse(true);
         playSFX('corpse-discover');
