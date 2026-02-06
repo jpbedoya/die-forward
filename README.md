@@ -99,20 +99,45 @@ Other players' corpses appear in your dungeon:
 
 ## ⚔️ Combat System
 
-No HP trading ping-pong. Every choice is a **risk/reward tradeoff**. Read enemy intent, make your move.
+No HP trading ping-pong. Every choice is a **risk/reward tradeoff**. Read enemy intent, exploit weaknesses, gear up.
+
+### Enemy Tiers
+Enemies hit harder as you go deeper:
+- **Tier 1**: Base damage (The Drowned, Pale Crawler)
+- **Tier 2**: 1.5x damage (Hollow Clergy, Carrion Knight)  
+- **Tier 3**: 2x damage (The Unnamed, Mother of Tides)
+
+### Intent System
+Enemy intent **matters**:
+| Intent | Effect |
+|--------|--------|
+| AGGRESSIVE | Normal attack |
+| CHARGING | Low now, **DOUBLE next turn** (Dodge/Brace negates!) |
+| DEFENSIVE | Reduced damage both ways |
+| STALKING | Harder to flee |
+| HUNTING | Bonus damage |
+
+### Item Bonuses
+Gear provides passive combat bonuses:
+- 🔦 Torch: +25% damage
+- 🗡️ Dagger: +35% damage
+- 🛡️ Shield: -25% damage taken
+- 🧥 Cloak: +15% flee, +10% defense
 
 ```
 ┌────────────────────────────────────────────────┐
-│  THE DROWNED          ❤️ ██████░░░░            │
+│  🧟 THE DROWNED        ❤️ ██████░░░░  TIER 1   │
 │                                                │
-│  It lunges forward, claws extended,            │
-│  aiming for your throat.                       │
+│  It lunges forward, claws extended...          │
+│  Intent: CHARGING ⚠️                           │
 │                                                │
-│  Intent: AGGRESSIVE                            │
+│  ⚠️ Will deal DOUBLE damage next turn!         │
+├────────────────────────────────────────────────┤
+│  ⚔️ +25% DMG                                   │
 ├────────────────────────────────────────────────┤
 │  [1] ⚔️ Strike — trade blows                   │
-│  [2] 🛡️ Brace — tank the hit                   │
-│  [3] 💨 Dodge — risky, big payoff              │
+│  [2] 🛡️ Brace — tank hit (negates charge!)     │
+│  [3] 💨 Dodge — avoid damage (negates charge!) │
 │  [4] 🌿 Herbs — heal now, take the hit         │
 │  [5] 🏃 Flee — try to escape                   │
 └────────────────────────────────────────────────┘

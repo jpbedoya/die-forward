@@ -26,80 +26,124 @@ Die Forward is a text-based social roguelite. Players navigate procedurally gene
 
 ### Philosophy
 
-No HP trading ping-pong. Every choice is a risk/reward tradeoff. Fights are short (2-4 exchanges) but tense.
+No HP trading ping-pong. Every choice is a risk/reward tradeoff. Fights are short (2-4 exchanges) but tense. **Enemies hit harder as you go deeper** — tier matters.
 
 ### Resources
 
 | Resource | Description |
 |----------|-------------|
-| ❤️ Health | Lose it all, you die |
-| ⚡ Stamina | Spent on aggressive moves, regens between fights |
-| 🎒 Items | Consumables that shift odds |
+| ❤️ Health | 100 max. Lose it all, you die |
+| ⚡ Stamina | 3 max. Spent on aggressive moves, regens 1 between turns |
+| 🎒 Items | Equipment that provides combat bonuses |
 
 ### Enemy Properties
 
-- **Intent**: Telegraphed each turn (attacking, defending, charging, fleeing)
-- **Weakness**: Discoverable through ghosts, observation, or items
+- **Tier**: Determines base damage (Tier 1 = 1x, Tier 2 = 1.5x, Tier 3 = 2x)
+- **Intent**: Telegraphed each turn — affects damage, defense, and flee chance
+- **Health**: Varies by creature type and tier (25-160 HP)
+
+### Enemy Tiers
+
+| Tier | Damage | Examples |
+|------|--------|----------|
+| **Tier 1** | 1.0x | The Drowned, Pale Crawler, Flickering Shade |
+| **Tier 2** | 1.5x | Hollow Clergy, Carrion Knight, The Congregation |
+| **Tier 3** | 2.0x | The Unnamed, Mother of Tides (bosses) |
+
+### Intent System
+
+Enemy intent **actively affects combat**. Read it carefully:
+
+| Intent | Enemy Damage | Takes Damage | Flee Chance | Special |
+|--------|--------------|--------------|-------------|---------|
+| **AGGRESSIVE** | Normal | Normal | Normal | — |
+| **CHARGING** | 0.5x this turn | Normal | Normal | ⚠️ **DOUBLE damage next turn** unless you Dodge/Brace! |
+| **DEFENSIVE** | 0.5x | 0.5x | +20% | Harder to hurt |
+| **STALKING** | Normal | Normal | -30% | Watching — hard to escape |
+| **HUNTING** | 1.3x | Normal | -20% | Deals bonus damage |
+| **ERRATIC** | 0.5x-2x random | Normal | +10% | Unpredictable |
+| **RETREATING** | 0.5x | 1.2x | +30% | Vulnerable, easy to flee |
 
 ### Turn Flow
 
 ```
-1. Agent describes enemy + their INTENT
-2. Player picks action
-3. Outcome resolves
-4. Repeat until someone drops
+1. Enemy intent shown (AGGRESSIVE, CHARGING, etc.)
+2. Combat modifiers displayed (tier, item bonuses)
+3. Player picks action
+4. Damage calculated with ALL modifiers
+5. Stamina regens, new intent chosen
+6. Repeat until someone drops
 ```
 
 ### Actions
 
-| Move | Cost | Effect |
-|------|------|--------|
-| ⚔️ Strike | 1 ⚡ | Deal damage. Risky if they're attacking too |
-| 🛡️ Brace | 0 | Reduce incoming damage. No offense |
-| 🔄 Dodge | 1 ⚡ | Avoid attack IF you read intent correctly |
-| 💥 Heavy | 2 ⚡ | Big damage but slow — punished if they dodge |
-| 🏃 Flee | 1 ⚡ | Escape fight. Might take a hit |
-| 🎒 Item | 0 | Use consumable — heals, buffs, reveals weakness |
+| Move | Cost | Base Effect |
+|------|------|-------------|
+| ⚔️ Strike | 1 ⚡ | Deal 20-29 damage, take 10-17 |
+| 🛡️ Brace | 0 | Take 50% reduced damage, **negates charge bonus** |
+| 💨 Dodge | 1 ⚡ | 70% avoid all damage, **negates charge bonus** |
+| 🌿 Herbs | 0 | Heal 20-29, but take a hit (consumes item) |
+| 🏃 Flee | 1 ⚡ | Base 50% escape (modified by intent/items) |
 
-### The Mindgame
+### Item Combat Effects
 
-Enemy telegraphs intent through narrative:
+Items provide **passive bonuses** while in inventory:
 
-> *"The Drowned One raises both arms, water swirling around its fists."*
+| Item | Effect |
+|------|--------|
+| 🔦 Torch | +25% damage dealt |
+| 🗡️ Dagger | +35% damage dealt |
+| 🗡️ Rusty Blade | +20% damage dealt |
+| 🛡️ Shield / Tattered Shield | -25% damage taken |
+| 🧥 Cloak | +15% flee chance, +10% defense |
+| 🌿 Herbs | Consumable heal (not passive) |
 
-Player deduces: charging a heavy attack.
+### Damage Calculation
 
-- **Strike?** Hit first, but if wrong, eat the heavy
-- **Dodge?** Perfect read = free damage next turn
-- **Brace?** Safe, but just stalling
-- **Heavy?** Both charge up... who lands first?
+Final damage = `Base × TierMult × IntentMult × ItemMods × ChargeMult`
+
+Example: Tier 2 enemy (1.5x) with HUNTING intent (1.3x) vs player with Shield (-25%):
+- Base hit: 15 damage
+- After tier: 15 × 1.5 = 22.5
+- After intent: 22.5 × 1.3 = 29.25
+- After shield: 29.25 × 0.75 = **22 damage**
+
+### The Charge Mindgame
+
+When you see **CHARGING**:
+- Enemy deals reduced damage this turn
+- But **NEXT TURN** they deal **DOUBLE**
+- **Dodge** or **Brace** negates the charge bonus!
+- Failing to counter = massive spike damage
+
+> ⚠️ IT'S CHARGING UP!
+> *DODGE or BRACE to avoid double damage!*
 
 ### Example Exchange
 
 ```
 ┌────────────────────────────────────────────────┐
-│  DROWNED ONE                    ❤️ ██████░░░░  │
+│  🧟 THE DROWNED                 ❤️ ██████░░░░  │
+│  TIER 1 • Intent: CHARGING                     │
 │                                                │
-│  It lunges forward, claws extended,            │
-│  aiming for your throat.                       │
+│  It draws back, muscles tensing,               │
+│  preparing to lunge...                         │
 │                                                │
-│  Intent: AGGRESSIVE                            │
+│  ⚠️ CHARGING — will deal DOUBLE next turn!     │
 ├────────────────────────────────────────────────┤
-│  You: ❤️ 73   ⚡ 2/3   🎒 Rusty Blade, Herbs   │
+│  ⚔️ +25% DMG    🛡️ -25% TAKEN                  │
+├────────────────────────────────────────────────┤
+│  You: ❤️ 73   ⚡ 2/3   🎒 Torch, Shield, Herbs │
 ├────────────────────────────────────────────────┤
 │  [1] ⚔️ Strike — trade blows                   │
-│  [2] 🛡️ Brace — tank the hit                   │
-│  [3] 🔄 Dodge — risky, big payoff              │
-│  [4] 🎒 Herbs — heal now, take the hit         │
+│  [2] 🛡️ Brace — tank the hit (negates charge!) │
+│  [3] 💨 Dodge — avoid damage (negates charge!) │
+│  [4] 🌿 Herbs — heal now, take the hit         │
 │  [5] 🏃 Flee — try to escape                   │
 └────────────────────────────────────────────────┘
 ```
 
-Player picks Dodge:
-
-> *You sidestep as claws rake the air. The creature stumbles past — exposed.*
-> 
-> **Opening!** Next attack deals double damage.
+Player picks Brace → Takes minimal damage, charge is wasted. Smart play.
 
 ## Death System
 
