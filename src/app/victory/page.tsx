@@ -23,6 +23,12 @@ export default function VictoryScreen() {
   useEffect(() => {
     const state = getGameState();
     const bonus = state.stakeAmount * 0.5; // 50% bonus
+    
+    // If no session token, already claimed or invalid
+    if (!state.sessionToken) {
+      setClaimed(true);
+    }
+    
     setVictoryData({
       zone: "THE SUNKEN CRYPT",
       roomsCleared: state.currentRoom + 1,
@@ -37,9 +43,8 @@ export default function VictoryScreen() {
 
   const handleClaim = async () => {
     if (!victoryData.sessionToken) {
-      // No session token - just clear state and proceed
-      clearGameState();
-      setClaimed(true);
+      // No session token - already claimed or invalid
+      setError('Session expired or already claimed');
       return;
     }
 
