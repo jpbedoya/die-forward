@@ -95,7 +95,7 @@ function shortenAddress(address: string): string {
 }
 
 export default function TitleScreen() {
-  const { publicKey, connected, connecting, disconnect } = useWallet();
+  const { publicKey, connected, connecting, disconnect, wallet } = useWallet();
   const { setVisible } = useWalletModal();
   const { connection } = useConnection();
   const [balance, setBalance] = useState<number | null>(null);
@@ -118,6 +118,16 @@ export default function TitleScreen() {
       setBalance(null);
     }
   }, [publicKey, connection]);
+
+  // Cache MWA auth token when connected via Mobile Wallet Adapter
+  useEffect(() => {
+    const walletName = wallet?.adapter?.name;
+    if (connected && walletName === 'Mobile Wallet Adapter' && publicKey) {
+      // Store public key in cache format for MWA reauthorize
+      // The actual auth_token will be cached on first transaction
+      console.log('MWA connected, auth will be cached on first transaction');
+    }
+  }, [connected, wallet, publicKey]);
 
   const handleConnect = () => {
     setVisible(true);

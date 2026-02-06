@@ -5,12 +5,29 @@ import {
   Transaction,
 } from '@solana/web3.js';
 import base58 from 'bs58';
+import { getCachedAuth, setCachedAuth } from './mwaAuthCache';
 
 const APP_IDENTITY = {
   name: 'Die Forward',
   uri: typeof window !== 'undefined' ? window.location.origin : 'https://die-forward.vercel.app',
   icon: '/favicon.ico',
 };
+
+// Helper to decode address (handles base64 from MWA)
+function decodeAddress(addressRaw: string | Uint8Array, log: (msg: string) => void): PublicKey {
+  if (typeof addressRaw === 'object' && addressRaw !== null && 'byteLength' in addressRaw) {
+    return new PublicKey(addressRaw as Uint8Array);
+  } else if (typeof addressRaw === 'string') {
+    if (addressRaw.includes('+') || addressRaw.includes('/') || addressRaw.endsWith('=')) {
+      log('Decoding base64 address...');
+      const bytes = Uint8Array.from(atob(addressRaw), c => c.charCodeAt(0));
+      return new PublicKey(bytes);
+    } else {
+      return new PublicKey(addressRaw);
+    }
+  }
+  throw new Error(`Unknown address format: ${typeof addressRaw}`);
+}
 
 export async function signAndSendWithMWA(
   transaction: Transaction,
@@ -24,55 +41,57 @@ export async function signAndSendWithMWA(
   const result = await transact(async (wallet) => {
     log('MWA session started');
     
-    // Authorize if needed
-    log('Calling authorize...');
-    let authResult;
-    try {
-      authResult = await wallet.authorize({
+    // Check for cached auth token
+    const cached = getCachedAuth();
+    let pubkey: PublicKey;
+    let authToken: string;
+    
+    if (cached) {
+      // Try to reauthorize with cached token (no user popup)
+      log(`Found cached auth, trying reauthorize...`);
+      try {
+        const reAuthResult = await wallet.reauthorize({
+          auth_token: cached.authToken,
+          identity: APP_IDENTITY,
+        });
+        authToken = reAuthResult.auth_token;
+        const addressRaw = reAuthResult.accounts[0]?.address as Uint8Array | string;
+        pubkey = decodeAddress(addressRaw, log);
+        log(`Reauthorized: ${pubkey.toBase58().slice(0, 8)}...`);
+        
+        // Update cache with new token
+        setCachedAuth(authToken, pubkey.toBase58());
+      } catch (reAuthErr) {
+        const errMsg = reAuthErr instanceof Error ? reAuthErr.message : String(reAuthErr);
+        log(`Reauthorize failed: ${errMsg}, falling back to authorize...`);
+        
+        // Fall back to full authorize
+        const authResult = await wallet.authorize({
+          cluster: 'devnet',
+          identity: APP_IDENTITY,
+        });
+        authToken = authResult.auth_token;
+        const addressRaw = authResult.accounts[0]?.address as Uint8Array | string;
+        pubkey = decodeAddress(addressRaw, log);
+        log(`Authorized (fresh): ${pubkey.toBase58().slice(0, 8)}...`);
+        
+        // Cache the new token
+        setCachedAuth(authToken, pubkey.toBase58());
+      }
+    } else {
+      // No cache, do full authorize
+      log('No cached auth, authorizing...');
+      const authResult = await wallet.authorize({
         cluster: 'devnet',
         identity: APP_IDENTITY,
       });
-      log(`Auth result keys: ${Object.keys(authResult || {}).join(', ')}`);
-      log(`Accounts: ${JSON.stringify(authResult?.accounts?.length)}`);
-      if (authResult?.accounts?.[0]) {
-        const acc = authResult.accounts[0];
-        log(`Account keys: ${Object.keys(acc).join(', ')}`);
-        log(`Address type: ${typeof acc.address}, isArray: ${Array.isArray(acc.address)}`);
-        log(`Address value: ${String(acc.address).slice(0, 50)}`);
-        log(`Address length: ${String(acc.address).length}`);
-        if (acc.address && typeof acc.address === 'object') {
-          log(`Address byteLength: ${(acc.address as any).length || (acc.address as any).byteLength}`);
-        }
-      }
-    } catch (authErr) {
-      const errMsg = authErr instanceof Error ? authErr.message : String(authErr);
-      log(`authorize() threw: ${errMsg}`);
-      throw authErr;
-    }
-    
-    // Address can be Uint8Array, base58 string, or base64 string
-    const addressRaw = authResult.accounts[0]?.address as Uint8Array | string;
-    let pubkey: PublicKey;
-    
-    if (typeof addressRaw === 'object' && addressRaw !== null && 'byteLength' in addressRaw) {
-      // It's a Uint8Array or similar
-      pubkey = new PublicKey(addressRaw as Uint8Array);
-      log(`Authorized (bytes): ${pubkey.toBase58().slice(0, 8)}...`);
-    } else if (typeof addressRaw === 'string') {
-      // Check if it's base64 (contains +, /, or ends with =)
-      if (addressRaw.includes('+') || addressRaw.includes('/') || addressRaw.endsWith('=')) {
-        // Decode from base64
-        log('Address is base64, decoding...');
-        const bytes = Uint8Array.from(atob(addressRaw), c => c.charCodeAt(0));
-        pubkey = new PublicKey(bytes);
-        log(`Authorized (base64→bytes): ${pubkey.toBase58().slice(0, 8)}...`);
-      } else {
-        // Assume base58
-        pubkey = new PublicKey(addressRaw);
-        log(`Authorized (base58): ${addressRaw.slice(0, 8)}...`);
-      }
-    } else {
-      throw new Error(`Unknown address format: ${typeof addressRaw}`);
+      authToken = authResult.auth_token;
+      const addressRaw = authResult.accounts[0]?.address as Uint8Array | string;
+      pubkey = decodeAddress(addressRaw, log);
+      log(`Authorized: ${pubkey.toBase58().slice(0, 8)}...`);
+      
+      // Cache the token for next time
+      setCachedAuth(authToken, pubkey.toBase58());
     }
     
     // Get fresh blockhash
@@ -121,4 +140,31 @@ export function shouldUseMWA(): boolean {
   const hasInjectedWallet = !!(window as unknown as { solana?: unknown }).solana;
   
   return isAndroid && isChrome && !hasInjectedWallet;
+}
+
+// Cache auth token when user connects via MWA (call from title screen)
+export async function cacheAuthOnConnect(onLog?: (msg: string) => void): Promise<void> {
+  const log = onLog || console.log;
+  
+  // Skip if already cached
+  const existing = getCachedAuth();
+  if (existing) {
+    log('Auth already cached');
+    return;
+  }
+  
+  log('Caching auth for future transactions...');
+  
+  await transact(async (wallet) => {
+    const authResult = await wallet.authorize({
+      cluster: 'devnet',
+      identity: APP_IDENTITY,
+    });
+    
+    const addressRaw = authResult.accounts[0]?.address as Uint8Array | string;
+    const pubkey = decodeAddress(addressRaw, log);
+    
+    setCachedAuth(authResult.auth_token, pubkey.toBase58());
+    log(`Auth cached for ${pubkey.toBase58().slice(0, 8)}...`);
+  });
 }
