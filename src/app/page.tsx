@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
@@ -15,13 +15,7 @@ const mockDeathFeed = [
   { playerName: 'degen_dave', zone: 'Sunken Crypt', room: 2, finalMessage: "lmao first room", createdAt: Date.now() - 480000 },
 ];
 
-const mockLeaderboard = [
-  { rank: 1, player: 'cryptKing', clears: 12, earned: 4.2 },
-  { rank: 2, player: 'sol_chad', clears: 9, earned: 3.1 },
-  { rank: 3, player: 'abysswatcher', clears: 7, earned: 2.8 },
-  { rank: 4, player: 'dungeon_lord', clears: 5, earned: 1.9 },
-  { rank: 5, player: 'degen_king', clears: 4, earned: 1.2 },
-];
+// Leaderboard will be computed from death data
 
 function timeAgo(timestamp: number): string {
   const seconds = Math.floor((Date.now() - timestamp) / 1000);
@@ -67,11 +61,11 @@ function DeathFeedItem({ playerName, room, finalMessage, createdAt }: {
   );
 }
 
-function LeaderboardItem({ rank, player, clears, earned }: {
+function LeaderboardItem({ rank, player, deaths, staked }: {
   rank: number;
   player: string;
-  clears: number;
-  earned: number;
+  deaths: number;
+  staked: number;
 }) {
   const rankColors: Record<number, string> = {
     1: 'text-[var(--amber-bright)]',
@@ -81,11 +75,11 @@ function LeaderboardItem({ rank, player, clears, earned }: {
   return (
     <div className="text-xs py-2 border-b border-[var(--border-dim)] flex items-center">
       <span className={`w-6 ${rankColors[rank] || 'text-[var(--text-dim)]'}`}>
-        {rank === 1 ? '👑' : `#${rank}`}
+        {rank === 1 ? '💀' : `#${rank}`}
       </span>
       <span className="text-[var(--text-secondary)] flex-1">@{player}</span>
-      <span className="text-[var(--green)] w-16 text-right">{clears} wins</span>
-      <span className="text-[var(--amber)] w-20 text-right">◎ {earned}</span>
+      <span className="text-[var(--red)] w-16 text-right">{deaths} deaths</span>
+      <span className="text-[var(--amber)] w-20 text-right">◎ {staked.toFixed(2)}</span>
     </div>
   );
 }
@@ -107,6 +101,31 @@ export default function TitleScreen() {
 
   // Use real data if available, fall back to mock
   const deathFeed = dbDeaths.length > 0 ? dbDeaths : mockDeathFeed;
+
+  // Compute leaderboard from deaths (most deaths = most experienced!)
+  const leaderboard = useMemo(() => {
+    const playerStats: Record<string, { deaths: number; totalStaked: number }> = {};
+    
+    dbDeaths.forEach((death) => {
+      const name = death.playerName || 'unknown';
+      if (!playerStats[name]) {
+        playerStats[name] = { deaths: 0, totalStaked: 0 };
+      }
+      playerStats[name].deaths++;
+      playerStats[name].totalStaked += death.stakeAmount || 0;
+    });
+
+    return Object.entries(playerStats)
+      .map(([player, stats], i) => ({
+        rank: i + 1,
+        player,
+        deaths: stats.deaths,
+        staked: stats.totalStaked,
+      }))
+      .sort((a, b) => b.deaths - a.deaths)
+      .slice(0, 5)
+      .map((entry, i) => ({ ...entry, rank: i + 1 }));
+  }, [dbDeaths]);
 
   // Fetch balance when connected
   useEffect(() => {
@@ -256,9 +275,13 @@ export default function TitleScreen() {
             ))
           )
         ) : (
-          mockLeaderboard.map((entry) => (
-            <LeaderboardItem key={entry.rank} {...entry} />
-          ))
+          leaderboard.length === 0 ? (
+            <div className="text-[var(--text-dim)] text-xs py-4 text-center">No deaths yet. Leaderboard is empty.</div>
+          ) : (
+            leaderboard.map((entry) => (
+              <LeaderboardItem key={entry.rank} {...entry} />
+            ))
+          )
         )}
       </div>
 
