@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { getGameState, saveGameState } from '@/lib/gameState';
 import { 
   getStrikeNarration, 
@@ -63,6 +64,7 @@ interface Resolution {
   enemyDmg: number;
   heal?: number;
   consumeHerbs?: boolean;
+  fleeSuccess?: boolean;
 }
 
 // Generate dynamic resolution based on action
@@ -95,12 +97,34 @@ function getResolution(action: string): Resolution {
         heal: 20 + Math.floor(Math.random() * 10), // Heal 20-29
         consumeHerbs: true,
       };
-    case 'flee':
-      return {
-        narrative: getActionNarration('flee', 'partial'), // Usually take some damage
-        playerDmg: 8 + Math.floor(Math.random() * 7), // 8-14 damage
-        enemyDmg: 0,
-      };
+    case 'flee': {
+      const roll = Math.random();
+      if (roll < 0.5) {
+        // 50% - Success: escape!
+        return {
+          narrative: getActionNarration('flee', 'success'),
+          playerDmg: 0,
+          enemyDmg: 0,
+          fleeSuccess: true,
+        };
+      } else if (roll < 0.8) {
+        // 30% - Fail with damage
+        return {
+          narrative: getActionNarration('flee', 'partial'),
+          playerDmg: 5 + Math.floor(Math.random() * 10), // 5-14 damage
+          enemyDmg: 0,
+          fleeSuccess: false,
+        };
+      } else {
+        // 20% - Fail but no damage (lucky)
+        return {
+          narrative: getActionNarration('flee', 'fail'),
+          playerDmg: 0,
+          enemyDmg: 0,
+          fleeSuccess: false,
+        };
+      }
+    }
     default:
       return { narrative: "Nothing happens.", playerDmg: 0, enemyDmg: 0 };
   }
@@ -130,6 +154,7 @@ function StaminaBar({ current, max }: { current: number; max: number }) {
 }
 
 export default function CombatScreen() {
+  const router = useRouter();
   const [phase, setPhase] = useState<CombatPhase>('choose');
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [playerHealth, setPlayerHealth] = useState(100);
@@ -252,6 +277,19 @@ export default function CombatScreen() {
   };
 
   const handleContinue = () => {
+    // Check if flee was successful
+    if (lastResolution?.fleeSuccess) {
+      // Save state and return to exploration
+      saveGameState({ 
+        health: playerHealth, 
+        stamina: playerStamina,
+        inventory: playerInventory 
+      });
+      playAmbient('ambient-explore');
+      router.push('/play');
+      return;
+    }
+    
     if (enemyHealth <= 0) {
       playSFX('enemy-death');
       setPhase('victory');
