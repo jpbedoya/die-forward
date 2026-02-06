@@ -5,6 +5,9 @@ import Link from 'next/link';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { getGameState, clearGameState } from '@/lib/gameState';
 
+// Demo mode flag
+const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
+
 function shortenAddress(address: string): string {
   return `${address.slice(0, 4)}...${address.slice(-4)}`;
 }
@@ -98,6 +101,15 @@ export default function DeathScreen() {
       
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-8">
         
+        {/* Demo mode indicator */}
+        {DEMO_MODE && (
+          <div className="mb-4">
+            <span className="text-[10px] px-2 py-1 bg-[var(--amber-dim)]/30 border border-[var(--amber-dim)] text-[var(--amber)] tracking-wider">
+              DEMO MODE
+            </span>
+          </div>
+        )}
+
         {/* Death announcement */}
         <div className="text-center mb-8">
           <pre 

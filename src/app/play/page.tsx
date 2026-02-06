@@ -6,6 +6,9 @@ import { getGameState, saveGameState, DungeonRoomState } from '@/lib/gameState';
 import { useCorpseForRoom, discoverCorpse, Corpse } from '@/lib/instant';
 import { getExploreRoom, getCombatRoom, getCacheRoom, getExitRoom } from '@/lib/content';
 
+// Demo mode flag
+const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
+
 // Menu overlay component
 function Menu({ 
   isOpen, 
@@ -397,6 +400,11 @@ export default function GameScreen() {
             <span className="text-[var(--amber-bright)] uppercase tracking-wide">
               THE SUNKEN CRYPT
             </span>
+            {DEMO_MODE && (
+              <span className="text-[10px] px-1.5 py-0.5 bg-[var(--amber-dim)]/30 border border-[var(--amber-dim)] text-[var(--amber)] tracking-wider">
+                DEMO
+              </span>
+            )}
           </div>
           <ProgressBar current={currentRoom + 1} total={rooms.length} />
         </div>

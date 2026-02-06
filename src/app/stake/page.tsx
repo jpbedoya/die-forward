@@ -32,6 +32,9 @@ const POOL_WALLET = new PublicKey(
   process.env.NEXT_PUBLIC_POOL_WALLET || 'D7NdNbJTL7s6Z7Wu8nGe5SBc64FiFQAH3iPvRZw15qSL'
 );
 
+// Demo mode - bypass SOL staking for testing
+const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
+
 export default function StakeScreen() {
   const router = useRouter();
   const { publicKey, connected, signTransaction, sendTransaction, wallet } = useWallet();
@@ -71,107 +74,116 @@ export default function StakeScreen() {
   const handleEnter = async () => {
     if (!selectedStake || !publicKey) return;
     
-    // Need either signTransaction or sendTransaction
-    if (!signTransaction && !sendTransaction) {
-      setError('Wallet does not support transactions');
-      return;
-    }
-    
-    // Check balance (need extra for fees)
-    if (balance !== null && selectedStake + 0.001 > balance) {
-      setError('Insufficient balance (need extra for fees)');
-      return;
+    // In demo mode, skip wallet validation
+    if (!DEMO_MODE) {
+      // Need either signTransaction or sendTransaction
+      if (!signTransaction && !sendTransaction) {
+        setError('Wallet does not support transactions');
+        return;
+      }
+      
+      // Check balance (need extra for fees)
+      if (balance !== null && selectedStake + 0.001 > balance) {
+        setError('Insufficient balance (need extra for fees)');
+        return;
+      }
     }
 
     setConfirming(true);
     setError(null);
     
-    let signature: string;
+    let signature: string = 'demo-mode-no-tx';
     
     setDebugLog([]); // Clear previous logs
     
     try {
-      log('Creating transaction...');
-      
-      // 1. Create transaction to transfer SOL to pool
-      const transaction = new Transaction().add(
-        SystemProgram.transfer({
-          fromPubkey: publicKey,
-          toPubkey: POOL_WALLET,
-          lamports: Math.floor(selectedStake * LAMPORTS_PER_SOL),
-        })
-      );
+      // DEMO MODE: Skip actual SOL transfer
+      if (DEMO_MODE) {
+        log('🎮 DEMO MODE - skipping SOL transfer');
+        signature = `demo-${Date.now()}`;
+      } else {
+        log('Creating transaction...');
+        
+        // 1. Create transaction to transfer SOL to pool
+        const transaction = new Transaction().add(
+          SystemProgram.transfer({
+            fromPubkey: publicKey,
+            toPubkey: POOL_WALLET,
+            lamports: Math.floor(selectedStake * LAMPORTS_PER_SOL),
+          })
+        );
 
-      log('Getting blockhash...');
-      const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
-      transaction.recentBlockhash = blockhash;
-      transaction.feePayer = publicKey;
+        log('Getting blockhash...');
+        const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
+        transaction.recentBlockhash = blockhash;
+        transaction.feePayer = publicKey;
 
-      log(`Wallet caps: send=${!!sendTransaction}, sign=${!!signTransaction}`);
-      const walletName = wallet?.adapter?.name || 'unknown';
-      log(`Wallet name: ${walletName}`);
-      log(`Wallet readyState: ${wallet?.adapter?.readyState || 'unknown'}`);
+        log(`Wallet caps: send=${!!sendTransaction}, sign=${!!signTransaction}`);
+        const walletName = wallet?.adapter?.name || 'unknown';
+        log(`Wallet name: ${walletName}`);
+        log(`Wallet readyState: ${wallet?.adapter?.readyState || 'unknown'}`);
 
-      // 2. Check if using Mobile Wallet Adapter - use native MWA protocol
-      if (walletName === 'Mobile Wallet Adapter') {
-        log('Detected MWA - using native protocol...');
-        try {
-          signature = await signAndSendWithMWA(transaction, connection, log);
-        } catch (mwaErr: unknown) {
-          const errMsg = mwaErr instanceof Error ? mwaErr.message : String(mwaErr);
-          log(`MWA FAILED: ${errMsg}`);
-          throw mwaErr;
-        }
-      }
-      // Standard wallet adapter flow for desktop/in-app browsers
-      else if (sendTransaction) {
-        try {
-          log('Calling sendTransaction...');
-          signature = await sendTransaction(transaction, connection);
-          log(`Got signature: ${signature.slice(0, 20)}...`);
-        } catch (sendErr: unknown) {
-          const errMsg = sendErr instanceof Error ? sendErr.message : String(sendErr);
-          log(`sendTransaction FAILED: ${errMsg.slice(0, 150)}`);
-          
-          // Fall back to sign + send raw if sendTransaction fails
-          if (signTransaction) {
-            log('Trying signTransaction fallback...');
-            const signedTx = await signTransaction(transaction);
-            
-            // Check if transaction was actually signed
-            const sigCount = signedTx.signatures.filter(s => s.signature !== null).length;
-            log(`Signatures on tx: ${sigCount}/${signedTx.signatures.length}`);
-            
-            if (sigCount === 0) {
-              throw new Error('Transaction was not signed by wallet');
-            }
-            
-            log('Got signed tx, sending raw...');
-            signature = await connection.sendRawTransaction(signedTx.serialize());
-            log(`Raw tx sent: ${signature.slice(0, 20)}...`);
-          } else {
-            throw sendErr;
+        // 2. Check if using Mobile Wallet Adapter - use native MWA protocol
+        if (walletName === 'Mobile Wallet Adapter') {
+          log('Detected MWA - using native protocol...');
+          try {
+            signature = await signAndSendWithMWA(transaction, connection, log);
+          } catch (mwaErr: unknown) {
+            const errMsg = mwaErr instanceof Error ? mwaErr.message : String(mwaErr);
+            log(`MWA FAILED: ${errMsg}`);
+            throw mwaErr;
           }
         }
-      } else if (signTransaction) {
-        log('Using signTransaction (no sendTransaction)...');
-        const signedTx = await signTransaction(transaction);
-        log('Signed, sending raw...');
-        signature = await connection.sendRawTransaction(signedTx.serialize());
-      } else {
-        throw new Error('No signing method available');
+        // Standard wallet adapter flow for desktop/in-app browsers
+        else if (sendTransaction) {
+          try {
+            log('Calling sendTransaction...');
+            signature = await sendTransaction(transaction, connection);
+            log(`Got signature: ${signature.slice(0, 20)}...`);
+          } catch (sendErr: unknown) {
+            const errMsg = sendErr instanceof Error ? sendErr.message : String(sendErr);
+            log(`sendTransaction FAILED: ${errMsg.slice(0, 150)}`);
+            
+            // Fall back to sign + send raw if sendTransaction fails
+            if (signTransaction) {
+              log('Trying signTransaction fallback...');
+              const signedTx = await signTransaction(transaction);
+              
+              // Check if transaction was actually signed
+              const sigCount = signedTx.signatures.filter(s => s.signature !== null).length;
+              log(`Signatures on tx: ${sigCount}/${signedTx.signatures.length}`);
+              
+              if (sigCount === 0) {
+                throw new Error('Transaction was not signed by wallet');
+              }
+              
+              log('Got signed tx, sending raw...');
+              signature = await connection.sendRawTransaction(signedTx.serialize());
+              log(`Raw tx sent: ${signature.slice(0, 20)}...`);
+            } else {
+              throw sendErr;
+            }
+          }
+        } else if (signTransaction) {
+          log('Using signTransaction (no sendTransaction)...');
+          const signedTx = await signTransaction(transaction);
+          log('Signed, sending raw...');
+          signature = await connection.sendRawTransaction(signedTx.serialize());
+        } else {
+          throw new Error('No signing method available');
+        }
+        
+        log('Waiting for confirmation...');
+        
+        // 3. Wait for confirmation
+        await connection.confirmTransaction({
+          signature,
+          blockhash,
+          lastValidBlockHeight,
+        }, 'confirmed');
+        
+        log('✓ Confirmed!');
       }
-      
-      log('Waiting for confirmation...');
-      
-      // 3. Wait for confirmation
-      await connection.confirmTransaction({
-        signature,
-        blockhash,
-        lastValidBlockHeight,
-      }, 'confirmed');
-      
-      log('✓ Confirmed!');
 
       // 4. Start game session via API (with tx signature as proof)
       const response = await fetch('/api/session/start', {
@@ -181,6 +193,7 @@ export default function StakeScreen() {
           walletAddress: publicKey.toBase58(),
           stakeAmount: selectedStake,
           txSignature: signature,
+          demoMode: DEMO_MODE,
         }),
       });
 
@@ -231,10 +244,15 @@ export default function StakeScreen() {
     <div className="min-h-screen bg-[var(--bg-base)] flex flex-col font-mono">
       
       {/* Header */}
-      <header className="border-b border-[var(--border-dim)] px-4 py-3">
+      <header className="border-b border-[var(--border-dim)] px-4 py-3 flex justify-between items-center">
         <Link href="/" className="text-[var(--text-muted)] text-xs hover:text-[var(--text-secondary)]">
           ← Back
         </Link>
+        {DEMO_MODE && (
+          <span className="text-[10px] px-2 py-0.5 bg-[var(--amber-dim)]/30 border border-[var(--amber-dim)] text-[var(--amber)] tracking-wider">
+            DEMO MODE
+          </span>
+        )}
       </header>
 
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-8">

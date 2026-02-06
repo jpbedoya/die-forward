@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getGameState, clearGameState } from '@/lib/gameState';
 
+// Demo mode flag
+const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
+
 export default function VictoryScreen() {
   const [claiming, setClaiming] = useState(false);
   const [claimed, setClaimed] = useState(false);
@@ -97,6 +100,15 @@ export default function VictoryScreen() {
       
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-8">
         
+        {/* Demo mode indicator */}
+        {DEMO_MODE && (
+          <div className="mb-4">
+            <span className="text-[10px] px-2 py-1 bg-[var(--amber-dim)]/30 border border-[var(--amber-dim)] text-[var(--amber)] tracking-wider">
+              DEMO MODE
+            </span>
+          </div>
+        )}
+
         {/* Victory announcement */}
         <div className="text-center mb-8">
           <div className="text-[var(--text-muted)] text-xs tracking-widest mb-2 flex items-center justify-center gap-2">

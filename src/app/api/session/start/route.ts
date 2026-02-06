@@ -13,7 +13,7 @@ const VALID_STAKES = [0.01, 0.05, 0.1, 0.25];
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { walletAddress, stakeAmount, txSignature } = body;
+    const { walletAddress, stakeAmount, txSignature, demoMode } = body;
 
     // Validate inputs
     if (!walletAddress || typeof walletAddress !== 'string') {
@@ -43,6 +43,7 @@ export async function POST(request: NextRequest) {
         status: 'active', // active, completed, dead
         currentRoom: 1, // Server-tracked room (1-indexed)
         maxRooms: 7, // Total rooms in dungeon
+        demoMode: demoMode || false, // Demo mode flag for testing
       }),
     ]);
 

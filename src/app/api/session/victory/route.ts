@@ -75,6 +75,24 @@ export async function POST(request: NextRequest) {
     const bonus = stakeAmount * 0.5; // 50% bonus for clearing
     const totalReward = stakeAmount + bonus;
 
+    // DEMO MODE: Skip actual payout
+    if (session.demoMode) {
+      await db.transact([
+        tx.sessions[session.id].update({
+          status: 'completed',
+          endedAt: Date.now(),
+          reward: totalReward,
+          payoutStatus: 'demo',
+        }),
+      ]);
+      return NextResponse.json({
+        success: true,
+        reward: totalReward,
+        payoutStatus: 'demo',
+        message: 'Demo mode - no real payout',
+      });
+    }
+
     // Get pool wallet
     const poolKeypair = getPoolKeypair();
     const playerWallet = new PublicKey(session.walletAddress);

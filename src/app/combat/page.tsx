@@ -12,6 +12,9 @@ import {
   IntentType 
 } from '@/lib/content';
 
+// Demo mode flag
+const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
+
 type CombatPhase = 'choose' | 'resolve' | 'enemy-turn' | 'victory' | 'death';
 
 const defaultPlayer = {
@@ -252,6 +255,11 @@ export default function CombatScreen() {
             <span className="text-[var(--red-bright)] uppercase tracking-wide text-sm">
               {enemyName}
             </span>
+            {DEMO_MODE && (
+              <span className="text-[10px] px-1.5 py-0.5 bg-[var(--amber-dim)]/30 border border-[var(--amber-dim)] text-[var(--amber)] tracking-wider">
+                DEMO
+              </span>
+            )}
           </div>
           <span className={`text-xs ${enemyHealth <= 0 ? 'text-[var(--text-dim)]' : 'text-[var(--red-bright)]'}`}>
             {enemyHealth}/{enemyMaxHealth}
