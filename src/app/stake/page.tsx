@@ -16,10 +16,10 @@ import { resetGameState, getGameState, saveGameState } from '@/lib/gameState';
 import { usePoolStats } from '@/lib/instant';
 
 const stakeOptions = [
-  { amount: 0.01, label: 'Timid', desc: 'Dip your toes' },
-  { amount: 0.05, label: 'Bold', desc: 'Standard fare' },
-  { amount: 0.1, label: 'Reckless', desc: 'Fortune favors...' },
-  { amount: 0.25, label: 'Degenerate', desc: 'All or nothing' },
+  { amount: 0.01, label: 'Timid' },
+  { amount: 0.05, label: 'Bold' },
+  { amount: 0.1, label: 'Reckless' },
+  { amount: 0.25, label: 'Degenerate' },
 ];
 
 function shortenAddress(address: string): string {
@@ -231,20 +231,18 @@ export default function StakeScreen() {
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-8">
         
         {/* Zone preview */}
-        <div className="text-center mb-8">
-          <pre className="text-[var(--amber)] text-[10px] leading-tight mb-2" style={{ fontFamily: 'Courier New, Courier, monospace' }}>
-{`    _____
-   /     \\
-  / ENTER \\
- /   THE   \\
-/___________\\`}
-          </pre>
+        <div className="text-center mb-6">
+          <div className="text-[var(--text-muted)] text-xs tracking-widest mb-1 flex items-center justify-center gap-2">
+            <span className="text-[var(--amber-dim)]">═══╣</span>
+            <span>ENTER THE</span>
+            <span className="text-[var(--amber-dim)]">╠═══</span>
+          </div>
           <h1 className="text-[var(--amber-bright)] text-xl tracking-wider mb-1">THE SUNKEN CRYPT</h1>
           <p className="text-[var(--text-muted)] text-xs">5-7 rooms • Water-themed horrors</p>
         </div>
 
         {/* Pool stats */}
-        <div className="flex gap-6 text-xs text-[var(--text-muted)] mb-8">
+        <div className="flex gap-6 text-xs text-[var(--text-muted)] mb-6">
           <div className="text-center">
             <div className="text-[var(--amber-bright)] text-lg">
               {statsLoading ? '...' : totalStaked.toFixed(2)}
@@ -266,8 +264,8 @@ export default function StakeScreen() {
         </div>
 
         {/* Stake selection */}
-        <div className="w-full max-w-xs mb-6">
-          <div className="text-[var(--text-muted)] text-xs uppercase tracking-wider mb-3">
+        <div className="w-full max-w-xs mb-4">
+          <div className="text-[var(--text-muted)] text-xs uppercase tracking-wider mb-2">
             Choose Your Stake
           </div>
           <div className="space-y-2">
@@ -278,7 +276,7 @@ export default function StakeScreen() {
                   key={option.amount}
                   onClick={() => canAfford && setSelectedStake(option.amount)}
                   disabled={!canAfford}
-                  className={`w-full text-left px-4 py-3 transition-all ${
+                  className={`w-full text-left px-4 py-2.5 transition-all ${
                     selectedStake === option.amount
                       ? 'bg-[var(--amber-dim)]/30 border border-[var(--amber)] text-[var(--amber-bright)]'
                       : canAfford
@@ -296,7 +294,6 @@ export default function StakeScreen() {
                       {option.label}
                     </span>
                   </div>
-                  <div className="text-[10px] text-[var(--text-muted)] mt-1">{option.desc}</div>
                 </button>
               );
             })}
