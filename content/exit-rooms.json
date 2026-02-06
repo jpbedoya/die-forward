@@ -1,0 +1,181 @@
+{
+  "type": "exit",
+  "zone": "THRESHOLD OF THE UNNAMED",
+  "rooms": [
+    {
+      "template": "threshold",
+      "variations": [
+        {
+          "id": "exit_threshold_1",
+          "narrative": "Light. Actual light, not torchlight — daylight, filtering through a crack above. Stone stairs lead upward. The air smells like the world you remember. You made it. This time."
+        },
+        {
+          "id": "exit_threshold_2",
+          "narrative": "The exit. Real. Tangible. After everything, here it is — a doorway back to the world above. The darkness behind you seems to lean closer, reluctant to let go."
+        },
+        {
+          "id": "exit_threshold_3",
+          "narrative": "Sunlight touches your face. Warmth after endless cold. The stairs are right there. The surface is right there. Every step feels like defiance. You're defying something old."
+        },
+        {
+          "id": "exit_threshold_4",
+          "narrative": "The passage rises. The water recedes. Ahead: light, air, life. Behind: everything else. Don't look back. You've earned this. Take it."
+        },
+        {
+          "id": "exit_threshold_5",
+          "narrative": "A door, ancient but functional. Beyond it: sound. Wind. Birds? The sounds of a world that kept turning while you were below. Open it. Go home."
+        }
+      ]
+    },
+    {
+      "template": "release",
+      "variations": [
+        {
+          "id": "exit_release_1",
+          "narrative": "The darkness recedes behind you. The water doesn't follow past this point. The underworld releases you — not defeated, just... satisfied. For now."
+        },
+        {
+          "id": "exit_release_2",
+          "narrative": "You feel it let go. A pressure you didn't know you were carrying lifts as you cross the boundary. The underworld had you. Now it doesn't. That simple. That terrifying."
+        },
+        {
+          "id": "exit_release_3",
+          "narrative": "The cold stops at an invisible line. You step past it and feel warmth for the first time in what feels like years. The depths watch you go. They'll remember."
+        },
+        {
+          "id": "exit_release_4",
+          "narrative": "Something unclenches. Something vast, with countless fingers, releasing its grip. You're free. You were held, and now you're free. Don't think about what was holding you."
+        },
+        {
+          "id": "exit_release_5",
+          "narrative": "The whispers fade. The pressure eases. The underworld peels away from your thoughts like a departing nightmare. You're rising. You're leaving. You're you again."
+        }
+      ]
+    },
+    {
+      "template": "earned",
+      "variations": [
+        {
+          "id": "exit_earned_1",
+          "narrative": "The final door. It was sealed. Now it opens. You earned this. Whatever judges in the dark has weighed you and found you sufficient. Step through, survivor."
+        },
+        {
+          "id": "exit_earned_2",
+          "narrative": "Light floods the chamber. A reward for reaching this far. The path to the surface opens like a gift — or an acknowledgment. You fought for this. It's yours."
+        },
+        {
+          "id": "exit_earned_3",
+          "narrative": "The gates part. Ancient mechanisms grind. Someone—something—is impressed. You passed the tests. You survived the trials. The way out is your prize. Claim it."
+        },
+        {
+          "id": "exit_earned_4",
+          "narrative": "A choir of silence. The respect of the dead. You made it further than most, survived what kills most. The exit honors you by existing. By letting you through."
+        },
+        {
+          "id": "exit_earned_5",
+          "narrative": "The path opens. Not given — earned. Every corpse you passed, every creature you survived, every choice you made led here. To this door. To this light. To life."
+        }
+      ]
+    },
+    {
+      "template": "reluctant",
+      "variations": [
+        {
+          "id": "exit_reluctant_1",
+          "narrative": "The exit is here. Safety is here. But something remains undone. Someone remains unfound. You leave, but not completely. Part of you stays. You'll be back for it."
+        },
+        {
+          "id": "exit_reluctant_2",
+          "narrative": "Light above. Darkness behind. You should feel relief. Instead you feel... unfinished. The underworld has more to show. More to teach. You're not sure you're done with it."
+        },
+        {
+          "id": "exit_reluctant_3",
+          "narrative": "You can leave. You will leave. But you hesitate at the threshold. Something calls from the depths — not threat, but invitation. Next time, it whispers. Next time, go deeper."
+        },
+        {
+          "id": "exit_reluctant_4",
+          "narrative": "Victory feels hollow. You escaped, but you left things behind. Corpses with messages you didn't read. Paths you didn't take. The exit judges you for leaving too soon."
+        },
+        {
+          "id": "exit_reluctant_5",
+          "narrative": "The surface waits. The deep calls. You're torn between survival and curiosity, between light and the secrets still hidden in shadow. You leave. For now."
+        }
+      ]
+    },
+    {
+      "template": "changed",
+      "variations": [
+        {
+          "id": "exit_changed_1",
+          "narrative": "The surface waits above. But can you return to it? You've seen what lies beneath. You've become someone who knows. The world above seems smaller now. Less real."
+        },
+        {
+          "id": "exit_changed_2",
+          "narrative": "You climb toward light. Each step feels stranger than the last. The person who descended isn't the person ascending. Something was added. Something was taken. Welcome back."
+        },
+        {
+          "id": "exit_changed_3",
+          "narrative": "Home is up there. Safety. Normalcy. But you know now. You've seen the foundations of the world. How can anything feel normal again? How can anything feel real?"
+        },
+        {
+          "id": "exit_changed_4",
+          "narrative": "The exit doesn't feel like victory. It feels like intermission. The underworld marked you. Changed you. You'll carry it forever. Even in sunlight. Especially in sunlight."
+        },
+        {
+          "id": "exit_changed_5",
+          "narrative": "Emerging feels like birth. Painful. Confusing. The world is too bright, too loud, too much. You were adapted to darkness. Now you have to adapt back. Can you?"
+        }
+      ]
+    },
+    {
+      "template": "invitation",
+      "variations": [
+        {
+          "id": "exit_invitation_1",
+          "narrative": "The door stands open. Sunlight spills through. No guardian, no trial, no price. Just... permission. It wants you to leave. It knows you'll return. They always return."
+        },
+        {
+          "id": "exit_invitation_2",
+          "narrative": "'Come back soon,' something doesn't say but definitely communicates. The exit is too easy. Too welcoming. You're not escaping — you're being let go. There's a difference."
+        },
+        {
+          "id": "exit_invitation_3",
+          "narrative": "The underworld holds the door for you. Polite. Patient. It's already preparing for your next visit. It knows something you don't: you're addicted to the descent now."
+        },
+        {
+          "id": "exit_invitation_4",
+          "narrative": "No obstacle blocks your way. Strange, after everything. Suspicious. The exit feels like bait, like a lure. But for what? For when? Go, survivor. Come back rich. Come back often."
+        },
+        {
+          "id": "exit_invitation_5",
+          "narrative": "Light ahead. Freedom ahead. The darkness behind you doesn't chase — it waves goodbye. See you soon, it seems to say. We'll leave the door unlocked."
+        }
+      ]
+    },
+    {
+      "template": "false",
+      "variations": [
+        {
+          "id": "exit_false_1",
+          "narrative": "Light ahead. Stairs leading up. Relief floods through you. Then you notice — the stairs are going down. They were always going down. The 'light' grins with too many teeth."
+        },
+        {
+          "id": "exit_false_2",
+          "narrative": "The exit. Finally. You reach for the door and your hand passes through. Illusion. Cruelty. The real path continues behind you, deeper. The underworld laughs without sound."
+        },
+        {
+          "id": "exit_false_3",
+          "narrative": "You climb toward sunlight. The air gets colder. The light gets darker. Somehow the stairs that lead up are taking you down. Geometry lies here. Hope lies here."
+        },
+        {
+          "id": "exit_false_4",
+          "narrative": "'EXIT' is carved above the doorway. Beyond: another chamber. Another choice. Another lie. The underworld is testing your hope. Torturing it. The real exit is still ahead. Maybe."
+        },
+        {
+          "id": "exit_false_5",
+          "narrative": "The way out. You're certain. You're wrong. You step through and find yourself at the entrance again. Circle. Loop. Trap. The underworld isn't done with you yet."
+        }
+      ]
+    }
+  ]
+}

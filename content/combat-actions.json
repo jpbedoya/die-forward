@@ -1,0 +1,132 @@
+{
+  "type": "combat_actions",
+  "actions": {
+    "strike": {
+      "success": [
+        "Your blade finds flesh. The impact shudders up your arm. It staggers back, hurt but not finished.",
+        "Steel meets corruption. The creature reels, ichor spraying. You've wounded it. It knows pain now.",
+        "You swing true. The blow lands solid, driving the thing back a step. Blood — or something like blood — flows.",
+        "A clean hit. The creature howls — or tries to, with what's left of its throat. You've hurt it badly.",
+        "Your weapon bites deep. The creature's eyes widen with something like surprise. It didn't expect you to fight back."
+      ],
+      "mutual": [
+        "You swing. It swings. Both connect. Pain blooms in your side as the creature staggers. Fair trade. Barely.",
+        "Steel meets claw. You tear into each other. Neither retreats. Blood mingles — yours and whatever passes for its.",
+        "A vicious exchange. You hurt it. It hurt you. The math of violence: both numbers go down.",
+        "Your blade sinks in as its claws rake across you. Agony and satisfaction, tangled together.",
+        "You cut deep. Its teeth find your arm. Mutual destruction. Mutual determination. Neither of you will stop."
+      ],
+      "weak": [
+        "The blow glances off. Not enough. It barely notices, already lunging for you.",
+        "You strike, but the angle is wrong. It absorbs the hit and keeps coming. This will take more.",
+        "Your weapon connects, but weakly. The creature laughs — or makes the sound where laughter should be."
+      ]
+    },
+    "dodge": {
+      "success": [
+        "You twist aside at the last moment. Claws slice through empty air. The creature stumbles past, exposed.",
+        "Pure instinct. Your body moves before your mind decides. The attack misses by inches. You feel the wind of it.",
+        "You're not where it expected. Its strike hits nothing. For a heartbeat, it's confused. Use that.",
+        "Too slow. It's too slow. You dance around its lunge, untouched, already positioning for the counter.",
+        "The attack passes through where you were. You're somewhere else now. Somewhere safe. Somewhere ready."
+      ],
+      "close": [
+        "Almost. You almost dodge cleanly. A claw catches your shoulder — grazing, not gutting. Still stings.",
+        "You move, but not quite fast enough. The edge of the attack finds you. Pain, but survivable.",
+        "Close enough to feel the air pressure. Close enough that it rips cloth but not flesh. Next time, be faster."
+      ]
+    },
+    "brace": {
+      "success": [
+        "You raise your guard. The impact rattles your bones, but you hold firm. Reduced, not eliminated.",
+        "You plant your feet and take it. The blow lands, but your stance absorbs most of the force. You're still standing.",
+        "Brace. Absorb. Endure. The creature's attack crashes against your defense. Painful. Survivable.",
+        "The impact shudders through you, but you've turned a killing blow into a bruising one. You can work with bruises.",
+        "You grit your teeth and weather it. The pain is real but distant. You're still here. Still fighting."
+      ],
+      "broken": [
+        "You brace, but it's stronger than you expected. Your guard breaks. Not all the damage gets through. Enough does.",
+        "The force is overwhelming. Your stance holds, barely, but something in your arm pops. Still better than the alternative."
+      ]
+    },
+    "herbs": {
+      "heal": [
+        "Bitter leaves. Bitter medicine. Warmth spreads through you as wounds close, pain recedes. The taste lingers.",
+        "You crush the herbs and press them to your wounds. Healing comes fast down here — survival demands it.",
+        "The herbs burn going down, but the burning is good. Cleansing. You feel strength return.",
+        "Ancient remedies. They work here, in the dark, where modern medicine fears to tread. You're mending.",
+        "You eat what looks like rot and tastes like hope. Your body remembers health. Your wounds remember to close."
+      ],
+      "interrupted": [
+        "You reach for the herbs. It reaches for you. The healing happens, but so does the hurting.",
+        "No time to enjoy the medicine. It strikes while you're distracted. Worth it? The healing says yes. The pain says maybe."
+      ]
+    },
+    "flee": {
+      "success": [
+        "You turn and run. Survival over pride. The darkness swallows you before it can follow.",
+        "Flight. Not cowardice — tactics. You disengage, sprinting for the passage. Behind you, frustrated sounds.",
+        "You break away, legs pumping, lungs burning. It doesn't chase. It doesn't need to. There's always another way.",
+        "Running isn't losing. Running is choosing to fight later, somewhere else, on your terms. You run.",
+        "You flee. The word tastes bitter, but you're alive to taste it. That's what matters."
+      ],
+      "hurt": [
+        "You run. A claw catches your back — parting gift. Blood flows, but so do your legs. Distance grows.",
+        "Escape isn't free. It takes a chunk of you as you go. The price of flight. Still cheaper than the price of failure.",
+        "You flee, but not fast enough. Not clean enough. It marks you before you're gone. A reminder."
+      ]
+    }
+  },
+  "enemy_intents": {
+    "AGGRESSIVE": [
+      "Lunging forward, claws extended",
+      "Preparing to strike with full force",
+      "Muscles tensing for a brutal attack",
+      "Eyes locked on your throat",
+      "Rearing back for a devastating blow",
+      "Gathering itself to pounce",
+      "Snarling, ready to tear",
+      "Coiling like a spring about to release"
+    ],
+    "DEFENSIVE": [
+      "Circling warily, watching for weakness",
+      "Arms raised, guarding vital areas",
+      "Backing away, reassessing",
+      "Wounded and cautious now",
+      "Watching your weapon, not your eyes",
+      "Moving to keep distance",
+      "Hissing warnings, not attacking yet",
+      "Testing your stance with feints"
+    ],
+    "CHARGING": [
+      "Building dark energy",
+      "Gathering power for something terrible",
+      "The air crackles around it",
+      "Something is building, pressure rising",
+      "Chanting under its breath",
+      "Drawing shadows toward itself",
+      "Growing darker, denser",
+      "Preparing something you don't want to see"
+    ],
+    "ERRATIC": [
+      "Twitching unpredictably",
+      "Moving in broken patterns",
+      "Jerking left, then right, then forward",
+      "Impossible to read, impossible to predict",
+      "Broken movements, broken mind",
+      "Seizing, spasming, attacking",
+      "No pattern, no warning",
+      "Chaos wearing a body"
+    ],
+    "HUNTING": [
+      "Sniffing the air, tracking you",
+      "Circling for the perfect angle",
+      "Patient, predatory, precise",
+      "Waiting for you to make a mistake",
+      "Eyes following your every movement",
+      "Positioning for the kill",
+      "Stalking, step by careful step",
+      "Watching. Learning. Waiting."
+    ]
+  }
+}

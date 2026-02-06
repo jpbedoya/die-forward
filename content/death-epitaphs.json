@@ -1,0 +1,49 @@
+{
+  "type": "death",
+  "death_moments": [
+    "The cold reaches your chest. Your legs stop working. The water rises, or maybe you sink. It's hard to tell the difference now.",
+    "You fall. The stone is cold against your cheek. Somewhere above, light flickers. You won't reach it.",
+    "Darkness crowds the edges of your vision. The last thing you see is the ceiling, impossibly far away.",
+    "Your weapon slips from numb fingers. The sound of it hitting stone is the last thing you hear.",
+    "Pain fades to numbness. Numbness fades to cold. Cold fades to nothing. This is what nothing feels like.",
+    "The creature watches you fall. There's something like pity in its eyes. Or hunger. Hard to tell the difference now.",
+    "You always wondered how it would end. Now you know. It ends like this. On cold stone. In dark water.",
+    "Your thoughts scatter like startled birds. One remains, clear and final: this is it. This is how your story ends.",
+    "The underworld catches you as you fall. It's been waiting for this. It's always been waiting for this.",
+    "Everything becomes distant — the pain, the cold, the fear. Peace, almost. Almost like peace.",
+    "You try to move. Your body disagrees. The argument is over before it begins. The body wins. The body always wins.",
+    "Blood or water. You can't tell which is filling your lungs. Does it matter? Does anything matter now?",
+    "The last breath leaves you. It doesn't come back. This is the part they don't tell you about: the quiet.",
+    "You reach for something — hope, help, another chance. Your hand closes on nothing. Nothing is all that's left.",
+    "The world tilts. Spins. Stops. This is what stopping feels like. This is what endings taste like.",
+    "Somewhere, someone might remember you. Here, the walls will remember. The water will remember. The dark always remembers.",
+    "You fought. You tried. It wasn't enough. It's never enough. The underworld accepts all debts, all dreams, all deaths.",
+    "The creature moves on. You were a moment in its eternal existence. A meal. A memory. A message.",
+    "Consciousness thins like morning mist. What lies beyond it? You're about to find out. You're about to become part of the answer.",
+    "This deep, death is just a change of address. You lived above. Now you live here. Forever here."
+  ],
+  "final_words_intros": [
+    "Your last thought crystallizes. Something for those who follow. A warning? A joke? A prayer?",
+    "With what remains of your strength, you leave a message. Let it mean something. Let it matter.",
+    "Words form in the dark. Final words. The only thing you'll leave behind.",
+    "One thought survives the fall. One message. Make it count.",
+    "The wall is cold beneath your fingers. You trace letters. These letters will outlast you.",
+    "You scratch into stone what you wish you could shout to the world: a last declaration.",
+    "Before the dark takes everything, you give it something: words. Your words. Forever.",
+    "The dying write to the living. It's the oldest tradition. The most honest communication.",
+    "What do you say when there's nothing left to say? You say this:",
+    "A message in a bottle. Except the bottle is stone and the ocean is time."
+  ],
+  "corpse_discovery_outros": [
+    "They tried. They failed. But they left something behind.",
+    "Another soul, another story, another warning.",
+    "The underworld is full of endings. This is one of them.",
+    "Whoever they were, they mattered. Their words prove it.",
+    "Every corpse was once hope. Every message was once breath.",
+    "They came seeking fortune. They found this instead.",
+    "The dead teach the living. This is the oldest school.",
+    "Someone loved them once. Someone might remember them still.",
+    "A life, reduced to a message. A message, preserved in stone.",
+    "They didn't make it. You still can. That's why they wrote."
+  ]
+}

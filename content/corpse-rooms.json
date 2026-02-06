@@ -1,0 +1,321 @@
+{
+  "type": "corpse",
+  "zone": "THRESHOLD OF THE UNNAMED",
+  "rooms": [
+    {
+      "template": "fresh",
+      "variations": [
+        {
+          "id": "fresh_1",
+          "narrative": "The blood hasn't dried. They fell here moments ago — or years. Time lies down here. Their hand still reaches toward the wall, where words are scratched:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "fresh_2",
+          "narrative": "Still warm. You can see the last breath still clouding in the cold air. They almost made it. Almost. Their final words, hastily carved:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "fresh_3",
+          "narrative": "You know this wasn't long ago because you can still smell the fear. Sharp. Metallic. Their message is fresh, the stone dust still falling from the letters:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "fresh_4",
+          "narrative": "Their torch still burns. That's how fresh. The flame wavers as you approach, as if acknowledging you. Their words glow in its dying light:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "fresh_5",
+          "narrative": "The ripples haven't settled. They just fell. You just missed them — or they just missed you. Either way, their message is meant for whoever comes next:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "old",
+      "variations": [
+        {
+          "id": "old_1",
+          "narrative": "Almost part of the wall now. The water has claimed most of them. But the words carved in stone remain, patient as grief:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "old_2",
+          "narrative": "Bones. Just bones now. Arranged by time and water into something almost peaceful. Their message has weathered, but remains:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "old_3",
+          "narrative": "The underworld has been digesting them for a while. What's left is more memory than body. But memories persist here. Their words endure:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "old_4",
+          "narrative": "Moss grows on them now. The underworld has accepted this body as part of itself. Only the carved message resists absorption:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "old_5",
+          "narrative": "How long have they been here? Long enough to become furniture. A landmark. Other survivors have clearly passed by, but none moved them. Their warning stands:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "peaceful",
+      "variations": [
+        {
+          "id": "peaceful_1",
+          "narrative": "They made themselves comfortable. Arranged their belongings neatly. Faced the direction of the exit they'd never reach. Their message is careful, considered:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "peaceful_2",
+          "narrative": "No struggle. No violence. They simply sat down and decided this was far enough. Their acceptance is almost enviable. Their words are calm:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "peaceful_3",
+          "narrative": "They died with their hands folded. Eyes closed. At peace with an ending they chose. Their message reads like a farewell, not a warning:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "peaceful_4",
+          "narrative": "A small fire, long cold. A meal, half-eaten. They rested here. They never woke up. Sometimes the underworld is merciful. Their last thought:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "peaceful_5",
+          "narrative": "They're smiling. Somehow. After everything. Their body is a lesson in letting go. Their message is for themselves as much as for you:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "heroic",
+      "variations": [
+        {
+          "id": "heroic_1",
+          "narrative": "The creature lies beside them. They killed it. It killed them. A fair trade? Their blade is still in its skull. Their message is short, satisfied:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "heroic_2",
+          "narrative": "They held the line. Here. You can see where the fight happened — the scars on the walls, the black ichor, the bodies of things they killed. Their epitaph is earned:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "heroic_3",
+          "narrative": "Three creatures dead around them. They didn't go quietly. They didn't go easily. They went fighting, surrounded, taking as many as they could. Their boast:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "heroic_4",
+          "narrative": "They died saving someone. You can see the second set of footprints, leading away. Someone else survived because of this one. Their legacy:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "heroic_5",
+          "narrative": "Standing. They died standing. Weapon raised. Facing something they knew they couldn't beat. They faced it anyway. Their defiance carved into stone:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "disturbing",
+      "variations": [
+        {
+          "id": "disturbing_1",
+          "narrative": "They didn't die fighting. They died waiting. Sitting against the wall, hands folded, patient. As if they knew. The message beside them:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "disturbing_2",
+          "narrative": "Something is wrong with this body. The proportions. The position. The smile. They look posed. Arranged. By something that doesn't understand human shapes. Their words:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "disturbing_3",
+          "narrative": "They're facing the wall. Forehead pressed to stone. Clawed at it until their fingers were gone. The message is carved in the rock, not scratched. Carved deep. It says:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "disturbing_4",
+          "narrative": "No wounds. No marks. No apparent cause. They just... stopped. Their expression is confused, still working out the problem. Their message trails off:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "disturbing_5",
+          "narrative": "They're standing. Dead, but standing. Eyes open. Watching the passage you just came through. Have they been watching this whole time? Their message stares with them:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "group",
+      "variations": [
+        {
+          "id": "group_1",
+          "narrative": "Three of them. Huddled together at the end. Whatever came, they faced it as one. Only one had time to write. The words are for everyone:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "group_2",
+          "narrative": "A circle of bodies. Facing outward. Back to back until the end. They trusted each other. They died together. One voice speaks for all:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "group_3",
+          "narrative": "Two of them. Holding hands. Even now. Whatever killed them didn't separate them. Their shared message:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "group_4",
+          "narrative": "A pile. That's the only word. Someone died first, and then the others didn't leave. They added themselves to the pile. The bottom one wrote something:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "group_5",
+          "narrative": "They died in formation. Like soldiers. Like believers. Like people who knew what was coming and decided to face it together. Their collective final word:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "trapped",
+      "variations": [
+        {
+          "id": "trapped_1",
+          "narrative": "The collapse sealed them in. Scratch marks cover the debris. They tried for a long time. Then they stopped. Their message, written in the dark:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "trapped_2",
+          "narrative": "Locked in. The door won't open from this side. They didn't know that when they closed it. The marks on the door tell the story. Their words are scratched at the bottom:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "trapped_3",
+          "narrative": "The water rose. You can see the mark where it stopped — just above their head. They climbed as high as they could. Not high enough. Their message is at the waterline:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "trapped_4",
+          "narrative": "Chains. They're chained here. Who chained them? Something that wanted them to wait. To think. To write one last thing:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "trapped_5",
+          "narrative": "A pit. Smooth walls. No way out. They survived down here longer than you'd expect. Long enough to carve these words:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "posed",
+      "variations": [
+        {
+          "id": "posed_1",
+          "narrative": "Someone arranged this body. Propped it up. Turned its face toward the entrance. Toward you. The message isn't theirs — something else wrote it:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "posed_2",
+          "narrative": "They're kneeling. Head bowed. Hands together. A mockery of prayer, staged by something that watched humans worship. The words beside them aren't worship:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "posed_3",
+          "narrative": "Built into the wall. Literally. Their body is part of the architecture now. The Architect was here. Only their hand is free, pointing at carved words:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "posed_4",
+          "narrative": "They're sitting at a table. With a meal. With company — other corpses, arranged like dinner guests. A horrible parody. Their place card reads:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "posed_5",
+          "narrative": "Displayed. Like art. Mounted on the wall with care, with intention. A gallery of one. The placard beneath them shows:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "legendary",
+      "variations": [
+        {
+          "id": "legendary_1",
+          "narrative": "You've heard of this one. Everyone has. They made it further than anyone before. Their corpse has become a landmark. Their words, copied and shared:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "legendary_2",
+          "narrative": "The famous one. Offerings surround them — gifts from other travelers, respects paid. They almost made it. Their message became a prayer:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "legendary_3",
+          "narrative": "You recognize them from the stories. Smaller than you imagined. More human. Their legend is larger than their body. Their words are surprisingly simple:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "legendary_4",
+          "narrative": "A pilgrimage site. Others have come just to see this spot, where the great one fell. Flowers rot at their feet. Their message is worn from being traced by fingers:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "legendary_5",
+          "narrative": "The highest staked run in history. The biggest loss. The bravest attempt. Their failure taught others how to succeed. Their legacy is more than words:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    }
+  ]
+}

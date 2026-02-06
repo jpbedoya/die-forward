@@ -1,0 +1,306 @@
+{
+  "type": "explore",
+  "zone": "THRESHOLD OF THE UNNAMED",
+  "rooms": [
+    {
+      "template": "corridor",
+      "variations": [
+        {
+          "id": "corridor_1",
+          "narrative": "Water drips somewhere ahead. The passage narrows, walls slick with something that isn't quite water. Your torch pushes back the dark. The dark pushes back.",
+          "options": ["Press forward", "Examine the walls"]
+        },
+        {
+          "id": "corridor_2",
+          "narrative": "The corridor bends. You can't see what's around the corner, but you can hear it — a wet, rhythmic sound. Breathing? Dripping? Something else entirely.",
+          "options": ["Round the corner", "Listen carefully first"]
+        },
+        {
+          "id": "corridor_3",
+          "narrative": "Scratch marks line both walls. Something was dragged through here. Recently. The marks lead deeper. So does the only path.",
+          "options": ["Follow the marks", "Move cautiously"]
+        },
+        {
+          "id": "corridor_4",
+          "narrative": "The stone here is older. Worn smooth by countless feet over countless years. You're not the first to walk this path. The bones in the corner suggest you might be among the last.",
+          "options": ["Continue", "Examine the bones"]
+        },
+        {
+          "id": "corridor_5",
+          "narrative": "Your footsteps echo wrong. Too many echoes. As if someone walks beside you, half a step behind. You don't look back. You know better.",
+          "options": ["Keep moving", "Stop and turn"]
+        }
+      ]
+    },
+    {
+      "template": "chamber",
+      "variations": [
+        {
+          "id": "chamber_1",
+          "narrative": "A vast space opens before you. Pillars rise into shadow, their tops lost to darkness. This was built for gatherings. Now it gathers only silence. And you.",
+          "options": ["Cross the chamber", "Stay near the walls"]
+        },
+        {
+          "id": "chamber_2",
+          "narrative": "The ceiling vanishes into black. The walls are too far apart. This room is larger than it should be — larger than the temple above could contain. Geometry lies down here.",
+          "options": ["Cross quickly", "Search the perimeter"]
+        },
+        {
+          "id": "chamber_3",
+          "narrative": "Water covers the floor, still as black glass. The chamber stretches in all directions. At its center, something rises from the water. An altar? A throne? You can't tell from here.",
+          "options": ["Wade toward the center", "Circle around the edge"]
+        },
+        {
+          "id": "chamber_4",
+          "narrative": "Broken pews line the hall. A congregation sat here once, listening to sermons in languages that predate words. The pulpit stands empty. Something watches from behind it.",
+          "options": ["Approach the pulpit", "Leave quickly"]
+        },
+        {
+          "id": "chamber_5",
+          "narrative": "The chamber hums. A frequency you feel in your teeth, your bones, your thoughts. The walls are carved with patterns that hurt to follow. Don't follow them.",
+          "options": ["Push through", "Close your eyes and navigate by touch"]
+        }
+      ]
+    },
+    {
+      "template": "descent",
+      "variations": [
+        {
+          "id": "descent_1",
+          "narrative": "Stairs spiral downward. And down. And down. You lose count after the first hundred. The air grows heavier with each step. Warmer. Wrong.",
+          "options": ["Continue descending", "Rest on the stairs"]
+        },
+        {
+          "id": "descent_2",
+          "narrative": "A shaft drops into darkness. Handholds are carved into the stone — worn smooth by countless hands before yours. Some of the holds are stained. Don't think about why.",
+          "options": ["Climb down", "Look for another way"]
+        },
+        {
+          "id": "descent_3",
+          "narrative": "The floor gives way to a gentle slope. Wet. Slippery. You're descending whether you choose to or not. The gradient steepens. Control is an illusion.",
+          "options": ["Slide carefully", "Try to find purchase"]
+        },
+        {
+          "id": "descent_4",
+          "narrative": "Stone steps, each one lower than the last. The proportions are wrong — built for something with longer legs, or perhaps for humans meant to stumble. You stumble.",
+          "options": ["Steady yourself and continue", "Take it slowly"]
+        },
+        {
+          "id": "descent_5",
+          "narrative": "The path drops through a crack in the floor. Below, water gleams. How deep? The torch's light doesn't reach the bottom. Nothing does.",
+          "options": ["Lower yourself through", "Drop something to test the depth"]
+        }
+      ]
+    },
+    {
+      "template": "flooded",
+      "variations": [
+        {
+          "id": "flooded_1",
+          "narrative": "Water to your knees. Black. Cold. Your feet find submerged steps you can't see. Something brushes your leg. Debris, probably. Probably.",
+          "options": ["Wade forward", "Move along the wall"]
+        },
+        {
+          "id": "flooded_2",
+          "narrative": "The passage is half-drowned. Water reaches your chest if you walk, your neck if you wade through the center. Both options are terrible.",
+          "options": ["Stay shallow near walls", "Swim the deeper center"]
+        },
+        {
+          "id": "flooded_3",
+          "narrative": "Water rises as you enter. Ankle. Knee. Thigh. It's not flowing in — it's just... rising. As if the room itself is swallowing. Move fast.",
+          "options": ["Rush through", "Search for higher ground"]
+        },
+        {
+          "id": "flooded_4",
+          "narrative": "Bodies float here. Face down. Bobbing gently. They're not fresh, but they're not old either. The water preserves them. The water preserves everything.",
+          "options": ["Swim past them", "Check if any are recent players"]
+        },
+        {
+          "id": "flooded_5",
+          "narrative": "The water glows. Faintly. A sickly phosphorescence that illuminates nothing but itself. Things move beneath the surface. You try not to look directly at them.",
+          "options": ["Wade through quickly", "Wait and watch the movements"]
+        }
+      ]
+    },
+    {
+      "template": "shrine",
+      "variations": [
+        {
+          "id": "shrine_1",
+          "narrative": "An altar to something forgotten. The idol's face has been scratched away, but you feel it watching anyway. Offerings rot at its base. Some are fresh.",
+          "options": ["Make an offering", "Pass without acknowledgment"]
+        },
+        {
+          "id": "shrine_2",
+          "narrative": "Candles burn here. Who lights them? The wax has pooled into shapes — faces, hands, things that might be words in a language of drippings. The flames don't flicker.",
+          "options": ["Examine the candles", "Don't touch anything"]
+        },
+        {
+          "id": "shrine_3",
+          "narrative": "A prayer wheel, rusted in place. The prayers carved into it are worn smooth, unreadable. Probably for the best. Someone tried to spin it recently — the rust is scraped.",
+          "options": ["Try to spin it", "Leave it alone"]
+        },
+        {
+          "id": "shrine_4",
+          "narrative": "The shrine is to water itself. A pool, perfectly circular, perfectly still. Your reflection looks back at you. It blinks when you don't.",
+          "options": ["Look away", "Stare it down"]
+        },
+        {
+          "id": "shrine_5",
+          "narrative": "Names cover every surface. Carved, scratched, burned into stone. Thousands of names. Pilgrims who came before. A blank space waits, as if expecting yours.",
+          "options": ["Add your name", "Leave no trace"]
+        }
+      ]
+    },
+    {
+      "template": "crossroads",
+      "variations": [
+        {
+          "id": "crossroads_1",
+          "narrative": "Three paths diverge. Left breathes cold air and whispers. Right echoes with distant water. Center shows drag marks leading in. None lead out.",
+          "options": ["Take the left path", "Take the right path", "Follow the center"]
+        },
+        {
+          "id": "crossroads_2",
+          "narrative": "The passage splits. Someone has marked the walls — scratched arrows, desperate directions. The arrows contradict each other. Someone was lost here. Many someones.",
+          "options": ["Follow the most worn path", "Choose the unmarked way"]
+        },
+        {
+          "id": "crossroads_3",
+          "narrative": "A hub of corridors, five in total. Your torch catches movement in two of them. Nothing in the other three — but nothing might be worse.",
+          "options": ["Toward the movement", "Away from it"]
+        },
+        {
+          "id": "crossroads_4",
+          "narrative": "Up or down. The only choices. Up is harder — the stairs are broken, crumbling. Down is easier. Down is always easier here.",
+          "options": ["Climb up", "Descend further"]
+        },
+        {
+          "id": "crossroads_5",
+          "narrative": "Two identical passages. Same dimensions. Same darkness. Same feeling of wrongness. One leads deeper. One leads to death. They might be the same thing.",
+          "options": ["Take the left passage", "Take the right passage"]
+        }
+      ]
+    },
+    {
+      "template": "collapse",
+      "variations": [
+        {
+          "id": "collapse_1",
+          "narrative": "Cracks web the ceiling. Dust falls in streams. This place wants to come down. You can hear it debating — groaning, settling, deciding. Move. Now.",
+          "options": ["Run through", "Move carefully"]
+        },
+        {
+          "id": "collapse_2",
+          "narrative": "Half the passage is rubble. The other half is patience — waiting to become rubble. You can see through to the other side. The gap is narrow. Time is narrower.",
+          "options": ["Squeeze through fast", "Test the stability first"]
+        },
+        {
+          "id": "collapse_3",
+          "narrative": "The floor tilts. Not much, but enough. Water pools on one side. Cracks spread from where you're standing. Every step is a negotiation with gravity.",
+          "options": ["Move to stable ground", "Stay very still"]
+        },
+        {
+          "id": "collapse_4",
+          "narrative": "Someone triggered a collapse here. You can see where they were standing when it came down. You can see where they stopped standing. Don't stand there.",
+          "options": ["Find another route", "Climb over the debris"]
+        },
+        {
+          "id": "collapse_5",
+          "narrative": "The walls are bowed inward. Pressure from somewhere. The temple above? The weight of water? The slow crush of the underworld digesting itself? Does it matter? Move.",
+          "options": ["Hurry through", "Shore up the walls somehow"]
+        }
+      ]
+    },
+    {
+      "template": "graveyard",
+      "variations": [
+        {
+          "id": "graveyard_1",
+          "narrative": "Bones. Sorted by type — skulls here, ribs there, femurs stacked like firewood. Someone organized this. Recently. There are gaps in the arrangement. Spaces waiting.",
+          "options": ["Search among the bones", "Pass through quickly"]
+        },
+        {
+          "id": "graveyard_2",
+          "narrative": "Graves line both walls, stacked three high. Some are sealed. Some are open. Some are opening, slowly, from the inside. You don't have time to watch.",
+          "options": ["Walk through the center", "Run"]
+        },
+        {
+          "id": "graveyard_3",
+          "narrative": "A pit of bodies. Old ones, at the bottom. Fresher ones, toward the top. The pit isn't full yet. It's patient. It knows more are coming.",
+          "options": ["Circle the pit", "Look for familiar faces"]
+        },
+        {
+          "id": "graveyard_4",
+          "narrative": "Memorial stones, cracked and worn. Names in languages you don't recognize. Dates that predate calendars. These dead are older than history. They remember anyway.",
+          "options": ["Read the stones", "Don't linger"]
+        },
+        {
+          "id": "graveyard_5",
+          "narrative": "The dead are posed here. Standing. Sitting. Kneeling. Frozen in their last moments, preserved by the dark. A gallery of endings. Admission is free. Leaving costs more.",
+          "options": ["Study the poses", "Keep your eyes forward"]
+        }
+      ]
+    },
+    {
+      "template": "witness",
+      "variations": [
+        {
+          "id": "witness_1",
+          "narrative": "The walls are scorched in a pattern. Circular. Precise. At the center, the stone has melted and reformed. Whatever was here is gone. You hope it's gone.",
+          "options": ["Examine the scorch marks", "Leave immediately"]
+        },
+        {
+          "id": "witness_2",
+          "narrative": "Claw marks cover every surface — floor, walls, ceiling. Deep gouges in solid stone. Something was trying to escape. Or something was trying to get in.",
+          "options": ["Study the marks", "Don't think about it"]
+        },
+        {
+          "id": "witness_3",
+          "narrative": "A perfect circle of untouched stone in a room of chaos. The circle is clean. Everything outside it is destroyed. You're standing outside the circle.",
+          "options": ["Step into the circle", "Stay out"]
+        },
+        {
+          "id": "witness_4",
+          "narrative": "Something happened here. The air still tastes like screaming. The stones are warm — warmer than they should be. You're standing in the aftermath of something terrible.",
+          "options": ["Search for clues", "Get out fast"]
+        },
+        {
+          "id": "witness_5",
+          "narrative": "Handprints. Hundreds of them. Pressed into the walls, the floor, the ceiling. All reaching in the same direction. Toward the door you just came through.",
+          "options": ["Follow where they point", "Go the other direction"]
+        }
+      ]
+    },
+    {
+      "template": "threshold",
+      "variations": [
+        {
+          "id": "threshold_1",
+          "narrative": "The doorway ahead is older than the walls around it. Beyond, the air tastes different — copper and salt. The scratches on the frame point backward. Someone tried to claw their way out.",
+          "options": ["Cross the threshold", "Hesitate"]
+        },
+        {
+          "id": "threshold_2",
+          "narrative": "A boundary. You can feel it — the air pressure changes, the sounds shift, your thoughts briefly scatter. You're about to enter somewhere else. Somewhere deeper.",
+          "options": ["Step through", "Steel yourself first"]
+        },
+        {
+          "id": "threshold_3",
+          "narrative": "The passage ends at a curtain of water, falling from somewhere above. Beyond it, darkness. The water is cold. The darkness is colder. Through is the only way.",
+          "options": ["Push through the water", "Look for another path"]
+        },
+        {
+          "id": "threshold_4",
+          "narrative": "A gate of bone. Actual bone — ribcages woven together, skulls for hinges. It swings open at your approach. It was waiting for you specifically.",
+          "options": ["Enter", "Refuse the invitation"]
+        },
+        {
+          "id": "threshold_5",
+          "narrative": "The light from your torch stops at this point. It doesn't illuminate what's beyond — the darkness there is absolute, hungry. You'll have to walk blind for a while.",
+          "options": ["Enter the darkness", "Find another light source"]
+        }
+      ]
+    }
+  ]
+}
