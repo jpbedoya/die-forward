@@ -24,7 +24,7 @@ export default function VictoryScreen() {
   });
   
   // Audio
-  const { playAmbient, playSFX } = useAudio();
+  const { enabled: audioEnabled, toggle: toggleAudio, playAmbient, playSFX } = useAudio();
   
   // Play victory ambient and SFX on mount
   useEffect(() => {
@@ -106,18 +106,28 @@ export default function VictoryScreen() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] flex flex-col font-mono">
+    <div className="min-h-screen bg-[var(--bg-base)] flex flex-col font-mono relative">
+      
+      {/* Top controls */}
+      <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+        {DEMO_MODE && (
+          <span className="text-[10px] px-2 py-1 bg-[var(--amber-dim)]/30 border border-[var(--amber-dim)] text-[var(--amber)] tracking-wider">
+            DEMO
+          </span>
+        )}
+        <button
+          onClick={() => {
+            playSFX('ui-click');
+            toggleAudio();
+          }}
+          className="p-2 text-[var(--text-muted)] hover:text-[var(--green)] transition-colors"
+          title={audioEnabled ? 'Mute audio' : 'Unmute audio'}
+        >
+          {audioEnabled ? '🔊' : '🔇'}
+        </button>
+      </div>
       
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-8">
-        
-        {/* Demo mode indicator */}
-        {DEMO_MODE && (
-          <div className="mb-4">
-            <span className="text-[10px] px-2 py-1 bg-[var(--amber-dim)]/30 border border-[var(--amber-dim)] text-[var(--amber)] tracking-wider">
-              DEMO MODE
-            </span>
-          </div>
-        )}
 
         {/* Victory announcement */}
         <div className="text-center mb-8">

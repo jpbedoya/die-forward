@@ -42,7 +42,7 @@ export default function DeathScreen() {
   const maxChars = 50;
   
   // Audio
-  const { playAmbient, playSFX } = useAudio();
+  const { enabled: audioEnabled, toggle: toggleAudio, playAmbient, playSFX } = useAudio();
   
   // Play death ambient and SFX on mount
   useEffect(() => {
@@ -131,14 +131,24 @@ export default function DeathScreen() {
 
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-8 relative z-10">
         
-        {/* Demo mode indicator */}
-        {DEMO_MODE && (
-          <div className="absolute top-4 right-4">
+        {/* Top controls */}
+        <div className="absolute top-4 right-4 flex items-center gap-2">
+          {DEMO_MODE && (
             <span className="text-[10px] px-2 py-1 bg-[var(--amber-dim)]/30 border border-[var(--amber-dim)] text-[var(--amber)] tracking-wider">
               DEMO
             </span>
-          </div>
-        )}
+          )}
+          <button
+            onClick={() => {
+              playSFX('ui-click');
+              toggleAudio();
+            }}
+            className="p-2 text-[var(--text-muted)] hover:text-[var(--red)] transition-colors"
+            title={audioEnabled ? 'Mute audio' : 'Unmute audio'}
+          >
+            {audioEnabled ? '🔊' : '🔇'}
+          </button>
+        </div>
 
         {/* Death announcement - dramatic reveal */}
         <div className="text-center mb-6">

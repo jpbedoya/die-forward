@@ -46,7 +46,7 @@ export default function StakeScreen() {
   const [error, setError] = useState<string | null>(null);
   
   // Audio - continue title ambient on stake screen
-  const { playAmbient, playSFX } = useAudio();
+  const { enabled: audioEnabled, toggle: toggleAudio, playAmbient, playSFX } = useAudio();
   
   useEffect(() => {
     playAmbient('ambient-title');
@@ -256,11 +256,23 @@ export default function StakeScreen() {
         <Link href="/" className="text-[var(--text-muted)] text-xs hover:text-[var(--text-secondary)]">
           ← Back
         </Link>
-        {DEMO_MODE && (
-          <span className="text-[10px] px-2 py-0.5 bg-[var(--amber-dim)]/30 border border-[var(--amber-dim)] text-[var(--amber)] tracking-wider">
-            DEMO MODE
-          </span>
-        )}
+        <div className="flex items-center gap-2">
+          {DEMO_MODE && (
+            <span className="text-[10px] px-2 py-0.5 bg-[var(--amber-dim)]/30 border border-[var(--amber-dim)] text-[var(--amber)] tracking-wider">
+              DEMO
+            </span>
+          )}
+          <button
+            onClick={() => {
+              playSFX('ui-click');
+              toggleAudio();
+            }}
+            className="p-1 text-[var(--text-muted)] hover:text-[var(--amber)] transition-colors"
+            title={audioEnabled ? 'Mute audio' : 'Unmute audio'}
+          >
+            {audioEnabled ? '🔊' : '🔇'}
+          </button>
+        </div>
       </header>
 
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-8">
