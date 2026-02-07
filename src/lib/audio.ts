@@ -68,10 +68,12 @@ class AudioManager {
       
       // Set up unlock listener for autoplay policy
       const unlock = () => {
+        console.log('[Audio] Unlock triggered, unlocked:', this.unlocked, 'pending:', this.pendingAmbientId);
         if (!this.unlocked) {
           this.unlocked = true;
           // Try to play pending ambient
           if (this.pendingAmbientId && this.enabled) {
+            console.log('[Audio] Playing pending ambient after unlock:', this.pendingAmbientId);
             this.playAmbient(this.pendingAmbientId);
           }
         }
@@ -98,6 +100,13 @@ class AudioManager {
   // Play ambient loop (crossfade from current, gapless looping)
   playAmbient(id: SoundId) {
     if (typeof window === 'undefined') return;
+    
+    console.log('[Audio] playAmbient called:', id, { 
+      enabled: this.enabled, 
+      unlocked: this.unlocked,
+      currentAmbientId: this.currentAmbientId,
+      pendingAmbientId: this.pendingAmbientId
+    });
     
     // If already playing this ambient (or it's pending), don't restart
     if (this.currentAmbientId === id) {
@@ -192,6 +201,7 @@ class AudioManager {
     };
     
     audio.play().then(() => {
+      console.log('[Audio] Ambient playing successfully:', id);
       this.unlocked = true;
       // Fade in
       const fadeInInterval = setInterval(() => {
@@ -205,7 +215,8 @@ class AudioManager {
       
       // Set up gapless looping
       setupGaplessLoop();
-    }).catch(() => {
+    }).catch((err) => {
+      console.log('[Audio] Ambient blocked by autoplay policy:', id, err.message);
       // Ambient blocked (waiting for interaction) - will retry via pendingAmbientId
     });
   }
