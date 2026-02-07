@@ -31,7 +31,7 @@ function SplashScreen({ onEnter }: { onEnter: () => void }) {
     >
       <div className={`transition-opacity duration-100 ${flicker ? 'opacity-60' : 'opacity-100'}`}>
         {/* Minimal logo */}
-        <pre className="text-[var(--green-bright)] text-[8px] sm:text-[10px] md:text-xs leading-none font-mono text-center mb-8 drop-shadow-[0_0_10px_rgba(34,197,94,0.3)]">
+        <pre className="text-[var(--amber)] text-[8px] sm:text-[10px] md:text-xs leading-none font-mono text-center mb-8 drop-shadow-[0_0_20px_rgba(245,158,11,0.3)]">
 {` ██████╗ ██╗███████╗
  ██╔══██╗██║██╔════╝
  ██║  ██║██║█████╗  
@@ -49,7 +49,7 @@ function SplashScreen({ onEnter }: { onEnter: () => void }) {
         {/* Enter prompt */}
         <div className="text-center">
           <div className="text-[var(--text-dim)] text-sm mb-4">💀 Death is Treasure 💀</div>
-          <div className="inline-block border border-[var(--green-bright)] px-6 py-3 text-[var(--green-bright)] animate-pulse hover:bg-[var(--green-bright)]/10 transition-colors">
+          <div className="inline-block border border-[var(--amber)] px-6 py-3 text-[var(--amber)] animate-pulse hover:bg-[var(--amber)]/10 transition-colors">
             [ CLICK TO ENTER ]
           </div>
           <div className="text-[var(--text-dim)] text-xs mt-4">🔊 Audio enabled</div>
