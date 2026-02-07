@@ -47,14 +47,20 @@ export default function StakeScreen() {
   const [error, setError] = useState<string | null>(null);
   
   // Check for demo wallet (fake wallet for testing without real connection)
-  const [demoWallet, setDemoWallet] = useState<string | null>(null);
-  useEffect(() => {
-    const demo = localStorage.getItem('die-forward-demo-wallet');
-    if (demo) {
-      setDemoWallet(demo);
-      setBalance(1.0); // Fake balance for demo
+  // Read synchronously to avoid race condition with redirect
+  const [demoWallet, setDemoWallet] = useState<string | null>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('die-forward-demo-wallet');
     }
-  }, []);
+    return null;
+  });
+  
+  // Set fake balance for demo mode
+  useEffect(() => {
+    if (demoWallet) {
+      setBalance(1.0);
+    }
+  }, [demoWallet]);
   
   // Use demo wallet or real wallet
   const effectiveWallet = demoWallet || publicKey?.toBase58() || null;
