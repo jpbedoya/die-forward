@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
@@ -8,6 +8,56 @@ import { useConnection } from '@solana/wallet-adapter-react';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { useDeathFeed, usePoolStats, usePlayer, getOrCreatePlayer, updatePlayerNickname, type Death } from '@/lib/instant';
 import { useAudio } from '@/lib/audio';
+
+// Splash screen component
+function SplashScreen({ onEnter }: { onEnter: () => void }) {
+  const [flicker, setFlicker] = useState(false);
+  
+  useEffect(() => {
+    // Random flicker effect
+    const interval = setInterval(() => {
+      if (Math.random() < 0.1) {
+        setFlicker(true);
+        setTimeout(() => setFlicker(false), 50 + Math.random() * 100);
+      }
+    }, 200);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div 
+      className="min-h-screen flex flex-col items-center justify-center bg-[var(--bg-primary)] cursor-pointer select-none"
+      onClick={onEnter}
+    >
+      <div className={`transition-opacity duration-100 ${flicker ? 'opacity-60' : 'opacity-100'}`}>
+        {/* Minimal logo */}
+        <pre className="text-[var(--green-bright)] text-[8px] sm:text-[10px] md:text-xs leading-none font-mono text-center mb-8 drop-shadow-[0_0_10px_rgba(34,197,94,0.3)]">
+{` ██████╗ ██╗███████╗
+ ██╔══██╗██║██╔════╝
+ ██║  ██║██║█████╗  
+ ██║  ██║██║██╔══╝  
+ ██████╔╝██║███████╗
+ ╚═════╝ ╚═╝╚══════╝
+ ███████╗ ██████╗ ██████╗ ██╗    ██╗ █████╗ ██████╗ ██████╗ 
+ ██╔════╝██╔═══██╗██╔══██╗██║    ██║██╔══██╗██╔══██╗██╔══██╗
+ █████╗  ██║   ██║██████╔╝██║ █╗ ██║███████║██████╔╝██║  ██║
+ ██╔══╝  ██║   ██║██╔══██╗██║███╗██║██╔══██║██╔══██╗██║  ██║
+ ██║     ╚██████╔╝██║  ██║╚███╔███╔╝██║  ██║██║  ██║██████╔╝
+ ╚═╝      ╚═════╝ ╚═╝  ╚═╝ ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝`}
+        </pre>
+        
+        {/* Enter prompt */}
+        <div className="text-center">
+          <div className="text-[var(--text-dim)] text-sm mb-4">💀 Death is Treasure 💀</div>
+          <div className="inline-block border border-[var(--green-bright)] px-6 py-3 text-[var(--green-bright)] animate-pulse hover:bg-[var(--green-bright)]/10 transition-colors">
+            [ CLICK TO ENTER ]
+          </div>
+          <div className="text-[var(--text-dim)] text-xs mt-4">🔊 Audio enabled</div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // Fallback mock data when DB is empty
 const mockDeathFeed = [
@@ -205,6 +255,7 @@ export default function TitleScreen() {
   const [nickname, setNickname] = useState('');
   const [editingNickname, setEditingNickname] = useState(false);
   const [savingNickname, setSavingNickname] = useState(false);
+  const [entered, setEntered] = useState(false);
   
   // Get player data from DB
   const walletAddress = publicKey?.toBase58() || null;
@@ -252,10 +303,29 @@ export default function TitleScreen() {
   // Audio
   const { enabled: audioEnabled, toggle: toggleAudio, playAmbient, playSFX } = useAudio();
   
-  // Play title ambient on mount
-  useEffect(() => {
+  // Handle splash screen entry
+  const handleEnter = useCallback(() => {
+    setEntered(true);
     playAmbient('ambient-title');
   }, [playAmbient]);
+  
+  // Check if already entered (persists across page navigations in session)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const wasEntered = sessionStorage.getItem('die-forward-entered');
+      if (wasEntered === 'true') {
+        setEntered(true);
+        playAmbient('ambient-title');
+      }
+    }
+  }, [playAmbient]);
+  
+  // Remember entry for session
+  useEffect(() => {
+    if (entered && typeof window !== 'undefined') {
+      sessionStorage.setItem('die-forward-entered', 'true');
+    }
+  }, [entered]);
   
   // Real-time death feed from InstantDB
   const { deaths: dbDeaths, isLoading: deathsLoading } = useDeathFeed(10);
@@ -284,6 +354,11 @@ export default function TitleScreen() {
     playSFX('ui-click');
     setVisible(true);
   };
+
+  // Show splash screen first
+  if (!entered) {
+    return <SplashScreen onEnter={handleEnter} />;
+  }
 
   return (
     <div className="min-h-screen bg-[var(--bg-base)] flex flex-col font-mono relative overflow-hidden">
