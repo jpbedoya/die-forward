@@ -642,9 +642,7 @@ export default function GameScreen() {
         {/* Options */}
         <div className="space-y-2 pb-4">
           <div className="text-[var(--text-muted)] text-xs mb-2">▼ WHAT DO YOU DO?</div>
-          {room.options
-            .filter(option => !(showCorpse && option.action === 'loot')) // Hide search after looting
-            .map((option, i) => (
+          {!showCorpse && room.options.map((option, i) => (
             <button
               key={option.id}
               onClick={() => {
