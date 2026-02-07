@@ -1,7 +1,8 @@
 # Die Forward — Demo Video Script
 
 **Target Length**: 1:30 - 2:00 minutes  
-**Tone**: Dramatic, slightly ominous, hooks immediately
+**Tone**: Dramatic, slightly ominous, hooks immediately  
+**Key angles**: Agent-built, Solana-native, unique among 400+ submissions
 
 ---
 
@@ -13,8 +14,10 @@
 > *"In most games, death is failure."*
 > 
 > *"In Die Forward... death is treasure."*
+>
+> *"And this entire game? Built by an AI agent."*
 
-**VISUAL**: ASCII skull fades in, then DIE FORWARD logo
+**VISUAL**: ASCII skull fades in, then DIE FORWARD logo, then "🤖 Built by Pisco" badge
 
 ---
 
@@ -61,6 +64,10 @@
 
 **VISUAL**: Show corpse discovery moment, loot an item
 
+> *"Tip the fallen 0.001 SOL — micro-payments only Solana makes possible."*
+
+**VISUAL**: Show "Tip 💸" button, click it, instant confirmation
+
 ---
 
 ### MECHANIC 3 - Death (1:15 - 1:35)
@@ -92,12 +99,18 @@
 
 > *"Die Forward."*
 > 
+> *"The only game in 400+ hackathon submissions."*
+>
+> *"100% built by an AI agent. Every death verifiable on-chain."*
+> 
 > *"Every death matters."*
 
 **VISUAL**: 
 - Logo + tagline
+- "🤖 Built by Pisco — AI Agent"
+- "⛓️ Verifiable Permadeath"
 - URL: **die-forward.vercel.app**
-- "Built for Colosseum Agent Hackathon"
+- "Colosseum Agent Hackathon 2026"
 
 ---
 
@@ -136,10 +149,13 @@
 
 ## 🎯 KEY MESSAGES TO HIT
 
-1. **Death is content** — Your failure enriches others
-2. **Real stakes** — SOL staking makes it matter
-3. **Async social** — No lobbies, just shared suffering
-4. **Mobile-first** — Works on Solana Seeker
+1. **100% Agent-Built** — Pisco (AI) wrote every line of code
+2. **Only game in 400+ submissions** — Unique among trading bots & infra
+3. **Death is content** — Your failure enriches others
+4. **Solana-native** — Micro-tips (0.001 SOL) only viable on Solana
+5. **Verifiable permadeath** — Deaths hashed and recorded on-chain
+6. **Real stakes** — SOL staking makes it matter
+7. **Mobile-first** — Works on Solana Seeker
 
 ---
 
