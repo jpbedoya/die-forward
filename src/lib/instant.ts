@@ -23,11 +23,14 @@ export interface Corpse {
   zone: string;
   room: number;
   playerName: string;
+  walletAddress: string; // For tipping the dead
   finalMessage: string;
   loot: string; // Single item name
   lootEmoji: string;
   discovered: boolean;
   discoveredBy?: string;
+  tipped?: boolean; // Whether someone tipped this corpse
+  tipAmount?: number; // Total tips received
   createdAt: number;
 }
 
@@ -81,10 +84,13 @@ export async function recordDeath(data: {
       zone: data.zone,
       room: data.room,
       playerName: data.playerName,
+      walletAddress: data.walletAddress, // For tipping
       finalMessage: data.finalMessage,
       loot: lootItem.name,
       lootEmoji: lootItem.emoji,
       discovered: false,
+      tipped: false,
+      tipAmount: 0,
       createdAt: Date.now(),
     }),
   ]);
@@ -110,6 +116,18 @@ export async function discoverCorpse(corpseId: string, discoveredBy: string) {
     tx.corpses[corpseId].update({
       discovered: true,
       discoveredBy,
+    }),
+  ]);
+}
+
+// Record a tip sent to a corpse
+export async function recordTip(corpseId: string, amount: number, tipperWallet: string) {
+  // Just mark as tipped - we don't track cumulative amount for simplicity
+  await db.transact([
+    tx.corpses[corpseId].update({
+      tipped: true,
+      tipAmount: amount, // Most recent tip amount
+      lastTippedBy: tipperWallet,
     }),
   ]);
 }

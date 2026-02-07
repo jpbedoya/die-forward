@@ -2,10 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useWallet, useConnection } from '@solana/wallet-adapter-react';
+import { PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { getGameState, saveGameState, DungeonRoomState } from '@/lib/gameState';
-import { useCorpseForRoom, discoverCorpse, Corpse } from '@/lib/instant';
+import { useCorpseForRoom, discoverCorpse, recordTip, Corpse } from '@/lib/instant';
 import { getExploreRoom, getCombatRoom, getCacheRoom, getExitRoom } from '@/lib/content';
 import { useAudio } from '@/lib/audio';
+
+// Tip amount in SOL
+const TIP_AMOUNT = 0.001;
 
 // Demo mode flag
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
@@ -215,6 +220,8 @@ function ProgressBar({ current, total }: { current: number; total: number }) {
 
 export default function GameScreen() {
   const router = useRouter();
+  const { publicKey, sendTransaction } = useWallet();
+  const { connection } = useConnection();
   const [currentRoom, setCurrentRoom] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -233,10 +240,56 @@ export default function GameScreen() {
   const [sessionToken, setSessionToken] = useState<string | null>(null);
   const [advancing, setAdvancing] = useState(false);
   const [rooms, setRooms] = useState<Room[]>([]);
+  const [tipping, setTipping] = useState(false);
+  const [tipped, setTipped] = useState(false);
 
   // Fetch real corpses from DB for the current room
   const { corpses: realCorpses } = useCorpseForRoom('THE SUNKEN CRYPT', currentRoom + 1);
   const realCorpse = realCorpses[0] as Corpse | undefined; // Get first undiscovered corpse
+
+  // Handle tipping a corpse
+  const handleTip = async () => {
+    if (!realCorpse || !publicKey || !realCorpse.walletAddress || tipping || tipped) return;
+    
+    // Don't tip yourself
+    if (realCorpse.walletAddress === publicKey.toBase58()) {
+      setMessage("You can't tip yourself!");
+      return;
+    }
+    
+    setTipping(true);
+    try {
+      const recipientPubkey = new PublicKey(realCorpse.walletAddress);
+      const lamports = TIP_AMOUNT * LAMPORTS_PER_SOL;
+      
+      const transaction = new Transaction().add(
+        SystemProgram.transfer({
+          fromPubkey: publicKey,
+          toPubkey: recipientPubkey,
+          lamports,
+        })
+      );
+      
+      const { blockhash } = await connection.getLatestBlockhash();
+      transaction.recentBlockhash = blockhash;
+      transaction.feePayer = publicKey;
+      
+      const signature = await sendTransaction(transaction, connection);
+      await connection.confirmTransaction(signature, 'confirmed');
+      
+      // Record tip in DB
+      await recordTip(realCorpse.id, TIP_AMOUNT, publicKey.toBase58());
+      
+      setTipped(true);
+      playSFX('item-pickup');
+      setMessage(`Sent ${TIP_AMOUNT} SOL to @${realCorpse.playerName}. They'll appreciate it from beyond.`);
+    } catch (err) {
+      console.error('Tip failed:', err);
+      setMessage('Tip failed. Try again?');
+    } finally {
+      setTipping(false);
+    }
+  };
 
   // Play exploration ambient on mount
   useEffect(() => {
@@ -328,6 +381,7 @@ export default function GameScreen() {
           setCurrentRoom(currentRoom + 1);
           setSelectedOption(null);
           setShowCorpse(false);
+          setTipped(false); // Reset tip state for next corpse
           setStamina(Math.min(3, stamina + 1)); // Regen stamina between rooms
         }
         break;
@@ -532,7 +586,7 @@ export default function GameScreen() {
               </div>
 
               {/* Loot section */}
-              <div className="flex items-center justify-between text-xs">
+              <div className="flex items-center justify-between text-xs mb-3">
                 <div className="flex items-center gap-2">
                   <span className="text-[var(--text-dim)]">They carried:</span>
                   <span className="px-2 py-1 bg-[var(--amber-dim)]/20 border border-[var(--amber-dim)] text-[var(--amber)]">
@@ -543,6 +597,39 @@ export default function GameScreen() {
                   {realCorpse ? 'Their loss, your gain.' : 'The underworld claimed everything.'}
                 </div>
               </div>
+
+              {/* Tip the Dead - only show for real corpses with wallet addresses */}
+              {realCorpse && realCorpse.walletAddress && publicKey && (
+                <div className="border-t border-[var(--purple-dim)]/30 pt-3">
+                  {tipped ? (
+                    <div className="flex items-center gap-2 text-[var(--green-bright)] text-xs">
+                      <span>💸</span>
+                      <span>Tip sent! They'll appreciate it from beyond.</span>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={handleTip}
+                      disabled={tipping}
+                      className="w-full py-2 px-3 bg-[var(--amber-dim)]/20 border border-[var(--amber)] text-[var(--amber-bright)] text-sm hover:bg-[var(--amber-dim)]/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      {tipping ? (
+                        <>
+                          <span className="animate-pulse">◈</span>
+                          <span>Sending tip...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>💸</span>
+                          <span>Tip {TIP_AMOUNT} SOL to @{realCorpse.playerName}</span>
+                        </>
+                      )}
+                    </button>
+                  )}
+                  <div className="text-[var(--text-dim)] text-[10px] text-center mt-1">
+                    Micro-payments — only possible on Solana
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
