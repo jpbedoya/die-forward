@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { useConnection } from '@solana/wallet-adapter-react';
@@ -245,6 +246,7 @@ function shortenAddress(address: string): string {
 const NICKNAME_KEY = 'die-forward-nickname';
 
 export default function TitleScreen() {
+  const router = useRouter();
   const { publicKey, connected, connecting, disconnect, wallet } = useWallet();
   const { setVisible } = useWalletModal();
   const { connection } = useConnection();
@@ -347,6 +349,15 @@ export default function TitleScreen() {
     setVisible(true);
   };
 
+  const handleDemoMode = () => {
+    playSFX('ui-click');
+    // Set fake demo wallet in localStorage
+    const demoWallet = 'DEMO' + Math.random().toString(36).substring(2, 10).toUpperCase();
+    localStorage.setItem('die-forward-demo-wallet', demoWallet);
+    localStorage.setItem('die-forward-nickname', 'DemoPlayer');
+    router.push('/stake');
+  };
+
   // Show splash screen first
   if (!entered) {
     return <SplashScreen onEnter={handleEnter} />;
@@ -398,25 +409,33 @@ export default function TitleScreen() {
           </div>
 
           {/* Primary CTA */}
-          <div className="mb-4">
+          <div className="mb-4 flex flex-col items-center gap-3">
             {!connected ? (
-              <button
-                onClick={handleConnect}
-                disabled={connecting}
-                className="group relative px-8 py-4 bg-gradient-to-b from-[var(--amber-dim)]/40 to-[var(--amber-dim)]/20 border-2 border-[var(--amber)] text-[var(--amber-bright)] hover:from-[var(--amber-dim)]/60 hover:to-[var(--amber-dim)]/40 hover:border-[var(--amber-bright)] transition-all disabled:opacity-50 text-lg tracking-wider shadow-[0_0_30px_rgba(245,158,11,0.2)] hover:shadow-[0_0_40px_rgba(245,158,11,0.3)]"
-              >
-                {connecting ? (
-                  <span className="flex items-center gap-3">
-                    <span className="animate-spin">◎</span>
-                    Connecting...
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-3">
-                    <span className="text-xl">◎</span>
-                    <span>Connect Wallet</span>
-                  </span>
-                )}
-              </button>
+              <>
+                <button
+                  onClick={handleConnect}
+                  disabled={connecting}
+                  className="group relative px-8 py-4 bg-gradient-to-b from-[var(--amber-dim)]/40 to-[var(--amber-dim)]/20 border-2 border-[var(--amber)] text-[var(--amber-bright)] hover:from-[var(--amber-dim)]/60 hover:to-[var(--amber-dim)]/40 hover:border-[var(--amber-bright)] transition-all disabled:opacity-50 text-lg tracking-wider shadow-[0_0_30px_rgba(245,158,11,0.2)] hover:shadow-[0_0_40px_rgba(245,158,11,0.3)]"
+                >
+                  {connecting ? (
+                    <span className="flex items-center gap-3">
+                      <span className="animate-spin">◎</span>
+                      Connecting...
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-3">
+                      <span className="text-xl">◎</span>
+                      <span>Connect Wallet</span>
+                    </span>
+                  )}
+                </button>
+                <button
+                  onClick={handleDemoMode}
+                  className="text-[var(--text-dim)] hover:text-[var(--purple-bright)] text-sm transition-colors"
+                >
+                  ▶ Play Demo (no wallet)
+                </button>
+              </>
             ) : (
               <Link
                 href="/stake"

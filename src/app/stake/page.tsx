@@ -46,6 +46,20 @@ export default function StakeScreen() {
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
+  // Check for demo wallet (fake wallet for testing without real connection)
+  const [demoWallet, setDemoWallet] = useState<string | null>(null);
+  useEffect(() => {
+    const demo = localStorage.getItem('die-forward-demo-wallet');
+    if (demo) {
+      setDemoWallet(demo);
+      setBalance(1.0); // Fake balance for demo
+    }
+  }, []);
+  
+  // Use demo wallet or real wallet
+  const effectiveWallet = demoWallet || publicKey?.toBase58() || null;
+  const isDemo = !!demoWallet;
+  
   // Load nickname from localStorage (set on title screen)
   useEffect(() => {
     const saved = localStorage.getItem('die-forward-nickname');
@@ -70,12 +84,12 @@ export default function StakeScreen() {
   // Real pool stats from InstantDB
   const { totalDeaths, totalStaked, isLoading: statsLoading } = usePoolStats();
 
-  // Redirect if not connected
+  // Redirect if not connected (unless demo mode)
   useEffect(() => {
-    if (!connected) {
+    if (!connected && !demoWallet) {
       router.push('/');
     }
-  }, [connected, router]);
+  }, [connected, demoWallet, router]);
 
   // Fetch balance
   useEffect(() => {
@@ -87,10 +101,10 @@ export default function StakeScreen() {
   }, [publicKey, connection]);
 
   const handleEnter = async () => {
-    if (!selectedStake || !publicKey) return;
+    if (!selectedStake || (!publicKey && !demoWallet)) return;
     
-    // In demo mode, skip wallet validation
-    if (!DEMO_MODE) {
+    // In demo mode (env or demo wallet), skip wallet validation
+    if (!DEMO_MODE && !isDemo) {
       // Need either signTransaction or sendTransaction
       if (!signTransaction && !sendTransaction) {
         setError('Wallet does not support transactions');
@@ -113,7 +127,7 @@ export default function StakeScreen() {
     
     try {
       // DEMO MODE: Skip actual SOL transfer
-      if (DEMO_MODE) {
+      if (DEMO_MODE || isDemo) {
         log('🎮 DEMO MODE - skipping SOL transfer');
         signature = `demo-${Date.now()}`;
       } else {
@@ -201,14 +215,15 @@ export default function StakeScreen() {
       }
 
       // 4. Start game session via API (with tx signature as proof)
+      const walletAddr = effectiveWallet || 'demo-unknown';
       const response = await fetch('/api/session/start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          walletAddress: publicKey.toBase58(),
+          walletAddress: walletAddr,
           stakeAmount: selectedStake,
           txSignature: signature,
-          demoMode: DEMO_MODE,
+          demoMode: DEMO_MODE || isDemo,
         }),
       });
 
@@ -231,11 +246,11 @@ export default function StakeScreen() {
       resetGameState(selectedStake, dungeonState);
       const state = getGameState();
       // Use nickname if set, otherwise use shortened wallet address
-      const playerName = nickname.trim() || shortenAddress(publicKey.toBase58());
+      const playerName = nickname.trim() || (effectiveWallet ? shortenAddress(effectiveWallet) : 'DemoPlayer');
       saveGameState({
         ...state,
         sessionToken,
-        walletAddress: publicKey.toBase58(),
+        walletAddress: walletAddr,
         nickname: playerName,
       });
       
@@ -249,8 +264,8 @@ export default function StakeScreen() {
     }
   };
 
-  // Loading state while checking connection
-  if (!connected || !publicKey) {
+  // Loading state while checking connection (skip for demo mode)
+  if (!demoWallet && (!connected || !publicKey)) {
     return (
       <div className="min-h-screen bg-[var(--bg-base)] flex items-center justify-center font-mono">
         <div className="text-[var(--amber)] animate-pulse">◈ Loading...</div>
@@ -267,7 +282,7 @@ export default function StakeScreen() {
           ← Back
         </Link>
         <div className="flex items-center gap-2">
-          {DEMO_MODE && (
+          {(DEMO_MODE || isDemo) && (
             <span className="text-[10px] px-2 py-0.5 bg-[var(--amber-dim)]/30 border border-[var(--amber-dim)] text-[var(--amber)] tracking-wider">
               DEMO
             </span>
@@ -409,7 +424,8 @@ export default function StakeScreen() {
       {/* Wallet display */}
       <footer className="border-t border-[var(--border-dim)] px-4 py-3 text-center">
         <div className="text-xs text-[var(--text-muted)]">
-          Connected: <span className="text-[var(--text-secondary)]">{shortenAddress(publicKey.toBase58())}</span>
+          Connected: <span className="text-[var(--text-secondary)]">{effectiveWallet ? shortenAddress(effectiveWallet) : '...'}</span>
+          {isDemo && <span className="text-[var(--amber)] ml-1">(Demo)</span>}
           <span className="text-[var(--text-dim)] mx-2">•</span>
           Balance: <span className="text-[var(--amber)]">{balance !== null ? `${balance.toFixed(4)} SOL` : '...'}</span>
         </div>
