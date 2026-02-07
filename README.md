@@ -306,11 +306,19 @@ On Ethereum, this tip would cost more in gas than the tip itself. On Solana, it'
 - No "pending" transactions breaking game flow
 - Victory payouts hit your wallet before you finish reading the victory screen
 
-### 🌐 On-Chain Social Layer
+### 🌐 On-Chain Death Verification
 
-Every death is recorded on-chain via InstantDB, creating a **persistent social layer**:
+Every death is **cryptographically hashed and written to Solana's Memo program** — permanent, verifiable proof of your demise:
+
+```
+DIE_FORWARD:v1:<sha256 hash of death data>
+```
+
+The hash includes: wallet, zone, room, final message, stake, timestamp.
+
+**Social layer powered by InstantDB:**
 - Live death feed on the title screen
-- Corpses discoverable by other players
+- Corpses discoverable by other players  
 - Tips tracked and attributed
 
 ### 📱 Mobile-Native
