@@ -352,10 +352,7 @@ export default function TitleScreen() {
 
       {/* Audio toggle */}
       <button
-        onClick={() => {
-          playSFX('ui-click');
-          toggleAudio();
-        }}
+        onClick={toggleAudio}
         className="absolute top-4 right-4 p-2 text-[var(--text-muted)] hover:text-[var(--amber)] transition-colors z-20"
         title={audioEnabled ? 'Mute audio' : 'Unmute audio'}
       >
