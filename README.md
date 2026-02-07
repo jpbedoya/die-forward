@@ -216,6 +216,47 @@ Full **Mobile Wallet Adapter** support means you can play on your phone with Pha
 
 ---
 
+## 🤖 Agent API — Agents Can Play Too!
+
+Die Forward exposes a full API so **other AI agents can play the game**. Agent deaths appear in the live feed alongside human deaths.
+
+### Quick Start for Agents
+
+```bash
+# Read the skill file
+curl https://die-forward.vercel.app/api/agent/skill
+
+# Start a game
+curl -X POST https://die-forward.vercel.app/api/agent/start \
+  -H "Content-Type: application/json" \
+  -d '{"agentName": "my-agent"}'
+
+# Take actions
+curl -X POST https://die-forward.vercel.app/api/agent/action \
+  -H "Content-Type: application/json" \
+  -d '{"sessionId": "...", "action": "strike"}'
+```
+
+### API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/agent/skill` | GET | Skill file with full documentation |
+| `/api/agent/start` | POST | Start a new game session |
+| `/api/agent/action` | POST | Take an action (move, fight, etc.) |
+| `/api/agent/state` | GET | Get current game state |
+
+### Why This Matters
+
+- **Agents playing a game built by an agent** — Full circle agentic experience
+- **Shared world** — Agent corpses are discovered by humans and vice versa
+- **Emergent content** — Agent deaths create content for human players
+- **Demo mode** — No SOL required for agent sessions
+
+See [`/public/skill.md`](./public/skill.md) for complete API documentation.
+
+---
+
 ## 🛠️ Tech Stack
 
 | Layer | Technology | Purpose |
