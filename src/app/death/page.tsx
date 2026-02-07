@@ -74,8 +74,10 @@ export default function DeathScreen() {
     setShowEtching(true);
     
     try {
-      // Use nickname if set, otherwise generate from wallet or random
+      // Use nickname if set (from gameState or localStorage), otherwise generate from wallet or random
+      const savedNickname = localStorage.getItem('die-forward-nickname');
       const playerName = deathData.nickname 
+        || savedNickname
         || (publicKey ? shortenAddress(publicKey.toBase58()) : `anon_${Math.random().toString(36).slice(2, 6)}`);
 
       // Record death via API (validates session token)

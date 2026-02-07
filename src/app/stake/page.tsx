@@ -46,6 +46,12 @@ export default function StakeScreen() {
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
+  // Load nickname from localStorage (set on title screen)
+  useEffect(() => {
+    const saved = localStorage.getItem('die-forward-nickname');
+    if (saved) setNickname(saved);
+  }, []);
+  
   // Audio - continue title ambient on stake screen
   const { enabled: audioEnabled, toggle: toggleAudio, playAmbient, playSFX } = useAudio();
   
@@ -366,24 +372,6 @@ export default function StakeScreen() {
             ))}
           </div>
         )}
-
-        {/* Nickname input */}
-        <div className="w-full max-w-xs mb-4">
-          <div className="text-[var(--text-muted)] text-xs uppercase tracking-wider mb-2">
-            Your Name <span className="text-[var(--text-dim)]">(optional)</span>
-          </div>
-          <input
-            type="text"
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value.slice(0, 16))}
-            placeholder={publicKey ? shortenAddress(publicKey.toBase58()) : 'anon'}
-            maxLength={16}
-            className="w-full px-4 py-2.5 bg-[var(--bg-surface)] border border-[var(--border-dim)] text-[var(--text-primary)] placeholder:text-[var(--text-dim)] focus:border-[var(--amber-dim)] focus:outline-none transition-colors"
-          />
-          <div className="text-[var(--text-dim)] text-[10px] mt-1">
-            This appears on your corpse when you die. Max 16 chars.
-          </div>
-        </div>
 
         {/* Error message */}
         {error && (

@@ -193,12 +193,31 @@ function shortenAddress(address: string): string {
   return `${address.slice(0, 4)}...${address.slice(-4)}`;
 }
 
+// Nickname storage key
+const NICKNAME_KEY = 'die-forward-nickname';
+
 export default function TitleScreen() {
   const { publicKey, connected, connecting, disconnect, wallet } = useWallet();
   const { setVisible } = useWalletModal();
   const { connection } = useConnection();
   const [balance, setBalance] = useState<number | null>(null);
   const [showHowItWorks, setShowHowItWorks] = useState(false);
+  const [nickname, setNickname] = useState('');
+  const [editingNickname, setEditingNickname] = useState(false);
+  
+  // Load nickname from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem(NICKNAME_KEY);
+    if (saved) setNickname(saved);
+  }, []);
+  
+  // Save nickname to localStorage when changed
+  const saveNickname = (name: string) => {
+    const trimmed = name.slice(0, 16);
+    setNickname(trimmed);
+    localStorage.setItem(NICKNAME_KEY, trimmed);
+    setEditingNickname(false);
+  };
   
   // Audio
   const { enabled: audioEnabled, toggle: toggleAudio, playAmbient, playSFX } = useAudio();
@@ -316,9 +335,35 @@ export default function TitleScreen() {
             )}
           </div>
 
-          {/* Wallet status */}
+          {/* Wallet status + Nickname */}
           {connected && publicKey && (
             <div className="text-xs text-[var(--text-muted)] mb-4 flex flex-col items-center gap-2">
+              {/* Nickname display/edit */}
+              <div className="flex items-center gap-2">
+                {editingNickname ? (
+                  <input
+                    type="text"
+                    value={nickname}
+                    onChange={(e) => setNickname(e.target.value.slice(0, 16))}
+                    onBlur={() => saveNickname(nickname)}
+                    onKeyDown={(e) => e.key === 'Enter' && saveNickname(nickname)}
+                    placeholder="Enter nickname..."
+                    autoFocus
+                    maxLength={16}
+                    className="px-2 py-1 bg-[var(--bg-surface)] border border-[var(--amber-dim)] text-[var(--amber-bright)] text-sm w-32 text-center focus:outline-none focus:border-[var(--amber)]"
+                  />
+                ) : (
+                  <button
+                    onClick={() => setEditingNickname(true)}
+                    className="text-[var(--amber-bright)] hover:text-[var(--amber)] transition-colors flex items-center gap-1"
+                  >
+                    <span>@{nickname || shortenAddress(publicKey.toBase58())}</span>
+                    <span className="text-[var(--text-dim)] text-[10px]">✎</span>
+                  </button>
+                )}
+              </div>
+              
+              {/* Wallet address + balance */}
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 bg-[var(--green)] rounded-full animate-pulse" />
                 <span className="text-[var(--text-secondary)]">{shortenAddress(publicKey.toBase58())}</span>
