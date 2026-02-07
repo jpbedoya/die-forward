@@ -383,7 +383,7 @@ export default function StakeScreen() {
         {/* Enter button */}
         <button
           onClick={() => {
-            playSFX('ui-click');
+            playSFX('ui-hover');
             handleEnter();
           }}
           disabled={!selectedStake || confirming}

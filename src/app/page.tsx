@@ -411,7 +411,7 @@ export default function TitleScreen() {
             ) : (
               <Link
                 href="/stake"
-                onClick={() => playSFX('ui-click')}
+                onClick={() => playSFX('ui-hover')}
                 className="group relative px-8 py-4 bg-gradient-to-b from-[var(--amber)]/40 to-[var(--amber-dim)]/30 border-2 border-[var(--amber-bright)] text-[var(--amber-bright)] hover:from-[var(--amber)]/60 hover:to-[var(--amber)]/40 transition-all text-lg tracking-wider shadow-[0_0_30px_rgba(245,158,11,0.3)] hover:shadow-[0_0_50px_rgba(245,158,11,0.4)] inline-flex items-center gap-3"
               >
                 <span className="text-xl group-hover:translate-x-1 transition-transform">▶</span>
