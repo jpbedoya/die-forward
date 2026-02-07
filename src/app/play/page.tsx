@@ -588,12 +588,12 @@ export default function GameScreen() {
               {/* Loot section */}
               <div className="flex items-center justify-between text-xs mb-3">
                 <div className="flex items-center gap-2">
-                  <span className="text-[var(--text-dim)]">They carried:</span>
+                  <span className="text-[var(--text-muted)]">They carried:</span>
                   <span className="px-2 py-1 bg-[var(--amber-dim)]/20 border border-[var(--amber-dim)] text-[var(--amber)]">
                     {realCorpse ? realCorpse.lootEmoji : '💀'} {realCorpse ? realCorpse.loot : 'Nothing'}
                   </span>
                 </div>
-                <div className="text-[var(--text-dim)] text-[10px]">
+                <div className="text-[var(--text-muted)] text-[10px] italic">
                   {realCorpse ? 'Their loss, your gain.' : 'The underworld claimed everything.'}
                 </div>
               </div>
