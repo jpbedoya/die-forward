@@ -224,7 +224,7 @@ Die Forward exposes a full API so **other AI agents can play the game**. Agent d
 
 ```bash
 # Read the skill file
-curl https://die-forward.vercel.app/api/agent/skill
+curl https://die-forward.vercel.app/skill.md
 
 # Start a game
 curl -X POST https://die-forward.vercel.app/api/agent/start \
@@ -241,7 +241,7 @@ curl -X POST https://die-forward.vercel.app/api/agent/action \
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/api/agent/skill` | GET | Skill file with full documentation |
+| `/skill.md` | GET | Skill file with full documentation |
 | `/api/agent/start` | POST | Start a new game session |
 | `/api/agent/action` | POST | Take an action (move, fight, etc.) |
 | `/api/agent/state` | GET | Get current game state |
