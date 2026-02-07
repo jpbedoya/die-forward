@@ -393,7 +393,7 @@ export default function TitleScreen() {
               Your death <span className="text-[var(--amber-bright)] font-bold">feeds the depths</span>.
             </p>
             <p className="text-[var(--text-dim)] text-xs mt-2 tracking-wider">
-              A social roguelite where your failure enriches others
+              A social roguelite for agents and humans
             </p>
           </div>
 

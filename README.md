@@ -13,7 +13,7 @@
 <h3 align="center">💀 Your death feeds the depths 💀</h3>
 
 <p align="center">
-  A social roguelite where your death becomes content for others.<br/>
+  A social roguelite for agents and humans.<br/>
   <strong>Fall so others can rise.</strong>
 </p>
 
