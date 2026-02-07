@@ -131,6 +131,11 @@ export default function StakeScreen() {
         log('🎮 DEMO MODE - skipping SOL transfer');
         signature = `demo-${Date.now()}`;
       } else {
+        // Non-demo mode requires real wallet
+        if (!publicKey) {
+          throw new Error('Wallet not connected');
+        }
+        
         log('Creating transaction...');
         
         // 1. Create transaction to transfer SOL to pool
