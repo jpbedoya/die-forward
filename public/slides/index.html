@@ -2,26 +2,51 @@
 <html>
 <head>
   <title>Die Forward — Pitch Slides</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
+    html, body {
       background: #0a0a0a;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      height: 100%;
+      overflow: hidden;
       font-family: -apple-system, sans-serif;
+    }
+    .slide-wrapper {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      padding-bottom: 80px;
+    }
+    .slide-container {
+      width: 100%;
+      height: 100%;
+      max-width: calc((100vh - 100px) * 16 / 9);
+      max-height: calc(100vw * 9 / 16);
+      position: relative;
+    }
+    iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1920px;
+      height: 1080px;
+      transform-origin: top left;
+      border: none;
+      background: #0a0a0a;
     }
     .controls {
       position: fixed;
-      bottom: 30px;
+      bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
       display: flex;
-      gap: 20px;
+      gap: 15px;
       z-index: 100;
-      background: rgba(0,0,0,0.8);
-      padding: 15px 30px;
+      background: rgba(0,0,0,0.9);
+      padding: 12px 25px;
       border-radius: 50px;
       border: 1px solid #333;
     }
@@ -29,8 +54,8 @@
       background: #1a1a1a;
       color: #f5f5f5;
       border: 1px solid #333;
-      padding: 12px 30px;
-      font-size: 16px;
+      padding: 10px 24px;
+      font-size: 14px;
       cursor: pointer;
       border-radius: 8px;
       transition: all 0.2s;
@@ -45,39 +70,20 @@
     }
     .counter {
       color: #71717a;
-      font-size: 18px;
+      font-size: 16px;
       display: flex;
       align-items: center;
-      min-width: 60px;
+      min-width: 50px;
       justify-content: center;
-    }
-    .slide-container {
-      width: 100%;
-      max-width: 1920px;
-      aspect-ratio: 16/9;
-      margin-top: 20px;
-    }
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: #0a0a0a;
-    }
-    .hint {
-      color: #52525b;
-      font-size: 14px;
-      margin-top: 10px;
-      position: fixed;
-      bottom: 100px;
     }
   </style>
 </head>
 <body>
-  <div class="slide-container">
-    <iframe id="slide" src="slide-01-hook.html"></iframe>
+  <div class="slide-wrapper">
+    <div class="slide-container" id="container">
+      <iframe id="slide" src="slide-01-hook.html"></iframe>
+    </div>
   </div>
-  
-  <div class="hint">Use arrow keys ← → or click buttons</div>
   
   <div class="controls">
     <button id="prev" onclick="prev()">← Prev</button>
@@ -98,6 +104,25 @@
     ];
     
     let current = 0;
+    
+    function scaleSlide() {
+      const container = document.getElementById('container');
+      const iframe = document.getElementById('slide');
+      const containerWidth = container.clientWidth;
+      const containerHeight = container.clientHeight;
+      
+      const scaleX = containerWidth / 1920;
+      const scaleY = containerHeight / 1080;
+      const scale = Math.min(scaleX, scaleY);
+      
+      iframe.style.transform = `scale(${scale})`;
+      
+      // Center the iframe
+      const scaledWidth = 1920 * scale;
+      const scaledHeight = 1080 * scale;
+      iframe.style.left = (containerWidth - scaledWidth) / 2 + 'px';
+      iframe.style.top = (containerHeight - scaledHeight) / 2 + 'px';
+    }
     
     function update() {
       document.getElementById('slide').src = slides[current];
@@ -125,7 +150,13 @@
       if (e.key === 'ArrowLeft') prev();
     });
     
-    update();
+    window.addEventListener('resize', scaleSlide);
+    window.addEventListener('load', () => {
+      scaleSlide();
+      update();
+    });
+    
+    scaleSlide();
   </script>
 </body>
 </html>
