@@ -309,24 +309,6 @@ export default function TitleScreen() {
     playAmbient('ambient-title');
   }, [playAmbient]);
   
-  // Check if already entered (persists across page navigations in session)
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const wasEntered = sessionStorage.getItem('die-forward-entered');
-      if (wasEntered === 'true') {
-        setEntered(true);
-        playAmbient('ambient-title');
-      }
-    }
-  }, [playAmbient]);
-  
-  // Remember entry for session
-  useEffect(() => {
-    if (entered && typeof window !== 'undefined') {
-      sessionStorage.setItem('die-forward-entered', 'true');
-    }
-  }, [entered]);
-  
   // Real-time death feed from InstantDB
   const { deaths: dbDeaths, isLoading: deathsLoading } = useDeathFeed(10);
   const { totalDeaths, totalStaked, isLoading: statsLoading } = usePoolStats();
