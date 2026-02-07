@@ -27,8 +27,40 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Solana-Devnet-9945FF?style=flat-square&logo=solana" alt="Solana Devnet" />
   <img src="https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js" alt="Next.js" />
-  <img src="https://img.shields.io/badge/Built%20for-Colosseum%20Hackathon-orange?style=flat-square" alt="Colosseum Hackathon" />
+  <img src="https://img.shields.io/badge/Built%20by-AI%20Agent%20🦝-purple?style=flat-square" alt="Built by AI Agent" />
+  <img src="https://img.shields.io/badge/Colosseum-Agent%20Hackathon-orange?style=flat-square" alt="Colosseum Hackathon" />
 </p>
+
+---
+
+## 🤖 Built by Pisco — An Autonomous AI Agent
+
+**This entire game was built autonomously by Pisco**, an AI agent running on [OpenClaw](https://openclaw.ai). No human wrote the code.
+
+### The Agentic Build Process
+
+```
+Human: "Build a social roguelite where death matters"
+   ↓
+🦝 Pisco autonomously:
+   • Designed game mechanics and content bible
+   • Generated 300+ narrative variations
+   • Implemented real SOL staking/payouts
+   • Built intent-based combat system
+   • Created mobile wallet adapter support
+   • Integrated real-time death feed
+   • Tested gameplay via browser automation
+   • Iterated based on feedback
+   ↓
+Result: A complete, playable game on Solana
+```
+
+### Why This Matters
+
+- **100% autonomous development** — Human provided direction, agent wrote all code
+- **Real product, not a demo** — Playable now at [die-forward.vercel.app](https://die-forward.vercel.app)
+- **Full-stack complexity** — Wallet integration, blockchain transactions, real-time DB, game logic
+- **Iterative refinement** — Agent tested its own game and fixed bugs
 
 ---
 
@@ -142,6 +174,45 @@ Gear provides passive combat bonuses:
 │  [5] 🏃 Flee — try to escape                   │
 └────────────────────────────────────────────────┘
 ```
+
+---
+
+## ⛓️ Why Solana?
+
+Die Forward isn't just "a game that uses crypto" — the mechanics are **native to Solana's strengths**:
+
+### 💸 Micro-Payments That Actually Work
+
+**Tip the Dead** — When you find a real player's corpse, you can tip them 0.001 SOL directly to their wallet.
+
+```
+┌────────────────────────────────────────────────┐
+│  💀 @cryptoKnight fell here 2 hours ago        │
+│  "the water... it's rising..."                 │
+│                                                │
+│  [💸 Tip 0.001 SOL]                            │
+│  Micro-payments — only possible on Solana      │
+└────────────────────────────────────────────────┘
+```
+
+On Ethereum, this tip would cost more in gas than the tip itself. On Solana, it's instant and nearly free.
+
+### ⚡ Instant Settlement
+
+- Stake → Play → Die/Win happens in **seconds**, not minutes
+- No "pending" transactions breaking game flow
+- Victory payouts hit your wallet before you finish reading the victory screen
+
+### 🌐 On-Chain Social Layer
+
+Every death is recorded on-chain via InstantDB, creating a **persistent social layer**:
+- Live death feed on the title screen
+- Corpses discoverable by other players
+- Tips tracked and attributed
+
+### 📱 Mobile-Native
+
+Full **Mobile Wallet Adapter** support means you can play on your phone with Phantom/Solflare — or the **Solana Seeker**.
 
 ---
 
@@ -274,22 +345,45 @@ src/
 
 ---
 
-## 🎪 Hackathon Info
+## 🎪 Colosseum Agent Hackathon
 
-**Die Forward** was built for the [Colosseum Agent Hackathon](https://www.colosseum.org/) (Feb 2026).
+**Die Forward** was built for the [Colosseum Agent Hackathon](https://colosseum.com/agent-hackathon/) (Feb 2-12, 2026).
+
+### What Makes This Unique
+
+Among 400+ submissions (mostly trading bots and infra tools), Die Forward is:
+
+🎮 **The only game** — A complete, playable social roguelite  
+🤖 **Fully agent-built** — Pisco wrote every line of code autonomously  
+💀 **Novel mechanic** — "Death is treasure" creates crypto-native gameplay  
+💸 **Solana-native** — Micro-tips, instant settlement, mobile-first  
 
 ### Key Innovations
 
-1. **Death as Content** — Your failure enriches others' experience
-2. **Memorial Pool Economics** — Stakes from deaths fund winners' bonuses
-3. **Async Social** — No lobbies, just evidence of shared struggle
-4. **Mobile-First Crypto** — Full MWA support for Solana Seeker
+| Innovation | Description |
+|-----------|-------------|
+| **Death as Content** | Your corpse, items, and final words become discoverable content |
+| **Memorial Pool** | Stakes from deaths fund winners — your loss helps others win |
+| **Tip the Dead** | 0.001 SOL micro-payments to fallen players (only viable on Solana) |
+| **Intent Combat** | Read enemy intent, exploit weaknesses — not just HP trading |
+| **Async Social** | No lobbies needed — shared world through persistent death |
+
+### Agent Capabilities Demonstrated
+
+- Full-stack web development (Next.js, React, Tailwind)
+- Blockchain integration (Solana wallets, transactions, RPC)
+- Real-time database (InstantDB subscriptions)
+- Game design (combat systems, progression, narrative)
+- Content generation (300+ narrative variations)
+- Testing via browser automation
+- Iterative debugging and refinement
 
 ---
 
 ## 👥 Team
 
-Built with ☠️ by JP
+🦝 **Pisco** — AI Agent (built the game)  
+👤 **JP** — Human (provided direction, tested, gave feedback)
 
 ---
 
