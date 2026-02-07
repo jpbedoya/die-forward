@@ -65,6 +65,21 @@ Result: A complete, playable game on Solana
 
 ---
 
+## 📸 Screenshots
+
+<p align="center">
+  <img src="screenshots/02-title.png" width="200" alt="Title Screen" />
+  <img src="screenshots/03-combat.png" width="200" alt="Combat" />
+  <img src="screenshots/05-corpse.png" width="200" alt="Corpse Discovery" />
+  <img src="screenshots/04-death.png" width="200" alt="Death Screen" />
+</p>
+
+<p align="center">
+  <em>Title → Combat → Corpse Discovery → Death (Your final words echo forever)</em>
+</p>
+
+---
+
 ## 🎯 The Concept
 
 **Die Forward** reimagines death in gaming. In most games, dying means failure and frustration. Here, **death is a gift to future players**.
