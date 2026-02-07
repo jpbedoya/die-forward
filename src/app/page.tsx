@@ -304,7 +304,19 @@ export default function TitleScreen() {
   // Handle splash screen entry
   const handleEnter = useCallback(() => {
     setEntered(true);
+    sessionStorage.setItem('die-forward-entered', 'true');
     playAmbient('ambient-title');
+  }, [playAmbient]);
+  
+  // Skip splash if already entered this session (in-app navigation)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const wasEntered = sessionStorage.getItem('die-forward-entered');
+      if (wasEntered === 'true') {
+        setEntered(true);
+        playAmbient('ambient-title');
+      }
+    }
   }, [playAmbient]);
   
   // Real-time death feed from InstantDB
