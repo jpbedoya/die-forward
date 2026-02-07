@@ -143,10 +143,7 @@ export default function DeathScreen() {
             </span>
           )}
           <button
-            onClick={() => {
-              playSFX('ui-click');
-              toggleAudio();
-            }}
+            onClick={toggleAudio}
             className="p-2 text-[var(--text-muted)] hover:text-[var(--red)] transition-colors"
             title={audioEnabled ? 'Mute audio' : 'Unmute audio'}
           >

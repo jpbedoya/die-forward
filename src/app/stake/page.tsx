@@ -273,10 +273,7 @@ export default function StakeScreen() {
             </span>
           )}
           <button
-            onClick={() => {
-              playSFX('ui-click');
-              toggleAudio();
-            }}
+            onClick={toggleAudio}
             className="p-1 text-[var(--text-muted)] hover:text-[var(--amber)] transition-colors"
             title={audioEnabled ? 'Mute audio' : 'Unmute audio'}
           >
