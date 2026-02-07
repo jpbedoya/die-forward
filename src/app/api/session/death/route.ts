@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { init, tx, id } from '@instantdb/admin';
+import { hashDeathData, recordDeathOnChain } from '@/lib/onchain';
 
 // Initialize InstantDB Admin client
 const db = init({
   appId: process.env.NEXT_PUBLIC_INSTANT_APP_ID!,
   adminToken: process.env.INSTANT_ADMIN_KEY!,
 });
+
+// Demo mode flag - skip on-chain recording
+const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
 
 export async function POST(request: NextRequest) {
   try {
@@ -55,9 +59,34 @@ export async function POST(request: NextRequest) {
       : { name: 'Nothing', emoji: '💀' };
 
     const displayName = playerName || `${session.walletAddress.slice(0, 4)}...${session.walletAddress.slice(-4)}`;
+    const timestamp = Date.now();
+
+    // Create verifiable death hash
+    const deathHash = hashDeathData({
+      walletAddress: session.walletAddress,
+      zone: session.zone,
+      room,
+      finalMessage: finalMessage.trim(),
+      stakeAmount: session.stakeAmount,
+      timestamp,
+    });
+
+    // Record death hash on-chain (non-blocking, skip in demo mode)
+    let onChainSignature: string | null = null;
+    if (!DEMO_MODE) {
+      // Fire and don't wait - we don't want to block the death flow
+      recordDeathOnChain(deathHash).then(sig => {
+        if (sig) {
+          // Update the death record with the on-chain signature
+          db.transact([
+            tx.deaths[deathId].update({ onChainSignature: sig }),
+          ]).catch(err => console.warn('Failed to update death with signature:', err));
+        }
+      }).catch(err => console.warn('On-chain death recording failed:', err));
+    }
 
     await db.transact([
-      // Record the death
+      // Record the death with hash for verification
       tx.deaths[deathId].update({
         walletAddress: session.walletAddress,
         playerName: displayName,
@@ -66,7 +95,8 @@ export async function POST(request: NextRequest) {
         stakeAmount: session.stakeAmount,
         finalMessage: finalMessage.trim(),
         inventory: JSON.stringify(inventoryArray),
-        createdAt: Date.now(),
+        deathHash, // Verifiable hash
+        createdAt: timestamp,
       }),
       // Create a corpse for other players to find
       tx.corpses[corpseId].update({
@@ -121,6 +151,7 @@ export async function POST(request: NextRequest) {
       success: true,
       deathId,
       corpseId,
+      deathHash, // For verification
     });
 
   } catch (error) {
