@@ -312,6 +312,61 @@ export async function POST(request: NextRequest) {
           },
           result: { type: resultType, narrative, damage, enemyDamage },
         });
+      } else {
+        // Enemy defeated - advance to next room
+        const nextRoom = dungeon[currentRoom - 1];
+        
+        // Set up enemy if next room is combat
+        let nextEnemyHealth = 0;
+        let nextEnemyIntent = 'AGGRESSIVE';
+        if (nextRoom?.type === 'combat') {
+          nextEnemyHealth = 80 + Math.floor(Math.random() * 40);
+          nextEnemyIntent = 'AGGRESSIVE';
+          
+          await db.transact([
+            tx.sessions[sessionId].update({
+              enemyHealth: nextEnemyHealth,
+              enemyIntent: nextEnemyIntent,
+              wasCharging: false,
+            }),
+          ]);
+        }
+        
+        return NextResponse.json({
+          state: {
+            phase: nextRoom?.type === 'combat' ? 'combat' : 'explore',
+            room: currentRoom,
+            totalRooms: session.totalRooms,
+            health,
+            maxHealth: session.maxHealth,
+            stamina,
+            inventory: inventory.map((i: any) => i.name),
+            narrative: `${room.enemy?.name || 'The creature'} falls. ${nextRoom?.content?.narrative || 'You proceed deeper.'}`,
+            options: nextRoom?.type === 'combat' ? [
+              { id: 'strike', text: '⚔️ Strike' },
+              { id: 'dodge', text: '💨 Dodge' },
+              { id: 'brace', text: '🛡️ Brace' },
+              ...(inventory.some((i: any) => i.name === 'Herbs') ? [{ id: 'herbs', text: '🌿 Herbs' }] : []),
+              { id: 'flee', text: '🏃 Flee' },
+            ] : nextRoom?.content?.options?.map((opt: string, i: number) => ({
+              id: String(i + 1),
+              text: opt,
+            })) || [{ id: '1', text: 'Continue' }],
+            enemy: nextRoom?.type === 'combat' ? {
+              name: nextRoom.enemy?.name,
+              health: nextEnemyHealth,
+              maxHealth: nextEnemyHealth,
+              intent: nextEnemyIntent,
+              tier: nextRoom.enemy?.tier || 2,
+            } : null,
+          },
+          result: { 
+            type: 'enemy_defeated', 
+            narrative: `${room.enemy?.name || 'The creature'} collapses. You dealt ${enemyDamage} damage.`,
+            damage,
+            enemyDamage,
+          },
+        });
       }
     }
 
