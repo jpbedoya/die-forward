@@ -15,6 +15,7 @@ export interface GameState {
   stakeAmount: number;
   sessionToken: string | null;
   walletAddress: string | null;
+  nickname: string | null; // Player-chosen display name
   dungeon: DungeonRoomState[] | null;
 }
 
@@ -31,6 +32,7 @@ const defaultState: GameState = {
   stakeAmount: 0.05,
   sessionToken: null,
   walletAddress: null,
+  nickname: null,
   dungeon: null,
 };
 

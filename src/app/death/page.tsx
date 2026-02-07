@@ -37,6 +37,7 @@ export default function DeathScreen() {
     stakeLost: 0.05,
     inventory: [] as { name: string; emoji: string }[],
     sessionToken: null as string | null,
+    nickname: null as string | null,
   });
   const [loaded, setLoaded] = useState(false);
   const maxChars = 50;
@@ -61,6 +62,7 @@ export default function DeathScreen() {
       stakeLost: state.stakeAmount,
       inventory: state.inventory,
       sessionToken: state.sessionToken,
+      nickname: state.nickname, // Player's chosen nickname
     });
     setLoaded(true);
   }, []);
@@ -72,10 +74,9 @@ export default function DeathScreen() {
     setShowEtching(true);
     
     try {
-      // Generate player name from wallet or random
-      const playerName = publicKey 
-        ? shortenAddress(publicKey.toBase58())
-        : `anon_${Math.random().toString(36).slice(2, 6)}`;
+      // Use nickname if set, otherwise generate from wallet or random
+      const playerName = deathData.nickname 
+        || (publicKey ? shortenAddress(publicKey.toBase58()) : `anon_${Math.random().toString(36).slice(2, 6)}`);
 
       // Record death via API (validates session token)
       if (deathData.sessionToken) {
