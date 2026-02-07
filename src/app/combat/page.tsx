@@ -432,23 +432,17 @@ export default function CombatScreen() {
       
       {/* Enemy Header */}
       <header className="bg-[var(--bg-base)] border-b border-[var(--red-dim)] px-3 py-3 sticky top-0 z-10">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2">
-            <span className="text-xl drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]">{enemyEmoji}</span>
-            <div>
-              <span className="text-[var(--red-bright)] uppercase tracking-wide text-sm font-bold">
-                {enemyName}
-              </span>
-              {DEMO_MODE && (
-                <span className="text-[10px] px-1.5 py-0.5 bg-[var(--amber-dim)]/30 border border-[var(--amber-dim)] text-[var(--amber)] tracking-wider ml-2">
-                  DEMO
-                </span>
-              )}
-            </div>
-          </div>
-          <span className={`text-xs font-bold ${enemyHealth <= 0 ? 'text-[var(--text-dim)]' : 'text-[var(--red-bright)]'}`}>
-            {enemyHealth}/{enemyMaxHealth}
+        {/* Enemy name + emoji + HP + DEMO badge */}
+        <div className="flex items-center gap-2 mb-2">
+          <span className="text-xl drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]">{enemyEmoji}</span>
+          <span className="text-[var(--red-bright)] uppercase tracking-wide text-sm font-bold">
+            {enemyName}
           </span>
+          {DEMO_MODE && (
+            <span className="text-[10px] px-1.5 py-0.5 bg-[var(--amber-dim)]/30 border border-[var(--amber-dim)] text-[var(--amber)] tracking-wider">
+              DEMO
+            </span>
+          )}
         </div>
         
         {/* Creature description */}
@@ -458,9 +452,17 @@ export default function CombatScreen() {
           </div>
         )}
         
-        <HealthBar current={enemyHealth} max={enemyMaxHealth} />
+        {/* Health bar with HP counter next to it */}
+        <div className="flex items-center gap-2">
+          <div className="flex-1">
+            <HealthBar current={enemyHealth} max={enemyMaxHealth} />
+          </div>
+          <span className={`text-xs font-bold whitespace-nowrap ${enemyHealth <= 0 ? 'text-[var(--text-dim)]' : 'text-[var(--red-bright)]'}`}>
+            {enemyHealth}/{enemyMaxHealth}
+          </span>
+        </div>
         
-        {/* Intent + Tier */}
+        {/* Intent + Tier - below the bar */}
         {phase === 'choose' && enemyHealth > 0 && (
           <div className="mt-2 text-xs flex items-center gap-2 flex-wrap">
             <span className="text-[var(--text-muted)]">Intent:</span>
