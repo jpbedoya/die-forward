@@ -146,6 +146,32 @@ export async function POST(request: NextRequest) {
       }),
     ]);
 
+    // Update player stats (increment clears, track earned)
+    try {
+      const { players } = await db.query({
+        players: {
+          $: {
+            where: { walletAddress: session.walletAddress },
+            limit: 1,
+          },
+        },
+      });
+
+      if (players && players.length > 0) {
+        const player = players[0];
+        await db.transact([
+          tx.players[player.id].update({
+            totalClears: ((player as Record<string, unknown>).totalClears as number || 0) + 1,
+            totalEarned: ((player as Record<string, unknown>).totalEarned as number || 0) + totalReward,
+            lastPlayedAt: Date.now(),
+          }),
+        ]);
+      }
+    } catch (statsError) {
+      console.warn('Failed to update player stats:', statsError);
+      // Don't fail the whole request for stats
+    }
+
     return NextResponse.json({
       success: true,
       reward: totalReward,

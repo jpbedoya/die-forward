@@ -74,10 +74,13 @@ export async function POST(request: NextRequest) {
         zone: session.zone,
         room,
         playerName: displayName,
+        walletAddress: session.walletAddress, // For tipping
         finalMessage: finalMessage.trim(),
         loot: lootItem.name,
         lootEmoji: lootItem.emoji,
         discovered: false,
+        tipped: false,
+        tipAmount: 0,
         createdAt: Date.now(),
       }),
       // Mark session as dead
@@ -87,6 +90,32 @@ export async function POST(request: NextRequest) {
         finalRoom: room,
       }),
     ]);
+
+    // Update player stats (increment deaths, track lost stake)
+    try {
+      const { players } = await db.query({
+        players: {
+          $: {
+            where: { walletAddress: session.walletAddress },
+            limit: 1,
+          },
+        },
+      });
+
+      if (players && players.length > 0) {
+        const player = players[0];
+        await db.transact([
+          tx.players[player.id].update({
+            totalDeaths: ((player as Record<string, unknown>).totalDeaths as number || 0) + 1,
+            totalLost: ((player as Record<string, unknown>).totalLost as number || 0) + session.stakeAmount,
+            lastPlayedAt: Date.now(),
+          }),
+        ]);
+      }
+    } catch (statsError) {
+      console.warn('Failed to update player stats:', statsError);
+      // Don't fail the whole request for stats
+    }
 
     return NextResponse.json({
       success: true,

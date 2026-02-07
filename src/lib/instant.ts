@@ -34,14 +34,17 @@ export interface Corpse {
   createdAt: number;
 }
 
-export interface PlayerStats {
+export interface Player {
   id: string;
   walletAddress: string;
-  playerName: string;
+  nickname: string;
   totalDeaths: number;
   totalClears: number;
   totalEarned: number;
   totalLost: number;
+  totalTipsReceived: number;
+  totalTipsSent: number;
+  createdAt: number;
   lastPlayedAt: number;
 }
 
@@ -132,6 +135,200 @@ export async function recordTip(corpseId: string, amount: number, tipperWallet: 
   ]);
 }
 
+// ============ PLAYER MANAGEMENT ============
+
+// Get or create a player record by wallet address
+export async function getOrCreatePlayer(walletAddress: string, nickname?: string): Promise<Player | null> {
+  try {
+    // Try to find existing player
+    const result = await db.queryOnce({
+      players: {
+        $: {
+          where: { walletAddress },
+          limit: 1,
+        },
+      },
+    });
+
+    const players = result.data?.players || [];
+
+    if (players && players.length > 0) {
+      // Update last played time
+      const player = players[0] as unknown as Player;
+      await db.transact([
+        tx.players[player.id].update({
+          lastPlayedAt: Date.now(),
+          // Update nickname if provided and different
+          ...(nickname && nickname !== player.nickname ? { nickname } : {}),
+        }),
+      ]);
+      return { ...player, nickname: nickname || player.nickname };
+    }
+
+    // Create new player
+    const playerId = id();
+    const newPlayer: Omit<Player, 'id'> = {
+      walletAddress,
+      nickname: nickname || walletAddress.slice(0, 4) + '...' + walletAddress.slice(-4),
+      totalDeaths: 0,
+      totalClears: 0,
+      totalEarned: 0,
+      totalLost: 0,
+      totalTipsReceived: 0,
+      totalTipsSent: 0,
+      createdAt: Date.now(),
+      lastPlayedAt: Date.now(),
+    };
+
+    await db.transact([
+      tx.players[playerId].update(newPlayer),
+    ]);
+
+    return { id: playerId, ...newPlayer };
+  } catch (error) {
+    console.error('Failed to get/create player:', error);
+    return null;
+  }
+}
+
+// Update player nickname
+export async function updatePlayerNickname(walletAddress: string, nickname: string): Promise<boolean> {
+  try {
+    const result = await db.queryOnce({
+      players: {
+        $: {
+          where: { walletAddress },
+          limit: 1,
+        },
+      },
+    });
+
+    const players = result.data?.players || [];
+
+    if (players && players.length > 0) {
+      const player = players[0] as unknown as Player;
+      await db.transact([
+        tx.players[player.id].update({ nickname }),
+      ]);
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('Failed to update nickname:', error);
+    return false;
+  }
+}
+
+// Increment player death stats
+export async function incrementPlayerDeaths(walletAddress: string, stakeLost: number): Promise<void> {
+  try {
+    const result = await db.queryOnce({
+      players: {
+        $: {
+          where: { walletAddress },
+          limit: 1,
+        },
+      },
+    });
+
+    const players = result.data?.players || [];
+
+    if (players && players.length > 0) {
+      const player = players[0] as unknown as Player;
+      await db.transact([
+        tx.players[player.id].update({
+          totalDeaths: (player.totalDeaths || 0) + 1,
+          totalLost: (player.totalLost || 0) + stakeLost,
+          lastPlayedAt: Date.now(),
+        }),
+      ]);
+    }
+  } catch (error) {
+    console.error('Failed to increment deaths:', error);
+  }
+}
+
+// Increment player clear stats
+export async function incrementPlayerClears(walletAddress: string, earned: number): Promise<void> {
+  try {
+    const result = await db.queryOnce({
+      players: {
+        $: {
+          where: { walletAddress },
+          limit: 1,
+        },
+      },
+    });
+
+    const players = result.data?.players || [];
+
+    if (players && players.length > 0) {
+      const player = players[0] as unknown as Player;
+      await db.transact([
+        tx.players[player.id].update({
+          totalClears: (player.totalClears || 0) + 1,
+          totalEarned: (player.totalEarned || 0) + earned,
+          lastPlayedAt: Date.now(),
+        }),
+      ]);
+    }
+  } catch (error) {
+    console.error('Failed to increment clears:', error);
+  }
+}
+
+// Hook to get player data
+export function usePlayer(walletAddress: string | null) {
+  const { data, isLoading, error } = db.useQuery(
+    walletAddress
+      ? {
+          players: {
+            $: {
+              where: { walletAddress },
+              limit: 1,
+            },
+          },
+        }
+      : null
+  );
+
+  const player = data?.players?.[0] as unknown as Player | undefined;
+
+  return {
+    player,
+    isLoading,
+    error,
+  };
+}
+
+// Hook to get leaderboard (top players by clears)
+export function useLeaderboard(limit = 10) {
+  const { data, isLoading, error } = db.useQuery({
+    players: {
+      $: {
+        limit,
+        // Note: InstantDB may need server-side sorting
+        // For now we'll sort client-side
+      },
+    },
+  });
+
+  // Sort by clears descending, then by deaths ascending
+  const leaderboard = (data?.players || [])
+    .map((p) => p as unknown as Player)
+    .sort((a, b) => {
+      if (b.totalClears !== a.totalClears) return b.totalClears - a.totalClears;
+      return a.totalDeaths - b.totalDeaths;
+    })
+    .slice(0, limit);
+
+  return {
+    leaderboard,
+    isLoading,
+    error,
+  };
+}
+
 // Get undiscovered corpses for a zone (checks current room and nearby)
 export function useCorpseForRoom(zone: string, room: number) {
   // Fetch all undiscovered corpses in the zone
@@ -177,42 +374,6 @@ export function useDeathFeed(limit = 10) {
 
   return {
     deaths: sortedDeaths,
-    isLoading,
-    error,
-  };
-}
-
-// Get leaderboard (top players by clears)
-export function useLeaderboard(limit = 10) {
-  // For MVP, we'll aggregate from deaths
-  // In production, you'd have a proper playerStats collection
-  const { data, isLoading, error } = db.useQuery({
-    deaths: {
-      $: {
-        order: { createdAt: 'desc' },
-        limit: 100, // Get recent deaths to aggregate
-      },
-    },
-  });
-
-  // Aggregate deaths by player (mock leaderboard for now)
-  // Real implementation would need server-side aggregation
-  const deaths = data?.deaths || [];
-  const playerDeaths: Record<string, { deaths: number; totalStaked: number }> = {};
-  
-  deaths.forEach((death) => {
-    const d = death as unknown as Death;
-    if (!playerDeaths[d.playerName]) {
-      playerDeaths[d.playerName] = { deaths: 0, totalStaked: 0 };
-    }
-    playerDeaths[d.playerName].deaths++;
-    playerDeaths[d.playerName].totalStaked += d.stakeAmount || 0;
-  });
-
-  return {
-    // Return mock data for now - real leaderboard needs clears tracking
-    deaths,
-    playerDeaths,
     isLoading,
     error,
   };

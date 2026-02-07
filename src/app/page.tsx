@@ -6,7 +6,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
-import { useDeathFeed, usePoolStats, type Death } from '@/lib/instant';
+import { useDeathFeed, usePoolStats, usePlayer, getOrCreatePlayer, updatePlayerNickname, type Death } from '@/lib/instant';
 import { useAudio } from '@/lib/audio';
 
 // Fallback mock data when DB is empty
@@ -193,7 +193,7 @@ function shortenAddress(address: string): string {
   return `${address.slice(0, 4)}...${address.slice(-4)}`;
 }
 
-// Nickname storage key
+// Nickname storage key (local backup)
 const NICKNAME_KEY = 'die-forward-nickname';
 
 export default function TitleScreen() {
@@ -204,19 +204,49 @@ export default function TitleScreen() {
   const [showHowItWorks, setShowHowItWorks] = useState(false);
   const [nickname, setNickname] = useState('');
   const [editingNickname, setEditingNickname] = useState(false);
+  const [savingNickname, setSavingNickname] = useState(false);
   
-  // Load nickname from localStorage on mount
+  // Get player data from DB
+  const walletAddress = publicKey?.toBase58() || null;
+  const { player, isLoading: playerLoading } = usePlayer(walletAddress);
+  
+  // Sync player on connect - create if new, load nickname if exists
   useEffect(() => {
-    const saved = localStorage.getItem(NICKNAME_KEY);
-    if (saved) setNickname(saved);
-  }, []);
+    if (connected && publicKey) {
+      const wallet = publicKey.toBase58();
+      const localNickname = localStorage.getItem(NICKNAME_KEY);
+      
+      // Create/update player in DB
+      getOrCreatePlayer(wallet, localNickname || undefined).then((p) => {
+        if (p) {
+          setNickname(p.nickname);
+          localStorage.setItem(NICKNAME_KEY, p.nickname);
+        }
+      });
+    }
+  }, [connected, publicKey]);
   
-  // Save nickname to localStorage when changed
-  const saveNickname = (name: string) => {
+  // Update nickname from player data when loaded
+  useEffect(() => {
+    if (player?.nickname) {
+      setNickname(player.nickname);
+      localStorage.setItem(NICKNAME_KEY, player.nickname);
+    }
+  }, [player]);
+  
+  // Save nickname to DB and localStorage
+  const saveNickname = async (name: string) => {
     const trimmed = name.slice(0, 16);
     setNickname(trimmed);
     localStorage.setItem(NICKNAME_KEY, trimmed);
     setEditingNickname(false);
+    
+    // Save to DB
+    if (walletAddress) {
+      setSavingNickname(true);
+      await updatePlayerNickname(walletAddress, trimmed);
+      setSavingNickname(false);
+    }
   };
   
   // Audio
