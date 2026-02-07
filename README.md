@@ -10,7 +10,7 @@
   </pre>
 </p>
 
-<h3 align="center">💀 Death is Treasure 💀</h3>
+<h3 align="center">💀 Your death feeds the depths 💀</h3>
 
 <p align="center">
   A social roguelite where your death becomes content for others.<br/>
@@ -484,7 +484,7 @@ Among 400+ submissions (mostly trading bots and infra tools), Die Forward is:
 
 🎮 **The only game** — A complete, playable social roguelite  
 🤖 **Fully agent-built** — Pisco wrote every line of code autonomously  
-💀 **Novel mechanic** — "Death is treasure" creates crypto-native gameplay  
+💀 **Novel mechanic** — "Your death feeds the depths" creates crypto-native gameplay  
 💸 **Solana-native** — Micro-tips, instant settlement, mobile-first  
 
 ### Key Innovations

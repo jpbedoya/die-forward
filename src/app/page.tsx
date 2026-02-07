@@ -390,7 +390,7 @@ export default function TitleScreen() {
           {/* Tagline with dramatic styling */}
           <div className="text-center mb-6">
             <p className="text-[var(--text-primary)] text-lg sm:text-xl tracking-[0.2em] font-light">
-              Death is <span className="text-[var(--amber-bright)] font-bold">Treasure</span>.
+              Your death <span className="text-[var(--amber-bright)] font-bold">feeds the depths</span>.
             </p>
             <p className="text-[var(--text-dim)] text-xs mt-2 tracking-wider">
               A social roguelite where your failure enriches others
