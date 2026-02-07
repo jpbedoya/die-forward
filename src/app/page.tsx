@@ -50,7 +50,7 @@ function SplashScreen({ onEnter }: { onEnter: () => void }) {
         <div className="text-center">
           <div className="text-[var(--text-dim)] text-sm mb-4">💀 Death is Treasure 💀</div>
           <div className="inline-block border border-[var(--amber)] px-6 py-3 text-[var(--amber)] animate-pulse hover:bg-[var(--amber)]/10 transition-colors">
-            [ CLICK TO ENTER ]
+            [ ENTER ]
           </div>
           <div className="text-[var(--text-dim)] text-xs mt-4">🔊 Audio enabled</div>
         </div>
