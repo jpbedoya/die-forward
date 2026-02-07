@@ -548,7 +548,7 @@ export default function GameScreen() {
         )}
 
         {/* Corpse callout - dramatic reveal of the fallen */}
-        {showCorpse && room.type === 'corpse' && (
+        {showCorpse && (room.type === 'corpse' || realCorpse) && (
           <div className="relative mb-4">
             {/* Outer glow */}
             <div className="absolute inset-0 bg-[var(--purple)]/5 blur-lg rounded-lg" />
