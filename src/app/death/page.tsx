@@ -224,6 +224,12 @@ export default function DeathScreen() {
                 <textarea
                   value={finalMessage}
                   onChange={(e) => setFinalMessage(e.target.value.slice(0, maxChars))}
+                  onFocus={(e) => {
+                    // Scroll into view when keyboard opens on mobile
+                    setTimeout(() => {
+                      e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 300);
+                  }}
                   placeholder="Leave a message..."
                   rows={2}
                   className="w-full bg-transparent text-[var(--text-primary)] text-base placeholder-[var(--text-dim)] focus:outline-none resize-none leading-relaxed"
