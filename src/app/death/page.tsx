@@ -285,19 +285,6 @@ export default function DeathScreen() {
               </div>
             </div>
 
-            {/* What happens next */}
-            <div className="mb-6">
-              <p className="text-[var(--text-muted)] text-sm leading-relaxed">
-                Your corpse now rests in <span className="text-[var(--red)]">{deathData.zone}</span>.
-              </p>
-              <p className="text-[var(--purple-bright)] text-sm mt-2">
-                Others will find you. Others will read your words.
-              </p>
-              <p className="text-[var(--text-dim)] text-xs mt-2 italic">
-                Death is treasure.
-              </p>
-            </div>
-
             {/* Actions */}
             <div className="flex flex-col gap-3">
               <Link
