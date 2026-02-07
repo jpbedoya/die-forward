@@ -43,8 +43,9 @@
 Human: "Build a social roguelite where death matters"
    ↓
 🦝 Pisco autonomously:
-   • Designed game mechanics and content bible
-   • Generated 300+ narrative variations
+   • Wrote the Content Bible (tone, vocabulary, creatures)
+   • Generated 300+ narrative variations from it
+   • Created audio via ElevenLabs Sound Effects API
    • Implemented real SOL staking/payouts
    • Built intent-based combat system
    • Created mobile wallet adapter support
@@ -174,6 +175,93 @@ Gear provides passive combat bonuses:
 │  [5] 🏃 Flee — try to escape                   │
 └────────────────────────────────────────────────┘
 ```
+
+---
+
+## 📜 Content Bible — Agent-Authored World Building
+
+Before writing a single line of game content, Pisco authored a comprehensive **Content Bible** that defines the world's tone, vocabulary, creatures, and narrative voice.
+
+### The Bible Defines
+
+| Element | Purpose |
+|---------|---------|
+| **Tone & Voice** | Second-person, present tense. Sparse, evocative. Dread through understatement. |
+| **Vocabulary Bank** | Words to use (hollow, pale, descend, whisper) and avoid (suddenly, very, cyber) |
+| **Zone Identity** | THE SUNKEN CRYPT — flooded halls, water and stone, bone-white and sickly green |
+| **Creature Catalog** | 8 enemy types with personality, tactics, and signature moves |
+| **Room Templates** | Explore, combat, corpse, cache, exit — each with narrative structure |
+
+### Sample Bible Entry
+
+```markdown
+## THE DROWNED
+Former adventurers who never left. The water preserved their bodies 
+but not their minds. They move wrong — joints bending backward, 
+heads tilting too far.
+
+**Personality:** Patient. They waited years. They can wait seconds more.
+**Tactics:** Grab and pull. They want you in the water with them.
+**Death flavor:** They don't die — they just stop pretending to be alive.
+```
+
+### Generated From Bible
+
+Using the Content Bible as source material, Pisco batch-generated **311 narrative variations**:
+
+- 30 explore rooms ("The ceiling vanishes into black...")
+- 25 combat intros ("It was waiting. It's always waiting.")  
+- 25 corpse discoveries ("They died saving someone...")
+- 20 cache rooms ("A shop. Down here. 'Recycling,' the keeper calls it.")
+- 15 exit rooms ("Home is up there. Safety. Normalcy.")
+- 196 combat action narrations (strikes, dodges, braces, flees)
+
+All content follows the Bible's tone — no generic fantasy, no modern language, consistent dread.
+
+See [`docs/CONTENT_BIBLE.md`](./docs/CONTENT_BIBLE.md) for the full bible.
+
+---
+
+## 🔊 Audio — AI-Generated Sound Design
+
+The audio isn't stock — **Pisco generated it using ElevenLabs Sound Effects API**, matching sounds to the Content Bible's tone.
+
+### Audio Architecture
+
+```
+┌─────────────────────────────────────────────────────┐
+│  AMBIENT LOOPS (gapless crossfade)                  │
+│  ├── explore.mp3 — dripping water, distant echoes   │
+│  ├── combat.mp3 — heartbeat, metallic stress        │
+│  └── death.mp3 — water rising, fading pulse         │
+├─────────────────────────────────────────────────────┤
+│  SFX (triggered on actions)                         │
+│  ├── strike.mp3 — blade impact, wet crunch          │
+│  ├── dodge.mp3 — swift movement, near miss          │
+│  ├── damage.mp3 — pain, impact                      │
+│  └── victory.mp3 — emergence, light                 │
+└─────────────────────────────────────────────────────┘
+```
+
+### Prompt Engineering for Audio
+
+Each sound was generated with prompts derived from the Content Bible:
+
+```
+Ambient Explore: "Underground flooded crypt ambiance, dripping water 
+echoing in stone halls, distant unsettling sounds, dark atmospheric, 
+no music, subtle dread"
+
+Combat Strike: "Blade cutting through waterlogged flesh, wet impact, 
+medieval combat, dark fantasy violence, visceral but not excessive"
+```
+
+### Technical Implementation
+
+- **Gapless looping** via pre-start crossfade (MP3 encoder adds padding)
+- **Scene-persistent audio** — death ambient starts in combat, continues to death screen
+- **Normalized levels** — all audio balanced for consistent volume
+- **User toggle** — mute control on every screen
 
 ---
 
