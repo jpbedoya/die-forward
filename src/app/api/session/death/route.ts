@@ -134,10 +134,12 @@ export async function POST(request: NextRequest) {
 
       if (players && players.length > 0) {
         const player = players[0];
+        const currentHighest = (player as Record<string, unknown>).highestRoom as number || 0;
         await db.transact([
           tx.players[player.id].update({
             totalDeaths: ((player as Record<string, unknown>).totalDeaths as number || 0) + 1,
             totalLost: ((player as Record<string, unknown>).totalLost as number || 0) + session.stakeAmount,
+            highestRoom: Math.max(currentHighest, room), // Track deepest room reached
             lastPlayedAt: Date.now(),
           }),
         ]);

@@ -46,6 +46,7 @@ export interface Player {
   totalLost: number;
   totalTipsReceived: number;
   totalTipsSent: number;
+  highestRoom: number;      // Deepest room reached
   createdAt: number;
   lastPlayedAt: number;
 }
@@ -303,22 +304,24 @@ export function usePlayer(walletAddress: string | null) {
   };
 }
 
-// Hook to get leaderboard (top players by clears)
+// Hook to get leaderboard (top explorers by deepest room)
 export function useLeaderboard(limit = 10) {
   const { data, isLoading, error } = db.useQuery({
     players: {
       $: {
-        limit,
-        // Note: InstantDB may need server-side sorting
-        // For now we'll sort client-side
+        limit: 100, // Fetch more to sort properly
       },
     },
   });
 
-  // Sort by clears descending, then by deaths ascending
+  // Sort by highest room descending, then by clears, then by fewest deaths
   const leaderboard = (data?.players || [])
     .map((p) => p as unknown as Player)
+    .filter((p) => (p.highestRoom || 0) > 0) // Only show players who have played
     .sort((a, b) => {
+      const aRoom = a.highestRoom || 0;
+      const bRoom = b.highestRoom || 0;
+      if (bRoom !== aRoom) return bRoom - aRoom;
       if (b.totalClears !== a.totalClears) return b.totalClears - a.totalClears;
       return a.totalDeaths - b.totalDeaths;
     })

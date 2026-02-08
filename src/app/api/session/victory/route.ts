@@ -159,10 +159,13 @@ export async function POST(request: NextRequest) {
 
       if (players && players.length > 0) {
         const player = players[0];
+        const currentHighest = (player as Record<string, unknown>).highestRoom as number || 0;
+        const clearedRoom = 12; // Full dungeon clear = room 12
         await db.transact([
           tx.players[player.id].update({
             totalClears: ((player as Record<string, unknown>).totalClears as number || 0) + 1,
             totalEarned: ((player as Record<string, unknown>).totalEarned as number || 0) + totalReward,
+            highestRoom: Math.max(currentHighest, clearedRoom), // Track deepest room reached
             lastPlayedAt: Date.now(),
           }),
         ]);
