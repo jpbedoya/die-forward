@@ -156,12 +156,28 @@ Final narrative plays
        ↓
 Prompt: "Your final thought?" (1 sentence)
        ↓
+Death hash written to Solana Memo Program (on-chain proof)
+       ↓
 Corpse enters world pool
        ↓
 Stake transfers to zone memorial
        ↓
 Run ends
 ```
+
+### On-Chain Death Verification
+
+Every death is cryptographically hashed and written to **Solana's Memo Program**:
+
+```
+DIE_FORWARD:v1:<sha256 hash>
+```
+
+The hash includes: wallet address, zone, room, final message, stake amount, timestamp.
+
+- **Cost:** ~0.000005 SOL (~$0.001) per death
+- **Verification:** Anyone can look up the transaction on Solana Explorer
+- **Immutable:** Permanent proof of your demise on-chain
 
 ### What Persists
 
@@ -170,6 +186,7 @@ Run ends
 - Your final message
 - Time of death
 - Your wallet address (for tips)
+- On-chain transaction signature (verifiable)
 
 ### Finding Corpses
 

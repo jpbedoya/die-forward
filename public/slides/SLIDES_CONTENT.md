@@ -22,6 +22,7 @@
 **Text:**
 > Stake SOL. Descend into the crypt.
 > Fight. Probably die.
+> Every death hashed & verified on-chain.
 
 ---
 
@@ -31,6 +32,7 @@
 > Your death feeds the depths.
 > Find the fallen.
 > Pay respects with a SOL offering.
+> Every death verified on-chain (~$0.001 via Solana Memo Program)
 
 ---
 
