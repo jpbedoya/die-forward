@@ -368,6 +368,76 @@ export function getTierDamageMultiplier(name: string): number {
   }
 }
 
+// ====== DEPTHS SYSTEM ======
+// Progression through different "depths" of the crypt
+
+export interface DepthInfo {
+  name: string;
+  tier: 1 | 2 | 3;
+  roomRange: [number, number];
+  description: string;
+}
+
+export const DEPTHS: DepthInfo[] = [
+  {
+    name: 'THE UPPER CRYPT',
+    tier: 1,
+    roomRange: [1, 4],
+    description: 'The entrance. Cold stone and shallow water.',
+  },
+  {
+    name: 'THE FLOODED HALLS',
+    tier: 2,
+    roomRange: [5, 8],
+    description: 'Deeper now. The water rises to your chest.',
+  },
+  {
+    name: 'THE ABYSS',
+    tier: 3,
+    roomRange: [9, 12],
+    description: 'The true depths. Few return from here.',
+  },
+];
+
+// Get depth info for a room number
+export function getDepthForRoom(roomNumber: number): DepthInfo {
+  for (const depth of DEPTHS) {
+    if (roomNumber >= depth.roomRange[0] && roomNumber <= depth.roomRange[1]) {
+      return depth;
+    }
+  }
+  // Beyond defined depths = Abyss tier
+  return DEPTHS[DEPTHS.length - 1];
+}
+
+// Get tier based on room number
+export function getTierForRoom(roomNumber: number): 1 | 2 | 3 {
+  return getDepthForRoom(roomNumber).tier;
+}
+
+// Get damage multiplier based on room number (depth-based)
+export function getRoomDamageMultiplier(roomNumber: number): number {
+  const tier = getTierForRoom(roomNumber);
+  switch (tier) {
+    case 1: return 1.0;
+    case 2: return 1.5;
+    case 3: return 2.0;
+    default: return 1.0;
+  }
+}
+
+// Get random creature appropriate for a depth/tier
+export function getCreatureForRoom(roomNumber: number): CreatureInfo {
+  const tier = getTierForRoom(roomNumber);
+  const creaturesOfTier = Object.values(BESTIARY).filter(c => c.tier === tier);
+  return pick(creaturesOfTier);
+}
+
+// Get all creatures of a specific tier
+export function getCreaturesByTier(tier: 1 | 2 | 3): CreatureInfo[] {
+  return Object.values(BESTIARY).filter(c => c.tier === tier);
+}
+
 // Get random creature health based on their tier
 export function getCreatureHealth(name: string): number {
   const info = BESTIARY[name];

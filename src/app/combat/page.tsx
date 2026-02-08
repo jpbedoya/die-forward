@@ -17,6 +17,9 @@ import {
   getCreatureTier,
   getIntentEffects,
   getItemEffects,
+  getRoomDamageMultiplier,
+  getTierForRoom,
+  getDepthForRoom,
   IntentType,
   IntentEffects,
   ItemEffects,
@@ -76,6 +79,7 @@ interface Resolution {
 // Combat context for calculating damage
 interface CombatContext {
   enemyName: string;
+  roomNumber: number;        // Current room for tier calculation
   intentEffects: IntentEffects;
   itemEffects: ItemEffects;
   wasCharging: boolean;      // Enemy was charging last turn
@@ -84,7 +88,8 @@ interface CombatContext {
 
 // Generate dynamic resolution based on action with full combat mechanics
 function getResolution(action: string, ctx: CombatContext): Resolution {
-  const tierMult = getTierDamageMultiplier(ctx.enemyName);
+  // Use ROOM-based tier, not creature-based (depths system)
+  const tierMult = getRoomDamageMultiplier(ctx.roomNumber);
   const intentMult = ctx.intentEffects.damageDealtMod;
   const defenseMult = 1 - ctx.itemEffects.defenseBonus;
   const attackMult = 1 + ctx.itemEffects.damageBonus;
@@ -229,6 +234,8 @@ export default function CombatScreen() {
   const [wasCharging, setWasCharging] = useState(false);
   const [playerTriedFlee, setPlayerTriedFlee] = useState(false);
   const [enemyTier, setEnemyTier] = useState(1);
+  const [roomNumber, setRoomNumber] = useState(1);
+  const [depthName, setDepthName] = useState('THE UPPER CRYPT');
   const [lastResolution, setLastResolution] = useState<Resolution | null>(null);
   const [loaded, setLoaded] = useState(false);
   
@@ -248,6 +255,13 @@ export default function CombatScreen() {
     setPlayerInventory(state.inventory);
     setStakeAmount(state.stakeAmount);
     
+    // Set room number and depth info
+    const currentRoomNum = state.currentRoom + 1; // 0-indexed to 1-indexed
+    setRoomNumber(currentRoomNum);
+    const depth = getDepthForRoom(currentRoomNum);
+    setDepthName(depth.name);
+    setEnemyTier(depth.tier); // Tier based on depth, not creature
+    
     // Calculate item effects from inventory
     setItemEffects(getItemEffects(state.inventory));
     
@@ -266,7 +280,7 @@ export default function CombatScreen() {
           setEnemyMaxHealth(health);
           setEnemyDescription(creatureInfo.description);
           setEnemyEmoji(creatureInfo.emoji);
-          setEnemyTier(getCreatureTier(enemyNameRaw));
+          // Note: enemyTier is set based on depth, not creature
           
           // Use creature-specific intent
           const initialIntent = getCreatureIntent(enemyNameRaw);
@@ -301,6 +315,7 @@ export default function CombatScreen() {
     const currentEnemy = state.dungeon?.[state.currentRoom]?.enemy || 'Unknown';
     const ctx: CombatContext = {
       enemyName: currentEnemy,
+      roomNumber: roomNumber,  // For depth-based tier calculation
       intentEffects,
       itemEffects,
       wasCharging,
@@ -432,17 +447,29 @@ export default function CombatScreen() {
       
       {/* Enemy Header */}
       <header className="bg-[var(--bg-base)] border-b border-[var(--red-dim)] px-3 py-3 sticky top-0 z-10">
-        {/* Enemy name + emoji + HP + DEMO badge */}
+        {/* Depth + Room indicator */}
+        <div className="flex items-center gap-2 mb-2 text-[10px]">
+          <span className={`px-2 py-0.5 border uppercase tracking-wider ${
+            enemyTier === 3 ? 'bg-[var(--purple-dim)]/20 border-[var(--purple-dim)] text-[var(--purple)]' :
+            enemyTier === 2 ? 'bg-[var(--amber-dim)]/20 border-[var(--amber-dim)] text-[var(--amber)]' :
+            'bg-[var(--text-dim)]/10 border-[var(--border-dim)] text-[var(--text-muted)]'
+          }`}>
+            ◈ {depthName}
+          </span>
+          <span className="text-[var(--text-dim)]">Room {roomNumber}</span>
+          {DEMO_MODE && (
+            <span className="ml-auto px-1.5 py-0.5 bg-[var(--amber-dim)]/30 border border-[var(--amber-dim)] text-[var(--amber)] tracking-wider">
+              FREE PLAY
+            </span>
+          )}
+        </div>
+        
+        {/* Enemy name + emoji + HP */}
         <div className="flex items-center gap-2 mb-2">
           <span className="text-xl drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]">{enemyEmoji}</span>
           <span className="text-[var(--red-bright)] uppercase tracking-wide text-sm font-bold">
             {enemyName}
           </span>
-          {DEMO_MODE && (
-            <span className="text-[10px] px-1.5 py-0.5 bg-[var(--amber-dim)]/30 border border-[var(--amber-dim)] text-[var(--amber)] tracking-wider">
-              DEMO
-            </span>
-          )}
         </div>
         
         {/* Creature description */}

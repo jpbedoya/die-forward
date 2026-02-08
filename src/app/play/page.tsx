@@ -6,7 +6,7 @@ import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { getGameState, saveGameState, DungeonRoomState } from '@/lib/gameState';
 import { useCorpseForRoom, discoverCorpse, recordTip, Corpse } from '@/lib/instant';
-import { getExploreRoom, getCombatRoom, getCacheRoom, getExitRoom } from '@/lib/content';
+import { getExploreRoom, getCombatRoom, getCacheRoom, getExitRoom, getDepthForRoom } from '@/lib/content';
 import { useAudio } from '@/lib/audio';
 
 // Tip amount in SOL
@@ -465,26 +465,36 @@ export default function GameScreen() {
 
       {/* Header */}
       <header className="bg-[var(--bg-base)] border-b border-[var(--amber-dim)] px-3 py-2 sticky top-0 z-10">
-        <div className="flex items-center justify-between text-xs">
-          <div className="flex items-center gap-2">
-            <button 
-              onClick={() => setMenuOpen(true)}
-              className="text-[var(--text-muted)] hover:text-[var(--amber)] transition-colors"
-            >
-              [≡]
-            </button>
-            <span className="text-[var(--amber)]">◈</span>
-            <span className="text-[var(--amber-bright)] uppercase tracking-wide">
-              THE SUNKEN CRYPT
-            </span>
-            {DEMO_MODE && (
-              <span className="text-[10px] px-1.5 py-0.5 bg-[var(--amber-dim)]/30 border border-[var(--amber-dim)] text-[var(--amber)] tracking-wider">
-                DEMO
-              </span>
-            )}
-          </div>
-          <ProgressBar current={currentRoom + 1} total={rooms.length} />
-        </div>
+        {(() => {
+          const depth = getDepthForRoom(currentRoom + 1);
+          const tierColor = depth.tier === 3 ? 'purple' : depth.tier === 2 ? 'amber' : 'text';
+          return (
+            <div className="flex items-center justify-between text-xs">
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setMenuOpen(true)}
+                  className="text-[var(--text-muted)] hover:text-[var(--amber)] transition-colors"
+                >
+                  [≡]
+                </button>
+                <span className={`text-[var(--${tierColor === 'text' ? 'amber' : tierColor})]`}>◈</span>
+                <span className={`uppercase tracking-wide ${
+                  depth.tier === 3 ? 'text-[var(--purple-bright)]' : 
+                  depth.tier === 2 ? 'text-[var(--amber-bright)]' : 
+                  'text-[var(--text-primary)]'
+                }`}>
+                  {depth.name}
+                </span>
+                {DEMO_MODE && (
+                  <span className="text-[10px] px-1.5 py-0.5 bg-[var(--amber-dim)]/30 border border-[var(--amber-dim)] text-[var(--amber)] tracking-wider">
+                    FREE PLAY
+                  </span>
+                )}
+              </div>
+              <ProgressBar current={currentRoom + 1} total={rooms.length} />
+            </div>
+          );
+        })()}
       </header>
 
       {/* Content */}
