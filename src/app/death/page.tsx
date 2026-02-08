@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { getGameState, clearGameState } from '@/lib/gameState';
 import { useAudio } from '@/lib/audio';
+import { generateDeathCard, shareCard } from '@/lib/shareCard';
 
 // Demo mode flag
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
@@ -30,6 +31,7 @@ export default function DeathScreen() {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [showEtching, setShowEtching] = useState(false);
+  const [sharing, setSharing] = useState(false);
   const [deathData, setDeathData] = useState({
     zone: "THE SUNKEN CRYPT",
     room: 1,
@@ -116,6 +118,25 @@ export default function DeathScreen() {
       setSubmitted(true);
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleShare = async () => {
+    setSharing(true);
+    try {
+      const blob = await generateDeathCard({
+        playerName: deathData.nickname || 'Unknown',
+        room: deathData.room,
+        totalRooms: deathData.totalRooms,
+        killedBy: deathData.killedBy,
+        epitaph: finalMessage || 'No final words...',
+        stakeLost: deathData.stakeLost,
+      });
+      await shareCard(blob, 'I Died in Die Forward', `Fell in Room ${deathData.room} of THE SUNKEN CRYPT. Can you do better? 💀`);
+    } catch (err) {
+      console.error('Share failed:', err);
+    } finally {
+      setSharing(false);
     }
   };
 
@@ -308,6 +329,13 @@ export default function DeathScreen() {
               >
                 Return to Title
               </Link>
+              <button
+                onClick={handleShare}
+                disabled={sharing}
+                className="px-4 py-3 bg-[var(--bg-surface)] border border-[var(--purple-dim)] text-[var(--purple)] hover:bg-[var(--purple-dim)]/20 hover:border-[var(--purple)] transition-all text-center disabled:opacity-50"
+              >
+                {sharing ? 'Creating...' : '📤 Share Death'}
+              </button>
             </div>
           </div>
         )}

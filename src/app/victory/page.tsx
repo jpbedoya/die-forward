@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getGameState, clearGameState } from '@/lib/gameState';
 import { useAudio } from '@/lib/audio';
+import { generateVictoryCard, shareCard } from '@/lib/shareCard';
 
 // Demo mode flag
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
@@ -13,6 +14,8 @@ export default function VictoryScreen() {
   const [claimed, setClaimed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [sharing, setSharing] = useState(false);
+  const [playerName, setPlayerName] = useState('Victor');
   const [victoryData, setVictoryData] = useState({
     zone: "THE SUNKEN CRYPT",
     roomsCleared: 7,
@@ -51,6 +54,9 @@ export default function VictoryScreen() {
       sessionToken: state.sessionToken,
       txSignature: null,
     });
+    // Get player name
+    const savedNickname = localStorage.getItem('die-forward-nickname');
+    setPlayerName(state.nickname || savedNickname || 'Victor');
     setLoaded(true);
   }, []);
 
@@ -94,6 +100,26 @@ export default function VictoryScreen() {
       console.error('Failed to claim:', err);
       setError(err instanceof Error ? err.message : 'Failed to claim. Please try again.');
       setClaiming(false);
+    }
+  };
+
+  const handleShare = async () => {
+    setSharing(true);
+    try {
+      // Count combat rooms as enemies defeated (rough estimate)
+      const enemiesDefeated = Math.floor(victoryData.roomsCleared * 0.4);
+      
+      const blob = await generateVictoryCard({
+        playerName,
+        roomsCleared: victoryData.roomsCleared,
+        stakeWon: victoryData.totalReward,
+        enemiesDefeated,
+      });
+      await shareCard(blob, 'I Escaped Die Forward!', `Conquered THE SUNKEN CRYPT and claimed ${victoryData.totalReward.toFixed(3)} SOL! 🏆`);
+    } catch (err) {
+      console.error('Share failed:', err);
+    } finally {
+      setSharing(false);
     }
   };
 
@@ -222,6 +248,13 @@ export default function VictoryScreen() {
               >
                 Return to Title
               </Link>
+              <button
+                onClick={handleShare}
+                disabled={sharing}
+                className="px-4 py-3 bg-[var(--bg-surface)] border border-[var(--green-dim)] text-[var(--green)] hover:bg-[var(--green-dim)]/20 hover:border-[var(--green)] transition-all text-center disabled:opacity-50"
+              >
+                {sharing ? 'Creating...' : '📤 Share Victory'}
+              </button>
             </div>
           </div>
         )}
