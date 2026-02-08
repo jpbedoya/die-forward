@@ -99,13 +99,19 @@ const ASCII_LOGO = `
  ╚═════╝ ╚═╝╚══════╝    ╚═╝      ╚═════╝ ╚═╝  ╚═╝ ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ `;
 
 // Animated death feed item with entrance animation
-function DeathFeedItem({ playerName, room, finalMessage, createdAt, isNew }: {
+function DeathFeedItem({ playerName, room, finalMessage, createdAt, onChainSignature, isNew }: {
   playerName: string;
   room: number;
   finalMessage: string;
   createdAt: number;
+  onChainSignature?: string;
   isNew?: boolean;
 }) {
+  // Explorer URL for devnet
+  const explorerUrl = onChainSignature 
+    ? `https://explorer.solana.com/tx/${onChainSignature}?cluster=devnet`
+    : null;
+    
   return (
     <div className={`py-3 border-b border-[var(--border-dim)]/50 transition-all duration-500 ${isNew ? 'animate-pulse bg-[var(--red-dim)]/10' : ''}`}>
       <div className="flex items-start gap-3">
@@ -127,6 +133,19 @@ function DeathFeedItem({ playerName, room, finalMessage, createdAt, isNew }: {
           <div className="mt-1.5 text-sm text-[var(--text-primary)] italic leading-relaxed">
             "{finalMessage}"
           </div>
+          
+          {/* On-chain verification link */}
+          {explorerUrl && (
+            <a 
+              href={explorerUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 mt-1.5 text-[10px] text-[var(--text-dim)] hover:text-[var(--purple)] transition-colors"
+            >
+              <span>⛓️</span>
+              <span className="underline">verified on-chain</span>
+            </a>
+          )}
         </div>
       </div>
     </div>
@@ -548,6 +567,7 @@ export default function TitleScreen() {
                 room={death.room}
                 finalMessage={death.finalMessage}
                 createdAt={death.createdAt}
+                onChainSignature={(death as Death).onChainSignature}
                 isNew={i === 0}
               />
             ))

@@ -14,6 +14,8 @@ export interface Death {
   stakeAmount: number;
   finalMessage: string;
   inventory: string[]; // JSON serialized
+  deathHash?: string; // SHA256 hash for verification
+  onChainSignature?: string; // Solana tx signature
   createdAt: number;
 }
 
