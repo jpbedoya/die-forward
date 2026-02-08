@@ -38,6 +38,7 @@ export default function DeathScreen() {
     inventory: [] as { name: string; emoji: string }[],
     sessionToken: null as string | null,
     nickname: null as string | null,
+    killedBy: null as string | null, // Enemy that killed the player
   });
   const [loaded, setLoaded] = useState(false);
   const maxChars = 50;
@@ -63,6 +64,7 @@ export default function DeathScreen() {
       inventory: state.inventory,
       sessionToken: state.sessionToken,
       nickname: state.nickname, // Player's chosen nickname
+      killedBy: state.lastEnemy, // Enemy that killed the player
     });
     setLoaded(true);
   }, []);
@@ -91,6 +93,7 @@ export default function DeathScreen() {
             finalMessage: finalMessage.trim(),
             inventory: deathData.inventory,
             playerName,
+            killedBy: deathData.killedBy, // Enemy that killed the player
           }),
         });
 
@@ -171,6 +174,11 @@ export default function DeathScreen() {
           <p className="text-[var(--text-dim)] text-xs mt-1">
             Room {deathData.room} of {deathData.totalRooms}
           </p>
+          {deathData.killedBy && (
+            <p className="text-[var(--red-dim)] text-xs mt-2 italic">
+              Slain by {deathData.killedBy}
+            </p>
+          )}
         </div>
 
         {/* Stats - what was lost */}

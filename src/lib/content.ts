@@ -574,6 +574,16 @@ export function getItemEffects(inventory: {name: string}[]): ItemEffects {
         effects.fleeBonus += 0.15;    // +15% flee chance
         effects.defenseBonus += 0.10; // +10% defense
         break;
+      case 'Poison Vial':
+        effects.damageBonus += 0.40;  // +40% damage (poison coats your weapon)
+        break;
+      case 'Ancient Scroll':
+        effects.defenseBonus += 0.20; // +20% defense (protective ward)
+        effects.fleeBonus += 0.10;    // +10% flee (swiftness blessing)
+        break;
+      case 'Bone Charm':
+        effects.defenseBonus += 0.15; // +15% defense (warding)
+        break;
     }
   }
   

@@ -451,10 +451,39 @@ export default function GameScreen() {
         }
         break;
       case 'heal':
-        playSFX('heal');
-        setHealth(Math.min(100, health + 30));
-        setMessage('You feel restored. +30 HP');
         {
+          // Cache rooms give a random item OR restore health
+          const cacheItems = [
+            { name: 'Herbs', emoji: '🌿', effect: 'Restore 30-40 HP in combat' },
+            { name: 'Poison Vial', emoji: '🧪', effect: '+40% damage' },
+            { name: 'Ancient Scroll', emoji: '📜', effect: '+20% defense, +10% flee' },
+            { name: 'Bone Charm', emoji: '💀', effect: '+15% defense' },
+            { name: 'Rusty Blade', emoji: '🗡️', effect: '+20% damage' },
+            { name: 'Tattered Shield', emoji: '🛡️', effect: '-25% damage taken' },
+          ];
+          
+          // 50% chance for item, 50% chance for healing
+          if (Math.random() < 0.5) {
+            // Try to give an item the player doesn't have
+            const availableItems = cacheItems.filter(item => !inventory.some(i => i.name === item.name));
+            if (availableItems.length > 0) {
+              const item = availableItems[Math.floor(Math.random() * availableItems.length)];
+              const newInventory = [...inventory, { id: Date.now().toString(), name: item.name, emoji: item.emoji }];
+              setInventory(newInventory);
+              playSFX('item-pickup');
+              setMessage(`Found ${item.emoji} ${item.name}! ${item.effect}`);
+            } else {
+              // Player has all items, give health instead
+              playSFX('heal');
+              setHealth(Math.min(100, health + 30));
+              setMessage('Nothing new here. Rested briefly. +30 HP');
+            }
+          } else {
+            playSFX('heal');
+            setHealth(Math.min(100, health + 30));
+            setMessage('Found medical supplies. +30 HP');
+          }
+          
           const ok = await advanceRoom();
           if (!ok) return;
           setCurrentRoom(currentRoom + 1);

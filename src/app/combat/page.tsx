@@ -424,6 +424,11 @@ export default function CombatScreen() {
     }
     
     if (playerHealth <= 0) {
+      // Save last enemy for death screen
+      const state = getGameState();
+      const currentEnemy = state.dungeon?.[state.currentRoom]?.enemy || enemyName;
+      saveGameState({ lastEnemy: currentEnemy });
+      
       // Start death ambient now for seamless transition
       // SFX will play on death page to avoid double-play
       playAmbient('ambient-death');

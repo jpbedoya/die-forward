@@ -14,7 +14,7 @@ const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { sessionToken, room, finalMessage, inventory, playerName } = body;
+    const { sessionToken, room, finalMessage, inventory, playerName, killedBy } = body;
 
     // Validate inputs
     if (!sessionToken || typeof sessionToken !== 'string') {
@@ -94,6 +94,7 @@ export async function POST(request: NextRequest) {
         room,
         stakeAmount: session.stakeAmount,
         finalMessage: finalMessage.trim(),
+        killedBy: killedBy || 'Unknown', // What killed the player
         inventory: JSON.stringify(inventoryArray),
         deathHash, // Verifiable hash
         createdAt: timestamp,
@@ -106,6 +107,7 @@ export async function POST(request: NextRequest) {
         playerName: displayName,
         walletAddress: session.walletAddress, // For tipping
         finalMessage: finalMessage.trim(),
+        killedBy: killedBy || 'Unknown', // What killed the player
         loot: lootItem.name,
         lootEmoji: lootItem.emoji,
         discovered: false,

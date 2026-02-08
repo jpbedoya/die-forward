@@ -17,6 +17,7 @@ export interface GameState {
   walletAddress: string | null;
   nickname: string | null; // Player-chosen display name
   dungeon: DungeonRoomState[] | null;
+  lastEnemy: string | null; // Enemy that killed the player (for death screen)
 }
 
 const STORAGE_KEY = 'die-forward-game';
@@ -34,6 +35,7 @@ const defaultState: GameState = {
   walletAddress: null,
   nickname: null,
   dungeon: null,
+  lastEnemy: null,
 };
 
 export function getGameState(): GameState {
