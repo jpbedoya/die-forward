@@ -79,18 +79,6 @@ function timeAgo(timestamp: number): string {
   return `${days}d ago`;
 }
 
-const ASCII_SKULL = `
-    ▄▄▄▄▄▄▄
-  ▄█░░░░░░░█▄
- ██░░░░░░░░░██
-██░░▀███░███▀░██
-█░░░░░░░░░░░░░░█
-█░░░░░▄▄▄░░░░░░█
- █░░░░▀▀▀░░░░░█
-  █░▄░░░░░▄░█
-   █░█▀▀▀█░█
-    ▀▀▀▀▀▀▀`;
-
 const ASCII_LOGO = `
  ██████╗ ██╗███████╗    ███████╗ ██████╗ ██████╗ ██╗    ██╗ █████╗ ██████╗ ██████╗ 
  ██╔══██╗██║██╔════╝    ██╔════╝██╔═══██╗██╔══██╗██║    ██║██╔══██╗██╔══██╗██╔══██╗
@@ -409,11 +397,6 @@ export default function TitleScreen() {
         {/* Hero section */}
         <div className="flex-1 flex flex-col items-center justify-center px-4 py-6">
           
-          {/* Skull decoration */}
-          <pre className="text-[var(--text-dim)]/30 text-[6px] leading-[0.7] mb-2 hidden sm:block">
-{ASCII_SKULL}
-          </pre>
-
           {/* Logo */}
           <pre className="text-[var(--amber)] text-[6px] sm:text-[8px] md:text-[10px] leading-none mb-3 text-center overflow-hidden max-w-full drop-shadow-[0_0_20px_rgba(245,158,11,0.3)]">
 {ASCII_LOGO}
