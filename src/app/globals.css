@@ -143,3 +143,46 @@ body::before {
 .border-dim { border-color: var(--border-dim); }
 .border-default { border-color: var(--border-default); }
 .border-bright { border-color: var(--border-bright); }
+
+/* ══════════════════════════════════════════
+   ANIMATIONS
+   ══════════════════════════════════════════ */
+
+/* Screen shake on damage */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+.shake {
+  animation: shake 0.4s ease-out;
+}
+
+/* Heavy shake for big hits */
+@keyframes shake-heavy {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-8px, -2px); }
+  20% { transform: translate(8px, 2px); }
+  30% { transform: translate(-6px, -4px); }
+  40% { transform: translate(6px, 4px); }
+  50% { transform: translate(-4px, -2px); }
+  60% { transform: translate(4px, 2px); }
+  70% { transform: translate(-2px, -1px); }
+  80% { transform: translate(2px, 1px); }
+  90% { transform: translate(-1px, 0); }
+}
+
+.shake-heavy {
+  animation: shake-heavy 0.5s ease-out;
+}
+
+/* Flash red on damage */
+@keyframes damage-flash {
+  0%, 100% { background-color: transparent; }
+  50% { background-color: rgba(239, 68, 68, 0.15); }
+}
+
+.damage-flash {
+  animation: damage-flash 0.3s ease-out;
+}

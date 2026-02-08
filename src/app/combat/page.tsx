@@ -31,6 +31,19 @@ const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
 
 type CombatPhase = 'choose' | 'resolve' | 'enemy-turn' | 'victory' | 'death';
 
+// Haptic feedback helper
+function triggerHaptic(pattern: 'light' | 'medium' | 'heavy' | 'death' = 'medium') {
+  if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+    const patterns = {
+      light: [30],
+      medium: [50, 30, 50],
+      heavy: [100, 50, 100, 50, 100],
+      death: [200, 100, 200, 100, 300],
+    };
+    navigator.vibrate(patterns[pattern]);
+  }
+}
+
 const defaultPlayer = {
   maxHealth: 100,
   maxStamina: 3,
@@ -238,6 +251,7 @@ export default function CombatScreen() {
   const [depthName, setDepthName] = useState('THE UPPER CRYPT');
   const [lastResolution, setLastResolution] = useState<Resolution | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [isShaking, setIsShaking] = useState(false);
   
   // Audio
   const { playAmbient, playSFX } = useAudio();
@@ -353,6 +367,10 @@ export default function CombatScreen() {
     setTimeout(() => {
       if (resolution.playerDmg > 0) {
         playSFX('damage-taken');
+        // Screen shake + haptics on damage
+        setIsShaking(true);
+        triggerHaptic(resolution.playerDmg >= 30 ? 'heavy' : 'medium');
+        setTimeout(() => setIsShaking(false), 400);
       }
       
       setPlayerHealth(newPlayerHealth);
@@ -399,6 +417,7 @@ export default function CombatScreen() {
     
     if (enemyHealth <= 0) {
       playSFX('enemy-death');
+      triggerHaptic('light');
       setPhase('victory');
       setNarrative("The creature collapses. Silence returns to the chamber.\n\nYou catch your breath. The path ahead is clear.");
       return;
@@ -408,6 +427,7 @@ export default function CombatScreen() {
       // Start death ambient now for seamless transition
       // SFX will play on death page to avoid double-play
       playAmbient('ambient-death');
+      triggerHaptic('death');
       setPhase('death');
       setNarrative("The world grows dark. Cold water rises around you.\n\nYour journey ends here.");
       return;
@@ -443,7 +463,7 @@ export default function CombatScreen() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] flex flex-col font-mono">
+    <div className={`min-h-screen bg-[var(--bg-base)] flex flex-col font-mono ${isShaking ? 'shake damage-flash' : ''}`}>
       
       {/* Enemy Header */}
       <header className="bg-[var(--bg-base)] border-b border-[var(--red-dim)] px-3 py-3 sticky top-0 z-10">
