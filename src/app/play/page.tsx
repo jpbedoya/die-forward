@@ -281,7 +281,7 @@ export default function GameScreen() {
       await recordTip(realCorpse.id, TIP_AMOUNT, publicKey.toBase58());
       
       setTipped(true);
-      playSFX('item-pickup');
+      playSFX('tip-chime');
       setMessage(`Sent ${TIP_AMOUNT} SOL to @${realCorpse.playerName}. They'll appreciate it from beyond.`);
     } catch (err) {
       console.error('Tip failed:', err);
@@ -377,7 +377,20 @@ export default function GameScreen() {
         if (currentRoom < rooms.length - 1) {
           const ok = await advanceRoom();
           if (!ok) return;
-          playSFX('footstep');
+          
+          // Play contextual sound based on room transition
+          const nextRoomNum = currentRoom + 2; // Next room (1-indexed)
+          const nextRoom = rooms[currentRoom + 1];
+          
+          // Play depth transition sound at depth boundaries (rooms 5 and 9)
+          if (nextRoomNum === 5 || nextRoomNum === 9) {
+            playSFX('depth-descend');
+          } else if (nextRoom?.type === 'explore' && nextRoom?.template === 'flooded') {
+            playSFX('water-splash');
+          } else {
+            playSFX('footstep');
+          }
+          
           setCurrentRoom(currentRoom + 1);
           setSelectedOption(null);
           setShowCorpse(false);
@@ -470,7 +483,7 @@ export default function GameScreen() {
               const item = availableItems[Math.floor(Math.random() * availableItems.length)];
               const newInventory = [...inventory, { id: Date.now().toString(), name: item.name, emoji: item.emoji }];
               setInventory(newInventory);
-              playSFX('item-pickup');
+              playSFX('loot-discover');
               setMessage(`Found ${item.emoji} ${item.name}! ${item.effect}`);
             } else {
               // Player has all items, give health instead

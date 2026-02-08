@@ -94,6 +94,7 @@ export default function VictoryScreen() {
 
       // Clear game state
       clearGameState();
+      playSFX('victory-fanfare');
       setClaimed(true);
 
     } catch (err) {
@@ -105,6 +106,7 @@ export default function VictoryScreen() {
 
   const handleShare = async () => {
     setSharing(true);
+    playSFX('share-click');
     try {
       // Count combat rooms as enemies defeated (rough estimate)
       const enemiesDefeated = Math.floor(victoryData.roomsCleared * 0.4);

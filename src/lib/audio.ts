@@ -8,45 +8,112 @@ type SoundId =
   | 'ambient-title'
   | 'ambient-death'
   | 'ambient-victory'
-  // Combat SFX
+  // Combat SFX (original)
   | 'sword-slash'
   | 'blunt-hit'
   | 'damage-taken'
   | 'enemy-death'
+  // Combat SFX (new)
+  | 'boss-intro'
+  | 'boss-roar'
+  | 'dodge-whoosh'
+  | 'brace-impact'
+  | 'flee-run'
+  | 'flee-fail'
+  | 'enemy-growl'
+  | 'critical-hit'
+  | 'parry-clang'
+  | 'attack-miss'
   // Player SFX
   | 'player-death'
   | 'victory'
   | 'heal'
-  // Environment SFX
+  | 'heartbeat-low'
+  | 'stamina-depleted'
+  | 'stamina-recover'
+  | 'poison-tick'
+  // Environment SFX (original)
   | 'footstep'
   | 'item-pickup'
   | 'door-creak'
   | 'water-drip'
   | 'corpse-discover'
+  // Environment SFX (new)
+  | 'depth-descend'
+  | 'water-splash'
+  | 'chains-rattle'
+  | 'eerie-whispers'
+  | 'stone-grinding'
+  | 'drip-echo'
+  // Rewards SFX
+  | 'tip-chime'
+  | 'loot-discover'
+  | 'victory-fanfare'
+  | 'share-click'
   // UI SFX
   | 'ui-click'
-  | 'ui-hover';
+  | 'ui-hover'
+  | 'menu-open'
+  | 'menu-close'
+  | 'confirm-action'
+  | 'error-buzz';
 
 const SOUND_PATHS: Record<SoundId, string> = {
+  // Ambient
   'ambient-explore': '/audio/ambient-explore.mp3',
   'ambient-combat': '/audio/ambient-combat.mp3',
   'ambient-title': '/audio/ambient-title.mp3',
   'ambient-death': '/audio/ambient-death.mp3',
   'ambient-victory': '/audio/ambient-victory.mp3',
+  // Combat (original)
   'sword-slash': '/audio/sword-slash.mp3',
   'blunt-hit': '/audio/blunt-hit.mp3',
   'damage-taken': '/audio/damage-taken.mp3',
   'enemy-death': '/audio/enemy-death.mp3',
+  // Combat (new)
+  'boss-intro': '/audio/boss-intro.mp3',
+  'boss-roar': '/audio/boss-roar.mp3',
+  'dodge-whoosh': '/audio/dodge-whoosh.mp3',
+  'brace-impact': '/audio/brace-impact.mp3',
+  'flee-run': '/audio/flee-run.mp3',
+  'flee-fail': '/audio/flee-fail.mp3',
+  'enemy-growl': '/audio/enemy-growl.mp3',
+  'critical-hit': '/audio/critical-hit.mp3',
+  'parry-clang': '/audio/parry-clang.mp3',
+  'attack-miss': '/audio/attack-miss.mp3',
+  // Player
   'player-death': '/audio/player-death.mp3',
   'victory': '/audio/victory.mp3',
   'heal': '/audio/heal.mp3',
+  'heartbeat-low': '/audio/heartbeat-low.mp3',
+  'stamina-depleted': '/audio/stamina-depleted.mp3',
+  'stamina-recover': '/audio/stamina-recover.mp3',
+  'poison-tick': '/audio/poison-tick.mp3',
+  // Environment (original)
   'footstep': '/audio/footstep.mp3',
   'item-pickup': '/audio/item-pickup.mp3',
   'door-creak': '/audio/door-creak.mp3',
   'water-drip': '/audio/water-drip.mp3',
   'corpse-discover': '/audio/corpse-discover.mp3',
+  // Environment (new)
+  'depth-descend': '/audio/depth-descend.mp3',
+  'water-splash': '/audio/water-splash.mp3',
+  'chains-rattle': '/audio/chains-rattle.mp3',
+  'eerie-whispers': '/audio/eerie-whispers.mp3',
+  'stone-grinding': '/audio/stone-grinding.mp3',
+  'drip-echo': '/audio/drip-echo.mp3',
+  // Rewards
+  'tip-chime': '/audio/tip-chime.mp3',
+  'loot-discover': '/audio/loot-discover.mp3',
+  'victory-fanfare': '/audio/victory-fanfare.mp3',
+  'share-click': '/audio/share-click.mp3',
+  // UI
   'ui-click': '/audio/ui-click.mp3',
   'ui-hover': '/audio/ui-hover.mp3',
+  'menu-open': '/audio/menu-open.mp3',
+  'menu-close': '/audio/menu-close.mp3',
+  'confirm-action': '/audio/confirm-action.mp3',
+  'error-buzz': '/audio/error-buzz.mp3',
 };
 
 // Singleton audio manager

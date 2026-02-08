@@ -123,6 +123,7 @@ export default function DeathScreen() {
 
   const handleShare = async () => {
     setSharing(true);
+    playSFX('share-click');
     try {
       const blob = await generateDeathCard({
         playerName: deathData.nickname || 'Unknown',

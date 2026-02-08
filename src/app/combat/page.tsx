@@ -260,6 +260,13 @@ export default function CombatScreen() {
   useEffect(() => {
     playAmbient('ambient-combat');
   }, [playAmbient]);
+  
+  // Play heartbeat sound when health is critically low
+  useEffect(() => {
+    if (playerHealth > 0 && playerHealth <= 25 && phase === 'choose') {
+      playSFX('heartbeat-low');
+    }
+  }, [playerHealth, phase, playSFX]);
 
   // Load game state on mount
   useEffect(() => {
@@ -285,6 +292,11 @@ export default function CombatScreen() {
       if (currentDungeonRoom.enemy) {
         const enemyNameRaw = currentDungeonRoom.enemy;
         setEnemyName(enemyNameRaw.toUpperCase());
+        
+        // Play boss intro for The Keeper
+        if (enemyNameRaw === 'The Keeper') {
+          playSFX('boss-intro');
+        }
         
         // Get creature info for stats
         const creatureInfo = getCreatureInfo(enemyNameRaw);
@@ -353,14 +365,21 @@ export default function CombatScreen() {
     newStamina = Math.max(0, newStamina);
     
     // Play SFX FIRST, then update state after short delay for audio sync
-    if (selectedOption === 'strike' && resolution.enemyDmg > 0) {
-      playSFX('sword-slash');
+    if (selectedOption === 'strike') {
+      if (resolution.enemyDmg > 0) {
+        // Big hit or regular hit
+        playSFX(resolution.enemyDmg >= 25 ? 'critical-hit' : 'sword-slash');
+      } else {
+        playSFX('attack-miss');
+      }
     } else if (selectedOption === 'dodge') {
-      playSFX('footstep'); // Quick movement sound
+      playSFX('dodge-whoosh');
     } else if (selectedOption === 'herbs') {
       playSFX('heal');
     } else if (selectedOption === 'brace') {
-      playSFX('footstep'); // Brace/stance sound
+      playSFX('brace-impact');
+    } else if (selectedOption === 'flee') {
+      playSFX(resolution.fleeSuccess ? 'flee-run' : 'flee-fail');
     }
     
     // Delay damage sound and state updates so attack sound plays first
@@ -448,6 +467,11 @@ export default function CombatScreen() {
     const newIntentEffects = getIntentEffects(newIntent.type);
     setEnemyIntent(newIntent);
     setIntentEffects(newIntentEffects);
+    
+    // Play enemy growl for aggressive/charging intents
+    if (newIntent.type === 'AGGRESSIVE' || newIntent.type === 'CHARGING') {
+      playSFX('enemy-growl');
+    }
     
     // Restore 1 stamina
     setPlayerStamina(Math.min(defaultPlayer.maxStamina, playerStamina + 1));
