@@ -179,6 +179,7 @@ export async function getOrCreatePlayer(walletAddress: string, nickname?: string
       totalLost: 0,
       totalTipsReceived: 0,
       totalTipsSent: 0,
+      highestRoom: 0,
       createdAt: Date.now(),
       lastPlayedAt: Date.now(),
     };
