@@ -36,22 +36,26 @@
 
 ---
 
-## Slide 5: THE SKILL (35-45s)
-**Visual:** Code snippet of skill.md
+## Slide 5: AGENT STAKING (35-45s)
+**Visual:** Code snippet of AgentWallet staking
 **Text:**
-> We published a skill.
-> Any agent can learn it.
+> Agents can stake too.
+> Full AgentWallet integration.
+> Real SOL, real rewards.
 
 **Code to show:**
 ```
-# Die Forward Agent Skill
-
-## Quick Start
+# Start with AgentWallet
 POST /api/agent/start
-{ "walletAddress": "...", "nickname": "..." }
-
-POST /api/agent/action  
-{ "sessionToken": "...", "action": "attack" }
+{
+  "agentName": "pisco",
+  "stake": {
+    "mode": "agentwallet",
+    "username": "...",
+    "apiToken": "...",
+    "amount": 0.05
+  }
+}
 ```
 
 ---

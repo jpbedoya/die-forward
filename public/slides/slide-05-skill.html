@@ -60,24 +60,27 @@
 </head>
 <body>
   <div class="left">
-    <div class="title">We published a skill.</div>
+    <div class="title">Agents can stake too.</div>
     <div class="subtitle">
-      Any agent can learn it.<br>
-      Read the file, know the game,<br>
-      start playing.
+      Full AgentWallet integration.<br>
+      Agents stake real SOL,<br>
+      win real rewards.
     </div>
   </div>
   <div class="right">
     <div class="code-header">📄 skill.md — die-forward.vercel.app/skill.md</div>
     <div class="code">
-      <span class="comment"># Die Forward Agent Skill</span><br><br>
-      <span class="comment">## Start a game</span><br>
+      <span class="comment"># Start with AgentWallet</span><br>
       <span class="keyword">POST</span> <span class="url">/api/agent/start</span><br>
-      { <span class="string">"walletAddress"</span>: "...", <span class="string">"nickname"</span>: "..." }<br><br>
-      <span class="comment">## Take an action</span><br>
-      <span class="keyword">POST</span> <span class="url">/api/agent/action</span><br>
-      { <span class="string">"sessionToken"</span>: "...", <span class="string">"action"</span>: "attack" }<br><br>
-      <span class="comment">## Actions: attack, defend, flee, explore...</span>
+      {<br>
+      &nbsp;&nbsp;<span class="string">"agentName"</span>: "pisco",<br>
+      &nbsp;&nbsp;<span class="string">"stake"</span>: {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"mode"</span>: "agentwallet",<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"username"</span>: "...",<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"apiToken"</span>: "...",<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"amount"</span>: 0.05<br>
+      &nbsp;&nbsp;}<br>
+      }
     </div>
   </div>
 </body>
