@@ -151,6 +151,7 @@ export interface DungeonRoom {
   type: 'explore' | 'combat' | 'corpse' | 'cache' | 'exit';
   template: string;
   content: RoomVariation;
+  boss?: boolean; // True for boss room (room 12)
 }
 
 export function generateDungeon(): DungeonRoom[] {
@@ -343,6 +344,16 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['AGGRESSIVE', 'HUNTING', 'CHARGING'],
     description: 'One wouldn\'t be a threat. But there isn\'t one. Dozens. More coming.',
     emoji: '🕷️',
+  },
+  
+  // BOSS - The Keeper (Room 12 only)
+  'The Keeper': {
+    name: 'The Keeper',
+    tier: 3,
+    health: { min: 180, max: 220 },
+    behaviors: ['CHARGING', 'AGGRESSIVE', 'DEFENSIVE', 'CHARGING'],
+    description: 'Guardian of the exit. None have passed. None will pass. It has waited millennia for you.',
+    emoji: '👁️',
   },
 };
 
@@ -569,7 +580,7 @@ export function getItemEffects(inventory: {name: string}[]): ItemEffects {
   return effects;
 }
 
-// Generate randomized dungeon (more variety)
+// Generate randomized dungeon (12 rooms with boss at the end)
 export function generateRandomDungeon(): DungeonRoom[] {
   const exploreTemplates = ['descent', 'corridor', 'flooded', 'chamber', 'shrine', 'crossroads'];
   const combatTemplates = ['ambush', 'confrontation', 'territorial', 'pursuit', 'guardian'];
@@ -578,14 +589,28 @@ export function generateRandomDungeon(): DungeonRoom[] {
   const exitTemplates = ['threshold', 'earned', 'release', 'changed'];
   
   return [
+    // Depth 1: Upper Crypt (Rooms 1-4)
     { type: 'explore', template: pick(exploreTemplates), content: getExploreRoom(pick(exploreTemplates)) },
-    { type: 'explore', template: 'flooded', content: getExploreRoom('flooded') },
     { type: 'combat', template: pick(combatTemplates), content: getCombatRoom(pick(combatTemplates)) },
     { type: 'corpse', template: pick(corpseTemplates), content: getCorpseRoom(pick(corpseTemplates)) },
+    { type: 'combat', template: pick(combatTemplates), content: getCombatRoom(pick(combatTemplates)) },
+    
+    // Depth 2: Flooded Halls (Rooms 5-8)
+    { type: 'explore', template: 'flooded', content: getExploreRoom('flooded') },
+    { type: 'combat', template: pick(combatTemplates), content: getCombatRoom(pick(combatTemplates)) },
     { type: 'cache', template: pick(cacheTemplates), content: getCacheRoom(pick(cacheTemplates)) },
     { type: 'combat', template: pick(combatTemplates), content: getCombatRoom(pick(combatTemplates)) },
+    
+    // Depth 3: The Abyss (Rooms 9-12)
     { type: 'explore', template: pick(exploreTemplates), content: getExploreRoom(pick(exploreTemplates)) },
-    { type: 'combat', template: 'arena', content: getCombatRoom('arena') }, // Boss always arena
+    { type: 'corpse', template: pick(corpseTemplates), content: getCorpseRoom(pick(corpseTemplates)) },
+    { type: 'combat', template: pick(combatTemplates), content: getCombatRoom(pick(combatTemplates)) },
+    { type: 'combat', template: 'arena', content: getCombatRoom('arena'), boss: true }, // Room 12: BOSS
     { type: 'exit', template: pick(exitTemplates), content: getExitRoom(pick(exitTemplates)) },
   ];
+}
+
+// Get boss creature for room 12
+export function getBossCreature(): CreatureInfo {
+  return BESTIARY['The Keeper'];
 }

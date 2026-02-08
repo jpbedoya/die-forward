@@ -250,8 +250,10 @@ export default function StakeScreen() {
       const dungeonState: DungeonRoomState[] = dungeonLayout.map(room => ({
         type: room.type,
         template: room.template,
-        narrative: room.content.narrative,
-        enemy: room.content.enemy,
+        narrative: room.boss 
+          ? "The chamber opens into a vast arena. Something ancient waits here. THE KEEPER rises." 
+          : room.content.narrative,
+        enemy: room.boss ? 'The Keeper' : room.content.enemy,
       }));
       
       resetGameState(selectedStake, dungeonState);
