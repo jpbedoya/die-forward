@@ -104,7 +104,8 @@ export async function POST(request: NextRequest) {
 
     const session = sessions[0] as any;
     
-    if (session.status !== 'active') {
+    // Allow 'dying' status for submit_death action
+    if (session.status !== 'active' && !(session.status === 'dying' && action === 'submit_death')) {
       return NextResponse.json({ error: 'Session is not active' }, { status: 400 });
     }
 
