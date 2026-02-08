@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { init, tx, id } from '@instantdb/admin';
+import { Connection, PublicKey } from '@solana/web3.js';
 import { 
   getExploreRoom, 
   getCorpseRoom, 
@@ -13,6 +14,64 @@ const db = init({
   appId: process.env.NEXT_PUBLIC_INSTANT_APP_ID!,
   adminToken: process.env.INSTANT_ADMIN_KEY!,
 });
+
+// Pool wallet for receiving stakes
+const POOL_WALLET = process.env.NEXT_PUBLIC_POOL_WALLET || 'D7NdNbJTL7s6Z7Wu8nGe5SBc64FiFQAH3iPvRZw15qSL';
+
+// Valid stake amounts
+const VALID_STAKES = [0.01, 0.05, 0.1, 0.25];
+
+// Verify a prepaid transaction
+async function verifyPrepaidTx(txSignature: string, expectedAmount: number): Promise<{ valid: boolean; sender?: string; error?: string }> {
+  try {
+    const connection = new Connection(
+      process.env.NEXT_PUBLIC_RPC_URL || 'https://api.devnet.solana.com',
+      'confirmed'
+    );
+    
+    const tx = await connection.getTransaction(txSignature, {
+      maxSupportedTransactionVersion: 0,
+    });
+    
+    if (!tx || !tx.meta) {
+      return { valid: false, error: 'Transaction not found' };
+    }
+    
+    // Check if transaction succeeded
+    if (tx.meta.err) {
+      return { valid: false, error: 'Transaction failed' };
+    }
+    
+    // Find transfer to pool wallet
+    const poolPubkey = new PublicKey(POOL_WALLET);
+    const accountKeys = tx.transaction.message.getAccountKeys();
+    const poolIndex = accountKeys.staticAccountKeys.findIndex(
+      key => key.equals(poolPubkey)
+    );
+    
+    if (poolIndex === -1) {
+      return { valid: false, error: 'Transaction does not include pool wallet' };
+    }
+    
+    // Check amount received by pool
+    const preBalance = tx.meta.preBalances[poolIndex] || 0;
+    const postBalance = tx.meta.postBalances[poolIndex] || 0;
+    const received = (postBalance - preBalance) / 1e9; // Convert lamports to SOL
+    
+    if (received < expectedAmount * 0.99) { // Allow 1% slippage
+      return { valid: false, error: `Insufficient amount: received ${received}, expected ${expectedAmount}` };
+    }
+    
+    // Get sender address
+    const senderIndex = 0; // First account is usually the fee payer/sender
+    const sender = accountKeys.staticAccountKeys[senderIndex]?.toBase58();
+    
+    return { valid: true, sender };
+  } catch (error) {
+    console.error('TX verification error:', error);
+    return { valid: false, error: 'Failed to verify transaction' };
+  }
+}
 
 // Room type distribution
 function generateRoomType(roomNum: number, totalRooms: number): 'explore' | 'combat' | 'corpse' | 'cache' | 'exit' {
@@ -79,11 +138,64 @@ function generateDungeon(totalRooms: number) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { agentName, walletAddress } = body;
+    const { agentName, nickname, walletAddress, stake } = body;
 
     if (!agentName || typeof agentName !== 'string') {
       return NextResponse.json({ error: 'agentName is required' }, { status: 400 });
     }
+
+    // Parse stake mode (default: free)
+    const stakeMode = stake?.mode || 'free';
+    let stakeAmount = 0;
+    let verifiedWallet = walletAddress || `agent_${agentName}`;
+    let txSignature = null;
+    
+    // Handle different stake modes
+    if (stakeMode === 'prepaid') {
+      // Validate prepaid staking
+      if (!stake?.txSignature) {
+        return NextResponse.json({ error: 'txSignature required for prepaid mode' }, { status: 400 });
+      }
+      if (!stake?.amount || !VALID_STAKES.includes(stake.amount)) {
+        return NextResponse.json({ 
+          error: `Invalid stake amount. Valid amounts: ${VALID_STAKES.join(', ')} SOL` 
+        }, { status: 400 });
+      }
+      
+      // Verify the transaction
+      const verification = await verifyPrepaidTx(stake.txSignature, stake.amount);
+      if (!verification.valid) {
+        return NextResponse.json({ 
+          error: `Transaction verification failed: ${verification.error}` 
+        }, { status: 400 });
+      }
+      
+      stakeAmount = stake.amount;
+      txSignature = stake.txSignature;
+      if (verification.sender) {
+        verifiedWallet = verification.sender;
+      }
+      
+      // Update pool stats
+      const { pool } = await db.query({ pool: {} });
+      const currentPool = pool?.[0] as { totalStaked?: number; totalDeaths?: number } | undefined;
+      const poolId = 'main-pool';
+      
+      await db.transact([
+        tx.pool[poolId].update({
+          totalStaked: (currentPool?.totalStaked || 0) + stakeAmount,
+        }),
+      ]);
+      
+    } else if (stakeMode === 'agentwallet') {
+      // AgentWallet integration - TODO: implement when AgentWallet API is available
+      // For now, treat as free mode with a note
+      return NextResponse.json({ 
+        error: 'AgentWallet mode coming soon. Use "free" or "prepaid" mode for now.',
+        hint: 'For prepaid: send SOL to pool wallet first, then provide txSignature'
+      }, { status: 501 });
+    }
+    // else: free mode (stakeAmount remains 0)
 
     // Generate session
     const sessionId = id();
@@ -96,15 +208,19 @@ export async function POST(request: NextRequest) {
       { id: 'torch', name: 'Torch', emoji: '🔦' },
       { id: 'herbs', name: 'Herbs', emoji: '🌿' },
     ];
+    
+    // Player display name
+    const playerName = nickname || `@${agentName}`;
 
     // Create session in DB
     await db.transact([
       tx.sessions[sessionId].update({
         token,
-        walletAddress: walletAddress || `agent_${agentName}`,
-        playerName: `@${agentName}`,
+        walletAddress: verifiedWallet,
+        playerName,
         zone: 'THE SUNKEN CRYPT',
-        stakeAmount: 0, // Demo mode for agents
+        stakeAmount,
+        txSignature,
         currentRoom: 1,
         totalRooms,
         health: 100,
@@ -115,6 +231,7 @@ export async function POST(request: NextRequest) {
         status: 'active',
         isAgent: true,
         agentName,
+        stakeMode,
         createdAt: Date.now(),
       }),
     ]);

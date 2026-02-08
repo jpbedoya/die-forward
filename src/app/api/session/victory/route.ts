@@ -75,21 +75,22 @@ export async function POST(request: NextRequest) {
     const bonus = stakeAmount * 0.5; // 50% bonus for clearing
     const totalReward = stakeAmount + bonus;
 
-    // DEMO MODE: Skip actual payout
-    if (session.demoMode) {
+    // DEMO MODE or FREE AGENT MODE: Skip actual payout
+    const isFreeMode = session.demoMode || (session.isAgent && session.stakeMode === 'free') || stakeAmount === 0;
+    if (isFreeMode) {
       await db.transact([
         tx.sessions[session.id].update({
           status: 'completed',
           endedAt: Date.now(),
-          reward: totalReward,
-          payoutStatus: 'demo',
+          reward: 0,
+          payoutStatus: 'free_mode',
         }),
       ]);
       return NextResponse.json({
         success: true,
-        reward: totalReward,
-        payoutStatus: 'demo',
-        message: 'Demo mode - no real payout',
+        reward: 0,
+        payoutStatus: 'free_mode',
+        message: session.isAgent ? 'Agent free mode - no staking' : 'Demo mode - no real payout',
       });
     }
 
