@@ -370,12 +370,12 @@ export default function TitleScreen() {
     setVisible(true);
   };
 
-  const handleDemoMode = () => {
+  const handleFreePlay = () => {
     playSFX('ui-click');
-    // Set fake demo wallet in localStorage
-    const demoWallet = 'DEMO' + Math.random().toString(36).substring(2, 10).toUpperCase();
-    localStorage.setItem('die-forward-demo-wallet', demoWallet);
-    localStorage.setItem('die-forward-nickname', 'DemoPlayer');
+    // Set fake demo wallet in localStorage for free play mode
+    const freePlayWallet = 'FREE' + Math.random().toString(36).substring(2, 10).toUpperCase();
+    localStorage.setItem('die-forward-demo-wallet', freePlayWallet);
+    localStorage.setItem('die-forward-nickname', 'Wanderer');
     router.push('/stake');
   };
 
@@ -451,10 +451,10 @@ export default function TitleScreen() {
                   )}
                 </button>
                 <button
-                  onClick={handleDemoMode}
+                  onClick={handleFreePlay}
                   className="text-[var(--text-dim)] hover:text-[var(--purple-bright)] text-sm transition-colors"
                 >
-                  ▶ Play Demo (no wallet)
+                  ▶ Free Play (no wallet)
                 </button>
               </>
             ) : (

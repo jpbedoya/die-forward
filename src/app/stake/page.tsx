@@ -295,7 +295,7 @@ export default function StakeScreen() {
         <div className="flex items-center gap-2">
           {(DEMO_MODE || isDemo) && (
             <span className="text-[10px] px-2 py-0.5 bg-[var(--amber-dim)]/30 border border-[var(--amber-dim)] text-[var(--amber)] tracking-wider">
-              DEMO
+              FREE PLAY
             </span>
           )}
           <button

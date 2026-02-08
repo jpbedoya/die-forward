@@ -139,7 +139,7 @@ export default function DeathScreen() {
         <div className="absolute top-4 right-4 flex items-center gap-2">
           {DEMO_MODE && (
             <span className="text-[10px] px-2 py-1 bg-[var(--amber-dim)]/30 border border-[var(--amber-dim)] text-[var(--amber)] tracking-wider">
-              DEMO
+              FREE PLAY
             </span>
           )}
           <button
