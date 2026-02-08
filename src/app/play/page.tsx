@@ -380,12 +380,12 @@ export default function GameScreen() {
           
           // Play contextual sound based on room transition
           const nextRoomNum = currentRoom + 2; // Next room (1-indexed)
-          const nextRoom = rooms[currentRoom + 1];
           
           // Play depth transition sound at depth boundaries (rooms 5 and 9)
           if (nextRoomNum === 5 || nextRoomNum === 9) {
             playSFX('depth-descend');
-          } else if (nextRoom?.type === 'explore' && nextRoom?.template === 'flooded') {
+          } else if (nextRoomNum >= 5 && nextRoomNum <= 8 && Math.random() < 0.3) {
+            // 30% chance for water splash in Flooded Halls depth
             playSFX('water-splash');
           } else {
             playSFX('footstep');
