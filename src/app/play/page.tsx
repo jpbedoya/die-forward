@@ -420,11 +420,26 @@ export default function GameScreen() {
           const lootName = realCorpse ? realCorpse.loot : corpseToLoot.loot;
           const lootEmoji = realCorpse ? realCorpse.lootEmoji : '🗡️';
           
+          let newInventory = [...inventory];
+          let foundItems: string[] = [];
+          
           // Don't add "Nothing" to inventory
           if (lootName && lootName !== 'Nothing' && !inventory.find(i => i.name === lootName)) {
-            setInventory([...inventory, { id: Date.now().toString(), name: lootName, emoji: lootEmoji }]);
+            newInventory.push({ id: Date.now().toString(), name: lootName, emoji: lootEmoji });
+            foundItems.push(lootName);
+          }
+          
+          // 30% chance to find Herbs on corpse (if player doesn't have them)
+          const hasHerbs = newInventory.some(i => i.name === 'Herbs');
+          if (!hasHerbs && Math.random() < 0.3) {
+            newInventory.push({ id: (Date.now() + 1).toString(), name: 'Herbs', emoji: '🌿' });
+            foundItems.push('Herbs');
+          }
+          
+          if (foundItems.length > 0) {
+            setInventory(newInventory);
             playSFX('item-pickup');
-            setMessage(`Found: ${lootName}`);
+            setMessage(`Found: ${foundItems.join(', ')}`);
           } else if (lootName === 'Nothing') {
             setMessage('The corpse has nothing of value.');
           }

@@ -142,12 +142,12 @@ function getResolution(action: string, ctx: CombatContext): Resolution {
       };
     }
     case 'herbs': {
-      const baseHit = 12 + Math.floor(Math.random() * 6); // Take hit while healing
+      // Herbs now provide full healing with no damage - reward for saving them
       return {
         narrative: getActionNarration('herbs', 'success'),
-        playerDmg: calcEnemyDamage(baseHit),
+        playerDmg: 0,
         enemyDmg: 0,
-        heal: 20 + Math.floor(Math.random() * 10), // Heal 20-29
+        heal: 30 + Math.floor(Math.random() * 11), // Heal 30-40
         consumeHerbs: true,
       };
     }
