@@ -132,11 +132,19 @@ When you die:
   - **THE FLOODED HALLS** (Rooms 5-8): Tier 2 enemies, 1.5x damage
   - **THE ABYSS** (Rooms 9-12): Tier 3 enemies, 2x damage
 
+- **👁️ Boss Fight: The Keeper** — Room 12 features a final boss with 180-220 HP
+
 - **🏆 Leaderboard** — "Deepest Explorers" tracks who reached the furthest room
 
 - **🎮 Free Play** — Try the game without connecting a wallet
 
 - **📜 On-Chain Death Proofs** — Every death is hashed and written to Solana via Memo program
+
+- **📤 Share Cards** — Generate shareable death/victory images for social media
+
+- **🫨 Screen Shake & Haptics** — Visceral feedback on hits and deaths
+
+- **🔊 40+ Sound Effects** — ElevenLabs-generated audio (boss roars, heartbeats, etc.)
 
 ### Finding the Fallen
 
@@ -180,10 +188,15 @@ Enemy intent **matters**:
 
 ### Item Bonuses
 Gear provides passive combat bonuses:
-- 🔦 Torch: +25% damage
-- 🗡️ Dagger: +35% damage
-- 🛡️ Shield: -25% damage taken
-- 🧥 Cloak: +15% flee, +10% defense
+- 🔦 **Torch**: +25% damage
+- 🗡️ **Rusty Blade**: +20% damage
+- 🧪 **Poison Vial**: +40% damage
+- 🛡️ **Tattered Shield**: -25% damage taken
+- 📜 **Ancient Scroll**: +20% defense, +10% flee
+- 💀 **Bone Charm**: +15% defense
+- 🌿 **Herbs**: Consumable, heals 30-40 HP
+
+Items found in cache rooms (50% chance) or looted from corpses.
 
 ```
 ┌────────────────────────────────────────────────┐
@@ -254,20 +267,33 @@ See [`docs/CONTENT_BIBLE.md`](./docs/CONTENT_BIBLE.md) for the full bible.
 
 The audio isn't stock — **Pisco generated it using ElevenLabs Sound Effects API**, matching sounds to the Content Bible's tone.
 
-### Audio Architecture
+### Audio Architecture — 40+ Sounds
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│  AMBIENT LOOPS (gapless crossfade)                  │
-│  ├── explore.mp3 — dripping water, distant echoes   │
-│  ├── combat.mp3 — heartbeat, metallic stress        │
-│  └── death.mp3 — water rising, fading pulse         │
+│  AMBIENT LOOPS (5 tracks, gapless crossfade)        │
+│  explore, combat, title, death, victory             │
 ├─────────────────────────────────────────────────────┤
-│  SFX (triggered on actions)                         │
-│  ├── strike.mp3 — blade impact, wet crunch          │
-│  ├── dodge.mp3 — swift movement, near miss          │
-│  ├── damage.mp3 — pain, impact                      │
-│  └── victory.mp3 — emergence, light                 │
+│  COMBAT SFX (14 sounds)                             │
+│  sword-slash, damage-taken, enemy-death, boss-intro │
+│  boss-roar, dodge-whoosh, brace-impact, flee-run    │
+│  flee-fail, enemy-growl, critical-hit, parry-clang  │
+│  attack-miss, blunt-hit                             │
+├─────────────────────────────────────────────────────┤
+│  PLAYER SFX (7 sounds)                              │
+│  player-death, victory, heal, heartbeat-low         │
+│  stamina-depleted, stamina-recover, poison-tick     │
+├─────────────────────────────────────────────────────┤
+│  ENVIRONMENT SFX (11 sounds)                        │
+│  footstep, item-pickup, corpse-discover, door-creak │
+│  water-drip, depth-descend, water-splash            │
+│  chains-rattle, eerie-whispers, stone-grinding      │
+│  drip-echo                                          │
+├─────────────────────────────────────────────────────┤
+│  REWARD & UI SFX (8 sounds)                         │
+│  tip-chime, loot-discover, victory-fanfare          │
+│  share-click, menu-open, menu-close                 │
+│  confirm-action, error-buzz                         │
 └─────────────────────────────────────────────────────┘
 ```
 

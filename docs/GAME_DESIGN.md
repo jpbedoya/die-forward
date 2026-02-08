@@ -261,3 +261,87 @@ Options:
         
         ◈ 12 adventurers died here today
 ```
+
+## Boss Fight: The Keeper
+
+### Final Challenge (Room 12)
+
+The Keeper guards the exit. Unlike regular enemies, The Keeper is a true boss:
+
+- **HP**: 180-220 (vs ~50-100 for regular enemies)
+- **Tier**: 3 (2x damage)
+- **Behaviors**: Aggressive, Charging, Defensive
+- **Description**: "Guardian of the exit. None have passed. None will pass. It has waited millennia for you."
+
+### Boss Introduction
+
+Special narrative and sound design:
+- Dramatic intro sound plays on encounter
+- Unique narrative: "The chamber opens into a vast arena. Something ancient waits here. THE KEEPER rises."
+- Boss roar on aggressive attacks
+
+## Juice & Feedback
+
+### Screen Shake
+
+Visual feedback on damage received:
+- **Light shake**: Normal hits (<30 damage)
+- **Heavy shake**: Big hits (≥30 damage)
+- CSS animations for smooth, game-feel feedback
+
+### Haptic Feedback
+
+Mobile vibration patterns via `navigator.vibrate()`:
+- **Light** [30ms]: Enemy defeated
+- **Medium** [50, 30, 50ms]: Taking damage
+- **Heavy** [100, 50, 100, 50, 100ms]: Big hit
+- **Death** [200, 100, 200, 100, 300ms]: Player death
+
+### Low Health Warning
+
+When HP ≤25:
+- Heartbeat sound plays
+- HP bar pulses red
+- Creates tension without being annoying
+
+## Share Cards
+
+### Social Proof System
+
+Canvas-generated images players can share to social media:
+
+**Death Card** (red theme):
+- Skull emoji + "YOU DIED"
+- Player name, room reached
+- "Slain by [Enemy]"
+- Epitaph in a styled box
+- SOL lost, game URL
+
+**Victory Card** (green theme):
+- Trophy emoji + "ESCAPED"
+- Player name
+- Rooms cleared, enemies slain, SOL won
+- Victory message
+- Game URL
+
+### Implementation
+
+- HTML5 Canvas API for image generation
+- Web Share API for native mobile sharing
+- Fallback to download for desktop
+
+## Sound Design
+
+### 40+ ElevenLabs-Generated Sounds
+
+All audio generated via ElevenLabs Sound Effects API with prompts matching the Content Bible tone.
+
+**Combat**: boss-intro, boss-roar, dodge-whoosh, brace-impact, flee-run/fail, enemy-growl, critical-hit, parry-clang, attack-miss
+
+**Player State**: heartbeat-low, stamina-depleted/recover, poison-tick
+
+**Environment**: depth-descend, water-splash, chains-rattle, eerie-whispers, stone-grinding, drip-echo
+
+**Rewards**: tip-chime, loot-discover, victory-fanfare, share-click
+
+**UI**: menu-open/close, confirm-action, error-buzz
