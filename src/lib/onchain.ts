@@ -180,6 +180,69 @@ export async function recordDeathInEscrow(
 }
 
 /**
+ * Process victory payout via direct pool wallet transfer
+ * 
+ * Used for AgentWallet staking (non-escrow flow)
+ * Returns stake + 50% bonus to the player
+ */
+export async function processDirectPayout(
+  playerWallet: string,
+  stakeAmount: number
+): Promise<string | null> {
+  try {
+    const secretKeyString = process.env.POOL_WALLET_SECRET;
+    if (!secretKeyString) {
+      console.warn('POOL_WALLET_SECRET not set, skipping direct payout');
+      return null;
+    }
+
+    const secretKey = Uint8Array.from(JSON.parse(secretKeyString));
+    const poolKeypair = Keypair.fromSecretKey(secretKey);
+    
+    const connection = new Connection(RPC_URL, 'confirmed');
+    
+    const player = new PublicKey(playerWallet);
+    
+    // Calculate payout: stake + 50% bonus
+    const bonus = stakeAmount * 0.5;
+    const totalPayout = stakeAmount + bonus;
+    const lamports = Math.floor(totalPayout * 1_000_000_000); // SOL to lamports
+    
+    // Check pool balance
+    const poolBalance = await connection.getBalance(poolKeypair.publicKey);
+    if (poolBalance < lamports + 5000) { // 5000 for fees
+      console.error('Pool balance too low for payout:', poolBalance, 'needed:', lamports);
+      return null;
+    }
+    
+    // Import SystemProgram dynamically to avoid circular deps
+    const { SystemProgram } = await import('@solana/web3.js');
+    
+    const transaction = new Transaction().add(
+      SystemProgram.transfer({
+        fromPubkey: poolKeypair.publicKey,
+        toPubkey: player,
+        lamports,
+      })
+    );
+    
+    const signature = await sendAndConfirmTransaction(
+      connection,
+      transaction,
+      [poolKeypair],
+      { commitment: 'confirmed' }
+    );
+    
+    console.log(`Direct pool payout processed: ${signature} (${totalPayout} SOL)`);
+    return signature;
+    
+  } catch (error) {
+    console.error('Failed to process direct payout:', error);
+    return null;
+  }
+}
+
+/**
  * Process victory payout from escrow program
  * 
  * Returns stake + bonus to the player

@@ -10,7 +10,7 @@ import {
   getTierDamageMultiplier,
   getIntentEffects,
 } from '@/lib/content';
-import { processVictoryPayout } from '@/lib/onchain';
+import { processVictoryPayout, processDirectPayout } from '@/lib/onchain';
 
 const db = init({
   appId: process.env.NEXT_PUBLIC_INSTANT_APP_ID!,
@@ -251,8 +251,11 @@ export async function POST(request: NextRequest) {
                 // Escrow program payout
                 const sig = await processVictoryPayout(session.walletAddress, session.escrowSessionId);
                 payoutResult = sig ? { status: 'paid', tx: sig } : { status: 'escrow_failed' };
+              } else {
+                // Direct pool wallet payout (AgentWallet flow)
+                const sig = await processDirectPayout(session.walletAddress, session.stakeAmount);
+                payoutResult = sig ? { status: 'paid', tx: sig } : { status: 'pool_payout_failed' };
               }
-              // Note: AgentWallet payout happens via the escrow program
             } catch (e) {
               console.error('Victory payout failed:', e);
               payoutResult = { status: 'failed', error: String(e) };
@@ -415,6 +418,10 @@ export async function POST(request: NextRequest) {
             if (session.useEscrow && session.escrowSessionId) {
               const sig = await processVictoryPayout(session.walletAddress, session.escrowSessionId);
               payoutResult = sig ? { status: 'paid', tx: sig } : { status: 'escrow_failed' };
+            } else {
+              // Direct pool wallet payout (AgentWallet flow)
+              const sig = await processDirectPayout(session.walletAddress, session.stakeAmount);
+              payoutResult = sig ? { status: 'paid', tx: sig } : { status: 'pool_payout_failed' };
             }
           } catch (e) {
             console.error('Victory payout failed:', e);
