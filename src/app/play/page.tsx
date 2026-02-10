@@ -242,24 +242,25 @@ export default function GameScreen() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [tipping, setTipping] = useState(false);
   const [tipped, setTipped] = useState(false);
+  const [lootedCorpse, setLootedCorpse] = useState<Corpse | null>(null);
 
   // Fetch real corpses from DB for the current room
   const { corpses: realCorpses } = useCorpseForRoom('THE SUNKEN CRYPT', currentRoom + 1);
   const realCorpse = realCorpses[0] as Corpse | undefined; // Get first undiscovered corpse
 
-  // Handle tipping a corpse
+  // Handle tipping a corpse (uses lootedCorpse since card is showing)
   const handleTip = async () => {
-    if (!realCorpse || !publicKey || !realCorpse.walletAddress || tipping || tipped) return;
+    if (!lootedCorpse || !publicKey || !lootedCorpse.walletAddress || tipping || tipped) return;
     
     // Don't tip yourself
-    if (realCorpse.walletAddress === publicKey.toBase58()) {
+    if (lootedCorpse.walletAddress === publicKey.toBase58()) {
       setMessage("You can't tip yourself!");
       return;
     }
     
     setTipping(true);
     try {
-      const recipientPubkey = new PublicKey(realCorpse.walletAddress);
+      const recipientPubkey = new PublicKey(lootedCorpse.walletAddress);
       const lamports = TIP_AMOUNT * LAMPORTS_PER_SOL;
       
       const transaction = new Transaction().add(
@@ -278,11 +279,11 @@ export default function GameScreen() {
       await connection.confirmTransaction(signature, 'confirmed');
       
       // Record tip in DB
-      await recordTip(realCorpse.id, TIP_AMOUNT, publicKey.toBase58());
+      await recordTip(lootedCorpse.id, TIP_AMOUNT, publicKey.toBase58());
       
       setTipped(true);
       playSFX('tip-chime');
-      setMessage(`Sent ${TIP_AMOUNT} SOL to @${realCorpse.playerName}. They'll appreciate it from beyond.`);
+      setMessage(`Sent ${TIP_AMOUNT} SOL to @${lootedCorpse.playerName}. They'll appreciate it from beyond.`);
     } catch (err) {
       console.error('Tip failed:', err);
       setMessage('Tip failed. Try again?');
@@ -395,6 +396,7 @@ export default function GameScreen() {
           setSelectedOption(null);
           setShowCorpse(false);
           setTipped(false); // Reset tip state for next corpse
+          setLootedCorpse(null); // Clear looted corpse data
           setStamina(Math.min(3, stamina + 1)); // Regen stamina between rooms
         }
         break;
@@ -425,6 +427,10 @@ export default function GameScreen() {
         break;
       }
       case 'loot':
+        // Store corpse data BEFORE marking as discovered (so card can render)
+        if (realCorpse) {
+          setLootedCorpse(realCorpse);
+        }
         setShowCorpse(true);
         playSFX('corpse-discover');
         // Use real corpse if available, otherwise fall back to room's mock corpse
@@ -451,7 +457,8 @@ export default function GameScreen() {
           
           if (foundItems.length > 0) {
             setInventory(newInventory);
-            playSFX('item-pickup');
+            // Delay item-pickup SFX to avoid overlap with corpse-discover
+            setTimeout(() => playSFX('item-pickup'), 600);
             setMessage(`Found: ${foundItems.join(', ')}`);
           } else if (lootName === 'Nothing') {
             setMessage('The corpse has nothing of value.');
@@ -615,7 +622,7 @@ export default function GameScreen() {
         )}
 
         {/* Corpse callout - dramatic reveal of the fallen */}
-        {showCorpse && (room.type === 'corpse' || realCorpse) && (
+        {showCorpse && (room.type === 'corpse' || lootedCorpse) && (
           <div className="relative mb-4">
             {/* Outer glow */}
             <div className="absolute inset-0 bg-[var(--purple)]/5 blur-lg rounded-lg" />
@@ -629,14 +636,14 @@ export default function GameScreen() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-[var(--purple-bright)] font-bold text-base">
-                      @{realCorpse ? realCorpse.playerName : 'Unknown Wanderer'}
+                      @{lootedCorpse ? lootedCorpse.playerName : 'Unknown Wanderer'}
                     </span>
                     <span className="text-[var(--text-dim)] text-[10px]">•</span>
                     <span className="text-[var(--red-dim)] text-xs">FALLEN</span>
                   </div>
-                  {realCorpse && realCorpse.createdAt && (
+                  {lootedCorpse && lootedCorpse.createdAt && (
                     <div className="text-[var(--text-dim)] text-[10px] mt-0.5">
-                      Died {formatTimeAgo(realCorpse.createdAt)}
+                      Died {formatTimeAgo(lootedCorpse.createdAt)}
                     </div>
                   )}
                 </div>
@@ -648,7 +655,7 @@ export default function GameScreen() {
                   Final Words
                 </div>
                 <div className="text-[var(--text-primary)] text-base italic leading-relaxed">
-                  "{realCorpse ? realCorpse.finalMessage : '...the darkness took me before I could finish...'}"
+                  "{lootedCorpse ? lootedCorpse.finalMessage : '...the darkness took me before I could finish...'}"
                 </div>
               </div>
 
@@ -657,16 +664,16 @@ export default function GameScreen() {
                 <div className="flex items-center gap-2">
                   <span className="text-[var(--text-muted)]">They carried:</span>
                   <span className="px-2 py-1 bg-[var(--amber-dim)]/20 border border-[var(--amber-dim)] text-[var(--amber)]">
-                    {realCorpse ? realCorpse.lootEmoji : '💀'} {realCorpse ? realCorpse.loot : 'Nothing'}
+                    {lootedCorpse ? lootedCorpse.lootEmoji : '💀'} {lootedCorpse ? lootedCorpse.loot : 'Nothing'}
                   </span>
                 </div>
                 <div className="text-[var(--text-muted)] text-[10px] italic">
-                  {realCorpse ? 'Their loss, your gain.' : 'The underworld claimed everything.'}
+                  {lootedCorpse ? 'Their loss, your gain.' : 'The underworld claimed everything.'}
                 </div>
               </div>
 
               {/* Tip the Dead - only show for real corpses with wallet addresses */}
-              {realCorpse && realCorpse.walletAddress && publicKey && (
+              {lootedCorpse && lootedCorpse.walletAddress && publicKey && (
                 <div className="border-t border-[var(--purple-dim)]/30 pt-3">
                   {tipped ? (
                     <div className="flex items-center gap-2 text-[var(--green-bright)] text-xs">
@@ -687,7 +694,7 @@ export default function GameScreen() {
                       ) : (
                         <>
                           <span>💸</span>
-                          <span>Tip {TIP_AMOUNT} SOL to @{realCorpse.playerName}</span>
+                          <span>Tip {TIP_AMOUNT} SOL to @{lootedCorpse.playerName}</span>
                         </>
                       )}
                     </button>
