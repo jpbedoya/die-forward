@@ -1,158 +1,164 @@
 # Roadmap
 
 ## Phase 0: Hackathon MVP ✅
-*Target: Week 1*
+*Target: Week 1 — COMPLETE*
 
 The playable proof of concept.
 
 - [x] Game design locked
 - [x] Tech stack chosen
-- [ ] Core game loop (1 zone, 5-7 rooms)
-- [ ] Combat system
-- [ ] Death → corpse → discovery flow
-- [ ] Simple Solana transfers (stake/claim)
-- [ ] InstantDB integration
-- [ ] Leaderboard + live death feed
-- [ ] Basic audio system
-- [ ] Deployed on Vercel
+- [x] Core game loop (3 depths, 12 rooms)
+- [x] Intent-based combat system (7 enemy intents)
+- [x] Death → corpse → discovery flow
+- [x] SOL staking (devnet) with payouts
+- [x] InstantDB integration
+- [x] Leaderboard + live death feed
+- [x] Full audio system (28 SFX + ambient)
+- [x] Boss encounter (The Keeper)
+- [x] Mobile Wallet Adapter support
+- [x] Agent API (`/api/agent/*`)
+- [x] Skill file for agent discovery
+- [x] AgentWallet integration
+- [x] On-chain death verification (Memo program)
+- [x] Share cards (death/victory)
+- [x] Screen shake + haptics
+- [x] Deployed on Vercel
 
-**Success**: Players can stake, play, die, become corpses, and others can find them.
+**✅ Success**: Players stake, play, die, become content for others. Agents can play too.
 
 ---
 
-## Phase 1: Polish & Validate
+## Phase 1: Post-Hackathon Polish
 *Target: Weeks 2-3*
 
-Make it actually fun.
+Improve balance and add admin tooling.
 
-### Gameplay
-- [ ] Balance pass (damage, health, stamina)
-- [ ] More enemy variety (3-5 types)
-- [ ] Trap encounters
-- [ ] Mystery encounters (agent wildcards)
-- [ ] Better loot variety
-- [ ] Item balancing
+### Admin Dashboard 🆕
+- [x] `/admin` route with wallet auth
+- [x] Live metrics (deaths, players, avg depth)
+- [ ] Game settings panel (loot %, damage scaling)
+- [ ] A/B config testing
+- [ ] Time-series analytics
 
-### UX
-- [ ] Onboarding flow
-- [ ] Tutorial room
-- [ ] Better mobile support
-- [ ] Loading states
-- [ ] Error handling
-- [ ] Transaction feedback
+### Gameplay Tuning
+- [x] Depth-scaled loot chances (50%/65%/80%)
+- [x] Bonus loot pool by depth
+- [ ] Enemy stat rebalancing
+- [ ] Item effect tuning
+- [ ] Stamina economy pass
+
+### UX Polish
+- [x] Prominent feedback messages
+- [ ] Better onboarding for new players
+- [ ] Tutorial hints (first 2 rooms)
+- [ ] Loading skeletons
+- [ ] Error recovery flows
 
 ### Audio
-- [ ] Full SFX pass
-- [ ] Music polish
-- [ ] Volume controls
+- [x] 28 SFX complete
+- [ ] Ambient variety per depth
+- [ ] Volume controls UI
+- [ ] Music tracks (low priority)
 
-### Analytics
-- [ ] Track run metrics
-- [ ] Identify drop-off points
-- [ ] A/B test encounter balance
-
-**Success**: Players return for multiple runs. Average session > 10 minutes.
+**Success**: Admin can tune game without deploys. Players understand mechanics faster.
 
 ---
 
-## Phase 2: On-Chain Program
+## Phase 2: More Zones 🗺️
 *Target: Weeks 4-6*
+
+Expand the world.
+
+### New Zones
+- [ ] **The Flooded Cathedral** — water mechanics, breath management
+- [ ] **Ashen Crypts** — fire hazards, burn DoT
+- [ ] **The Void Beyond** — reality warping, unpredictable enemies
+- [ ] **The Living Tomb** — organic horror, infection mechanics
+
+### Zone Mechanics
+- [ ] Zone-specific enemy types
+- [ ] Environmental hazards
+- [ ] Zone-locked items
+- [ ] Zone selection at start (unlock via depth reached)
+
+### Progression
+- [ ] "Knowledge" persists between runs (enemy hints)
+- [ ] Unlockable starting items
+- [ ] Achievement system
+- [ ] Player profiles with stats
+
+**Success**: Players have variety. "I want to try the fire zone today."
+
+---
+
+## Phase 3: On-Chain Program
+*Target: Weeks 7-10*
 
 Trustless Solana integration.
 
 ### Anchor Program
 - [ ] Escrow PDA for stakes
 - [ ] Pool PDA per zone
-- [ ] Claim mechanics
-- [ ] Tip system (direct to corpse wallet)
-- [ ] Admin functions (emergency withdrawal)
-
-### Integration
-- [ ] Replace simple transfers
-- [ ] Transaction verification
-- [ ] On-chain run verification (optional)
+- [ ] Trustless claim mechanics
+- [ ] On-chain tip system
+- [ ] Admin/emergency functions
+- [ ] Upgrade authority management
 
 ### Security
-- [ ] Audit prep
+- [ ] Formal audit (Sec3/OtterSec)
 - [ ] Rate limiting
-- [ ] Abuse prevention
+- [ ] Sybil resistance
+- [ ] Bot detection
 
-**Success**: No backend wallet needed. Fully trustless stake/claim.
-
----
-
-## Phase 3: World Expansion
-*Target: Weeks 7-10*
-
-More content, more reasons to play.
-
-### Zones
-- [ ] **Ruined Chapel** — undead, holy/unholy mechanics
-- [ ] **Ashen Halls** — fire hazards, environmental damage
-- [ ] **The Void** — sensory deprivation, harder enemies
-
-### Progression
-- [ ] Zone unlock requirements
-- [ ] Knowledge system (enemy hints persist)
-- [ ] Achievement badges
-- [ ] Player profiles
-
-### Social
-- [ ] Player search
-- [ ] Run history viewing
-- [ ] "Follow" favorite corpses
-- [ ] Social sharing (Twitter cards)
-
-**Success**: Players have goals beyond single runs. Retention improves.
+**Success**: No backend wallet needed. Fully trustless stake/claim/tip.
 
 ---
 
-## Phase 4: Seasons & Economy
+## Phase 4: Token Economy 💰
 *Target: Weeks 11-14*
 
-Sustainable game loop.
+Optional $DIE token integration.
+
+### Token Design
+- [ ] $DIE token (SPL)
+- [ ] Earned through notable deaths
+- [ ] Stake $DIE for cosmetics/perks
+- [ ] Burn for special runs
 
 ### Seasons
 - [ ] Time-limited seasons (2-4 weeks)
-- [ ] Season leaderboards
+- [ ] Season leaderboards with $DIE prizes
 - [ ] Season-end pool distribution
 - [ ] World "reset" narrative
 
-### Economy
+### Economy Balance
 - [ ] Dynamic stake suggestions
-- [ ] Pool distribution mechanics
 - [ ] Anti-whale measures
-- [ ] Optional token integration (if applicable)
+- [ ] Sustainable emission curve
 
-### Events
-- [ ] Limited-time zones
-- [ ] Boss events
-- [ ] Community challenges
-
-**Success**: Recurring engagement loop. Players anticipate seasons.
+**Success**: Token adds engagement without being required.
 
 ---
 
-## Phase 5: Advanced Social
+## Phase 5: Social & Community
 *Target: Weeks 15+*
-
-Community features.
 
 ### Guilds
 - [ ] Create/join guilds
 - [ ] Guild leaderboards
 - [ ] Shared guild pools
-- [ ] Guild-only zones
+- [ ] Guild challenges
 
 ### Spectating
 - [ ] Watch live runs
-- [ ] Spectator chat
-- [ ] Betting on runners (prediction markets?)
+- [ ] Spectator reactions
+- [ ] Betting on runners
 
-### Content
+### Content Creation
 - [ ] Run replays
-- [ ] Highlight clips
+- [ ] Auto-generated highlight clips
 - [ ] Death compilations
+- [ ] Social sharing improvements
 
 **Success**: Die Forward is a community, not just a game.
 
@@ -162,38 +168,44 @@ Community features.
 
 *Not committed, just possibilities.*
 
-- **NFT Corpses**: Mint notable deaths as collectibles
-- **Custom Death Messages**: Pay extra for longer/formatted messages
-- **Haunting**: Dead players can influence living runs briefly
-- **PvP Zones**: Direct player combat areas
-- **Crafting**: Combine items for upgrades
-- **Companions**: AI helpers that die with you
-- **Mobile App**: Native iOS/Android
-- **VR Mode**: Full immersion horror
+| Idea | Notes |
+|------|-------|
+| **NFT Corpses** | Mint notable deaths as collectibles |
+| **Custom Death Messages** | Pay extra for longer/formatted messages |
+| **Haunting** | Dead players briefly influence living runs |
+| **PvP Zones** | Direct player combat areas |
+| **Crafting** | Combine items for upgrades |
+| **Companions** | AI helpers that die with you |
+| **Mobile App** | Native iOS/Android |
+| **VR Mode** | Full immersion horror |
+| **Cross-chain** | EVM bridge for stakes |
+| **AI Dungeon Master** | Claude generates unique encounters |
 
 ---
 
 ## Metrics to Track
 
-| Metric | Target |
-|--------|--------|
-| Daily Active Players | Growing week over week |
-| Average Session Length | > 10 minutes |
-| Runs per Player per Day | > 2 |
-| Return Rate (D1) | > 40% |
-| Return Rate (D7) | > 20% |
-| Stake Conversion | > 30% of connected wallets |
-| Clear Rate | 10-20% (not too easy, not too hard) |
+| Metric | Current | Target |
+|--------|---------|--------|
+| Daily Active Players | TBD | Growing WoW |
+| Average Depth Reached | ~4 | 6-7 |
+| Runs per Player/Day | TBD | > 2 |
+| Return Rate (D1) | TBD | > 40% |
+| Return Rate (D7) | TBD | > 20% |
+| Stake Conversion | TBD | > 30% |
+| Clear Rate (Room 12) | ~5% | 10-15% |
+| Corpse Discovery Rate | TBD | > 60% |
 
 ---
 
 ## Non-Goals (For Now)
 
-Things we're explicitly **not** doing:
+Things we're explicitly **not** doing yet:
 
-- Mobile-first (web-first, mobile-friendly)
-- Real-time multiplayer (async is the point)
-- Complex graphics/art (terminal aesthetic)
-- Native apps (web only)
-- Multiple tokens (SOL only)
-- DAO governance (keep it simple)
+- ❌ Mobile-first (web-first, mobile-friendly)
+- ❌ Real-time multiplayer (async is the point)
+- ❌ Complex graphics/art (terminal aesthetic is intentional)
+- ❌ Native apps (web only)
+- ❌ Multiple tokens (SOL only for now)
+- ❌ DAO governance (keep it simple)
+- ❌ VCs/fundraising (bootstrap first)

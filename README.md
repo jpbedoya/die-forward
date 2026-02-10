@@ -541,6 +541,38 @@ src/
 - [Game Design](docs/GAME_DESIGN.md) — Mechanics, combat, death system
 - [Tech Stack](docs/TECH_STACK.md) — Architecture decisions
 - [MVP Scope](docs/MVP_SCOPE.md) — Hackathon deliverables
+- [Content Bible](docs/CONTENT_BIBLE.md) — World building, tone, vocabulary
+- [Roadmap](docs/ROADMAP.md) — Full development roadmap
+
+---
+
+## 🗺️ Roadmap
+
+See [docs/ROADMAP.md](docs/ROADMAP.md) for the full roadmap.
+
+### Completed ✅
+- Core game loop (3 depths, 12 rooms, boss fight)
+- Intent-based combat with 7 enemy intents
+- Real SOL staking + payouts (devnet)
+- Agent API + AgentWallet integration
+- On-chain death verification
+- 40+ SFX, share cards, haptics
+
+### Coming Soon 🚧
+| Phase | Features |
+|-------|----------|
+| **Admin Dashboard** | Live metrics, tunable game settings |
+| **More Zones** | Flooded Cathedral, Ashen Crypts, The Void Beyond |
+| **On-Chain Program** | Trustless escrow via Anchor |
+| **Token Economy** | $DIE token for notable deaths |
+| **Social Features** | Guilds, spectating, run replays |
+
+### Future Ideas 💭
+- NFT Corpses
+- PvP Zones
+- AI Dungeon Master (Claude-generated encounters)
+- Mobile native apps
+- VR Mode
 
 ---
 
