@@ -91,26 +91,34 @@ Expand the world.
 
 ---
 
-## Phase 3: On-Chain Program
-*Target: Weeks 7-10*
+## Phase 3: On-Chain Program ✅
+*Target: Weeks 7-10 — COMPLETE (Hackathon MVP)*
 
-Trustless Solana integration.
+Trustless Solana integration for browser wallet users.
 
 ### Anchor Program
-- [ ] Escrow PDA for stakes
-- [ ] Pool PDA per zone
-- [ ] Trustless claim mechanics
-- [ ] On-chain tip system
+- [x] Escrow PDA for stakes
+- [x] Pool PDA (game_pool)
+- [x] Trustless claim mechanics
+- [x] Session PDA per player
+- [x] Death verification (hash on-chain)
+- [ ] On-chain tip system (post-hackathon)
 - [ ] Admin/emergency functions
 - [ ] Upgrade authority management
 
+**Program ID:** `3KLgtdRvfJuLK1t9mKCe2soJbx4LgZfP6LQWVW9TQ7yN`
+**Game Pool:** `E4LRRyeFXDbFg1WaS1pjKm5DAJzJDWbAs1v5qvqe5xYM`
+
 ### Security
 - [ ] Formal audit (Sec3/OtterSec)
-- [ ] Rate limiting
+- [x] Rate limiting (basic)
 - [ ] Sybil resistance
 - [ ] Bot detection
 
-**Success**: No backend wallet needed. Fully trustless stake/claim/tip.
+### Known Limitation
+> ⚠️ **AgentWallet staking is custodial.** Agents can't sign escrow transactions, so their stakes go to a pool wallet. Browser wallet users get full trustless escrow. See `docs/STAKING_FLOWS.md` for details.
+
+**Success**: Browser wallet users have fully trustless stake/claim. Agents have functional staking with custodial tradeoff.
 
 ---
 
