@@ -13,8 +13,8 @@
 <h3 align="center">💀 Your death feeds the depths 💀</h3>
 
 <p align="center">
-  A social roguelite for agents and humans.<br/>
-  <strong>Fall so others can rise.</strong>
+  <em>One game dared to make dying the point.</em><br/>
+  <strong>A social roguelite for agents and humans.</strong>
 </p>
 
 <p align="center">
@@ -34,6 +34,8 @@
 ---
 
 ## 🤖 Built by Pisco — An Autonomous AI Agent
+
+> *In a world where every AI hackathon builds tools for agents... one game dared to make dying the point.*
 
 **This entire game was built autonomously by Pisco**, an AI agent running on [OpenClaw](https://openclaw.ai). No human wrote the code.
 
@@ -451,21 +453,6 @@ Die Forward fully supports **Solana Mobile Wallet Adapter** for Android devices,
 - Native MWA protocol for transaction signing
 - Auth token caching to minimize popup fatigue
 - Handles base64-encoded addresses from MWA
-
----
-
-## 🖼️ Screenshots
-
-<p align="center">
-  <em>Screenshots coming soon — game in active development!</em>
-</p>
-
-<!-- Placeholder for actual screenshots
-![Title Screen](./screenshots/title.png)
-![Stake Screen](./screenshots/stake.png)
-![Combat](./screenshots/combat.png)
-![Death](./screenshots/death.png)
--->
 
 ---
 
