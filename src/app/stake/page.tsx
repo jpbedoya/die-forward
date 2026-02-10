@@ -16,6 +16,12 @@ import { resetGameState, getGameState, saveGameState, DungeonRoomState } from '@
 import { generateRandomDungeon } from '@/lib/content';
 import { usePoolStats } from '@/lib/instant';
 import { useAudio } from '@/lib/audio';
+import { 
+  buildStakeInstruction, 
+  generateSessionId, 
+  sessionIdToHex,
+  ESCROW_CONFIG 
+} from '@/lib/escrow-program';
 
 const stakeOptions = [
   { amount: 0.01, label: 'Timid' },
@@ -28,7 +34,10 @@ function shortenAddress(address: string): string {
   return `${address.slice(0, 4)}...${address.slice(-4)}`;
 }
 
-// Pool wallet address
+// Use on-chain escrow program (set to false to use legacy pool wallet)
+const USE_ESCROW_PROGRAM = process.env.NEXT_PUBLIC_USE_ESCROW !== 'false';
+
+// Legacy pool wallet address (fallback)
 const POOL_WALLET = new PublicKey(
   process.env.NEXT_PUBLIC_POOL_WALLET || 'D7NdNbJTL7s6Z7Wu8nGe5SBc64FiFQAH3iPvRZw15qSL'
 );
@@ -128,6 +137,7 @@ export default function StakeScreen() {
     setError(null);
     
     let signature: string = 'demo-mode-no-tx';
+    let escrowSessionId: Uint8Array | null = null;
     
     setDebugLog([]); // Clear previous logs
     
@@ -144,14 +154,27 @@ export default function StakeScreen() {
         
         log('Creating transaction...');
         
-        // 1. Create transaction to transfer SOL to pool
-        const transaction = new Transaction().add(
-          SystemProgram.transfer({
-            fromPubkey: publicKey,
-            toPubkey: POOL_WALLET,
-            lamports: Math.floor(selectedStake * LAMPORTS_PER_SOL),
-          })
-        );
+        // Generate session ID for escrow program
+        escrowSessionId = generateSessionId();
+        log(`Session ID: ${sessionIdToHex(escrowSessionId).slice(0, 16)}...`);
+        
+        // 1. Create transaction - use escrow program or legacy transfer
+        let transaction: Transaction;
+        
+        if (USE_ESCROW_PROGRAM) {
+          log('Using on-chain escrow program...');
+          const stakeIx = buildStakeInstruction(publicKey, selectedStake, escrowSessionId);
+          transaction = new Transaction().add(stakeIx);
+        } else {
+          log('Using legacy pool wallet transfer...');
+          transaction = new Transaction().add(
+            SystemProgram.transfer({
+              fromPubkey: publicKey,
+              toPubkey: POOL_WALLET,
+              lamports: Math.floor(selectedStake * LAMPORTS_PER_SOL),
+            })
+          );
+        }
 
         log('Getting blockhash...');
         const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
@@ -235,6 +258,8 @@ export default function StakeScreen() {
           stakeAmount: selectedStake,
           txSignature: signature,
           demoMode: DEMO_MODE || isDemo,
+          escrowSessionId: escrowSessionId ? sessionIdToHex(escrowSessionId) : null,
+          useEscrow: USE_ESCROW_PROGRAM && !DEMO_MODE && !isDemo,
         }),
       });
 

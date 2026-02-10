@@ -9,6 +9,7 @@ import {
   LAMPORTS_PER_SOL,
   sendAndConfirmTransaction,
 } from '@solana/web3.js';
+import { processVictoryPayout } from '@/lib/onchain';
 
 // Initialize InstantDB Admin client
 const db = init({
@@ -98,43 +99,74 @@ export async function POST(request: NextRequest) {
     const poolKeypair = getPoolKeypair();
     const playerWallet = new PublicKey(session.walletAddress);
 
-    // Check pool balance
-    const poolBalance = await connection.getBalance(poolKeypair.publicKey);
-    const rewardLamports = Math.floor(totalReward * LAMPORTS_PER_SOL);
-
-    if (poolBalance < rewardLamports + 5000) { // 5000 lamports for fees
-      console.error('Pool balance too low:', poolBalance, 'needed:', rewardLamports);
-      // Still mark session as completed, but note payout failed
-      await db.transact([
-        tx.sessions[session.id].update({
-          status: 'completed',
-          endedAt: Date.now(),
+    let signature: string;
+    
+    // Use escrow program if session was created with it
+    if (session.useEscrow && session.escrowSessionId) {
+      console.log('Processing victory via escrow program...');
+      const escrowSig = await processVictoryPayout(session.walletAddress, session.escrowSessionId);
+      
+      if (!escrowSig) {
+        // Escrow payout failed
+        await db.transact([
+          tx.sessions[session.id].update({
+            status: 'completed',
+            endedAt: Date.now(),
+            reward: totalReward,
+            payoutStatus: 'escrow_failed',
+          }),
+        ]);
+        return NextResponse.json({ 
+          success: true, 
           reward: totalReward,
-          payoutStatus: 'insufficient_funds',
-        }),
-      ]);
-      return NextResponse.json({ 
-        success: true, 
-        reward: totalReward,
-        payoutStatus: 'pending', // Will need manual payout
-        message: 'Victory recorded! Payout pending (pool needs funding).',
-      });
+          payoutStatus: 'pending',
+          message: 'Victory recorded! Escrow payout failed - manual intervention needed.',
+        });
+      }
+      
+      signature = escrowSig;
+    } else {
+      // Legacy: Direct pool wallet transfer
+      console.log('Processing victory via pool wallet...');
+      
+      // Check pool balance
+      const poolBalance = await connection.getBalance(poolKeypair.publicKey);
+      const rewardLamports = Math.floor(totalReward * LAMPORTS_PER_SOL);
+
+      if (poolBalance < rewardLamports + 5000) { // 5000 lamports for fees
+        console.error('Pool balance too low:', poolBalance, 'needed:', rewardLamports);
+        // Still mark session as completed, but note payout failed
+        await db.transact([
+          tx.sessions[session.id].update({
+            status: 'completed',
+            endedAt: Date.now(),
+            reward: totalReward,
+            payoutStatus: 'insufficient_funds',
+          }),
+        ]);
+        return NextResponse.json({ 
+          success: true, 
+          reward: totalReward,
+          payoutStatus: 'pending', // Will need manual payout
+          message: 'Victory recorded! Payout pending (pool needs funding).',
+        });
+      }
+
+      // Create and send payout transaction
+      const transaction = new Transaction().add(
+        SystemProgram.transfer({
+          fromPubkey: poolKeypair.publicKey,
+          toPubkey: playerWallet,
+          lamports: rewardLamports,
+        })
+      );
+
+      signature = await sendAndConfirmTransaction(
+        connection,
+        transaction,
+        [poolKeypair]
+      );
     }
-
-    // Create and send payout transaction
-    const transaction = new Transaction().add(
-      SystemProgram.transfer({
-        fromPubkey: poolKeypair.publicKey,
-        toPubkey: playerWallet,
-        lamports: rewardLamports,
-      })
-    );
-
-    const signature = await sendAndConfirmTransaction(
-      connection,
-      transaction,
-      [poolKeypair]
-    );
 
     // Mark session as completed with payout info
     await db.transact([

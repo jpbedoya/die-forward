@@ -43,3 +43,6 @@ next-env.d.ts
 video/node_modules/
 video/out/
 video/
+
+# Anchor/Rust build artifacts
+anchor-program/target/

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { init, tx, id } from '@instantdb/admin';
-import { hashDeathData, recordDeathOnChain } from '@/lib/onchain';
+import { hashDeathData, recordDeathOnChain, recordDeathInEscrow } from '@/lib/onchain';
 
 // Initialize InstantDB Admin client
 const db = init({
@@ -73,16 +73,32 @@ export async function POST(request: NextRequest) {
 
     // Record death hash on-chain (non-blocking, skip in demo mode)
     let onChainSignature: string | null = null;
-    if (!DEMO_MODE) {
-      // Fire and don't wait - we don't want to block the death flow
-      recordDeathOnChain(deathHash).then(sig => {
-        if (sig) {
-          // Update the death record with the on-chain signature
-          db.transact([
-            tx.deaths[deathId].update({ onChainSignature: sig }),
-          ]).catch(err => console.warn('Failed to update death with signature:', err));
-        }
-      }).catch(err => console.warn('On-chain death recording failed:', err));
+    if (!DEMO_MODE && !session.demoMode) {
+      // Check if using escrow program
+      if (session.useEscrow && session.escrowSessionId) {
+        // Record death in escrow program (releases stake to pool)
+        recordDeathInEscrow(session.walletAddress, session.escrowSessionId, deathHash)
+          .then(sig => {
+            if (sig) {
+              db.transact([
+                tx.deaths[deathId].update({ 
+                  onChainSignature: sig,
+                  escrowRecorded: true,
+                }),
+              ]).catch(err => console.warn('Failed to update death with escrow signature:', err));
+            }
+          })
+          .catch(err => console.warn('Escrow death recording failed:', err));
+      } else {
+        // Legacy: Fire and don't wait - record to memo program
+        recordDeathOnChain(deathHash).then(sig => {
+          if (sig) {
+            db.transact([
+              tx.deaths[deathId].update({ onChainSignature: sig }),
+            ]).catch(err => console.warn('Failed to update death with signature:', err));
+          }
+        }).catch(err => console.warn('On-chain death recording failed:', err));
+      }
     }
 
     await db.transact([

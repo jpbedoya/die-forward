@@ -2,6 +2,7 @@
  * On-chain death verification utilities
  * 
  * Writes death hashes to Solana's memo program for verifiable permadeath.
+ * Also supports the Die Forward escrow program for on-chain stake management.
  * Anyone can verify a death by checking the on-chain record.
  */
 
@@ -14,6 +15,12 @@ import {
   sendAndConfirmTransaction,
 } from '@solana/web3.js';
 import { createHash } from 'crypto';
+import { 
+  buildRecordDeathInstruction, 
+  buildClaimVictoryInstruction,
+  hexToSessionId,
+  PROGRAM_ID as ESCROW_PROGRAM_ID,
+} from './escrow-program';
 
 // Solana Memo Program ID
 const MEMO_PROGRAM_ID = new PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr');
@@ -118,5 +125,104 @@ export async function verifyDeathOnChain(
   } catch (error) {
     console.error('Failed to verify death on-chain:', error);
     return false;
+  }
+}
+
+/**
+ * Record death in the escrow program
+ * 
+ * Marks the player's session as dead, their stake stays in the pool
+ */
+export async function recordDeathInEscrow(
+  playerWallet: string,
+  escrowSessionId: string,
+  deathHash: string
+): Promise<string | null> {
+  try {
+    const secretKeyString = process.env.POOL_WALLET_SECRET;
+    if (!secretKeyString) {
+      console.warn('POOL_WALLET_SECRET not set, skipping escrow death record');
+      return null;
+    }
+
+    const secretKey = Uint8Array.from(JSON.parse(secretKeyString));
+    const authority = Keypair.fromSecretKey(secretKey);
+    
+    const connection = new Connection(RPC_URL, 'confirmed');
+    
+    const player = new PublicKey(playerWallet);
+    const sessionId = hexToSessionId(escrowSessionId);
+    const deathHashBytes = Buffer.from(deathHash, 'hex');
+    
+    const instruction = buildRecordDeathInstruction(
+      authority.publicKey,
+      player,
+      sessionId,
+      deathHashBytes
+    );
+    
+    const transaction = new Transaction().add(instruction);
+    
+    const signature = await sendAndConfirmTransaction(
+      connection,
+      transaction,
+      [authority],
+      { commitment: 'confirmed' }
+    );
+    
+    console.log(`Death recorded in escrow program: ${signature}`);
+    return signature;
+    
+  } catch (error) {
+    console.error('Failed to record death in escrow:', error);
+    return null;
+  }
+}
+
+/**
+ * Process victory payout from escrow program
+ * 
+ * Returns stake + bonus to the player
+ */
+export async function processVictoryPayout(
+  playerWallet: string,
+  escrowSessionId: string
+): Promise<string | null> {
+  try {
+    const secretKeyString = process.env.POOL_WALLET_SECRET;
+    if (!secretKeyString) {
+      console.warn('POOL_WALLET_SECRET not set, skipping escrow victory');
+      return null;
+    }
+
+    const secretKey = Uint8Array.from(JSON.parse(secretKeyString));
+    const authority = Keypair.fromSecretKey(secretKey);
+    
+    const connection = new Connection(RPC_URL, 'confirmed');
+    
+    const player = new PublicKey(playerWallet);
+    const sessionId = hexToSessionId(escrowSessionId);
+    
+    const instruction = buildClaimVictoryInstruction(
+      authority.publicKey,
+      player,
+      sessionId
+    );
+    
+    const transaction = new Transaction().add(instruction);
+    
+    const signature = await sendAndConfirmTransaction(
+      connection,
+      transaction,
+      [authority],
+      { commitment: 'confirmed' }
+    );
+    
+    console.log(`Victory payout processed: ${signature}`);
+    return signature;
+    
+  } catch (error) {
+    console.error('Failed to process victory payout:', error);
+    return null;
   }
 }
