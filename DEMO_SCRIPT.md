@@ -35,7 +35,7 @@
 ### MECHANIC 1 - Stake to Play (0:30 - 0:50)
 **[Connect wallet → Stake screen]**
 
-> *"Stake real SOL to enter the crypt."*
+> *"Stake SOL to enter the crypt."*
 > 
 > *"Choose your risk. Timid... or degenerate?"*
 
@@ -125,7 +125,7 @@
 - Use 1920x1080 or 1080x1920 (mobile demo)
 - Clean browser (hide bookmarks, extensions)
 - Have devnet SOL ready in wallet
-- Use DEMO_MODE=true for smooth recording (no real SOL needed)
+- Use DEMO_MODE=true for smooth recording (no SOL needed)
 
 ### Editing
 - Add subtle dark ambient music
@@ -139,7 +139,7 @@
 
 - [ ] Clear browser cache (fresh session)
 - [ ] Wallet connected with devnet SOL
-- [ ] DEMO_MODE=true in env (or real SOL ready)
+- [ ] DEMO_MODE=true in env (or SOL ready)
 - [ ] Screen recording software ready (OBS, Loom, etc.)
 - [ ] Quiet recording environment
 - [ ] Script printed/visible on second monitor

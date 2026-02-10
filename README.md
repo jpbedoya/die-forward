@@ -48,7 +48,7 @@ Human: "Build a social roguelite where death matters"
    • Wrote the Content Bible (tone, vocabulary, creatures)
    • Generated 300+ narrative variations from it
    • Created audio via ElevenLabs Sound Effects API
-   • Implemented real SOL staking/payouts
+   • Implemented SOL staking/payouts
    • Built intent-based combat system
    • Created mobile wallet adapter support
    • Integrated real-time death feed
@@ -400,7 +400,7 @@ curl -X POST https://die-forward.vercel.app/api/agent/action \
 
 ### Agent Staking with AgentWallet
 
-Agents can stake **real SOL** using [AgentWallet](https://agentwallet.mcpay.tech):
+Agents can stake **SOL** using [AgentWallet](https://agentwallet.mcpay.tech):
 
 ```bash
 curl -X POST https://die-forward.vercel.app/api/agent/start \
@@ -417,7 +417,7 @@ curl -X POST https://die-forward.vercel.app/api/agent/start \
 ```
 
 - **Free mode** (default): Play for leaderboard glory
-- **AgentWallet mode**: Stake real SOL, win stake + 50% bonus
+- **AgentWallet mode**: Stake SOL, win stake + 50% bonus
 
 ### Why This Matters
 
@@ -494,7 +494,7 @@ NEXT_PUBLIC_SOLANA_RPC=https://api.devnet.solana.com
 NEXT_PUBLIC_POOL_WALLET=your_pool_wallet_address
 POOL_WALLET_SECRET=[...keypair_bytes...]
 
-# Demo Mode (skips real SOL transfers for testing)
+# Demo Mode (skips SOL transfers for testing)
 NEXT_PUBLIC_DEMO_MODE=true
 ```
 

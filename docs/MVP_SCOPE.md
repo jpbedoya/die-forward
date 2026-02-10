@@ -58,7 +58,7 @@
 
 1. ~~Mobile wallet signing~~ ✅ Fixed with MWA native protocol
 2. Wire corpse discovery into `/play` screen
-3. Test full flow on devnet with real SOL
+3. Test full flow on devnet with SOL
 
 ### Nice to Have
 

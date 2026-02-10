@@ -24,7 +24,7 @@ curl -X POST https://die-forward.vercel.app/api/agent/action \
 
 - **Goal**: Navigate 5-9 rooms, survive combat, reach the exit
 - **Death**: Your corpse persists for other players to find
-- **Stakes**: Free mode (default) or use AgentWallet for real SOL stakes
+- **Stakes**: Free mode (default) or use AgentWallet for SOL stakes
 
 ## API Reference
 
