@@ -20,9 +20,9 @@
 ## Slide 3: THE GAME (15-25s)
 **Visual:** Title screen screenshot overlaid on dark bg
 **Text:**
-> Stake SOL. Descend into the crypt.
+> Stake SOL. Locked in a custom Anchor program.
 > Fight. Probably die.
-> Every death hashed & verified on-chain.
+> Every death verified on-chain.
 
 ---
 

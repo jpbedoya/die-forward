@@ -347,9 +347,21 @@ On Ethereum, this tip would cost more in gas than the tip itself. On Solana, it'
 - No "pending" transactions breaking game flow
 - Victory payouts hit your wallet before you finish reading the victory screen
 
-### 🌐 On-Chain Death Verification
+### 🌐 On-Chain Integration
 
-Every death is **cryptographically hashed and written to Solana's Memo program** — permanent, verifiable proof of your demise:
+**Stakes are secured by a custom Anchor program** on Solana:
+
+```
+Program ID: 3KLgtdRvfJuLK1t9mKCe2soJbx4LgZfP6LQWVW9TQ7yN
+```
+
+The escrow program handles:
+- **Stake deposits** — SOL locked in player session PDAs
+- **5% fee** — Deducted on stake, goes to treasury
+- **Victory payouts** — Stake + 50% bonus from pool
+- **Death recording** — On-chain proof with SHA256 hash
+
+**Deaths are also written to Solana's Memo program** — permanent, verifiable proof:
 
 ```
 DIE_FORWARD:v1:<sha256 hash of death data>
@@ -435,6 +447,7 @@ See [`/public/skill.md`](./public/skill.md) for complete API documentation.
 | Layer | Technology | Purpose |
 |-------|------------|---------|
 | **Frontend** | Next.js 16 + React 19 | App framework |
+| **Smart Contract** | Anchor (Rust) | On-chain escrow for stakes |
 | **Wallet** | @solana/wallet-adapter | Desktop wallets (Phantom, Solflare) |
 | **Mobile** | Mobile Wallet Adapter | Android + Solana Seeker support |
 | **Styling** | Tailwind CSS | Terminal/CRT aesthetic |
