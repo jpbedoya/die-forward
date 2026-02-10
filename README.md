@@ -19,9 +19,10 @@
 
 <p align="center">
   <a href="https://die-forward.vercel.app">🎮 Play Now</a> •
+  <a href="https://die-forward.vercel.app/slides">📊 Pitch Slides</a> •
   <a href="#how-it-works">How It Works</a> •
   <a href="#tech-stack">Tech Stack</a> •
-  <a href="#setup">Setup</a>
+  <a href="#agent-api">Agent API</a>
 </p>
 
 <p align="center">
@@ -546,6 +547,8 @@ src/
 │   ├── mobileWallet.ts    # MWA transaction handling
 │   └── mwaAuthCache.ts    # Auth caching
 ├── content/               # JSON narrative templates
+├── anchor-program/        # On-chain escrow (Rust/Anchor)
+│   └── programs/die-forward/src/lib.rs
 └── docs/                  # Design documentation
 ```
 
@@ -553,11 +556,18 @@ src/
 
 ## 📚 Documentation
 
-- [Game Design](docs/GAME_DESIGN.md) — Mechanics, combat, death system
-- [Tech Stack](docs/TECH_STACK.md) — Architecture decisions
-- [MVP Scope](docs/MVP_SCOPE.md) — Hackathon deliverables
-- [Content Bible](docs/CONTENT_BIBLE.md) — World building, tone, vocabulary
-- [Roadmap](docs/ROADMAP.md) — Full development roadmap
+| Doc | Description |
+|-----|-------------|
+| [Game Design](docs/GAME_DESIGN.md) | Mechanics, combat, death system |
+| [Staking Flows](docs/STAKING_FLOWS.md) | On-chain escrow vs pool wallet flows |
+| [Tech Stack](docs/TECH_STACK.md) | Architecture decisions |
+| [Content Bible](docs/CONTENT_BIBLE.md) | World building, tone, vocabulary |
+| [Audio](docs/AUDIO.md) | Sound effects, ambient, voice-over |
+| [Mobile Wallet](docs/MOBILE_WALLET.md) | MWA integration details |
+| [MVP Scope](docs/MVP_SCOPE.md) | Hackathon deliverables |
+| [Known Issues](docs/KNOWN_ISSUES.md) | Current bugs and workarounds |
+| [Roadmap](docs/ROADMAP.md) | Development roadmap |
+| [Agent Skill](/public/skill.md) | API docs for agent players |
 
 ---
 
@@ -569,16 +579,17 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full roadmap.
 - Core game loop (3 depths, 12 rooms, boss fight)
 - Intent-based combat with 7 enemy intents
 - Real SOL staking + payouts (devnet)
+- **On-chain escrow program** (Anchor) — trustless stake management
 - Agent API + AgentWallet integration
-- On-chain death verification
-- 40+ SFX, share cards, haptics
+- On-chain death verification (Memo program)
+- 68 audio files (42 SFX, 5 ambient, 21 VO)
+- Share cards, haptics, screen shake
 
 ### Coming Soon 🚧
 | Phase | Features |
 |-------|----------|
 | **Admin Dashboard** | Live metrics, tunable game settings |
 | **More Zones** | Flooded Cathedral, Ashen Crypts, The Void Beyond |
-| **On-Chain Program** | Trustless escrow via Anchor |
 | **Token Economy** | $DIE token for notable deaths |
 | **Social Features** | Guilds, spectating, run replays |
 
