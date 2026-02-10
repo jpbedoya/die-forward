@@ -578,10 +578,13 @@ export default function GameScreen() {
           )}
         </div>
 
-        {/* Message */}
+        {/* Message - made prominent so players notice loot/heal feedback */}
         {message && (
-          <div className="bg-[var(--amber-dim)]/20 border border-[var(--amber-dim)] p-3 mb-4 text-[var(--amber-bright)] text-sm">
-            {message}
+          <div className="bg-[var(--amber-dim)]/40 border-2 border-[var(--amber-bright)] p-4 mb-4 text-[var(--amber-bright)] text-base font-medium animate-pulse">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">✦</span>
+              <span>{message}</span>
+            </div>
           </div>
         )}
 
