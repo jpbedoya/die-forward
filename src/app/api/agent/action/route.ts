@@ -10,6 +10,7 @@ import {
   getTierDamageMultiplier,
   getIntentEffects,
 } from '@/lib/content';
+import { processVictoryPayout } from '@/lib/onchain';
 
 const db = init({
   appId: process.env.NEXT_PUBLIC_INSTANT_APP_ID!,
@@ -241,10 +242,29 @@ export async function POST(request: NextRequest) {
         
         if (currentRoom > session.totalRooms) {
           // Victory!
+          let payoutResult = null;
+          
+          // Process payout for staked sessions
+          if (session.stakeAmount > 0 && session.walletAddress) {
+            try {
+              if (session.useEscrow && session.escrowSessionId) {
+                // Escrow program payout
+                const sig = await processVictoryPayout(session.walletAddress, session.escrowSessionId);
+                payoutResult = sig ? { status: 'paid', tx: sig } : { status: 'escrow_failed' };
+              }
+              // Note: AgentWallet payout happens via the escrow program
+            } catch (e) {
+              console.error('Victory payout failed:', e);
+              payoutResult = { status: 'failed', error: String(e) };
+            }
+          }
+          
           await db.transact([
             tx.sessions[sessionId].update({
               status: 'victory',
               endedAt: Date.now(),
+              payoutStatus: payoutResult?.status || 'free_mode',
+              payoutTx: payoutResult?.tx || null,
             }),
           ]);
           
@@ -259,6 +279,7 @@ export async function POST(request: NextRequest) {
             result: {
               type: 'victory',
               narrative: 'You emerge victorious!',
+              payout: payoutResult,
             },
           });
         }
@@ -386,12 +407,29 @@ export async function POST(request: NextRequest) {
       
       // Check if done
       if (currentRoom > session.totalRooms) {
+        let payoutResult = null;
+        
+        // Process payout for staked sessions
+        if (session.stakeAmount > 0 && session.walletAddress) {
+          try {
+            if (session.useEscrow && session.escrowSessionId) {
+              const sig = await processVictoryPayout(session.walletAddress, session.escrowSessionId);
+              payoutResult = sig ? { status: 'paid', tx: sig } : { status: 'escrow_failed' };
+            }
+          } catch (e) {
+            console.error('Victory payout failed:', e);
+            payoutResult = { status: 'failed', error: String(e) };
+          }
+        }
+        
         await db.transact([
           tx.sessions[sessionId].update({
             status: 'victory',
             health,
             currentRoom,
             endedAt: Date.now(),
+            payoutStatus: payoutResult?.status || 'free_mode',
+            payoutTx: payoutResult?.tx || null,
           }),
         ]);
         
@@ -403,7 +441,11 @@ export async function POST(request: NextRequest) {
             health,
             narrative: 'Light breaks through. You have conquered the crypt.',
           },
-          result: { type: 'victory', narrative: 'You emerge victorious!' },
+          result: { 
+            type: 'victory', 
+            narrative: 'You emerge victorious!',
+            payout: payoutResult,
+          },
         });
       }
       
