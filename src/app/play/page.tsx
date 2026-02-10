@@ -448,11 +448,29 @@ export default function GameScreen() {
             foundItems.push(lootName);
           }
           
-          // 30% chance to find Herbs on corpse (if player doesn't have them)
-          const hasHerbs = newInventory.some(i => i.name === 'Herbs');
-          if (!hasHerbs && Math.random() < 0.3) {
-            newInventory.push({ id: (Date.now() + 1).toString(), name: 'Herbs', emoji: '🌿' });
-            foundItems.push('Herbs');
+          // Bonus loot chance - scales with depth
+          // Upper Crypt (1-4): 50%, Flooded Halls (5-8): 65%, The Abyss (9-12): 80%
+          const roomNum = currentRoom + 1;
+          const bonusChance = roomNum <= 4 ? 0.5 : roomNum <= 8 ? 0.65 : 0.8;
+          
+          // Bonus loot pool - deeper = better items possible
+          const bonusLootPool = [
+            { name: 'Herbs', emoji: '🌿', minDepth: 1 },
+            { name: 'Bone Charm', emoji: '💀', minDepth: 3 },
+            { name: 'Rusty Blade', emoji: '🗡️', minDepth: 5 },
+            { name: 'Poison Vial', emoji: '🧪', minDepth: 7 },
+            { name: 'Ancient Scroll', emoji: '📜', minDepth: 9 },
+          ];
+          
+          // Filter by depth and items player doesn't have
+          const availableBonus = bonusLootPool.filter(item => 
+            roomNum >= item.minDepth && !newInventory.some(i => i.name === item.name)
+          );
+          
+          if (availableBonus.length > 0 && Math.random() < bonusChance) {
+            const bonus = availableBonus[Math.floor(Math.random() * availableBonus.length)];
+            newInventory.push({ id: (Date.now() + 1).toString(), name: bonus.name, emoji: bonus.emoji });
+            foundItems.push(bonus.name);
           }
           
           if (foundItems.length > 0) {
