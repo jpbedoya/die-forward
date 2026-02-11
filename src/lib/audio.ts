@@ -192,70 +192,12 @@ class AudioManager {
       }, 50);
     }
 
-    // Start new ambient with gapless crossfade looping
+    // Start new ambient with native looping
     const audio = new Audio(SOUND_PATHS[id]);
-    audio.loop = false; // We handle looping manually for gapless
+    audio.loop = true; // Simple native looping
     audio.volume = 0;
     this.currentAmbient = audio;
     this.currentAmbientId = id;
-    
-    // Gapless loop: start next instance before current ends, crossfade
-    const setupGaplessLoop = () => {
-      const CROSSFADE_TIME = 1.5; // Start crossfade 1.5s before end
-      
-      const checkLoop = () => {
-        if (!this.currentAmbient || this.currentAmbientId !== id) return;
-        
-        const timeLeft = audio.duration - audio.currentTime;
-        if (timeLeft <= CROSSFADE_TIME && timeLeft > 0) {
-          // Start next loop with crossfade
-          const nextAudio = new Audio(SOUND_PATHS[id]);
-          nextAudio.loop = false;
-          nextAudio.volume = 0;
-          
-          nextAudio.play().then(() => {
-            if (!this.enabled) {
-              nextAudio.pause();
-              return;
-            }
-            this.allAmbientElements.add(nextAudio); // Track this element
-            // Crossfade: fade out current, fade in next
-            const crossfadeInterval = setInterval(() => {
-              if (!this.enabled) {
-                clearInterval(crossfadeInterval);
-                return;
-              }
-              if (audio.volume > 0.02) {
-                audio.volume -= 0.02;
-              }
-              if (nextAudio.volume < this.ambientVolume - 0.02) {
-                nextAudio.volume += 0.02;
-              } else {
-                nextAudio.volume = this.ambientVolume;
-                audio.pause();
-                this.allAmbientElements.delete(audio); // Clean up old element
-                clearInterval(crossfadeInterval);
-              }
-            }, 30);
-            
-            // Set up looping for the new audio
-            this.currentAmbient = nextAudio;
-            setupGaplessLoop();
-          }).catch(() => {});
-        } else if (this.currentAmbient === audio && !audio.paused) {
-          requestAnimationFrame(checkLoop);
-        }
-      };
-      
-      // Wait for metadata to know duration
-      if (audio.duration) {
-        requestAnimationFrame(checkLoop);
-      } else {
-        audio.addEventListener('loadedmetadata', () => {
-          requestAnimationFrame(checkLoop);
-        }, { once: true });
-      }
-    };
     
     audio.play().then(() => {
       this.unlocked = true;
@@ -273,9 +215,6 @@ class AudioManager {
           clearInterval(fadeInInterval);
         }
       }, 50);
-      
-      // Set up gapless looping
-      setupGaplessLoop();
     }).catch(() => {
       // Ambient blocked by autoplay policy - will retry via pendingAmbientId after unlock
     });
