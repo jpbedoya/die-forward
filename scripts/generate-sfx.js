@@ -2,7 +2,11 @@
 const fs = require('fs');
 const path = require('path');
 
-const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY || 'sk_faa8a6f1e4eec4b64e092a4f6c56d6fad8e9e8c16db481e9';
+const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
+if (!ELEVENLABS_API_KEY) {
+  console.error('Error: ELEVENLABS_API_KEY environment variable is required');
+  process.exit(1);
+}
 const OUTPUT_DIR = path.join(__dirname, '../public/audio');
 
 const SOUNDS = [
