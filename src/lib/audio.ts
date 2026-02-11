@@ -125,7 +125,8 @@ class AudioManager {
   private enabled: boolean = true;
   private unlocked: boolean = false;
   private sfxVolume: number = 0.7;
-  private ambientVolume: number = 0.4;
+  private ambientVolume: number = 0.3; // Lowered from 0.4
+  private allAmbientElements: Set<HTMLAudioElement> = new Set(); // Track ALL playing ambient elements
 
   constructor() {
     if (typeof window !== 'undefined') {
@@ -185,6 +186,7 @@ class AudioManager {
         } else {
           fadeOut.pause();
           fadeOut.currentTime = 0;
+          this.allAmbientElements.delete(fadeOut);
           clearInterval(fadeOutInterval);
         }
       }, 50);
@@ -212,8 +214,17 @@ class AudioManager {
           nextAudio.volume = 0;
           
           nextAudio.play().then(() => {
+            if (!this.enabled) {
+              nextAudio.pause();
+              return;
+            }
+            this.allAmbientElements.add(nextAudio); // Track this element
             // Crossfade: fade out current, fade in next
             const crossfadeInterval = setInterval(() => {
+              if (!this.enabled) {
+                clearInterval(crossfadeInterval);
+                return;
+              }
               if (audio.volume > 0.02) {
                 audio.volume -= 0.02;
               }
@@ -222,6 +233,7 @@ class AudioManager {
               } else {
                 nextAudio.volume = this.ambientVolume;
                 audio.pause();
+                this.allAmbientElements.delete(audio); // Clean up old element
                 clearInterval(crossfadeInterval);
               }
             }, 30);
@@ -247,8 +259,13 @@ class AudioManager {
     
     audio.play().then(() => {
       this.unlocked = true;
+      this.allAmbientElements.add(audio); // Track this element
       // Fade in
       const fadeInInterval = setInterval(() => {
+        if (!this.enabled) {
+          clearInterval(fadeInInterval);
+          return;
+        }
         if (audio.volume < this.ambientVolume - 0.05) {
           audio.volume += 0.05;
         } else {
@@ -269,20 +286,20 @@ class AudioManager {
     if (!keepPending) {
       this.pendingAmbientId = null;
     }
-    if (this.currentAmbient) {
-      const fadeOut = this.currentAmbient;
-      const fadeOutInterval = setInterval(() => {
-        if (fadeOut.volume > 0.05) {
-          fadeOut.volume -= 0.05;
-        } else {
-          fadeOut.pause();
-          fadeOut.currentTime = 0;
-          clearInterval(fadeOutInterval);
-        }
-      }, 50);
-      this.currentAmbient = null;
-      this.currentAmbientId = null;
-    }
+    
+    // Stop ALL ambient audio elements, not just currentAmbient
+    this.allAmbientElements.forEach(audio => {
+      try {
+        audio.pause();
+        audio.currentTime = 0;
+        audio.volume = 0;
+      } catch (e) {
+        // Ignore errors on already-removed elements
+      }
+    });
+    this.allAmbientElements.clear();
+    this.currentAmbient = null;
+    this.currentAmbientId = null;
   }
 
   // Resume current ambient (call after user interaction)
