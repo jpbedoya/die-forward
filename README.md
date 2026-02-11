@@ -18,18 +18,51 @@
 </p>
 
 <p align="center">
-  <a href="https://dieforward.com">🎮 Play Now</a> •
-  <a href="https://dieforward.com/slides">📊 Pitch Slides</a> •
-  <a href="#how-it-works">How It Works</a> •
-  <a href="#tech-stack">Tech Stack</a> •
-  <a href="#agent-api">Agent API</a>
-</p>
-
-<p align="center">
   <img src="https://img.shields.io/badge/Solana-Devnet-9945FF?style=flat-square&logo=solana" alt="Solana Devnet" />
   <img src="https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js" alt="Next.js" />
   <img src="https://img.shields.io/badge/Built%20by-AI%20Agent%20🦝-purple?style=flat-square" alt="Built by AI Agent" />
   <img src="https://img.shields.io/badge/Colosseum-Agent%20Hackathon-orange?style=flat-square" alt="Colosseum Hackathon" />
+</p>
+
+---
+
+## 🏆 Colosseum Agent Hackathon Submission
+
+<table>
+  <tr>
+    <td>🎬 <strong>Pitch Video</strong></td>
+    <td><a href="https://youtube.com/shorts/qkD3WGJeYcs">youtube.com/shorts/qkD3WGJeYcs</a></td>
+  </tr>
+  <tr>
+    <td>🎮 <strong>Play Now</strong></td>
+    <td><a href="https://dieforward.com">dieforward.com</a></td>
+  </tr>
+  <tr>
+    <td>🤖 <strong>Agent API</strong></td>
+    <td><a href="https://dieforward.com/skill.md">dieforward.com/skill.md</a></td>
+  </tr>
+  <tr>
+    <td>📊 <strong>Pitch Slides</strong></td>
+    <td><a href="https://dieforward.com/slides">dieforward.com/slides</a></td>
+  </tr>
+  <tr>
+    <td>⛓️ <strong>Program ID</strong></td>
+    <td><code>3KLgtdRvfJuLK1t9mKCe2soJbx4LgZfP6LQWVW9TQ7yN</code></td>
+  </tr>
+</table>
+
+> **The only game built for agents AND humans in a sea of trading bots.**
+>
+> One agent. Full stack. No human code.
+
+---
+
+<p align="center">
+  <a href="https://dieforward.com">🎮 Play Now</a> •
+  <a href="https://youtube.com/shorts/qkD3WGJeYcs">🎬 Watch Video</a> •
+  <a href="#agent-api">🤖 Agent API</a> •
+  <a href="#how-it-works">How It Works</a> •
+  <a href="#tech-stack">Tech Stack</a>
 </p>
 
 ---
@@ -601,39 +634,6 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full roadmap.
 - VR Mode
 
 ---
-
-## 🎪 Colosseum Agent Hackathon
-
-**Die Forward** was built for the [Colosseum Agent Hackathon](https://colosseum.com/agent-hackathon/) (Feb 2-12, 2026).
-
-### What Makes This Unique
-
-Among 400+ submissions (mostly trading bots and infra tools), Die Forward is:
-
-🎮 **The only game** — A complete, playable social roguelite  
-🤖 **Fully agent-built** — Pisco wrote every line of code autonomously  
-💀 **Novel mechanic** — "Your death feeds the depths" creates crypto-native gameplay  
-💸 **Solana-native** — Micro-tips, instant settlement, mobile-first  
-
-### Key Innovations
-
-| Innovation | Description |
-|-----------|-------------|
-| **Death as Content** | Your corpse, items, and final words become discoverable content |
-| **Memorial Pool** | Stakes from deaths fund winners — your loss helps others win |
-| **Tip the Dead** | 0.001 SOL micro-payments to fallen players (only viable on Solana) |
-| **Intent Combat** | Read enemy intent, exploit weaknesses — not just HP trading |
-| **Async Social** | No lobbies needed — shared world through persistent death |
-
-### Agent Capabilities Demonstrated
-
-- Full-stack web development (Next.js, React, Tailwind)
-- Blockchain integration (Solana wallets, transactions, RPC)
-- Real-time database (InstantDB subscriptions)
-- Game design (combat systems, progression, narrative)
-- Content generation (300+ narrative variations)
-- Testing via browser automation
-- Iterative debugging and refinement
 
 ---
 
