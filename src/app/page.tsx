@@ -32,15 +32,10 @@ function SplashScreen({ onEnter }: { onEnter: () => void }) {
       onClick={onEnter}
     >
       <div className={`transition-opacity duration-100 ${flicker ? 'opacity-60' : 'opacity-100'}`}>
-        {/* Logo - matching title screen style */}
-        <pre className="text-[var(--amber)] text-[6px] sm:text-[8px] md:text-[10px] leading-none font-mono text-center mb-8 drop-shadow-[0_0_20px_rgba(245,158,11,0.3)]">
-{` ██████╗ ██╗███████╗    ███████╗ ██████╗ ██████╗ ██╗    ██╗ █████╗ ██████╗ ██████╗ 
- ██╔══██╗██║██╔════╝    ██╔════╝██╔═══██╗██╔══██╗██║    ██║██╔══██╗██╔══██╗██╔══██╗
- ██║  ██║██║█████╗      █████╗  ██║   ██║██████╔╝██║ █╗ ██║███████║██████╔╝██║  ██║
- ██║  ██║██║██╔══╝      ██╔══╝  ██║   ██║██╔══██╗██║███╗██║██╔══██║██╔══██╗██║  ██║
- ██████╔╝██║███████╗    ██║     ╚██████╔╝██║  ██║╚███╔███╔╝██║  ██║██║  ██║██████╔╝
- ╚═════╝ ╚═╝╚══════╝    ╚═╝      ╚═════╝ ╚═╝  ╚═╝ ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝`}
-        </pre>
+        {/* Logo - clean text style */}
+        <h1 className="text-[var(--amber)] text-4xl sm:text-5xl md:text-6xl font-bold tracking-[0.15em] mb-8 text-center drop-shadow-[0_0_30px_rgba(245,158,11,0.4)]">
+          DIE FORWARD
+        </h1>
         
         {/* Enter prompt */}
         <div className="text-center">
