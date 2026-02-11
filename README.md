@@ -646,7 +646,7 @@ Among 400+ submissions (mostly trading bots and infra tools), Die Forward is:
 
 ## 📄 License
 
-MIT — Die freely, die often.
+All Rights Reserved © 2026
 
 ---
 
