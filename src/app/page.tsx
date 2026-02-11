@@ -32,10 +32,10 @@ function SplashScreen({ onEnter }: { onEnter: () => void }) {
       onClick={onEnter}
     >
       <div className={`transition-opacity duration-100 ${flicker ? 'opacity-60' : 'opacity-100'}`}>
-        {/* Logo - clean text style */}
-        <h1 className="text-[var(--amber)] text-4xl sm:text-5xl md:text-6xl font-bold tracking-[0.15em] mb-8 text-center drop-shadow-[0_0_30px_rgba(245,158,11,0.4)]">
-          DIE FORWARD
-        </h1>
+        {/* Logo - same as title screen */}
+        <pre className="text-[var(--amber)] text-[6px] sm:text-[8px] md:text-[10px] leading-none mb-8 text-center overflow-hidden max-w-full drop-shadow-[0_0_20px_rgba(245,158,11,0.3)]">
+{ASCII_LOGO}
+        </pre>
         
         {/* Enter prompt */}
         <div className="text-center">
