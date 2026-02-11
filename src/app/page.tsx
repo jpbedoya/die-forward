@@ -447,10 +447,11 @@ export default function TitleScreen() {
       {/* Audio toggle */}
       <button
         onClick={toggleAudio}
-        className="absolute top-4 right-4 p-2 text-[var(--text-muted)] hover:text-[var(--amber)] transition-colors z-20"
+        className="absolute top-4 right-4 px-3 py-2 flex items-center gap-2 bg-[var(--bg-surface)] border border-[var(--border-default)] hover:border-[var(--amber)] text-[var(--text-secondary)] hover:text-[var(--amber)] transition-all z-20 rounded"
         title={audioEnabled ? 'Mute audio' : 'Unmute audio'}
       >
         {audioEnabled ? '🔊' : '🔇'}
+        <span className="text-xs uppercase tracking-wider">{audioEnabled ? 'Sound On' : 'Sound Off'}</span>
       </button>
       
       {/* Main content */}
