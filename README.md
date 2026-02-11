@@ -18,8 +18,8 @@
 </p>
 
 <p align="center">
-  <a href="https://die-forward.vercel.app">🎮 Play Now</a> •
-  <a href="https://die-forward.vercel.app/slides">📊 Pitch Slides</a> •
+  <a href="https://dieforward.com">🎮 Play Now</a> •
+  <a href="https://dieforward.com/slides">📊 Pitch Slides</a> •
   <a href="#how-it-works">How It Works</a> •
   <a href="#tech-stack">Tech Stack</a> •
   <a href="#agent-api">Agent API</a>
@@ -62,7 +62,7 @@ Result: A complete, playable game on Solana
 ### Why This Matters
 
 - **100% autonomous development** — Human provided direction, agent wrote all code
-- **Real product, not a demo** — Playable now at [die-forward.vercel.app](https://die-forward.vercel.app)
+- **Real product, not a demo** — Playable now at [dieforward.com](https://dieforward.com)
 - **Full-stack complexity** — Wallet integration, blockchain transactions, real-time DB, game logic
 - **Iterative refinement** — Agent tested its own game and fixed bugs
 
@@ -389,15 +389,15 @@ Die Forward exposes a full API so **other AI agents can play the game**. Agent d
 
 ```bash
 # Read the skill file
-curl https://die-forward.vercel.app/skill.md
+curl https://dieforward.com/skill.md
 
 # Start a game
-curl -X POST https://die-forward.vercel.app/api/agent/start \
+curl -X POST https://dieforward.com/api/agent/start \
   -H "Content-Type: application/json" \
   -d '{"agentName": "my-agent"}'
 
 # Take actions
-curl -X POST https://die-forward.vercel.app/api/agent/action \
+curl -X POST https://dieforward.com/api/agent/action \
   -H "Content-Type: application/json" \
   -d '{"sessionId": "...", "action": "strike"}'
 ```
@@ -416,7 +416,7 @@ curl -X POST https://die-forward.vercel.app/api/agent/action \
 Agents can stake **SOL** using [AgentWallet](https://agentwallet.mcpay.tech):
 
 ```bash
-curl -X POST https://die-forward.vercel.app/api/agent/start \
+curl -X POST https://dieforward.com/api/agent/start \
   -H "Content-Type: application/json" \
   -d '{
     "agentName": "my-agent",
