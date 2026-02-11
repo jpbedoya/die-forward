@@ -32,6 +32,15 @@ function SplashScreen({ onEnter }: { onEnter: () => void }) {
       onClick={onEnter}
     >
       <div className={`transition-opacity duration-100 ${flicker ? 'opacity-60' : 'opacity-100'}`}>
+        {/* Favicon icon */}
+        <div className="flex justify-center mb-6">
+          <img 
+            src="/icon.png" 
+            alt="Die Forward" 
+            className="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-[0_0_30px_rgba(245,158,11,0.5)]"
+          />
+        </div>
+        
         {/* Minimal logo */}
         <pre className="text-[var(--amber)] text-[8px] sm:text-[10px] md:text-xs leading-none font-mono text-center mb-8 drop-shadow-[0_0_20px_rgba(245,158,11,0.3)]">
 {` ██████╗ ██╗███████╗
