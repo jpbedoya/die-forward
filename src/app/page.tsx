@@ -184,6 +184,78 @@ function PoolStats({ totalDeaths, totalStaked, isLoading }: {
   );
 }
 
+// Devnet info modal
+function DevnetModal({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div 
+        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      
+      {/* Modal */}
+      <div className="relative bg-[var(--bg-surface)] border border-[var(--amber-dim)] max-w-md w-full p-6 shadow-[0_0_50px_rgba(245,158,11,0.2)]">
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 text-[var(--text-dim)] hover:text-[var(--text-primary)] text-xl"
+        >
+          ×
+        </button>
+        
+        {/* Header */}
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-[var(--amber)] text-xl">⚡</span>
+          <h2 className="text-[var(--amber-bright)] text-lg font-bold tracking-wider">DEVNET MODE</h2>
+        </div>
+        
+        {/* Content */}
+        <div className="space-y-4 text-sm">
+          <p className="text-[var(--text-secondary)]">
+            Die Forward is currently running on <span className="text-[var(--amber-bright)]">Solana Devnet</span> — a test network where SOL has no real value.
+          </p>
+          
+          <div className="bg-[var(--bg-primary)] p-4 border border-[var(--border-dim)]">
+            <h3 className="text-[var(--text-primary)] font-bold mb-2 text-xs uppercase tracking-wider">Setup Steps:</h3>
+            <ol className="space-y-2 text-[var(--text-secondary)]">
+              <li className="flex gap-2">
+                <span className="text-[var(--amber)]">1.</span>
+                <span>Open your wallet (Phantom/Solflare)</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-[var(--amber)]">2.</span>
+                <span>Go to Settings → Developer Settings</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-[var(--amber)]">3.</span>
+                <span>Enable &quot;Testnet Mode&quot; and select <span className="text-[var(--amber-bright)]">Devnet</span></span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-[var(--amber)]">4.</span>
+                <span>Get free devnet SOL from the faucet</span>
+              </li>
+            </ol>
+          </div>
+          
+          <a
+            href="https://faucet.solana.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block w-full py-3 bg-[var(--amber-dim)]/30 border border-[var(--amber)] text-[var(--amber-bright)] text-center hover:bg-[var(--amber-dim)]/50 transition-colors"
+          >
+            🚰 Get Free Devnet SOL →
+          </a>
+          
+          <p className="text-[var(--text-dim)] text-xs text-center">
+            Mainnet launch coming soon!
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // How it works section
 function HowItWorks() {
   const steps = [
@@ -253,6 +325,7 @@ export default function TitleScreen() {
   const [editingNickname, setEditingNickname] = useState(false);
   const [savingNickname, setSavingNickname] = useState(false);
   const [entered, setEntered] = useState(false);
+  const [showDevnetModal, setShowDevnetModal] = useState(false);
   
   // Get player data from DB
   const walletAddress = publicKey?.toBase58() || null;
@@ -400,6 +473,16 @@ export default function TitleScreen() {
               A social roguelite for agents and humans
             </p>
           </div>
+
+          {/* Devnet badge */}
+          <button
+            onClick={() => setShowDevnetModal(true)}
+            className="mb-2 px-3 py-1 bg-[var(--amber-dim)]/20 border border-[var(--amber-dim)] text-[var(--amber)] text-xs tracking-wider hover:bg-[var(--amber-dim)]/40 hover:border-[var(--amber)] transition-all flex items-center gap-2"
+          >
+            <span>⚡</span>
+            <span>DEVNET</span>
+            <span className="text-[var(--text-dim)]">ⓘ</span>
+          </button>
 
           {/* Primary CTA */}
           <div className="mb-4 flex flex-col items-center gap-3">
@@ -600,6 +683,11 @@ export default function TitleScreen() {
         </footer>
 
       </main>
+
+      {/* Devnet Modal */}
+      {showDevnetModal && (
+        <DevnetModal onClose={() => setShowDevnetModal(false)} />
+      )}
     </div>
   );
 }
