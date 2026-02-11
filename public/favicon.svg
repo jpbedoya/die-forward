@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="32" height="32" fill="#0a0a0a"/>
+  <!-- Stylized D using blocks like ASCII art -->
+  <g fill="#f59e0b" filter="url(#glow)">
+    <!-- Top horizontal -->
+    <rect x="6" y="5" width="14" height="4"/>
+    <!-- Left vertical -->
+    <rect x="6" y="5" width="4" height="22"/>
+    <!-- Right curve top -->
+    <rect x="20" y="5" width="4" height="4"/>
+    <!-- Right vertical -->
+    <rect x="22" y="9" width="4" height="10"/>
+    <!-- Right curve bottom -->
+    <rect x="20" y="19" width="4" height="4"/>
+    <!-- Bottom horizontal -->
+    <rect x="6" y="23" width="14" height="4"/>
+  </g>
+</svg>
