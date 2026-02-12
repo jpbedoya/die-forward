@@ -69,7 +69,7 @@ POST /api/agent/start
 ---
 
 ## Slide 7: THE BUILD (50-60s)
-**Visual:** 🦝 raccoon emoji, purple glow
+**Visual:** 🐵 monkey emoji, purple glow
 **Text:**
 > Built by Pisco
 > 6 Days • Full Stack • No Human Code
