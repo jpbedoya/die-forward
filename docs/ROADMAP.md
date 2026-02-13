@@ -12,7 +12,7 @@ The playable proof of concept.
 - [x] Death → corpse → discovery flow
 - [x] SOL staking (devnet) with payouts
 - [x] InstantDB integration
-- [x] Leaderboard + live death feed
+- [x] Live death feed (real-time)
 - [x] Full audio system (28 SFX + ambient)
 - [x] Boss encounter (The Keeper)
 - [x] Mobile Wallet Adapter support
@@ -49,10 +49,20 @@ Improve balance and add admin tooling.
 
 ### UX Polish
 - [x] Prominent feedback messages
+- [x] Landing page at root (game moved to /game)
+- [x] Responsive logo scaling
+- [x] Corpse display shows wallet address when no nickname
 - [ ] Better onboarding for new players
 - [ ] Tutorial hints (first 2 rooms)
 - [ ] Loading skeletons
 - [ ] Error recovery flows
+
+### Mobile Prep
+- [x] Expo project scaffolded (`/mobile`)
+- [x] Mobile screens designed (Home, Stake, Play, Death, Victory)
+- [ ] EAS Build setup for APK/IPA
+- [ ] Solana dApp Store submission
+- [ ] App Store / Play Store submission
 
 ### Audio
 - [x] 28 SFX complete
@@ -210,10 +220,9 @@ Optional $DIE token integration.
 
 Things we're explicitly **not** doing yet:
 
-- ❌ Mobile-first (web-first, mobile-friendly)
 - ❌ Real-time multiplayer (async is the point)
 - ❌ Complex graphics/art (terminal aesthetic is intentional)
-- ❌ Native apps (web only)
+- 🔄 Native apps (Expo in progress, web-first)
 - ❌ Multiple tokens (SOL only for now)
 - ❌ DAO governance (keep it simple)
 - ❌ VCs/fundraising (bootstrap first)

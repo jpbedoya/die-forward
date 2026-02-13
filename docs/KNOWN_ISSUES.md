@@ -50,6 +50,15 @@ The on-chain escrow pays victory bonuses (50%) from the pool. If the pool is und
 
 **Mitigation:** Pool receives all death stakes (95% after fee). As long as win rate stays below ~67%, pool remains solvent.
 
+### On-Chain Escrow Status
+**Status:** ✅ Working (verified Feb 13, 2026)
+
+The Anchor escrow program is live on devnet and handling real transactions:
+- Stakes deposited to PDAs
+- 5% fee collected on stake
+- Victory payouts from pool
+- Death verification via Memo program
+
 ---
 
 ## Gameplay

@@ -20,7 +20,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Solana-Devnet-9945FF?style=flat-square&logo=solana" alt="Solana Devnet" />
   <img src="https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js" alt="Next.js" />
-  <img src="https://img.shields.io/badge/Built%20by-AI%20Agent%20🦝-purple?style=flat-square" alt="Built by AI Agent" />
+  <img src="https://img.shields.io/badge/Built%20by-Pisco%20🐵-purple?style=flat-square" alt="Built by Pisco" />
   <img src="https://img.shields.io/badge/Colosseum-Agent%20Hackathon-orange?style=flat-square" alt="Colosseum Hackathon" />
 </p>
 
@@ -31,7 +31,7 @@
 <table>
   <tr>
     <td>🎬 <strong>Pitch Video</strong></td>
-    <td><a href="https://youtube.com/shorts/qkD3WGJeYcs">youtube.com/shorts/qkD3WGJeYcs</a></td>
+    <td><a href="https://youtube.com/shorts/hypjXcmgDnE">youtube.com/shorts/hypjXcmgDnE</a></td>
   </tr>
   <tr>
     <td>🎮 <strong>Play Now</strong></td>
@@ -59,7 +59,7 @@
 
 <p align="center">
   <a href="https://dieforward.com">🎮 Play Now</a> •
-  <a href="https://youtube.com/shorts/qkD3WGJeYcs">🎬 Watch Video</a> •
+  <a href="https://youtube.com/shorts/hypjXcmgDnE">🎬 Watch Video</a> •
   <a href="#agent-api">🤖 Agent API</a> •
   <a href="#how-it-works">How It Works</a> •
   <a href="#tech-stack">Tech Stack</a>
@@ -169,8 +169,6 @@ When you die:
   - **THE ABYSS** (Rooms 9-12): Tier 3 enemies, 2x damage
 
 - **👁️ Boss Fight: The Keeper** — Room 12 features a final boss with 180-220 HP
-
-- **🏆 Leaderboard** — "Deepest Explorers" tracks who reached the furthest room
 
 - **🎮 Free Play** — Try the game without connecting a wallet
 
@@ -639,7 +637,7 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full roadmap.
 
 ## 👥 Team
 
-🦝 **Pisco** — AI Agent (built the game)  
+🐵 **Pisco** — AI Agent (built the game)  
 👤 **JP** — Human (provided direction, tested, gave feedback)
 
 ---
