@@ -7,8 +7,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
-import { useDeathFeed, usePoolStats, usePlayer, useLeaderboard, getOrCreatePlayer, updatePlayerNickname, type Death, type Player } from '@/lib/instant';
-import { getDepthForRoom } from '@/lib/content';
+import { useDeathFeed, usePoolStats, usePlayer, getOrCreatePlayer, updatePlayerNickname, type Death } from '@/lib/instant';
 import { useAudio } from '@/lib/audio';
 import GameFrame from '@/components/GameFrame';
 
@@ -397,7 +396,6 @@ export default function TitleScreen() {
   // Real-time death feed from InstantDB
   const { deaths: dbDeaths, isLoading: deathsLoading } = useDeathFeed(10);
   const { totalDeaths, totalStaked, isLoading: statsLoading } = usePoolStats();
-  const { leaderboard, isLoading: leaderboardLoading } = useLeaderboard(5);
 
   // Use real data if available, fall back to mock
   const deathFeed = dbDeaths.length > 0 ? dbDeaths : mockDeathFeed;
@@ -599,49 +597,6 @@ export default function TitleScreen() {
           totalStaked={totalStaked}
           isLoading={statsLoading}
         />
-
-        {/* Leaderboard - Top Explorers */}
-        {leaderboard.length > 0 && (
-          <div className="border-b border-[var(--border-dim)]/50">
-            <div className="px-4 py-2 flex items-center gap-2">
-              <span className="text-[var(--amber)]">🏆</span>
-              <span className="text-xs text-[var(--text-muted)] uppercase tracking-[0.2em]">Deepest Explorers</span>
-            </div>
-            <div className="px-4 pb-3">
-              {leaderboardLoading ? (
-                <div className="text-[var(--text-dim)] text-xs animate-pulse">Loading...</div>
-              ) : (
-                <div className="grid grid-cols-1 gap-1">
-                  {leaderboard.map((player: Player, i: number) => {
-                    const depth = getDepthForRoom(player.highestRoom || 1);
-                    return (
-                      <div key={player.id} className="flex items-center gap-2 text-xs">
-                        <span className={`w-5 text-center ${i === 0 ? 'text-[var(--amber)]' : 'text-[var(--text-dim)]'}`}>
-                          {i === 0 ? '👑' : `#${i + 1}`}
-                        </span>
-                        <span className="text-[var(--purple-bright)] flex-1 truncate">
-                          @{player.nickname || player.walletAddress.slice(0, 8)}
-                        </span>
-                        <span className={`px-1.5 py-0.5 text-[10px] ${
-                          depth.tier === 3 ? 'text-[var(--purple)]' : 
-                          depth.tier === 2 ? 'text-[var(--amber)]' : 
-                          'text-[var(--text-muted)]'
-                        }`}>
-                          Room {player.highestRoom}
-                        </span>
-                        {player.totalClears > 0 && (
-                          <span className="text-[var(--green)] text-[10px]">
-                            ✓{player.totalClears}
-                          </span>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
 
         {/* Death feed header */}
         <div className="px-4 py-3 border-b border-[var(--border-dim)]/50 flex items-center justify-between">
