@@ -76,9 +76,9 @@ export default function LandingPage() {
               <Image 
                 src="/badges/solana-dapp-store.svg" 
                 alt="Get it on Solana dApp Store" 
-                width={135} 
-                height={52}
-                className="h-[52px] w-auto"
+                width={102} 
+                height={40}
+                className="h-10 w-auto"
               />
             </div>
           </div>
