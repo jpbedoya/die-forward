@@ -22,26 +22,26 @@ export default function LandingPage() {
     <div className="min-h-screen bg-[var(--bg-base)] font-mono">
       {/* Hero Section */}
       <section className="relative min-h-screen flex flex-col items-center justify-center px-4 py-16">
-        {/* Background glow */}
-        <div className="absolute inset-0 bg-gradient-radial from-[var(--amber-dim)]/10 via-transparent to-transparent" />
+        {/* Background glow - pointer-events-none so it doesn't block clicks */}
+        <div className="absolute inset-0 bg-gradient-radial from-[var(--amber-dim)]/10 via-transparent to-transparent pointer-events-none" />
         
         {/* Logo */}
-        <pre className="text-[var(--amber)] text-[5px] sm:text-[7px] md:text-[9px] leading-none mb-8 text-center overflow-hidden max-w-full drop-shadow-[0_0_30px_rgba(245,158,11,0.4)]">
+        <pre className="relative z-10 text-[var(--amber)] text-[5px] sm:text-[7px] md:text-[9px] leading-none mb-8 text-center overflow-hidden max-w-full drop-shadow-[0_0_30px_rgba(245,158,11,0.4)]">
 {ASCII_LOGO}
         </pre>
 
         {/* Tagline */}
-        <h1 className="text-[var(--text-primary)] text-xl sm:text-2xl md:text-3xl text-center mb-4 tracking-wide">
+        <h1 className="relative z-10 text-[var(--text-primary)] text-xl sm:text-2xl md:text-3xl text-center mb-4 tracking-wide">
           Your Death Feeds the Depths
         </h1>
         
-        <p className="text-[var(--text-muted)] text-sm sm:text-base max-w-xl text-center mb-8 leading-relaxed">
+        <p className="relative z-10 text-[var(--text-muted)] text-sm sm:text-base max-w-xl text-center mb-8 leading-relaxed">
           A text-based roguelite where every death matters. Stake SOL, descend into darkness, 
           and leave your final words for the next adventurer to find.
         </p>
 
         {/* CTA Button */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-12">
+        <div className="relative z-10 flex flex-col sm:flex-row gap-4 mb-12">
           <a 
             href="/game"
             className="px-8 py-4 bg-[var(--amber)] text-[var(--bg-base)] font-bold text-lg hover:bg-[var(--amber-bright)] transition-all hover:scale-105 text-center cursor-pointer"
