@@ -316,7 +316,7 @@ export default function DeathScreen() {
                 <span>Descend Again</span>
               </Link>
               <Link
-                href="/"
+                href="/game"
                 className="px-4 py-3 bg-[var(--bg-surface)] border border-[var(--border-dim)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] hover:border-[var(--border-default)] transition-all text-center"
               >
                 Return to Title
