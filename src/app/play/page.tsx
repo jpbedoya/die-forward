@@ -8,6 +8,7 @@ import { getGameState, saveGameState, DungeonRoomState } from '@/lib/gameState';
 import { useCorpseForRoom, discoverCorpse, recordTip, Corpse } from '@/lib/instant';
 import { getExploreRoom, getCombatRoom, getCacheRoom, getExitRoom, getDepthForRoom } from '@/lib/content';
 import { useAudio } from '@/lib/audio';
+import GameFrame from '@/components/GameFrame';
 
 // Tip amount in SOL
 const TIP_AMOUNT = 0.001;
@@ -537,6 +538,7 @@ export default function GameScreen() {
   };
 
   return (
+    <GameFrame>
     <div className="min-h-screen bg-[var(--bg-base)] flex flex-col font-mono">
       
       <Menu 
@@ -811,5 +813,6 @@ export default function GameScreen() {
         </div>
       </footer>
     </div>
+    </GameFrame>
   );
 }

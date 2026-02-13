@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { getGameState, clearGameState } from '@/lib/gameState';
 import { useAudio } from '@/lib/audio';
 import { generateVictoryCard, shareCard } from '@/lib/shareCard';
+import GameFrame from '@/components/GameFrame';
 
 // Demo mode flag
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
@@ -127,13 +128,16 @@ export default function VictoryScreen() {
 
   if (!loaded) {
     return (
+      <GameFrame>
       <div className="min-h-screen bg-[var(--bg-base)] flex items-center justify-center font-mono">
         <div className="text-[var(--green)] animate-pulse">✓ Loading...</div>
       </div>
+      </GameFrame>
     );
   }
 
   return (
+    <GameFrame>
     <div className="min-h-screen bg-[var(--bg-base)] flex flex-col font-mono relative">
       
       {/* Top controls */}
@@ -269,5 +273,6 @@ export default function VictoryScreen() {
       </footer>
 
     </div>
+    </GameFrame>
   );
 }

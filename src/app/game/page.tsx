@@ -10,6 +10,7 @@ import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { useDeathFeed, usePoolStats, usePlayer, useLeaderboard, getOrCreatePlayer, updatePlayerNickname, type Death, type Player } from '@/lib/instant';
 import { getDepthForRoom } from '@/lib/content';
 import { useAudio } from '@/lib/audio';
+import GameFrame from '@/components/GameFrame';
 
 const ASCII_LOGO = `
  ██████╗ ██╗███████╗    ███████╗ ██████╗ ██████╗ ██╗    ██╗ █████╗ ██████╗ ██████╗ 
@@ -431,10 +432,11 @@ export default function TitleScreen() {
 
   // Show splash screen first
   if (!entered) {
-    return <SplashScreen onEnter={handleEnter} />;
+    return <GameFrame><SplashScreen onEnter={handleEnter} /></GameFrame>;
   }
 
   return (
+    <GameFrame>
     <div className="min-h-screen bg-[var(--bg-base)] flex flex-col font-mono relative overflow-hidden">
       
       {/* Background gradient effects */}
@@ -690,5 +692,6 @@ export default function TitleScreen() {
         <DevnetModal onClose={() => setShowDevnetModal(false)} />
       )}
     </div>
+    </GameFrame>
   );
 }

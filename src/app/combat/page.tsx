@@ -116,6 +116,7 @@ import {
   ItemEffects,
 } from '@/lib/content';
 import { useAudio } from '@/lib/audio';
+import GameFrame from '@/components/GameFrame';
 
 // Demo mode flag
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
@@ -597,13 +598,16 @@ export default function CombatScreen() {
   // Show loading until state is loaded
   if (!loaded) {
     return (
+      <GameFrame>
       <div className="min-h-screen bg-[var(--bg-base)] flex items-center justify-center font-mono">
         <div className="text-[var(--amber)] animate-pulse">◈ Loading...</div>
       </div>
+      </GameFrame>
     );
   }
 
   return (
+    <GameFrame>
     <div className={`min-h-screen bg-[var(--bg-base)] flex flex-col font-mono ${isShaking ? 'shake damage-flash' : ''}`}>
       
       <Menu 
@@ -972,5 +976,6 @@ export default function CombatScreen() {
       </footer>
 
     </div>
+    </GameFrame>
   );
 }

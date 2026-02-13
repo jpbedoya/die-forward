@@ -6,6 +6,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { getGameState, clearGameState } from '@/lib/gameState';
 import { useAudio } from '@/lib/audio';
 import { generateDeathCard, shareCard } from '@/lib/shareCard';
+import GameFrame from '@/components/GameFrame';
 
 // Demo mode flag
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
@@ -143,13 +144,16 @@ export default function DeathScreen() {
 
   if (!loaded) {
     return (
+      <GameFrame>
       <div className="min-h-screen bg-[var(--bg-base)] flex items-center justify-center font-mono">
         <div className="text-[var(--red)] animate-pulse">☠ Loading...</div>
       </div>
+      </GameFrame>
     );
   }
 
   return (
+    <GameFrame>
     <div className="min-h-screen bg-[var(--bg-base)] flex flex-col font-mono relative overflow-hidden">
       
       {/* Background effects */}
@@ -345,5 +349,6 @@ export default function DeathScreen() {
       </footer>
 
     </div>
+    </GameFrame>
   );
 }

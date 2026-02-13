@@ -16,6 +16,7 @@ import { resetGameState, getGameState, saveGameState, DungeonRoomState } from '@
 import { generateRandomDungeon } from '@/lib/content';
 import { usePoolStats } from '@/lib/instant';
 import { useAudio } from '@/lib/audio';
+import GameFrame from '@/components/GameFrame';
 import { 
   buildStakeInstruction, 
   generateSessionId, 
@@ -305,13 +306,16 @@ export default function StakeScreen() {
   // Loading state while checking connection (skip for demo mode)
   if (!demoWallet && (!connected || !publicKey)) {
     return (
+      <GameFrame>
       <div className="min-h-screen bg-[var(--bg-base)] flex items-center justify-center font-mono">
         <div className="text-[var(--amber)] animate-pulse">◈ Loading...</div>
       </div>
+      </GameFrame>
     );
   }
 
   return (
+    <GameFrame>
     <div className="min-h-screen bg-[var(--bg-base)] flex flex-col font-mono">
       
       {/* Header */}
@@ -470,5 +474,6 @@ export default function StakeScreen() {
       </footer>
 
     </div>
+    </GameFrame>
   );
 }
