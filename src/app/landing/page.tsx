@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
 
 const ASCII_LOGO = `
@@ -41,21 +40,13 @@ export default function LandingPage() {
           and leave your final words for the next adventurer to find.
         </p>
 
-        {/* CTA Buttons */}
+        {/* CTA Button */}
         <div className="flex flex-col sm:flex-row gap-4 mb-12">
-          <Link 
+          <a 
             href="/"
-            className="px-8 py-4 bg-[var(--amber)] text-[var(--bg-base)] font-bold text-lg hover:bg-[var(--amber-bright)] transition-all hover:scale-105 text-center"
+            className="px-8 py-4 bg-[var(--amber)] text-[var(--bg-base)] font-bold text-lg hover:bg-[var(--amber-bright)] transition-all hover:scale-105 text-center cursor-pointer"
           >
             ▶ PLAY NOW
-          </Link>
-          <a 
-            href="https://github.com/jpbedoya/die-forward"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-8 py-4 border-2 border-[var(--amber)] text-[var(--amber)] font-bold text-lg hover:bg-[var(--amber-dim)]/20 transition-all text-center"
-          >
-            ⚡ VIEW SOURCE
           </a>
         </div>
 
