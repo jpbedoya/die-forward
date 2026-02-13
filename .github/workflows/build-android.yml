@@ -1,7 +1,7 @@
 name: Build Android APK
 
 on:
-  workflow_dispatch:  # Manual trigger
+  workflow_dispatch:
   push:
     branches: [main]
     paths:
@@ -39,13 +39,26 @@ jobs:
         working-directory: mobile
         run: npx expo prebuild --platform android --clean
 
-      - name: Build APK (debug - no signing needed)
+      - name: Create assets directory
+        run: mkdir -p mobile/android/app/src/main/assets
+
+      - name: Bundle JS for release
+        working-directory: mobile
+        run: |
+          npx react-native bundle \
+            --platform android \
+            --dev false \
+            --entry-file node_modules/expo-router/entry.js \
+            --bundle-output android/app/src/main/assets/index.android.bundle \
+            --assets-dest android/app/src/main/res
+
+      - name: Build Release APK
         working-directory: mobile/android
-        run: ./gradlew assembleDebug
+        run: ./gradlew assembleRelease
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: die-forward-apk
-          path: mobile/android/app/build/outputs/apk/debug/*.apk
+          path: mobile/android/app/build/outputs/apk/release/*.apk
           retention-days: 30
