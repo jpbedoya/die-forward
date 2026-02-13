@@ -132,7 +132,7 @@ export default function LandingPage() {
       <section className="py-20 px-4 bg-[var(--bg-surface)]/50">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-[var(--amber)] text-2xl mb-12 text-center tracking-wider">
-            ◈ SCREENSHOTS
+            ◈ GLIMPSE THE DEPTHS
           </h2>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
