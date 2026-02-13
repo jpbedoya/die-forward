@@ -213,10 +213,6 @@ export default function DeathScreen() {
               <span className="text-[var(--text-muted)] text-sm">Stake</span>
               <span className="text-[var(--amber)] font-bold">◎ {deathData.stakeLost} SOL</span>
             </div>
-            <div className="flex justify-between py-1.5 border-b border-[var(--border-dim)]/50">
-              <span className="text-[var(--text-muted)] text-sm">Progress</span>
-              <span className="text-[var(--text-primary)]">{deathData.room - 1} rooms cleared</span>
-            </div>
             <div className="flex justify-between py-1.5">
               <span className="text-[var(--text-muted)] text-sm">Items</span>
               <div className="flex items-center gap-1">
@@ -298,19 +294,14 @@ export default function DeathScreen() {
           </div>
         ) : (
           <div className="w-full max-w-xs text-center">
-            {/* The epitaph reveal - dramatic */}
-            <div className="relative mb-6">
-              <div className="absolute inset-0 bg-[var(--purple)]/10 blur-xl rounded-lg" />
-              <div className="relative bg-gradient-to-b from-[var(--bg-surface)] to-[var(--purple-dim)]/20 border-2 border-[var(--purple)] p-6">
-                <div className="text-[var(--purple)] text-[10px] uppercase tracking-[0.3em] mb-3">
+            {/* The epitaph reveal - compact */}
+            <div className="relative mb-4">
+              <div className="relative bg-[var(--bg-surface)] border border-[var(--purple-dim)] p-4">
+                <div className="text-[var(--purple)] text-[10px] uppercase tracking-[0.2em] mb-2">
                   Your Epitaph
                 </div>
-                <div className="text-[var(--text-primary)] text-lg italic leading-relaxed mb-4">
+                <div className="text-[var(--text-primary)] text-base italic leading-relaxed">
                   "{finalMessage}"
-                </div>
-                <div className="w-16 h-px bg-[var(--purple-dim)] mx-auto mb-3" />
-                <div className="text-[var(--text-dim)] text-xs">
-                  — A fallen adventurer
                 </div>
               </div>
             </div>
