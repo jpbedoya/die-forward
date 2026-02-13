@@ -13,6 +13,23 @@ import GameFrame from '@/components/GameFrame';
 // Tip amount in SOL
 const TIP_AMOUNT = 0.001;
 
+// Helper to get display name for corpse - prefer nickname, fall back to shortened wallet
+function getCorpseDisplayName(corpse: Corpse | null): string {
+  if (!corpse) return 'Unknown Wanderer';
+  
+  // If they have a real nickname (not generic "Wanderer"), use it
+  if (corpse.playerName && corpse.playerName !== 'Wanderer' && corpse.playerName !== 'Unknown Wanderer') {
+    return corpse.playerName;
+  }
+  
+  // Fall back to shortened wallet address
+  if (corpse.walletAddress && corpse.walletAddress.length > 8) {
+    return `${corpse.walletAddress.slice(0, 4)}...${corpse.walletAddress.slice(-4)}`;
+  }
+  
+  return 'Unknown Wanderer';
+}
+
 // Demo mode flag
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
 
@@ -286,7 +303,7 @@ export default function GameScreen() {
       
       setTipped(true);
       playSFX('tip-chime');
-      setMessage(`Sent ${TIP_AMOUNT} SOL to @${lootedCorpse.playerName}. They'll appreciate it from beyond.`);
+      setMessage(`Sent ${TIP_AMOUNT} SOL to @${getCorpseDisplayName(lootedCorpse)}. They'll appreciate it from beyond.`);
     } catch (err) {
       console.error('Tip failed:', err);
       setMessage('Tip failed. Try again?');
@@ -662,7 +679,7 @@ export default function GameScreen() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-[var(--purple-bright)] font-bold text-base">
-                      @{lootedCorpse ? lootedCorpse.playerName : 'Unknown Wanderer'}
+                      @{getCorpseDisplayName(lootedCorpse)}
                     </span>
                     <span className="text-[var(--text-dim)] text-[10px]">•</span>
                     <span className="text-[var(--red-dim)] text-xs">FALLEN</span>
@@ -720,7 +737,7 @@ export default function GameScreen() {
                       ) : (
                         <>
                           <span>💸</span>
-                          <span>Tip {TIP_AMOUNT} SOL to @{lootedCorpse.playerName}</span>
+                          <span>Tip {TIP_AMOUNT} SOL to @{getCorpseDisplayName(lootedCorpse)}</span>
                         </>
                       )}
                     </button>
