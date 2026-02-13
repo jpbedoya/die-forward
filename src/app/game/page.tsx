@@ -42,7 +42,7 @@ function SplashScreen({ onEnter }: { onEnter: () => void }) {
     >
       <div className={`transition-opacity duration-100 ${flicker ? 'opacity-60' : 'opacity-100'}`}>
         {/* Logo - same as title screen */}
-        <pre className="text-[var(--amber)] text-[6px] sm:text-[8px] md:text-[10px] leading-none mb-8 text-center overflow-hidden max-w-full drop-shadow-[0_0_20px_rgba(245,158,11,0.3)]">
+        <pre className="text-[var(--amber)] text-[5px] sm:text-[8px] md:text-[10px] leading-none mb-8 text-center overflow-hidden max-w-full drop-shadow-[0_0_20px_rgba(245,158,11,0.3)]">
 {ASCII_LOGO}
         </pre>
         
@@ -463,7 +463,7 @@ export default function TitleScreen() {
         <div className="flex-1 flex flex-col items-center justify-center px-4 py-6">
           
           {/* Logo */}
-          <pre className="text-[var(--amber)] text-[6px] sm:text-[8px] md:text-[10px] leading-none mb-3 text-center overflow-hidden max-w-full drop-shadow-[0_0_20px_rgba(245,158,11,0.3)]">
+          <pre className="text-[var(--amber)] text-[5px] sm:text-[8px] md:text-[10px] leading-none mb-3 text-center overflow-hidden max-w-full drop-shadow-[0_0_20px_rgba(245,158,11,0.3)]">
 {ASCII_LOGO}
           </pre>
 
