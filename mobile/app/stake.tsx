@@ -1,23 +1,35 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, Pressable, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Pressable, TextInput, ActivityIndicator } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useGame } from '../lib/GameContext';
 
 const STAKE_OPTIONS = [0.01, 0.05, 0.1, 0.25];
 
 export default function StakeScreen() {
+  const game = useGame();
   const [selectedStake, setSelectedStake] = useState(0.05);
   const [customStake, setCustomStake] = useState('');
-  const [walletConnected, setWalletConnected] = useState(false);
+  const [staking, setStaking] = useState(false);
 
-  const handleConnect = () => {
-    // TODO: Integrate Solana Mobile Wallet Adapter
-    setWalletConnected(true);
+  const handleConnect = async () => {
+    await game.connect();
   };
 
-  const handleStake = () => {
-    // TODO: Create game session and navigate to play
-    router.push('/play');
+  const handleStake = async (demoMode = false) => {
+    setStaking(true);
+    try {
+      await game.startGame(selectedStake, demoMode);
+      router.push('/play');
+    } catch (err) {
+      console.error('Failed to start game:', err);
+    } finally {
+      setStaking(false);
+    }
+  };
+
+  const formatAddress = (addr: string) => {
+    return `${addr.slice(0, 4)}...${addr.slice(-4)}`;
   };
 
   return (
@@ -32,6 +44,14 @@ export default function StakeScreen() {
       </View>
 
       <View style={styles.content}>
+        {/* Error display */}
+        {game.error && (
+          <Pressable style={styles.errorBox} onPress={game.clearError}>
+            <Text style={styles.errorText}>⚠️ {game.error}</Text>
+            <Text style={styles.errorDismiss}>Tap to dismiss</Text>
+          </Pressable>
+        )}
+
         {/* Warning */}
         <View style={styles.warningBox}>
           <Text style={styles.warningText}>
@@ -109,22 +129,59 @@ export default function StakeScreen() {
 
         {/* Action buttons */}
         <View style={styles.actionContainer}>
-          {!walletConnected ? (
-            <Pressable style={styles.connectButton} onPress={handleConnect}>
-              <Text style={styles.connectButtonText}>🔗 CONNECT WALLET</Text>
-            </Pressable>
+          {!game.walletConnected ? (
+            <>
+              <Pressable 
+                style={styles.connectButton} 
+                onPress={handleConnect}
+                disabled={game.loading}
+              >
+                {game.loading ? (
+                  <ActivityIndicator color="#ffffff" />
+                ) : (
+                  <Text style={styles.connectButtonText}>🔗 CONNECT WALLET</Text>
+                )}
+              </Pressable>
+              
+              <Pressable 
+                style={styles.demoButton}
+                onPress={() => handleStake(true)}
+                disabled={staking}
+              >
+                <Text style={styles.demoButtonText}>🎮 FREE PLAY (No Stake)</Text>
+              </Pressable>
+            </>
           ) : (
-            <Pressable style={styles.stakeButton} onPress={handleStake}>
-              <Text style={styles.stakeButtonText}>⚔️ STAKE & DESCEND</Text>
-            </Pressable>
+            <>
+              <Pressable 
+                style={styles.stakeButton} 
+                onPress={() => handleStake(false)}
+                disabled={staking || (game.balance !== null && game.balance < selectedStake)}
+              >
+                {staking ? (
+                  <ActivityIndicator color="#0d0d0d" />
+                ) : (
+                  <Text style={styles.stakeButtonText}>⚔️ STAKE & DESCEND</Text>
+                )}
+              </Pressable>
+              
+              {game.balance !== null && game.balance < selectedStake && (
+                <Text style={styles.insufficientText}>
+                  Insufficient balance ({game.balance.toFixed(3)} SOL)
+                </Text>
+              )}
+            </>
           )}
         </View>
 
         {/* Wallet status */}
-        {walletConnected && (
+        {game.walletConnected && game.walletAddress && (
           <View style={styles.walletInfo}>
-            <Text style={styles.walletConnected}>✓ Wallet Connected</Text>
-            <Text style={styles.walletAddress}>8xH4...k9Qz</Text>
+            <Text style={styles.walletConnected}>✓ Connected</Text>
+            <Text style={styles.walletAddress}>{formatAddress(game.walletAddress)}</Text>
+            {game.balance !== null && (
+              <Text style={styles.walletBalance}>◎ {game.balance.toFixed(3)}</Text>
+            )}
           </View>
         )}
       </View>
@@ -161,6 +218,24 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: 20,
+  },
+  errorBox: {
+    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+    borderWidth: 1,
+    borderColor: '#ef4444',
+    padding: 12,
+    marginBottom: 16,
+  },
+  errorText: {
+    color: '#fca5a5',
+    fontSize: 13,
+    fontFamily: 'monospace',
+  },
+  errorDismiss: {
+    color: '#78716c',
+    fontSize: 11,
+    fontFamily: 'monospace',
+    marginTop: 4,
   },
   warningBox: {
     backgroundColor: 'rgba(239, 68, 68, 0.1)',
@@ -287,6 +362,7 @@ const styles = StyleSheet.create({
   },
   actionContainer: {
     marginBottom: 16,
+    gap: 12,
   },
   connectButton: {
     backgroundColor: '#7c3aed',
@@ -300,6 +376,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 1,
   },
+  demoButton: {
+    borderWidth: 1,
+    borderColor: '#44403c',
+    paddingVertical: 16,
+    alignItems: 'center',
+  },
+  demoButtonText: {
+    color: '#a8a29e',
+    fontSize: 14,
+    fontFamily: 'monospace',
+  },
   stakeButton: {
     backgroundColor: '#f59e0b',
     paddingVertical: 18,
@@ -311,6 +398,12 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
     fontWeight: 'bold',
     letterSpacing: 1,
+  },
+  insufficientText: {
+    color: '#ef4444',
+    fontSize: 12,
+    fontFamily: 'monospace',
+    textAlign: 'center',
   },
   walletInfo: {
     flexDirection: 'row',
@@ -327,5 +420,11 @@ const styles = StyleSheet.create({
     color: '#78716c',
     fontSize: 12,
     fontFamily: 'monospace',
+  },
+  walletBalance: {
+    color: '#fbbf24',
+    fontSize: 12,
+    fontFamily: 'monospace',
+    fontWeight: 'bold',
   },
 });

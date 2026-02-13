@@ -1,69 +1,55 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useGame } from '../lib/GameContext';
 
-type RoomType = 'explore' | 'combat' | 'cache' | 'exit';
+type RoomType = 'explore' | 'combat' | 'corpse' | 'cache' | 'exit';
 
-interface Room {
-  type: RoomType;
-  narrative: string;
-  options: { id: string; text: string; action: string }[];
-  enemy?: string;
+interface RoomOption {
+  id: string;
+  text: string;
+  action: string;
 }
 
-// Simple demo dungeon
-const DEMO_DUNGEON: Room[] = [
-  {
-    type: 'explore',
-    narrative: 'You descend into THE UPPER CRYPT.\n\nTorch light flickers against ancient stone. The air tastes of dust and forgotten prayers. Something scratches in the darkness ahead.',
-    options: [
-      { id: '1', text: 'Press forward', action: 'next' },
-      { id: '2', text: 'Proceed carefully', action: 'next' },
-    ],
-  },
-  {
-    type: 'combat',
-    narrative: 'A PALE CRAWLER emerges from the shadows.\n\nBone-white limbs scrape against stone. Empty eye sockets lock onto you. It was human once. Now it hungers.',
-    options: [
-      { id: '1', text: 'Ready your weapon', action: 'combat' },
-      { id: '2', text: 'Try to flee', action: 'flee' },
-    ],
-    enemy: 'Pale Crawler',
-  },
-  {
-    type: 'cache',
-    narrative: 'A moment of respite.\n\nSupplies rest on a worn stone shelf - bandages, herbs, a flask of something that might be medicine. The dead no longer need them.',
-    options: [
-      { id: '1', text: 'Take the supplies (+30 HP)', action: 'heal' },
-      { id: '2', text: 'Continue deeper', action: 'next' },
-    ],
-  },
-  {
-    type: 'explore',
-    narrative: 'The passage narrows.\n\nWater seeps through cracks above. Your torch sputters. The walls press closer, carved with warnings in a language older than memory.',
-    options: [
-      { id: '1', text: 'Push through', action: 'next' },
-      { id: '2', text: 'Search the walls', action: 'next' },
-    ],
-  },
-  {
-    type: 'combat',
-    narrative: 'THE DROWNED ONE rises from a pool of black water.\n\nWaterlogged robes cling to bloated flesh. It reaches for you with fingers like swollen roots. The smell is overwhelming.',
-    options: [
-      { id: '1', text: 'Stand and fight', action: 'combat' },
-      { id: '2', text: 'Retreat', action: 'flee' },
-    ],
-    enemy: 'The Drowned One',
-  },
-  {
-    type: 'exit',
-    narrative: 'Light breaks through the darkness.\n\nAfter what feels like an eternity, you see it - the exit. Fresh air. The sun. You made it. You actually made it.',
-    options: [
-      { id: '1', text: 'Ascend to victory', action: 'victory' },
-    ],
-  },
-];
+// Generate options based on room type
+function getOptionsForRoom(type: RoomType): RoomOption[] {
+  switch (type) {
+    case 'explore':
+      return [
+        { id: '1', text: 'Press forward', action: 'next' },
+        { id: '2', text: 'Proceed carefully', action: 'next' },
+      ];
+    case 'combat':
+      return [
+        { id: '1', text: 'Ready your weapon', action: 'combat' },
+        { id: '2', text: 'Try to flee', action: 'flee' },
+      ];
+    case 'corpse':
+      return [
+        { id: '1', text: 'Search the corpse', action: 'loot' },
+        { id: '2', text: 'Pay respects and move on', action: 'next' },
+      ];
+    case 'cache':
+      return [
+        { id: '1', text: 'Take the supplies (+30 HP)', action: 'heal' },
+        { id: '2', text: 'Continue deeper', action: 'next' },
+      ];
+    case 'exit':
+      return [
+        { id: '1', text: 'Ascend to victory', action: 'victory' },
+      ];
+    default:
+      return [{ id: '1', text: 'Continue', action: 'next' }];
+  }
+}
+
+// Get depth name from room number
+function getDepthName(roomNum: number): { name: string; tier: number } {
+  if (roomNum <= 4) return { name: 'UPPER CRYPT', tier: 1 };
+  if (roomNum <= 8) return { name: 'FLOODED HALLS', tier: 2 };
+  return { name: 'THE ABYSS', tier: 3 };
+}
 
 function HealthBar({ current, max }: { current: number; max: number }) {
   const filled = Math.round((current / max) * 8);
@@ -76,84 +62,132 @@ function HealthBar({ current, max }: { current: number; max: number }) {
 }
 
 export default function PlayScreen() {
-  const [currentRoom, setCurrentRoom] = useState(0);
-  const [health, setHealth] = useState(100);
-  const [stamina, setStamina] = useState(3);
+  const game = useGame();
   const [message, setMessage] = useState<string | null>(null);
-  const [inventory, setInventory] = useState(['🔦 Torch', '🌿 Herbs']);
+  const [processing, setProcessing] = useState(false);
+  const [killedBy, setKilledBy] = useState<string | undefined>();
 
-  const room = DEMO_DUNGEON[currentRoom];
-  const progress = `${currentRoom + 1}/${DEMO_DUNGEON.length}`;
+  // Get current room from dungeon
+  const room = game.dungeon[game.currentRoom] || null;
+  const depth = getDepthName(game.currentRoom + 1);
+  const progress = `${game.currentRoom + 1}/${game.dungeon.length}`;
+  const options = room ? getOptionsForRoom(room.type as RoomType) : [];
 
-  const handleAction = (action: string) => {
+  // If no session, redirect to stake
+  useEffect(() => {
+    if (!game.sessionToken && game.dungeon.length === 0) {
+      router.replace('/stake');
+    }
+  }, [game.sessionToken, game.dungeon.length]);
+
+  const handleAction = async (action: string) => {
     setMessage(null);
+    setProcessing(true);
 
-    switch (action) {
-      case 'next':
-        if (currentRoom < DEMO_DUNGEON.length - 1) {
-          setCurrentRoom(currentRoom + 1);
-          setStamina(Math.min(3, stamina + 1));
-        }
-        break;
+    try {
+      switch (action) {
+        case 'next':
+          const advanced = await game.advance();
+          if (advanced) {
+            game.setStamina(Math.min(3, game.stamina + 1));
+          }
+          break;
 
-      case 'combat':
-        // Simulate combat - 70% chance to win with damage
-        const damage = Math.floor(Math.random() * 25) + 10;
-        const newHealth = health - damage;
-        
-        if (newHealth <= 0) {
-          setHealth(0);
-          router.replace('/death');
-          return;
-        }
-        
-        setHealth(newHealth);
-        setMessage(`Victory! But you took ${damage} damage.`);
-        
-        if (currentRoom < DEMO_DUNGEON.length - 1) {
-          setTimeout(() => {
-            setCurrentRoom(currentRoom + 1);
+        case 'combat': {
+          // Simulate combat - 70% chance to win with damage
+          const damage = Math.floor(Math.random() * 25) + 10;
+          const newHealth = game.health - damage;
+          
+          if (newHealth <= 0) {
+            game.setHealth(0);
+            setKilledBy(room?.enemy);
+            router.replace('/death');
+            return;
+          }
+          
+          game.setHealth(newHealth);
+          setMessage(`Victory! But you took ${damage} damage.`);
+          
+          // Advance after short delay
+          setTimeout(async () => {
+            await game.advance();
             setMessage(null);
           }, 1500);
+          break;
         }
-        break;
 
-      case 'flee':
-        const fleeDamage = Math.floor(Math.random() * 15) + 5;
-        const fleeHealth = health - fleeDamage;
-        
-        if (fleeHealth <= 0) {
-          setHealth(0);
-          router.replace('/death');
-          return;
-        }
-        
-        setHealth(fleeHealth);
-        setMessage(`Escaped! But took ${fleeDamage} damage while fleeing.`);
-        
-        if (currentRoom < DEMO_DUNGEON.length - 1) {
-          setTimeout(() => {
-            setCurrentRoom(currentRoom + 1);
+        case 'flee': {
+          const fleeDamage = Math.floor(Math.random() * 15) + 5;
+          const newHealth = game.health - fleeDamage;
+          
+          if (newHealth <= 0) {
+            game.setHealth(0);
+            setKilledBy(room?.enemy);
+            router.replace('/death');
+            return;
+          }
+          
+          game.setHealth(newHealth);
+          setMessage(`Escaped! But took ${fleeDamage} damage while fleeing.`);
+          
+          setTimeout(async () => {
+            await game.advance();
             setMessage(null);
           }, 1500);
+          break;
         }
-        break;
 
-      case 'heal':
-        setHealth(Math.min(100, health + 30));
-        setMessage('Bandaged wounds. +30 HP');
-        
-        setTimeout(() => {
-          setCurrentRoom(currentRoom + 1);
-          setMessage(null);
-        }, 1500);
-        break;
+        case 'loot': {
+          // Add random loot
+          const lootItems = [
+            { name: 'Herbs', emoji: '🌿' },
+            { name: 'Bone Charm', emoji: '💀' },
+            { name: 'Rusty Blade', emoji: '🗡️' },
+          ];
+          const loot = lootItems[Math.floor(Math.random() * lootItems.length)];
+          
+          if (!game.inventory.some(i => i.name === loot.name)) {
+            game.addToInventory({ id: Date.now().toString(), ...loot });
+            setMessage(`Found: ${loot.emoji} ${loot.name}`);
+          } else {
+            setMessage('Nothing new here.');
+          }
+          
+          setTimeout(async () => {
+            await game.advance();
+            setMessage(null);
+          }, 1500);
+          break;
+        }
 
-      case 'victory':
-        router.replace('/victory');
-        break;
+        case 'heal':
+          game.setHealth(Math.min(100, game.health + 30));
+          setMessage('Found medical supplies. +30 HP');
+          
+          setTimeout(async () => {
+            await game.advance();
+            setMessage(null);
+          }, 1500);
+          break;
+
+        case 'victory':
+          router.replace('/victory');
+          break;
+      }
+    } finally {
+      setProcessing(false);
     }
   };
+
+  // Loading state
+  if (!room) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <ActivityIndicator size="large" color="#f59e0b" />
+        <Text style={styles.loadingText}>Loading dungeon...</Text>
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -163,7 +197,18 @@ export default function PlayScreen() {
           <Pressable onPress={() => {/* TODO: Menu */}}>
             <Text style={styles.menuButton}>[≡]</Text>
           </Pressable>
-          <Text style={styles.depthName}>◈ UPPER CRYPT</Text>
+          <Text style={[
+            styles.depthName,
+            depth.tier === 2 && styles.depthTier2,
+            depth.tier === 3 && styles.depthTier3,
+          ]}>
+            ◈ {depth.name}
+          </Text>
+          {game.stakeAmount === 0 && (
+            <View style={styles.freeBadge}>
+              <Text style={styles.freeBadgeText}>FREE</Text>
+            </View>
+          )}
         </View>
         <Text style={styles.progress}>{progress}</Text>
       </View>
@@ -185,11 +230,12 @@ export default function PlayScreen() {
 
         {/* Options */}
         <Text style={styles.optionsLabel}>▼ WHAT DO YOU DO?</Text>
-        {room.options.map((option, i) => (
+        {options.map((option, i) => (
           <Pressable
             key={option.id}
-            style={styles.optionButton}
+            style={[styles.optionButton, processing && styles.optionDisabled]}
             onPress={() => handleAction(option.action)}
+            disabled={processing}
           >
             <Text style={styles.optionNumber}>{i + 1}.</Text>
             <Text style={styles.optionText}>{option.text}</Text>
@@ -203,31 +249,36 @@ export default function PlayScreen() {
         <View style={styles.statsRow}>
           <View style={styles.stat}>
             <Text style={styles.statIcon}>♥</Text>
-            <HealthBar current={health} max={100} />
-            <Text style={[styles.statValue, health < 30 && styles.statValueDanger]}>
-              {health}
+            <HealthBar current={game.health} max={100} />
+            <Text style={[styles.statValue, game.health < 30 && styles.statValueDanger]}>
+              {game.health}
             </Text>
           </View>
           <View style={styles.stat}>
             <Text style={styles.statIcon}>⚡</Text>
             <Text style={styles.staminaText}>
-              {'◆'.repeat(stamina)}{'◇'.repeat(3 - stamina)}
+              {'◆'.repeat(game.stamina)}{'◇'.repeat(3 - game.stamina)}
             </Text>
           </View>
           <View style={styles.stat}>
             <Text style={styles.solIcon}>◎</Text>
-            <Text style={styles.solValue}>0.05 SOL</Text>
+            <Text style={styles.solValue}>
+              {game.stakeAmount > 0 ? `${game.stakeAmount} SOL` : 'FREE'}
+            </Text>
           </View>
         </View>
 
         {/* Inventory row */}
         <ScrollView horizontal style={styles.inventoryRow}>
           <Text style={styles.inventoryIcon}>🎒</Text>
-          {inventory.map((item, i) => (
-            <View key={i} style={styles.inventoryItem}>
-              <Text style={styles.inventoryText}>{item}</Text>
+          {game.inventory.map((item) => (
+            <View key={item.id} style={styles.inventoryItem}>
+              <Text style={styles.inventoryText}>{item.emoji} {item.name}</Text>
             </View>
           ))}
+          {game.inventory.length === 0 && (
+            <Text style={styles.inventoryEmpty}>Empty</Text>
+          )}
         </ScrollView>
       </View>
     </SafeAreaView>
@@ -238,6 +289,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0d0d0d',
+  },
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    color: '#f59e0b',
+    fontSize: 14,
+    fontFamily: 'monospace',
+    marginTop: 16,
   },
   header: {
     flexDirection: 'row',
@@ -261,6 +322,25 @@ const styles = StyleSheet.create({
   depthName: {
     color: '#f59e0b',
     fontSize: 12,
+    fontFamily: 'monospace',
+    letterSpacing: 1,
+  },
+  depthTier2: {
+    color: '#fbbf24',
+  },
+  depthTier3: {
+    color: '#a855f7',
+  },
+  freeBadge: {
+    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+    borderWidth: 1,
+    borderColor: 'rgba(245, 158, 11, 0.5)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  freeBadgeText: {
+    color: '#f59e0b',
+    fontSize: 10,
     fontFamily: 'monospace',
     letterSpacing: 1,
   },
@@ -316,6 +396,9 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 12,
     marginBottom: 8,
+  },
+  optionDisabled: {
+    opacity: 0.5,
   },
   optionNumber: {
     color: '#78716c',
@@ -402,5 +485,11 @@ const styles = StyleSheet.create({
     color: '#a8a29e',
     fontSize: 12,
     fontFamily: 'monospace',
+  },
+  inventoryEmpty: {
+    color: '#57534e',
+    fontSize: 12,
+    fontFamily: 'monospace',
+    fontStyle: 'italic',
   },
 });

@@ -1,15 +1,42 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, Pressable, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Pressable, TextInput, ActivityIndicator } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useGame } from '../lib/GameContext';
+
+// Get depth name from room number
+function getDepthName(roomNum: number): string {
+  if (roomNum <= 4) return 'Upper Crypt';
+  if (roomNum <= 8) return 'Flooded Halls';
+  return 'The Abyss';
+}
 
 export default function DeathScreen() {
+  const game = useGame();
   const [finalWords, setFinalWords] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = () => {
-    // TODO: Submit to API
-    setSubmitted(true);
+  const depthName = getDepthName(game.currentRoom + 1);
+  const roomDisplay = `${depthName} (Room ${game.currentRoom + 1})`;
+
+  const handleSubmit = async () => {
+    if (!finalWords.trim()) return;
+    
+    setSubmitting(true);
+    try {
+      await game.recordDeath(finalWords);
+      setSubmitted(true);
+    } catch (err) {
+      console.error('Failed to submit death:', err);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handlePlayAgain = () => {
+    // Reset game state will happen when starting new game
+    router.replace('/');
   };
 
   return (
@@ -26,15 +53,19 @@ export default function DeathScreen() {
         <View style={styles.statsBox}>
           <View style={styles.statRow}>
             <Text style={styles.statLabel}>Depth Reached</Text>
-            <Text style={styles.statValue}>Upper Crypt (Room 2)</Text>
+            <Text style={styles.statValue}>{roomDisplay}</Text>
           </View>
+          {game.stakeAmount > 0 && (
+            <View style={styles.statRow}>
+              <Text style={styles.statLabel}>SOL Lost</Text>
+              <Text style={styles.statValueRed}>◎ {game.stakeAmount}</Text>
+            </View>
+          )}
           <View style={styles.statRow}>
-            <Text style={styles.statLabel}>SOL Lost</Text>
-            <Text style={styles.statValueRed}>◎ 0.05</Text>
-          </View>
-          <View style={styles.statRow}>
-            <Text style={styles.statLabel}>Killed By</Text>
-            <Text style={styles.statValue}>Pale Crawler</Text>
+            <Text style={styles.statLabel}>Mode</Text>
+            <Text style={styles.statValue}>
+              {game.stakeAmount > 0 ? 'Staked Run' : 'Free Play'}
+            </Text>
           </View>
         </View>
 
@@ -53,15 +84,20 @@ export default function DeathScreen() {
               placeholderTextColor="#57534e"
               multiline
               maxLength={200}
+              editable={!submitting}
             />
             <Text style={styles.charCount}>{finalWords.length}/200</Text>
             
             <Pressable 
-              style={[styles.submitButton, !finalWords && styles.submitButtonDisabled]}
+              style={[styles.submitButton, (!finalWords.trim() || submitting) && styles.submitButtonDisabled]}
               onPress={handleSubmit}
-              disabled={!finalWords}
+              disabled={!finalWords.trim() || submitting}
             >
-              <Text style={styles.submitButtonText}>⚰️ ETCH INTO STONE</Text>
+              {submitting ? (
+                <ActivityIndicator color="#ffffff" />
+              ) : (
+                <Text style={styles.submitButtonText}>⚰️ ETCH INTO STONE</Text>
+              )}
             </Pressable>
           </View>
         ) : (
@@ -79,7 +115,7 @@ export default function DeathScreen() {
         <View style={styles.actions}>
           <Pressable 
             style={styles.primaryButton}
-            onPress={() => router.replace('/')}
+            onPress={handlePlayAgain}
           >
             <Text style={styles.primaryButtonText}>↻ TRY AGAIN</Text>
           </Pressable>
