@@ -3,6 +3,95 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getGameState, saveGameState } from '@/lib/gameState';
+
+// Menu overlay component
+function Menu({ 
+  isOpen, 
+  onClose,
+  walletAddress,
+  audioEnabled,
+  onToggleAudio,
+}: { 
+  isOpen: boolean;
+  onClose: () => void;
+  walletAddress: string;
+  audioEnabled: boolean;
+  onToggleAudio: () => void;
+}) {
+  const [confirmingAbandon, setConfirmingAbandon] = useState(false);
+
+  if (!isOpen) return null;
+  
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div 
+        className="absolute inset-0 bg-black/80"
+        onClick={() => {
+          setConfirmingAbandon(false);
+          onClose();
+        }}
+      />
+      <div className="relative bg-[var(--bg-surface)] border border-[var(--border-default)] w-[90%] max-w-xs p-4">
+        <div className="text-[var(--amber)] text-xs mb-4 flex items-center justify-between">
+          <span className="tracking-wider">◈ DIE FORWARD</span>
+          <button 
+            onClick={() => {
+              setConfirmingAbandon(false);
+              onClose();
+            }} 
+            className="text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
+          >
+            [X]
+          </button>
+        </div>
+        <div className="mb-4 text-xs">
+          <div className="text-[var(--text-muted)] mb-1">CONNECTED</div>
+          <div className="text-[var(--text-secondary)] font-mono truncate">
+            {walletAddress}
+          </div>
+        </div>
+        <button 
+          onClick={onToggleAudio}
+          className="w-full text-left px-3 py-2 text-sm bg-[var(--bg-base)] border border-[var(--border-dim)] mb-2 flex items-center justify-between"
+        >
+          <span className="text-[var(--text-secondary)]">Audio</span>
+          <span className={audioEnabled ? 'text-[var(--green)]' : 'text-[var(--red)]'}>
+            {audioEnabled ? '♪ ON' : '♪ OFF'}
+          </span>
+        </button>
+        
+        {!confirmingAbandon ? (
+          <button 
+            onClick={() => setConfirmingAbandon(true)}
+            className="w-full text-left px-3 py-2 text-sm bg-[var(--bg-base)] border border-[var(--red-dim)] text-[var(--red-bright)] hover:bg-[var(--red-dim)]/20"
+          >
+            ☠ Abandon Run
+          </button>
+        ) : (
+          <div className="border border-[var(--red-dim)] bg-[var(--red-dim)]/10 p-3">
+            <p className="text-[var(--text-secondary)] text-xs mb-3">
+              Abandon run? Your stake will be lost.
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setConfirmingAbandon(false)}
+                className="flex-1 px-3 py-2 text-xs bg-[var(--bg-base)] border border-[var(--border-dim)] text-[var(--text-muted)]"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => window.location.href = '/'}
+                className="flex-1 px-3 py-2 text-xs bg-[var(--red-dim)]/30 border border-[var(--red)] text-[var(--red-bright)]"
+              >
+                Abandon
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 import { 
   getStrikeNarration, 
   getDodgeNarration, 
@@ -252,9 +341,11 @@ export default function CombatScreen() {
   const [lastResolution, setLastResolution] = useState<Resolution | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [isShaking, setIsShaking] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [walletAddress, setWalletAddress] = useState<string>('');
   
   // Audio
-  const { playAmbient, playSFX } = useAudio();
+  const { enabled: audioEnabled, toggle: toggleAudio, playAmbient, playSFX } = useAudio();
   
   // Play combat ambient on mount
   useEffect(() => {
@@ -275,6 +366,7 @@ export default function CombatScreen() {
     setPlayerStamina(state.stamina);
     setPlayerInventory(state.inventory);
     setStakeAmount(state.stakeAmount);
+    setWalletAddress(state.walletAddress || '');
     
     // Set room number and depth info
     const currentRoomNum = state.currentRoom + 1; // 0-indexed to 1-indexed
@@ -494,10 +586,24 @@ export default function CombatScreen() {
   return (
     <div className={`min-h-screen bg-[var(--bg-base)] flex flex-col font-mono ${isShaking ? 'shake damage-flash' : ''}`}>
       
+      <Menu 
+        isOpen={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        walletAddress={walletAddress || 'Not connected'}
+        audioEnabled={audioEnabled}
+        onToggleAudio={toggleAudio}
+      />
+
       {/* Enemy Header */}
       <header className="bg-[var(--bg-base)] border-b border-[var(--red-dim)] px-3 py-3 sticky top-0 z-10">
         {/* Depth + Room indicator */}
         <div className="flex items-center gap-2 mb-2 text-[10px]">
+          <button 
+            onClick={() => setMenuOpen(true)}
+            className="text-[var(--text-muted)] hover:text-[var(--amber)] transition-colors mr-1"
+          >
+            [≡]
+          </button>
           <span className={`px-2 py-0.5 border uppercase tracking-wider ${
             enemyTier === 3 ? 'bg-[var(--purple-dim)]/20 border-[var(--purple-dim)] text-[var(--purple)]' :
             enemyTier === 2 ? 'bg-[var(--amber-dim)]/20 border-[var(--amber-dim)] text-[var(--amber)]' :
