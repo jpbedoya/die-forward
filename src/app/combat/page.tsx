@@ -526,6 +526,24 @@ export default function CombatScreen() {
       return;
     }
     
+    // MUTUAL KILL - both die at the same time
+    // Player death takes priority (thematic: "you took them with you")
+    if (playerHealth <= 0 && enemyHealth <= 0) {
+      // Save last enemy for death screen
+      const state = getGameState();
+      const currentEnemy = state.dungeon?.[state.currentRoom]?.enemy || enemyName;
+      saveGameState({ lastEnemy: currentEnemy });
+      
+      playSFX('enemy-death');
+      setTimeout(() => {
+        playAmbient('ambient-death');
+      }, 500);
+      triggerHaptic('death');
+      setPhase('death');
+      setNarrative("You strike the killing blow... but not before taking a fatal wound.\n\nThe creature collapses. So do you.\n\nYou fall together into the darkness.");
+      return;
+    }
+    
     if (enemyHealth <= 0) {
       playSFX('enemy-death');
       triggerHaptic('light');
