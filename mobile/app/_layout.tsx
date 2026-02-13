@@ -1,4 +1,9 @@
+// Polyfills must be imported FIRST for Solana web3.js compatibility
 import 'react-native-get-random-values';
+import { Buffer } from 'buffer';
+global.Buffer = Buffer;
+import 'react-native-url-polyfill/auto';
+
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
