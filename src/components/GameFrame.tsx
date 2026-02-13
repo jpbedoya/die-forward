@@ -2,17 +2,54 @@
 
 import { ReactNode } from 'react';
 
-const VERTICAL_LOGO = `D
-I
-E
+// ASCII side decoration - dungeon wall style
+const SIDE_ART_LEFT = `
+    ╔══╗
+    ║██║
+    ║██║
+    ╠══╣
+    ║ D║
+    ║ I║
+    ║ E║
+    ╠══╣
+    ║▓▓║
+    ╠══╣
+    ║ F║
+    ║ O║
+    ║ R║
+    ║ W║
+    ║ A║
+    ║ R║
+    ║ D║
+    ╠══╣
+    ║██║
+    ║██║
+    ╚══╝
+`;
 
-F
-O
-R
-W
-A
-R
-D`;
+const SIDE_ART_RIGHT = `
+╔══╗
+║██║
+║██║
+╠══╣
+║D ║
+║I ║
+║E ║
+╠══╣
+║▓▓║
+╠══╣
+║F ║
+║O ║
+║R ║
+║W ║
+║A ║
+║R ║
+║D ║
+╠══╣
+║██║
+║██║
+╚══╝
+`;
 
 interface GameFrameProps {
   children: ReactNode;
@@ -25,9 +62,9 @@ export default function GameFrame({ children }: GameFrameProps) {
       <div className="hidden lg:flex flex-col items-center justify-center h-screen w-48 relative">
         {/* Glow effect */}
         <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[var(--amber)]/10 to-transparent" />
-        {/* Vertical logo */}
-        <pre className="text-[var(--amber)]/30 text-2xl font-bold tracking-[0.5em] leading-relaxed select-none">
-{VERTICAL_LOGO}
+        {/* ASCII side art */}
+        <pre className="text-[var(--amber)]/40 text-sm leading-tight select-none font-mono">
+{SIDE_ART_LEFT}
         </pre>
       </div>
 
@@ -46,9 +83,9 @@ export default function GameFrame({ children }: GameFrameProps) {
       <div className="hidden lg:flex flex-col items-center justify-center h-screen w-48 relative">
         {/* Glow effect */}
         <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[var(--amber)]/10 to-transparent" />
-        {/* Vertical logo */}
-        <pre className="text-[var(--amber)]/30 text-2xl font-bold tracking-[0.5em] leading-relaxed select-none">
-{VERTICAL_LOGO}
+        {/* ASCII side art */}
+        <pre className="text-[var(--amber)]/40 text-sm leading-tight select-none font-mono">
+{SIDE_ART_RIGHT}
         </pre>
       </div>
     </div>
