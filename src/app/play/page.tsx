@@ -22,12 +22,14 @@ function Menu({
   walletAddress,
   audioEnabled,
   onToggleAudio,
+  stakeAmount,
 }: { 
   isOpen: boolean;
   onClose: () => void;
   walletAddress: string;
   audioEnabled: boolean;
   onToggleAudio: () => void;
+  stakeAmount: number;
 }) {
   const [confirmingAbandon, setConfirmingAbandon] = useState(false);
 
@@ -81,7 +83,7 @@ function Menu({
         ) : (
           <div className="border border-[var(--red-dim)] bg-[var(--red-dim)]/10 p-3">
             <p className="text-[var(--text-secondary)] text-xs mb-3">
-              Abandon run? Your stake will be lost.
+              Abandon run? Your {stakeAmount} SOL stake will be lost.
             </p>
             <div className="flex gap-2">
               <button
@@ -543,6 +545,7 @@ export default function GameScreen() {
         walletAddress={mockWallet}
         audioEnabled={audioEnabled}
         onToggleAudio={toggleAudio}
+        stakeAmount={stakeAmount}
       />
 
       {/* Header */}

@@ -82,23 +82,23 @@
     },
     "flee": {
       "success": [
-        "You turn and run. Survival over pride. The darkness swallows you before it can follow.",
-        "Flight. Not cowardice — tactics. You disengage, sprinting for the passage. Behind you, frustrated sounds.",
-        "You break away, legs pumping, lungs burning. It doesn't chase. It doesn't need to. There's always another way.",
-        "Running isn't losing. Running is choosing to fight later, somewhere else, on your terms. You run.",
-        "You flee. The word tastes bitter, but you're alive to taste it. That's what matters."
+        "EVADED — You turn and run. Survival over pride. The darkness swallows you before it can follow.",
+        "EVADED — Flight. Not cowardice — tactics. You disengage, sprinting for the passage. Behind you, frustrated sounds.",
+        "EVADED — You break away, legs pumping, lungs burning. It doesn't chase. It doesn't need to. There's always another way.",
+        "EVADED — Running isn't losing. Running is choosing to fight later, somewhere else, on your terms. You run.",
+        "EVADED — You flee. The word tastes bitter, but you're alive to taste it. That's what matters."
       ],
       "hurt": [
-        "You run. A claw catches your back — parting gift. Blood flows, but so do your legs. Distance grows.",
-        "Escape isn't free. It takes a chunk of you as you go. The price of flight. Still cheaper than the price of failure.",
-        "You flee, but not fast enough. Not clean enough. It marks you before you're gone. A reminder.",
-        "Running is painful. Every step costs something. But staying costs more. You pay the price and go.",
-        "It gets a piece of you. A deep gash, a trophy. But you're alive. Alive and moving. That's what matters."
+        "PAINFULLY EVADED — You run. A claw catches your back — parting gift. Blood flows, but so do your legs. Distance grows.",
+        "PAINFULLY EVADED — Escape isn't free. It takes a chunk of you as you go. The price of flight. Still cheaper than failure.",
+        "PAINFULLY EVADED — You flee, but not fast enough. Not clean enough. It marks you before you're gone. A reminder.",
+        "PAINFULLY EVADED — Running is painful. Every step costs something. But staying costs more. You pay the price and go.",
+        "PAINFULLY EVADED — It gets a piece of you. A deep gash, a trophy. But you're alive. Alive and moving. That's what matters."
       ],
       "fail": [
-        "You turn to run and hit the wall. Wrong direction. No direction. It's on you before you can correct.",
-        "Your legs give out. Too much. Too fast. You collapse before you can flee. The creature looms.",
-        "There's nowhere to run. You realize this as you try. Dead end. Dead you."
+        "EVADE FAILED — You turn to run and hit the wall. Wrong direction. No direction. It's on you before you can correct.",
+        "EVADE FAILED — Your legs give out. Too much. Too fast. You collapse before you can flee. The creature looms.",
+        "EVADE FAILED — There's nowhere to run. You realize this as you try. Dead end. Dead you."
       ]
     }
   },
