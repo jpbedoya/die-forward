@@ -42,9 +42,11 @@ function SplashScreen({ onEnter }: { onEnter: () => void }) {
     >
       <div className={`transition-opacity duration-100 ${flicker ? 'opacity-60' : 'opacity-100'}`}>
         {/* Logo - same as title screen */}
-        <pre className="text-[var(--amber)] text-[5px] sm:text-[8px] md:text-[10px] leading-none mb-8 text-center overflow-hidden max-w-full drop-shadow-[0_0_20px_rgba(245,158,11,0.3)]">
+        <div className="w-full max-w-md overflow-hidden mb-8">
+          <pre className="text-[var(--amber)] text-[8px] leading-none text-center whitespace-pre drop-shadow-[0_0_20px_rgba(245,158,11,0.3)] transform scale-[0.48] sm:scale-[0.65] md:scale-[0.85] origin-top">
 {ASCII_LOGO}
-        </pre>
+          </pre>
+        </div>
         
         {/* Enter prompt */}
         <div className="text-center">
@@ -446,26 +448,29 @@ export default function TitleScreen() {
         <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[var(--purple)]/5 rounded-full blur-[80px]" />
       </div>
 
-      {/* Audio toggle */}
-      <button
-        onClick={toggleAudio}
-        className="absolute top-4 right-4 px-3 py-2 flex items-center gap-2 bg-[var(--bg-surface)] border border-[var(--border-default)] hover:border-[var(--amber)] text-[var(--text-secondary)] hover:text-[var(--amber)] transition-all z-20 rounded"
-        title={audioEnabled ? 'Mute audio' : 'Unmute audio'}
-      >
-        {audioEnabled ? '🔊' : '🔇'}
-        <span className="text-xs uppercase tracking-wider">{audioEnabled ? 'Sound On' : 'Sound Off'}</span>
-      </button>
-      
       {/* Main content */}
       <main className="flex-1 flex flex-col relative z-10">
         
         {/* Hero section */}
         <div className="flex-1 flex flex-col items-center justify-center px-4 py-6">
           
-          {/* Logo */}
-          <pre className="text-[var(--amber)] text-[5px] sm:text-[8px] md:text-[10px] leading-none mb-3 text-center overflow-hidden max-w-full drop-shadow-[0_0_20px_rgba(245,158,11,0.3)]">
+          {/* Audio toggle - top right of hero, below where logo ends */}
+          <div className="w-full flex justify-end mb-2">
+            <button
+              onClick={toggleAudio}
+              className="px-2 py-1 flex items-center gap-1 bg-[var(--bg-surface)] border border-[var(--border-default)] hover:border-[var(--amber)] text-[var(--text-secondary)] hover:text-[var(--amber)] transition-all rounded text-xs"
+              title={audioEnabled ? 'Mute audio' : 'Unmute audio'}
+            >
+              {audioEnabled ? '🔊' : '🔇'}
+            </button>
+          </div>
+
+          {/* Logo - scale to fit container */}
+          <div className="w-full overflow-hidden mb-3">
+            <pre className="text-[var(--amber)] text-[8px] leading-none text-center whitespace-pre drop-shadow-[0_0_20px_rgba(245,158,11,0.3)] transform scale-[0.48] sm:scale-[0.65] md:scale-[0.85] origin-top">
 {ASCII_LOGO}
-          </pre>
+            </pre>
+          </div>
 
           {/* Tagline with dramatic styling */}
           <div className="text-center mb-6">
