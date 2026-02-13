@@ -53,15 +53,33 @@ export default function LandingPage() {
         {/* Store Links */}
         <div className="flex flex-col items-center gap-4">
           <div className="text-[var(--text-dim)] text-xs uppercase tracking-wider">Coming Soon</div>
-          <div className="flex gap-4">
-            <div className="px-4 py-2 border border-[var(--border-dim)] text-[var(--text-muted)] text-sm flex items-center gap-2 opacity-60">
-              <span>🍎</span> App Store
+          <div className="flex flex-wrap justify-center gap-3">
+            <div className="opacity-50 hover:opacity-70 transition-opacity cursor-not-allowed">
+              <Image 
+                src="/badges/app-store.svg" 
+                alt="Download on the App Store" 
+                width={120} 
+                height={40}
+                className="h-10 w-auto"
+              />
             </div>
-            <div className="px-4 py-2 border border-[var(--border-dim)] text-[var(--text-muted)] text-sm flex items-center gap-2 opacity-60">
-              <span>🤖</span> Google Play
+            <div className="opacity-50 hover:opacity-70 transition-opacity cursor-not-allowed">
+              <Image 
+                src="/badges/google-play.svg" 
+                alt="Get it on Google Play" 
+                width={135} 
+                height={40}
+                className="h-10 w-auto"
+              />
             </div>
-            <div className="px-4 py-2 border border-[var(--border-dim)] text-[var(--text-muted)] text-sm flex items-center gap-2 opacity-60">
-              <span>◎</span> dApp Store
+            <div className="opacity-50 hover:opacity-70 transition-opacity cursor-not-allowed">
+              <Image 
+                src="/badges/solana-dapp-store.svg" 
+                alt="Get it on Solana dApp Store" 
+                width={135} 
+                height={52}
+                className="h-[52px] w-auto"
+              />
             </div>
           </div>
         </div>
