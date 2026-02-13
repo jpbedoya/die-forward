@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, Animated, Dimensions } from 'react-native';
 import { Link } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { usePoolStats, useDeathFeed } from '../lib/instant';
 
 const ASCII_LOGO = `
   ██████  ██ ███████ 
@@ -61,6 +62,10 @@ export default function HomeScreen() {
     );
   }
 
+  // Real-time stats from InstantDB
+  const { totalDeaths, totalStaked, isLoading: statsLoading } = usePoolStats();
+  const { deaths: recentDeaths } = useDeathFeed(5);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
@@ -86,22 +91,43 @@ export default function HomeScreen() {
             </Pressable>
           </Link>
           
-          <Pressable style={styles.secondaryButton}>
-            <Text style={styles.secondaryButtonText}>🎮 FREE PLAY (Demo)</Text>
-          </Pressable>
+          <Link href="/stake" asChild>
+            <Pressable style={styles.secondaryButton}>
+              <Text style={styles.secondaryButtonText}>🎮 FREE PLAY (Demo)</Text>
+            </Pressable>
+          </Link>
         </View>
 
-        {/* Stats placeholder */}
+        {/* Live Stats */}
         <View style={styles.statsContainer}>
           <View style={styles.statBox}>
-            <Text style={styles.statValue}>◎ 12.5</Text>
-            <Text style={styles.statLabel}>SOL in Pool</Text>
+            <Text style={styles.statValue}>
+              ◎ {statsLoading ? '...' : totalStaked.toFixed(2)}
+            </Text>
+            <Text style={styles.statLabel}>SOL Staked</Text>
           </View>
           <View style={styles.statBox}>
-            <Text style={styles.statValue}>💀 247</Text>
-            <Text style={styles.statLabel}>Deaths Today</Text>
+            <Text style={styles.statValue}>
+              💀 {statsLoading ? '...' : totalDeaths}
+            </Text>
+            <Text style={styles.statLabel}>Total Deaths</Text>
           </View>
         </View>
+
+        {/* Recent Deaths Feed */}
+        {recentDeaths.length > 0 && (
+          <View style={styles.feedContainer}>
+            <Text style={styles.feedTitle}>RECENT DEATHS</Text>
+            {recentDeaths.slice(0, 3).map((death, i) => (
+              <View key={death.id || i} style={styles.feedItem}>
+                <Text style={styles.feedText}>
+                  💀 <Text style={styles.feedName}>@{death.playerName}</Text>
+                  {' fell in '}{death.zone} (Room {death.room})
+                </Text>
+              </View>
+            ))}
+          </View>
+        )}
 
         {/* Footer */}
         <View style={styles.footer}>
@@ -228,6 +254,31 @@ const styles = StyleSheet.create({
     color: '#57534e',
     fontFamily: 'monospace',
     marginTop: 4,
+  },
+  feedContainer: {
+    backgroundColor: '#1c1917',
+    borderWidth: 1,
+    borderColor: '#292524',
+    padding: 12,
+    marginBottom: 20,
+  },
+  feedTitle: {
+    fontSize: 10,
+    color: '#78716c',
+    fontFamily: 'monospace',
+    letterSpacing: 2,
+    marginBottom: 8,
+  },
+  feedItem: {
+    paddingVertical: 4,
+  },
+  feedText: {
+    fontSize: 12,
+    color: '#a8a29e',
+    fontFamily: 'monospace',
+  },
+  feedName: {
+    color: '#a855f7',
   },
   footer: {
     alignItems: 'center',

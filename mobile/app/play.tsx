@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator } from
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
+import { useCorpsesForRoom, discoverCorpse, Corpse } from '../lib/instant';
 
 type RoomType = 'explore' | 'combat' | 'corpse' | 'cache' | 'exit';
 
@@ -66,12 +67,21 @@ export default function PlayScreen() {
   const [message, setMessage] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
   const [killedBy, setKilledBy] = useState<string | undefined>();
+  const [showCorpse, setShowCorpse] = useState(false);
+  const [lootedCorpse, setLootedCorpse] = useState<Corpse | null>(null);
 
   // Get current room from dungeon
   const room = game.dungeon[game.currentRoom] || null;
   const depth = getDepthName(game.currentRoom + 1);
   const progress = `${game.currentRoom + 1}/${game.dungeon.length}`;
   const options = room ? getOptionsForRoom(room.type as RoomType) : [];
+
+  // Fetch real corpses from InstantDB
+  const { corpses: nearbyCorpses } = useCorpsesForRoom(
+    depth.name,
+    game.currentRoom + 1
+  );
+  const realCorpse = nearbyCorpses[0]; // Get first undiscovered corpse
 
   // If no session, redirect to stake
   useEffect(() => {
@@ -138,25 +148,50 @@ export default function PlayScreen() {
         }
 
         case 'loot': {
-          // Add random loot
-          const lootItems = [
-            { name: 'Herbs', emoji: '🌿' },
-            { name: 'Bone Charm', emoji: '💀' },
-            { name: 'Rusty Blade', emoji: '🗡️' },
-          ];
-          const loot = lootItems[Math.floor(Math.random() * lootItems.length)];
-          
-          if (!game.inventory.some(i => i.name === loot.name)) {
-            game.addToInventory({ id: Date.now().toString(), ...loot });
-            setMessage(`Found: ${loot.emoji} ${loot.name}`);
+          // Use real corpse if available
+          if (realCorpse) {
+            setLootedCorpse(realCorpse);
+            setShowCorpse(true);
+            
+            // Add loot if player doesn't have it
+            if (realCorpse.loot !== 'Nothing' && !game.inventory.some(i => i.name === realCorpse.loot)) {
+              game.addToInventory({ 
+                id: Date.now().toString(), 
+                name: realCorpse.loot, 
+                emoji: realCorpse.lootEmoji 
+              });
+              setMessage(`Found: ${realCorpse.lootEmoji} ${realCorpse.loot}`);
+            } else {
+              setMessage('The corpse has nothing you need.');
+            }
+            
+            // Mark corpse as discovered
+            if (game.walletAddress) {
+              discoverCorpse(realCorpse.id, game.walletAddress).catch(console.error);
+            }
           } else {
-            setMessage('Nothing new here.');
+            // Fallback to random loot
+            const lootItems = [
+              { name: 'Herbs', emoji: '🌿' },
+              { name: 'Bone Charm', emoji: '💀' },
+              { name: 'Rusty Blade', emoji: '🗡️' },
+            ];
+            const loot = lootItems[Math.floor(Math.random() * lootItems.length)];
+            
+            if (!game.inventory.some(i => i.name === loot.name)) {
+              game.addToInventory({ id: Date.now().toString(), ...loot });
+              setMessage(`Found: ${loot.emoji} ${loot.name}`);
+            } else {
+              setMessage('Nothing new here.');
+            }
           }
           
           setTimeout(async () => {
             await game.advance();
             setMessage(null);
-          }, 1500);
+            setShowCorpse(false);
+            setLootedCorpse(null);
+          }, 2000);
           break;
         }
 
@@ -222,6 +257,42 @@ export default function PlayScreen() {
         {message && (
           <View style={styles.messageBox}>
             <Text style={styles.messageText}>✦ {message}</Text>
+          </View>
+        )}
+
+        {/* Real corpse discovery prompt */}
+        {realCorpse && !showCorpse && room?.type !== 'corpse' && (
+          <View style={styles.corpsePrompt}>
+            <Text style={styles.corpsePromptIcon}>💀</Text>
+            <View style={styles.corpsePromptContent}>
+              <Text style={styles.corpsePromptTitle}>A body lies nearby...</Text>
+              <Text style={styles.corpsePromptHint}>Someone fell here before you</Text>
+            </View>
+            <Pressable onPress={() => handleAction('loot')}>
+              <Text style={styles.corpsePromptAction}>→ Investigate</Text>
+            </Pressable>
+          </View>
+        )}
+
+        {/* Corpse card - shown after looting */}
+        {showCorpse && lootedCorpse && (
+          <View style={styles.corpseCard}>
+            <View style={styles.corpseHeader}>
+              <Text style={styles.corpseIcon}>💀</Text>
+              <View>
+                <Text style={styles.corpseName}>@{lootedCorpse.playerName}</Text>
+                <Text style={styles.corpseStatus}>FALLEN</Text>
+              </View>
+            </View>
+            <View style={styles.corpseMessage}>
+              <Text style={styles.corpseQuote}>"{lootedCorpse.finalMessage}"</Text>
+            </View>
+            <View style={styles.corpseLoot}>
+              <Text style={styles.corpseLootLabel}>They carried:</Text>
+              <Text style={styles.corpseLootItem}>
+                {lootedCorpse.lootEmoji} {lootedCorpse.loot}
+              </Text>
+            </View>
           </View>
         )}
 
@@ -491,5 +562,95 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: 'monospace',
     fontStyle: 'italic',
+  },
+  // Corpse prompt
+  corpsePrompt: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(168, 85, 247, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(168, 85, 247, 0.3)',
+    padding: 12,
+    marginBottom: 16,
+    gap: 12,
+  },
+  corpsePromptIcon: {
+    fontSize: 24,
+  },
+  corpsePromptContent: {
+    flex: 1,
+  },
+  corpsePromptTitle: {
+    color: '#a855f7',
+    fontSize: 14,
+    fontFamily: 'monospace',
+    fontWeight: 'bold',
+  },
+  corpsePromptHint: {
+    color: '#78716c',
+    fontSize: 11,
+    fontFamily: 'monospace',
+  },
+  corpsePromptAction: {
+    color: '#a855f7',
+    fontSize: 14,
+    fontFamily: 'monospace',
+  },
+  // Corpse card
+  corpseCard: {
+    backgroundColor: '#1c1917',
+    borderWidth: 1,
+    borderColor: '#a855f7',
+    padding: 16,
+    marginBottom: 16,
+  },
+  corpseHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 12,
+  },
+  corpseIcon: {
+    fontSize: 32,
+  },
+  corpseName: {
+    color: '#a855f7',
+    fontSize: 16,
+    fontFamily: 'monospace',
+    fontWeight: 'bold',
+  },
+  corpseStatus: {
+    color: '#ef4444',
+    fontSize: 10,
+    fontFamily: 'monospace',
+    letterSpacing: 1,
+  },
+  corpseMessage: {
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderLeftWidth: 2,
+    borderLeftColor: '#a855f7',
+    padding: 12,
+    marginBottom: 12,
+  },
+  corpseQuote: {
+    color: '#e7e5e4',
+    fontSize: 14,
+    fontFamily: 'monospace',
+    fontStyle: 'italic',
+  },
+  corpseLoot: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  corpseLootLabel: {
+    color: '#78716c',
+    fontSize: 12,
+    fontFamily: 'monospace',
+  },
+  corpseLootItem: {
+    color: '#fbbf24',
+    fontSize: 12,
+    fontFamily: 'monospace',
   },
 });
