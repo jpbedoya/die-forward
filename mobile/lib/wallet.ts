@@ -9,6 +9,7 @@ import {
   clusterApiUrl,
 } from '@solana/web3.js';
 import base58 from 'bs58';
+import { decode as base64Decode } from 'base-64';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const APP_IDENTITY = {
@@ -69,7 +70,7 @@ function decodeAddress(addressRaw: string | Uint8Array): PublicKey {
   } else if (typeof addressRaw === 'string') {
     // Check if base64 encoded
     if (addressRaw.includes('+') || addressRaw.includes('/') || addressRaw.endsWith('=')) {
-      const bytes = Uint8Array.from(atob(addressRaw), c => c.charCodeAt(0));
+      const bytes = Uint8Array.from(base64Decode(addressRaw), (c: string) => c.charCodeAt(0));
       return new PublicKey(bytes);
     }
     return new PublicKey(addressRaw);

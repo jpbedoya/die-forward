@@ -1,4 +1,4 @@
-import { init, tx, id } from '@instantdb/react';
+import { init, tx, id } from '@instantdb/react-native';
 
 // App ID - same as web version
 const APP_ID = process.env.EXPO_PUBLIC_INSTANT_APP_ID || '84f04877-bcc3-4b09-89df-f6ef498d21f5';
