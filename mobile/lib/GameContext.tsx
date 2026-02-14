@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import * as api from './api';
+import { generateDungeon } from './api';
 import * as wallet from './wallet';
 
 interface GameState {
@@ -122,23 +123,21 @@ export function GameProvider({ children }: { children: ReactNode }) {
       // Start session with backend
       const session = await api.startSession(walletAddress, amount, stakeTxSignature);
       
-      // Defensive: ensure all required fields have values
+      // Defensive: ensure we got a session token
       if (!session || !session.sessionToken) {
         throw new Error('Invalid session response from server');
       }
       
-      const dungeon = session.dungeon ?? [];
-      if (dungeon.length === 0) {
-        throw new Error('Server returned empty dungeon');
-      }
+      // Generate dungeon client-side (same as web app)
+      const dungeon = generateDungeon();
       
       updateState({
         sessionToken: session.sessionToken,
         stakeAmount: amount,
-        currentRoom: session.currentRoom ?? 0,
-        health: session.health ?? 100,
-        stamina: session.stamina ?? 3,
-        inventory: session.inventory ?? [],
+        currentRoom: 0,
+        health: 100,
+        stamina: 3,
+        inventory: [],
         dungeon,
         loading: false,
       });
