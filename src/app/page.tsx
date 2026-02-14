@@ -150,8 +150,8 @@ export default function LandingPage() {
           
           {/* Vertical timeline */}
           <div className="relative">
-            {/* Vertical line */}
-            <div className="absolute left-6 sm:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-[var(--amber)] via-[var(--red)] to-[var(--purple)] sm:-translate-x-px" />
+            {/* Vertical line - ends at tombstone */}
+            <div className="absolute left-6 sm:left-1/2 top-0 bottom-12 w-px bg-gradient-to-b from-[var(--amber)] via-[var(--red)] to-[var(--text-dim)] sm:-translate-x-px" />
             
             {/* Step 1: Stake */}
             <div className="relative flex items-start gap-6 sm:gap-12 mb-16">
@@ -208,7 +208,7 @@ export default function LandingPage() {
             </div>
 
             {/* Step 4: Tip */}
-            <div className="relative flex items-start gap-6 sm:gap-12">
+            <div className="relative flex items-start gap-6 sm:gap-12 mb-12">
               <div className="flex-shrink-0 w-12 h-12 rounded-full bg-[var(--bg-base)] border-2 border-[var(--green)] flex items-center justify-center text-2xl z-10 sm:absolute sm:left-1/2 sm:-translate-x-1/2">
                 💸
               </div>
@@ -222,6 +222,14 @@ export default function LandingPage() {
                   </p>
                   <div className="text-[var(--text-dim)] text-xs mt-3 font-mono">THE CYCLE CONTINUES</div>
                 </div>
+              </div>
+            </div>
+
+            {/* Tombstone ending */}
+            <div className="relative flex justify-center">
+              <div className="flex flex-col items-center z-10">
+                <div className="text-4xl mb-2">🪦</div>
+                <div className="text-[var(--text-dim)] text-xs font-mono tracking-widest">REST IN SOL</div>
               </div>
             </div>
           </div>
