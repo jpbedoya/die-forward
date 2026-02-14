@@ -3,6 +3,7 @@ import { View, Text, Pressable, ScrollView, ActivityIndicator } from 'react-nati
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
+import { ProgressBar } from '../components/ProgressBar';
 import { useAudio } from '../lib/audio';
 import { useGameSettings, DEFAULT_GAME_SETTINGS } from '../lib/instant';
 import {
@@ -264,7 +265,7 @@ export default function CombatScreen() {
       {/* Header */}
       <View className="flex-row items-center justify-between px-3 py-2 border-b border-amber/30">
         <Text className="text-amber text-xs font-mono">◈ {depth.name}</Text>
-        <Text className="text-bone-dark text-xs font-mono">COMBAT</Text>
+        <ProgressBar current={roomNumber} total={13} />
       </View>
 
       <ScrollView className="flex-1" contentContainerClassName="p-4">

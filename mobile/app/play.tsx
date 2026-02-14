@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
 import { useAudio } from '../lib/audio';
 import { useCorpsesForRoom, discoverCorpse, recordTip, Corpse } from '../lib/instant';
+import { ProgressBar } from '../components/ProgressBar';
 import { getDepthForRoom, DungeonRoom } from '../lib/content';
 import { sendTip } from '../lib/wallet';
 
@@ -259,7 +260,7 @@ export default function PlayScreen() {
             </View>
           )}
         </View>
-        <Text className="text-bone-dark text-xs font-mono">{roomNumber}/{dungeon.length}</Text>
+        <ProgressBar current={roomNumber} total={dungeon.length} />
       </View>
 
       {/* Main content */}
