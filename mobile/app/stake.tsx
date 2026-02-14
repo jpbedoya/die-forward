@@ -20,6 +20,8 @@ export default function StakeScreen() {
     setStaking(true);
     try {
       await game.startGame(selectedStake, demoMode);
+      // Small delay to ensure state has propagated before navigation
+      await new Promise(resolve => setTimeout(resolve, 100));
       router.push('/play');
     } catch (err) {
       console.error('Failed to start game:', err);

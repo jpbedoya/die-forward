@@ -127,6 +127,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
         throw new Error('Invalid session response from server');
       }
       
+      const dungeon = session.dungeon ?? [];
+      if (dungeon.length === 0) {
+        throw new Error('Server returned empty dungeon');
+      }
+      
       updateState({
         sessionToken: session.sessionToken,
         stakeAmount: amount,
@@ -134,7 +139,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         health: session.health ?? 100,
         stamina: session.stamina ?? 3,
         inventory: session.inventory ?? [],
-        dungeon: session.dungeon ?? [],
+        dungeon,
         loading: false,
       });
     } catch (err) {
