@@ -151,9 +151,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
     
     try {
       const result = await api.advanceRoom(state.sessionToken, state.currentRoom + 1);
-      if (result.success) {
+      if (result?.success) {
         updateState({
-          currentRoom: result.currentRoom,
+          currentRoom: result.currentRoom ?? state.currentRoom + 1,
           stamina: Math.min(3, state.stamina + 1),
         });
         return true;
