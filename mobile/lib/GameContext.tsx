@@ -122,14 +122,19 @@ export function GameProvider({ children }: { children: ReactNode }) {
       // Start session with backend
       const session = await api.startSession(walletAddress, amount, stakeTxSignature);
       
+      // Defensive: ensure all required fields have values
+      if (!session || !session.sessionToken) {
+        throw new Error('Invalid session response from server');
+      }
+      
       updateState({
         sessionToken: session.sessionToken,
         stakeAmount: amount,
-        currentRoom: session.currentRoom,
-        health: session.health,
-        stamina: session.stamina,
-        inventory: session.inventory,
-        dungeon: session.dungeon,
+        currentRoom: session.currentRoom ?? 0,
+        health: session.health ?? 100,
+        stamina: session.stamina ?? 3,
+        inventory: session.inventory ?? [],
+        dungeon: session.dungeon ?? [],
         loading: false,
       });
     } catch (err) {
