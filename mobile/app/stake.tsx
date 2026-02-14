@@ -1,28 +1,39 @@
-import { useState } from 'react';
-import { View, Text, StyleSheet, Pressable, TextInput, ActivityIndicator } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View, Text, Pressable, TextInput, ScrollView, ActivityIndicator } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
+import { useAudio } from '../lib/audio';
 
 const STAKE_OPTIONS = [0.01, 0.05, 0.1, 0.25];
 
 export default function StakeScreen() {
   const game = useGame();
+  const { playSFX, playAmbient } = useAudio();
   const [selectedStake, setSelectedStake] = useState(0.05);
   const [customStake, setCustomStake] = useState('');
   const [staking, setStaking] = useState(false);
 
+  useEffect(() => {
+    playAmbient('ambient-title');
+  }, []);
+
   const handleConnect = async () => {
+    playSFX('ui-click');
     await game.connect();
   };
 
   const handleStake = async (demoMode = false) => {
     setStaking(true);
+    playSFX('confirm-action');
+    
     try {
       await game.startGame(selectedStake, demoMode);
+      playSFX('depth-descend');
       router.push('/play');
     } catch (err) {
       console.error('Failed to start game:', err);
+      playSFX('error-buzz');
     } finally {
       setStaking(false);
     }
@@ -33,55 +44,56 @@ export default function StakeScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView className="flex-1 bg-crypt-bg">
       {/* Header */}
-      <View style={styles.header}>
+      <View className="flex-row items-center justify-between px-4 py-3 border-b border-crypt-border">
         <Pressable onPress={() => router.back()}>
-          <Text style={styles.backButton}>← BACK</Text>
+          <Text className="text-bone-muted text-sm font-mono">← BACK</Text>
         </Pressable>
-        <Text style={styles.headerTitle}>STAKE YOUR SOL</Text>
-        <View style={{ width: 60 }} />
+        <Text className="text-amber text-base font-mono font-bold tracking-widest">STAKE YOUR SOL</Text>
+        <View className="w-[60px]" />
       </View>
 
-      <View style={styles.content}>
+      <ScrollView className="flex-1" contentContainerClassName="p-5">
         {/* Error display */}
         {game.error && (
-          <Pressable style={styles.errorBox} onPress={game.clearError}>
-            <Text style={styles.errorText}>⚠️ {game.error}</Text>
-            <Text style={styles.errorDismiss}>Tap to dismiss</Text>
+          <Pressable 
+            className="bg-blood/20 border border-blood p-3 mb-4"
+            onPress={game.clearError}
+          >
+            <Text className="text-blood-light text-sm font-mono">⚠️ {game.error}</Text>
+            <Text className="text-bone-dark text-xs font-mono mt-1">Tap to dismiss</Text>
           </Pressable>
         )}
 
         {/* Warning */}
-        <View style={styles.warningBox}>
-          <Text style={styles.warningText}>
-            ⚠️ Your stake will be locked in escrow. Die and lose it. 
-            Escape and claim victory with bonus rewards.
+        <View className="bg-blood/10 border border-blood-dark p-4 mb-6">
+          <Text className="text-blood-light text-sm font-mono leading-5">
+            ⚠️ Your stake will be locked in escrow. Die and lose it. Escape and claim victory with bonus rewards.
           </Text>
         </View>
 
         {/* Stake options */}
-        <View style={styles.stakeSection}>
-          <Text style={styles.sectionTitle}>SELECT AMOUNT</Text>
-          <View style={styles.stakeOptions}>
+        <View className="mb-6">
+          <Text className="text-bone-dark text-xs font-mono tracking-widest mb-3">SELECT AMOUNT</Text>
+          <View className="flex-row flex-wrap gap-2">
             {STAKE_OPTIONS.map((amount) => (
               <Pressable
                 key={amount}
-                style={[
-                  styles.stakeOption,
-                  selectedStake === amount && styles.stakeOptionSelected,
-                ]}
+                className={`py-3 px-5 border ${
+                  selectedStake === amount 
+                    ? 'border-amber bg-amber/10' 
+                    : 'border-crypt-border-light bg-crypt-surface'
+                }`}
                 onPress={() => {
+                  playSFX('ui-click');
                   setSelectedStake(amount);
                   setCustomStake('');
                 }}
               >
-                <Text
-                  style={[
-                    styles.stakeOptionText,
-                    selectedStake === amount && styles.stakeOptionTextSelected,
-                  ]}
-                >
+                <Text className={`font-mono text-base ${
+                  selectedStake === amount ? 'text-amber-light' : 'text-bone-muted'
+                }`}>
                   ◎ {amount}
                 </Text>
               </Pressable>
@@ -89,12 +101,12 @@ export default function StakeScreen() {
           </View>
 
           {/* Custom input */}
-          <View style={styles.customInput}>
-            <Text style={styles.customLabel}>OR ENTER CUSTOM:</Text>
-            <View style={styles.inputRow}>
-              <Text style={styles.inputPrefix}>◎</Text>
+          <View className="mt-4">
+            <Text className="text-stone-600 text-xs font-mono mb-2">OR ENTER CUSTOM:</Text>
+            <View className="flex-row items-center border border-crypt-border-light bg-crypt-surface px-3">
+              <Text className="text-amber text-lg font-mono mr-2">◎</Text>
               <TextInput
-                style={styles.input}
+                className="flex-1 text-bone text-lg font-mono py-3"
                 value={customStake}
                 onChangeText={(text) => {
                   setCustomStake(text);
@@ -112,61 +124,65 @@ export default function StakeScreen() {
         </View>
 
         {/* Summary */}
-        <View style={styles.summaryBox}>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Stake Amount</Text>
-            <Text style={styles.summaryValue}>◎ {selectedStake}</Text>
+        <View className="bg-crypt-surface border border-crypt-border p-4 mb-6">
+          <View className="flex-row justify-between mb-2">
+            <Text className="text-bone-dark text-sm font-mono">Stake Amount</Text>
+            <Text className="text-bone-muted text-sm font-mono">◎ {selectedStake}</Text>
           </View>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Victory Bonus (50%)</Text>
-            <Text style={styles.summaryValueGreen}>+◎ {(selectedStake * 0.5).toFixed(3)}</Text>
+          <View className="flex-row justify-between mb-2">
+            <Text className="text-bone-dark text-sm font-mono">Victory Bonus (50%)</Text>
+            <Text className="text-victory text-sm font-mono">+◎ {(selectedStake * 0.5).toFixed(3)}</Text>
           </View>
-          <View style={[styles.summaryRow, styles.summaryTotal]}>
-            <Text style={styles.summaryLabelBold}>Potential Reward</Text>
-            <Text style={styles.summaryValueBold}>◎ {(selectedStake * 1.5).toFixed(3)}</Text>
+          <View className="flex-row justify-between border-t border-crypt-border pt-3 mt-1">
+            <Text className="text-bone-muted text-sm font-mono font-bold">Potential Reward</Text>
+            <Text className="text-amber-light text-base font-mono font-bold">◎ {(selectedStake * 1.5).toFixed(3)}</Text>
           </View>
         </View>
 
         {/* Action buttons */}
-        <View style={styles.actionContainer}>
+        <View className="gap-3 mb-4">
           {!game.walletConnected ? (
             <>
               <Pressable 
-                style={styles.connectButton} 
+                className="bg-purple-700 py-5 items-center active:bg-purple-800"
                 onPress={handleConnect}
                 disabled={game.loading}
               >
                 {game.loading ? (
                   <ActivityIndicator color="#ffffff" />
                 ) : (
-                  <Text style={styles.connectButtonText}>🔗 CONNECT WALLET</Text>
+                  <Text className="text-white font-mono font-bold tracking-wider">🔗 CONNECT WALLET</Text>
                 )}
               </Pressable>
               
               <Pressable 
-                style={styles.demoButton}
+                className="border border-crypt-border-light py-4 items-center active:border-amber"
                 onPress={() => handleStake(true)}
                 disabled={staking}
               >
-                <Text style={styles.demoButtonText}>🎮 FREE PLAY (No Stake)</Text>
+                <Text className="text-bone-muted font-mono">🎮 FREE PLAY (No Stake)</Text>
               </Pressable>
             </>
           ) : (
             <>
               <Pressable 
-                style={styles.stakeButton} 
+                className={`py-5 items-center ${
+                  staking || (game.balance !== null && game.balance < selectedStake)
+                    ? 'bg-amber/50'
+                    : 'bg-amber active:bg-amber-dark'
+                }`}
                 onPress={() => handleStake(false)}
                 disabled={staking || (game.balance !== null && game.balance < selectedStake)}
               >
                 {staking ? (
                   <ActivityIndicator color="#0d0d0d" />
                 ) : (
-                  <Text style={styles.stakeButtonText}>⚔️ STAKE & DESCEND</Text>
+                  <Text className="text-crypt-bg font-mono font-bold tracking-wider">⚔️ STAKE & DESCEND</Text>
                 )}
               </Pressable>
               
               {game.balance !== null && game.balance < selectedStake && (
-                <Text style={styles.insufficientText}>
+                <Text className="text-blood text-xs font-mono text-center">
                   Insufficient balance ({game.balance.toFixed(3)} SOL)
                 </Text>
               )}
@@ -176,255 +192,15 @@ export default function StakeScreen() {
 
         {/* Wallet status */}
         {game.walletConnected && game.walletAddress && (
-          <View style={styles.walletInfo}>
-            <Text style={styles.walletConnected}>✓ Connected</Text>
-            <Text style={styles.walletAddress}>{formatAddress(game.walletAddress)}</Text>
+          <View className="flex-row items-center justify-center gap-3">
+            <Text className="text-victory text-xs font-mono">✓ Connected</Text>
+            <Text className="text-bone-dark text-xs font-mono">{formatAddress(game.walletAddress)}</Text>
             {game.balance !== null && (
-              <Text style={styles.walletBalance}>◎ {game.balance.toFixed(3)}</Text>
+              <Text className="text-amber-light text-xs font-mono font-bold">◎ {game.balance.toFixed(3)}</Text>
             )}
           </View>
         )}
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0d0d0d',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#292524',
-  },
-  backButton: {
-    color: '#a8a29e',
-    fontSize: 14,
-    fontFamily: 'monospace',
-  },
-  headerTitle: {
-    color: '#f59e0b',
-    fontSize: 16,
-    fontFamily: 'monospace',
-    fontWeight: 'bold',
-    letterSpacing: 2,
-  },
-  content: {
-    flex: 1,
-    padding: 20,
-  },
-  errorBox: {
-    backgroundColor: 'rgba(239, 68, 68, 0.2)',
-    borderWidth: 1,
-    borderColor: '#ef4444',
-    padding: 12,
-    marginBottom: 16,
-  },
-  errorText: {
-    color: '#fca5a5',
-    fontSize: 13,
-    fontFamily: 'monospace',
-  },
-  errorDismiss: {
-    color: '#78716c',
-    fontSize: 11,
-    fontFamily: 'monospace',
-    marginTop: 4,
-  },
-  warningBox: {
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-    borderWidth: 1,
-    borderColor: '#7f1d1d',
-    padding: 16,
-    marginBottom: 24,
-  },
-  warningText: {
-    color: '#fca5a5',
-    fontSize: 13,
-    fontFamily: 'monospace',
-    lineHeight: 20,
-  },
-  stakeSection: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    color: '#78716c',
-    fontSize: 12,
-    fontFamily: 'monospace',
-    letterSpacing: 2,
-    marginBottom: 12,
-  },
-  stakeOptions: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-  },
-  stakeOption: {
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderWidth: 1,
-    borderColor: '#44403c',
-    backgroundColor: '#1c1917',
-  },
-  stakeOptionSelected: {
-    borderColor: '#f59e0b',
-    backgroundColor: 'rgba(245, 158, 11, 0.1)',
-  },
-  stakeOptionText: {
-    color: '#a8a29e',
-    fontSize: 16,
-    fontFamily: 'monospace',
-  },
-  stakeOptionTextSelected: {
-    color: '#fbbf24',
-  },
-  customInput: {
-    marginTop: 16,
-  },
-  customLabel: {
-    color: '#57534e',
-    fontSize: 11,
-    fontFamily: 'monospace',
-    marginBottom: 8,
-  },
-  inputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#44403c',
-    backgroundColor: '#1c1917',
-    paddingHorizontal: 12,
-  },
-  inputPrefix: {
-    color: '#f59e0b',
-    fontSize: 18,
-    fontFamily: 'monospace',
-    marginRight: 8,
-  },
-  input: {
-    flex: 1,
-    color: '#e7e5e4',
-    fontSize: 18,
-    fontFamily: 'monospace',
-    paddingVertical: 14,
-  },
-  summaryBox: {
-    backgroundColor: '#1c1917',
-    borderWidth: 1,
-    borderColor: '#292524',
-    padding: 16,
-    marginBottom: 24,
-  },
-  summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  summaryTotal: {
-    borderTopWidth: 1,
-    borderTopColor: '#292524',
-    paddingTop: 12,
-    marginTop: 4,
-    marginBottom: 0,
-  },
-  summaryLabel: {
-    color: '#78716c',
-    fontSize: 13,
-    fontFamily: 'monospace',
-  },
-  summaryLabelBold: {
-    color: '#a8a29e',
-    fontSize: 14,
-    fontFamily: 'monospace',
-    fontWeight: 'bold',
-  },
-  summaryValue: {
-    color: '#a8a29e',
-    fontSize: 13,
-    fontFamily: 'monospace',
-  },
-  summaryValueGreen: {
-    color: '#22c55e',
-    fontSize: 13,
-    fontFamily: 'monospace',
-  },
-  summaryValueBold: {
-    color: '#fbbf24',
-    fontSize: 16,
-    fontFamily: 'monospace',
-    fontWeight: 'bold',
-  },
-  actionContainer: {
-    marginBottom: 16,
-    gap: 12,
-  },
-  connectButton: {
-    backgroundColor: '#7c3aed',
-    paddingVertical: 18,
-    alignItems: 'center',
-  },
-  connectButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontFamily: 'monospace',
-    fontWeight: 'bold',
-    letterSpacing: 1,
-  },
-  demoButton: {
-    borderWidth: 1,
-    borderColor: '#44403c',
-    paddingVertical: 16,
-    alignItems: 'center',
-  },
-  demoButtonText: {
-    color: '#a8a29e',
-    fontSize: 14,
-    fontFamily: 'monospace',
-  },
-  stakeButton: {
-    backgroundColor: '#f59e0b',
-    paddingVertical: 18,
-    alignItems: 'center',
-  },
-  stakeButtonText: {
-    color: '#0d0d0d',
-    fontSize: 16,
-    fontFamily: 'monospace',
-    fontWeight: 'bold',
-    letterSpacing: 1,
-  },
-  insufficientText: {
-    color: '#ef4444',
-    fontSize: 12,
-    fontFamily: 'monospace',
-    textAlign: 'center',
-  },
-  walletInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 12,
-  },
-  walletConnected: {
-    color: '#22c55e',
-    fontSize: 12,
-    fontFamily: 'monospace',
-  },
-  walletAddress: {
-    color: '#78716c',
-    fontSize: 12,
-    fontFamily: 'monospace',
-  },
-  walletBalance: {
-    color: '#fbbf24',
-    fontSize: 12,
-    fontFamily: 'monospace',
-    fontWeight: 'bold',
-  },
-});
