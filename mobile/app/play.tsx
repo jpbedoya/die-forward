@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { View, Text, Pressable, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
 import { useAudio } from '../lib/audio';
-import { useCorpsesForRoom, discoverCorpse, Corpse } from '../lib/instant';
+import { useCorpsesForRoom, discoverCorpse, recordTip, Corpse } from '../lib/instant';
 import { getDepthForRoom, DungeonRoom } from '../lib/content';
+import { sendTip } from '../lib/wallet';
 
 function HealthBar({ current, max }: { current: number; max: number }) {
   const filled = Math.round((current / max) * 8);
@@ -24,6 +25,27 @@ export default function PlayScreen() {
   const [processing, setProcessing] = useState(false);
   const [showCorpse, setShowCorpse] = useState(false);
   const [lootedCorpse, setLootedCorpse] = useState<Corpse | null>(null);
+  const [tipping, setTipping] = useState(false);
+
+  // Handle tipping a corpse
+  const handleTip = async (corpse: Corpse) => {
+    if (!game.walletConnected || tipping) return;
+    
+    const tipAmount = 0.01; // 0.01 SOL tip
+    
+    setTipping(true);
+    try {
+      const { signature } = await sendTip(corpse.walletAddress, tipAmount);
+      await recordTip(corpse.id, tipAmount, game.walletAddress!);
+      playSFX('tip-chime');
+      setMessage(`Tipped @${corpse.playerName} ◎ ${tipAmount} SOL`);
+    } catch (e) {
+      console.error('Tip failed:', e);
+      Alert.alert('Tip Failed', 'Could not send tip. Please try again.');
+    } finally {
+      setTipping(false);
+    }
+  };
 
   // Safe access to game state
   const dungeon = game.dungeon || [];
@@ -275,10 +297,27 @@ export default function PlayScreen() {
           <View className="bg-crypt-surface border border-ethereal p-4 mb-4">
             <View className="flex-row items-center gap-3 mb-3">
               <Text className="text-3xl">💀</Text>
-              <View>
+              <View className="flex-1">
                 <Text className="text-ethereal text-base font-mono font-bold">@{lootedCorpse.playerName}</Text>
                 <Text className="text-blood text-[10px] font-mono tracking-widest">FALLEN</Text>
               </View>
+              {/* Tip button */}
+              {game.walletConnected && !lootedCorpse.tipped && (
+                <Pressable
+                  className={`px-3 py-2 border border-amber ${tipping ? 'opacity-50' : 'active:bg-amber/10'}`}
+                  onPress={() => handleTip(lootedCorpse)}
+                  disabled={tipping}
+                >
+                  {tipping ? (
+                    <ActivityIndicator size="small" color="#f59e0b" />
+                  ) : (
+                    <Text className="text-amber text-xs font-mono">💰 TIP</Text>
+                  )}
+                </Pressable>
+              )}
+              {lootedCorpse.tipped && (
+                <Text className="text-victory text-xs font-mono">✓ Tipped</Text>
+              )}
             </View>
             <View className="bg-black/30 border-l-2 border-ethereal p-3 mb-3">
               <Text className="text-bone text-sm font-mono italic">"{lootedCorpse.finalMessage}"</Text>

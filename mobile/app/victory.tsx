@@ -1,23 +1,35 @@
 import { useState, useEffect } from 'react';
-import { View, Text, Pressable, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, ScrollView, ActivityIndicator, Modal } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
 import { useAudio } from '../lib/audio';
 import { useGameSettings } from '../lib/instant';
+import { VictoryCard, ShareCardCapture, useShareCard } from '../lib/shareCard';
 
 export default function VictoryScreen() {
   const game = useGame();
   const { playSFX, playAmbient } = useAudio();
   const { settings } = useGameSettings();
+  const { viewShotRef, captureAndShare } = useShareCard();
   const [claiming, setClaiming] = useState(false);
   const [claimed, setClaimed] = useState(false);
   const [signature, setSignature] = useState<string | null>(null);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [sharing, setSharing] = useState(false);
 
   // Use victory bonus from admin settings
   const bonusPercent = settings.victoryBonusPercent / 100;
   const victoryBonus = game.stakeAmount * bonusPercent;
   const totalReward = game.stakeAmount + victoryBonus;
+  
+  const handleShare = async () => {
+    setSharing(true);
+    playSFX('share-click');
+    await captureAndShare('Die Forward - Victory!', `I escaped Die Forward and won ${totalReward.toFixed(3)} SOL!`);
+    setSharing(false);
+    setShowShareModal(false);
+  };
 
   useEffect(() => {
     playAmbient('ambient-victory');
@@ -161,6 +173,13 @@ export default function VictoryScreen() {
         {/* Action Buttons */}
         <View className="gap-3">
           <Pressable
+            className="bg-victory py-4 items-center active:bg-green-600"
+            onPress={() => setShowShareModal(true)}
+          >
+            <Text className="text-crypt-bg font-mono font-bold tracking-widest">📤 SHARE VICTORY</Text>
+          </Pressable>
+          
+          <Pressable
             className="bg-amber py-4 items-center active:bg-amber-dark"
             onPress={handlePlayAgain}
           >
@@ -175,6 +194,53 @@ export default function VictoryScreen() {
           </Pressable>
         </View>
       </ScrollView>
+      
+      {/* Share Card Modal */}
+      <Modal
+        visible={showShareModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowShareModal(false)}
+      >
+        <View className="flex-1 bg-black/80 justify-center items-center p-4">
+          <View className="bg-crypt-surface border border-crypt-border p-4 w-full max-w-[340px]">
+            <Text className="text-victory text-lg font-mono font-bold text-center mb-4">Share Victory Card</Text>
+            
+            {/* Card Preview */}
+            <View className="items-center mb-4">
+              <ShareCardCapture viewShotRef={viewShotRef}>
+                <VictoryCard 
+                  data={{
+                    playerName: game.walletAddress?.slice(0, 8) || 'Champion',
+                    roomsCleared: game.dungeon?.length || 12,
+                    stakeWon: totalReward,
+                    enemiesDefeated: 4, // TODO: Track actual kills
+                  }}
+                />
+              </ShareCardCapture>
+            </View>
+            
+            <Pressable
+              className={`py-4 items-center mb-3 ${sharing ? 'bg-victory/50' : 'bg-victory active:bg-green-600'}`}
+              onPress={handleShare}
+              disabled={sharing}
+            >
+              {sharing ? (
+                <ActivityIndicator color="#0d0d0d" />
+              ) : (
+                <Text className="text-crypt-bg font-mono font-bold">📤 SHARE</Text>
+              )}
+            </Pressable>
+            
+            <Pressable
+              className="py-3 items-center"
+              onPress={() => setShowShareModal(false)}
+            >
+              <Text className="text-bone-muted font-mono">Cancel</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }

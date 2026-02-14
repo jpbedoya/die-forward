@@ -199,6 +199,71 @@ export async function stakeSOL(
   return result;
 }
 
+// Send a tip to a corpse creator
+export async function sendTip(
+  recipientAddress: string,
+  amountSOL: number
+): Promise<{ signature: string; walletAddress: string }> {
+  const cached = await getCachedAuth();
+  if (!cached) {
+    throw new Error('Wallet not connected');
+  }
+  
+  const result = await transact(async (wallet: Web3MobileWallet) => {
+    // Reauthorize
+    let authToken: string;
+    let pubkey: PublicKey;
+    
+    try {
+      const reAuthResult = await wallet.reauthorize({
+        auth_token: cached.authToken,
+        identity: APP_IDENTITY,
+      });
+      authToken = reAuthResult.auth_token;
+      pubkey = decodeAddress(reAuthResult.accounts[0]?.address);
+    } catch {
+      const authResult = await wallet.authorize({
+        cluster: CLUSTER,
+        identity: APP_IDENTITY,
+      });
+      authToken = authResult.auth_token;
+      pubkey = decodeAddress(authResult.accounts[0]?.address);
+    }
+    
+    // Create tip transaction
+    const { blockhash } = await connection.getLatestBlockhash();
+    const transaction = new Transaction().add(
+      SystemProgram.transfer({
+        fromPubkey: pubkey,
+        toPubkey: new PublicKey(recipientAddress),
+        lamports: amountSOL * LAMPORTS_PER_SOL,
+      })
+    );
+    transaction.recentBlockhash = blockhash;
+    transaction.feePayer = pubkey;
+    
+    // Sign and send
+    const signatures = await wallet.signAndSendTransactions({
+      transactions: [transaction],
+    });
+    
+    const sigRaw = signatures[0];
+    const signature = typeof sigRaw === 'object' && 'length' in sigRaw
+      ? base58.encode(sigRaw as Uint8Array) 
+      : sigRaw as string;
+    
+    // Update cache
+    await setCachedAuth(authToken, pubkey.toBase58());
+    
+    return {
+      signature,
+      walletAddress: pubkey.toBase58(),
+    };
+  });
+  
+  return result;
+}
+
 // Sign a generic transaction
 export async function signAndSendTransaction(
   transaction: Transaction

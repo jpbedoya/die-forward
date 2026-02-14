@@ -1,24 +1,36 @@
 import { useState, useEffect } from 'react';
-import { View, Text, Pressable, TextInput, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, TextInput, ScrollView, ActivityIndicator, Modal } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
 import { useAudio } from '../lib/audio';
 import { getDeathMoment, getFinalWordsIntro, getDepthForRoom } from '../lib/content';
+import { DeathCard, ShareCardCapture, useShareCard } from '../lib/shareCard';
 
 export default function DeathScreen() {
   const game = useGame();
   const { playSFX, playAmbient } = useAudio();
+  const { viewShotRef, captureAndShare } = useShareCard();
   const params = useLocalSearchParams<{ killedBy?: string }>();
   
   const [finalWords, setFinalWords] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [sharing, setSharing] = useState(false);
   const [deathMoment] = useState(() => getDeathMoment());
   const [finalWordsIntro] = useState(() => getFinalWordsIntro());
 
   const roomNumber = (game.currentRoom || 0) + 1;
   const depth = getDepthForRoom(roomNumber);
+  
+  const handleShare = async () => {
+    setSharing(true);
+    playSFX('share-click');
+    await captureAndShare('Die Forward - Death Card', `I died in Die Forward at room ${roomNumber}. ${finalWords}`);
+    setSharing(false);
+    setShowShareModal(false);
+  };
 
   useEffect(() => {
     playAmbient('ambient-death');
@@ -142,6 +154,15 @@ export default function DeathScreen() {
 
         {/* Action Buttons */}
         <View className="gap-3">
+          {submitted && (
+            <Pressable
+              className="bg-ethereal py-4 items-center active:bg-purple-700"
+              onPress={() => setShowShareModal(true)}
+            >
+              <Text className="text-white font-mono font-bold tracking-widest">📤 SHARE DEATH CARD</Text>
+            </Pressable>
+          )}
+          
           <Pressable
             className="bg-amber py-4 items-center active:bg-amber-dark"
             onPress={handlePlayAgain}
@@ -157,6 +178,55 @@ export default function DeathScreen() {
           </Pressable>
         </View>
       </ScrollView>
+      
+      {/* Share Card Modal */}
+      <Modal
+        visible={showShareModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowShareModal(false)}
+      >
+        <View className="flex-1 bg-black/80 justify-center items-center p-4">
+          <View className="bg-crypt-surface border border-crypt-border p-4 w-full max-w-[340px]">
+            <Text className="text-amber text-lg font-mono font-bold text-center mb-4">Share Death Card</Text>
+            
+            {/* Card Preview */}
+            <View className="items-center mb-4">
+              <ShareCardCapture viewShotRef={viewShotRef}>
+                <DeathCard 
+                  data={{
+                    playerName: game.walletAddress?.slice(0, 8) || 'Anonymous',
+                    room: roomNumber,
+                    totalRooms: game.dungeon?.length || 12,
+                    killedBy: params.killedBy || null,
+                    epitaph: finalWords || 'No final words...',
+                    stakeLost: game.stakeAmount,
+                  }}
+                />
+              </ShareCardCapture>
+            </View>
+            
+            <Pressable
+              className={`py-4 items-center mb-3 ${sharing ? 'bg-ethereal/50' : 'bg-ethereal active:bg-purple-700'}`}
+              onPress={handleShare}
+              disabled={sharing}
+            >
+              {sharing ? (
+                <ActivityIndicator color="#ffffff" />
+              ) : (
+                <Text className="text-white font-mono font-bold">📤 SHARE</Text>
+              )}
+            </Pressable>
+            
+            <Pressable
+              className="py-3 items-center"
+              onPress={() => setShowShareModal(false)}
+            >
+              <Text className="text-bone-muted font-mono">Cancel</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
