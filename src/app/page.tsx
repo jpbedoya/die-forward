@@ -13,10 +13,22 @@ const ASCII_LOGO = `
 
 export default function LandingPage() {
   const [mounted, setMounted] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+  
+  // Close lightbox on escape key
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLightboxIndex(null);
+      if (e.key === 'ArrowLeft' && lightboxIndex !== null) setLightboxIndex((prev) => (prev! - 1 + 5) % 5);
+      if (e.key === 'ArrowRight' && lightboxIndex !== null) setLightboxIndex((prev) => (prev! + 1) % 5);
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [lightboxIndex]);
 
   return (
     <div className="min-h-screen bg-[var(--bg-base)] font-mono">
@@ -128,38 +140,127 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Screenshots Section */}
-      <section className="py-20 px-4 bg-[var(--bg-surface)]/50">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-[var(--amber)] text-2xl mb-12 text-center tracking-wider">
+      {/* Screenshots Section - App Store Style */}
+      <section className="py-20 bg-[var(--bg-surface)]/50">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-[var(--amber)] text-2xl mb-8 text-center tracking-wider px-4">
             ◈ GLIMPSE THE DEPTHS
           </h2>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              { src: '/screenshots/02-title.png', alt: 'Title Screen' },
-              { src: '/screenshots/03-combat.png', alt: 'Combat' },
-              { src: '/screenshots/05-corpse.png', alt: 'Corpse Discovery' },
-            ].map((img, i) => (
-              <div key={i} className="border border-[var(--border-dim)] bg-[var(--bg-base)] p-2">
-                <div className="aspect-[9/16] relative bg-[var(--bg-surface)] flex items-center justify-center">
-                  {/* Placeholder - replace with actual screenshots */}
-                  <Image
-                    src={img.src}
-                    alt={img.alt}
-                    fill
-                    className="object-contain"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                    }}
-                  />
-                  <span className="text-[var(--text-dim)] text-sm absolute">{img.alt}</span>
-                </div>
-              </div>
-            ))}
+          {/* Horizontal scrolling gallery */}
+          <div className="overflow-x-auto scrollbar-hide">
+            <div className="flex gap-4 px-4 pb-4" style={{ width: 'max-content' }}>
+              {[
+                { src: '/screenshots/01-splash.png', alt: 'Splash Screen' },
+                { src: '/screenshots/02-title.png', alt: 'Title Screen' },
+                { src: '/screenshots/03-combat.png', alt: 'Combat' },
+                { src: '/screenshots/04-death.png', alt: 'Death Screen' },
+                { src: '/screenshots/05-corpse.png', alt: 'Corpse Discovery' },
+              ].map((img, i) => (
+                <button
+                  key={i}
+                  onClick={() => setLightboxIndex(i)}
+                  className="flex-shrink-0 border border-[var(--border-dim)] bg-[var(--bg-base)] p-1.5 rounded-lg hover:border-[var(--amber-dim)] transition-all hover:scale-[1.02] cursor-pointer group"
+                >
+                  <div className="w-[140px] sm:w-[160px] aspect-[9/16] relative bg-[var(--bg-surface)] rounded overflow-hidden">
+                    <Image
+                      src={img.src}
+                      alt={img.alt}
+                      fill
+                      className="object-cover"
+                      sizes="160px"
+                    />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all" />
+                  </div>
+                  <p className="text-[var(--text-dim)] text-xs mt-1.5 text-center">{img.alt}</p>
+                </button>
+              ))}
+            </div>
           </div>
+          
+          <p className="text-[var(--text-dim)] text-xs text-center mt-4 px-4">
+            Tap to view full size • Scroll for more →
+          </p>
         </div>
       </section>
+
+      {/* Lightbox Gallery */}
+      {lightboxIndex !== null && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
+          onClick={() => setLightboxIndex(null)}
+        >
+          {/* Close button */}
+          <button 
+            className="absolute top-4 right-4 text-white/70 hover:text-white text-3xl z-10"
+            onClick={() => setLightboxIndex(null)}
+          >
+            ✕
+          </button>
+          
+          {/* Navigation arrows */}
+          <button
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white text-4xl z-10 p-2"
+            onClick={(e) => {
+              e.stopPropagation();
+              setLightboxIndex((prev) => (prev! - 1 + 5) % 5);
+            }}
+          >
+            ‹
+          </button>
+          <button
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white text-4xl z-10 p-2"
+            onClick={(e) => {
+              e.stopPropagation();
+              setLightboxIndex((prev) => (prev! + 1) % 5);
+            }}
+          >
+            ›
+          </button>
+          
+          {/* Image */}
+          <div 
+            className="relative w-full h-full max-w-md max-h-[85vh] mx-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Image
+              src={[
+                '/screenshots/01-splash.png',
+                '/screenshots/02-title.png',
+                '/screenshots/03-combat.png',
+                '/screenshots/04-death.png',
+                '/screenshots/05-corpse.png',
+              ][lightboxIndex]}
+              alt="Screenshot"
+              fill
+              className="object-contain"
+              sizes="(max-width: 768px) 100vw, 500px"
+              priority
+            />
+          </div>
+          
+          {/* Dots indicator */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+            {[0, 1, 2, 3, 4].map((i) => (
+              <button
+                key={i}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLightboxIndex(i);
+                }}
+                className={`w-2 h-2 rounded-full transition-all ${
+                  i === lightboxIndex ? 'bg-[var(--amber)] w-4' : 'bg-white/40 hover:bg-white/60'
+                }`}
+              />
+            ))}
+          </div>
+          
+          {/* Caption */}
+          <p className="absolute bottom-14 left-1/2 -translate-x-1/2 text-white/70 text-sm">
+            {['Splash Screen', 'Title Screen', 'Combat', 'Death Screen', 'Corpse Discovery'][lightboxIndex]}
+          </p>
+        </div>
+      )}
 
       {/* Agent API Section */}
       <section className="py-20 px-4 border-t border-[var(--border-dim)]">
