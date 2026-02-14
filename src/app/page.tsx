@@ -141,39 +141,88 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* The Descent - Vertical Timeline */}
       <section className="py-20 px-4 border-t border-[var(--border-dim)]">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-[var(--amber)] text-2xl mb-12 text-center tracking-wider">
-            ◈ HOW IT WORKS
+        <div className="max-w-2xl mx-auto">
+          <h2 className="text-[var(--amber)] text-2xl mb-16 text-center tracking-wider">
+            ◈ THE DESCENT
           </h2>
           
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Feature 1 */}
-            <div className="bg-[var(--bg-surface)] border border-[var(--border-dim)] p-6">
-              <div className="text-4xl mb-4">💀</div>
-              <h3 className="text-[var(--amber-bright)] font-bold mb-2">STAKE & DESCEND</h3>
-              <p className="text-[var(--text-muted)] text-sm leading-relaxed">
-                Lock your SOL and enter the dungeon. The deeper you go, the more you risk - and the more you can win.
-              </p>
+          {/* Vertical timeline */}
+          <div className="relative">
+            {/* Vertical line */}
+            <div className="absolute left-6 sm:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-[var(--amber)] via-[var(--red)] to-[var(--purple)] sm:-translate-x-px" />
+            
+            {/* Step 1: Stake */}
+            <div className="relative flex items-start gap-6 sm:gap-12 mb-16">
+              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-[var(--bg-base)] border-2 border-[var(--amber)] flex items-center justify-center text-2xl z-10 sm:absolute sm:left-1/2 sm:-translate-x-1/2">
+                ◎
+              </div>
+              <div className="flex-1 sm:w-[calc(50%-4rem)] sm:pr-8 sm:text-right">
+                <div className="bg-[var(--bg-surface)] border border-[var(--border-dim)] p-5 relative">
+                  <div className="hidden sm:block absolute top-4 -right-2 w-0 h-0 border-t-8 border-b-8 border-l-8 border-transparent border-l-[var(--border-dim)]" />
+                  <h3 className="text-[var(--amber-bright)] font-bold text-lg mb-2">STAKE YOUR SOL</h3>
+                  <p className="text-[var(--text-muted)] text-sm leading-relaxed">
+                    Lock your tokens in the escrow. The deeper you go, the more you risk — and the more you can win.
+                  </p>
+                  <div className="text-[var(--text-dim)] text-xs mt-3 font-mono">FLOOR 0</div>
+                </div>
+              </div>
+              <div className="hidden sm:block flex-1" />
             </div>
 
-            {/* Feature 2 */}
-            <div className="bg-[var(--bg-surface)] border border-[var(--border-dim)] p-6">
-              <div className="text-4xl mb-4">📜</div>
-              <h3 className="text-[var(--amber-bright)] font-bold mb-2">DIE & LEAVE YOUR MARK</h3>
-              <p className="text-[var(--text-muted)] text-sm leading-relaxed">
-                When you fall, write your final words. Your corpse becomes content for the next player to discover.
-              </p>
+            {/* Step 2: Fight */}
+            <div className="relative flex items-start gap-6 sm:gap-12 mb-16">
+              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-[var(--bg-base)] border-2 border-[var(--red)] flex items-center justify-center text-2xl z-10 sm:absolute sm:left-1/2 sm:-translate-x-1/2">
+                ⚔️
+              </div>
+              <div className="hidden sm:block flex-1" />
+              <div className="flex-1 sm:w-[calc(50%-4rem)] sm:pl-8">
+                <div className="bg-[var(--bg-surface)] border border-[var(--border-dim)] p-5 relative">
+                  <div className="hidden sm:block absolute top-4 -left-2 w-0 h-0 border-t-8 border-b-8 border-r-8 border-transparent border-r-[var(--border-dim)]" />
+                  <h3 className="text-[var(--red-bright)] font-bold text-lg mb-2">FIGHT OR FLEE</h3>
+                  <p className="text-[var(--text-muted)] text-sm leading-relaxed">
+                    Battle creatures in the dark. Strike, dodge, brace, or run. Each choice could be your last.
+                  </p>
+                  <div className="text-[var(--text-dim)] text-xs mt-3 font-mono">FLOORS 1-12</div>
+                </div>
+              </div>
             </div>
 
-            {/* Feature 3 */}
-            <div className="bg-[var(--bg-surface)] border border-[var(--border-dim)] p-6">
-              <div className="text-4xl mb-4">💸</div>
-              <h3 className="text-[var(--amber-bright)] font-bold mb-2">TIP THE DEAD</h3>
-              <p className="text-[var(--text-muted)] text-sm leading-relaxed">
-                Find a corpse with great final words? Send them a micro-tip. Only possible on Solana.
-              </p>
+            {/* Step 3: Die */}
+            <div className="relative flex items-start gap-6 sm:gap-12 mb-16">
+              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-[var(--bg-base)] border-2 border-[var(--purple)] flex items-center justify-center text-2xl z-10 sm:absolute sm:left-1/2 sm:-translate-x-1/2">
+                💀
+              </div>
+              <div className="flex-1 sm:w-[calc(50%-4rem)] sm:pr-8 sm:text-right">
+                <div className="bg-[var(--bg-surface)] border border-[var(--border-dim)] p-5 relative">
+                  <div className="hidden sm:block absolute top-4 -right-2 w-0 h-0 border-t-8 border-b-8 border-l-8 border-transparent border-l-[var(--border-dim)]" />
+                  <h3 className="text-[var(--purple-bright)] font-bold text-lg mb-2">DIE & LEAVE YOUR MARK</h3>
+                  <p className="text-[var(--text-muted)] text-sm leading-relaxed">
+                    When you fall, etch your final words into the stone. Your corpse becomes content for others to find.
+                  </p>
+                  <div className="text-[var(--text-dim)] text-xs mt-3 font-mono">YOUR END</div>
+                </div>
+              </div>
+              <div className="hidden sm:block flex-1" />
+            </div>
+
+            {/* Step 4: Tip */}
+            <div className="relative flex items-start gap-6 sm:gap-12">
+              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-[var(--bg-base)] border-2 border-[var(--green)] flex items-center justify-center text-2xl z-10 sm:absolute sm:left-1/2 sm:-translate-x-1/2">
+                💸
+              </div>
+              <div className="hidden sm:block flex-1" />
+              <div className="flex-1 sm:w-[calc(50%-4rem)] sm:pl-8">
+                <div className="bg-[var(--bg-surface)] border border-[var(--border-dim)] p-5 relative">
+                  <div className="hidden sm:block absolute top-4 -left-2 w-0 h-0 border-t-8 border-b-8 border-r-8 border-transparent border-r-[var(--border-dim)]" />
+                  <h3 className="text-[var(--green-bright)] font-bold text-lg mb-2">TIP THE FALLEN</h3>
+                  <p className="text-[var(--text-muted)] text-sm leading-relaxed">
+                    Discover a corpse with legendary final words? Send them SOL. Death pays dividends.
+                  </p>
+                  <div className="text-[var(--text-dim)] text-xs mt-3 font-mono">THE CYCLE CONTINUES</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
