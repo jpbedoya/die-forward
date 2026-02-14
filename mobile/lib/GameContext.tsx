@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import * as api from './api';
-import { generateDungeon } from './api';
+import { generateRandomDungeon, DungeonRoom } from './content';
 import * as wallet from './wallet';
 
 interface GameState {
@@ -16,7 +16,7 @@ interface GameState {
   health: number;
   stamina: number;
   inventory: { id: string; name: string; emoji: string }[];
-  dungeon: api.DungeonRoom[];
+  dungeon: DungeonRoom[];
   
   // UI state
   loading: boolean;
@@ -128,8 +128,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
         throw new Error('Invalid session response from server');
       }
       
-      // Generate dungeon client-side (same as web app)
-      const dungeon = generateDungeon();
+      // Generate dungeon client-side with full content system
+      const dungeon = generateRandomDungeon();
       
       updateState({
         sessionToken: session.sessionToken,

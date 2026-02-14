@@ -1,21 +1,7 @@
 // API client for Die Forward backend
+// Full dungeon generation is now in lib/content.ts
 
 const API_BASE = 'https://dieforward.com';
-
-// Generate a dungeon client-side (matches web app structure)
-export function generateDungeon(): DungeonRoom[] {
-  return [
-    { type: 'explore', narrative: 'The descent begins. Cold air rises from below.' },
-    { type: 'explore', narrative: 'Water seeps through ancient cracks in the walls.' },
-    { type: 'combat', narrative: 'Something moves in the shadows ahead.', enemy: 'The Drowned' },
-    { type: 'corpse', narrative: 'A fallen adventurer lies crumpled against the wall.' },
-    { type: 'cache', narrative: 'A hidden alcove contains forgotten supplies.' },
-    { type: 'combat', narrative: 'A guardian blocks the deeper passage.', enemy: 'Pale Crawler' },
-    { type: 'explore', narrative: 'You stand at the threshold of the abyss.' },
-    { type: 'combat', narrative: 'The final challenge awaits.', enemy: 'The Hollow' },
-    { type: 'exit', narrative: 'Light filters from above. Freedom is within reach.' },
-  ];
-}
 
 export interface GameSession {
   sessionToken: string;

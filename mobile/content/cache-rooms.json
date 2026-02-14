@@ -1,0 +1,231 @@
+{
+  "type": "cache",
+  "zone": "THRESHOLD OF THE UNNAMED",
+  "rooms": [
+    {
+      "template": "alcove",
+      "variations": [
+        {
+          "id": "alcove_1",
+          "narrative": "A gap in the wall, above the waterline. Dry. Almost warm. Someone left supplies here. Maybe they made it out. Maybe they just left everything behind."
+        },
+        {
+          "id": "alcove_2",
+          "narrative": "A natural pocket in the stone. Small enough to miss, large enough to hide. Inside: bandages, dried food, a note that says 'Take it. I won't need it.'"
+        },
+        {
+          "id": "alcove_3",
+          "narrative": "Behind a loose stone. You almost didn't check. Someone wanted this hidden. Someone who knew they wouldn't be coming back for it."
+        },
+        {
+          "id": "alcove_4",
+          "narrative": "A crawlspace. Tight, but it opens into a small chamber. Supplies are stacked neatly. No dust — someone was here recently. Someone who left in a hurry."
+        },
+        {
+          "id": "alcove_5",
+          "narrative": "An alcove marked with a survivor's symbol. The universal sign for 'safe enough.' Inside: what you need. Outside: everything else."
+        }
+      ]
+    },
+    {
+      "template": "offering_site",
+      "variations": [
+        {
+          "id": "offering_1",
+          "narrative": "An altar to something nameless. Offerings rot at its base — but among them, something useful. Taking it feels like accepting a contract."
+        },
+        {
+          "id": "offering_2",
+          "narrative": "A shrine to water itself. Coins glitter beneath the surface of a pool. Other things too — weapons, herbs, hope. The water gives if you're willing to reach."
+        },
+        {
+          "id": "offering_3",
+          "narrative": "The faithful left gifts here. The faithful are gone. The gifts remain. Taking them might anger something. Not taking them seems like waste."
+        },
+        {
+          "id": "offering_4",
+          "narrative": "A statue of something that might have been worshipped. At its feet: supplies left by pilgrims. At its face: a knowing smile. It wants you to take them."
+        },
+        {
+          "id": "offering_5",
+          "narrative": "Candles surround a small bounty. The candles are fresh. Who lights them? Who leaves supplies for strangers? Don't think about it. Just take what you need."
+        }
+      ]
+    },
+    {
+      "template": "survivor_stash",
+      "variations": [
+        {
+          "id": "stash_1",
+          "narrative": "Marks on the wall. Counting days? There are hundreds. Whoever was here survived longer than seems possible. They left everything behind. Did they escape, or simply give up?"
+        },
+        {
+          "id": "stash_2",
+          "narrative": "A bedroll. A cold fire. A journal, the last page torn out. They lived here. For how long? Long enough to accumulate supplies. Long enough to suddenly leave."
+        },
+        {
+          "id": "stash_3",
+          "narrative": "Someone built a life down here. Furniture made from debris. Art scratched into walls. Then they abandoned it. Everything useful is neatly packed, waiting."
+        },
+        {
+          "id": "stash_4",
+          "narrative": "A survivor's camp. No body — they didn't die here. Their supplies are labeled, organized, left with intention. A gift for whoever comes next."
+        },
+        {
+          "id": "stash_5",
+          "narrative": "Weapons. Food. Medicine. Stacked against the far wall. A note reads: 'Couldn't carry it all. Didn't need to. Made it out.' Hope in ink."
+        }
+      ]
+    },
+    {
+      "template": "spring",
+      "variations": [
+        {
+          "id": "spring_1",
+          "narrative": "Water trickles from the stone. Clear, not black. Something green grows at its edges — the only living thing you've seen. Drinking feels like hope. The aftertaste lingers."
+        },
+        {
+          "id": "spring_2",
+          "narrative": "A pool of clean water. A miracle down here. You can see the bottom. Nothing moves. Nothing lurks. It's safe. It has to be safe. Drink."
+        },
+        {
+          "id": "spring_3",
+          "narrative": "Steam rises from a crack in the floor. Warm water, mineral-rich, almost pleasant. The heat is alien after so much cold. Rest here. Recover."
+        },
+        {
+          "id": "spring_4",
+          "narrative": "An underground spring, fresh and cold. Others have camped here — you can see the marks. A safe place. As safe as anything gets."
+        },
+        {
+          "id": "spring_5",
+          "narrative": "The water here glows faintly. A soft blue. It's not dangerous — somehow you know this. Drinking it soothes wounds. Don't ask how. Don't ask why."
+        }
+      ]
+    },
+    {
+      "template": "abandoned_camp",
+      "variations": [
+        {
+          "id": "camp_1",
+          "narrative": "A bedroll. Cold ashes. Food half-eaten. They left fast. The supplies remain, but so does the question: what made someone abandon their only safe place?"
+        },
+        {
+          "id": "camp_2",
+          "narrative": "Tents — plural. A group camped here. Their gear is scattered, panicked. Some took essentials. Some took nothing. What arrived wasn't worth packing for."
+        },
+        {
+          "id": "camp_3",
+          "narrative": "Everything is overturned. Signs of struggle? Signs of flight? The supplies are buried under chaos, but they're here. Whatever happened, it happened fast."
+        },
+        {
+          "id": "camp_4",
+          "narrative": "A watch post. Someone was on guard here. Their chair faces the wrong direction now. Their supplies are untouched. They saw something. They didn't finish seeing it."
+        },
+        {
+          "id": "camp_5",
+          "narrative": "Mid-meal. The food is still on plates. Still... edible, probably. They didn't even stop eating before they ran. Or were taken. The supplies don't answer questions."
+        }
+      ]
+    },
+    {
+      "template": "armory",
+      "variations": [
+        {
+          "id": "armory_1",
+          "narrative": "Racks of weapons, pitted with age. An army was equipped here once. For what war? Against what enemy? Some blades still hold an edge. Help yourself."
+        },
+        {
+          "id": "armory_2",
+          "narrative": "A weapon cache, hidden in the walls. Someone prepared for a war that never came. Or a war that never ended. Their preparation is your survival."
+        },
+        {
+          "id": "armory_3",
+          "narrative": "Tools of violence, organized by type. The dust is thick. No one has been here in ages. No one except the things that don't need weapons."
+        },
+        {
+          "id": "armory_4",
+          "narrative": "A guard room. Empty now. The guards' equipment remains — corroded, but functional. They won't mind you borrowing it. They don't mind anything anymore."
+        },
+        {
+          "id": "armory_5",
+          "narrative": "Weapons embedded in the wall. Trophies? Storage? Art? The arrangement is deliberate. Take what calls to you. Something here was waiting for you specifically."
+        }
+      ]
+    },
+    {
+      "template": "merchant",
+      "variations": [
+        {
+          "id": "merchant_1",
+          "narrative": "A figure in the dark. They have supplies. They have prices. Both are non-negotiable. In the underworld, commerce continues. The dead still deal."
+        },
+        {
+          "id": "merchant_2",
+          "narrative": "The Collector sits among relics. 'Nothing is free. Everything costs. What are you willing to pay?' They spread their wares. The prices aren't in SOL."
+        },
+        {
+          "id": "merchant_3",
+          "narrative": "'You have things. I have things. We can trade, or we can wait to see who takes whose things by force.' The merchant smiles. It's not a nice smile."
+        },
+        {
+          "id": "merchant_4",
+          "narrative": "They call themselves a 'facilitator.' They facilitate the movement of items from dead hands to living ones. 'Everyone wins,' they say. 'Eventually, everyone's a supplier.'"
+        },
+        {
+          "id": "merchant_5",
+          "narrative": "A shop. Down here. Stocked with items from every dead adventurer who passed through. 'Recycling,' the keeper calls it. 'Sustainable.' The prices are your future possessions."
+        }
+      ]
+    },
+    {
+      "template": "trophy_room",
+      "variations": [
+        {
+          "id": "trophy_1",
+          "narrative": "Skulls mounted on the walls. Claws displayed. Someone hunted here, successfully. Their trophies tell you what's ahead. Their supplies might help you survive it."
+        },
+        {
+          "id": "trophy_2",
+          "narrative": "A hunter's den. Pelts, bones, things you don't recognize. Whoever lived here knew how to survive. Knew how to kill. Their tools are available. Their wisdom, less so."
+        },
+        {
+          "id": "trophy_3",
+          "narrative": "Every creature from the depths, preserved and mounted. A catalogue of nightmares. Among them: supplies for creating more trophies. Or avoiding becoming one."
+        },
+        {
+          "id": "trophy_4",
+          "narrative": "The first thing you see is the Drowned's head on a spike. Then the Crawler, pinned like a specimen. Someone was studying them. Their notes and supplies remain."
+        },
+        {
+          "id": "trophy_5",
+          "narrative": "A monument to violence. Trophies of a hundred hunts. The hunter isn't here. The trophies suggest they rarely stay in one place. They rarely need to. Take what's useful."
+        }
+      ]
+    },
+    {
+      "template": "hermit",
+      "variations": [
+        {
+          "id": "hermit_1",
+          "narrative": "They've been here years. Decades? Alone. Surviving. They don't want company, but they'll share what they know. And what they no longer need."
+        },
+        {
+          "id": "hermit_2",
+          "narrative": "'You're the first visitor in... I've lost count.' The hermit's eyes are strange but not hostile. 'Take these. I've made more. I always make more.'"
+        },
+        {
+          "id": "hermit_3",
+          "narrative": "A philosopher of the depths. They've accepted their existence here. 'Supplies? Yes, take them. Answers? I have those too. The questions are harder.'"
+        },
+        {
+          "id": "hermit_4",
+          "narrative": "They've forgotten their own name. They remember how to survive. 'This will help. That will kill you. I learned the difference. The hard way. You don't have to.'"
+        },
+        {
+          "id": "hermit_5",
+          "narrative": "'You want to leave. I wanted that too, once.' The hermit gestures at supplies. 'Take them. Make it out. Or don't. Either way, I'll be here.'"
+        }
+      ]
+    }
+  ]
+}
