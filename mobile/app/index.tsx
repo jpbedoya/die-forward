@@ -102,6 +102,21 @@ export default function HomeScreen() {
               <Text className="text-bone-muted text-base font-mono">🎮 FREE PLAY (Demo)</Text>
             </Pressable>
           </Link>
+
+          {/* Secondary navigation */}
+          <View className="flex-row gap-2">
+            <Link href="/leaderboard" asChild className="flex-1">
+              <Pressable className="border border-crypt-border py-3 px-4 items-center active:border-amber">
+                <Text className="text-bone-dark text-sm font-mono">🏆 Leaderboard</Text>
+              </Pressable>
+            </Link>
+            
+            <Link href="/feed" asChild className="flex-1">
+              <Pressable className="border border-crypt-border py-3 px-4 items-center active:border-amber">
+                <Text className="text-bone-dark text-sm font-mono">💀 Feed</Text>
+              </Pressable>
+            </Link>
+          </View>
         </View>
 
         {/* Live Stats */}

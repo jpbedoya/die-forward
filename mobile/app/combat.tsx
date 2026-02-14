@@ -144,13 +144,22 @@ export default function CombatScreen() {
     
     switch (action) {
       case 'strike': {
-        playSFX('sword-slash');
         // Player damage uses settings range, enemy counter-attack is lower
         const basePlayerHit = getBaseDamage();
         const baseEnemyHit = Math.floor(getBaseDamage() * 0.6);
         playerDmg = calculateDamage(baseEnemyHit, false);
         enemyDmg = calculateDamage(basePlayerHit, true);
-        actionNarrative = getStrikeNarration('mutual');
+        
+        // Critical hit: 15% chance for 1.5x damage
+        const isCritical = Math.random() < 0.15;
+        if (isCritical) {
+          enemyDmg = Math.round(enemyDmg * 1.5);
+          actionNarrative = getStrikeNarration('success');
+          playSFX('critical-hit');
+        } else {
+          actionNarrative = getStrikeNarration('mutual');
+          playSFX(enemyDmg >= 25 ? 'critical-hit' : 'sword-slash');
+        }
         break;
       }
       case 'dodge': {
