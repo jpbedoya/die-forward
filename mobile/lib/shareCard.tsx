@@ -5,7 +5,6 @@ import React, { useRef, useCallback } from 'react';
 import { View, Text } from 'react-native';
 import ViewShot from 'react-native-view-shot';
 import * as Sharing from 'expo-sharing';
-import * as FileSystem from 'expo-file-system';
 
 export interface DeathCardData {
   playerName: string;
@@ -154,26 +153,7 @@ export function useShareCard() {
     }
   }, []);
 
-  const saveToDevice = useCallback(async () => {
-    if (!viewShotRef.current) return null;
-
-    try {
-      const uri = await viewShotRef.current.capture?.();
-      if (!uri) return null;
-
-      // Copy to a permanent location
-      const filename = `die-forward-${Date.now()}.png`;
-      const destUri = FileSystem.documentDirectory + filename;
-      await FileSystem.copyAsync({ from: uri, to: destUri });
-
-      return destUri;
-    } catch (error) {
-      console.error('Failed to save card:', error);
-      return null;
-    }
-  }, []);
-
-  return { viewShotRef, captureAndShare, saveToDevice };
+  return { viewShotRef, captureAndShare };
 }
 
 // Wrapper component for capturing
@@ -182,7 +162,7 @@ export function ShareCardCapture({
   viewShotRef 
 }: { 
   children: React.ReactNode;
-  viewShotRef: React.RefObject<ViewShot>;
+  viewShotRef: React.RefObject<ViewShot | null>;
 }) {
   return (
     <ViewShot 

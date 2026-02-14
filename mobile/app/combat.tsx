@@ -11,7 +11,6 @@ import {
   getCreatureIntent,
   getIntentEffects,
   getItemEffects,
-  getRoomDamageMultiplier,
   getDepthForRoom,
   getStrikeNarration,
   getDodgeNarration,

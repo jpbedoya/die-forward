@@ -142,11 +142,10 @@ export function buildStakeInstruction(
   const sessionPda = deriveSessionPDA(sessionId);
   
   // Instruction data: discriminator + session_id (16 bytes) + amount (8 bytes LE)
-  const data = new Uint8Array(8 + 16 + 8);
+  const data = Buffer.alloc(8 + 16 + 8);
   data.set(STAKE_DISCRIMINATOR);
   data.set(sessionId, 8);
-  const amountView = new DataView(data.buffer);
-  amountView.setBigUint64(24, amountLamports, true); // Little endian
+  data.writeBigUInt64LE(amountLamports, 24);
   
   return new TransactionInstruction({
     keys: [
@@ -168,7 +167,7 @@ export function buildRecordDeathInstruction(
   const sessionPda = deriveSessionPDA(sessionId);
   
   // Instruction data: discriminator + session_id (16 bytes)
-  const data = new Uint8Array(8 + 16);
+  const data = Buffer.alloc(8 + 16);
   data.set(RECORD_DEATH_DISCRIMINATOR);
   data.set(sessionId, 8);
   
@@ -192,7 +191,7 @@ export function buildClaimVictoryInstruction(
   const sessionPda = deriveSessionPDA(sessionId);
   
   // Instruction data: discriminator + session_id (16 bytes)
-  const data = new Uint8Array(8 + 16);
+  const data = Buffer.alloc(8 + 16);
   data.set(CLAIM_VICTORY_DISCRIMINATOR);
   data.set(sessionId, 8);
   
