@@ -3,8 +3,23 @@
 
 import { Platform } from 'react-native';
 
-// Web uses relative paths (same origin), native uses full URL
-const API_BASE = Platform.OS === 'web' ? '' : 'https://dieforward.com';
+// Determine API base URL:
+// - Web production (dieforward.com): relative paths
+// - Web dev (localhost): use production API with CORS
+// - Native (iOS/Android): use production API
+function getApiBase(): string {
+  if (Platform.OS !== 'web') {
+    return 'https://dieforward.com';
+  }
+  // On web, check if we're on the production domain
+  if (typeof window !== 'undefined' && window.location.hostname === 'dieforward.com') {
+    return ''; // Use relative paths on production
+  }
+  // Dev mode on web - use production API (CORS enabled)
+  return 'https://dieforward.com';
+}
+
+const API_BASE = getApiBase();
 
 export interface GameSession {
   sessionToken: string;
