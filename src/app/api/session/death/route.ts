@@ -11,6 +11,17 @@ const db = init({
 // Demo mode flag - skip on-chain recording
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
 
+// CORS headers for unified codebase
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+};
+
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders });
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();

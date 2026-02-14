@@ -10,6 +10,17 @@ const db = init({
 // Valid stake amounts
 const VALID_STAKES = [0.01, 0.05, 0.1, 0.25];
 
+// CORS headers for unified codebase (web + mobile)
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+};
+
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders });
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -53,10 +64,10 @@ export async function POST(request: NextRequest) {
       success: true,
       sessionToken,
       zone: 'THE SUNKEN CRYPT',
-    });
+    }, { headers: corsHeaders });
 
   } catch (error) {
     console.error('Failed to start session:', error);
-    return NextResponse.json({ error: 'Failed to start session' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to start session' }, { status: 500, headers: corsHeaders });
   }
 }

@@ -1,7 +1,10 @@
 // API client for Die Forward backend
 // Full dungeon generation is now in lib/content.ts
 
-const API_BASE = 'https://dieforward.com';
+import { Platform } from 'react-native';
+
+// Web uses relative paths (same origin), native uses full URL
+const API_BASE = Platform.OS === 'web' ? '' : 'https://dieforward.com';
 
 export interface GameSession {
   sessionToken: string;
