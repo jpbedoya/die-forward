@@ -1,6 +1,6 @@
 // API client for Die Forward backend
 
-const API_BASE = 'https://die-forward.vercel.app';
+const API_BASE = 'https://dieforward.com';
 
 // Generate a dungeon client-side (matches web app structure)
 export function generateDungeon(): DungeonRoom[] {

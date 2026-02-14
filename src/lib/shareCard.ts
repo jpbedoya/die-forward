@@ -130,7 +130,7 @@ export async function generateDeathCard(data: DeathCardData): Promise<Blob> {
   // URL
   ctx.font = '16px "Courier New", monospace';
   ctx.fillStyle = '#f59e0b';
-  ctx.fillText('die-forward.vercel.app', 300, 750);
+  ctx.fillText('dieforward.com', 300, 750);
   
   return new Promise((resolve) => {
     canvas.toBlob((blob) => resolve(blob!), 'image/png');
@@ -233,7 +233,7 @@ export async function generateVictoryCard(data: VictoryCardData): Promise<Blob> 
   // URL
   ctx.font = '16px "Courier New", monospace';
   ctx.fillStyle = '#f59e0b';
-  ctx.fillText('die-forward.vercel.app', 300, 770);
+  ctx.fillText('dieforward.com', 300, 770);
   
   return new Promise((resolve) => {
     canvas.toBlob((blob) => resolve(blob!), 'image/png');
