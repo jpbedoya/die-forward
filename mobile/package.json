@@ -25,6 +25,7 @@
     "bs58": "^6.0.0",
     "buffer": "^6.0.3",
     "expo": "~54.0.33",
+    "expo-asset": "~12.0.12",
     "expo-av": "~16.0.8",
     "expo-constants": "^18.0.13",
     "expo-file-system": "~19.0.21",
