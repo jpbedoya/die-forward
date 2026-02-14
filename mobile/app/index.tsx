@@ -116,8 +116,12 @@ export default function HomeScreen() {
           pointerEvents="none"
         >
           <View className="flex-1 bg-crypt-bg justify-center items-center">
-            <Text className="text-2xl text-amber">◈</Text>
-            <Text className="text-xl text-bone font-mono font-bold tracking-[4px] mt-2">DIE FORWARD</Text>
+            <Text 
+              className="font-mono text-[6px] text-amber text-center leading-[7px]"
+              style={{ textShadowColor: '#f59e0b', textShadowRadius: 15 }}
+            >
+              {ASCII_LOGO}
+            </Text>
           </View>
         </Animated.View>
       </View>
@@ -127,10 +131,14 @@ export default function HomeScreen() {
   return (
     <SafeAreaView className="flex-1 bg-crypt-bg">
       <View className="flex-1 px-5 justify-between">
-        {/* Header */}
-        <View className="flex-row items-center justify-center pt-5 gap-2">
-          <Text className="text-2xl text-amber">◈</Text>
-          <Text className="text-xl text-bone font-mono font-bold tracking-[4px]">DIE FORWARD</Text>
+        {/* Header - ASCII Logo */}
+        <View className="items-center pt-4">
+          <Text 
+            className="font-mono text-[4px] text-amber text-center leading-[5px]"
+            style={{ textShadowColor: '#f59e0b', textShadowRadius: 10 }}
+          >
+            {ASCII_LOGO}
+          </Text>
         </View>
 
         {/* Tagline */}
