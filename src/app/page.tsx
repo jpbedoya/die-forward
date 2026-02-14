@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 
 const ASCII_LOGO = `
@@ -11,24 +11,63 @@ const ASCII_LOGO = `
  ██████╔╝██║███████╗    ██║     ╚██████╔╝██║  ██║╚███╔███╔╝██║  ██║██║  ██║██████╔╝
  ╚═════╝ ╚═╝╚══════╝    ╚═╝      ╚═════╝ ╚═╝  ╚═╝ ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ `;
 
+const SCREENSHOTS = [
+  { src: '/screenshots/01-splash.png', alt: 'Splash Screen' },
+  { src: '/screenshots/02-title.png', alt: 'Title Screen' },
+  { src: '/screenshots/03-combat.png', alt: 'Combat' },
+  { src: '/screenshots/04-death.png', alt: 'Death Screen' },
+  { src: '/screenshots/05-corpse.png', alt: 'Corpse Discovery' },
+];
+
 export default function LandingPage() {
   const [mounted, setMounted] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
   
-  // Close lightbox on escape key
+  // Close lightbox on escape key + arrow navigation
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setLightboxIndex(null);
-      if (e.key === 'ArrowLeft' && lightboxIndex !== null) setLightboxIndex((prev) => (prev! - 1 + 5) % 5);
-      if (e.key === 'ArrowRight' && lightboxIndex !== null) setLightboxIndex((prev) => (prev! + 1) % 5);
+      if (e.key === 'ArrowLeft' && lightboxIndex !== null) setLightboxIndex((prev) => (prev! - 1 + SCREENSHOTS.length) % SCREENSHOTS.length);
+      if (e.key === 'ArrowRight' && lightboxIndex !== null) setLightboxIndex((prev) => (prev! + 1) % SCREENSHOTS.length);
     };
     window.addEventListener('keydown', handleEsc);
     return () => window.removeEventListener('keydown', handleEsc);
   }, [lightboxIndex]);
+
+  // Swipe handlers for lightbox
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartX.current === null || touchEndX.current === null) return;
+    
+    const diff = touchStartX.current - touchEndX.current;
+    const threshold = 50; // minimum swipe distance
+    
+    if (Math.abs(diff) > threshold) {
+      if (diff > 0) {
+        // Swiped left -> next image
+        setLightboxIndex((prev) => (prev! + 1) % SCREENSHOTS.length);
+      } else {
+        // Swiped right -> previous image
+        setLightboxIndex((prev) => (prev! - 1 + SCREENSHOTS.length) % SCREENSHOTS.length);
+      }
+    }
+    
+    touchStartX.current = null;
+    touchEndX.current = null;
+  };
 
   return (
     <div className="min-h-screen bg-[var(--bg-base)] font-mono">
@@ -150,13 +189,7 @@ export default function LandingPage() {
           {/* Horizontal scrolling gallery */}
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex gap-4 px-4 pb-4" style={{ width: 'max-content' }}>
-              {[
-                { src: '/screenshots/01-splash.png', alt: 'Splash Screen' },
-                { src: '/screenshots/02-title.png', alt: 'Title Screen' },
-                { src: '/screenshots/03-combat.png', alt: 'Combat' },
-                { src: '/screenshots/04-death.png', alt: 'Death Screen' },
-                { src: '/screenshots/05-corpse.png', alt: 'Corpse Discovery' },
-              ].map((img, i) => (
+              {SCREENSHOTS.map((img, i) => (
                 <button
                   key={i}
                   onClick={() => setLightboxIndex(i)}
@@ -189,6 +222,9 @@ export default function LandingPage() {
         <div 
           className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
           onClick={() => setLightboxIndex(null)}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
           {/* Close button */}
           <button 
@@ -198,50 +234,50 @@ export default function LandingPage() {
             ✕
           </button>
           
-          {/* Navigation arrows */}
+          {/* Navigation arrows - hidden on mobile */}
           <button
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white text-4xl z-10 p-2"
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white text-4xl z-10 p-2 hidden sm:block"
             onClick={(e) => {
               e.stopPropagation();
-              setLightboxIndex((prev) => (prev! - 1 + 5) % 5);
+              setLightboxIndex((prev) => (prev! - 1 + SCREENSHOTS.length) % SCREENSHOTS.length);
             }}
           >
             ‹
           </button>
           <button
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white text-4xl z-10 p-2"
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white text-4xl z-10 p-2 hidden sm:block"
             onClick={(e) => {
               e.stopPropagation();
-              setLightboxIndex((prev) => (prev! + 1) % 5);
+              setLightboxIndex((prev) => (prev! + 1) % SCREENSHOTS.length);
             }}
           >
             ›
           </button>
           
-          {/* Image */}
+          {/* Image - swipeable area */}
           <div 
-            className="relative w-full h-full max-w-md max-h-[85vh] mx-4"
+            className="relative w-full h-full max-w-md max-h-[85vh] mx-4 touch-pan-y"
             onClick={(e) => e.stopPropagation()}
           >
             <Image
-              src={[
-                '/screenshots/01-splash.png',
-                '/screenshots/02-title.png',
-                '/screenshots/03-combat.png',
-                '/screenshots/04-death.png',
-                '/screenshots/05-corpse.png',
-              ][lightboxIndex]}
-              alt="Screenshot"
+              src={SCREENSHOTS[lightboxIndex].src}
+              alt={SCREENSHOTS[lightboxIndex].alt}
               fill
-              className="object-contain"
+              className="object-contain pointer-events-none select-none"
               sizes="(max-width: 768px) 100vw, 500px"
               priority
+              draggable={false}
             />
           </div>
           
+          {/* Swipe hint on mobile */}
+          <p className="absolute bottom-20 left-1/2 -translate-x-1/2 text-white/50 text-xs sm:hidden">
+            Swipe to navigate
+          </p>
+          
           {/* Dots indicator */}
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
-            {[0, 1, 2, 3, 4].map((i) => (
+            {SCREENSHOTS.map((_, i) => (
               <button
                 key={i}
                 onClick={(e) => {
