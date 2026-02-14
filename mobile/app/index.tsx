@@ -18,126 +18,85 @@ const ASCII_LOGO = `
   ██       ██████  ██   ██  ███ ███  ██   ██ ██   ██ ██████  
 `;
 
-// Progress bar for loading effect
-const PROGRESS_CHARS = ['░', '▒', '▓', '█'];
-
 export default function HomeScreen() {
   const [showSplash, setShowSplash] = useState(true);
-  const [isTransitioning, setIsTransitioning] = useState(false);
   
   // Animations
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const logoScale = useRef(new Animated.Value(0.8)).current;
-  const logoPulse = useRef(new Animated.Value(1)).current;
   const logoZoom = useRef(new Animated.Value(1)).current;
-  const textOpacity = useRef(new Animated.Value(0)).current;
   const titleFade = useRef(new Animated.Value(0)).current;
-  const progressWidth = useRef(new Animated.Value(0)).current;
-  const [progressText, setProgressText] = useState('');
 
   // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
   const { totalDeaths, totalStaked, isLoading: statsLoading } = usePoolStats();
   const { deaths: recentDeaths } = useDeathFeed(5);
 
-  // Splash intro animation
+  // Splash intro animation - auto transition after one pulse
   useEffect(() => {
-    // Animate progress bar
-    let progress = 0;
-    const progressInterval = setInterval(() => {
-      progress += Math.random() * 15 + 5;
-      if (progress >= 100) {
-        progress = 100;
-        clearInterval(progressInterval);
-      }
-      const filled = Math.floor(progress / 10);
-      const empty = 10 - filled;
-      setProgressText('█'.repeat(filled) + '░'.repeat(empty) + ` ${Math.floor(progress)}%`);
-    }, 150);
-
-    // Fade in logo
+    // Fade in + scale up + one pulse + zoom transition
     Animated.sequence([
+      // Fade in logo
       Animated.timing(fadeAnim, {
         toValue: 1,
         duration: 500,
         useNativeDriver: true,
       }),
-      // Scale up logo
+      // Scale up to full size
       Animated.timing(logoScale, {
         toValue: 1,
         duration: 400,
         useNativeDriver: true,
       }),
+      // One pulse: scale up
+      Animated.timing(logoScale, {
+        toValue: 1.08,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+      // Pulse back down
+      Animated.timing(logoScale, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+      // Brief pause
+      Animated.delay(200),
     ]).start(() => {
-      // Start pulsing
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(logoPulse, {
-            toValue: 1.05,
-            duration: 1500,
-            useNativeDriver: true,
-          }),
-          Animated.timing(logoPulse, {
-            toValue: 0.95,
-            duration: 1500,
-            useNativeDriver: true,
-          }),
-        ])
-      ).start();
-      
-      // Fade in tap text
-      Animated.timing(textOpacity, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }).start();
+      // Auto-transition: zoom out towards player
+      Animated.parallel([
+        // Logo zooms towards player
+        Animated.timing(logoZoom, {
+          toValue: 3,
+          duration: 400,
+          useNativeDriver: true,
+        }),
+        // Fade out splash
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 400,
+          useNativeDriver: true,
+        }),
+        // Fade in title screen
+        Animated.timing(titleFade, {
+          toValue: 1,
+          duration: 600,
+          delay: 200,
+          useNativeDriver: true,
+        }),
+      ]).start(() => setShowSplash(false));
     });
-
-    return () => clearInterval(progressInterval);
   }, []);
-
-  const handleTap = () => {
-    if (isTransitioning) return;
-    setIsTransitioning(true);
-    
-    // Stop pulsing and zoom towards player
-    logoPulse.stopAnimation();
-    
-    Animated.parallel([
-      // Logo zooms out (scales up like coming at you)
-      Animated.timing(logoZoom, {
-        toValue: 3,
-        duration: 400,
-        useNativeDriver: true,
-      }),
-      // Fade out splash
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: 400,
-        useNativeDriver: true,
-      }),
-      // Fade in title screen
-      Animated.timing(titleFade, {
-        toValue: 1,
-        duration: 600,
-        delay: 200,
-        useNativeDriver: true,
-      }),
-    ]).start(() => setShowSplash(false));
-  };
 
   if (showSplash) {
     return (
       <View className="flex-1 bg-crypt-bg">
-        <Pressable 
-          className="flex-1 justify-center items-center"
-          onPress={handleTap}
-        >
-          {/* Centered pulsing logo */}
+        <View className="flex-1 justify-center items-center">
+          {/* Centered logo with pulse + zoom */}
           <Animated.View 
             style={{ 
               opacity: fadeAnim,
               transform: [
-                { scale: Animated.multiply(logoScale, Animated.multiply(logoPulse, logoZoom)) }
+                { scale: Animated.multiply(logoScale, logoZoom) }
               ],
             }}
           >
@@ -148,22 +107,7 @@ export default function HomeScreen() {
               {ASCII_LOGO}
             </Text>
           </Animated.View>
-          
-          {/* Progress bar */}
-          <Animated.View style={{ opacity: fadeAnim }} className="mt-8">
-            <Text className="font-mono text-xs text-amber-dark text-center tracking-wider">
-              {progressText}
-            </Text>
-          </Animated.View>
-          
-          {/* Tap to enter */}
-          <Animated.Text 
-            className="mt-8 text-sm text-bone-dark font-mono tracking-widest"
-            style={{ opacity: textOpacity }}
-          >
-            [ TAP TO ENTER ]
-          </Animated.Text>
-        </Pressable>
+        </View>
         
         {/* Title screen fading in behind */}
         <Animated.View 
