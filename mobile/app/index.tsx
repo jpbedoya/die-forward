@@ -163,7 +163,7 @@ export default function HomeScreen() {
           
           <Link href="/stake" asChild>
             <Pressable className="border-2 border-crypt-border-light py-4 px-8 items-center active:border-amber">
-              <Text className="text-bone-muted text-base font-mono">🎮 FREE PLAY (Demo)</Text>
+              <Text className="text-bone-muted text-base font-mono">🎮 FREE PLAY</Text>
             </Pressable>
           </Link>
 
