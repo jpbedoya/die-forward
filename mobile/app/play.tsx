@@ -70,25 +70,29 @@ export default function PlayScreen() {
   const [showCorpse, setShowCorpse] = useState(false);
   const [lootedCorpse, setLootedCorpse] = useState<Corpse | null>(null);
 
+  // Safely get dungeon data with fallbacks
+  const dungeon = game.dungeon || [];
+  const currentRoom = game.currentRoom || 0;
+  
   // Get current room from dungeon
-  const room = game.dungeon[game.currentRoom] || null;
-  const depth = getDepthName(game.currentRoom + 1);
-  const progress = `${game.currentRoom + 1}/${game.dungeon.length}`;
+  const room = dungeon[currentRoom] || null;
+  const depth = getDepthName(currentRoom + 1);
+  const progress = `${currentRoom + 1}/${dungeon.length || 1}`;
   const options = room ? getOptionsForRoom(room.type as RoomType) : [];
 
   // Fetch real corpses from InstantDB
   const { corpses: nearbyCorpses } = useCorpsesForRoom(
     depth.name,
-    game.currentRoom + 1
+    currentRoom + 1
   );
-  const realCorpse = nearbyCorpses[0]; // Get first undiscovered corpse
+  const realCorpse = nearbyCorpses?.[0] || null; // Get first undiscovered corpse
 
   // If no session, redirect to stake
   useEffect(() => {
-    if (!game.sessionToken && game.dungeon.length === 0) {
+    if (!game.sessionToken && dungeon.length === 0) {
       router.replace('/stake');
     }
-  }, [game.sessionToken, game.dungeon.length]);
+  }, [game.sessionToken, dungeon.length]);
 
   const handleAction = async (action: string) => {
     setMessage(null);
