@@ -23,6 +23,10 @@ export default function HomeScreen() {
   const fadeAnim = useState(new Animated.Value(1))[0];
   const pulseAnim = useState(new Animated.Value(1))[0];
 
+  // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
+  const { totalDeaths, totalStaked, isLoading: statsLoading } = usePoolStats();
+  const { deaths: recentDeaths } = useDeathFeed(5);
+
   useEffect(() => {
     // Pulsing effect for "tap to continue"
     Animated.loop(
@@ -61,10 +65,6 @@ export default function HomeScreen() {
       </Pressable>
     );
   }
-
-  // Real-time stats from InstantDB
-  const { totalDeaths, totalStaked, isLoading: statsLoading } = usePoolStats();
-  const { deaths: recentDeaths } = useDeathFeed(5);
 
   return (
     <SafeAreaView style={styles.container}>
