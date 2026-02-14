@@ -276,11 +276,37 @@ export default function PlayScreen() {
           {getNarrative()}
         </Text>
 
+        {/* Corpse discovery - show fallen player in purple BEFORE looting */}
+        {room.type === 'corpse' && realCorpse && !showCorpse && (
+          <View className="bg-crypt-surface border-l-2 border-ethereal p-4 mb-4">
+            <Text className="text-ethereal text-base font-mono font-bold mb-2">
+              💀 @{realCorpse.playerName}
+            </Text>
+            <View className="bg-black/30 p-3 mb-2">
+              <Text className="text-bone-muted text-sm font-mono italic">
+                "{realCorpse.finalMessage}"
+              </Text>
+            </View>
+            <Text className="text-bone-dark text-xs font-mono">
+              They fell here. Their belongings remain...
+            </Text>
+          </View>
+        )}
+
+        {/* Fallback corpse message when no real corpse data */}
+        {room.type === 'corpse' && !realCorpse && !showCorpse && (
+          <View className="bg-crypt-surface border-l-2 border-ethereal p-4 mb-4">
+            <Text className="text-ethereal text-sm font-mono">
+              💀 An unknown wanderer lies here, their story lost to the depths.
+            </Text>
+          </View>
+        )}
+
         {/* Enemy preview for combat rooms */}
         {room.type === 'combat' && room.content?.enemy && (
           <View className="bg-crypt-surface border border-blood/30 p-3 mb-4">
             <Text className="text-blood-light text-sm font-mono">
-              👁️ {room.content.enemy} blocks your path...
+              {room.content.enemyEmoji || '👁️'} {room.content.enemy} blocks your path...
             </Text>
           </View>
         )}

@@ -14,6 +14,7 @@ export interface RoomVariation {
   narrative: string;
   options?: string[];
   enemy?: string;
+  enemyEmoji?: string;
   player_name?: string;
   final_message?: string;
 }
@@ -395,6 +396,17 @@ export function getItemEffects(inventory: {name: string}[]): ItemEffects {
   return effects;
 }
 
+// Generate a combat room with a specific creature assigned
+function getCombatRoomWithCreature(roomNumber: number, template?: string): RoomVariation & { enemy: string; enemyEmoji: string } {
+  const baseContent = getCombatRoom(template);
+  const creature = getCreatureForRoom(roomNumber);
+  return {
+    ...baseContent,
+    enemy: creature.name,
+    enemyEmoji: creature.emoji,
+  };
+}
+
 // Generate randomized dungeon (12 rooms with boss at the end)
 export function generateRandomDungeon(): DungeonRoom[] {
   const exploreTemplates = ['descent', 'corridor', 'flooded', 'chamber', 'shrine', 'crossroads'];
@@ -406,21 +418,21 @@ export function generateRandomDungeon(): DungeonRoom[] {
   return [
     // Depth 1: Upper Crypt (Rooms 1-4)
     { type: 'explore', template: pick(exploreTemplates), content: getExploreRoom() },
-    { type: 'combat', template: pick(combatTemplates), content: getCombatRoom() },
+    { type: 'combat', template: pick(combatTemplates), content: getCombatRoomWithCreature(2) },
     { type: 'corpse', template: pick(corpseTemplates), content: getCorpseRoom() },
-    { type: 'combat', template: pick(combatTemplates), content: getCombatRoom() },
+    { type: 'combat', template: pick(combatTemplates), content: getCombatRoomWithCreature(4) },
     
     // Depth 2: Flooded Halls (Rooms 5-8)
     { type: 'explore', template: 'flooded', content: getExploreRoom('flooded') },
-    { type: 'combat', template: pick(combatTemplates), content: getCombatRoom() },
+    { type: 'combat', template: pick(combatTemplates), content: getCombatRoomWithCreature(6) },
     { type: 'cache', template: pick(cacheTemplates), content: getCacheRoom() },
-    { type: 'combat', template: pick(combatTemplates), content: getCombatRoom() },
+    { type: 'combat', template: pick(combatTemplates), content: getCombatRoomWithCreature(8) },
     
     // Depth 3: The Abyss (Rooms 9-12)
     { type: 'explore', template: pick(exploreTemplates), content: getExploreRoom() },
     { type: 'corpse', template: pick(corpseTemplates), content: getCorpseRoom() },
-    { type: 'combat', template: pick(combatTemplates), content: getCombatRoom() },
-    { type: 'combat', template: 'arena', content: getCombatRoom('arena'), boss: true },
+    { type: 'combat', template: pick(combatTemplates), content: getCombatRoomWithCreature(11) },
+    { type: 'combat', template: 'arena', content: { ...getCombatRoom('arena'), enemy: 'The Keeper', enemyEmoji: '👁️' }, boss: true },
     { type: 'exit', template: pick(exitTemplates), content: getExitRoom() },
   ];
 }

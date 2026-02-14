@@ -7,6 +7,7 @@ import { useAudio } from '../lib/audio';
 import { useGameSettings, DEFAULT_GAME_SETTINGS } from '../lib/instant';
 import {
   getCreatureForRoom,
+  getCreatureInfo,
   getCreatureHealth,
   getCreatureIntent,
   getIntentEffects,
@@ -71,8 +72,20 @@ export default function CombatScreen() {
   useEffect(() => {
     playAmbient('ambient-combat');
     
-    // Get creature for this room's tier
-    const roomCreature = getCreatureForRoom(roomNumber);
+    // Use the enemy passed from play screen, or fallback to random
+    const enemyName = params.enemy;
+    let roomCreature: CreatureInfo | null = null;
+    
+    if (enemyName) {
+      // Look up creature by name from BESTIARY
+      roomCreature = getCreatureInfo(enemyName);
+    }
+    
+    // Fallback to random creature for this tier if not found
+    if (!roomCreature) {
+      roomCreature = getCreatureForRoom(roomNumber);
+    }
+    
     setCreature(roomCreature);
     
     const hp = getCreatureHealth(roomCreature.name);
@@ -84,7 +97,7 @@ export default function CombatScreen() {
     setIntentEffects(getIntentEffects(intent.type));
     
     playSFX('enemy-growl');
-  }, [roomNumber]);
+  }, [roomNumber, params.enemy]);
 
   // Calculate damage using admin settings
   const calculateDamage = (base: number, isPlayerAttacking: boolean) => {
