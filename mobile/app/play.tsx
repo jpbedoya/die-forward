@@ -120,13 +120,7 @@ export default function PlayScreen() {
           }
           
           game.setHealth(newHealth);
-          setMessage(`Victory! But you took ${damage} damage.`);
-          
-          // Advance after short delay
-          setTimeout(async () => {
-            await game.advance();
-            setMessage(null);
-          }, 1500);
+          setMessage(`Victory! -${damage} HP. Tap to continue...`);
           break;
         }
 
@@ -142,12 +136,14 @@ export default function PlayScreen() {
           }
           
           game.setHealth(newHealth);
-          setMessage(`Escaped! But took ${fleeDamage} damage while fleeing.`);
-          
-          setTimeout(async () => {
-            await game.advance();
-            setMessage(null);
-          }, 1500);
+          setMessage(`Escaped! -${fleeDamage} HP. Tap to continue...`);
+          break;
+        }
+        
+        case 'continue': {
+          // Continue after combat/flee result
+          await game.advance();
+          setMessage(null);
           break;
         }
 
@@ -305,17 +301,30 @@ export default function PlayScreen() {
 
         {/* Options */}
         <Text style={styles.optionsLabel}>▼ WHAT DO YOU DO?</Text>
-        {options.map((option, i) => (
+        {message ? (
+          // Show continue button after combat/flee
           <Pressable
-            key={option.id}
             style={[styles.optionButton, processing && styles.optionDisabled]}
-            onPress={() => handleAction(option.action)}
+            onPress={() => handleAction('continue')}
             disabled={processing}
           >
-            <Text style={styles.optionNumber}>{i + 1}.</Text>
-            <Text style={styles.optionText}>{option.text}</Text>
+            <Text style={styles.optionNumber}>▶</Text>
+            <Text style={styles.optionText}>Continue...</Text>
           </Pressable>
-        ))}
+        ) : (
+          // Show normal options
+          options.map((option, i) => (
+            <Pressable
+              key={option.id}
+              style={[styles.optionButton, processing && styles.optionDisabled]}
+              onPress={() => handleAction(option.action)}
+              disabled={processing}
+            >
+              <Text style={styles.optionNumber}>{i + 1}.</Text>
+              <Text style={styles.optionText}>{option.text}</Text>
+            </Pressable>
+          ))
+        )}
       </ScrollView>
 
       {/* Footer */}

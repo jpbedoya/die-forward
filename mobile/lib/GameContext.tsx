@@ -153,23 +153,27 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const advance = useCallback(async (): Promise<boolean> => {
     if (!state.sessionToken) return false;
     
-    try {
-      const result = await api.advanceRoom(state.sessionToken, state.currentRoom + 1);
-      if (result?.success) {
-        updateState({
-          currentRoom: result.currentRoom ?? state.currentRoom + 1,
-          stamina: Math.min(3, state.stamina + 1),
-        });
-        return true;
-      }
-      return false;
-    } catch (err) {
-      updateState({
-        error: err instanceof Error ? err.message : 'Failed to advance',
-      });
-      return false;
+    const nextRoom = state.currentRoom + 1;
+    const maxRooms = state.dungeon?.length || 9;
+    
+    // Check if we've reached the end
+    if (nextRoom >= maxRooms) {
+      return false; // Can't advance past final room
     }
-  }, [state.sessionToken, state.currentRoom, state.stamina, updateState]);
+    
+    // Update room client-side (dungeon is generated locally)
+    updateState({
+      currentRoom: nextRoom,
+      stamina: Math.min(3, state.stamina + 1),
+    });
+    
+    // Optionally notify backend (fire and forget, don't block on it)
+    api.advanceRoom(state.sessionToken, nextRoom).catch(() => {
+      // Ignore backend errors - client-side state is authoritative for mobile
+    });
+    
+    return true;
+  }, [state.sessionToken, state.currentRoom, state.stamina, state.dungeon?.length, updateState]);
 
   const recordDeathAction = useCallback(async (finalMessage: string, killedBy?: string) => {
     if (!state.sessionToken) return;
