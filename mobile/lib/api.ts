@@ -4,19 +4,22 @@
 import { Platform } from 'react-native';
 
 // Determine API base URL:
-// - Web production (dieforward.com): relative paths
+// - Web production (dieforward.com or www.dieforward.com): relative paths
 // - Web dev (localhost): use production API with CORS
 // - Native (iOS/Android): use production API
+// Note: Must use www.dieforward.com to avoid 307 redirect which breaks CORS
 function getApiBase(): string {
   if (Platform.OS !== 'web') {
-    return 'https://dieforward.com';
+    return 'https://www.dieforward.com';
   }
   // On web, check if we're on the production domain
-  if (typeof window !== 'undefined' && window.location.hostname === 'dieforward.com') {
+  if (typeof window !== 'undefined' && 
+      (window.location.hostname === 'dieforward.com' || 
+       window.location.hostname === 'www.dieforward.com')) {
     return ''; // Use relative paths on production
   }
   // Dev mode on web - use production API (CORS enabled)
-  return 'https://dieforward.com';
+  return 'https://www.dieforward.com';
 }
 
 const API_BASE = getApiBase();
