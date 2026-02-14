@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { View, Text, Pressable, Animated, Dimensions } from 'react-native';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { usePoolStats, useDeathFeed } from '../lib/instant';
+import { useGame } from '../lib/GameContext';
 
 const ASCII_LOGO = `
   ██████  ██ ███████ 
@@ -30,6 +31,17 @@ export default function HomeScreen() {
   // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
   const { totalDeaths, totalStaked, isLoading: statsLoading } = usePoolStats();
   const { deaths: recentDeaths } = useDeathFeed(5);
+  const { startGame } = useGame();
+
+  // Start free play and go directly to game
+  const startFreePlay = async () => {
+    try {
+      await startGame(0, true);
+      router.replace('/play');
+    } catch (err) {
+      console.error('Failed to start free play:', err);
+    }
+  };
 
   // Splash intro animation - auto transition after one pulse
   useEffect(() => {
@@ -161,11 +173,12 @@ export default function HomeScreen() {
             </Pressable>
           </Link>
           
-          <Link href="/stake" asChild>
-            <Pressable className="border-2 border-crypt-border-light py-4 px-8 items-center active:border-amber">
-              <Text className="text-bone-muted text-base font-mono">🎮 FREE PLAY</Text>
-            </Pressable>
-          </Link>
+          <Pressable 
+            className="border-2 border-crypt-border-light py-4 px-8 items-center active:border-amber"
+            onPress={startFreePlay}
+          >
+            <Text className="text-bone-muted text-base font-mono">🎮 FREE PLAY</Text>
+          </Pressable>
 
           {/* Secondary navigation */}
           <View className="flex-row gap-2">
