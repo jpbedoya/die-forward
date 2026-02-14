@@ -4,6 +4,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
 import { useAudio } from '../lib/audio';
+import { useGameSettings, DEFAULT_GAME_SETTINGS } from '../lib/instant';
 import {
   getCreatureForRoom,
   getCreatureHealth,
@@ -47,6 +48,7 @@ function HealthBar({ current, max, color = 'red' }: { current: number; max: numb
 export default function CombatScreen() {
   const game = useGame();
   const { playSFX, playAmbient } = useAudio();
+  const { settings } = useGameSettings();
   const params = useLocalSearchParams<{ enemy?: string; roomNum?: string }>();
   
   const [phase, setPhase] = useState<CombatPhase>('choose');
@@ -85,9 +87,11 @@ export default function CombatScreen() {
     playSFX('enemy-growl');
   }, [roomNumber]);
 
-  // Calculate damage
+  // Calculate damage using admin settings
   const calculateDamage = (base: number, isPlayerAttacking: boolean) => {
-    const tierMult = getRoomDamageMultiplier(roomNumber);
+    // Use tier multiplier from settings
+    const tier = depth.tier;
+    const tierMult = tier === 3 ? settings.tier3Multiplier : tier === 2 ? settings.tier2Multiplier : 1.0;
     const itemEffects = getItemEffects(game.inventory);
     
     if (isPlayerAttacking) {
@@ -96,6 +100,13 @@ export default function CombatScreen() {
       const chargeMult = wasCharging ? 2.0 : 1.0;
       return Math.round(base * tierMult * intentEffects.damageDealtMod * (1 - itemEffects.defenseBonus) * chargeMult);
     }
+  };
+  
+  // Get base damage range from settings
+  const getBaseDamage = () => {
+    const min = settings.baseDamageMin;
+    const max = settings.baseDamageMax;
+    return min + Math.floor(Math.random() * (max - min + 1));
   };
 
   // Handle combat action
@@ -122,8 +133,9 @@ export default function CombatScreen() {
     switch (action) {
       case 'strike': {
         playSFX('sword-slash');
-        const basePlayerHit = 20 + Math.floor(Math.random() * 10);
-        const baseEnemyHit = 10 + Math.floor(Math.random() * 8);
+        // Player damage uses settings range, enemy counter-attack is lower
+        const basePlayerHit = getBaseDamage();
+        const baseEnemyHit = Math.floor(getBaseDamage() * 0.6);
         playerDmg = calculateDamage(baseEnemyHit, false);
         enemyDmg = calculateDamage(basePlayerHit, true);
         actionNarrative = getStrikeNarration('mutual');

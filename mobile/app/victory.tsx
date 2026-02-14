@@ -4,15 +4,19 @@ import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
 import { useAudio } from '../lib/audio';
+import { useGameSettings } from '../lib/instant';
 
 export default function VictoryScreen() {
   const game = useGame();
   const { playSFX, playAmbient } = useAudio();
+  const { settings } = useGameSettings();
   const [claiming, setClaiming] = useState(false);
   const [claimed, setClaimed] = useState(false);
   const [signature, setSignature] = useState<string | null>(null);
 
-  const victoryBonus = game.stakeAmount * 0.5;
+  // Use victory bonus from admin settings
+  const bonusPercent = settings.victoryBonusPercent / 100;
+  const victoryBonus = game.stakeAmount * bonusPercent;
   const totalReward = game.stakeAmount + victoryBonus;
 
   useEffect(() => {
@@ -98,7 +102,7 @@ export default function VictoryScreen() {
                 <Text className="text-bone text-xs font-mono">◎ {game.stakeAmount}</Text>
               </View>
               <View className="flex-row justify-between">
-                <Text className="text-bone-dark text-xs font-mono">Victory Bonus (50%)</Text>
+                <Text className="text-bone-dark text-xs font-mono">Victory Bonus ({settings.victoryBonusPercent}%)</Text>
                 <Text className="text-victory text-xs font-mono">+◎ {victoryBonus.toFixed(3)}</Text>
               </View>
             </View>

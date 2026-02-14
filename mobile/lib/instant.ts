@@ -298,3 +298,57 @@ export function usePoolStats() {
 
   return { totalDeaths, totalStaked, isLoading, error };
 }
+
+// ============ GAME SETTINGS ============
+
+export interface GameSettings {
+  id: string;
+  // Loot settings
+  lootChanceBase: number;
+  lootChanceDepth5: number;
+  lootChanceDepth9: number;
+  // Combat settings
+  baseDamageMin: number;
+  baseDamageMax: number;
+  tier2Multiplier: number;
+  tier3Multiplier: number;
+  // Victory settings
+  victoryBonusPercent: number;
+}
+
+// Default settings (fallback if not set in DB)
+export const DEFAULT_GAME_SETTINGS: Omit<GameSettings, 'id'> = {
+  lootChanceBase: 0.5,
+  lootChanceDepth5: 0.65,
+  lootChanceDepth9: 0.8,
+  baseDamageMin: 15,
+  baseDamageMax: 25,
+  tier2Multiplier: 1.5,
+  tier3Multiplier: 2.0,
+  victoryBonusPercent: 50,
+};
+
+// Hook to get game settings (from admin panel)
+export function useGameSettings() {
+  const { data, isLoading, error } = db.useQuery({
+    gameSettings: {
+      $: { limit: 1 },
+    },
+  });
+
+  const dbSettings = data?.gameSettings?.[0] as unknown as GameSettings | undefined;
+  
+  // Merge with defaults
+  const settings: Omit<GameSettings, 'id'> = {
+    lootChanceBase: dbSettings?.lootChanceBase ?? DEFAULT_GAME_SETTINGS.lootChanceBase,
+    lootChanceDepth5: dbSettings?.lootChanceDepth5 ?? DEFAULT_GAME_SETTINGS.lootChanceDepth5,
+    lootChanceDepth9: dbSettings?.lootChanceDepth9 ?? DEFAULT_GAME_SETTINGS.lootChanceDepth9,
+    baseDamageMin: dbSettings?.baseDamageMin ?? DEFAULT_GAME_SETTINGS.baseDamageMin,
+    baseDamageMax: dbSettings?.baseDamageMax ?? DEFAULT_GAME_SETTINGS.baseDamageMax,
+    tier2Multiplier: dbSettings?.tier2Multiplier ?? DEFAULT_GAME_SETTINGS.tier2Multiplier,
+    tier3Multiplier: dbSettings?.tier3Multiplier ?? DEFAULT_GAME_SETTINGS.tier3Multiplier,
+    victoryBonusPercent: dbSettings?.victoryBonusPercent ?? DEFAULT_GAME_SETTINGS.victoryBonusPercent,
+  };
+
+  return { settings, isLoading, error };
+}

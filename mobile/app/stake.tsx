@@ -4,12 +4,14 @@ import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
 import { useAudio } from '../lib/audio';
+import { useGameSettings } from '../lib/instant';
 
 const STAKE_OPTIONS = [0.01, 0.05, 0.1, 0.25];
 
 export default function StakeScreen() {
   const game = useGame();
   const { playSFX, playAmbient } = useAudio();
+  const { settings } = useGameSettings();
   const [selectedStake, setSelectedStake] = useState(0.05);
   const [customStake, setCustomStake] = useState('');
   const [staking, setStaking] = useState(false);
@@ -130,12 +132,12 @@ export default function StakeScreen() {
             <Text className="text-bone-muted text-sm font-mono">◎ {selectedStake}</Text>
           </View>
           <View className="flex-row justify-between mb-2">
-            <Text className="text-bone-dark text-sm font-mono">Victory Bonus (50%)</Text>
-            <Text className="text-victory text-sm font-mono">+◎ {(selectedStake * 0.5).toFixed(3)}</Text>
+            <Text className="text-bone-dark text-sm font-mono">Victory Bonus ({settings.victoryBonusPercent}%)</Text>
+            <Text className="text-victory text-sm font-mono">+◎ {(selectedStake * settings.victoryBonusPercent / 100).toFixed(3)}</Text>
           </View>
           <View className="flex-row justify-between border-t border-crypt-border pt-3 mt-1">
             <Text className="text-bone-muted text-sm font-mono font-bold">Potential Reward</Text>
-            <Text className="text-amber-light text-base font-mono font-bold">◎ {(selectedStake * 1.5).toFixed(3)}</Text>
+            <Text className="text-amber-light text-base font-mono font-bold">◎ {(selectedStake * (1 + settings.victoryBonusPercent / 100)).toFixed(3)}</Text>
           </View>
         </View>
 
