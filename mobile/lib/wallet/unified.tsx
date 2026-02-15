@@ -2,13 +2,21 @@
  * Unified Wallet Provider
  * 
  * Platform-aware wallet that uses:
- * - Web: @solana/react-hooks for wallet connection + web3.js for transactions
- * - Native: Mobile Wallet Adapter (MWA) with web3.js boundary
+ * - Desktop Web: @solana/react-hooks for wallet connection
+ * - Mobile Web: Mobile Wallet Adapter (MWA) via deep links
+ * - Native Mobile: Mobile Wallet Adapter (MWA)
  */
 
 import React, { createContext, useContext, useMemo, useCallback, useState, useEffect, ReactNode } from 'react';
 import { Platform } from 'react-native';
 import type { Address } from '@solana/kit';
+
+// Detect if we're on mobile web
+const isMobileWeb = Platform.OS === 'web' && typeof navigator !== 'undefined' && 
+  /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+// Use MWA for native OR mobile web
+const useMWA = Platform.OS !== 'web' || isMobileWeb;
 
 // Conditional imports
 let useWalletConnection: any;
@@ -32,8 +40,8 @@ let mobileConnection: any;
 let useSolTransfer: any;
 let useSendTransaction: any;
 
-if (Platform.OS === 'web') {
-  // Web: use framework-kit
+if (Platform.OS === 'web' && !isMobileWeb) {
+  // Desktop Web: use framework-kit
   const hooks = require('@solana/react-hooks');
   const provider = require('./provider');
   const web3 = require('@solana/web3.js');
@@ -50,8 +58,10 @@ if (Platform.OS === 'web') {
   Transaction = web3.Transaction;
   SystemProgram = web3.SystemProgram;
   LAMPORTS_PER_SOL = web3.LAMPORTS_PER_SOL;
-} else {
-  // Native: use MWA boundary
+}
+
+if (useMWA) {
+  // Native or Mobile Web: use MWA boundary
   const mwa = require('./mobile-adapter');
   mobileConnect = mwa.mobileConnect;
   mobileSignAndSend = mwa.mobileSignAndSend;
@@ -273,7 +283,9 @@ function MobileWalletProvider({ children }: { children: ReactNode }) {
 
 // Main provider - switches based on platform
 export function UnifiedWalletProvider({ children }: { children: ReactNode }) {
-  if (Platform.OS === 'web') {
+  // Desktop web: use framework-kit
+  // Mobile web + Native: use MWA
+  if (Platform.OS === 'web' && !isMobileWeb) {
     return (
       <WebWalletProvider>
         <WebWalletConsumer>
@@ -283,6 +295,7 @@ export function UnifiedWalletProvider({ children }: { children: ReactNode }) {
     );
   }
   
+  // Mobile (web or native): use MWA
   return (
     <MobileWalletProvider>
       {children}
