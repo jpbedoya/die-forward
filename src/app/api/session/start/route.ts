@@ -7,8 +7,8 @@ const db = init({
   adminToken: process.env.INSTANT_ADMIN_KEY!,
 });
 
-// Valid stake amounts
-const VALID_STAKES = [0.01, 0.05, 0.1, 0.25];
+// Valid stake amounts (0 = free play)
+const VALID_STAKES = [0, 0.01, 0.05, 0.1, 0.25];
 
 // CORS headers for unified codebase (web + mobile)
 const corsHeaders = {

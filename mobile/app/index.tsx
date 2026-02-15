@@ -147,7 +147,7 @@ export default function HomeScreen() {
             onPress={startFreePlay}
           >
             <Text className="text-crypt-bg text-lg font-bold font-mono tracking-widest">
-              ▶ START GAME
+              ▼ ENTER THE CRYPT
             </Text>
           </Pressable>
 
