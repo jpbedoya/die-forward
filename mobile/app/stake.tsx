@@ -191,6 +191,14 @@ export default function StakeScreen() {
                   Insufficient balance ({game.balance.toFixed(3)} SOL)
                 </Text>
               )}
+              
+              <Pressable 
+                className="border border-crypt-border-light py-4 items-center active:border-amber"
+                onPress={() => handleStake(true)}
+                disabled={staking}
+              >
+                <Text className="text-bone-muted font-mono">EMPTY-HANDED</Text>
+              </Pressable>
             </>
           )}
         </View>
