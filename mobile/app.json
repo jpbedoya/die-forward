@@ -31,7 +31,8 @@
     },
     "plugins": [
       "expo-router",
-      "expo-asset"
+      "expo-asset",
+      "expo-haptics"
     ],
     "extra": {
       "router": {
