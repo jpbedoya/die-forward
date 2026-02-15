@@ -2,7 +2,8 @@ import React, { createContext, useContext, useState, useCallback, ReactNode, use
 import * as api from './api';
 import { generateRandomDungeon, DungeonRoom } from './content';
 import { useUnifiedWallet, type Address } from './wallet/unified';
-import { GAME_POOL_PDA } from './solana/escrow';
+import { GAME_POOL_PDA, buildStakeInstruction, generateSessionId } from './solana/escrow';
+import { Transaction, LAMPORTS_PER_SOL } from '@solana/web3.js';
 
 interface GameState {
   // Wallet
@@ -134,11 +135,21 @@ export function GameProvider({ children }: { children: ReactNode }) {
       let walletAddress = state.walletAddress || 'demo-wallet';
 
       if (!demoMode && state.walletAddress && unifiedWallet.connected) {
-        // Real stake transaction via unified wallet
-        const signature = await unifiedWallet.sendSOL(
-          GAME_POOL_PDA, // Game pool PDA (typed as Address)
-          amount
+        // Build escrow stake transaction
+        const { hex: sessionIdHex, bytes: sessionIdBytes } = generateSessionId();
+        const amountLamports = BigInt(Math.floor(amount * LAMPORTS_PER_SOL));
+        
+        // Build stake instruction for escrow program
+        const stakeIx = buildStakeInstruction(
+          state.walletAddress as Address,
+          sessionIdBytes,
+          amountLamports
         );
+        
+        // Create and send transaction
+        const transaction = new Transaction().add(stakeIx);
+        const signature = await unifiedWallet.signAndSendTransaction(transaction);
+        
         stakeTxSignature = signature;
         walletAddress = state.walletAddress;
       }
