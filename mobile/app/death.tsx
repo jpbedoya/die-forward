@@ -111,20 +111,37 @@ export default function DeathScreen() {
     router.replace('/');
   };
 
+  // ASCII art for "YOU DIED"
+  const YOU_DIED_ASCII = `
+██    ██  ██████  ██    ██ 
+ ██  ██  ██    ██ ██    ██ 
+  ████   ██    ██ ██    ██ 
+   ██    ██    ██ ██    ██ 
+   ██     ██████   ██████  
+                           
+██████  ██ ███████ ██████  
+██   ██ ██ ██      ██   ██ 
+██   ██ ██ █████   ██   ██ 
+██   ██ ██ ██      ██   ██ 
+██████  ██ ███████ ██████  `;
+
   // Dramatic intro screen
   if (showDramaticIntro) {
     return (
-      <View className="flex-1 bg-black">
+      <View className="flex-1 bg-black justify-center items-center">
         <Animated.View 
-          className="flex-1 justify-center items-center"
+          className="items-center"
           style={{ opacity: introFade }}
         >
-          <Animated.View style={{ transform: [{ scale: textScale }] }}>
-            <Text className="text-blood text-5xl font-mono font-bold tracking-[8px] text-center mb-6">
-              YOU DIED
+          <Animated.View style={{ transform: [{ scale: textScale }] }} className="items-center">
+            <Text 
+              className="font-mono text-[5px] text-blood text-center leading-[6px] mb-6"
+              style={{ textShadowColor: '#991b1b', textShadowRadius: 20 }}
+            >
+              {YOU_DIED_ASCII}
             </Text>
             {params.killedBy && (
-              <Text className="text-bone-muted text-lg font-mono text-center mb-2">
+              <Text className="text-bone-muted text-base font-mono text-center mb-2">
                 Slain by {params.killedBy}
               </Text>
             )}
