@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
-import { View, Text, Pressable, TextInput, ScrollView, ActivityIndicator, Modal } from 'react-native';
+import { useState, useEffect, useRef } from 'react';
+import { View, Text, Pressable, TextInput, ScrollView, ActivityIndicator, Modal, Animated, Platform } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Haptics from 'expo-haptics';
 import { useGame } from '../lib/GameContext';
 import { useAudio } from '../lib/audio';
 import { getDeathMoment, getFinalWordsIntro, getDepthForRoom } from '../lib/content';
@@ -12,6 +13,12 @@ export default function DeathScreen() {
   const { playSFX, playAmbient } = useAudio();
   const { viewShotRef, captureAndShare } = useShareCard();
   const params = useLocalSearchParams<{ killedBy?: string }>();
+  
+  // Dramatic intro state
+  const [showDramaticIntro, setShowDramaticIntro] = useState(true);
+  const introFade = useRef(new Animated.Value(0)).current;
+  const textScale = useRef(new Animated.Value(0.8)).current;
+  const contentFade = useRef(new Animated.Value(0)).current;
   
   const [finalWords, setFinalWords] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -32,9 +39,49 @@ export default function DeathScreen() {
     setShowShareModal(false);
   };
 
+  // Dramatic "YOU DIED" intro animation
   useEffect(() => {
     playAmbient('ambient-death');
     playSFX('player-death');
+    
+    // Haptic on death
+    if (Platform.OS !== 'web') {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    }
+    
+    // Fade in "YOU DIED" text
+    Animated.parallel([
+      Animated.timing(introFade, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+      Animated.timing(textScale, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+    ]).start();
+    
+    // After 2.5 seconds, transition to main content
+    const timer = setTimeout(() => {
+      Animated.parallel([
+        Animated.timing(introFade, {
+          toValue: 0,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+        Animated.timing(contentFade, {
+          toValue: 1,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
+        setShowDramaticIntro(false);
+      });
+    }, 2500);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   const handleSubmit = async () => {
@@ -64,8 +111,35 @@ export default function DeathScreen() {
     router.replace('/');
   };
 
+  // Dramatic intro screen
+  if (showDramaticIntro) {
+    return (
+      <View className="flex-1 bg-black">
+        <Animated.View 
+          className="flex-1 justify-center items-center"
+          style={{ opacity: introFade }}
+        >
+          <Animated.View style={{ transform: [{ scale: textScale }] }}>
+            <Text className="text-blood text-5xl font-mono font-bold tracking-[8px] text-center mb-6">
+              YOU DIED
+            </Text>
+            {params.killedBy && (
+              <Text className="text-bone-muted text-lg font-mono text-center mb-2">
+                Slain by {params.killedBy}
+              </Text>
+            )}
+            <Text className="text-bone-dark text-sm font-mono text-center">
+              {depth.name} — Room {roomNumber}
+            </Text>
+          </Animated.View>
+        </Animated.View>
+      </View>
+    );
+  }
+
   return (
     <SafeAreaView className="flex-1 bg-crypt-bg">
+      <Animated.View style={{ flex: 1, opacity: contentFade }}>
       <ScrollView className="flex-1" contentContainerClassName="p-6">
         {/* Death Header */}
         <View className="items-center mb-8">
@@ -178,6 +252,7 @@ export default function DeathScreen() {
           </Pressable>
         </View>
       </ScrollView>
+      </Animated.View>
       
       {/* Share Card Modal */}
       <Modal

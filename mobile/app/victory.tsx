@@ -1,17 +1,77 @@
-import { useState, useEffect } from 'react';
-import { View, Text, Pressable, ScrollView, ActivityIndicator, Modal } from 'react-native';
+import { useState, useEffect, useRef } from 'react';
+import { View, Text, Pressable, ScrollView, ActivityIndicator, Modal, Animated, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Haptics from 'expo-haptics';
 import { useGame } from '../lib/GameContext';
 import { useAudio } from '../lib/audio';
 import { useGameSettings } from '../lib/instant';
 import { VictoryCard, ShareCardCapture, useShareCard } from '../lib/shareCard';
+
+// Confetti particle component
+const ConfettiParticle = ({ delay, startX }: { delay: number; startX: number }) => {
+  const fallAnim = useRef(new Animated.Value(-50)).current;
+  const swayAnim = useRef(new Animated.Value(0)).current;
+  const opacity = useRef(new Animated.Value(1)).current;
+  
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      Animated.parallel([
+        Animated.timing(fallAnim, {
+          toValue: 800,
+          duration: 3000 + Math.random() * 2000,
+          useNativeDriver: true,
+        }),
+        Animated.loop(
+          Animated.sequence([
+            Animated.timing(swayAnim, { toValue: 20, duration: 500, useNativeDriver: true }),
+            Animated.timing(swayAnim, { toValue: -20, duration: 500, useNativeDriver: true }),
+          ])
+        ),
+        Animated.timing(opacity, {
+          toValue: 0,
+          duration: 4000,
+          delay: 1000,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }, delay);
+    return () => clearTimeout(timeout);
+  }, []);
+  
+  const colors = ['#fbbf24', '#f59e0b', '#22c55e', '#3b82f6', '#a855f7'];
+  const color = colors[Math.floor(Math.random() * colors.length)];
+  const symbol = ['✦', '◆', '★', '●'][Math.floor(Math.random() * 4)];
+  
+  return (
+    <Animated.Text
+      style={{
+        position: 'absolute',
+        left: startX,
+        color,
+        fontSize: 16 + Math.random() * 8,
+        opacity,
+        transform: [{ translateY: fallAnim }, { translateX: swayAnim }],
+      }}
+    >
+      {symbol}
+    </Animated.Text>
+  );
+};
 
 export default function VictoryScreen() {
   const game = useGame();
   const { playSFX, playAmbient } = useAudio();
   const { settings } = useGameSettings();
   const { viewShotRef, captureAndShare } = useShareCard();
+  
+  // Dramatic intro state
+  const [showDramaticIntro, setShowDramaticIntro] = useState(true);
+  const introFade = useRef(new Animated.Value(0)).current;
+  const textScale = useRef(new Animated.Value(0.5)).current;
+  const glowPulse = useRef(new Animated.Value(1)).current;
+  const contentFade = useRef(new Animated.Value(0)).current;
+  
   const [claiming, setClaiming] = useState(false);
   const [claimed, setClaimed] = useState(false);
   const [signature, setSignature] = useState<string | null>(null);
@@ -31,9 +91,60 @@ export default function VictoryScreen() {
     setShowShareModal(false);
   };
 
+  // Dramatic victory intro animation
   useEffect(() => {
     playAmbient('ambient-victory');
     playSFX('victory-fanfare');
+    
+    // Haptic celebration
+    if (Platform.OS !== 'web') {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      // Double haptic for extra celebration
+      setTimeout(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy), 300);
+    }
+    
+    // Epic intro animation
+    Animated.parallel([
+      Animated.timing(introFade, {
+        toValue: 1,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+      Animated.spring(textScale, {
+        toValue: 1,
+        tension: 50,
+        friction: 7,
+        useNativeDriver: true,
+      }),
+    ]).start();
+    
+    // Pulsing glow effect
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(glowPulse, { toValue: 1.1, duration: 800, useNativeDriver: true }),
+        Animated.timing(glowPulse, { toValue: 1, duration: 800, useNativeDriver: true }),
+      ])
+    ).start();
+    
+    // Transition to main content after 3 seconds
+    const timer = setTimeout(() => {
+      Animated.parallel([
+        Animated.timing(introFade, {
+          toValue: 0,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+        Animated.timing(contentFade, {
+          toValue: 1,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
+        setShowDramaticIntro(false);
+      });
+    }, 3000);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   const handleClaim = async () => {
@@ -64,13 +175,57 @@ export default function VictoryScreen() {
     router.replace('/');
   };
 
+  // Generate confetti particles
+  const confettiParticles = Array.from({ length: 30 }, (_, i) => ({
+    id: i,
+    delay: Math.random() * 1500,
+    startX: Math.random() * 350,
+  }));
+
+  // Dramatic victory intro screen
+  if (showDramaticIntro) {
+    return (
+      <View className="flex-1 bg-black overflow-hidden">
+        {/* Confetti */}
+        {confettiParticles.map(p => (
+          <ConfettiParticle key={p.id} delay={p.delay} startX={p.startX} />
+        ))}
+        
+        <Animated.View 
+          className="flex-1 justify-center items-center"
+          style={{ opacity: introFade }}
+        >
+          <Animated.View style={{ transform: [{ scale: Animated.multiply(textScale, glowPulse) }] }}>
+            <Text className="text-amber text-4xl mb-4 text-center">✦ ✦ ✦</Text>
+            <Text 
+              className="text-victory text-4xl font-mono font-bold tracking-[6px] text-center mb-4"
+              style={{ textShadowColor: '#22c55e', textShadowRadius: 30 }}
+            >
+              VICTORIOUS
+            </Text>
+            <Text className="text-amber text-4xl mb-6 text-center">✦ ✦ ✦</Text>
+            <Text className="text-bone text-lg font-mono text-center mb-2">
+              You conquered the depths!
+            </Text>
+            {totalReward > 0 && (
+              <Text className="text-amber-bright text-xl font-mono text-center font-bold">
+                ◎ {totalReward.toFixed(3)} SOL
+              </Text>
+            )}
+          </Animated.View>
+        </Animated.View>
+      </View>
+    );
+  }
+
   return (
     <SafeAreaView className="flex-1 bg-crypt-bg">
+      <Animated.View style={{ flex: 1, opacity: contentFade }}>
       <ScrollView className="flex-1" contentContainerClassName="p-6">
         {/* Victory Header */}
         <View className="items-center mb-8">
           <Text className="text-6xl mb-4">🏆</Text>
-          <Text className="text-victory text-2xl font-mono font-bold tracking-widest">VICTORY!</Text>
+          <Text className="text-victory text-2xl font-mono font-bold tracking-widest">VICTORIOUS</Text>
           <Text className="text-bone-muted text-sm font-mono mt-2">
             You escaped the depths
           </Text>
@@ -194,6 +349,7 @@ export default function VictoryScreen() {
           </Pressable>
         </View>
       </ScrollView>
+      </Animated.View>
       
       {/* Share Card Modal */}
       <Modal
