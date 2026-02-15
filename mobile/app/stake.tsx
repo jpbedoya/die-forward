@@ -147,9 +147,9 @@ export default function StakeScreen() {
               <Pressable 
                 className="bg-purple-700 py-5 items-center active:bg-purple-800"
                 onPress={handleConnect}
-                disabled={game.loading}
+                disabled={game.loading || staking}
               >
-                {game.loading ? (
+                {game.loading && !staking ? (
                   <ActivityIndicator color="#ffffff" />
                 ) : (
                   <Text className="text-white font-mono font-bold tracking-wider">🔗 CONNECT WALLET</Text>
@@ -161,7 +161,11 @@ export default function StakeScreen() {
                 onPress={() => handleStake(true)}
                 disabled={staking}
               >
-                <Text className="text-bone-muted font-mono">🎮 FREE PLAY (No Stake)</Text>
+                {staking ? (
+                  <ActivityIndicator color="#a8a29e" />
+                ) : (
+                  <Text className="text-bone-muted font-mono">🎮 FREE PLAY (No Stake)</Text>
+                )}
               </Pressable>
             </>
           ) : (
