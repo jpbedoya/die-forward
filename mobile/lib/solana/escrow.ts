@@ -30,7 +30,7 @@ export const TREASURY = '7rn4KRHNQwSJDa1uq1ENMzyDqW95QAr3bZUepkLh58ed' as Addres
 const TREASURY_PUBKEY = new PublicKey(TREASURY);
 
 // PDA Seeds
-const SESSION_SEED = Buffer.from('session');
+const SESSION_SEED = new TextEncoder().encode('session');
 
 // Instruction discriminators (Anchor-style)
 const STAKE_DISCRIMINATOR = new Uint8Array([206, 176, 202, 18, 200, 209, 179, 108]);
