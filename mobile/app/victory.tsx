@@ -8,56 +8,51 @@ import { useAudio } from '../lib/audio';
 import { useGameSettings } from '../lib/instant';
 import { VictoryCard, ShareCardCapture, useShareCard } from '../lib/shareCard';
 
-// Confetti particle component
-const ConfettiParticle = ({ delay, startX }: { delay: number; startX: number }) => {
-  const fallAnim = useRef(new Animated.Value(-50)).current;
-  const swayAnim = useRef(new Animated.Value(0)).current;
-  const opacity = useRef(new Animated.Value(1)).current;
+// ASCII sparkle component
+const AsciiSparkle = ({ delay, x, y }: { delay: number; x: number; y: number }) => {
+  const opacity = useRef(new Animated.Value(0)).current;
+  const chars = ['+', '*', '·', '∙', '◇', '◆'];
+  const [char] = useState(() => chars[Math.floor(Math.random() * chars.length)]);
   
   useEffect(() => {
     const timeout = setTimeout(() => {
-      Animated.parallel([
-        Animated.timing(fallAnim, {
-          toValue: 800,
-          duration: 3000 + Math.random() * 2000,
-          useNativeDriver: true,
-        }),
-        Animated.loop(
-          Animated.sequence([
-            Animated.timing(swayAnim, { toValue: 20, duration: 500, useNativeDriver: true }),
-            Animated.timing(swayAnim, { toValue: -20, duration: 500, useNativeDriver: true }),
-          ])
-        ),
-        Animated.timing(opacity, {
-          toValue: 0,
-          duration: 4000,
-          delay: 1000,
-          useNativeDriver: true,
-        }),
-      ]).start();
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(opacity, { toValue: 1, duration: 300, useNativeDriver: true }),
+          Animated.timing(opacity, { toValue: 0.2, duration: 500, useNativeDriver: true }),
+          Animated.timing(opacity, { toValue: 0.8, duration: 400, useNativeDriver: true }),
+          Animated.timing(opacity, { toValue: 0, duration: 600, useNativeDriver: true }),
+          Animated.delay(Math.random() * 1000),
+        ])
+      ).start();
     }, delay);
     return () => clearTimeout(timeout);
   }, []);
-  
-  const colors = ['#fbbf24', '#f59e0b', '#22c55e', '#3b82f6', '#a855f7'];
-  const color = colors[Math.floor(Math.random() * colors.length)];
-  const symbol = ['✦', '◆', '★', '●'][Math.floor(Math.random() * 4)];
   
   return (
     <Animated.Text
       style={{
         position: 'absolute',
-        left: startX,
-        color,
-        fontSize: 16 + Math.random() * 8,
+        left: x,
+        top: y,
+        color: '#f59e0b',
+        fontSize: 14 + Math.random() * 10,
         opacity,
-        transform: [{ translateY: fallAnim }, { translateX: swayAnim }],
+        fontFamily: 'monospace',
       }}
     >
-      {symbol}
+      {char}
     </Animated.Text>
   );
 };
+
+// ASCII art for VICTORIOUS
+const VICTORIOUS_ASCII = `
+██    ██ ██  ██████ ████████  ██████  ██████  ██  ██████  ██    ██ ███████ 
+██    ██ ██ ██         ██    ██    ██ ██   ██ ██ ██    ██ ██    ██ ██      
+██    ██ ██ ██         ██    ██    ██ ██████  ██ ██    ██ ██    ██ ███████ 
+ ██  ██  ██ ██         ██    ██    ██ ██   ██ ██ ██    ██ ██    ██      ██ 
+  ████   ██  ██████    ██     ██████  ██   ██ ██  ██████   ██████  ███████ `;
 
 export default function VictoryScreen() {
   const game = useGame();
@@ -175,36 +170,41 @@ export default function VictoryScreen() {
     router.replace('/');
   };
 
-  // Generate confetti particles
-  const confettiParticles = Array.from({ length: 30 }, (_, i) => ({
+  // Generate ASCII sparkles
+  const sparkles = Array.from({ length: 20 }, (_, i) => ({
     id: i,
-    delay: Math.random() * 1500,
-    startX: Math.random() * 350,
+    delay: Math.random() * 2000,
+    x: Math.random() * 350,
+    y: Math.random() * 700,
   }));
 
   // Dramatic victory intro screen
   if (showDramaticIntro) {
     return (
-      <View className="flex-1 bg-black overflow-hidden">
-        {/* Confetti */}
-        {confettiParticles.map(p => (
-          <ConfettiParticle key={p.id} delay={p.delay} startX={p.startX} />
+      <View className="flex-1 bg-black justify-center items-center overflow-hidden">
+        {/* ASCII Sparkles */}
+        {sparkles.map(s => (
+          <AsciiSparkle key={s.id} delay={s.delay} x={s.x} y={s.y} />
         ))}
         
         <Animated.View 
-          className="flex-1 justify-center items-center"
+          className="items-center"
           style={{ opacity: introFade }}
         >
-          <Animated.View style={{ transform: [{ scale: Animated.multiply(textScale, glowPulse) }] }}>
-            <Text className="text-amber text-4xl mb-4 text-center">✦ ✦ ✦</Text>
-            <Text 
-              className="text-victory text-4xl font-mono font-bold tracking-[6px] text-center mb-4"
-              style={{ textShadowColor: '#22c55e', textShadowRadius: 30 }}
-            >
-              VICTORIOUS
+          <Animated.View style={{ transform: [{ scale: Animated.multiply(textScale, glowPulse) }] }} className="items-center">
+            <Text className="text-amber font-mono text-sm mb-4 tracking-[4px]">
+              · · ◆ · ◆ · ◆ · ·
             </Text>
-            <Text className="text-amber text-4xl mb-6 text-center">✦ ✦ ✦</Text>
-            <Text className="text-bone text-lg font-mono text-center mb-2">
+            <Text 
+              className="font-mono text-[3px] text-victory text-center leading-[4px] mb-4"
+              style={{ textShadowColor: '#22c55e', textShadowRadius: 15 }}
+            >
+              {VICTORIOUS_ASCII}
+            </Text>
+            <Text className="text-amber font-mono text-sm mb-6 tracking-[4px]">
+              · · ◆ · ◆ · ◆ · ·
+            </Text>
+            <Text className="text-bone text-base font-mono text-center mb-2">
               You conquered the depths!
             </Text>
             {totalReward > 0 && (
