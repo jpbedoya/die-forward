@@ -213,13 +213,22 @@ export default function CombatScreen() {
         playSFX('flee-run');
         const itemEffects = getItemEffects(game.inventory);
         const fleeChance = Math.min(0.9, Math.max(0.1, 0.5 + intentEffects.fleeMod + itemEffects.fleeBonus));
-        fleeSuccess = Math.random() < fleeChance;
+        const roll = Math.random();
         
-        if (fleeSuccess) {
+        if (roll < fleeChance * 0.6) {
+          // Clean escape
+          fleeSuccess = true;
           actionNarrative = getFleeNarration('success');
-        } else {
-          playerDmg = calculateDamage(5 + Math.floor(Math.random() * 10), false);
+        } else if (roll < fleeChance) {
+          // Escaped but took damage
+          fleeSuccess = true;
+          playerDmg = calculateDamage(5 + Math.floor(Math.random() * 8), false);
           actionNarrative = getFleeNarration('hurt');
+        } else {
+          // Failed to escape
+          fleeSuccess = false;
+          playerDmg = calculateDamage(8 + Math.floor(Math.random() * 12), false);
+          actionNarrative = getFleeNarration('fail');
           playSFX('flee-fail');
         }
         break;
