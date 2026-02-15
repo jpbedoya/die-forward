@@ -2,21 +2,25 @@
  * Unified Wallet Provider
  * 
  * Platform-aware wallet that uses:
- * - Web: @solana/react-hooks with Wallet Standard auto-discovery
+ * - Web: @solana/react-hooks for wallet connection + web3.js for transactions
  * - Native: Mobile Wallet Adapter (MWA) with web3.js boundary
  */
 
 import React, { createContext, useContext, useMemo, useCallback, useState, ReactNode } from 'react';
 import { Platform } from 'react-native';
 import type { Address } from '@solana/kit';
-import { lamports } from '@solana/kit';
 
 // Conditional imports
 let useWalletConnection: any;
 let useBalance: any;
-let useSolTransfer: any;
 let WebWalletProvider: any;
-let solanaClient: any;
+
+// Web3.js imports for transaction building (boundary layer)
+let Connection: any;
+let PublicKey: any;
+let Transaction: any;
+let SystemProgram: any;
+let LAMPORTS_PER_SOL: any;
 
 let mobileConnect: any;
 let mobileSignAndSend: any;
@@ -25,15 +29,21 @@ let getMobileBalance: any;
 let mobileConnection: any;
 
 if (Platform.OS === 'web') {
-  // Web: use framework-kit
+  // Web: use framework-kit for connection + web3.js for tx building
   const hooks = require('@solana/react-hooks');
   const provider = require('./provider');
+  const web3 = require('@solana/web3.js');
   
   useWalletConnection = hooks.useWalletConnection;
   useBalance = hooks.useBalance;
-  useSolTransfer = hooks.useSolTransfer;
   WebWalletProvider = provider.WebWalletProvider;
-  solanaClient = provider.solanaClient;
+  
+  // Web3.js for transaction building
+  Connection = web3.Connection;
+  PublicKey = web3.PublicKey;
+  Transaction = web3.Transaction;
+  SystemProgram = web3.SystemProgram;
+  LAMPORTS_PER_SOL = web3.LAMPORTS_PER_SOL;
 } else {
   // Native: use MWA boundary
   const mwa = require('./mobile-adapter');
@@ -71,13 +81,15 @@ export function useUnifiedWallet() {
   return useContext(UnifiedWalletContext);
 }
 
+// RPC endpoint for web
+const WEB_RPC_ENDPOINT = process.env.EXPO_PUBLIC_SOLANA_RPC || 'https://api.devnet.solana.com';
+
 // Web implementation using framework-kit hooks
 function WebWalletConsumer({ children }: { children: ReactNode }) {
   const walletConnection = useWalletConnection();
   // wallet.wallet is the session, which contains account.address
   const walletAddress = walletConnection.wallet?.account?.address ?? null;
   const balanceResult = useBalance(walletAddress ? walletAddress : undefined);
-  const transfer = useSolTransfer();
   
   const contextValue = useMemo<UnifiedWalletContextState>(() => ({
     connected: walletConnection.connected,
@@ -100,16 +112,35 @@ function WebWalletConsumer({ children }: { children: ReactNode }) {
     },
     sendSOL: async (to: Address, amount: number) => {
       if (!walletAddress) throw new Error('Wallet not connected');
-      const signature = await transfer.send({
-        to,
-        amount: lamports(BigInt(Math.floor(amount * 1e9))),
-      });
-      return signature;
+      const session = walletConnection.wallet;
+      if (!session) throw new Error('No wallet session');
+      
+      // Build transaction using web3.js (boundary layer)
+      const connection = new Connection(WEB_RPC_ENDPOINT, 'confirmed');
+      const fromPubkey = new PublicKey(walletAddress);
+      const toPubkey = new PublicKey(to);
+      
+      const transaction = new Transaction().add(
+        SystemProgram.transfer({
+          fromPubkey,
+          toPubkey,
+          lamports: Math.floor(amount * LAMPORTS_PER_SOL),
+        })
+      );
+      
+      const { blockhash } = await connection.getLatestBlockhash();
+      transaction.recentBlockhash = blockhash;
+      transaction.feePayer = fromPubkey;
+      
+      // Sign using wallet standard - the session has signAndSendTransaction
+      const signedTx = await session.signAndSendTransaction(transaction);
+      
+      return typeof signedTx === 'string' ? signedTx : signedTx.signature;
     },
     refreshBalance: async () => {
       balanceResult.refresh?.();
     },
-  }), [walletConnection, walletAddress, balanceResult, transfer]);
+  }), [walletConnection, walletAddress, balanceResult]);
   
   return (
     <UnifiedWalletContext.Provider value={contextValue}>
