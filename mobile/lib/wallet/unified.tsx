@@ -30,16 +30,33 @@ let mobileConnection: any;
 
 // Additional hooks for web
 let useSolTransfer: any;
+let useSendTransaction: any;
+
+// Web3.js for transaction building (escrow program)
+let Connection: any;
+let PublicKey: any;
+let Transaction: any;
+let SystemProgram: any;
+let LAMPORTS_PER_SOL: any;
 
 if (Platform.OS === 'web') {
   // Web: use framework-kit
   const hooks = require('@solana/react-hooks');
   const provider = require('./provider');
+  const web3 = require('@solana/web3.js');
   
   useWalletConnection = hooks.useWalletConnection;
   useBalance = hooks.useBalance;
   useSolTransfer = hooks.useSolTransfer;
+  useSendTransaction = hooks.useSendTransaction;
   WebWalletProvider = provider.WebWalletProvider;
+  
+  // Web3.js for building escrow transactions
+  Connection = web3.Connection;
+  PublicKey = web3.PublicKey;
+  Transaction = web3.Transaction;
+  SystemProgram = web3.SystemProgram;
+  LAMPORTS_PER_SOL = web3.LAMPORTS_PER_SOL;
 } else {
   // Native: use MWA boundary
   const mwa = require('./mobile-adapter');
@@ -59,6 +76,7 @@ interface UnifiedWalletContextState {
   connect: () => Promise<Address | null>;
   disconnect: () => Promise<void>;
   sendSOL: (to: Address, amount: number) => Promise<string>;
+  signAndSendTransaction: (transaction: any) => Promise<string>; // For escrow/custom txs
   refreshBalance: () => Promise<void>;
 }
 
@@ -70,6 +88,7 @@ const UnifiedWalletContext = createContext<UnifiedWalletContextState>({
   connect: async () => null,
   disconnect: async () => {},
   sendSOL: async () => { throw new Error('Not connected'); },
+  signAndSendTransaction: async () => { throw new Error('Not connected'); },
   refreshBalance: async () => {},
 });
 
@@ -77,31 +96,55 @@ export function useUnifiedWallet() {
   return useContext(UnifiedWalletContext);
 }
 
+// RPC endpoint
+const WEB_RPC = process.env.EXPO_PUBLIC_SOLANA_RPC || 'https://api.devnet.solana.com';
+
 // Web implementation using framework-kit hooks
 function WebWalletConsumer({ children }: { children: ReactNode }) {
   const walletConnection = useWalletConnection();
   const solTransfer = useSolTransfer();
+  const txSender = useSendTransaction();
   
   // wallet is the session, which contains account.address
   const walletAddress = walletConnection.wallet?.account?.address ?? null;
   const balanceResult = useBalance(walletAddress ? walletAddress : undefined);
   
-  // Send SOL using framework-kit's useSolTransfer
+  // Send SOL using framework-kit's useSolTransfer (simple transfers)
   const doSendSOL = useCallback(async (to: Address, amount: number): Promise<string> => {
     if (!walletAddress) throw new Error('Wallet not connected');
     if (!walletConnection.wallet) throw new Error('No wallet session');
     
-    // useSolTransfer.send expects { to: Address, amount: bigint (lamports) }
     const lamports = BigInt(Math.floor(amount * 1e9));
-    
-    const signature = await solTransfer.send({
-      to: to,
-      amount: lamports,
-    });
+    const signature = await solTransfer.send({ to, amount: lamports });
     
     if (!signature) throw new Error('Transaction failed - no signature returned');
     return signature;
   }, [walletAddress, walletConnection.wallet, solTransfer]);
+  
+  // Sign and send arbitrary transaction (for escrow program)
+  const doSignAndSend = useCallback(async (transaction: any): Promise<string> => {
+    if (!walletAddress) throw new Error('Wallet not connected');
+    if (!walletConnection.wallet) throw new Error('No wallet session');
+    
+    // Get blockhash if not set
+    const connection = new Connection(WEB_RPC, 'confirmed');
+    if (!transaction.recentBlockhash) {
+      const { blockhash } = await connection.getLatestBlockhash();
+      transaction.recentBlockhash = blockhash;
+    }
+    if (!transaction.feePayer) {
+      transaction.feePayer = new PublicKey(walletAddress);
+    }
+    
+    // Serialize for framework-kit
+    const serialized = transaction.serialize({ requireAllSignatures: false });
+    
+    // Use useSendTransaction to sign and send
+    const signature = await txSender.send({ transaction: serialized });
+    
+    if (!signature) throw new Error('Transaction failed - no signature returned');
+    return signature;
+  }, [walletAddress, walletConnection.wallet, txSender]);
   
   const contextValue = useMemo<UnifiedWalletContextState>(() => ({
     connected: walletConnection.connected,
@@ -109,7 +152,6 @@ function WebWalletConsumer({ children }: { children: ReactNode }) {
     address: walletAddress as Address | null,
     balance: balanceResult.lamports ? Number(balanceResult.lamports) / 1e9 : null,
     connect: async () => {
-      // Open wallet selection - framework-kit handles the modal
       if (walletConnection.connectors.length > 0) {
         try {
           await walletConnection.connect(walletConnection.connectors[0].id);
@@ -123,10 +165,11 @@ function WebWalletConsumer({ children }: { children: ReactNode }) {
       await walletConnection.disconnect();
     },
     sendSOL: doSendSOL,
+    signAndSendTransaction: doSignAndSend,
     refreshBalance: async () => {
       balanceResult.refresh?.();
     },
-  }), [walletConnection, walletAddress, balanceResult, doSendSOL]);
+  }), [walletConnection, walletAddress, balanceResult, doSendSOL, doSignAndSend]);
   
   return (
     <UnifiedWalletContext.Provider value={contextValue}>
@@ -176,6 +219,11 @@ function MobileWalletProvider({ children }: { children: ReactNode }) {
     return await mobileSendSOL(address, to, amount, authToken);
   }, [authToken, address]);
   
+  const signAndSendTransaction = useCallback(async (transaction: any): Promise<string> => {
+    if (!authToken || !address) throw new Error('Wallet not connected');
+    return await mobileSignAndSend(transaction, authToken);
+  }, [authToken, address]);
+  
   const refreshBalance = useCallback(async () => {
     if (address) {
       const bal = await getMobileBalance(address);
@@ -191,8 +239,9 @@ function MobileWalletProvider({ children }: { children: ReactNode }) {
     connect,
     disconnect,
     sendSOL,
+    signAndSendTransaction,
     refreshBalance,
-  }), [connected, connecting, address, balance, connect, disconnect, sendSOL, refreshBalance]);
+  }), [connected, connecting, address, balance, connect, disconnect, sendSOL, signAndSendTransaction, refreshBalance]);
   
   return (
     <UnifiedWalletContext.Provider value={contextValue}>
