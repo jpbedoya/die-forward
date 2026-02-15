@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
-import { View, Text, Pressable, ScrollView, ActivityIndicator } from 'react-native';
+import { useState, useEffect, useRef } from 'react';
+import { View, Text, Pressable, ScrollView, ActivityIndicator, Animated, Platform } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
@@ -65,6 +66,32 @@ export default function CombatScreen() {
   const [narrative, setNarrative] = useState('');
   const [playerDmgTaken, setPlayerDmgTaken] = useState(0);
   const [enemyDmgTaken, setEnemyDmgTaken] = useState(0);
+  
+  // Screen shake animation
+  const shakeAnim = useRef(new Animated.Value(0)).current;
+  
+  const triggerShake = (intensity: 'light' | 'medium' | 'heavy' = 'medium') => {
+    const magnitude = intensity === 'heavy' ? 15 : intensity === 'medium' ? 8 : 4;
+    
+    // Haptic feedback
+    if (Platform.OS !== 'web') {
+      const hapticType = intensity === 'heavy' 
+        ? Haptics.ImpactFeedbackStyle.Heavy 
+        : intensity === 'medium' 
+          ? Haptics.ImpactFeedbackStyle.Medium 
+          : Haptics.ImpactFeedbackStyle.Light;
+      Haptics.impactAsync(hapticType);
+    }
+    
+    // Screen shake
+    Animated.sequence([
+      Animated.timing(shakeAnim, { toValue: magnitude, duration: 50, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: -magnitude, duration: 50, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: magnitude * 0.6, duration: 50, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: -magnitude * 0.6, duration: 50, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: 0, duration: 50, useNativeDriver: true }),
+    ]).start();
+  };
 
   const roomNumber = parseInt(params.roomNum || '1', 10);
   const depth = getDepthForRoom(roomNumber);
@@ -209,6 +236,12 @@ export default function CombatScreen() {
     setPlayerDmgTaken(playerDmg);
     setNarrative(actionNarrative);
     
+    // Screen shake + haptics on damage
+    if (playerDmg > 0) {
+      const intensity = playerDmg >= 20 ? 'heavy' : playerDmg >= 10 ? 'medium' : 'light';
+      triggerShake(intensity);
+    }
+    
     // Check outcomes
     if (fleeSuccess) {
       playSFX('footstep');
@@ -222,6 +255,10 @@ export default function CombatScreen() {
     
     if (newPlayerHealth <= 0) {
       playSFX('player-death');
+      triggerShake('heavy');
+      if (Platform.OS !== 'web') {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
       setPhase('death');
       setTimeout(() => {
         router.replace({ pathname: '/death', params: { killedBy: creature?.name } });
@@ -231,6 +268,9 @@ export default function CombatScreen() {
     
     if (newEnemyHealth <= 0) {
       playSFX('enemy-death');
+      if (Platform.OS !== 'web') {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
       setPhase('victory');
       setTimeout(() => {
         game.advance();
@@ -262,13 +302,17 @@ export default function CombatScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-crypt-bg">
-      {/* Header */}
-      <View className="flex-row items-center justify-between px-3 py-2 border-b border-amber/30">
-        <Text className="text-amber text-xs font-mono">◈ {depth.name}</Text>
-        <ProgressBar current={roomNumber} total={13} />
-      </View>
+      <Animated.View 
+        className="flex-1"
+        style={{ transform: [{ translateX: shakeAnim }] }}
+      >
+        {/* Header */}
+        <View className="flex-row items-center justify-between px-3 py-2 border-b border-amber/30">
+          <Text className="text-amber text-xs font-mono">◈ {depth.name}</Text>
+          <ProgressBar current={roomNumber} total={13} />
+        </View>
 
-      <ScrollView className="flex-1" contentContainerClassName="p-4">
+        <ScrollView className="flex-1" contentContainerClassName="p-4">
         {/* Enemy Card */}
         <View className="bg-crypt-surface border border-crypt-border p-4 mb-4">
           <View className="flex-row items-center gap-3 mb-3">
@@ -382,6 +426,7 @@ export default function CombatScreen() {
           </View>
         </View>
       </View>
+      </Animated.View>
     </SafeAreaView>
   );
 }

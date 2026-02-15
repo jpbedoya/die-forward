@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { View, Text, Pressable, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, Pressable, ScrollView, ActivityIndicator, Alert, Platform } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
@@ -39,9 +40,15 @@ export default function PlayScreen() {
       const { signature } = await sendTip(corpse.walletAddress, tipAmount);
       await recordTip(corpse.id, tipAmount, game.walletAddress!);
       playSFX('tip-chime');
+      if (Platform.OS !== 'web') {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
       setMessage(`Tipped @${corpse.playerName} ◎ ${tipAmount} SOL`);
     } catch (e) {
       console.error('Tip failed:', e);
+      if (Platform.OS !== 'web') {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
       Alert.alert('Tip Failed', 'Could not send tip. Please try again.');
     } finally {
       setTipping(false);
