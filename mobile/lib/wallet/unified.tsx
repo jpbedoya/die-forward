@@ -138,13 +138,30 @@ function WebWalletConsumer({ children }: { children: ReactNode }) {
     }));
     
     // useSendTransaction expects { instructions, feePayer }
-    const signature = await txSender.send({
-      instructions: kitInstructions,
-      feePayer: walletAddress,
-    });
-    
-    if (!signature) throw new Error('Transaction failed - no signature returned');
-    return signature;
+    try {
+      const signature = await txSender.send({
+        instructions: kitInstructions,
+        feePayer: walletAddress,
+      });
+      
+      if (!signature) throw new Error('Transaction failed - no signature returned');
+      return signature;
+    } catch (err: any) {
+      // Handle user rejection and other wallet errors gracefully
+      const message = err?.message || String(err);
+      if (message.includes('rejected') || message.includes('cancelled') || message.includes('denied')) {
+        throw new Error('Transaction cancelled');
+      }
+      if (message.includes('transaction plan failed')) {
+        // Check for more specific cause
+        const cause = err?.cause?.message || err?.transactionPlanResult?.error?.message;
+        if (cause?.includes('rejected') || cause?.includes('User rejected')) {
+          throw new Error('Transaction cancelled');
+        }
+        throw new Error(cause || 'Transaction failed');
+      }
+      throw err;
+    }
   }, [walletAddress, walletConnection.wallet, txSender]);
   
   const contextValue = useMemo<UnifiedWalletContextState>(() => ({
