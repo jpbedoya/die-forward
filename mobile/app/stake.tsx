@@ -152,7 +152,7 @@ export default function StakeScreen() {
                 {game.loading && !staking ? (
                   <ActivityIndicator color="#ffffff" />
                 ) : (
-                  <Text className="text-white font-mono font-bold tracking-wider">🔗 CONNECT WALLET</Text>
+                  <Text className="text-white font-mono font-bold tracking-wider">CONNECT WALLET</Text>
                 )}
               </Pressable>
               
@@ -164,7 +164,7 @@ export default function StakeScreen() {
                 {staking ? (
                   <ActivityIndicator color="#a8a29e" />
                 ) : (
-                  <Text className="text-bone-muted font-mono">🎮 FREE PLAY (No Stake)</Text>
+                  <Text className="text-bone-muted font-mono">FREE PLAY (No Stake)</Text>
                 )}
               </Pressable>
             </>

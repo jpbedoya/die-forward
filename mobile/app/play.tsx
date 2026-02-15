@@ -222,7 +222,7 @@ export default function PlayScreen() {
         ];
       case 'corpse':
         return [
-          { id: '1', text: '🔍 Search the body', action: 'loot' },
+          { id: '1', text: 'Search the body', action: 'loot' },
           { id: '2', text: 'Pay respects and move on', action: 'explore' },
         ];
       case 'cache':
