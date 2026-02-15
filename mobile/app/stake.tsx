@@ -96,7 +96,7 @@ export default function StakeScreen() {
                 <Text className={`font-mono text-base ${
                   selectedStake === amount ? 'text-amber-light' : 'text-bone-muted'
                 }`}>
-                  ◎ {amount}
+                  {amount}
                 </Text>
               </Pressable>
             ))}
@@ -106,7 +106,6 @@ export default function StakeScreen() {
           <View className="mt-4">
             <Text className="text-stone-600 text-xs font-mono mb-2">OR ENTER CUSTOM:</Text>
             <View className="flex-row items-center border border-crypt-border-light bg-crypt-surface px-3">
-              <Text className="text-amber text-lg font-mono mr-2">◎</Text>
               <TextInput
                 className="flex-1 text-bone text-lg font-mono py-3"
                 value={customStake}
@@ -129,15 +128,15 @@ export default function StakeScreen() {
         <View className="bg-crypt-surface border border-crypt-border p-4 mb-6">
           <View className="flex-row justify-between mb-2">
             <Text className="text-bone-dark text-sm font-mono">Stake Amount</Text>
-            <Text className="text-bone-muted text-sm font-mono">◎ {selectedStake}</Text>
+            <Text className="text-bone-muted text-sm font-mono">{selectedStake} SOL</Text>
           </View>
           <View className="flex-row justify-between mb-2">
             <Text className="text-bone-dark text-sm font-mono">Victory Bonus ({settings.victoryBonusPercent}%)</Text>
-            <Text className="text-victory text-sm font-mono">+◎ {(selectedStake * settings.victoryBonusPercent / 100).toFixed(3)}</Text>
+            <Text className="text-victory text-sm font-mono">+{(selectedStake * settings.victoryBonusPercent / 100).toFixed(3)}</Text>
           </View>
           <View className="flex-row justify-between border-t border-crypt-border pt-3 mt-1">
             <Text className="text-bone-muted text-sm font-mono font-bold">Potential Reward</Text>
-            <Text className="text-amber-light text-base font-mono font-bold">◎ {(selectedStake * (1 + settings.victoryBonusPercent / 100)).toFixed(3)}</Text>
+            <Text className="text-amber-light text-base font-mono font-bold">{(selectedStake * (1 + settings.victoryBonusPercent / 100)).toFixed(3)} SOL</Text>
           </View>
         </View>
 
@@ -198,7 +197,7 @@ export default function StakeScreen() {
             <Text className="text-victory text-xs font-mono">✓ Connected</Text>
             <Text className="text-bone-dark text-xs font-mono">{formatAddress(game.walletAddress)}</Text>
             {game.balance !== null && (
-              <Text className="text-amber-light text-xs font-mono font-bold">◎ {game.balance.toFixed(3)}</Text>
+              <Text className="text-amber-light text-xs font-mono font-bold">{game.balance.toFixed(3)} SOL</Text>
             )}
           </View>
         )}
