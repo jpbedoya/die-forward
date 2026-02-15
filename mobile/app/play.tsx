@@ -9,7 +9,7 @@ import { useCorpsesForRoom, discoverCorpse, recordTip, useGameSettings, Corpse }
 import { ProgressBar } from '../components/ProgressBar';
 import { GameMenu, MenuButton } from '../components/GameMenu';
 import { getDepthForRoom, DungeonRoom } from '../lib/content';
-import { sendTip } from '../lib/wallet';
+import { useUnifiedWallet, type Address } from '../lib/wallet/unified';
 
 function HealthBar({ current, max }: { current: number; max: number }) {
   const filled = Math.round((current / max) * 8);
@@ -23,6 +23,7 @@ function HealthBar({ current, max }: { current: number; max: number }) {
 
 export default function PlayScreen() {
   const game = useGame();
+  const wallet = useUnifiedWallet();
   const { playSFX, playAmbient } = useAudio();
   const { settings } = useGameSettings();
   const [message, setMessage] = useState<string | null>(null);
@@ -34,14 +35,14 @@ export default function PlayScreen() {
 
   // Handle tipping a corpse
   const handleTip = async (corpse: Corpse) => {
-    if (!game.walletConnected || tipping) return;
+    if (!wallet.connected || tipping) return;
     
     const tipAmount = 0.01; // 0.01 SOL tip
     
     setTipping(true);
     try {
-      const { signature } = await sendTip(corpse.walletAddress, tipAmount);
-      await recordTip(corpse.id, tipAmount, game.walletAddress!);
+      await wallet.sendSOL(corpse.walletAddress as Address, tipAmount);
+      await recordTip(corpse.id, tipAmount, wallet.address!);
       playSFX('tip-chime');
       if (Platform.OS !== 'web') {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);

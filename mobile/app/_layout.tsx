@@ -13,7 +13,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { View, Text, ScrollView } from 'react-native';
 import { GameProvider } from '../lib/GameContext';
-import { UnifiedWalletProvider } from '../lib/WalletProvider';
+import { UnifiedWalletProvider } from '../lib/wallet/unified';
 import { WebFrame } from '../components/WebFrame';
 
 // Error boundary to catch and display crashes
