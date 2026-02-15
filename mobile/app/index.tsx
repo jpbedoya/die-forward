@@ -124,9 +124,9 @@ export default function HomeScreen() {
         className="absolute top-12 right-4 z-10 p-2"
         onPress={async () => {
           unlockAudio(); // Unlock audio on web
-          await toggleAudio();
+          const nowEnabled = await toggleAudio(); // Returns new state
           // If just enabled, play ambient
-          if (!audioEnabled) {
+          if (nowEnabled) {
             playAmbient('ambient-title');
           }
         }}
