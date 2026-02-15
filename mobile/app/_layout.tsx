@@ -14,6 +14,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { View, Text, ScrollView } from 'react-native';
 import { GameProvider } from '../lib/GameContext';
 import { UnifiedWalletProvider } from '../lib/WalletProvider';
+import { WebFrame } from '../components/WebFrame';
 
 // Error boundary to catch and display crashes
 class ErrorBoundary extends React.Component<
@@ -59,18 +60,20 @@ export default function RootLayout() {
   return (
     <ErrorBoundary>
       <SafeAreaProvider>
-        <UnifiedWalletProvider>
-          <GameProvider>
-            <StatusBar style="light" />
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                contentStyle: { backgroundColor: '#0d0d0d' },
-                animation: 'fade',
-              }}
-            />
-          </GameProvider>
-        </UnifiedWalletProvider>
+        <WebFrame>
+          <UnifiedWalletProvider>
+            <GameProvider>
+              <StatusBar style="light" />
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  contentStyle: { backgroundColor: '#0d0d0d' },
+                  animation: 'fade',
+                }}
+              />
+            </GameProvider>
+          </UnifiedWalletProvider>
+        </WebFrame>
       </SafeAreaProvider>
     </ErrorBoundary>
   );
