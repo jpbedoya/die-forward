@@ -26,7 +26,6 @@ export default function HomeScreen() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const logoScale = useRef(new Animated.Value(0.8)).current;
   const logoZoom = useRef(new Animated.Value(1)).current;
-  const titleFade = useRef(new Animated.Value(0)).current;
 
   // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
   const { totalDeaths, totalStaked, isLoading: statsLoading } = usePoolStats();
@@ -74,7 +73,7 @@ export default function HomeScreen() {
       // Brief pause
       Animated.delay(200),
     ]).start(() => {
-      // Auto-transition: zoom out towards player
+      // Auto-transition: zoom out towards player then fade to main screen
       Animated.parallel([
         // Logo zooms towards player
         Animated.timing(logoZoom, {
@@ -86,13 +85,6 @@ export default function HomeScreen() {
         Animated.timing(fadeAnim, {
           toValue: 0,
           duration: 400,
-          useNativeDriver: true,
-        }),
-        // Fade in title screen
-        Animated.timing(titleFade, {
-          toValue: 1,
-          duration: 600,
-          delay: 200,
           useNativeDriver: true,
         }),
       ]).start(() => setShowSplash(false));
@@ -121,21 +113,6 @@ export default function HomeScreen() {
           </Animated.View>
         </View>
         
-        {/* Title screen fading in behind */}
-        <Animated.View 
-          className="absolute inset-0" 
-          style={{ opacity: titleFade }}
-          pointerEvents="none"
-        >
-          <View className="flex-1 bg-crypt-bg justify-center items-center">
-            <Text 
-              className="font-mono text-[6px] text-amber text-center leading-[7px]"
-              style={{ textShadowColor: '#f59e0b', textShadowRadius: 15 }}
-            >
-              {ASCII_LOGO}
-            </Text>
-          </View>
-        </Animated.View>
       </View>
     );
   }
@@ -165,19 +142,13 @@ export default function HomeScreen() {
 
         {/* Main CTA */}
         <View className="gap-3">
-          <Link href="/stake" asChild>
-            <Pressable className="bg-amber py-5 px-8 items-center active:bg-amber-dark">
-              <Text className="text-crypt-bg text-lg font-bold font-mono tracking-widest">
-                ▶ START GAME
-              </Text>
-            </Pressable>
-          </Link>
-          
           <Pressable 
-            className="border-2 border-crypt-border-light py-4 px-8 items-center active:border-amber"
+            className="bg-amber py-5 px-8 items-center active:bg-amber-dark"
             onPress={startFreePlay}
           >
-            <Text className="text-bone-muted text-base font-mono">🎮 FREE PLAY</Text>
+            <Text className="text-crypt-bg text-lg font-bold font-mono tracking-widest">
+              ▶ START GAME
+            </Text>
           </Pressable>
 
           {/* Secondary navigation */}
