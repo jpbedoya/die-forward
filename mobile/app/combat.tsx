@@ -178,10 +178,10 @@ export default function CombatScreen() {
         playerDmg = calculateDamage(baseEnemyHit, false);
         enemyDmg = calculateDamage(basePlayerHit, true);
         
-        // Critical hit: 15% chance for 1.5x damage
-        const isCritical = Math.random() < 0.15;
+        // Critical hit chance from settings
+        const isCritical = Math.random() < settings.criticalChance;
         if (isCritical) {
-          enemyDmg = Math.round(enemyDmg * 1.5);
+          enemyDmg = Math.round(enemyDmg * settings.criticalMultiplier);
           actionNarrative = getStrikeNarration('success');
           playSFX('critical-hit');
         } else {
@@ -192,7 +192,7 @@ export default function CombatScreen() {
       }
       case 'dodge': {
         playSFX('dodge-whoosh');
-        const success = Math.random() > 0.3;
+        const success = Math.random() < settings.dodgeSuccessRate;
         if (success) {
           playerDmg = 0;
           actionNarrative = getDodgeNarration('success');
@@ -205,7 +205,7 @@ export default function CombatScreen() {
       case 'brace': {
         playSFX('brace-impact');
         const baseDmg = 3 + Math.floor(Math.random() * 5);
-        playerDmg = Math.round(calculateDamage(baseDmg, false) * 0.5);
+        playerDmg = Math.round(calculateDamage(baseDmg, false) * (1 - settings.braceReduction));
         actionNarrative = getBraceNarration('success');
         break;
       }
@@ -298,7 +298,7 @@ export default function CombatScreen() {
       setEnemyIntent(newIntent);
       setIntentEffects(getIntentEffects(newIntent.type));
       setPhase('choose');
-      game.setStamina(Math.min(3, game.stamina + 1));
+      game.setStamina(Math.min(3, game.stamina + settings.staminaRegen));
     }, 1500);
   };
 

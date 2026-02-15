@@ -316,9 +316,16 @@ export interface GameSettings {
   baseDamageMax: number;
   tier2Multiplier: number;
   tier3Multiplier: number;
+  // Action settings
+  dodgeSuccessRate: number;    // Base dodge success (0-1)
+  braceReduction: number;      // Damage reduction when bracing (0-1)
+  criticalChance: number;      // Crit chance (0-1)
+  criticalMultiplier: number;  // Crit damage multiplier
   // Flee settings
   fleeChanceBase: number;      // Base chance to flee (0-1)
   fleeCleanRatio: number;      // Ratio of clean escapes vs hurt escapes (0-1)
+  // Player settings
+  staminaRegen: number;        // Stamina recovered per turn
   // Victory settings
   victoryBonusPercent: number;
 }
@@ -332,8 +339,13 @@ export const DEFAULT_GAME_SETTINGS: Omit<GameSettings, 'id'> = {
   baseDamageMax: 25,
   tier2Multiplier: 1.5,
   tier3Multiplier: 2.0,
+  dodgeSuccessRate: 0.7,
+  braceReduction: 0.5,
+  criticalChance: 0.15,
+  criticalMultiplier: 1.5,
   fleeChanceBase: 0.5,
   fleeCleanRatio: 0.6,
+  staminaRegen: 1,
   victoryBonusPercent: 50,
 };
 
@@ -356,8 +368,13 @@ export function useGameSettings() {
     baseDamageMax: dbSettings?.baseDamageMax ?? DEFAULT_GAME_SETTINGS.baseDamageMax,
     tier2Multiplier: dbSettings?.tier2Multiplier ?? DEFAULT_GAME_SETTINGS.tier2Multiplier,
     tier3Multiplier: dbSettings?.tier3Multiplier ?? DEFAULT_GAME_SETTINGS.tier3Multiplier,
+    dodgeSuccessRate: dbSettings?.dodgeSuccessRate ?? DEFAULT_GAME_SETTINGS.dodgeSuccessRate,
+    braceReduction: dbSettings?.braceReduction ?? DEFAULT_GAME_SETTINGS.braceReduction,
+    criticalChance: dbSettings?.criticalChance ?? DEFAULT_GAME_SETTINGS.criticalChance,
+    criticalMultiplier: dbSettings?.criticalMultiplier ?? DEFAULT_GAME_SETTINGS.criticalMultiplier,
     fleeChanceBase: dbSettings?.fleeChanceBase ?? DEFAULT_GAME_SETTINGS.fleeChanceBase,
     fleeCleanRatio: dbSettings?.fleeCleanRatio ?? DEFAULT_GAME_SETTINGS.fleeCleanRatio,
+    staminaRegen: dbSettings?.staminaRegen ?? DEFAULT_GAME_SETTINGS.staminaRegen,
     victoryBonusPercent: dbSettings?.victoryBonusPercent ?? DEFAULT_GAME_SETTINGS.victoryBonusPercent,
   };
 

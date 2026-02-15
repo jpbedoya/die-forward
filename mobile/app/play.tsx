@@ -5,7 +5,7 @@ import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
 import { useAudio } from '../lib/audio';
-import { useCorpsesForRoom, discoverCorpse, recordTip, Corpse } from '../lib/instant';
+import { useCorpsesForRoom, discoverCorpse, recordTip, useGameSettings, Corpse } from '../lib/instant';
 import { ProgressBar } from '../components/ProgressBar';
 import { getDepthForRoom, DungeonRoom } from '../lib/content';
 import { sendTip } from '../lib/wallet';
@@ -23,6 +23,7 @@ function HealthBar({ current, max }: { current: number; max: number }) {
 export default function PlayScreen() {
   const game = useGame();
   const { playSFX, playAmbient } = useAudio();
+  const { settings } = useGameSettings();
   const [message, setMessage] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
   const [showCorpse, setShowCorpse] = useState(false);
@@ -135,11 +136,20 @@ export default function PlayScreen() {
         case 'loot': {
           playSFX('corpse-discover');
           
+          // Calculate loot chance based on depth
+          const lootChance = roomNumber >= 9 
+            ? settings.lootChanceDepth9 
+            : roomNumber >= 5 
+              ? settings.lootChanceDepth5 
+              : settings.lootChanceBase;
+          
+          const foundLoot = Math.random() < lootChance;
+          
           if (realCorpse) {
             setLootedCorpse(realCorpse);
             setShowCorpse(true);
             
-            if (realCorpse.loot !== 'Nothing' && !game.inventory.some(i => i.name === realCorpse.loot)) {
+            if (foundLoot && realCorpse.loot !== 'Nothing' && !game.inventory.some(i => i.name === realCorpse.loot)) {
               playSFX('loot-discover');
               game.addToInventory({ 
                 id: Date.now().toString(), 
@@ -155,19 +165,23 @@ export default function PlayScreen() {
               discoverCorpse(realCorpse.id, game.walletAddress).catch(console.error);
             }
           } else {
-            const lootItems = [
-              { name: 'Herbs', emoji: '🌿' },
-              { name: 'Bone Charm', emoji: '💀' },
-              { name: 'Rusty Blade', emoji: '🗡️' },
-            ];
-            const loot = lootItems[Math.floor(Math.random() * lootItems.length)];
-            
-            if (!game.inventory.some(i => i.name === loot.name)) {
-              playSFX('loot-discover');
-              game.addToInventory({ id: Date.now().toString(), ...loot });
-              setMessage(`Found: ${loot.emoji} ${loot.name}`);
+            if (foundLoot) {
+              const lootItems = [
+                { name: 'Herbs', emoji: '🌿' },
+                { name: 'Bone Charm', emoji: '💀' },
+                { name: 'Rusty Blade', emoji: '🗡️' },
+              ];
+              const loot = lootItems[Math.floor(Math.random() * lootItems.length)];
+              
+              if (!game.inventory.some(i => i.name === loot.name)) {
+                playSFX('loot-discover');
+                game.addToInventory({ id: Date.now().toString(), ...loot });
+                setMessage(`Found: ${loot.emoji} ${loot.name}`);
+              } else {
+                setMessage('Nothing new here.');
+              }
             } else {
-              setMessage('Nothing new here.');
+              setMessage('Nothing useful here.');
             }
           }
           
