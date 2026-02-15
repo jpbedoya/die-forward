@@ -150,8 +150,8 @@ export default function LandingPage() {
           
           {/* Vertical timeline */}
           <div className="relative">
-            {/* Vertical line */}
-            <div className="absolute left-6 sm:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-[var(--amber)] via-[var(--red)] via-[var(--purple)] via-[var(--green)] to-[var(--text-dim)] sm:-translate-x-px" />
+            {/* Vertical line - stops at tombstone */}
+            <div className="absolute left-6 sm:left-1/2 top-0 bottom-6 w-px bg-gradient-to-b from-[var(--amber)] via-[var(--red)] via-[var(--purple)] via-[var(--green)] to-[var(--text-dim)] sm:-translate-x-px" />
             
             {/* Step 1: Stake */}
             <div className="relative flex items-start gap-6 sm:gap-12 mb-16">
