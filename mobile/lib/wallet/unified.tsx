@@ -28,26 +28,18 @@ let mobileSendSOL: any;
 let getMobileBalance: any;
 let mobileConnection: any;
 
-// Additional hook for web
-let useSendTransaction: any;
+// Additional hooks for web
+let useSolTransfer: any;
 
 if (Platform.OS === 'web') {
-  // Web: use framework-kit for connection + web3.js for tx building
+  // Web: use framework-kit
   const hooks = require('@solana/react-hooks');
   const provider = require('./provider');
-  const web3 = require('@solana/web3.js');
   
   useWalletConnection = hooks.useWalletConnection;
   useBalance = hooks.useBalance;
-  useSendTransaction = hooks.useSendTransaction;
+  useSolTransfer = hooks.useSolTransfer;
   WebWalletProvider = provider.WebWalletProvider;
-  
-  // Web3.js for transaction building
-  Connection = web3.Connection;
-  PublicKey = web3.PublicKey;
-  Transaction = web3.Transaction;
-  SystemProgram = web3.SystemProgram;
-  LAMPORTS_PER_SOL = web3.LAMPORTS_PER_SOL;
 } else {
   // Native: use MWA boundary
   const mwa = require('./mobile-adapter');
@@ -85,52 +77,31 @@ export function useUnifiedWallet() {
   return useContext(UnifiedWalletContext);
 }
 
-// RPC endpoint for web
-const WEB_RPC_ENDPOINT = process.env.EXPO_PUBLIC_SOLANA_RPC || 'https://api.devnet.solana.com';
-
 // Web implementation using framework-kit hooks
 function WebWalletConsumer({ children }: { children: ReactNode }) {
   const walletConnection = useWalletConnection();
-  const sendTx = useSendTransaction();
-  // wallet.wallet is the session, which contains account.address
+  const solTransfer = useSolTransfer();
+  
+  // wallet is the session, which contains account.address
   const walletAddress = walletConnection.wallet?.account?.address ?? null;
   const balanceResult = useBalance(walletAddress ? walletAddress : undefined);
-  const [pendingSend, setPendingSend] = useState<{
-    resolve: (sig: string) => void;
-    reject: (err: Error) => void;
-  } | null>(null);
   
-  // Build and send SOL transfer
+  // Send SOL using framework-kit's useSolTransfer
   const doSendSOL = useCallback(async (to: Address, amount: number): Promise<string> => {
     if (!walletAddress) throw new Error('Wallet not connected');
+    if (!walletConnection.wallet) throw new Error('No wallet session');
     
-    // Build transaction using web3.js (boundary layer)
-    const connection = new Connection(WEB_RPC_ENDPOINT, 'confirmed');
-    const fromPubkey = new PublicKey(walletAddress);
-    const toPubkey = new PublicKey(to);
+    // useSolTransfer.send expects { to: Address, amount: bigint (lamports) }
+    const lamports = BigInt(Math.floor(amount * 1e9));
     
-    const transaction = new Transaction().add(
-      SystemProgram.transfer({
-        fromPubkey,
-        toPubkey,
-        lamports: Math.floor(amount * LAMPORTS_PER_SOL),
-      })
-    );
-    
-    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
-    transaction.recentBlockhash = blockhash;
-    transaction.feePayer = fromPubkey;
-    
-    // Serialize to wire format for framework-kit
-    const serialized = transaction.serialize({ requireAllSignatures: false });
-    
-    // Use framework-kit's send which handles wallet signing
-    const signature = await sendTx.send({
-      transaction: serialized,
+    const signature = await solTransfer.send({
+      to: to,
+      amount: lamports,
     });
     
+    if (!signature) throw new Error('Transaction failed - no signature returned');
     return signature;
-  }, [walletAddress, sendTx]);
+  }, [walletAddress, walletConnection.wallet, solTransfer]);
   
   const contextValue = useMemo<UnifiedWalletContextState>(() => ({
     connected: walletConnection.connected,
