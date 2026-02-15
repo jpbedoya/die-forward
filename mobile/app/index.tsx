@@ -151,58 +151,39 @@ export default function HomeScreen() {
             </Text>
           </Pressable>
 
-          {/* Secondary navigation */}
-          <View className="flex-row gap-2">
-            <Link href="/leaderboard" asChild className="flex-1">
-              <Pressable className="border border-crypt-border py-3 px-4 items-center active:border-amber">
-                <Text className="text-bone-dark text-sm font-mono">🏆 Leaderboard</Text>
-              </Pressable>
-            </Link>
-            
-            <Link href="/feed" asChild className="flex-1">
-              <Pressable className="border border-crypt-border py-3 px-4 items-center active:border-amber">
-                <Text className="text-bone-dark text-sm font-mono">💀 Feed</Text>
-              </Pressable>
-            </Link>
-          </View>
+          {/* Leaderboard */}
+          <Link href="/leaderboard" asChild>
+            <Pressable className="border border-crypt-border py-3 px-4 items-center active:border-amber">
+              <Text className="text-bone-dark text-sm font-mono">🏆 Leaderboard</Text>
+            </Pressable>
+          </Link>
         </View>
 
-        {/* Live Stats */}
-        <View className="flex-row justify-around py-8">
-          <View className="items-center">
-            <Text className="text-xl text-amber-light font-mono font-bold">
-              ◎ {statsLoading ? '...' : totalStaked.toFixed(2)}
-            </Text>
-            <Text className="text-xs text-stone-600 font-mono mt-1">SOL Staked</Text>
-          </View>
-          <View className="items-center">
-            <Text className="text-xl text-amber-light font-mono font-bold">
-              💀 {statsLoading ? '...' : totalDeaths}
-            </Text>
-            <Text className="text-xs text-stone-600 font-mono mt-1">Total Deaths</Text>
-          </View>
+        {/* Total Deaths */}
+        <View className="items-center py-4">
+          <Text className="text-3xl text-amber-light font-mono font-bold">
+            💀 {statsLoading ? '...' : totalDeaths}
+          </Text>
+          <Text className="text-xs text-stone-600 font-mono mt-1">Total Deaths</Text>
         </View>
 
         {/* Recent Deaths Feed */}
-        {recentDeaths.length > 0 && (
-          <View className="bg-crypt-surface border border-crypt-border p-3 mb-5">
-            <Text className="text-[10px] text-bone-dark font-mono tracking-widest mb-2">
-              RECENT DEATHS
-            </Text>
-            {recentDeaths.slice(0, 3).map((death, i) => (
-              <View key={death.id || i} className="py-1">
+        <View className="bg-crypt-surface border border-crypt-border p-3 mb-5 flex-1">
+          <Text className="text-[10px] text-bone-dark font-mono tracking-widest mb-2">
+            RECENT DEATHS
+          </Text>
+          {recentDeaths.length > 0 ? (
+            recentDeaths.slice(0, 5).map((death, i) => (
+              <View key={death.id || i} className="py-1.5 border-b border-crypt-border last:border-b-0">
                 <Text className="text-xs text-bone-muted font-mono">
                   💀 <Text className="text-ethereal">@{death.playerName}</Text>
                   {' fell in '}{death.zone} (Room {death.room})
                 </Text>
               </View>
-            ))}
-          </View>
-        )}
-
-        {/* Footer */}
-        <View className="items-center pb-5">
-          <Text className="text-xs text-crypt-border-light font-mono">Powered by Solana</Text>
+            ))
+          ) : (
+            <Text className="text-xs text-bone-dark font-mono">No deaths yet... be the first.</Text>
+          )}
         </View>
       </View>
     </SafeAreaView>
