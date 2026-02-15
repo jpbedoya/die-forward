@@ -115,25 +115,23 @@ function WebWalletConsumer({ children }: { children: ReactNode }) {
   }, [walletAddress, walletConnection.wallet, solTransfer]);
   
   // Sign and send arbitrary transaction (for escrow program)
+  // Accepts a web3.js Transaction with instructions already added
   const doSignAndSend = useCallback(async (transaction: any): Promise<string> => {
     if (!walletAddress) throw new Error('Wallet not connected');
     if (!walletConnection.wallet) throw new Error('No wallet session');
     
-    // Get blockhash if not set
-    const connection = new Connection(WEB_RPC, 'confirmed');
-    if (!transaction.recentBlockhash) {
-      const { blockhash } = await connection.getLatestBlockhash();
-      transaction.recentBlockhash = blockhash;
-    }
-    if (!transaction.feePayer) {
-      transaction.feePayer = new PublicKey(walletAddress);
+    // Extract instructions from web3.js Transaction
+    const instructions = transaction.instructions;
+    if (!instructions || instructions.length === 0) {
+      throw new Error('Transaction has no instructions');
     }
     
-    // Serialize for framework-kit
-    const serialized = transaction.serialize({ requireAllSignatures: false });
-    
-    // Use useSendTransaction to sign and send
-    const signature = await txSender.send({ transaction: serialized });
+    // useSendTransaction expects { instructions, feePayer }
+    // Framework-kit handles blockhash internally
+    const signature = await txSender.send({
+      instructions,
+      feePayer: walletAddress,
+    });
     
     if (!signature) throw new Error('Transaction failed - no signature returned');
     return signature;
