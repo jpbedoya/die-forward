@@ -197,17 +197,25 @@ class AudioManager {
   }
 
   async playAmbient(id: SoundId) {
-    if (!this.enabled) return;
+    if (!this.enabled) {
+      console.log('[Audio] Ambient skipped - audio disabled');
+      return;
+    }
     
     // If not unlocked yet (browser), queue for later
     if (!this.unlocked) {
+      console.log('[Audio] Ambient queued (waiting for unlock):', id);
       this.pendingAmbient = id;
       return;
     }
     
-    if (this.currentAmbientId === id) return;
+    if (this.currentAmbientId === id) {
+      console.log('[Audio] Ambient already playing:', id);
+      return;
+    }
     
     try {
+      console.log('[Audio] Playing ambient:', id);
       // Stop current ambient
       await this.stopAmbient();
       
@@ -224,8 +232,9 @@ class AudioManager {
       this.currentAmbientId = id;
       
       await sound.playAsync();
+      console.log('[Audio] Ambient started:', id);
     } catch (e) {
-      console.warn('Failed to play ambient:', id, e);
+      console.warn('[Audio] Failed to play ambient:', id, e);
     }
   }
 
@@ -271,14 +280,19 @@ class AudioManager {
   }
 
   // Force unlock (call on user interaction)
-  unlock() {
+  async unlock() {
     if (this.unlocked) return;
     this.unlocked = true;
+    console.log('[Audio] Unlocked by user interaction');
     
-    // Play pending ambient if any
+    // Play pending ambient if any (with small delay for browser)
     if (this.pendingAmbient && this.enabled) {
-      this.playAmbient(this.pendingAmbient);
+      const pending = this.pendingAmbient;
       this.pendingAmbient = null;
+      // Small delay to ensure browser registers the interaction
+      setTimeout(() => {
+        this.playAmbient(pending);
+      }, 50);
     }
   }
 }
