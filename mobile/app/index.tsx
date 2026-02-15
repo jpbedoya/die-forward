@@ -170,7 +170,7 @@ export default function HomeScreen() {
         {/* Recent Deaths Feed */}
         <View className="bg-crypt-surface border border-crypt-border p-3 mb-5 flex-1">
           <Text className="text-[10px] text-bone-dark font-mono tracking-widest mb-2">
-            RECENT DEATHS
+            DEATHS FEED
           </Text>
           {recentDeaths.length > 0 ? (
             recentDeaths.slice(0, 5).map((death, i) => (
