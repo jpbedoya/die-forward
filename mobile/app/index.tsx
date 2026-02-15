@@ -123,19 +123,19 @@ export default function HomeScreen() {
         {/* Header - ASCII Logo */}
         <View className="items-center pt-4">
           <Text 
-            className="font-mono text-[4px] text-amber text-center leading-[5px]"
-            style={{ textShadowColor: '#f59e0b', textShadowRadius: 10 }}
+            className="font-mono text-[6px] text-amber text-center leading-[7px]"
+            style={{ textShadowColor: '#f59e0b', textShadowRadius: 12 }}
           >
             {ASCII_LOGO}
           </Text>
         </View>
 
         {/* Tagline */}
-        <View className="items-center py-10">
-          <Text className="text-2xl text-bone font-mono text-center mb-3">
+        <View className="items-center py-6">
+          <Text className="text-lg text-bone font-mono text-center mb-2">
             Your Death Feeds the Depths
           </Text>
-          <Text className="text-sm text-bone-dark text-center font-mono">
+          <Text className="text-xs text-bone-dark text-center font-mono">
             Stake SOL. Descend. Die. Leave your mark.
           </Text>
         </View>
