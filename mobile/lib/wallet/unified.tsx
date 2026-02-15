@@ -6,7 +6,7 @@
  * - Native: Mobile Wallet Adapter (MWA) with web3.js boundary
  */
 
-import React, { createContext, useContext, useMemo, useCallback, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useMemo, useCallback, useState, useEffect, ReactNode } from 'react';
 import { Platform } from 'react-native';
 import type { Address } from '@solana/kit';
 
@@ -28,6 +28,9 @@ let mobileSendSOL: any;
 let getMobileBalance: any;
 let mobileConnection: any;
 
+// Additional hook for web
+let useSendTransaction: any;
+
 if (Platform.OS === 'web') {
   // Web: use framework-kit for connection + web3.js for tx building
   const hooks = require('@solana/react-hooks');
@@ -36,6 +39,7 @@ if (Platform.OS === 'web') {
   
   useWalletConnection = hooks.useWalletConnection;
   useBalance = hooks.useBalance;
+  useSendTransaction = hooks.useSendTransaction;
   WebWalletProvider = provider.WebWalletProvider;
   
   // Web3.js for transaction building
@@ -87,9 +91,46 @@ const WEB_RPC_ENDPOINT = process.env.EXPO_PUBLIC_SOLANA_RPC || 'https://api.devn
 // Web implementation using framework-kit hooks
 function WebWalletConsumer({ children }: { children: ReactNode }) {
   const walletConnection = useWalletConnection();
+  const sendTx = useSendTransaction();
   // wallet.wallet is the session, which contains account.address
   const walletAddress = walletConnection.wallet?.account?.address ?? null;
   const balanceResult = useBalance(walletAddress ? walletAddress : undefined);
+  const [pendingSend, setPendingSend] = useState<{
+    resolve: (sig: string) => void;
+    reject: (err: Error) => void;
+  } | null>(null);
+  
+  // Build and send SOL transfer
+  const doSendSOL = useCallback(async (to: Address, amount: number): Promise<string> => {
+    if (!walletAddress) throw new Error('Wallet not connected');
+    
+    // Build transaction using web3.js (boundary layer)
+    const connection = new Connection(WEB_RPC_ENDPOINT, 'confirmed');
+    const fromPubkey = new PublicKey(walletAddress);
+    const toPubkey = new PublicKey(to);
+    
+    const transaction = new Transaction().add(
+      SystemProgram.transfer({
+        fromPubkey,
+        toPubkey,
+        lamports: Math.floor(amount * LAMPORTS_PER_SOL),
+      })
+    );
+    
+    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
+    transaction.recentBlockhash = blockhash;
+    transaction.feePayer = fromPubkey;
+    
+    // Serialize to wire format for framework-kit
+    const serialized = transaction.serialize({ requireAllSignatures: false });
+    
+    // Use framework-kit's send which handles wallet signing
+    const signature = await sendTx.send({
+      transaction: serialized,
+    });
+    
+    return signature;
+  }, [walletAddress, sendTx]);
   
   const contextValue = useMemo<UnifiedWalletContextState>(() => ({
     connected: walletConnection.connected,
@@ -110,37 +151,11 @@ function WebWalletConsumer({ children }: { children: ReactNode }) {
     disconnect: async () => {
       await walletConnection.disconnect();
     },
-    sendSOL: async (to: Address, amount: number) => {
-      if (!walletAddress) throw new Error('Wallet not connected');
-      const session = walletConnection.wallet;
-      if (!session) throw new Error('No wallet session');
-      
-      // Build transaction using web3.js (boundary layer)
-      const connection = new Connection(WEB_RPC_ENDPOINT, 'confirmed');
-      const fromPubkey = new PublicKey(walletAddress);
-      const toPubkey = new PublicKey(to);
-      
-      const transaction = new Transaction().add(
-        SystemProgram.transfer({
-          fromPubkey,
-          toPubkey,
-          lamports: Math.floor(amount * LAMPORTS_PER_SOL),
-        })
-      );
-      
-      const { blockhash } = await connection.getLatestBlockhash();
-      transaction.recentBlockhash = blockhash;
-      transaction.feePayer = fromPubkey;
-      
-      // Sign using wallet standard - the session has signAndSendTransaction
-      const signedTx = await session.signAndSendTransaction(transaction);
-      
-      return typeof signedTx === 'string' ? signedTx : signedTx.signature;
-    },
+    sendSOL: doSendSOL,
     refreshBalance: async () => {
       balanceResult.refresh?.();
     },
-  }), [walletConnection, walletAddress, balanceResult]);
+  }), [walletConnection, walletAddress, balanceResult, doSendSOL]);
   
   return (
     <UnifiedWalletContext.Provider value={contextValue}>
