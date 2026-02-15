@@ -33,6 +33,8 @@ jobs:
 
       - name: Prebuild Android
         working-directory: mobile
+        env:
+          EXPO_PUBLIC_INSTANT_APP_ID: ${{ secrets.EXPO_PUBLIC_INSTANT_APP_ID }}
         run: npx expo prebuild --platform android --clean
 
       - name: Create assets directory
@@ -40,6 +42,8 @@ jobs:
 
       - name: Bundle JS for release
         working-directory: mobile
+        env:
+          EXPO_PUBLIC_INSTANT_APP_ID: ${{ secrets.EXPO_PUBLIC_INSTANT_APP_ID }}
         run: |
           npx react-native bundle \
             --platform android \
