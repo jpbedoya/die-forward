@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
 import * as api from './api';
 import { generateRandomDungeon, DungeonRoom } from './content';
-import * as wallet from './wallet';
+import { useUnifiedWallet, connection } from './WalletProvider';
+import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 
 interface GameState {
   // Wallet
@@ -61,50 +62,72 @@ const GameContext = createContext<GameContextType | null>(null);
 
 export function GameProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<GameState>(initialState);
+  const unifiedWallet = useUnifiedWallet();
 
   const updateState = useCallback((updates: Partial<GameState>) => {
     setState(prev => ({ ...prev, ...updates }));
   }, []);
 
-  // Wallet actions
+  // Sync wallet state from unified wallet
+  useEffect(() => {
+    updateState({
+      walletConnected: unifiedWallet.connected,
+      walletAddress: unifiedWallet.address,
+    });
+  }, [unifiedWallet.connected, unifiedWallet.address, updateState]);
+
+  // Refresh balance when wallet connects
+  useEffect(() => {
+    if (unifiedWallet.address) {
+      connection.getBalance(unifiedWallet.publicKey!)
+        .then(balance => updateState({ balance: balance / LAMPORTS_PER_SOL }))
+        .catch(err => console.error('Failed to get balance:', err));
+    }
+  }, [unifiedWallet.address, unifiedWallet.publicKey, updateState]);
+
+  // Wallet actions (delegate to unified wallet)
   const connect = useCallback(async () => {
     updateState({ loading: true, error: null });
     try {
-      const { address } = await wallet.connectWallet();
-      const balance = await wallet.getBalance(address);
-      updateState({
-        walletConnected: true,
-        walletAddress: address,
-        balance,
-        loading: false,
-      });
+      const address = await unifiedWallet.connect();
+      if (address && unifiedWallet.publicKey) {
+        const balance = await connection.getBalance(unifiedWallet.publicKey);
+        updateState({
+          walletConnected: true,
+          walletAddress: address,
+          balance: balance / LAMPORTS_PER_SOL,
+          loading: false,
+        });
+      } else {
+        updateState({ loading: false });
+      }
     } catch (err) {
       updateState({
         loading: false,
         error: err instanceof Error ? err.message : 'Failed to connect wallet',
       });
     }
-  }, [updateState]);
+  }, [updateState, unifiedWallet]);
 
   const disconnect = useCallback(async () => {
-    await wallet.clearAuthCache();
+    await unifiedWallet.disconnect();
     updateState({
       walletConnected: false,
       walletAddress: null,
       balance: null,
       sessionToken: null,
     });
-  }, [updateState]);
+  }, [updateState, unifiedWallet]);
 
   const refreshBalance = useCallback(async () => {
-    if (!state.walletAddress) return;
+    if (!unifiedWallet.publicKey) return;
     try {
-      const balance = await wallet.getBalance(state.walletAddress);
-      updateState({ balance });
+      const balance = await connection.getBalance(unifiedWallet.publicKey);
+      updateState({ balance: balance / LAMPORTS_PER_SOL });
     } catch (err) {
       console.error('Failed to refresh balance:', err);
     }
-  }, [state.walletAddress, updateState]);
+  }, [unifiedWallet.publicKey, updateState]);
 
   // Game actions
   const startGame = useCallback(async (amount: number, demoMode = false) => {
@@ -113,11 +136,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
       let stakeTxSignature: string | undefined;
       let walletAddress = state.walletAddress || 'demo-wallet';
 
-      if (!demoMode && state.walletAddress) {
-        // Real stake transaction
-        const result = await wallet.stakeSOL(amount);
-        stakeTxSignature = result.signature;
-        walletAddress = result.walletAddress;
+      if (!demoMode && state.walletAddress && unifiedWallet.connected) {
+        // Real stake transaction via unified wallet
+        const signature = await unifiedWallet.sendSOL(
+          'E4LRRyeFXDbFg1WaS1pjKm5DAJzJDWbAs1v5qvqe5xYM', // Game pool PDA
+          amount
+        );
+        stakeTxSignature = signature;
+        walletAddress = state.walletAddress;
       }
 
       // Start session with backend

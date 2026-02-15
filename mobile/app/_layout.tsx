@@ -13,6 +13,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { View, Text, ScrollView } from 'react-native';
 import { GameProvider } from '../lib/GameContext';
+import { UnifiedWalletProvider } from '../lib/WalletProvider';
 
 // Error boundary to catch and display crashes
 class ErrorBoundary extends React.Component<
@@ -58,16 +59,18 @@ export default function RootLayout() {
   return (
     <ErrorBoundary>
       <SafeAreaProvider>
-        <GameProvider>
-          <StatusBar style="light" />
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              contentStyle: { backgroundColor: '#0d0d0d' },
-              animation: 'fade',
-            }}
-          />
-        </GameProvider>
+        <UnifiedWalletProvider>
+          <GameProvider>
+            <StatusBar style="light" />
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                contentStyle: { backgroundColor: '#0d0d0d' },
+                animation: 'fade',
+              }}
+            />
+          </GameProvider>
+        </UnifiedWalletProvider>
       </SafeAreaProvider>
     </ErrorBoundary>
   );
