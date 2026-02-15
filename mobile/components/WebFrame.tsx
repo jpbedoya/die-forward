@@ -43,12 +43,8 @@ const styles = StyleSheet.create({
     minHeight: '100vh' as any,
     backgroundColor: '#0d0d0d',
     position: 'relative',
-    // Shadow/glow effect (web only)
-    shadowColor: '#f59e0b',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.15,
-    shadowRadius: 50,
-    // @ts-ignore - web-only property
+    // Shadow/glow effect
+    // @ts-ignore - web property
     boxShadow: '0 0 80px rgba(245, 158, 11, 0.12)',
   },
   glowBorder: {
