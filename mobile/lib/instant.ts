@@ -1,7 +1,8 @@
 import { init, tx, id } from '@instantdb/react-native';
 
 // App ID - same as web version
-const APP_ID = process.env.EXPO_PUBLIC_INSTANT_APP_ID;
+// Fallback to production ID if env var missing (for Vercel builds before env is set)
+const APP_ID = process.env.EXPO_PUBLIC_INSTANT_APP_ID || '0700b913-585c-4de8-abdf-0bc81a0f5920';
 if (!APP_ID) {
   throw new Error('EXPO_PUBLIC_INSTANT_APP_ID is required - check .env file');
 }
