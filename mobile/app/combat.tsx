@@ -411,20 +411,24 @@ export default function CombatScreen() {
                 return (
                   <Pressable
                     key={option.id}
-                    className={`bg-crypt-surface border py-3 px-3 mb-2 items-center justify-center ${
+                    className={`bg-crypt-surface border py-3 px-3 mb-2 ${
                       canUse ? 'border-amber active:bg-amber/10' : 'border-crypt-border opacity-50'
                     }`}
                     style={{ width: '48%' }}
                     onPress={() => canUse && handleAction(option.id)}
                     disabled={!canUse}
                   >
-                    <Text className="text-2xl mb-1">{option.emoji}</Text>
-                    <Text className={`font-mono font-bold text-center ${canUse ? 'text-bone' : 'text-bone-dark'}`}>
-                      {option.text}
-                    </Text>
-                    {option.cost > 0 && (
-                      <Text className="text-blue-400 text-xs font-mono mt-1">⚡{option.cost}</Text>
-                    )}
+                    <View className="flex-row items-center justify-between">
+                      <View className="flex-row items-center">
+                        <Text className="text-xl mr-2">{option.emoji}</Text>
+                        <Text className={`font-mono font-bold ${canUse ? 'text-bone' : 'text-bone-dark'}`}>
+                          {option.text}
+                        </Text>
+                      </View>
+                      {option.cost > 0 && (
+                        <Text className="text-blue-400 text-xs font-mono">⚡{option.cost}</Text>
+                      )}
+                    </View>
                   </Pressable>
                 );
               })}
