@@ -32,13 +32,6 @@ let mobileConnection: any;
 let useSolTransfer: any;
 let useSendTransaction: any;
 
-// Web3.js for transaction building (escrow program)
-let Connection: any;
-let PublicKey: any;
-let Transaction: any;
-let SystemProgram: any;
-let LAMPORTS_PER_SOL: any;
-
 if (Platform.OS === 'web') {
   // Web: use framework-kit
   const hooks = require('@solana/react-hooks');
