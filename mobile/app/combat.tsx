@@ -301,10 +301,10 @@ export default function CombatScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-crypt-bg">
+    <SafeAreaView className="flex-1 bg-crypt-bg" style={{ minHeight: '100%' }}>
       <Animated.View 
-        className="flex-1"
-        style={{ transform: [{ translateX: shakeAnim }] }}
+        className="flex-1 flex-col"
+        style={{ transform: [{ translateX: shakeAnim }], flex: 1 }}
       >
         {/* Header */}
         <View className="flex-row items-center justify-between px-3 py-2 border-b border-amber/30">
@@ -415,8 +415,8 @@ export default function CombatScreen() {
         )}
       </ScrollView>
 
-      {/* Footer - Player Stats */}
-      <View className="border-t border-crypt-border p-3 bg-crypt-bg">
+      {/* Footer - Player Stats (sticky bottom) */}
+      <View className="border-t border-crypt-border p-3 bg-crypt-bg" style={{ flexShrink: 0 }}>
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-center gap-2">
             <Text className="text-blood">♥</Text>
