@@ -26,7 +26,7 @@ export const GAME_POOL_PDA = 'E4LRRyeFXDbFg1WaS1pjKm5DAJzJDWbAs1v5qvqe5xYM' as A
 const GAME_POOL_PDA_PUBKEY = new PublicKey(GAME_POOL_PDA);
 
 // Treasury (receives fees) - from game pool state
-export const TREASURY = '7rn4KRHNQwSJDa1uq1ENMzyDqW95QAr3bZUepkLh58ed' as Address;
+export const TREASURY = 'D7NdNbJTL7s6Z7Wu8nGe5SBc64FiFQAH3iPvRZw15qSL' as Address;
 const TREASURY_PUBKEY = new PublicKey(TREASURY);
 
 // PDA Seeds
