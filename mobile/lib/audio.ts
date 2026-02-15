@@ -60,8 +60,8 @@ export type SoundId =
   | 'confirm-action'
   | 'error-buzz';
 
-// Audio files hosted on production web server
-const AUDIO_BASE_URL = 'https://dieforward.com/audio';
+// Audio files hosted on production web server (must use www to avoid redirect)
+const AUDIO_BASE_URL = 'https://www.dieforward.com/audio';
 
 const SOUND_PATHS: Record<SoundId, string> = {
   // Ambient
