@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import { View, Text, Pressable, Animated, Dimensions } from 'react-native';
+import { View, Text, Pressable, Animated } from 'react-native';
 import { Link } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { usePoolStats, useDeathFeed } from '../lib/instant';
+import { useAudio } from '../lib/audio';
 
 const ASCII_LOGO = `
   ██████  ██ ███████ 
@@ -29,6 +30,13 @@ export default function HomeScreen() {
   // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
   const { totalDeaths, totalStaked, isLoading: statsLoading } = usePoolStats();
   const { deaths: recentDeaths } = useDeathFeed(5);
+  const { playAmbient, enabled: audioEnabled, toggle: toggleAudio } = useAudio();
+
+  // Play title ambient on mount
+  useEffect(() => {
+    playAmbient('ambient-title');
+  }, []);
+
   // Splash intro animation - auto transition after one pulse
   useEffect(() => {
     // Fade in + scale up + one pulse + zoom transition
@@ -106,6 +114,14 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-crypt-bg">
+      {/* Sound Toggle - Top Right */}
+      <Pressable 
+        className="absolute top-12 right-4 z-10 p-2"
+        onPress={toggleAudio}
+      >
+        <Text className="text-xl">{audioEnabled ? '🔊' : '🔇'}</Text>
+      </Pressable>
+
       <View className="flex-1 px-5 justify-between">
         {/* Header - ASCII Logo */}
         <View className="items-center pt-4">
