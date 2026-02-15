@@ -127,8 +127,8 @@ export default function StakeScreen() {
         {/* Summary */}
         <View className="bg-crypt-surface border border-crypt-border p-4 mb-6">
           <View className="flex-row justify-between mb-2">
-            <Text className="text-bone-dark text-sm font-mono">At Risk</Text>
-            <Text className="text-bone-muted text-sm font-mono">{selectedStake} SOL</Text>
+            <Text className="text-bone-dark text-sm font-mono">Your Offering</Text>
+            <Text className="text-bone-muted text-sm font-mono">{selectedStake}</Text>
           </View>
           <View className="flex-row justify-between mb-2">
             <Text className="text-bone-dark text-sm font-mono">If You Escape (+{settings.victoryBonusPercent}%)</Text>
