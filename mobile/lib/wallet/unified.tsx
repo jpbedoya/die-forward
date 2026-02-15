@@ -176,6 +176,9 @@ function WebWalletConsumer({ children }: { children: ReactNode }) {
         } catch (e) {
           console.error('Connect failed:', e);
         }
+      } else {
+        // No wallets found - likely mobile web without wallet extension
+        throw new Error('No wallet found. Open this page in your Phantom or Solflare app browser.');
       }
       return walletAddress as Address | null;
     },

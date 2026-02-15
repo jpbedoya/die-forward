@@ -269,9 +269,9 @@ export default function PlayScreen() {
   const options = getOptions();
 
   return (
-    <SafeAreaView className="flex-1 bg-crypt-bg">
+    <SafeAreaView className="flex-1 bg-crypt-bg" style={{ display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
-      <View className="flex-row items-center justify-between px-3 py-2 border-b border-amber/30">
+      <View className="flex-row items-center justify-between px-3 py-2 border-b border-amber/30" style={{ flexShrink: 0 }}>
         <View className="flex-row items-center gap-2">
           <MenuButton onPress={() => setMenuOpen(true)} />
           <Text className={`text-xs font-mono tracking-wider ${
@@ -413,7 +413,7 @@ export default function PlayScreen() {
       </ScrollView>
 
       {/* Footer */}
-      <View className="border-t border-crypt-border p-3 bg-crypt-bg">
+      <View className="border-t border-crypt-border p-3 bg-crypt-bg" style={{ flexShrink: 0 }}>
         <View className="flex-row items-center justify-between mb-3">
           <View className="flex-row items-center gap-2">
             <Text className="text-blood">♥</Text>
