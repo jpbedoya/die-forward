@@ -126,6 +126,8 @@ class AudioManager {
   private sfxVolume: number = 0.7;
   private ambientVolume: number = 0.3;
   private initialized: boolean = false;
+  private unlocked: boolean = false;
+  private pendingAmbient: SoundId | null = null;
 
   async init() {
     if (this.initialized) return;
@@ -142,6 +144,29 @@ class AudioManager {
       const saved = await AsyncStorage.getItem('audio-enabled');
       this.enabled = saved !== 'false';
       this.initialized = true;
+      
+      // On web, listen for first user interaction to unlock audio
+      if (typeof window !== 'undefined') {
+        const unlockAudio = () => {
+          this.unlocked = true;
+          // Play pending ambient if any
+          if (this.pendingAmbient && this.enabled) {
+            this.playAmbient(this.pendingAmbient);
+            this.pendingAmbient = null;
+          }
+          // Remove listeners after unlock
+          window.removeEventListener('click', unlockAudio);
+          window.removeEventListener('touchstart', unlockAudio);
+          window.removeEventListener('keydown', unlockAudio);
+        };
+        
+        window.addEventListener('click', unlockAudio, { once: true });
+        window.addEventListener('touchstart', unlockAudio, { once: true });
+        window.addEventListener('keydown', unlockAudio, { once: true });
+      } else {
+        // Native apps don't need unlock
+        this.unlocked = true;
+      }
     } catch (e) {
       console.warn('Failed to initialize audio:', e);
     }
@@ -149,6 +174,7 @@ class AudioManager {
 
   async playSFX(id: SoundId) {
     if (!this.enabled) return;
+    if (!this.unlocked) return; // Browser hasn't been unlocked yet
     
     try {
       const { sound } = await Audio.Sound.createAsync(
@@ -172,6 +198,13 @@ class AudioManager {
 
   async playAmbient(id: SoundId) {
     if (!this.enabled) return;
+    
+    // If not unlocked yet (browser), queue for later
+    if (!this.unlocked) {
+      this.pendingAmbient = id;
+      return;
+    }
+    
     if (this.currentAmbientId === id) return;
     
     try {
@@ -232,6 +265,22 @@ class AudioManager {
       await this.stopAmbient();
     }
   }
+
+  isUnlocked(): boolean {
+    return this.unlocked;
+  }
+
+  // Force unlock (call on user interaction)
+  unlock() {
+    if (this.unlocked) return;
+    this.unlocked = true;
+    
+    // Play pending ambient if any
+    if (this.pendingAmbient && this.enabled) {
+      this.playAmbient(this.pendingAmbient);
+      this.pendingAmbient = null;
+    }
+  }
 }
 
 // Singleton instance
@@ -248,11 +297,13 @@ export function getAudioManager(): AudioManager {
 export function useAudio() {
   const [enabled, setEnabled] = useState(true);
   const [ready, setReady] = useState(false);
+  const [unlocked, setUnlocked] = useState(false);
   
   useEffect(() => {
     const manager = getAudioManager();
     manager.init().then(() => {
       setEnabled(manager.isEnabled());
+      setUnlocked(manager.isUnlocked());
       setReady(true);
     });
   }, []);
@@ -276,12 +327,21 @@ export function useAudio() {
     return newState;
   }, []);
 
+  // Call this on user interaction to unlock audio (web)
+  const unlock = useCallback(() => {
+    const manager = getAudioManager();
+    manager.unlock();
+    setUnlocked(true);
+  }, []);
+
   return {
     enabled,
     ready,
+    unlocked,
     playSFX,
     playAmbient,
     stopAmbient,
     toggle,
+    unlock,
   };
 }

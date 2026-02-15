@@ -30,9 +30,9 @@ export default function HomeScreen() {
   // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
   const { totalDeaths, totalStaked, isLoading: statsLoading } = usePoolStats();
   const { deaths: recentDeaths } = useDeathFeed(5);
-  const { playAmbient, enabled: audioEnabled, toggle: toggleAudio } = useAudio();
+  const { playAmbient, enabled: audioEnabled, toggle: toggleAudio, unlock: unlockAudio } = useAudio();
 
-  // Play title ambient on mount
+  // Play title ambient (queued until user interacts)
   useEffect(() => {
     playAmbient('ambient-title');
   }, []);
@@ -88,7 +88,10 @@ export default function HomeScreen() {
 
   if (showSplash) {
     return (
-      <View className="flex-1 bg-crypt-bg">
+      <Pressable 
+        className="flex-1 bg-crypt-bg"
+        onPress={unlockAudio} // Tap anywhere to unlock audio
+      >
         <View className="flex-1 justify-center items-center">
           {/* Centered logo with pulse + zoom */}
           <Animated.View 
@@ -106,9 +109,11 @@ export default function HomeScreen() {
               {ASCII_LOGO}
             </Text>
           </Animated.View>
+          
+          {/* Subtle hint */}
+          <Text className="text-stone-600 text-xs font-mono mt-8">tap to enable sound</Text>
         </View>
-        
-      </View>
+      </Pressable>
     );
   }
 
@@ -117,7 +122,10 @@ export default function HomeScreen() {
       {/* Sound Toggle - Top Right */}
       <Pressable 
         className="absolute top-12 right-4 z-10 p-2"
-        onPress={toggleAudio}
+        onPress={() => {
+          unlockAudio(); // Unlock audio on web
+          toggleAudio();
+        }}
       >
         <Text className="text-xl">{audioEnabled ? '🔊' : '🔇'}</Text>
       </Pressable>
