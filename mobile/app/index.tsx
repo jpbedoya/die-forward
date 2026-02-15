@@ -22,10 +22,9 @@ const ASCII_LOGO = `
 export default function HomeScreen() {
   const [showSplash, setShowSplash] = useState(true);
   
-  // Animations
+  // Animations - simpler for smoother performance
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const logoScale = useRef(new Animated.Value(0.8)).current;
-  const logoZoom = useRef(new Animated.Value(1)).current;
+  const scaleAnim = useRef(new Animated.Value(1)).current;
 
   // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
   const { totalDeaths, totalStaked, isLoading: statsLoading } = usePoolStats();
@@ -37,52 +36,43 @@ export default function HomeScreen() {
     playAmbient('ambient-title');
   }, []);
 
-  // Splash intro animation - auto transition after one pulse
+  // Splash intro animation - smooth and simple
   useEffect(() => {
-    // Fade in + scale up + one pulse + zoom transition
-    Animated.sequence([
-      // Fade in logo
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }),
-      // Scale up to full size
-      Animated.timing(logoScale, {
-        toValue: 1,
-        duration: 400,
-        useNativeDriver: true,
-      }),
-      // One pulse: scale up
-      Animated.timing(logoScale, {
-        toValue: 1.08,
-        duration: 800,
-        useNativeDriver: true,
-      }),
-      // Pulse back down
-      Animated.timing(logoScale, {
-        toValue: 1,
-        duration: 800,
-        useNativeDriver: true,
-      }),
-      // Brief pause
-      Animated.delay(200),
-    ]).start(() => {
-      // Auto-transition: zoom out towards player then fade to main screen
-      Animated.parallel([
-        // Logo zooms towards player
-        Animated.timing(logoZoom, {
-          toValue: 3,
-          duration: 400,
+    // Phase 1: Fade in
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 600,
+      useNativeDriver: true,
+    }).start(() => {
+      // Phase 2: Gentle pulse
+      Animated.sequence([
+        Animated.timing(scaleAnim, {
+          toValue: 1.05,
+          duration: 600,
           useNativeDriver: true,
         }),
-        // Fade out splash
-        Animated.timing(fadeAnim, {
-          toValue: 0,
-          duration: 400,
+        Animated.timing(scaleAnim, {
+          toValue: 1,
+          duration: 600,
           useNativeDriver: true,
         }),
-      ]).start(() => setShowSplash(false));
+      ]).start(() => {
+        // Phase 3: Zoom out + fade
+        setTimeout(() => {
+          Animated.parallel([
+            Animated.timing(scaleAnim, {
+              toValue: 2.5,
+              duration: 350,
+              useNativeDriver: true,
+            }),
+            Animated.timing(fadeAnim, {
+              toValue: 0,
+              duration: 350,
+              useNativeDriver: true,
+            }),
+          ]).start(() => setShowSplash(false));
+        }, 300);
+      });
     });
   }, []);
 
@@ -97,9 +87,7 @@ export default function HomeScreen() {
           <Animated.View 
             style={{ 
               opacity: fadeAnim,
-              transform: [
-                { scale: Animated.multiply(logoScale, logoZoom) }
-              ],
+              transform: [{ scale: scaleAnim }],
             }}
           >
             <Text 
