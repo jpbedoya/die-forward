@@ -340,13 +340,26 @@ export default function CombatScreen() {
 
         {/* Combat Narrative */}
         {narrative && (
-          <View className="bg-amber/10 border-2 border-amber p-4 mb-4">
-            <Text className="text-amber-light text-sm font-mono">{narrative}</Text>
-            {playerDmgTaken > 0 && (
-              <Text className="text-blood text-xs font-mono mt-2">You took {playerDmgTaken} damage</Text>
-            )}
-            {enemyDmgTaken > 0 && (
-              <Text className="text-victory text-xs font-mono mt-1">Enemy took {enemyDmgTaken} damage</Text>
+          <View className="bg-amber/10 border-2 border-amber mb-4">
+            {/* Narrative text */}
+            <View className="p-4 pb-3">
+              <Text className="text-amber-light text-sm font-mono">{narrative}</Text>
+            </View>
+            
+            {/* Damage summary - separated, bigger, centered */}
+            {(playerDmgTaken > 0 || enemyDmgTaken > 0) && (
+              <View className="border-t border-amber/30 py-4">
+                {enemyDmgTaken > 0 && (
+                  <Text className="text-victory text-lg font-mono font-bold text-center">
+                    YOU DEALT {enemyDmgTaken}
+                  </Text>
+                )}
+                {playerDmgTaken > 0 && (
+                  <Text className="text-blood text-lg font-mono font-bold text-center mt-1">
+                    YOU TOOK {playerDmgTaken}
+                  </Text>
+                )}
+              </View>
             )}
           </View>
         )}
