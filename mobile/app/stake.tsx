@@ -52,7 +52,7 @@ export default function StakeScreen() {
         <Pressable onPress={() => router.back()}>
           <Text className="text-bone-muted text-sm font-mono">← BACK</Text>
         </Pressable>
-        <Text className="text-amber text-base font-mono font-bold tracking-widest">STAKE YOUR SOL</Text>
+        <Text className="text-amber text-base font-mono font-bold tracking-widest">THE TOLL</Text>
         <View className="w-[60px]" />
       </View>
 
@@ -71,13 +71,13 @@ export default function StakeScreen() {
         {/* Warning */}
         <View className="bg-blood/10 border border-blood-dark p-4 mb-6">
           <Text className="text-blood-light text-sm font-mono leading-5">
-            ⚠️ Your stake will be locked in escrow. Die and lose it. Escape and claim victory with bonus rewards.
+            What you offer, the depths will hold. Die, and it's theirs. Escape, and claim more than you risked.
           </Text>
         </View>
 
         {/* Stake options */}
         <View className="mb-6">
-          <Text className="text-bone-dark text-xs font-mono tracking-widest mb-3">SELECT AMOUNT</Text>
+          <Text className="text-bone-dark text-xs font-mono tracking-widest mb-3">CHOOSE YOUR OFFERING</Text>
           <View className="flex-row flex-wrap gap-2">
             {STAKE_OPTIONS.map((amount) => (
               <Pressable
@@ -104,7 +104,7 @@ export default function StakeScreen() {
 
           {/* Custom input */}
           <View className="mt-4">
-            <Text className="text-stone-600 text-xs font-mono mb-2">OR ENTER CUSTOM:</Text>
+            <Text className="text-stone-600 text-xs font-mono mb-2 italic">...or name your price</Text>
             <View className="flex-row items-center border border-crypt-border-light bg-crypt-surface px-3">
               <TextInput
                 className="flex-1 text-bone text-lg font-mono py-3"
@@ -127,15 +127,15 @@ export default function StakeScreen() {
         {/* Summary */}
         <View className="bg-crypt-surface border border-crypt-border p-4 mb-6">
           <View className="flex-row justify-between mb-2">
-            <Text className="text-bone-dark text-sm font-mono">Stake Amount</Text>
+            <Text className="text-bone-dark text-sm font-mono">At Risk</Text>
             <Text className="text-bone-muted text-sm font-mono">{selectedStake} SOL</Text>
           </View>
           <View className="flex-row justify-between mb-2">
-            <Text className="text-bone-dark text-sm font-mono">Victory Bonus ({settings.victoryBonusPercent}%)</Text>
+            <Text className="text-bone-dark text-sm font-mono">If You Escape (+{settings.victoryBonusPercent}%)</Text>
             <Text className="text-victory text-sm font-mono">+{(selectedStake * settings.victoryBonusPercent / 100).toFixed(3)}</Text>
           </View>
           <View className="flex-row justify-between border-t border-crypt-border pt-3 mt-1">
-            <Text className="text-bone-muted text-sm font-mono font-bold">Potential Reward</Text>
+            <Text className="text-bone-muted text-sm font-mono font-bold">Should You Survive</Text>
             <Text className="text-amber-light text-base font-mono font-bold">{(selectedStake * (1 + settings.victoryBonusPercent / 100)).toFixed(3)} SOL</Text>
           </View>
         </View>
@@ -152,7 +152,7 @@ export default function StakeScreen() {
                 {game.loading && !staking ? (
                   <ActivityIndicator color="#ffffff" />
                 ) : (
-                  <Text className="text-white font-mono font-bold tracking-wider">CONNECT WALLET</Text>
+                  <Text className="text-white font-mono font-bold tracking-wider">BIND WALLET</Text>
                 )}
               </Pressable>
               
@@ -164,7 +164,7 @@ export default function StakeScreen() {
                 {staking ? (
                   <ActivityIndicator color="#a8a29e" />
                 ) : (
-                  <Text className="text-bone-muted font-mono">FREE PLAY (No Stake)</Text>
+                  <Text className="text-bone-muted font-mono">EMPTY-HANDED</Text>
                 )}
               </Pressable>
             </>
@@ -182,7 +182,7 @@ export default function StakeScreen() {
                 {staking ? (
                   <ActivityIndicator color="#0d0d0d" />
                 ) : (
-                  <Text className="text-crypt-bg font-mono font-bold tracking-wider">⚔️ STAKE & DESCEND</Text>
+                  <Text className="text-crypt-bg font-mono font-bold tracking-wider">SEAL YOUR FATE</Text>
                 )}
               </Pressable>
               
