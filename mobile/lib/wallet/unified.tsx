@@ -121,15 +121,25 @@ function WebWalletConsumer({ children }: { children: ReactNode }) {
     if (!walletConnection.wallet) throw new Error('No wallet session');
     
     // Extract instructions from web3.js Transaction
-    const instructions = transaction.instructions;
-    if (!instructions || instructions.length === 0) {
+    const web3Instructions = transaction.instructions;
+    if (!web3Instructions || web3Instructions.length === 0) {
       throw new Error('Transaction has no instructions');
     }
     
+    // Convert web3.js instructions to Kit format
+    // AccountRole: READONLY=0, WRITABLE=1, READONLY_SIGNER=2, WRITABLE_SIGNER=3
+    const kitInstructions = web3Instructions.map((ix: any) => ({
+      programAddress: ix.programId.toBase58(),
+      accounts: ix.keys.map((key: any) => ({
+        address: key.pubkey.toBase58(),
+        role: (key.isSigner ? 2 : 0) + (key.isWritable ? 1 : 0),
+      })),
+      data: new Uint8Array(ix.data),
+    }));
+    
     // useSendTransaction expects { instructions, feePayer }
-    // Framework-kit handles blockhash internally
     const signature = await txSender.send({
-      instructions,
+      instructions: kitInstructions,
       feePayer: walletAddress,
     });
     
