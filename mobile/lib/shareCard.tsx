@@ -25,97 +25,142 @@ export interface VictoryCardData {
 // Death Card Component
 export function DeathCard({ data }: { data: DeathCardData }) {
   return (
-    <View className="w-[300px] h-[400px] bg-[#1a0505] border-2 border-blood p-4">
-      {/* Inner border */}
-      <View className="flex-1 border border-blood-dark p-3">
-        {/* Skull */}
-        <Text className="text-center text-5xl mb-2">💀</Text>
-        
-        {/* Title */}
-        <Text className="text-blood text-2xl font-mono font-bold text-center">YOU DIED</Text>
-        <Text className="text-bone-muted text-xs font-mono text-center mb-4">in THE SUNKEN CRYPT</Text>
-        
-        {/* Player name */}
-        <Text className="text-amber text-lg font-mono font-bold text-center mb-2">@{data.playerName}</Text>
-        
-        {/* Progress */}
-        <Text className="text-bone text-sm font-mono text-center">
-          Reached Room {data.room} of {data.totalRooms}
+    <View className="w-[300px] h-[420px] bg-[#0a0a0a] p-1">
+      {/* ASCII Border Top */}
+      <Text className="text-blood font-mono text-[8px] text-center">╔{'═'.repeat(36)}╗</Text>
+      <Text className="text-blood/50 font-mono text-[6px] text-center">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</Text>
+      
+      <View className="flex-1 px-3 py-2">
+        {/* ASCII Logo */}
+        <Text className="text-amber font-mono text-[3px] text-center leading-[4px] mb-1">
+          {ASCII_LOGO_SMALL}
         </Text>
-        
-        {/* Killed by */}
-        {data.killedBy && (
-          <Text className="text-blood-dark text-xs font-mono italic text-center mt-1">
-            Slain by {data.killedBy}
-          </Text>
-        )}
-        
-        {/* Epitaph box */}
-        <View className="bg-black/50 border border-crypt-border p-2 mt-4 mb-4">
-          <Text className="text-stone-500 text-[10px] font-mono text-center mb-1">FINAL WORDS</Text>
-          <Text className="text-bone text-sm font-mono italic text-center">"{data.epitaph}"</Text>
-        </View>
-        
-        {/* Stake lost */}
-        <Text className="text-amber text-base font-mono font-bold text-center mb-4">
-          ◎ {data.stakeLost} SOL LOST
+        <Text className="text-amber font-mono text-[2px] text-center leading-[3px] mb-2">
+          {ASCII_FORWARD_SMALL}
         </Text>
         
         {/* Divider */}
-        <View className="border-t border-crypt-border mb-3" />
+        <Text className="text-blood/30 font-mono text-[8px] text-center mb-2">─────────────────────────────</Text>
         
-        {/* Game title */}
-        <Text className="text-amber text-xl font-mono font-bold text-center">DIE FORWARD</Text>
+        {/* Title */}
+        <Text className="text-blood text-xl font-mono font-bold text-center tracking-[4px]">YOU DIED</Text>
+        <Text className="text-stone-400 text-[10px] font-mono text-center mb-2">in THE SUNKEN CRYPT</Text>
+        
+        {/* Player name */}
+        <Text className="text-amber text-base font-mono font-bold text-center mb-2">@{data.playerName}</Text>
+        
+        {/* Stats - no border */}
+        <View className="mb-2">
+          <View className="flex-row justify-between mb-1 px-4">
+            <Text className="text-stone-300 text-sm font-mono">Room Reached</Text>
+            <Text className="text-stone-300 text-sm font-mono">{data.room} / {data.totalRooms}</Text>
+          </View>
+          {data.killedBy && (
+            <View className="flex-row justify-between px-4">
+              <Text className="text-stone-300 text-sm font-mono">Slain By</Text>
+              <Text className="text-blood text-sm font-mono font-bold">{data.killedBy}</Text>
+            </View>
+          )}
+        </View>
+        
+        {/* Epitaph */}
+        <View className="mb-2 px-2">
+          <Text className="text-stone-500 text-[8px] font-mono text-center mb-1">FINAL WORDS</Text>
+          <Text className="text-stone-300 text-xs font-mono italic text-center">"{data.epitaph}"</Text>
+        </View>
+        
+        {/* Stake lost */}
+        {data.stakeLost > 0 && (
+          <Text className="text-blood text-sm font-mono font-bold text-center mb-2">
+            ◎ {data.stakeLost} SOL LOST
+          </Text>
+        )}
+        
+        {/* Divider */}
+        <Text className="text-blood/30 font-mono text-[8px] text-center mb-2">─────────────────────────────</Text>
+        
+        {/* URL */}
         <Text className="text-stone-500 text-[10px] font-mono text-center">dieforward.com</Text>
       </View>
+      
+      {/* ASCII Border Bottom */}
+      <Text className="text-blood/50 font-mono text-[6px] text-center">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</Text>
+      <Text className="text-blood font-mono text-[8px] text-center">╚{'═'.repeat(36)}╝</Text>
     </View>
   );
 }
 
+// ASCII Logo for cards
+const ASCII_LOGO_SMALL = `██████  ██ ███████
+██   ██ ██ ██     
+██   ██ ██ █████  
+██   ██ ██ ██     
+██████  ██ ███████`;
+
+const ASCII_FORWARD_SMALL = `███████  ██████  ██████  ██     ██  █████  ██████  ██████ 
+██      ██    ██ ██   ██ ██     ██ ██   ██ ██   ██ ██   ██
+█████   ██    ██ ██████  ██  █  ██ ███████ ██████  ██   ██
+██      ██    ██ ██   ██ ██ ███ ██ ██   ██ ██   ██ ██   ██
+██       ██████  ██   ██  ███ ███  ██   ██ ██   ██ ██████ `;
+
 // Victory Card Component
 export function VictoryCard({ data }: { data: VictoryCardData }) {
   return (
-    <View className="w-[300px] h-[400px] bg-[#0a1a05] border-2 border-victory p-4">
-      {/* Inner border */}
-      <View className="flex-1 border border-green-900 p-3">
-        {/* Trophy */}
-        <Text className="text-center text-5xl mb-2">🏆</Text>
+    <View className="w-[300px] h-[420px] bg-[#0a0a0a] p-1">
+      {/* ASCII Border Top */}
+      <Text className="text-amber font-mono text-[8px] text-center">╔{'═'.repeat(36)}╗</Text>
+      <Text className="text-amber/50 font-mono text-[6px] text-center">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</Text>
+      
+      <View className="flex-1 px-3 py-2">
+        {/* ASCII Logo */}
+        <Text className="text-amber font-mono text-[3px] text-center leading-[4px] mb-1">
+          {ASCII_LOGO_SMALL}
+        </Text>
+        <Text className="text-amber font-mono text-[2px] text-center leading-[3px] mb-2">
+          {ASCII_FORWARD_SMALL}
+        </Text>
+        
+        {/* Divider */}
+        <Text className="text-amber/30 font-mono text-[8px] text-center mb-2">─────────────────────────────</Text>
         
         {/* Title */}
-        <Text className="text-victory text-2xl font-mono font-bold text-center">ESCAPED</Text>
-        <Text className="text-bone-muted text-xs font-mono text-center mb-4">THE SUNKEN CRYPT</Text>
+        <Text className="text-victory text-xl font-mono font-bold text-center tracking-[4px]">ESCAPED</Text>
+        <Text className="text-stone-400 text-[10px] font-mono text-center mb-3">THE SUNKEN CRYPT</Text>
         
         {/* Player name */}
-        <Text className="text-amber text-lg font-mono font-bold text-center mb-4">@{data.playerName}</Text>
+        <Text className="text-amber text-base font-mono font-bold text-center mb-4">@{data.playerName}</Text>
         
-        {/* Stats box */}
-        <View className="bg-black/50 border border-victory p-3 mb-4">
-          <View className="flex-row justify-between mb-2">
-            <Text className="text-bone text-sm font-mono">Rooms Cleared:</Text>
-            <Text className="text-victory text-sm font-mono">{data.roomsCleared}</Text>
+        {/* Stats - no border */}
+        <View className="mb-3">
+          <View className="flex-row justify-between mb-1 px-4">
+            <Text className="text-stone-300 text-sm font-mono">Rooms Cleared</Text>
+            <Text className="text-victory text-sm font-mono font-bold">{data.roomsCleared}</Text>
           </View>
-          <View className="flex-row justify-between mb-2">
-            <Text className="text-bone text-sm font-mono">Enemies Slain:</Text>
-            <Text className="text-blood text-sm font-mono">{data.enemiesDefeated}</Text>
+          <View className="flex-row justify-between mb-1 px-4">
+            <Text className="text-stone-300 text-sm font-mono">Enemies Slain</Text>
+            <Text className="text-blood text-sm font-mono font-bold">{data.enemiesDefeated}</Text>
           </View>
-          <View className="flex-row justify-between">
-            <Text className="text-bone text-sm font-mono">SOL Won:</Text>
+          <View className="flex-row justify-between px-4">
+            <Text className="text-stone-300 text-sm font-mono">SOL Won</Text>
             <Text className="text-amber text-sm font-mono font-bold">◎ {data.stakeWon.toFixed(3)}</Text>
           </View>
         </View>
         
         {/* Victory message */}
-        <Text className="text-bone-muted text-xs font-mono italic text-center mb-4">
+        <Text className="text-stone-500 text-[10px] font-mono italic text-center mb-3">
           You conquered the depths.{'\n'}Few can claim the same.
         </Text>
         
         {/* Divider */}
-        <View className="border-t border-crypt-border mb-3" />
+        <Text className="text-amber/30 font-mono text-[8px] text-center mb-2">─────────────────────────────</Text>
         
-        {/* Game title */}
-        <Text className="text-amber text-xl font-mono font-bold text-center">DIE FORWARD</Text>
+        {/* URL */}
         <Text className="text-stone-500 text-[10px] font-mono text-center">dieforward.com</Text>
       </View>
+      
+      {/* ASCII Border Bottom */}
+      <Text className="text-amber/50 font-mono text-[6px] text-center">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</Text>
+      <Text className="text-amber font-mono text-[8px] text-center">╚{'═'.repeat(36)}╝</Text>
     </View>
   );
 }
