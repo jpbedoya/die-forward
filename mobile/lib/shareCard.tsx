@@ -2,7 +2,7 @@
 // Uses react-native-view-shot to capture views as images
 
 import React, { useRef, useCallback } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Platform } from 'react-native';
 import ViewShot from 'react-native-view-shot';
 import * as Sharing from 'expo-sharing';
 
@@ -25,12 +25,25 @@ export interface VictoryCardData {
 // Death Card Component
 export function DeathCard({ data }: { data: DeathCardData }) {
   return (
-    <View className="w-[300px] h-[420px] bg-[#0a0a0a] p-1">
+    <View className="w-[300px] h-[420px] bg-[#0a0a0a]">
       {/* ASCII Border Top */}
-      <Text className="text-blood font-mono text-[8px] text-center">╔{'═'.repeat(36)}╗</Text>
-      <Text className="text-blood/50 font-mono text-[6px] text-center">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</Text>
+      <Text className="text-blood font-mono text-[8px] text-center">╔{'═'.repeat(34)}╗</Text>
       
-      <View className="flex-1 px-3 py-2">
+      <View className="flex-row flex-1">
+        {/* Left border */}
+        <View className="justify-between py-1">
+          <Text className="text-blood font-mono text-[8px]">║</Text>
+          <Text className="text-blood/50 font-mono text-[6px]">░</Text>
+          <Text className="text-blood font-mono text-[8px]">║</Text>
+          <Text className="text-blood/50 font-mono text-[6px]">░</Text>
+          <Text className="text-blood font-mono text-[8px]">║</Text>
+          <Text className="text-blood/50 font-mono text-[6px]">░</Text>
+          <Text className="text-blood font-mono text-[8px]">║</Text>
+          <Text className="text-blood/50 font-mono text-[6px]">░</Text>
+          <Text className="text-blood font-mono text-[8px]">║</Text>
+        </View>
+        
+        <View className="flex-1 px-2 py-2">
         {/* ASCII Logo */}
         <Text className="text-amber font-mono text-[3px] text-center leading-[4px] mb-1">
           {ASCII_LOGO_SMALL}
@@ -81,11 +94,24 @@ export function DeathCard({ data }: { data: DeathCardData }) {
         
         {/* URL */}
         <Text className="text-stone-500 text-[10px] font-mono text-center">dieforward.com</Text>
+        </View>
+        
+        {/* Right border */}
+        <View className="justify-between py-1">
+          <Text className="text-blood font-mono text-[8px]">║</Text>
+          <Text className="text-blood/50 font-mono text-[6px]">░</Text>
+          <Text className="text-blood font-mono text-[8px]">║</Text>
+          <Text className="text-blood/50 font-mono text-[6px]">░</Text>
+          <Text className="text-blood font-mono text-[8px]">║</Text>
+          <Text className="text-blood/50 font-mono text-[6px]">░</Text>
+          <Text className="text-blood font-mono text-[8px]">║</Text>
+          <Text className="text-blood/50 font-mono text-[6px]">░</Text>
+          <Text className="text-blood font-mono text-[8px]">║</Text>
+        </View>
       </View>
       
       {/* ASCII Border Bottom */}
-      <Text className="text-blood/50 font-mono text-[6px] text-center">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</Text>
-      <Text className="text-blood font-mono text-[8px] text-center">╚{'═'.repeat(36)}╝</Text>
+      <Text className="text-blood font-mono text-[8px] text-center">╚{'═'.repeat(34)}╝</Text>
     </View>
   );
 }
@@ -106,12 +132,25 @@ const ASCII_FORWARD_SMALL = `███████  ██████  ██�
 // Victory Card Component
 export function VictoryCard({ data }: { data: VictoryCardData }) {
   return (
-    <View className="w-[300px] h-[420px] bg-[#0a0a0a] p-1">
+    <View className="w-[300px] h-[420px] bg-[#0a0a0a]">
       {/* ASCII Border Top */}
-      <Text className="text-amber font-mono text-[8px] text-center">╔{'═'.repeat(36)}╗</Text>
-      <Text className="text-amber/50 font-mono text-[6px] text-center">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</Text>
+      <Text className="text-amber font-mono text-[8px] text-center">╔{'═'.repeat(34)}╗</Text>
       
-      <View className="flex-1 px-3 py-2">
+      <View className="flex-row flex-1">
+        {/* Left border */}
+        <View className="justify-between py-1">
+          <Text className="text-amber font-mono text-[8px]">║</Text>
+          <Text className="text-amber/50 font-mono text-[6px]">░</Text>
+          <Text className="text-amber font-mono text-[8px]">║</Text>
+          <Text className="text-amber/50 font-mono text-[6px]">░</Text>
+          <Text className="text-amber font-mono text-[8px]">║</Text>
+          <Text className="text-amber/50 font-mono text-[6px]">░</Text>
+          <Text className="text-amber font-mono text-[8px]">║</Text>
+          <Text className="text-amber/50 font-mono text-[6px]">░</Text>
+          <Text className="text-amber font-mono text-[8px]">║</Text>
+        </View>
+        
+        <View className="flex-1 px-2 py-2">
         {/* ASCII Logo */}
         <Text className="text-amber font-mono text-[3px] text-center leading-[4px] mb-1">
           {ASCII_LOGO_SMALL}
@@ -156,11 +195,24 @@ export function VictoryCard({ data }: { data: VictoryCardData }) {
         
         {/* URL */}
         <Text className="text-stone-500 text-[10px] font-mono text-center">dieforward.com</Text>
+        </View>
+        
+        {/* Right border */}
+        <View className="justify-between py-1">
+          <Text className="text-amber font-mono text-[8px]">║</Text>
+          <Text className="text-amber/50 font-mono text-[6px]">░</Text>
+          <Text className="text-amber font-mono text-[8px]">║</Text>
+          <Text className="text-amber/50 font-mono text-[6px]">░</Text>
+          <Text className="text-amber font-mono text-[8px]">║</Text>
+          <Text className="text-amber/50 font-mono text-[6px]">░</Text>
+          <Text className="text-amber font-mono text-[8px]">║</Text>
+          <Text className="text-amber/50 font-mono text-[6px]">░</Text>
+          <Text className="text-amber font-mono text-[8px]">║</Text>
+        </View>
       </View>
       
       {/* ASCII Border Bottom */}
-      <Text className="text-amber/50 font-mono text-[6px] text-center">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</Text>
-      <Text className="text-amber font-mono text-[8px] text-center">╚{'═'.repeat(36)}╝</Text>
+      <Text className="text-amber font-mono text-[8px] text-center">╚{'═'.repeat(34)}╝</Text>
     </View>
   );
 }
@@ -175,16 +227,45 @@ export function useShareCard() {
     try {
       // Capture the view as an image
       const uri = await viewShotRef.current.capture?.();
-      if (!uri) return false;
+      if (!uri) {
+        console.error('Failed to capture view');
+        return false;
+      }
 
-      // Check if sharing is available
+      // Web: Use Web Share API or download fallback
+      if (Platform.OS === 'web') {
+        // Convert data URI to blob for Web Share API
+        const response = await fetch(uri);
+        const blob = await response.blob();
+        const file = new File([blob], 'die-forward-card.png', { type: 'image/png' });
+
+        // Try Web Share API first (mobile browsers)
+        if (navigator.share && navigator.canShare?.({ files: [file] })) {
+          await navigator.share({
+            title,
+            text: message,
+            files: [file],
+          });
+          return true;
+        }
+
+        // Fallback: Download the image
+        const link = document.createElement('a');
+        link.href = uri;
+        link.download = 'die-forward-card.png';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        return true;
+      }
+
+      // Native: Use expo-sharing
       const isAvailable = await Sharing.isAvailableAsync();
       if (!isAvailable) {
         console.log('Sharing not available on this device');
         return false;
       }
 
-      // Share the image
       await Sharing.shareAsync(uri, {
         mimeType: 'image/png',
         dialogTitle: title,
