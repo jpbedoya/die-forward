@@ -25,9 +25,9 @@ export interface VictoryCardData {
 // Death Card Component
 export function DeathCard({ data }: { data: DeathCardData }) {
   return (
-    <View className="w-[300px] h-[420px] bg-[#0a0a0a] border-2 border-blood/70">
+    <View className="w-[300px] bg-[#0a0a0a] border-2 border-blood/70">
       {/* Inner content with padding */}
-      <View className="flex-1 m-1 border border-blood/30 p-3">
+      <View className="m-1 border border-blood/30 p-3">
         {/* ASCII Logo */}
         <Text className="text-amber font-mono text-[3px] text-center leading-[4px] mb-1">
           {ASCII_LOGO_SMALL}
@@ -71,7 +71,7 @@ export function DeathCard({ data }: { data: DeathCardData }) {
         )}
         
         {/* URL */}
-        <Text className="text-stone-500 text-[10px] font-mono text-center">dieforward.com</Text>
+        <Text className="text-amber text-[10px] font-mono text-center">dieforward.com</Text>
       </View>
     </View>
   );
@@ -93,9 +93,9 @@ const ASCII_FORWARD_SMALL = `███████  ██████  ██�
 // Victory Card Component
 export function VictoryCard({ data }: { data: VictoryCardData }) {
   return (
-    <View className="w-[300px] h-[420px] bg-[#0a0a0a] border-2 border-amber/70">
+    <View className="w-[300px] bg-[#0a0a0a] border-2 border-amber/70">
       {/* Inner content with padding */}
-      <View className="flex-1 m-1 border border-amber/30 p-3">
+      <View className="m-1 border border-amber/30 p-3">
         {/* ASCII Logo */}
         <Text className="text-amber font-mono text-[3px] text-center leading-[4px] mb-1">
           {ASCII_LOGO_SMALL}
@@ -128,12 +128,12 @@ export function VictoryCard({ data }: { data: VictoryCardData }) {
         </View>
         
         {/* Victory message */}
-        <Text className="text-stone-500 text-[10px] font-mono italic text-center mb-4">
+        <Text className="text-stone-500 text-[10px] font-mono italic text-center mb-3">
           You conquered the depths.{'\n'}Few can claim the same.
         </Text>
         
         {/* URL */}
-        <Text className="text-stone-500 text-[10px] font-mono text-center">dieforward.com</Text>
+        <Text className="text-amber text-[10px] font-mono text-center">dieforward.com</Text>
       </View>
     </View>
   );
