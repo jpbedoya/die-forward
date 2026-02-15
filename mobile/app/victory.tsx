@@ -46,13 +46,13 @@ const AsciiSparkle = ({ delay, x, y }: { delay: number; x: number; y: number }) 
   );
 };
 
-// ASCII art for VICTORIOUS
-const VICTORIOUS_ASCII = `
-██    ██ ██  ██████ ████████  ██████  ██████  ██  ██████  ██    ██ ███████ 
-██    ██ ██ ██         ██    ██    ██ ██   ██ ██ ██    ██ ██    ██ ██      
-██    ██ ██ ██         ██    ██    ██ ██████  ██ ██    ██ ██    ██ ███████ 
- ██  ██  ██ ██         ██    ██    ██ ██   ██ ██ ██    ██ ██    ██      ██ 
-  ████   ██  ██████    ██     ██████  ██   ██ ██  ██████   ██████  ███████ `;
+// ASCII art for ESCAPED
+const ESCAPED_ASCII = `
+███████ ███████  ██████  █████  ██████  ███████ ██████  
+██      ██      ██      ██   ██ ██   ██ ██      ██   ██ 
+█████   ███████ ██      ███████ ██████  █████   ██   ██ 
+██           ██ ██      ██   ██ ██      ██      ██   ██ 
+███████ ███████  ██████ ██   ██ ██      ███████ ██████  `;
 
 export default function VictoryScreen() {
   const game = useGame();
@@ -192,16 +192,16 @@ export default function VictoryScreen() {
           style={{ opacity: introFade }}
         >
           <Animated.View style={{ transform: [{ scale: Animated.multiply(textScale, glowPulse) }] }} className="items-center">
-            <Text className="text-amber font-mono text-sm mb-4 tracking-[4px]">
+            <Text className="text-amber font-mono text-xs mb-4 text-center">
               · · ◆ · ◆ · ◆ · ·
             </Text>
             <Text 
-              className="font-mono text-[3px] text-victory text-center leading-[4px] mb-4"
+              className="font-mono text-[5px] text-victory text-center leading-[6px] mb-4"
               style={{ textShadowColor: '#22c55e', textShadowRadius: 15 }}
             >
-              {VICTORIOUS_ASCII}
+              {ESCAPED_ASCII}
             </Text>
-            <Text className="text-amber font-mono text-sm mb-6 tracking-[4px]">
+            <Text className="text-amber font-mono text-xs mb-6 text-center">
               · · ◆ · ◆ · ◆ · ·
             </Text>
             <Text className="text-bone text-base font-mono text-center mb-2">
@@ -225,7 +225,7 @@ export default function VictoryScreen() {
         {/* Victory Header */}
         <View className="items-center mb-8">
           <Text className="text-6xl mb-4">🏆</Text>
-          <Text className="text-victory text-2xl font-mono font-bold tracking-widest">VICTORIOUS</Text>
+          <Text className="text-victory text-2xl font-mono font-bold tracking-widest">ESCAPED</Text>
           <Text className="text-bone-muted text-sm font-mono mt-2">
             You escaped the depths
           </Text>
