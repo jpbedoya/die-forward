@@ -5,6 +5,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
 import { ProgressBar } from '../components/ProgressBar';
+import { GameMenu, MenuButton } from '../components/GameMenu';
 import { useAudio } from '../lib/audio';
 import { useGameSettings, DEFAULT_GAME_SETTINGS } from '../lib/instant';
 import {
@@ -66,6 +67,7 @@ export default function CombatScreen() {
   const [narrative, setNarrative] = useState('');
   const [playerDmgTaken, setPlayerDmgTaken] = useState(0);
   const [enemyDmgTaken, setEnemyDmgTaken] = useState(0);
+  const [menuOpen, setMenuOpen] = useState(false);
   
   // Screen shake animation
   const shakeAnim = useRef(new Animated.Value(0)).current;
@@ -318,9 +320,15 @@ export default function CombatScreen() {
       >
         {/* Header */}
         <View className="flex-row items-center justify-between px-3 py-2 border-b border-amber/30">
-          <Text className="text-amber text-xs font-mono">◈ {depth.name}</Text>
+          <View className="flex-row items-center gap-2">
+            <MenuButton onPress={() => setMenuOpen(true)} />
+            <Text className="text-amber text-xs font-mono">◈ {depth.name}</Text>
+          </View>
           <ProgressBar current={roomNumber} total={13} />
         </View>
+
+        {/* Game Menu */}
+        <GameMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
 
         <ScrollView className="flex-1" contentContainerClassName="p-4">
         {/* Enemy Card */}

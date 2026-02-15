@@ -7,6 +7,7 @@ import { useGame } from '../lib/GameContext';
 import { useAudio } from '../lib/audio';
 import { useCorpsesForRoom, discoverCorpse, recordTip, useGameSettings, Corpse } from '../lib/instant';
 import { ProgressBar } from '../components/ProgressBar';
+import { GameMenu, MenuButton } from '../components/GameMenu';
 import { getDepthForRoom, DungeonRoom } from '../lib/content';
 import { sendTip } from '../lib/wallet';
 
@@ -29,6 +30,7 @@ export default function PlayScreen() {
   const [showCorpse, setShowCorpse] = useState(false);
   const [lootedCorpse, setLootedCorpse] = useState<Corpse | null>(null);
   const [tipping, setTipping] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // Handle tipping a corpse
   const handleTip = async (corpse: Corpse) => {
@@ -270,6 +272,7 @@ export default function PlayScreen() {
       {/* Header */}
       <View className="flex-row items-center justify-between px-3 py-2 border-b border-amber/30">
         <View className="flex-row items-center gap-2">
+          <MenuButton onPress={() => setMenuOpen(true)} />
           <Text className={`text-xs font-mono tracking-wider ${
             depth.tier === 1 ? 'text-amber' : depth.tier === 2 ? 'text-amber-light' : 'text-ethereal'
           }`}>
@@ -283,6 +286,9 @@ export default function PlayScreen() {
         </View>
         <ProgressBar current={roomNumber} total={dungeon.length} />
       </View>
+
+      {/* Game Menu */}
+      <GameMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
 
       {/* Main content */}
       <ScrollView className="flex-1" contentContainerClassName="p-4">
