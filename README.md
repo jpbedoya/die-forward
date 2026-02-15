@@ -590,6 +590,7 @@ src/
 | Doc | Description |
 |-----|-------------|
 | [Game Design](docs/GAME_DESIGN.md) | Mechanics, combat, death system |
+| [Admin Settings](docs/ADMIN_SETTINGS.md) | Configurable game mechanics via InstantDB |
 | [Staking Flows](docs/STAKING_FLOWS.md) | On-chain escrow vs pool wallet flows |
 | [Tech Stack](docs/TECH_STACK.md) | Architecture decisions |
 | [Content Bible](docs/CONTENT_BIBLE.md) | World building, tone, vocabulary |
@@ -599,6 +600,53 @@ src/
 | [Known Issues](docs/KNOWN_ISSUES.md) | Current bugs and workarounds |
 | [Roadmap](docs/ROADMAP.md) | Development roadmap |
 | [Agent Skill](/public/skill.md) | API docs for agent players |
+
+---
+
+## 📝 Recent Updates (Feb 2026)
+
+### Unified Mobile App
+- **Single codebase** for web, iOS, and Android via Expo
+- **Web:** [play.dieforward.com](https://play.dieforward.com)
+- **Mobile:** Android APK via GitHub Actions
+
+### Platform-Aware Wallet
+- **Desktop browsers:** Standard wallet adapter (Phantom, Solflare extensions)
+- **Mobile native:** Mobile Wallet Adapter (MWA) protocol
+- Unified interface - same code, automatic platform detection
+
+### Combat Improvements
+- **Flee mechanics fixed:** 3 outcomes (clean escape, painful escape, failed)
+- **All mechanics configurable:** Dodge rate, crit chance, damage, etc.
+- **Bigger damage display:** Centered, separated from narrative
+- **Screen shake + haptics** on damage
+
+### Admin Settings Panel
+All game mechanics now configurable via InstantDB in real-time:
+- Loot chances (scales with depth)
+- Combat damage ranges and tier multipliers
+- Action success rates (dodge, crit, flee)
+- Stamina regen, victory bonus %
+
+See [Admin Settings](docs/ADMIN_SETTINGS.md) for full list.
+
+### Share Cards
+- Redesigned victory/death cards
+- ASCII-style DIE FORWARD logo
+- Web Share API + native sharing
+- Clean double-border frame
+
+### Audio System
+- Browser autoplay policy handled
+- Tap-to-unlock on splash screen
+- Sound toggle in corner
+- Ambient music per screen
+
+### UI Polish
+- Removed redundant icons
+- Cleaner stake screen
+- Footer anchored on web
+- ASCII progress bars
 
 ---
 
@@ -615,11 +663,16 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full roadmap.
 - On-chain death verification (Memo program)
 - 68 audio files (42 SFX, 5 ambient, 21 VO)
 - Share cards, haptics, screen shake
+- **Unified mobile app** (Expo - web + iOS + Android)
+- **Platform-aware wallet** (browser extensions + MWA)
+- **Admin settings panel** (all mechanics configurable)
+- **Audio autoplay handling** (browser policy compliant)
 
 ### Coming Soon 🚧
 | Phase | Features |
 |-------|----------|
-| **Admin Dashboard** | Live metrics, tunable game settings |
+| **dApp Store** | Submit Android APK to Solana dApp Store |
+| **App Stores** | iOS App Store, Google Play |
 | **More Zones** | Flooded Cathedral, Ashen Crypts, The Void Beyond |
 | **Token Economy** | $DIE token for notable deaths |
 | **Social Features** | Guilds, spectating, run replays |
@@ -628,7 +681,6 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full roadmap.
 - NFT Corpses
 - PvP Zones
 - AI Dungeon Master (Claude-generated encounters)
-- Mobile native apps
 - VR Mode
 
 ---
