@@ -135,11 +135,8 @@ export default function HomeScreen() {
 
         {/* Tagline */}
         <View className="items-center py-6">
-          <Text className="text-lg text-bone font-mono text-center mb-2">
+          <Text className="text-lg text-bone font-mono text-center">
             Your Death Feeds the Depths
-          </Text>
-          <Text className="text-xs text-bone-dark text-center font-mono">
-            Stake SOL. Descend. Die. Leave your mark.
           </Text>
         </View>
 
