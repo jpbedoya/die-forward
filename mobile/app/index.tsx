@@ -1,9 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { View, Text, Pressable, Animated, Dimensions } from 'react-native';
-import { Link, router } from 'expo-router';
+import { Link } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { usePoolStats, useDeathFeed } from '../lib/instant';
-import { useGame } from '../lib/GameContext';
 
 const ASCII_LOGO = `
   ██████  ██ ███████ 
@@ -30,18 +29,6 @@ export default function HomeScreen() {
   // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
   const { totalDeaths, totalStaked, isLoading: statsLoading } = usePoolStats();
   const { deaths: recentDeaths } = useDeathFeed(5);
-  const { startGame } = useGame();
-
-  // Start free play and go directly to game
-  const startFreePlay = async () => {
-    try {
-      await startGame(0, true);
-      router.replace('/play');
-    } catch (err) {
-      console.error('Failed to start free play:', err);
-    }
-  };
-
   // Splash intro animation - auto transition after one pulse
   useEffect(() => {
     // Fade in + scale up + one pulse + zoom transition
@@ -142,14 +129,13 @@ export default function HomeScreen() {
 
         {/* Main CTA */}
         <View className="gap-3">
-          <Pressable 
-            className="bg-amber py-5 px-8 items-center active:bg-amber-dark"
-            onPress={startFreePlay}
-          >
-            <Text className="text-crypt-bg text-lg font-bold font-mono tracking-widest">
-              ▼ ENTER THE CRYPT
-            </Text>
-          </Pressable>
+          <Link href="/stake" asChild>
+            <Pressable className="bg-amber py-5 px-8 items-center active:bg-amber-dark">
+              <Text className="text-crypt-bg text-lg font-bold font-mono tracking-widest">
+                ▼ ENTER THE CRYPT
+              </Text>
+            </Pressable>
+          </Link>
 
           {/* Leaderboard */}
           <Link href="/leaderboard" asChild>
