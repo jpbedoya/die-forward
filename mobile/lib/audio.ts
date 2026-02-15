@@ -1,9 +1,23 @@
 // Audio manager for Die Forward (React Native / Expo)
-// Uses expo-av for SFX and ambient loops
+// Uses expo-audio for SFX and ambient loops
 
-import { Audio, AVPlaybackStatus } from 'expo-av';
 import { useEffect, useState, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// Dynamically import expo-audio to avoid issues on web
+let AudioModule: any = null;
+let setAudioModeAsync: any = null;
+
+async function loadAudioModule() {
+  if (AudioModule) return;
+  try {
+    const mod = await import('expo-audio');
+    AudioModule = (mod as any).default || mod;
+    setAudioModeAsync = mod.setAudioModeAsync;
+  } catch (e) {
+    console.warn('[Audio] Failed to load expo-audio:', e);
+  }
+}
 
 export type SoundId = 
   // Ambient loops
@@ -120,7 +134,7 @@ const SOUND_PATHS: Record<SoundId, string> = {
 };
 
 class AudioManager {
-  private currentAmbient: Audio.Sound | null = null;
+  private currentAmbient: any = null; // AudioPlayer instance
   private currentAmbientId: SoundId | null = null;
   private enabled: boolean = true;
   private sfxVolume: number = 0.7;
@@ -133,12 +147,17 @@ class AudioManager {
     if (this.initialized) return;
     
     try {
+      // Load audio module
+      await loadAudioModule();
+      
       // Configure audio mode for background playback
-      await Audio.setAudioModeAsync({
-        playsInSilentModeIOS: true,
-        staysActiveInBackground: false,
-        shouldDuckAndroid: true,
-      });
+      if (setAudioModeAsync) {
+        await setAudioModeAsync({
+          playsInSilentModeIOS: true,
+          shouldPlayInBackground: false,
+          shouldReduceOtherAudioVolume: true,
+        });
+      }
       
       // Load saved preference
       const saved = await AsyncStorage.getItem('audio-enabled');
@@ -174,24 +193,28 @@ class AudioManager {
 
   async playSFX(id: SoundId) {
     if (!this.enabled) return;
-    if (!this.unlocked) return; // Browser hasn't been unlocked yet
+    if (!this.unlocked) return;
+    if (!AudioModule?.AudioPlayer) return;
     
     try {
-      const { sound } = await Audio.Sound.createAsync(
+      // Create a new player for this SFX
+      const player = new AudioModule.AudioPlayer(
         { uri: SOUND_PATHS[id] },
-        { volume: this.sfxVolume }
+        100, // updateInterval
+        false // keepAudioSessionActive
       );
       
-      await sound.playAsync();
+      player.volume = this.sfxVolume;
       
-      // Unload after playing
-      sound.setOnPlaybackStatusUpdate((status: AVPlaybackStatus) => {
-        if (status.isLoaded && status.didJustFinish) {
-          sound.unloadAsync();
+      // Listen for completion to clean up
+      player.addListener('playbackStatusUpdate', (status: any) => {
+        if (status.didJustFinish || (!status.playing && status.currentTime >= status.duration - 0.1)) {
+          player.remove();
         }
       });
+      
+      player.play();
     } catch (e) {
-      // Silent fail for SFX
       console.warn('Failed to play SFX:', id, e);
     }
   }
@@ -202,7 +225,6 @@ class AudioManager {
       return;
     }
     
-    // If not unlocked yet (browser), queue for later
     if (!this.unlocked) {
       console.log('[Audio] Ambient queued (waiting for unlock):', id);
       this.pendingAmbient = id;
@@ -214,24 +236,30 @@ class AudioManager {
       return;
     }
     
+    if (!AudioModule?.AudioPlayer) {
+      console.warn('[Audio] AudioModule not loaded');
+      return;
+    }
+    
     try {
       console.log('[Audio] Playing ambient:', id);
       // Stop current ambient
       await this.stopAmbient();
       
-      // Load and play new ambient
-      const { sound } = await Audio.Sound.createAsync(
+      // Create and configure new ambient player
+      const player = new AudioModule.AudioPlayer(
         { uri: SOUND_PATHS[id] },
-        { 
-          volume: this.ambientVolume,
-          isLooping: true,
-        }
+        100,
+        false
       );
       
-      this.currentAmbient = sound;
+      player.volume = this.ambientVolume;
+      player.loop = true;
+      
+      this.currentAmbient = player;
       this.currentAmbientId = id;
       
-      await sound.playAsync();
+      player.play();
       console.log('[Audio] Ambient started:', id);
     } catch (e) {
       console.warn('[Audio] Failed to play ambient:', id, e);
@@ -241,8 +269,8 @@ class AudioManager {
   async stopAmbient() {
     if (this.currentAmbient) {
       try {
-        await this.currentAmbient.stopAsync();
-        await this.currentAmbient.unloadAsync();
+        this.currentAmbient.pause();
+        this.currentAmbient.remove();
       } catch (e) {
         // Ignore errors
       }
@@ -279,17 +307,14 @@ class AudioManager {
     return this.unlocked;
   }
 
-  // Force unlock (call on user interaction)
   async unlock() {
     if (this.unlocked) return;
     this.unlocked = true;
     console.log('[Audio] Unlocked by user interaction');
     
-    // Play pending ambient if any (with small delay for browser)
     if (this.pendingAmbient && this.enabled) {
       const pending = this.pendingAmbient;
       this.pendingAmbient = null;
-      // Small delay to ensure browser registers the interaction
       setTimeout(() => {
         this.playAmbient(pending);
       }, 50);
@@ -341,7 +366,6 @@ export function useAudio() {
     return newState;
   }, []);
 
-  // Call this on user interaction to unlock audio (web)
   const unlock = useCallback(() => {
     const manager = getAudioManager();
     manager.unlock();
