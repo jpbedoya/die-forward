@@ -15,6 +15,7 @@ export default function StakeScreen() {
   const [selectedStake, setSelectedStake] = useState(0.05);
   const [customStake, setCustomStake] = useState('');
   const [staking, setStaking] = useState(false);
+  const [stakingMode, setStakingMode] = useState<'stake' | 'free' | null>(null);
 
   useEffect(() => {
     playAmbient('ambient-title');
@@ -27,6 +28,7 @@ export default function StakeScreen() {
 
   const handleStake = async (demoMode = false) => {
     setStaking(true);
+    setStakingMode(demoMode ? 'free' : 'stake');
     playSFX('confirm-action');
     
     try {
@@ -38,6 +40,7 @@ export default function StakeScreen() {
       playSFX('error-buzz');
     } finally {
       setStaking(false);
+      setStakingMode(null);
     }
   };
 
@@ -179,7 +182,7 @@ export default function StakeScreen() {
                 onPress={() => handleStake(false)}
                 disabled={staking || (game.balance !== null && game.balance < selectedStake)}
               >
-                {staking ? (
+                {stakingMode === 'stake' ? (
                   <ActivityIndicator color="#0d0d0d" />
                 ) : (
                   <Text className="text-crypt-bg font-mono font-bold tracking-wider">SEAL YOUR FATE</Text>
@@ -197,7 +200,11 @@ export default function StakeScreen() {
                 onPress={() => handleStake(true)}
                 disabled={staking}
               >
-                <Text className="text-bone-muted font-mono">EMPTY-HANDED</Text>
+                {stakingMode === 'free' ? (
+                  <ActivityIndicator color="#a8a29e" />
+                ) : (
+                  <Text className="text-bone-muted font-mono">EMPTY-HANDED</Text>
+                )}
               </Pressable>
             </>
           )}
