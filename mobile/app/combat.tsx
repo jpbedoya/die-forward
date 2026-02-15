@@ -212,10 +212,11 @@ export default function CombatScreen() {
       case 'flee': {
         playSFX('flee-run');
         const itemEffects = getItemEffects(game.inventory);
-        const fleeChance = Math.min(0.9, Math.max(0.1, 0.5 + intentEffects.fleeMod + itemEffects.fleeBonus));
+        const fleeChance = Math.min(0.9, Math.max(0.1, settings.fleeChanceBase + intentEffects.fleeMod + itemEffects.fleeBonus));
+        const cleanRatio = settings.fleeCleanRatio;
         const roll = Math.random();
         
-        if (roll < fleeChance * 0.6) {
+        if (roll < fleeChance * cleanRatio) {
           // Clean escape
           fleeSuccess = true;
           actionNarrative = getFleeNarration('success');

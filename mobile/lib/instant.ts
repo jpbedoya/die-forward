@@ -316,6 +316,9 @@ export interface GameSettings {
   baseDamageMax: number;
   tier2Multiplier: number;
   tier3Multiplier: number;
+  // Flee settings
+  fleeChanceBase: number;      // Base chance to flee (0-1)
+  fleeCleanRatio: number;      // Ratio of clean escapes vs hurt escapes (0-1)
   // Victory settings
   victoryBonusPercent: number;
 }
@@ -329,6 +332,8 @@ export const DEFAULT_GAME_SETTINGS: Omit<GameSettings, 'id'> = {
   baseDamageMax: 25,
   tier2Multiplier: 1.5,
   tier3Multiplier: 2.0,
+  fleeChanceBase: 0.5,
+  fleeCleanRatio: 0.6,
   victoryBonusPercent: 50,
 };
 
@@ -351,6 +356,8 @@ export function useGameSettings() {
     baseDamageMax: dbSettings?.baseDamageMax ?? DEFAULT_GAME_SETTINGS.baseDamageMax,
     tier2Multiplier: dbSettings?.tier2Multiplier ?? DEFAULT_GAME_SETTINGS.tier2Multiplier,
     tier3Multiplier: dbSettings?.tier3Multiplier ?? DEFAULT_GAME_SETTINGS.tier3Multiplier,
+    fleeChanceBase: dbSettings?.fleeChanceBase ?? DEFAULT_GAME_SETTINGS.fleeChanceBase,
+    fleeCleanRatio: dbSettings?.fleeCleanRatio ?? DEFAULT_GAME_SETTINGS.fleeCleanRatio,
     victoryBonusPercent: dbSettings?.victoryBonusPercent ?? DEFAULT_GAME_SETTINGS.victoryBonusPercent,
   };
 
