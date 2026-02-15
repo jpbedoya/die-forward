@@ -73,24 +73,33 @@ export function useUnifiedWallet() {
 
 // Web implementation using framework-kit hooks
 function WebWalletConsumer({ children }: { children: ReactNode }) {
-  const wallet = useWalletConnection();
-  const balanceResult = useBalance(wallet.address ? { address: wallet.address } : undefined);
+  const walletConnection = useWalletConnection();
+  // wallet.wallet is the session, which contains account.address
+  const walletAddress = walletConnection.wallet?.account?.address ?? null;
+  const balanceResult = useBalance(walletAddress ? walletAddress : undefined);
   const transfer = useSolTransfer();
   
   const contextValue = useMemo<UnifiedWalletContextState>(() => ({
-    connected: wallet.connected,
-    connecting: wallet.connecting,
-    address: wallet.address as Address | null,
-    balance: balanceResult.data ? Number(balanceResult.data) / 1e9 : null,
+    connected: walletConnection.connected,
+    connecting: walletConnection.connecting,
+    address: walletAddress as Address | null,
+    balance: balanceResult.lamports ? Number(balanceResult.lamports) / 1e9 : null,
     connect: async () => {
-      await wallet.connect();
-      return wallet.address as Address | null;
+      // Open wallet selection - framework-kit handles the modal
+      if (walletConnection.connectors.length > 0) {
+        try {
+          await walletConnection.connect(walletConnection.connectors[0].id);
+        } catch (e) {
+          console.error('Connect failed:', e);
+        }
+      }
+      return walletAddress as Address | null;
     },
     disconnect: async () => {
-      await wallet.disconnect();
+      await walletConnection.disconnect();
     },
     sendSOL: async (to: Address, amount: number) => {
-      if (!wallet.address) throw new Error('Wallet not connected');
+      if (!walletAddress) throw new Error('Wallet not connected');
       const signature = await transfer.send({
         to,
         amount: lamports(BigInt(Math.floor(amount * 1e9))),
@@ -98,9 +107,9 @@ function WebWalletConsumer({ children }: { children: ReactNode }) {
       return signature;
     },
     refreshBalance: async () => {
-      balanceResult.refetch();
+      balanceResult.refresh?.();
     },
-  }), [wallet, balanceResult, transfer]);
+  }), [walletConnection, walletAddress, balanceResult, transfer]);
   
   return (
     <UnifiedWalletContext.Provider value={contextValue}>
