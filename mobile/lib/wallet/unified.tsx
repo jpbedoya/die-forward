@@ -217,22 +217,65 @@ function MobileWalletProvider({ children }: { children: ReactNode }) {
   const [authToken, setAuthToken] = useState<string | null>(null);
   const [balance, setBalance] = useState<number | null>(null);
   
+  // Restore wallet state from storage on mount (for mobile web page refreshes)
+  useEffect(() => {
+    if (typeof localStorage !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('mwa-wallet-state');
+        if (saved) {
+          const { address: savedAddr, authToken: savedToken } = JSON.parse(saved);
+          if (savedAddr && savedToken) {
+            console.log('[MWA] Restoring wallet from storage:', savedAddr);
+            setAddress(savedAddr);
+            setAuthToken(savedToken);
+            setConnected(true);
+            // Fetch balance
+            getMobileBalance(savedAddr).then(setBalance).catch(console.warn);
+          }
+        }
+      } catch (e) {
+        console.warn('[MWA] Failed to restore wallet state:', e);
+      }
+    }
+  }, []);
+  
   const connect = useCallback(async (): Promise<Address | null> => {
+    console.log('[MWA] Starting connect...');
     setConnecting(true);
     try {
       const result = await mobileConnect();
-      setAddress(result.address);
-      setAuthToken(result.authToken);
-      setConnected(true);
+      console.log('[MWA] Connect result:', result);
       
-      // Fetch initial balance
-      const bal = await getMobileBalance(result.address);
-      setBalance(bal);
-      
-      return result.address;
-    } catch (e) {
-      console.error('Mobile wallet connect failed:', e);
-      return null;
+      if (result?.address) {
+        setAddress(result.address);
+        setAuthToken(result.authToken);
+        setConnected(true);
+        
+        // Save to storage for page refresh persistence
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('mwa-wallet-state', JSON.stringify({
+            address: result.address,
+            authToken: result.authToken,
+          }));
+        }
+        
+        // Fetch initial balance
+        try {
+          const bal = await getMobileBalance(result.address);
+          setBalance(bal);
+          console.log('[MWA] Balance:', bal);
+        } catch (balErr) {
+          console.warn('[MWA] Failed to fetch balance:', balErr);
+        }
+        
+        return result.address;
+      } else {
+        console.warn('[MWA] No address in result');
+        return null;
+      }
+    } catch (e: any) {
+      console.error('[MWA] Connect failed:', e?.message || e);
+      throw new Error(e?.message || 'Wallet connection failed');
     } finally {
       setConnecting(false);
     }
@@ -243,6 +286,10 @@ function MobileWalletProvider({ children }: { children: ReactNode }) {
     setAuthToken(null);
     setConnected(false);
     setBalance(null);
+    // Clear storage
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem('mwa-wallet-state');
+    }
   }, []);
   
   const sendSOL = useCallback(async (to: Address, amount: number): Promise<string> => {
