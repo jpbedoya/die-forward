@@ -28,18 +28,19 @@ let Web3MobileWallet: any;
 
 // Conditional imports based on platform
 if (Platform.OS === 'web') {
-  // Web wallet adapter
+  // Web wallet adapter - individual packages only (no Trezor/ws dependency)
   const walletAdapterBase = require('@solana/wallet-adapter-base');
   const walletAdapterReact = require('@solana/wallet-adapter-react');
-  const walletAdapterWallets = require('@solana/wallet-adapter-wallets');
+  const phantomAdapter = require('@solana/wallet-adapter-phantom');
+  const solflareAdapter = require('@solana/wallet-adapter-solflare');
   
   WalletAdapterNetwork = walletAdapterBase.WalletAdapterNetwork;
   ConnectionProvider = walletAdapterReact.ConnectionProvider;
   WalletProvider = walletAdapterReact.WalletProvider;
   useWallet = walletAdapterReact.useWallet;
   useConnection = walletAdapterReact.useConnection;
-  PhantomWalletAdapter = walletAdapterWallets.PhantomWalletAdapter;
-  SolflareWalletAdapter = walletAdapterWallets.SolflareWalletAdapter;
+  PhantomWalletAdapter = phantomAdapter.PhantomWalletAdapter;
+  SolflareWalletAdapter = solflareAdapter.SolflareWalletAdapter;
   
   // Dynamic import for modal (has CSS)
   try {

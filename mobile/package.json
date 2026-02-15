@@ -2,9 +2,6 @@
   "name": "die-forward-mobile",
   "version": "1.0.0",
   "main": "expo-router/entry",
-  "browser": {
-    "ws": "./shims/ws.js"
-  },
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
@@ -23,9 +20,10 @@
     "@solana-mobile/mobile-wallet-adapter-protocol-web3js": "^2.2.5",
     "@solana-mobile/wallet-adapter-mobile": "^2.2.5",
     "@solana/wallet-adapter-base": "^0.9.27",
+    "@solana/wallet-adapter-phantom": "^0.9.28",
     "@solana/wallet-adapter-react": "^0.15.39",
     "@solana/wallet-adapter-react-ui": "^0.9.39",
-    "@solana/wallet-adapter-wallets": "^0.19.37",
+    "@solana/wallet-adapter-solflare": "^0.6.32",
     "@solana/web3.js": "^1.98.4",
     "babel-preset-expo": "^54.0.10",
     "base-64": "^1.0.0",
