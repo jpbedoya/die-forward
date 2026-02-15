@@ -2,6 +2,9 @@
   "name": "die-forward-mobile",
   "version": "1.0.0",
   "main": "expo-router/entry",
+  "browser": {
+    "ws": "./shims/ws.js"
+  },
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
@@ -38,6 +41,7 @@
     "expo-router": "^6.0.23",
     "expo-sharing": "~14.0.8",
     "expo-status-bar": "~3.0.9",
+    "isomorphic-ws": "^5.0.0",
     "nativewind": "^4.2.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
