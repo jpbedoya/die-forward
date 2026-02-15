@@ -328,10 +328,15 @@ function MobileWalletProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// Import the official MWA provider for mobile
+let MWAWalletProvider: any;
+if (useMWA) {
+  MWAWalletProvider = require('./mwa-provider').MWAWalletProvider;
+}
+
 // Main provider - switches based on platform
 export function UnifiedWalletProvider({ children }: { children: ReactNode }) {
   // Desktop web: use framework-kit
-  // Mobile web + Native: use MWA
   if (Platform.OS === 'web' && !isMobileWeb) {
     return (
       <WebWalletProvider>
@@ -342,11 +347,11 @@ export function UnifiedWalletProvider({ children }: { children: ReactNode }) {
     );
   }
   
-  // Mobile (web or native): use MWA
+  // Mobile (web or native): use official @wallet-ui MWA provider
   return (
-    <MobileWalletProvider>
+    <MWAWalletProvider>
       {children}
-    </MobileWalletProvider>
+    </MWAWalletProvider>
   );
 }
 

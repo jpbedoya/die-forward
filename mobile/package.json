@@ -25,6 +25,7 @@
     "@solana/react-hooks": "^1.4.1",
     "@solana/web3-compat": "^0.0.21",
     "@solana/web3.js": "^1.98.4",
+    "@wallet-ui/react-native-web3js": "^3.2.0",
     "babel-preset-expo": "^54.0.10",
     "base-64": "^1.0.0",
     "bs58": "^6.0.0",
