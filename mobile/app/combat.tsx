@@ -439,7 +439,7 @@ export default function CombatScreen() {
 
       {/* Footer - Player Stats (sticky bottom) */}
       <View className="border-t border-crypt-border p-3 bg-crypt-bg" style={{ flexShrink: 0 }}>
-        <View className="flex-row items-center justify-between">
+        <View className="flex-row items-center justify-between mb-3">
           <View className="flex-row items-center gap-2">
             <Text className="text-blood">♥</Text>
             <HealthBar current={game.health} max={100} />
@@ -459,6 +459,22 @@ export default function CombatScreen() {
               {game.stakeAmount > 0 ? `${game.stakeAmount}` : 'FREE'}
             </Text>
           </View>
+        </View>
+        
+        {/* Inventory */}
+        <View className="flex-row items-center">
+          <Text className="text-bone-dark text-xs font-mono mr-2">ITEMS</Text>
+          <ScrollView horizontal className="flex-row flex-1" showsHorizontalScrollIndicator={false}>
+            {game.inventory.length > 0 ? (
+              game.inventory.map((item) => (
+                <View key={item.id} className="bg-crypt-surface border border-crypt-border py-1 px-2 mr-2">
+                  <Text className="text-bone-muted text-xs font-mono">{item.emoji} {item.name}</Text>
+                </View>
+              ))
+            ) : (
+              <Text className="text-stone-600 text-xs font-mono italic">None</Text>
+            )}
+          </ScrollView>
         </View>
       </View>
       </Animated.View>

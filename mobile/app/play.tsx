@@ -437,17 +437,20 @@ export default function PlayScreen() {
         </View>
 
         {/* Inventory */}
-        <ScrollView horizontal className="flex-row">
-          <Text className="text-base mr-2">🎒</Text>
-          {game.inventory.map((item) => (
-            <View key={item.id} className="bg-crypt-surface border border-crypt-border py-1 px-2 mr-2">
-              <Text className="text-bone-muted text-xs font-mono">{item.emoji} {item.name}</Text>
-            </View>
-          ))}
-          {game.inventory.length === 0 && (
-            <Text className="text-stone-600 text-xs font-mono italic">Empty</Text>
-          )}
-        </ScrollView>
+        <View className="flex-row items-center">
+          <Text className="text-bone-dark text-xs font-mono mr-2">ITEMS</Text>
+          <ScrollView horizontal className="flex-row flex-1" showsHorizontalScrollIndicator={false}>
+            {game.inventory.length > 0 ? (
+              game.inventory.map((item) => (
+                <View key={item.id} className="bg-crypt-surface border border-crypt-border py-1 px-2 mr-2">
+                  <Text className="text-bone-muted text-xs font-mono">{item.emoji} {item.name}</Text>
+                </View>
+              ))
+            ) : (
+              <Text className="text-stone-600 text-xs font-mono italic">None</Text>
+            )}
+          </ScrollView>
+        </View>
       </View>
     </SafeAreaView>
   );
