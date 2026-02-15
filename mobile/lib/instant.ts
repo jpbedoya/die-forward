@@ -1,7 +1,7 @@
 import { init, tx, id } from '@instantdb/react-native';
 
 // App ID - same as web version
-const APP_ID = process.env.EXPO_PUBLIC_INSTANT_APP_ID || '84f04877-bcc3-4b09-89df-f6ef498d21f5';
+const APP_ID = process.env.EXPO_PUBLIC_INSTANT_APP_ID || '0700b913-585c-4de8-abdf-0bc81a0f5920';
 
 // Schema types
 export interface Death {
