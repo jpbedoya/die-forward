@@ -27,7 +27,11 @@ interface WebWalletProviderProps {
 
 export function WebWalletProvider({ children }: WebWalletProviderProps) {
   return (
-    <SolanaProvider client={solanaClient}>
+    <SolanaProvider 
+      client={solanaClient}
+      autoConnect={true}
+      storageKey="die-forward-wallet"
+    >
       {children}
     </SolanaProvider>
   );
