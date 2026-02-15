@@ -399,14 +399,14 @@ export default function PlayScreen() {
             <Text className="text-bone text-sm font-mono">Continue...</Text>
           </Pressable>
         ) : (
-          options.map((option, i) => (
+          options.map((option) => (
             <Pressable
               key={option.id}
               className={`flex-row items-center bg-crypt-surface border-l-2 border-crypt-border-light py-4 px-3 mb-2 active:border-amber active:bg-amber/5 ${processing ? 'opacity-50' : ''}`}
               onPress={() => handleAction(option.action)}
               disabled={processing}
             >
-              <Text className="text-bone-dark text-sm font-mono mr-2">{i + 1}.</Text>
+              <Text className="text-bone-dark text-sm font-mono mr-2">▶</Text>
               <Text className="text-bone text-sm font-mono">{option.text}</Text>
             </Pressable>
           ))

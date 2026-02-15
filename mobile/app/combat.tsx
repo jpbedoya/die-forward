@@ -401,34 +401,34 @@ export default function CombatScreen() {
           </View>
         )}
 
-        {/* Combat Options */}
+        {/* Combat Options - 2x2 Grid */}
         {phase === 'choose' && (
           <View className="mt-4">
             <Text className="text-bone-dark text-xs font-mono tracking-widest mb-3">▼ CHOOSE ACTION</Text>
-            {COMBAT_OPTIONS.map((option) => {
-              const canUse = game.stamina >= option.cost;
-              return (
-                <Pressable
-                  key={option.id}
-                  className={`flex-row items-center bg-crypt-surface border-l-2 py-4 px-3 mb-2 ${
-                    canUse ? 'border-amber active:bg-amber/10' : 'border-crypt-border opacity-50'
-                  }`}
-                  onPress={() => canUse && handleAction(option.id)}
-                  disabled={!canUse}
-                >
-                  <Text className="text-2xl mr-3">{option.emoji}</Text>
-                  <View className="flex-1">
-                    <Text className={`font-mono font-bold ${canUse ? 'text-bone' : 'text-bone-dark'}`}>
+            <View className="flex-row flex-wrap justify-between">
+              {COMBAT_OPTIONS.map((option) => {
+                const canUse = game.stamina >= option.cost;
+                return (
+                  <Pressable
+                    key={option.id}
+                    className={`bg-crypt-surface border py-3 px-3 mb-2 items-center justify-center ${
+                      canUse ? 'border-amber active:bg-amber/10' : 'border-crypt-border opacity-50'
+                    }`}
+                    style={{ width: '48%' }}
+                    onPress={() => canUse && handleAction(option.id)}
+                    disabled={!canUse}
+                  >
+                    <Text className="text-2xl mb-1">{option.emoji}</Text>
+                    <Text className={`font-mono font-bold text-center ${canUse ? 'text-bone' : 'text-bone-dark'}`}>
                       {option.text}
                     </Text>
-                    <Text className="text-bone-dark text-xs font-mono">{option.desc}</Text>
-                  </View>
-                  {option.cost > 0 && (
-                    <Text className="text-blue-400 text-xs font-mono">⚡{option.cost}</Text>
-                  )}
-                </Pressable>
-              );
-            })}
+                    {option.cost > 0 && (
+                      <Text className="text-blue-400 text-xs font-mono mt-1">⚡{option.cost}</Text>
+                    )}
+                  </Pressable>
+                );
+              })}
+            </View>
           </View>
         )}
       </ScrollView>
