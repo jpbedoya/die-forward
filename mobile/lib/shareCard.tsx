@@ -25,51 +25,32 @@ export interface VictoryCardData {
 // Death Card Component
 export function DeathCard({ data }: { data: DeathCardData }) {
   return (
-    <View className="w-[300px] h-[420px] bg-[#0a0a0a]">
-      {/* ASCII Border Top */}
-      <Text className="text-blood font-mono text-[8px] text-center">╔{'═'.repeat(34)}╗</Text>
-      
-      <View className="flex-row flex-1">
-        {/* Left border */}
-        <View className="justify-between py-1">
-          <Text className="text-blood font-mono text-[8px]">║</Text>
-          <Text className="text-blood/50 font-mono text-[6px]">░</Text>
-          <Text className="text-blood font-mono text-[8px]">║</Text>
-          <Text className="text-blood/50 font-mono text-[6px]">░</Text>
-          <Text className="text-blood font-mono text-[8px]">║</Text>
-          <Text className="text-blood/50 font-mono text-[6px]">░</Text>
-          <Text className="text-blood font-mono text-[8px]">║</Text>
-          <Text className="text-blood/50 font-mono text-[6px]">░</Text>
-          <Text className="text-blood font-mono text-[8px]">║</Text>
-        </View>
-        
-        <View className="flex-1 px-2 py-2">
+    <View className="w-[300px] h-[420px] bg-[#0a0a0a] border-2 border-blood/70">
+      {/* Inner content with padding */}
+      <View className="flex-1 m-1 border border-blood/30 p-3">
         {/* ASCII Logo */}
         <Text className="text-amber font-mono text-[3px] text-center leading-[4px] mb-1">
           {ASCII_LOGO_SMALL}
         </Text>
-        <Text className="text-amber font-mono text-[2px] text-center leading-[3px] mb-2">
+        <Text className="text-amber font-mono text-[2px] text-center leading-[3px] mb-3">
           {ASCII_FORWARD_SMALL}
         </Text>
-        
-        {/* Divider */}
-        <Text className="text-blood/30 font-mono text-[8px] text-center mb-2">─────────────────────────────</Text>
         
         {/* Title */}
         <Text className="text-blood text-xl font-mono font-bold text-center tracking-[4px]">YOU DIED</Text>
         <Text className="text-stone-400 text-[10px] font-mono text-center mb-2">in THE SUNKEN CRYPT</Text>
         
         {/* Player name */}
-        <Text className="text-amber text-base font-mono font-bold text-center mb-2">@{data.playerName}</Text>
+        <Text className="text-amber text-base font-mono font-bold text-center mb-3">@{data.playerName}</Text>
         
-        {/* Stats - no border */}
+        {/* Stats */}
         <View className="mb-2">
-          <View className="flex-row justify-between mb-1 px-4">
+          <View className="flex-row justify-between mb-1 px-2">
             <Text className="text-stone-300 text-sm font-mono">Room Reached</Text>
             <Text className="text-stone-300 text-sm font-mono">{data.room} / {data.totalRooms}</Text>
           </View>
           {data.killedBy && (
-            <View className="flex-row justify-between px-4">
+            <View className="flex-row justify-between px-2">
               <Text className="text-stone-300 text-sm font-mono">Slain By</Text>
               <Text className="text-blood text-sm font-mono font-bold">{data.killedBy}</Text>
             </View>
@@ -77,41 +58,21 @@ export function DeathCard({ data }: { data: DeathCardData }) {
         </View>
         
         {/* Epitaph */}
-        <View className="mb-2 px-2">
+        <View className="mb-3 px-1">
           <Text className="text-stone-500 text-[8px] font-mono text-center mb-1">FINAL WORDS</Text>
           <Text className="text-stone-300 text-xs font-mono italic text-center">"{data.epitaph}"</Text>
         </View>
         
         {/* Stake lost */}
         {data.stakeLost > 0 && (
-          <Text className="text-blood text-sm font-mono font-bold text-center mb-2">
+          <Text className="text-blood text-sm font-mono font-bold text-center mb-3">
             ◎ {data.stakeLost} SOL LOST
           </Text>
         )}
         
-        {/* Divider */}
-        <Text className="text-blood/30 font-mono text-[8px] text-center mb-2">─────────────────────────────</Text>
-        
         {/* URL */}
         <Text className="text-stone-500 text-[10px] font-mono text-center">dieforward.com</Text>
-        </View>
-        
-        {/* Right border */}
-        <View className="justify-between py-1">
-          <Text className="text-blood font-mono text-[8px]">║</Text>
-          <Text className="text-blood/50 font-mono text-[6px]">░</Text>
-          <Text className="text-blood font-mono text-[8px]">║</Text>
-          <Text className="text-blood/50 font-mono text-[6px]">░</Text>
-          <Text className="text-blood font-mono text-[8px]">║</Text>
-          <Text className="text-blood/50 font-mono text-[6px]">░</Text>
-          <Text className="text-blood font-mono text-[8px]">║</Text>
-          <Text className="text-blood/50 font-mono text-[6px]">░</Text>
-          <Text className="text-blood font-mono text-[8px]">║</Text>
-        </View>
       </View>
-      
-      {/* ASCII Border Bottom */}
-      <Text className="text-blood font-mono text-[8px] text-center">╚{'═'.repeat(34)}╝</Text>
     </View>
   );
 }
@@ -132,35 +93,16 @@ const ASCII_FORWARD_SMALL = `███████  ██████  ██�
 // Victory Card Component
 export function VictoryCard({ data }: { data: VictoryCardData }) {
   return (
-    <View className="w-[300px] h-[420px] bg-[#0a0a0a]">
-      {/* ASCII Border Top */}
-      <Text className="text-amber font-mono text-[8px] text-center">╔{'═'.repeat(34)}╗</Text>
-      
-      <View className="flex-row flex-1">
-        {/* Left border */}
-        <View className="justify-between py-1">
-          <Text className="text-amber font-mono text-[8px]">║</Text>
-          <Text className="text-amber/50 font-mono text-[6px]">░</Text>
-          <Text className="text-amber font-mono text-[8px]">║</Text>
-          <Text className="text-amber/50 font-mono text-[6px]">░</Text>
-          <Text className="text-amber font-mono text-[8px]">║</Text>
-          <Text className="text-amber/50 font-mono text-[6px]">░</Text>
-          <Text className="text-amber font-mono text-[8px]">║</Text>
-          <Text className="text-amber/50 font-mono text-[6px]">░</Text>
-          <Text className="text-amber font-mono text-[8px]">║</Text>
-        </View>
-        
-        <View className="flex-1 px-2 py-2">
+    <View className="w-[300px] h-[420px] bg-[#0a0a0a] border-2 border-amber/70">
+      {/* Inner content with padding */}
+      <View className="flex-1 m-1 border border-amber/30 p-3">
         {/* ASCII Logo */}
         <Text className="text-amber font-mono text-[3px] text-center leading-[4px] mb-1">
           {ASCII_LOGO_SMALL}
         </Text>
-        <Text className="text-amber font-mono text-[2px] text-center leading-[3px] mb-2">
+        <Text className="text-amber font-mono text-[2px] text-center leading-[3px] mb-3">
           {ASCII_FORWARD_SMALL}
         </Text>
-        
-        {/* Divider */}
-        <Text className="text-amber/30 font-mono text-[8px] text-center mb-2">─────────────────────────────</Text>
         
         {/* Title */}
         <Text className="text-victory text-xl font-mono font-bold text-center tracking-[4px]">ESCAPED</Text>
@@ -169,50 +111,30 @@ export function VictoryCard({ data }: { data: VictoryCardData }) {
         {/* Player name */}
         <Text className="text-amber text-base font-mono font-bold text-center mb-4">@{data.playerName}</Text>
         
-        {/* Stats - no border */}
-        <View className="mb-3">
-          <View className="flex-row justify-between mb-1 px-4">
+        {/* Stats */}
+        <View className="mb-4">
+          <View className="flex-row justify-between mb-1 px-2">
             <Text className="text-stone-300 text-sm font-mono">Rooms Cleared</Text>
             <Text className="text-victory text-sm font-mono font-bold">{data.roomsCleared}</Text>
           </View>
-          <View className="flex-row justify-between mb-1 px-4">
+          <View className="flex-row justify-between mb-1 px-2">
             <Text className="text-stone-300 text-sm font-mono">Enemies Slain</Text>
             <Text className="text-blood text-sm font-mono font-bold">{data.enemiesDefeated}</Text>
           </View>
-          <View className="flex-row justify-between px-4">
+          <View className="flex-row justify-between px-2">
             <Text className="text-stone-300 text-sm font-mono">SOL Won</Text>
             <Text className="text-amber text-sm font-mono font-bold">◎ {data.stakeWon.toFixed(3)}</Text>
           </View>
         </View>
         
         {/* Victory message */}
-        <Text className="text-stone-500 text-[10px] font-mono italic text-center mb-3">
+        <Text className="text-stone-500 text-[10px] font-mono italic text-center mb-4">
           You conquered the depths.{'\n'}Few can claim the same.
         </Text>
         
-        {/* Divider */}
-        <Text className="text-amber/30 font-mono text-[8px] text-center mb-2">─────────────────────────────</Text>
-        
         {/* URL */}
         <Text className="text-stone-500 text-[10px] font-mono text-center">dieforward.com</Text>
-        </View>
-        
-        {/* Right border */}
-        <View className="justify-between py-1">
-          <Text className="text-amber font-mono text-[8px]">║</Text>
-          <Text className="text-amber/50 font-mono text-[6px]">░</Text>
-          <Text className="text-amber font-mono text-[8px]">║</Text>
-          <Text className="text-amber/50 font-mono text-[6px]">░</Text>
-          <Text className="text-amber font-mono text-[8px]">║</Text>
-          <Text className="text-amber/50 font-mono text-[6px]">░</Text>
-          <Text className="text-amber font-mono text-[8px]">║</Text>
-          <Text className="text-amber/50 font-mono text-[6px]">░</Text>
-          <Text className="text-amber font-mono text-[8px]">║</Text>
-        </View>
       </View>
-      
-      {/* ASCII Border Bottom */}
-      <Text className="text-amber font-mono text-[8px] text-center">╚{'═'.repeat(34)}╝</Text>
     </View>
   );
 }
