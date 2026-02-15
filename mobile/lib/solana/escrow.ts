@@ -25,12 +25,12 @@ const PROGRAM_ID_PUBKEY = new PublicKey(PROGRAM_ID);
 export const GAME_POOL_PDA = 'E4LRRyeFXDbFg1WaS1pjKm5DAJzJDWbAs1v5qvqe5xYM' as Address;
 const GAME_POOL_PDA_PUBKEY = new PublicKey(GAME_POOL_PDA);
 
-// Treasury (receives fees)
-export const TREASURY = 'D7NdNbJTL7s6Z7Wu8nGe5SBc64FiFQAH3iPvRZw15qSL' as Address;
+// Treasury (receives fees) - from game pool state
+export const TREASURY = '7rn4KRHNQwSJDa1uq1ENMzyDqW95QAr3bZUepkLh58ed' as Address;
 const TREASURY_PUBKEY = new PublicKey(TREASURY);
 
 // PDA Seeds
-const SESSION_SEED = new TextEncoder().encode('session');
+const SESSION_SEED = Buffer.from('session');
 
 // Instruction discriminators (Anchor-style)
 const STAKE_DISCRIMINATOR = new Uint8Array([206, 176, 202, 18, 200, 209, 179, 108]);
@@ -45,23 +45,23 @@ function toPublicKey(address: Address): PublicKey {
 }
 
 /**
- * Convert hex string to session ID bytes
+ * Convert hex string to session ID bytes (32 bytes)
  */
 export function hexToSessionId(hex: string): Uint8Array {
   const clean = hex.startsWith('0x') ? hex.slice(2) : hex;
-  const bytes = new Uint8Array(16);
-  for (let i = 0; i < 16; i++) {
+  const bytes = new Uint8Array(32);
+  for (let i = 0; i < 32 && i * 2 < clean.length; i++) {
     bytes[i] = parseInt(clean.substr(i * 2, 2), 16);
   }
   return bytes;
 }
 
 /**
- * Generate a random session ID
+ * Generate a random session ID (32 bytes)
  */
 export function generateSessionId(): { hex: string; bytes: Uint8Array } {
-  const bytes = new Uint8Array(16);
-  for (let i = 0; i < 16; i++) {
+  const bytes = new Uint8Array(32);
+  for (let i = 0; i < 32; i++) {
     bytes[i] = Math.floor(Math.random() * 256);
   }
   const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
@@ -70,10 +70,11 @@ export function generateSessionId(): { hex: string; bytes: Uint8Array } {
 
 /**
  * Derive session PDA
+ * Seeds: ["session", player_pubkey, session_id]
  */
-export function deriveSessionPDA(sessionId: Uint8Array): Address {
+export function deriveSessionPDA(player: Address, sessionId: Uint8Array): Address {
   const [pda] = PublicKey.findProgramAddressSync(
-    [SESSION_SEED, sessionId],
+    [SESSION_SEED, new PublicKey(player).toBuffer(), sessionId],
     PROGRAM_ID_PUBKEY
   );
   return pda.toBase58() as Address;
@@ -83,7 +84,7 @@ export function deriveSessionPDA(sessionId: Uint8Array): Address {
  * Build stake instruction
  * 
  * @param player - Player's wallet address (Kit Address type)
- * @param sessionId - 16-byte session ID
+ * @param sessionId - 32-byte session ID
  * @param amountLamports - Amount to stake in lamports
  * @returns web3.js TransactionInstruction (for sending via wallet)
  */
@@ -92,19 +93,22 @@ export function buildStakeInstruction(
   sessionId: Uint8Array,
   amountLamports: bigint
 ): TransactionInstruction {
-  const sessionPda = deriveSessionPDA(sessionId);
+  const sessionPda = deriveSessionPDA(player, sessionId);
   
-  // Instruction data: discriminator + session_id (16 bytes) + amount (8 bytes LE)
-  const data = Buffer.alloc(8 + 16 + 8);
-  data.set(STAKE_DISCRIMINATOR);
-  data.set(sessionId, 8);
-  data.writeBigUInt64LE(amountLamports, 24);
+  // Instruction data: discriminator (8) + amount (8 bytes LE) + session_id (32 bytes)
+  // Note: Anchor serializes in order of function parameters
+  const data = Buffer.alloc(8 + 8 + 32);
+  data.set(STAKE_DISCRIMINATOR, 0);
+  data.writeBigUInt64LE(amountLamports, 8);
+  data.set(sessionId, 16);
   
+  // Account order from Anchor: game_pool, session, treasury, player, system_program
   return new TransactionInstruction({
     keys: [
-      { pubkey: toPublicKey(player), isSigner: true, isWritable: true },
-      { pubkey: toPublicKey(sessionPda), isSigner: false, isWritable: true },
       { pubkey: GAME_POOL_PDA_PUBKEY, isSigner: false, isWritable: true },
+      { pubkey: toPublicKey(sessionPda), isSigner: false, isWritable: true },
+      { pubkey: TREASURY_PUBKEY, isSigner: false, isWritable: true },
+      { pubkey: toPublicKey(player), isSigner: true, isWritable: true },
       { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
     ],
     programId: PROGRAM_ID_PUBKEY,
@@ -114,22 +118,27 @@ export function buildStakeInstruction(
 
 /**
  * Build record death instruction (authority only)
+ * Note: This is called by the server, not the client
  */
 export function buildRecordDeathInstruction(
   authority: Address,
-  sessionId: Uint8Array
+  player: Address,
+  sessionId: Uint8Array,
+  deathHash: Uint8Array // 32 bytes
 ): TransactionInstruction {
-  const sessionPda = deriveSessionPDA(sessionId);
+  const sessionPda = deriveSessionPDA(player, sessionId);
   
-  const data = Buffer.alloc(8 + 16);
-  data.set(RECORD_DEATH_DISCRIMINATOR);
-  data.set(sessionId, 8);
+  // data: discriminator (8) + death_hash (32)
+  const data = Buffer.alloc(8 + 32);
+  data.set(RECORD_DEATH_DISCRIMINATOR, 0);
+  data.set(deathHash, 8);
   
+  // Account order: game_pool, session, authority
   return new TransactionInstruction({
     keys: [
-      { pubkey: toPublicKey(authority), isSigner: true, isWritable: false },
-      { pubkey: toPublicKey(sessionPda), isSigner: false, isWritable: true },
       { pubkey: GAME_POOL_PDA_PUBKEY, isSigner: false, isWritable: true },
+      { pubkey: toPublicKey(sessionPda), isSigner: false, isWritable: true },
+      { pubkey: toPublicKey(authority), isSigner: true, isWritable: false },
     ],
     programId: PROGRAM_ID_PUBKEY,
     data,
@@ -138,26 +147,26 @@ export function buildRecordDeathInstruction(
 
 /**
  * Build claim victory instruction
+ * Note: This is called by the server, not the client
  */
 export function buildClaimVictoryInstruction(
   authority: Address,
   player: Address,
   sessionId: Uint8Array
 ): TransactionInstruction {
-  const sessionPda = deriveSessionPDA(sessionId);
+  const sessionPda = deriveSessionPDA(player, sessionId);
   
-  const data = Buffer.alloc(8 + 16);
-  data.set(CLAIM_VICTORY_DISCRIMINATOR);
-  data.set(sessionId, 8);
+  // data: discriminator only (no args)
+  const data = Buffer.alloc(8);
+  data.set(CLAIM_VICTORY_DISCRIMINATOR, 0);
   
+  // Account order: game_pool, session, player, authority
   return new TransactionInstruction({
     keys: [
-      { pubkey: toPublicKey(authority), isSigner: true, isWritable: true },
-      { pubkey: toPublicKey(player), isSigner: false, isWritable: true },
-      { pubkey: toPublicKey(sessionPda), isSigner: false, isWritable: true },
       { pubkey: GAME_POOL_PDA_PUBKEY, isSigner: false, isWritable: true },
-      { pubkey: TREASURY_PUBKEY, isSigner: false, isWritable: true },
-      { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
+      { pubkey: toPublicKey(sessionPda), isSigner: false, isWritable: true },
+      { pubkey: toPublicKey(player), isSigner: true, isWritable: true },
+      { pubkey: toPublicKey(authority), isSigner: true, isWritable: false },
     ],
     programId: PROGRAM_ID_PUBKEY,
     data,
