@@ -313,10 +313,10 @@ export default function CombatScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-crypt-bg" style={{ minHeight: '100%' }}>
+    <SafeAreaView className="flex-1 bg-crypt-bg" style={{ display: 'flex', flexDirection: 'column' }}>
       <Animated.View 
         className="flex-1 flex-col"
-        style={{ transform: [{ translateX: shakeAnim }], flex: 1 }}
+        style={{ transform: [{ translateX: shakeAnim }], display: 'flex', flexDirection: 'column', flex: 1 }}
       >
         {/* Header */}
         <View className="flex-row items-center justify-between px-3 py-2 border-b border-amber/30">
@@ -330,7 +330,7 @@ export default function CombatScreen() {
         {/* Game Menu */}
         <GameMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
 
-        <ScrollView className="flex-1" contentContainerClassName="p-4">
+        <ScrollView className="flex-1 flex-shrink" contentContainerClassName="p-4" style={{ flexGrow: 1, flexShrink: 1 }}>
         {/* Enemy Card */}
         <View className="bg-crypt-surface border border-crypt-border p-4 mb-4">
           <View className="flex-row items-center gap-3 mb-3">
@@ -438,7 +438,7 @@ export default function CombatScreen() {
       </ScrollView>
 
       {/* Footer - Player Stats (sticky bottom) */}
-      <View className="border-t border-crypt-border p-3 bg-crypt-bg" style={{ flexShrink: 0 }}>
+      <View className="border-t border-crypt-border p-3 bg-crypt-bg" style={{ flexShrink: 0, flexGrow: 0 }}>
         <View className="flex-row items-center justify-between mb-3">
           <View className="flex-row items-center gap-2">
             <Text className="text-blood">♥</Text>
