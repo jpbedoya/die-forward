@@ -11,9 +11,11 @@ let setAudioModeAsync: any = null;
 async function loadAudioModule() {
   if (AudioModule) return;
   try {
+    console.log('[Audio] Loading expo-audio module...');
     const mod = await import('expo-audio');
     AudioModule = (mod as any).default || mod;
     setAudioModeAsync = mod.setAudioModeAsync;
+    console.log('[Audio] expo-audio loaded:', !!AudioModule?.AudioPlayer);
   } catch (e) {
     console.warn('[Audio] Failed to load expo-audio:', e);
   }
@@ -166,10 +168,13 @@ class AudioManager {
       
       // On web, listen for first user interaction to unlock audio
       if (typeof window !== 'undefined') {
+        console.log('[Audio] Setting up web unlock listeners');
         const unlockAudio = () => {
+          console.log('[Audio] User interaction detected - unlocking audio');
           this.unlocked = true;
           // Play pending ambient if any
           if (this.pendingAmbient && this.enabled) {
+            console.log('[Audio] Playing pending ambient:', this.pendingAmbient);
             this.playAmbient(this.pendingAmbient);
             this.pendingAmbient = null;
           }
@@ -184,6 +189,7 @@ class AudioManager {
         window.addEventListener('keydown', unlockAudio, { once: true });
       } else {
         // Native apps don't need unlock
+        console.log('[Audio] Native platform - no unlock needed');
         this.unlocked = true;
       }
     } catch (e) {
@@ -192,9 +198,19 @@ class AudioManager {
   }
 
   async playSFX(id: SoundId) {
-    if (!this.enabled) return;
-    if (!this.unlocked) return;
-    if (!AudioModule?.AudioPlayer) return;
+    console.log('[Audio] playSFX called:', id, { enabled: this.enabled, unlocked: this.unlocked, hasModule: !!AudioModule?.AudioPlayer });
+    if (!this.enabled) {
+      console.log('[Audio] SFX skipped - disabled');
+      return;
+    }
+    if (!this.unlocked) {
+      console.log('[Audio] SFX skipped - not unlocked');
+      return;
+    }
+    if (!AudioModule?.AudioPlayer) {
+      console.log('[Audio] SFX skipped - no AudioPlayer');
+      return;
+    }
     
     try {
       // Create a new player for this SFX
