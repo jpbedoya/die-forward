@@ -251,7 +251,7 @@ export default function AudioTestPage() {
                 >
                   <div className="flex-1">
                     <div className="text-[var(--text-primary)] text-sm">{preset.name}</div>
-                    <div className="text-[var(--text-dim)] text-[10px] mt-0.5 truncate max-w-[200px]">
+                    <div className="text-[var(--text-dim)] text-[10px] mt-0.5">
                       {preset.prompt}
                     </div>
                   </div>
