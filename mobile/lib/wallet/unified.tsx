@@ -209,65 +209,76 @@ function WebWalletConsumer({ children }: { children: ReactNode }) {
   );
 }
 
-// Mobile WEB implementation - tells user to open in wallet app browser
+// Mobile WEB implementation using MWA deep links
 function MobileWalletProvider({ children }: { children: ReactNode }) {
   const [connected, setConnected] = useState(false);
   const [connecting, setConnecting] = useState(false);
   const [address, setAddress] = useState<Address | null>(null);
+  const [authToken, setAuthToken] = useState<string | null>(null);
   const [balance, setBalance] = useState<number | null>(null);
   
-  // Check if we're inside a wallet app's browser (Phantom injects solana object)
-  const isInWalletBrowser = typeof window !== 'undefined' && 
-    ((window as any).solana || (window as any).phantom?.solana);
-  
-  // If in wallet browser, try to connect via injected provider
+  // Restore wallet state from storage on mount (for page refresh after returning from wallet)
   useEffect(() => {
-    if (isInWalletBrowser) {
-      const provider = (window as any).phantom?.solana || (window as any).solana;
-      if (provider?.publicKey) {
-        const addr = provider.publicKey.toBase58() as Address;
-        setAddress(addr);
-        setConnected(true);
-        // Fetch balance
-        getMobileBalance(addr).then(setBalance).catch(console.warn);
+    if (typeof localStorage !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('mwa-wallet-state');
+        if (saved) {
+          const { address: savedAddr, authToken: savedToken } = JSON.parse(saved);
+          if (savedAddr && savedToken) {
+            console.log('[MWA] Restoring wallet from storage:', savedAddr);
+            setAddress(savedAddr);
+            setAuthToken(savedToken);
+            setConnected(true);
+            // Fetch balance
+            getMobileBalance(savedAddr).then(setBalance).catch(console.warn);
+          }
+        }
+      } catch (e) {
+        console.warn('[MWA] Failed to restore wallet state:', e);
       }
     }
-  }, [isInWalletBrowser]);
+  }, []);
   
   const connect = useCallback(async (): Promise<Address | null> => {
-    console.log('[MobileWeb] Starting connect...');
+    console.log('[MWA] Starting connect via transact()...');
     setConnecting(true);
-    
     try {
-      // Check if we're in a wallet's in-app browser
-      const provider = (window as any).phantom?.solana || (window as any).solana;
+      const result = await mobileConnect();
+      console.log('[MWA] Connect result:', result);
       
-      if (provider) {
-        // We're in a wallet browser - use injected provider
-        console.log('[MobileWeb] Found injected provider');
-        const resp = await provider.connect();
-        const addr = resp.publicKey.toBase58() as Address;
-        setAddress(addr);
+      if (result?.address) {
+        setAddress(result.address);
+        setAuthToken(result.authToken);
         setConnected(true);
         
-        // Fetch balance
-        const bal = await getMobileBalance(addr);
-        setBalance(bal);
+        // Save to storage for persistence when returning from wallet
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('mwa-wallet-state', JSON.stringify({
+            address: result.address,
+            authToken: result.authToken,
+          }));
+        }
         
-        return addr;
+        // Fetch initial balance
+        try {
+          const bal = await getMobileBalance(result.address);
+          setBalance(bal);
+          console.log('[MWA] Balance:', bal);
+        } catch (balErr) {
+          console.warn('[MWA] Failed to fetch balance:', balErr);
+        }
+        
+        return result.address;
       } else {
-        // Not in wallet browser - open Phantom deep link
-        const currentUrl = encodeURIComponent(window.location.href);
-        const phantomUrl = `https://phantom.app/ul/browse/${currentUrl}`;
-        
-        // Show alert then redirect
-        alert('Opening in Phantom wallet browser...\n\nIf you don\'t have Phantom installed, please install it first.');
-        window.location.href = phantomUrl;
-        
+        console.warn('[MWA] No address in result');
         return null;
       }
     } catch (e: any) {
-      console.error('[MobileWeb] Connect failed:', e?.message || e);
+      console.error('[MWA] Connect failed:', e?.message || e);
+      // Check if it's a "no wallet found" type error
+      if (e?.message?.includes('No compatible wallet') || e?.message?.includes('no MWA')) {
+        throw new Error('No Solana wallet found. Install Phantom or Solflare on your device.');
+      }
       throw new Error(e?.message || 'Wallet connection failed');
     } finally {
       setConnecting(false);
@@ -275,58 +286,25 @@ function MobileWalletProvider({ children }: { children: ReactNode }) {
   }, []);
   
   const disconnect = useCallback(async () => {
-    const provider = (window as any).phantom?.solana || (window as any).solana;
-    if (provider?.disconnect) {
-      await provider.disconnect();
-    }
     setAddress(null);
+    setAuthToken(null);
     setConnected(false);
     setBalance(null);
+    // Clear storage
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem('mwa-wallet-state');
+    }
   }, []);
   
   const sendSOL = useCallback(async (to: Address, amount: number): Promise<string> => {
-    if (!address) throw new Error('Wallet not connected');
-    
-    const provider = (window as any).phantom?.solana || (window as any).solana;
-    if (!provider) throw new Error('Wallet provider not found');
-    
-    // Import web3.js dynamically
-    const { Transaction, SystemProgram, PublicKey, LAMPORTS_PER_SOL } = await import('@solana/web3.js');
-    
-    const tx = new Transaction().add(
-      SystemProgram.transfer({
-        fromPubkey: new PublicKey(address),
-        toPubkey: new PublicKey(to),
-        lamports: Math.floor(amount * LAMPORTS_PER_SOL),
-      })
-    );
-    
-    const { blockhash } = await mobileConnection.getLatestBlockhash();
-    tx.recentBlockhash = blockhash;
-    tx.feePayer = new PublicKey(address);
-    
-    const { signature } = await provider.signAndSendTransaction(tx);
-    return signature;
-  }, [address]);
+    if (!authToken || !address) throw new Error('Wallet not connected');
+    return await mobileSendSOL(address, to, amount, authToken);
+  }, [authToken, address]);
   
   const signAndSendTransaction = useCallback(async (transaction: any): Promise<string> => {
-    if (!address) throw new Error('Wallet not connected');
-    
-    const provider = (window as any).phantom?.solana || (window as any).solana;
-    if (!provider) throw new Error('Wallet provider not found');
-    
-    const { PublicKey } = await import('@solana/web3.js');
-    
-    // Ensure fee payer and blockhash
-    if (!transaction.recentBlockhash) {
-      const { blockhash } = await mobileConnection.getLatestBlockhash();
-      transaction.recentBlockhash = blockhash;
-    }
-    transaction.feePayer = new PublicKey(address);
-    
-    const { signature } = await provider.signAndSendTransaction(transaction);
-    return signature;
-  }, [address]);
+    if (!authToken || !address) throw new Error('Wallet not connected');
+    return await mobileSignAndSend(transaction, authToken);
+  }, [authToken, address]);
   
   const refreshBalance = useCallback(async () => {
     if (address) {
