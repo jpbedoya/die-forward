@@ -1,17 +1,20 @@
 // Audio manager for Die Forward (React Native / Expo)
-// Uses expo-audio for SFX and ambient loops
+// Uses expo-audio for native, Web Audio API for browser
 
 import { useEffect, useState, useCallback } from 'react';
+import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Dynamically import expo-audio to avoid issues on web
+// Native audio module (expo-audio) - only loaded on native platforms
 let AudioModule: any = null;
 let setAudioModeAsync: any = null;
 
-async function loadAudioModule() {
+async function loadNativeAudioModule() {
+  if (Platform.OS === 'web') return; // Skip on web
   if (AudioModule) return;
+  
   try {
-    console.log('[Audio] Loading expo-audio module...');
+    console.log('[Audio] Loading expo-audio module (native)...');
     const mod = await import('expo-audio');
     AudioModule = (mod as any).default || mod;
     setAudioModeAsync = mod.setAudioModeAsync;
@@ -135,8 +138,12 @@ const SOUND_PATHS: Record<SoundId, string> = {
   'error-buzz': `${AUDIO_BASE_URL}/error-buzz.mp3`,
 };
 
-class AudioManager {
-  private currentAmbient: any = null; // AudioPlayer instance
+// =============================================================================
+// Web Audio Implementation (uses HTML5 Audio API)
+// =============================================================================
+
+class WebAudioManager {
+  private currentAmbient: HTMLAudioElement | null = null;
   private currentAmbientId: SoundId | null = null;
   private enabled: boolean = true;
   private sfxVolume: number = 0.7;
@@ -144,141 +151,118 @@ class AudioManager {
   private initialized: boolean = false;
   private unlocked: boolean = false;
   private pendingAmbient: SoundId | null = null;
+  private audioCache: Map<string, HTMLAudioElement> = new Map();
 
   async init() {
     if (this.initialized) return;
     
     try {
-      // Load audio module
-      await loadAudioModule();
-      
-      // Configure audio mode for background playback
-      if (setAudioModeAsync) {
-        await setAudioModeAsync({
-          playsInSilentModeIOS: true,
-          shouldPlayInBackground: false,
-          shouldReduceOtherAudioVolume: true,
-        });
-      }
-      
       // Load saved preference
       const saved = await AsyncStorage.getItem('audio-enabled');
       this.enabled = saved !== 'false';
       this.initialized = true;
       
-      // On web, listen for first user interaction to unlock audio
-      if (typeof window !== 'undefined') {
-        console.log('[Audio] Setting up web unlock listeners');
-        const unlockAudio = () => {
-          console.log('[Audio] User interaction detected - unlocking audio');
-          this.unlocked = true;
-          // Play pending ambient if any
-          if (this.pendingAmbient && this.enabled) {
-            console.log('[Audio] Playing pending ambient:', this.pendingAmbient);
-            this.playAmbient(this.pendingAmbient);
-            this.pendingAmbient = null;
-          }
-          // Remove listeners after unlock
-          window.removeEventListener('click', unlockAudio);
-          window.removeEventListener('touchstart', unlockAudio);
-          window.removeEventListener('keydown', unlockAudio);
-        };
-        
-        window.addEventListener('click', unlockAudio, { once: true });
-        window.addEventListener('touchstart', unlockAudio, { once: true });
-        window.addEventListener('keydown', unlockAudio, { once: true });
-      } else {
-        // Native apps don't need unlock
-        console.log('[Audio] Native platform - no unlock needed');
+      console.log('[Audio/Web] Initialized, setting up unlock listeners');
+      
+      // Listen for first user interaction to unlock audio
+      const unlockAudio = () => {
+        console.log('[Audio/Web] User interaction detected - unlocking audio');
         this.unlocked = true;
-      }
+        
+        // Play a silent audio to fully unlock iOS Safari
+        const silentAudio = new Audio();
+        silentAudio.volume = 0;
+        silentAudio.play().catch(() => {});
+        
+        // Play pending ambient if any
+        if (this.pendingAmbient && this.enabled) {
+          console.log('[Audio/Web] Playing pending ambient:', this.pendingAmbient);
+          this.playAmbient(this.pendingAmbient);
+          this.pendingAmbient = null;
+        }
+        
+        // Remove listeners after unlock
+        window.removeEventListener('click', unlockAudio);
+        window.removeEventListener('touchstart', unlockAudio);
+        window.removeEventListener('keydown', unlockAudio);
+      };
+      
+      window.addEventListener('click', unlockAudio, { once: true });
+      window.addEventListener('touchstart', unlockAudio, { once: true });
+      window.addEventListener('keydown', unlockAudio, { once: true });
     } catch (e) {
-      console.warn('Failed to initialize audio:', e);
+      console.warn('[Audio/Web] Failed to initialize:', e);
     }
   }
 
+  private getOrCreateAudio(url: string): HTMLAudioElement {
+    let audio = this.audioCache.get(url);
+    if (!audio) {
+      audio = new Audio(url);
+      audio.preload = 'auto';
+      this.audioCache.set(url, audio);
+    }
+    return audio;
+  }
+
   async playSFX(id: SoundId) {
-    console.log('[Audio] playSFX called:', id, { enabled: this.enabled, unlocked: this.unlocked, hasModule: !!AudioModule?.AudioPlayer });
-    if (!this.enabled) {
-      console.log('[Audio] SFX skipped - disabled');
-      return;
-    }
-    if (!this.unlocked) {
-      console.log('[Audio] SFX skipped - not unlocked');
-      return;
-    }
-    if (!AudioModule?.AudioPlayer) {
-      console.log('[Audio] SFX skipped - no AudioPlayer');
-      return;
-    }
+    console.log('[Audio/Web] playSFX:', id, { enabled: this.enabled, unlocked: this.unlocked });
+    
+    if (!this.enabled || !this.unlocked) return;
     
     try {
-      // Create a new player for this SFX
-      const player = new AudioModule.AudioPlayer(
-        { uri: SOUND_PATHS[id] },
-        100, // updateInterval
-        false // keepAudioSessionActive
-      );
+      // Create a new Audio element for SFX (allows overlapping sounds)
+      const audio = new Audio(SOUND_PATHS[id]);
+      audio.volume = this.sfxVolume;
       
-      player.volume = this.sfxVolume;
-      
-      // Listen for completion to clean up
-      player.addListener('playbackStatusUpdate', (status: any) => {
-        if (status.didJustFinish || (!status.playing && status.currentTime >= status.duration - 0.1)) {
-          player.remove();
-        }
+      audio.play().catch(e => {
+        console.warn('[Audio/Web] SFX play failed:', id, e);
       });
       
-      player.play();
+      // Clean up after playback
+      audio.onended = () => {
+        audio.remove?.();
+      };
     } catch (e) {
-      console.warn('Failed to play SFX:', id, e);
+      console.warn('[Audio/Web] Failed to play SFX:', id, e);
     }
   }
 
   async playAmbient(id: SoundId) {
-    if (!this.enabled) {
-      console.log('[Audio] Ambient skipped - audio disabled');
-      return;
-    }
+    console.log('[Audio/Web] playAmbient:', id, { enabled: this.enabled, unlocked: this.unlocked });
+    
+    if (!this.enabled) return;
     
     if (!this.unlocked) {
-      console.log('[Audio] Ambient queued (waiting for unlock):', id);
+      console.log('[Audio/Web] Ambient queued (waiting for unlock):', id);
       this.pendingAmbient = id;
       return;
     }
     
     if (this.currentAmbientId === id) {
-      console.log('[Audio] Ambient already playing:', id);
-      return;
-    }
-    
-    if (!AudioModule?.AudioPlayer) {
-      console.warn('[Audio] AudioModule not loaded');
+      console.log('[Audio/Web] Ambient already playing:', id);
       return;
     }
     
     try {
-      console.log('[Audio] Playing ambient:', id);
       // Stop current ambient
       await this.stopAmbient();
       
-      // Create and configure new ambient player
-      const player = new AudioModule.AudioPlayer(
-        { uri: SOUND_PATHS[id] },
-        100,
-        false
-      );
+      // Create and configure new ambient
+      const audio = new Audio(SOUND_PATHS[id]);
+      audio.volume = this.ambientVolume;
+      audio.loop = true;
       
-      player.volume = this.ambientVolume;
-      player.loop = true;
-      
-      this.currentAmbient = player;
+      this.currentAmbient = audio;
       this.currentAmbientId = id;
       
-      player.play();
-      console.log('[Audio] Ambient started:', id);
+      audio.play().catch(e => {
+        console.warn('[Audio/Web] Ambient play failed:', id, e);
+      });
+      
+      console.log('[Audio/Web] Ambient started:', id);
     } catch (e) {
-      console.warn('[Audio] Failed to play ambient:', id, e);
+      console.warn('[Audio/Web] Failed to play ambient:', id, e);
     }
   }
 
@@ -286,9 +270,9 @@ class AudioManager {
     if (this.currentAmbient) {
       try {
         this.currentAmbient.pause();
-        this.currentAmbient.remove();
+        this.currentAmbient.currentTime = 0;
       } catch (e) {
-        // Ignore errors
+        // Ignore
       }
       this.currentAmbient = null;
       this.currentAmbientId = null;
@@ -326,7 +310,7 @@ class AudioManager {
   async unlock() {
     if (this.unlocked) return;
     this.unlocked = true;
-    console.log('[Audio] Unlocked by user interaction');
+    console.log('[Audio/Web] Unlocked by user interaction');
     
     if (this.pendingAmbient && this.enabled) {
       const pending = this.pendingAmbient;
@@ -338,12 +322,177 @@ class AudioManager {
   }
 }
 
-// Singleton instance
-let audioManager: AudioManager | null = null;
+// =============================================================================
+// Native Audio Implementation (uses expo-audio)
+// =============================================================================
 
-export function getAudioManager(): AudioManager {
+class NativeAudioManager {
+  private currentAmbient: any = null; // AudioPlayer instance
+  private currentAmbientId: SoundId | null = null;
+  private enabled: boolean = true;
+  private sfxVolume: number = 0.7;
+  private ambientVolume: number = 0.3;
+  private initialized: boolean = false;
+  private unlocked: boolean = true; // Native doesn't need unlock
+
+  async init() {
+    if (this.initialized) return;
+    
+    try {
+      // Load audio module
+      await loadNativeAudioModule();
+      
+      // Configure audio mode for background playback
+      if (setAudioModeAsync) {
+        await setAudioModeAsync({
+          playsInSilentModeIOS: true,
+          shouldPlayInBackground: false,
+          shouldReduceOtherAudioVolume: true,
+        });
+      }
+      
+      // Load saved preference
+      const saved = await AsyncStorage.getItem('audio-enabled');
+      this.enabled = saved !== 'false';
+      this.initialized = true;
+      
+      console.log('[Audio/Native] Initialized');
+    } catch (e) {
+      console.warn('[Audio/Native] Failed to initialize:', e);
+    }
+  }
+
+  async playSFX(id: SoundId) {
+    console.log('[Audio/Native] playSFX:', id, { enabled: this.enabled, hasModule: !!AudioModule?.AudioPlayer });
+    
+    if (!this.enabled) return;
+    if (!AudioModule?.AudioPlayer) return;
+    
+    try {
+      const player = new AudioModule.AudioPlayer(
+        { uri: SOUND_PATHS[id] },
+        100,
+        false
+      );
+      
+      player.volume = this.sfxVolume;
+      
+      player.addListener('playbackStatusUpdate', (status: any) => {
+        if (status.didJustFinish || (!status.playing && status.currentTime >= status.duration - 0.1)) {
+          player.remove();
+        }
+      });
+      
+      player.play();
+    } catch (e) {
+      console.warn('[Audio/Native] Failed to play SFX:', id, e);
+    }
+  }
+
+  async playAmbient(id: SoundId) {
+    console.log('[Audio/Native] playAmbient:', id, { enabled: this.enabled, hasModule: !!AudioModule?.AudioPlayer });
+    
+    if (!this.enabled) return;
+    if (this.currentAmbientId === id) return;
+    if (!AudioModule?.AudioPlayer) return;
+    
+    try {
+      await this.stopAmbient();
+      
+      const player = new AudioModule.AudioPlayer(
+        { uri: SOUND_PATHS[id] },
+        100,
+        false
+      );
+      
+      player.volume = this.ambientVolume;
+      player.loop = true;
+      
+      this.currentAmbient = player;
+      this.currentAmbientId = id;
+      
+      player.play();
+      console.log('[Audio/Native] Ambient started:', id);
+    } catch (e) {
+      console.warn('[Audio/Native] Failed to play ambient:', id, e);
+    }
+  }
+
+  async stopAmbient() {
+    if (this.currentAmbient) {
+      try {
+        this.currentAmbient.pause();
+        this.currentAmbient.remove();
+      } catch (e) {
+        // Ignore
+      }
+      this.currentAmbient = null;
+      this.currentAmbientId = null;
+    }
+  }
+
+  async toggle(): Promise<boolean> {
+    this.enabled = !this.enabled;
+    await AsyncStorage.setItem('audio-enabled', String(this.enabled));
+    
+    if (!this.enabled) {
+      await this.stopAmbient();
+    }
+    
+    return this.enabled;
+  }
+
+  isEnabled(): boolean {
+    return this.enabled;
+  }
+
+  async setEnabled(enabled: boolean) {
+    this.enabled = enabled;
+    await AsyncStorage.setItem('audio-enabled', String(this.enabled));
+    
+    if (!enabled) {
+      await this.stopAmbient();
+    }
+  }
+
+  isUnlocked(): boolean {
+    return this.unlocked;
+  }
+
+  async unlock() {
+    // No-op for native
+    this.unlocked = true;
+  }
+}
+
+// =============================================================================
+// Unified Interface
+// =============================================================================
+
+interface IAudioManager {
+  init(): Promise<void>;
+  playSFX(id: SoundId): Promise<void>;
+  playAmbient(id: SoundId): Promise<void>;
+  stopAmbient(): Promise<void>;
+  toggle(): Promise<boolean>;
+  isEnabled(): boolean;
+  setEnabled(enabled: boolean): Promise<void>;
+  isUnlocked(): boolean;
+  unlock(): Promise<void>;
+}
+
+// Singleton instance - platform-appropriate
+let audioManager: IAudioManager | null = null;
+
+export function getAudioManager(): IAudioManager {
   if (!audioManager) {
-    audioManager = new AudioManager();
+    if (Platform.OS === 'web') {
+      console.log('[Audio] Creating WebAudioManager');
+      audioManager = new WebAudioManager();
+    } else {
+      console.log('[Audio] Creating NativeAudioManager');
+      audioManager = new NativeAudioManager();
+    }
   }
   return audioManager;
 }
