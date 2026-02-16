@@ -31,7 +31,7 @@ const presets: SoundPreset[] = [
   { id: 'dodge-whoosh', name: 'Dodge Whoosh', prompt: 'Quick swoosh of fast movement dodging an attack, cloth and air', duration: 1, category: 'Combat' },
   { id: 'brace-impact', name: 'Brace Impact', prompt: 'Shield blocking heavy impact, metal thud with grunt', duration: 1, category: 'Combat' },
   { id: 'flee-run', name: 'Flee Run', prompt: 'Frantic running footsteps on stone, splashing through water', duration: 2, category: 'Combat' },
-  { id: 'flee-fail', name: 'Flee Fail', prompt: 'Stumbling fall sound, person tripping with grunt of pain', duration: 1.5, category: 'Combat' },
+  { id: 'flee-fail', name: 'Flee Fail', prompt: 'Body stumbling and falling on stone floor, impact thud, no voice no scream, physical fall sound only', duration: 1.5, category: 'Combat' },
   { id: 'enemy-growl', name: 'Enemy Growl', prompt: 'Menacing creature growl, undead monster preparing to attack', duration: 1.5, category: 'Combat' },
   { id: 'critical-hit', name: 'Critical Hit', prompt: 'Powerful sword slash impact, bone crunch, devastating blow', duration: 1, category: 'Combat' },
   { id: 'parry-clang', name: 'Parry Clang', prompt: 'Metal sword parry clang, sparks flying, defensive block', duration: 1, category: 'Combat' },
@@ -259,7 +259,17 @@ export default function AudioTestPage() {
                   <div className="flex items-center gap-2 ml-4">
                     <span className="text-[var(--text-dim)] text-[10px]">{preset.duration}s</span>
                     
-                    {sound ? (
+                    {/* Always show Generate/Regenerate button */}
+                    <button
+                      onClick={() => generateSound(preset)}
+                      disabled={isGenerating}
+                      className="px-3 py-1.5 text-xs bg-[var(--amber-dim)]/30 border border-[var(--amber)] text-[var(--amber-bright)] disabled:opacity-50"
+                    >
+                      {isGenerating ? '◈ ...' : sound ? '⚡ Regen' : '⚡ Generate'}
+                    </button>
+                    
+                    {/* Show Play/Stop if file exists */}
+                    {sound && (
                       <>
                         <button
                           onClick={() => isPlaying ? stopSound() : playSound(sound.path, sound.id, preset.category === 'Ambient')}
@@ -275,14 +285,6 @@ export default function AudioTestPage() {
                           {Math.round(sound.size / 1024)}KB
                         </span>
                       </>
-                    ) : (
-                      <button
-                        onClick={() => generateSound(preset)}
-                        disabled={isGenerating}
-                        className="px-3 py-1.5 text-xs bg-[var(--amber-dim)]/30 border border-[var(--amber)] text-[var(--amber-bright)] disabled:opacity-50"
-                      >
-                        {isGenerating ? '◈ Generating...' : '⚡ Generate'}
-                      </button>
                     )}
                   </div>
                 </div>
