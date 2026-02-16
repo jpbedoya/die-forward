@@ -10,42 +10,34 @@
   <title>Die Forward</title>
   <style>
     /* Prevent overscroll and ensure full height */
-    html, body, #root {
+    html, body {
       height: 100%;
       width: 100%;
       margin: 0;
       padding: 0;
       overflow: hidden;
-      background-color: #0c0a09;
+      background-color: #0d0d0d;
       /* Prevent pull-to-refresh and overscroll */
       overscroll-behavior: none;
       touch-action: manipulation;
     }
-    /* Fix for mobile viewport height issues */
-    body {
-      min-height: 100dvh;
+    /* Fix for mobile viewport height issues - use 100svh to include safe areas */
+    html {
+      min-height: 100svh;
       min-height: -webkit-fill-available;
     }
-    html {
-      height: -webkit-fill-available;
-    }
-    /* Safe area insets for notched devices */
-    #root {
-      /* iOS safe area */
+    body {
+      min-height: 100svh;
+      min-height: -webkit-fill-available;
+      /* Extend background into safe area */
       padding-bottom: env(safe-area-inset-bottom, 0px);
       box-sizing: border-box;
     }
-    /* Android gesture bar fallback - add extra padding on mobile */
-    @supports not (padding-bottom: env(safe-area-inset-bottom)) {
-      #root {
-        padding-bottom: 20px;
-      }
-    }
-    /* Force safe area on all mobile */
-    @media (max-width: 768px) and (hover: none) {
-      #root {
-        padding-bottom: max(env(safe-area-inset-bottom, 0px), 16px);
-      }
+    #root {
+      height: 100%;
+      width: 100%;
+      background-color: #0d0d0d;
+      overflow: hidden;
     }
   </style>
 </head>

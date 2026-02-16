@@ -7,14 +7,53 @@ import 'react-native-url-polyfill/auto';
 // NativeWind CSS
 import '../global.css';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, Platform } from 'react-native';
 import { GameProvider } from '../lib/GameContext';
 import { UnifiedWalletProvider } from '../lib/wallet/unified';
 import { WebFrame } from '../components/WebFrame';
+
+// Inject critical CSS for web safe areas
+function useWebSafeAreaCSS() {
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    
+    const style = document.createElement('style');
+    style.id = 'safe-area-fix';
+    style.textContent = `
+      html, body {
+        background-color: #0d0d0d !important;
+        margin: 0;
+        padding: 0;
+        min-height: 100%;
+        min-height: 100dvh;
+      }
+      body {
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        box-sizing: border-box;
+      }
+      #root {
+        background-color: #0d0d0d !important;
+        min-height: 100%;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    // Also set meta viewport for safe area
+    let viewport = document.querySelector('meta[name="viewport"]');
+    if (viewport) {
+      viewport.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover');
+    }
+    
+    return () => {
+      const existing = document.getElementById('safe-area-fix');
+      if (existing) existing.remove();
+    };
+  }, []);
+}
 
 // Error boundary to catch and display crashes
 class ErrorBoundary extends React.Component<
@@ -57,9 +96,11 @@ class ErrorBoundary extends React.Component<
 }
 
 export default function RootLayout() {
+  useWebSafeAreaCSS();
+  
   return (
     <ErrorBoundary>
-      <SafeAreaProvider style={{ backgroundColor: '#0c0a09' }}>
+      <SafeAreaProvider style={{ backgroundColor: '#0d0d0d' }}>
         <WebFrame>
           <UnifiedWalletProvider>
             <GameProvider>
