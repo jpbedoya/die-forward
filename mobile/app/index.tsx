@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { View, Text, Pressable, Animated, Platform, ScrollView, Modal } from 'react-native';
-import { Link } from 'expo-router';
+import { router } from 'expo-router';
+import { useAudio } from '../lib/audio';
 
 // Animated gradient button decoration - constantly flows inward
 function AnimatedDescendButton() {
+  const { playSFX } = useAudio();
   const [frame, setFrame] = useState(0);
   
   // Gradient frames that continuously flow toward center (no reverse)
@@ -39,21 +41,26 @@ function AnimatedDescendButton() {
     return () => clearInterval(interval);
   }, []);
   
+  const handleDescend = () => {
+    playSFX('depth-descend');
+    router.push('/stake');
+  };
+
   return (
-    <Link href="/stake" asChild>
-      <Pressable className="flex-row items-center py-3 active:opacity-80">
-        <Text className="text-amber font-mono text-sm">{leftFrames[frame]}</Text>
-        <Text className="text-amber text-lg font-bold font-mono tracking-widest mx-2">
-          DESCEND
-        </Text>
-        <Text className="text-amber font-mono text-sm">{rightFrames[frame]}</Text>
-      </Pressable>
-    </Link>
+    <Pressable 
+      className="flex-row items-center py-3 active:opacity-80"
+      onPress={handleDescend}
+    >
+      <Text className="text-amber font-mono text-sm">{leftFrames[frame]}</Text>
+      <Text className="text-amber text-lg font-bold font-mono tracking-widest mx-2">
+        DESCEND
+      </Text>
+      <Text className="text-amber font-mono text-sm">{rightFrames[frame]}</Text>
+    </Pressable>
   );
 }
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { usePoolStats, useDeathFeed, useLeaderboard } from '../lib/instant';
-import { useAudio } from '../lib/audio';
 import { DieForwardLogo } from '../components/DieForwardLogo';
 import { AudioToggle } from '../components/AudioToggle';
 
