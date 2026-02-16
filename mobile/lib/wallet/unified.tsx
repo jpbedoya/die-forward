@@ -30,11 +30,21 @@ let Transaction: any;
 let SystemProgram: any;
 let LAMPORTS_PER_SOL: any;
 
+// Native mobile MWA (transact protocol)
 let mobileConnect: any;
 let mobileSignAndSend: any;
 let mobileSendSOL: any;
 let getMobileBalance: any;
 let mobileConnection: any;
+
+// Mobile web adapter (uses OS wallet picker)
+let mobileWebConnect: any;
+let mobileWebDisconnect: any;
+let mobileWebSignAndSend: any;
+let getMobileWebBalance: any;
+let mobileWebConnection: any;
+let isMobileWebConnected: any;
+let getMobileWebAddress: any;
 
 // Additional hooks for web
 let useSolTransfer: any;
@@ -60,14 +70,26 @@ if (Platform.OS === 'web' && !isMobileWeb) {
   LAMPORTS_PER_SOL = web3.LAMPORTS_PER_SOL;
 }
 
-if (useMWA) {
-  // Native or Mobile Web: use MWA boundary
+// Native mobile: use raw transact protocol
+if (Platform.OS === 'ios' || Platform.OS === 'android') {
   const mwa = require('./mobile-adapter');
   mobileConnect = mwa.mobileConnect;
   mobileSignAndSend = mwa.mobileSignAndSend;
   mobileSendSOL = mwa.mobileSendSOL;
   getMobileBalance = mwa.getMobileBalance;
   mobileConnection = mwa.mobileConnection;
+}
+
+// Mobile web: use wallet-adapter-mobile (proper OS wallet picker)
+if (isMobileWeb) {
+  const mwa = require('./mobile-web-adapter');
+  mobileWebConnect = mwa.mobileWebConnect;
+  mobileWebDisconnect = mwa.mobileWebDisconnect;
+  mobileWebSignAndSend = mwa.mobileWebSignAndSend;
+  getMobileWebBalance = mwa.getMobileWebBalance;
+  mobileWebConnection = mwa.mobileWebConnection;
+  isMobileWebConnected = mwa.isMobileWebConnected;
+  getMobileWebAddress = mwa.getMobileWebAddress;
 }
 
 // Unified wallet context interface
@@ -209,76 +231,53 @@ function WebWalletConsumer({ children }: { children: ReactNode }) {
   );
 }
 
-// Mobile WEB implementation using MWA deep links
+// Mobile WEB implementation using @solana-mobile/wallet-adapter-mobile
+// This uses the proper Android intent system for wallet selection
 function MobileWalletProvider({ children }: { children: ReactNode }) {
   const [connected, setConnected] = useState(false);
   const [connecting, setConnecting] = useState(false);
   const [address, setAddress] = useState<Address | null>(null);
-  const [authToken, setAuthToken] = useState<string | null>(null);
   const [balance, setBalance] = useState<number | null>(null);
   
-  // Restore wallet state from storage on mount (for page refresh after returning from wallet)
+  // Check connection state on mount (adapter may have cached auth)
   useEffect(() => {
-    if (typeof localStorage !== 'undefined') {
-      try {
-        const saved = localStorage.getItem('mwa-wallet-state');
-        if (saved) {
-          const { address: savedAddr, authToken: savedToken } = JSON.parse(saved);
-          if (savedAddr && savedToken) {
-            console.log('[MWA] Restoring wallet from storage:', savedAddr);
-            setAddress(savedAddr);
-            setAuthToken(savedToken);
-            setConnected(true);
-            // Fetch balance
-            getMobileBalance(savedAddr).then(setBalance).catch(console.warn);
-          }
-        }
-      } catch (e) {
-        console.warn('[MWA] Failed to restore wallet state:', e);
+    if (isMobileWebConnected && isMobileWebConnected()) {
+      const addr = getMobileWebAddress();
+      if (addr) {
+        setAddress(addr);
+        setConnected(true);
+        getMobileWebBalance(addr).then(setBalance).catch(console.warn);
       }
     }
   }, []);
   
   const connect = useCallback(async (): Promise<Address | null> => {
-    console.log('[MWA] Starting connect via transact()...');
+    console.log('[MobileWeb] Starting connect via wallet-adapter-mobile...');
     setConnecting(true);
     try {
-      const result = await mobileConnect();
-      console.log('[MWA] Connect result:', result);
+      const result = await mobileWebConnect();
+      console.log('[MobileWeb] Connect result:', result);
       
       if (result?.address) {
         setAddress(result.address);
-        setAuthToken(result.authToken);
         setConnected(true);
-        
-        // Save to storage for persistence when returning from wallet
-        if (typeof localStorage !== 'undefined') {
-          localStorage.setItem('mwa-wallet-state', JSON.stringify({
-            address: result.address,
-            authToken: result.authToken,
-          }));
-        }
         
         // Fetch initial balance
         try {
-          const bal = await getMobileBalance(result.address);
+          const bal = await getMobileWebBalance(result.address);
           setBalance(bal);
-          console.log('[MWA] Balance:', bal);
+          console.log('[MobileWeb] Balance:', bal);
         } catch (balErr) {
-          console.warn('[MWA] Failed to fetch balance:', balErr);
+          console.warn('[MobileWeb] Failed to fetch balance:', balErr);
         }
         
         return result.address;
       } else {
-        console.warn('[MWA] No address in result');
+        console.warn('[MobileWeb] No address in result');
         return null;
       }
     } catch (e: any) {
-      console.error('[MWA] Connect failed:', e?.message || e);
-      // Check if it's a "no wallet found" type error
-      if (e?.message?.includes('No compatible wallet') || e?.message?.includes('no MWA')) {
-        throw new Error('No Solana wallet found. Install Phantom or Solflare on your device.');
-      }
+      console.error('[MobileWeb] Connect failed:', e?.message || e);
       throw new Error(e?.message || 'Wallet connection failed');
     } finally {
       setConnecting(false);
@@ -286,29 +285,36 @@ function MobileWalletProvider({ children }: { children: ReactNode }) {
   }, []);
   
   const disconnect = useCallback(async () => {
+    await mobileWebDisconnect();
     setAddress(null);
-    setAuthToken(null);
     setConnected(false);
     setBalance(null);
-    // Clear storage
-    if (typeof localStorage !== 'undefined') {
-      localStorage.removeItem('mwa-wallet-state');
-    }
   }, []);
   
   const sendSOL = useCallback(async (to: Address, amount: number): Promise<string> => {
-    if (!authToken || !address) throw new Error('Wallet not connected');
-    return await mobileSendSOL(address, to, amount, authToken);
-  }, [authToken, address]);
+    if (!address) throw new Error('Wallet not connected');
+    
+    // Build transaction
+    const { Transaction, SystemProgram, PublicKey, LAMPORTS_PER_SOL } = await import('@solana/web3.js');
+    const tx = new Transaction().add(
+      SystemProgram.transfer({
+        fromPubkey: new PublicKey(address),
+        toPubkey: new PublicKey(to),
+        lamports: Math.floor(amount * LAMPORTS_PER_SOL),
+      })
+    );
+    
+    return await mobileWebSignAndSend(tx);
+  }, [address]);
   
   const signAndSendTransaction = useCallback(async (transaction: any): Promise<string> => {
-    if (!authToken || !address) throw new Error('Wallet not connected');
-    return await mobileSignAndSend(transaction, authToken);
-  }, [authToken, address]);
+    if (!address) throw new Error('Wallet not connected');
+    return await mobileWebSignAndSend(transaction);
+  }, [address]);
   
   const refreshBalance = useCallback(async () => {
     if (address) {
-      const bal = await getMobileBalance(address);
+      const bal = await getMobileWebBalance(address);
       setBalance(bal);
     }
   }, [address]);
