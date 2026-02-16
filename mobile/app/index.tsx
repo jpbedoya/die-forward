@@ -162,7 +162,7 @@ export default function HomeScreen() {
     <SafeAreaView className="flex-1 bg-crypt-bg" edges={['top', 'left', 'right', 'bottom']}>
       <CRTOverlay />
       
-      {/* Sound Toggle - ASCII style */}
+      {/* Sound Toggle */}
       <Pressable 
         className="absolute top-12 right-4 z-10 p-2"
         onPress={async () => {
@@ -171,9 +171,7 @@ export default function HomeScreen() {
           if (nowEnabled) playAmbient('ambient-title');
         }}
       >
-        <Text className="text-amber font-mono text-sm">
-          {audioEnabled ? '♪' : '×'}
-        </Text>
+        <Text className="text-xl">{audioEnabled ? '🔊' : '🔇'}</Text>
       </Pressable>
 
       <View className="flex-1 px-4" style={Platform.OS === 'web' ? { paddingBottom: 20 } : undefined}>
