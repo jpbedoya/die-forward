@@ -239,17 +239,77 @@ function MobileWalletProvider({ children }: { children: ReactNode }) {
   const [address, setAddress] = useState<Address | null>(null);
   const [balance, setBalance] = useState<number | null>(null);
   
-  // Check connection state on mount (adapter may have cached auth)
-  useEffect(() => {
-    if (isMobileWebConnected && isMobileWebConnected()) {
-      const addr = getMobileWebAddress();
-      if (addr) {
-        setAddress(addr);
-        setConnected(true);
-        getMobileWebBalance(addr).then(setBalance).catch(console.warn);
+  // Sync state from adapter - handles returning from wallet app
+  const syncAdapterState = useCallback(async () => {
+    const isConn = isMobileWebConnected?.() ?? false;
+    const addr = getMobileWebAddress?.() ?? null;
+    
+    console.log('[MobileWeb] Syncing state - connected:', isConn, 'address:', addr);
+    
+    if (isConn && addr) {
+      setAddress(addr);
+      setConnected(true);
+      try {
+        const bal = await getMobileWebBalance(addr);
+        setBalance(bal);
+      } catch (e) {
+        console.warn('[MobileWeb] Failed to fetch balance on sync:', e);
       }
+    } else {
+      setConnected(false);
+      setAddress(null);
     }
   }, []);
+  
+  // Check connection state on mount and listen for adapter events
+  useEffect(() => {
+    // Initial sync
+    syncAdapterState();
+    
+    // Listen for adapter events (handles returning from wallet app)
+    const adapter = require('./mobile-web-adapter').getMobileWebAdapter?.();
+    if (adapter) {
+      const onConnect = () => {
+        console.log('[MobileWeb] Adapter "connect" event fired');
+        syncAdapterState();
+      };
+      const onDisconnect = () => {
+        console.log('[MobileWeb] Adapter "disconnect" event fired');
+        setConnected(false);
+        setAddress(null);
+        setBalance(null);
+      };
+      
+      adapter.on('connect', onConnect);
+      adapter.on('disconnect', onDisconnect);
+      
+      return () => {
+        adapter.off('connect', onConnect);
+        adapter.off('disconnect', onDisconnect);
+      };
+    }
+  }, [syncAdapterState]);
+  
+  // Also sync when window regains focus (fallback for missed events)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const handleFocus = () => {
+      console.log('[MobileWeb] Window focus - syncing adapter state');
+      syncAdapterState();
+    };
+    
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        handleFocus();
+      }
+    });
+    
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [syncAdapterState]);
   
   const connect = useCallback(async (): Promise<Address | null> => {
     console.log('[MobileWeb] Starting connect via wallet-adapter-mobile...');
