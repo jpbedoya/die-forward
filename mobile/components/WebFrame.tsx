@@ -29,23 +29,34 @@ export function WebFrame({ children }: WebFrameProps) {
   );
 }
 
+// Detect mobile browser
+const isMobileWeb = typeof navigator !== 'undefined' && 
+  /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+// Use dvh for mobile (accounts for browser chrome), vh for desktop
+const viewportHeight = isMobileWeb ? '100dvh' : '100vh';
+
 const styles = StyleSheet.create({
   outer: {
     flex: 1,
-    minHeight: '100vh' as any,
-    backgroundColor: '#050505',
+    minHeight: viewportHeight as any,
+    height: viewportHeight as any,
+    maxHeight: viewportHeight as any,
+    backgroundColor: '#0d0d0d',
     alignItems: 'center',
     justifyContent: 'flex-start',
+    overflow: 'hidden' as any,
   },
   container: {
     width: '100%',
     maxWidth: 430,
-    minHeight: '100vh' as any,
+    height: '100%',
     backgroundColor: '#0d0d0d',
     position: 'relative',
-    // Shadow/glow effect
+    overflow: 'hidden' as any,
+    // Shadow/glow effect (desktop only)
     // @ts-ignore - web property
-    boxShadow: '0 0 80px rgba(245, 158, 11, 0.12)',
+    boxShadow: isMobileWeb ? 'none' : '0 0 80px rgba(245, 158, 11, 0.12)',
   },
   glowBorder: {
     position: 'absolute',
@@ -53,12 +64,13 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    borderWidth: 1,
+    borderWidth: isMobileWeb ? 0 : 1,
     borderColor: 'rgba(245, 158, 11, 0.15)',
     pointerEvents: 'none' as any,
   },
   content: {
     flex: 1,
-    minHeight: '100vh' as any,
+    height: '100%',
+    overflow: 'hidden' as any,
   },
 });
