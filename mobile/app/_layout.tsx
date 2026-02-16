@@ -59,7 +59,7 @@ class ErrorBoundary extends React.Component<
 export default function RootLayout() {
   return (
     <ErrorBoundary>
-      <SafeAreaProvider>
+      <SafeAreaProvider style={{ backgroundColor: '#0c0a09' }}>
         <WebFrame>
           <UnifiedWalletProvider>
             <GameProvider>

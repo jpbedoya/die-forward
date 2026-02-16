@@ -275,7 +275,7 @@ export default function PlayScreen() {
 
   return (
     <View style={containerStyle} className="bg-crypt-bg">
-      <SafeAreaView style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <SafeAreaView style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#0c0a09' }} edges={['top']}>
         {/* Header */}
         <View className="flex-row items-center justify-between px-3 py-2 border-b border-amber/30" style={{ flexShrink: 0 }}>
           <View className="flex-row items-center gap-2">

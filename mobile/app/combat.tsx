@@ -319,7 +319,7 @@ export default function CombatScreen() {
 
   return (
     <View style={containerStyle} className="bg-crypt-bg">
-      <SafeAreaView style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <SafeAreaView style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#0c0a09' }} edges={['top']}>
         <Animated.View 
           style={{ transform: [{ translateX: shakeAnim }], flex: 1, display: 'flex', flexDirection: 'column' }}
         >
