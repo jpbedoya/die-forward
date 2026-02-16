@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, Pressable, TextInput, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, TextInput, ScrollView, ActivityIndicator, Modal } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
@@ -17,6 +17,7 @@ export default function StakeScreen() {
   const [customStake, setCustomStake] = useState('');
   const [staking, setStaking] = useState(false);
   const [stakingMode, setStakingMode] = useState<'stake' | 'free' | null>(null);
+  const [showWalletPicker, setShowWalletPicker] = useState(false);
 
   useEffect(() => {
     playAmbient('ambient-title');
@@ -24,7 +25,27 @@ export default function StakeScreen() {
 
   const handleConnect = async () => {
     playSFX('ui-click');
-    await game.connect();
+    
+    // If multiple wallets available, show picker
+    if (game.connectors.length > 1) {
+      setShowWalletPicker(true);
+      return;
+    }
+    
+    try {
+      await game.connect();
+    } catch (err) {
+      // If MULTIPLE_WALLETS error, show picker
+      if (err instanceof Error && err.message === 'MULTIPLE_WALLETS') {
+        setShowWalletPicker(true);
+      }
+    }
+  };
+
+  const handleSelectWallet = async (connectorId: string) => {
+    playSFX('ui-click');
+    setShowWalletPicker(false);
+    await game.connectTo(connectorId);
   };
 
   const handleStake = async (demoMode = false) => {
@@ -51,15 +72,13 @@ export default function StakeScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-crypt-bg">
-      <AudioToggle ambientTrack="ambient-title" />
-      
       {/* Header */}
       <View className="flex-row items-center justify-between px-4 py-3 border-b border-crypt-border">
         <Pressable onPress={() => router.back()}>
           <Text className="text-bone-muted text-sm font-mono">← BACK</Text>
         </Pressable>
         <Text className="text-amber text-base font-mono font-bold tracking-widest">THE TOLL</Text>
-        <View className="w-[60px]" />
+        <AudioToggle ambientTrack="ambient-title" inline />
       </View>
 
       <ScrollView className="flex-1" contentContainerClassName="p-5">
@@ -224,6 +243,45 @@ export default function StakeScreen() {
           </View>
         )}
       </ScrollView>
+
+      {/* Wallet Picker Modal */}
+      <Modal
+        visible={showWalletPicker}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowWalletPicker(false)}
+      >
+        <Pressable 
+          className="flex-1 bg-black/80 justify-center items-center p-6"
+          onPress={() => setShowWalletPicker(false)}
+        >
+          <View className="bg-crypt-bg border border-crypt-border w-full max-w-sm p-4">
+            <Text className="text-amber text-lg font-mono font-bold text-center mb-4">
+              SELECT WALLET
+            </Text>
+            
+            {game.connectors.map((connector) => (
+              <Pressable
+                key={connector.id}
+                className="bg-crypt-surface border border-crypt-border p-4 mb-2 flex-row items-center active:opacity-80"
+                onPress={() => handleSelectWallet(connector.id)}
+              >
+                <Text className="text-bone text-base font-mono flex-1">
+                  {connector.name}
+                </Text>
+                <Text className="text-bone-muted text-xl">→</Text>
+              </Pressable>
+            ))}
+            
+            <Pressable
+              className="mt-4 p-3"
+              onPress={() => setShowWalletPicker(false)}
+            >
+              <Text className="text-bone-muted text-sm font-mono text-center">Cancel</Text>
+            </Pressable>
+          </View>
+        </Pressable>
+      </Modal>
     </SafeAreaView>
   );
 }

@@ -25,9 +25,17 @@ interface GameState {
   error: string | null;
 }
 
+interface WalletConnector {
+  id: string;
+  name: string;
+  icon?: string;
+}
+
 interface GameContextType extends GameState {
   // Wallet actions
   connect: () => Promise<void>;
+  connectTo: (connectorId: string) => Promise<void>;
+  connectors: WalletConnector[];
   disconnect: () => Promise<void>;
   refreshBalance: () => Promise<void>;
   
@@ -89,6 +97,33 @@ export function GameProvider({ children }: { children: ReactNode }) {
     updateState({ loading: true, error: null });
     try {
       const address = await unifiedWallet.connect();
+      if (address) {
+        updateState({
+          walletConnected: true,
+          walletAddress: address,
+          balance: unifiedWallet.balance,
+          loading: false,
+        });
+      } else {
+        updateState({ loading: false });
+      }
+    } catch (err) {
+      // Re-throw MULTIPLE_WALLETS so UI can show picker
+      if (err instanceof Error && err.message === 'MULTIPLE_WALLETS') {
+        updateState({ loading: false });
+        throw err;
+      }
+      updateState({
+        loading: false,
+        error: err instanceof Error ? err.message : 'Failed to connect wallet',
+      });
+    }
+  }, [updateState, unifiedWallet]);
+
+  const connectTo = useCallback(async (connectorId: string) => {
+    updateState({ loading: true, error: null });
+    try {
+      const address = await unifiedWallet.connectTo(connectorId);
       if (address) {
         updateState({
           walletConnected: true,
@@ -262,6 +297,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const value: GameContextType = {
     ...state,
     connect,
+    connectTo,
+    connectors: unifiedWallet.connectors,
     disconnect,
     refreshBalance,
     startGame,

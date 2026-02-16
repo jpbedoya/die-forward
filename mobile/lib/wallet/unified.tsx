@@ -92,13 +92,22 @@ if (isMobileWeb) {
   getMobileWebAddress = mwa.getMobileWebAddress;
 }
 
+// Wallet connector info
+interface WalletConnector {
+  id: string;
+  name: string;
+  icon?: string;
+}
+
 // Unified wallet context interface
 interface UnifiedWalletContextState {
   connected: boolean;
   connecting: boolean;
   address: Address | null;
   balance: number | null;
-  connect: () => Promise<Address | null>;
+  connectors: WalletConnector[];  // Available wallets
+  connect: () => Promise<Address | null>;  // Auto-connect (first wallet or shows picker)
+  connectTo: (connectorId: string) => Promise<Address | null>;  // Connect to specific wallet
   disconnect: () => Promise<void>;
   sendSOL: (to: Address, amount: number) => Promise<string>;
   signAndSendTransaction: (transaction: any) => Promise<string>; // For escrow/custom txs
@@ -110,7 +119,9 @@ const UnifiedWalletContext = createContext<UnifiedWalletContextState>({
   connecting: false,
   address: null,
   balance: null,
+  connectors: [],
   connect: async () => null,
+  connectTo: async () => null,
   disconnect: async () => {},
   sendSOL: async () => { throw new Error('Not connected'); },
   signAndSendTransaction: async () => { throw new Error('Not connected'); },
@@ -196,23 +207,46 @@ function WebWalletConsumer({ children }: { children: ReactNode }) {
     }
   }, [walletAddress, walletConnection.wallet, txSender]);
   
+  // Map connectors to our interface
+  const connectors: WalletConnector[] = useMemo(() => 
+    walletConnection.connectors.map((c: any) => ({
+      id: c.id,
+      name: c.name || c.id,
+      icon: c.icon,
+    })),
+    [walletConnection.connectors]
+  );
+
   const contextValue = useMemo<UnifiedWalletContextState>(() => ({
     connected: walletConnection.connected,
     connecting: walletConnection.connecting,
     address: walletAddress as Address | null,
     balance: balanceResult.lamports ? Number(balanceResult.lamports) / 1e9 : null,
+    connectors,
     connect: async () => {
-      if (walletConnection.connectors.length > 0) {
+      // If only one wallet, connect directly. Otherwise caller should use connectTo with picker.
+      if (walletConnection.connectors.length === 1) {
         try {
           await walletConnection.connect(walletConnection.connectors[0].id);
         } catch (e) {
           console.error('Connect failed:', e);
         }
+      } else if (walletConnection.connectors.length > 1) {
+        // Multiple wallets - throw so UI can show picker
+        throw new Error('MULTIPLE_WALLETS');
       } else {
-        // No wallets found - likely mobile web without wallet extension
-        throw new Error('No wallet found. Open this page in your Phantom or Solflare app browser.');
+        throw new Error('No wallet found. Install Phantom, Backpack, or Solflare extension.');
       }
       return walletAddress as Address | null;
+    },
+    connectTo: async (connectorId: string) => {
+      try {
+        await walletConnection.connect(connectorId);
+        return walletAddress as Address | null;
+      } catch (e) {
+        console.error('Connect failed:', e);
+        throw e;
+      }
     },
     disconnect: async () => {
       await walletConnection.disconnect();
@@ -222,7 +256,7 @@ function WebWalletConsumer({ children }: { children: ReactNode }) {
     refreshBalance: async () => {
       balanceResult.refresh?.();
     },
-  }), [walletConnection, walletAddress, balanceResult, doSendSOL, doSignAndSend]);
+  }), [walletConnection, walletAddress, balanceResult, connectors, doSendSOL, doSignAndSend]);
   
   return (
     <UnifiedWalletContext.Provider value={contextValue}>
@@ -384,7 +418,9 @@ function MobileWalletProvider({ children }: { children: ReactNode }) {
     connecting,
     address,
     balance,
+    connectors: [],  // Mobile uses OS wallet picker via MWA
     connect,
+    connectTo: connect,  // Mobile doesn't need specific wallet selection
     disconnect,
     sendSOL,
     signAndSendTransaction,
