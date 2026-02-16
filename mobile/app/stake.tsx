@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
 import { useAudio } from '../lib/audio';
 import { useGameSettings } from '../lib/instant';
+import { AudioToggle } from '../components/AudioToggle';
 
 const STAKE_OPTIONS = [0.01, 0.05, 0.1, 0.25];
 
@@ -50,6 +51,8 @@ export default function StakeScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-crypt-bg">
+      <AudioToggle ambientTrack="ambient-title" />
+      
       {/* Header */}
       <View className="flex-row items-center justify-between px-4 py-3 border-b border-crypt-border">
         <Pressable onPress={() => router.back()}>

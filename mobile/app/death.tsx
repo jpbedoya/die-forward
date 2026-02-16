@@ -7,10 +7,11 @@ import { useGame } from '../lib/GameContext';
 import { useAudio } from '../lib/audio';
 import { getDeathMoment, getFinalWordsIntro, getDepthForRoom } from '../lib/content';
 import { DeathCard, ShareCardCapture, useShareCard } from '../lib/shareCard';
+import { AudioToggle } from '../components/AudioToggle';
 
 export default function DeathScreen() {
   const game = useGame();
-  const { playSFX, playAmbient, enabled: audioEnabled, toggle: toggleAudio, unlock: unlockAudio } = useAudio();
+  const { playSFX, playAmbient } = useAudio();
   const { viewShotRef, captureAndShare } = useShareCard();
   const params = useLocalSearchParams<{ killedBy?: string }>();
   
@@ -157,19 +158,7 @@ export default function DeathScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-crypt-bg">
-      {/* Sound Toggle - Top Right */}
-      <Pressable 
-        className="absolute top-12 right-4 z-10 p-2"
-        onPress={async () => {
-          unlockAudio();
-          const nowEnabled = await toggleAudio();
-          if (nowEnabled) {
-            playAmbient('ambient-death');
-          }
-        }}
-      >
-        <Text className="text-xl">{audioEnabled ? '🔊' : '🔇'}</Text>
-      </Pressable>
+      <AudioToggle ambientTrack="ambient-death" />
 
       <Animated.View style={{ flex: 1, opacity: contentFade }}>
       <ScrollView className="flex-1" contentContainerClassName="p-6">

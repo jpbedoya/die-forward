@@ -7,6 +7,7 @@ import { useGame } from '../lib/GameContext';
 import { useAudio } from '../lib/audio';
 import { useGameSettings } from '../lib/instant';
 import { VictoryCard, ShareCardCapture, useShareCard } from '../lib/shareCard';
+import { AudioToggle } from '../components/AudioToggle';
 
 // ASCII sparkle component
 const AsciiSparkle = ({ delay, x, y }: { delay: number; x: number; y: number }) => {
@@ -56,7 +57,7 @@ const ESCAPED_ASCII = `
 
 export default function VictoryScreen() {
   const game = useGame();
-  const { playSFX, playAmbient, enabled: audioEnabled, toggle: toggleAudio, unlock: unlockAudio } = useAudio();
+  const { playSFX, playAmbient } = useAudio();
   const { settings } = useGameSettings();
   const { viewShotRef, captureAndShare } = useShareCard();
   
@@ -224,19 +225,7 @@ export default function VictoryScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-crypt-bg">
-      {/* Sound Toggle - Top Right */}
-      <Pressable 
-        className="absolute top-12 right-4 z-10 p-2"
-        onPress={async () => {
-          unlockAudio();
-          const nowEnabled = await toggleAudio();
-          if (nowEnabled) {
-            playAmbient('ambient-victory');
-          }
-        }}
-      >
-        <Text className="text-xl">{audioEnabled ? '🔊' : '🔇'}</Text>
-      </Pressable>
+      <AudioToggle ambientTrack="ambient-victory" />
 
       <Animated.View style={{ flex: 1, opacity: contentFade }}>
       <ScrollView className="flex-1" contentContainerClassName="p-6">

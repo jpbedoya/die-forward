@@ -55,6 +55,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { usePoolStats, useDeathFeed, useLeaderboard } from '../lib/instant';
 import { useAudio } from '../lib/audio';
 import { DieForwardLogo } from '../components/DieForwardLogo';
+import { AudioToggle } from '../components/AudioToggle';
 
 // CRT Scanline + vignette overlay effect
 function CRTOverlay() {
@@ -86,7 +87,7 @@ export default function HomeScreen() {
   const { totalDeaths, isLoading: statsLoading } = usePoolStats();
   const { deaths: recentDeaths } = useDeathFeed(20);
   const { leaderboard: rawLeaderboard } = useLeaderboard(20);
-  const { playAmbient, enabled: audioEnabled, toggle: toggleAudio, unlock: unlockAudio } = useAudio();
+  const { playAmbient, unlock: unlockAudio } = useAudio();
 
   // Filter out empty leaderboard entries
   const leaderboard = rawLeaderboard.filter(p => p.name && p.name.trim() !== '');
@@ -162,17 +163,7 @@ export default function HomeScreen() {
     <SafeAreaView className="flex-1 bg-crypt-bg" edges={['top', 'left', 'right', 'bottom']}>
       <CRTOverlay />
       
-      {/* Sound Toggle */}
-      <Pressable 
-        className="absolute top-12 right-4 z-10 p-2"
-        onPress={async () => {
-          unlockAudio();
-          const nowEnabled = await toggleAudio();
-          if (nowEnabled) playAmbient('ambient-title');
-        }}
-      >
-        <Text className="text-xl">{audioEnabled ? '🔊' : '🔇'}</Text>
-      </Pressable>
+      <AudioToggle ambientTrack="ambient-title" />
 
       <View className="flex-1 px-4" style={Platform.OS === 'web' ? { paddingBottom: 20 } : undefined}>
         
