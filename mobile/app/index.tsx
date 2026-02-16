@@ -1,37 +1,108 @@
-import { useState, useEffect, useRef } from 'react';
-import { View, Text, Pressable, Animated, Platform, StyleSheet } from 'react-native';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { View, Text, Pressable, Animated, Platform, ScrollView, Modal } from 'react-native';
 import { Link } from 'expo-router';
+
+// Animated gradient button decoration - constantly flows inward
+function AnimatedDescendButton() {
+  const [frame, setFrame] = useState(0);
+  
+  // Gradient frames that continuously flow toward center (no reverse)
+  const leftFrames = [
+    '░░▒▒▓▓',
+    '░░░▒▒▓',
+    '░░░░▒▒',
+    '░░░░░▒',
+    '░░░░░░',
+    '▒░░░░░',
+    '▓▒░░░░',
+    '▓▓▒░░░',
+    '▓▓▓▒░░',
+    '▓▓▓▓▒░',
+  ];
+  const rightFrames = [
+    '▓▓▒▒░░',
+    '▓▒▒░░░',
+    '▒▒░░░░',
+    '▒░░░░░',
+    '░░░░░░',
+    '░░░░░▒',
+    '░░░░▒▓',
+    '░░░▒▓▓',
+    '░░▒▓▓▓',
+    '░▒▓▓▓▓',
+  ];
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFrame(f => (f + 1) % leftFrames.length);
+    }, 120);
+    return () => clearInterval(interval);
+  }, []);
+  
+  return (
+    <Link href="/stake" asChild>
+      <Pressable className="flex-row items-center py-3 active:opacity-80">
+        <Text className="text-amber font-mono text-sm">{leftFrames[frame]}</Text>
+        <Text className="text-amber text-lg font-bold font-mono tracking-widest mx-2">
+          DESCEND
+        </Text>
+        <Text className="text-amber font-mono text-sm">{rightFrames[frame]}</Text>
+      </Pressable>
+    </Link>
+  );
+}
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { usePoolStats, useDeathFeed } from '../lib/instant';
+import { usePoolStats, useDeathFeed, useLeaderboard } from '../lib/instant';
 import { useAudio } from '../lib/audio';
 import { DieForwardLogo } from '../components/DieForwardLogo';
 
+// CRT Scanline + vignette overlay effect
+function CRTOverlay() {
+  return (
+    <View 
+      pointerEvents="none"
+      className="absolute inset-0 z-50"
+      style={{
+        // Scanlines
+        backgroundImage: Platform.OS === 'web' 
+          ? `repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 2px),
+             radial-gradient(ellipse at center, transparent 0%, transparent 50%, rgba(0,0,0,0.4) 100%)`
+          : undefined,
+      }}
+    />
+  );
+}
+
 export default function HomeScreen() {
   const [showSplash, setShowSplash] = useState(true);
+  const [activeTab, setActiveTab] = useState<'echoes' | 'victors'>('echoes');
+  const [showAllSheet, setShowAllSheet] = useState(false);
   
-  // Animations - simpler for smoother performance
+  // Animations
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
-  // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
-  const { totalDeaths, totalStaked, isLoading: statsLoading } = usePoolStats();
-  const { deaths: recentDeaths } = useDeathFeed(5);
+  // Data hooks
+  const { totalDeaths, isLoading: statsLoading } = usePoolStats();
+  const { deaths: recentDeaths } = useDeathFeed(20);
+  const { leaderboard: rawLeaderboard } = useLeaderboard(20);
   const { playAmbient, enabled: audioEnabled, toggle: toggleAudio, unlock: unlockAudio } = useAudio();
 
-  // Play title ambient (queued until user interacts)
+  // Filter out empty leaderboard entries
+  const leaderboard = rawLeaderboard.filter(p => p.name && p.name.trim() !== '');
+
+  // Play title ambient
   useEffect(() => {
     playAmbient('ambient-title');
   }, []);
 
-  // Splash intro animation - smooth and simple
+  // Splash intro animation
   useEffect(() => {
-    // Phase 1: Fade in
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 600,
       useNativeDriver: true,
     }).start(() => {
-      // Phase 2: Gentle pulse
       Animated.sequence([
         Animated.timing(scaleAnim, {
           toValue: 1.05,
@@ -44,7 +115,6 @@ export default function HomeScreen() {
           useNativeDriver: true,
         }),
       ]).start(() => {
-        // Phase 3: Zoom out + fade
         setTimeout(() => {
           Animated.parallel([
             Animated.timing(scaleAnim, {
@@ -67,10 +137,10 @@ export default function HomeScreen() {
     return (
       <Pressable 
         className="flex-1 bg-crypt-bg"
-        onPress={unlockAudio} // Tap anywhere to unlock audio
+        onPress={unlockAudio}
       >
+        <CRTOverlay />
         <View className="flex-1 justify-center items-center">
-          {/* Centered logo with pulse + zoom */}
           <Animated.View 
             style={{ 
               opacity: fadeAnim,
@@ -79,89 +149,225 @@ export default function HomeScreen() {
           >
             <DieForwardLogo size="large" showGlow glowColor="#f59e0b" />
           </Animated.View>
-          
-          {/* Subtle hint */}
           <Text className="text-stone-600 text-xs font-mono mt-8">tap to enable sound</Text>
         </View>
       </Pressable>
     );
   }
 
+  const displayedDeaths = recentDeaths.slice(0, 5);
+  const displayedVictors = leaderboard.slice(0, 5);
+
   return (
     <SafeAreaView className="flex-1 bg-crypt-bg" edges={['top', 'left', 'right', 'bottom']}>
-      {/* Sound Toggle - Top Right */}
+      <CRTOverlay />
+      
+      {/* Sound Toggle - ASCII style */}
       <Pressable 
         className="absolute top-12 right-4 z-10 p-2"
         onPress={async () => {
-          unlockAudio(); // Unlock audio on web
-          const nowEnabled = await toggleAudio(); // Returns new state
-          // If just enabled, play ambient
-          if (nowEnabled) {
-            playAmbient('ambient-title');
-          }
+          unlockAudio();
+          const nowEnabled = await toggleAudio();
+          if (nowEnabled) playAmbient('ambient-title');
         }}
       >
-        <Text className="text-xl">{audioEnabled ? '🔊' : '🔇'}</Text>
+        <Text className="text-amber font-mono text-sm">
+          {audioEnabled ? '♪' : '×'}
+        </Text>
       </Pressable>
 
-      <View className="flex-1 px-5 justify-between" style={Platform.OS === 'web' ? { paddingBottom: 20 } : undefined}>
-        {/* Header - ASCII Logo */}
-        <View className="items-center pt-4">
+      <View className="flex-1 px-4" style={Platform.OS === 'web' ? { paddingBottom: 20 } : undefined}>
+        
+        {/* Top spacer - pushes content down more */}
+        <View className="flex-[3]" />
+
+        {/* Main content: Logo + Tagline + CTA */}
+        <View className="items-center">
+          {/* Logo */}
           <DieForwardLogo size="large" showGlow glowColor="#f59e0b" />
-        </View>
 
-        {/* Tagline */}
-        <View className="items-center py-6">
-          <Text className="text-lg text-bone font-mono text-center">
-            Your Death Feeds the Depths
+          {/* Tagline */}
+          <Text className="text-bone font-mono text-center italic mt-6 mb-12">
+            Your death feeds the depths
           </Text>
+
+          {/* Main CTA - animated gradient */}
+          <AnimatedDescendButton />
         </View>
 
-        {/* Main CTA */}
-        <View className="gap-3">
-          <Link href="/stake" asChild>
-            <Pressable className="bg-amber py-5 px-8 items-center active:bg-amber-dark">
-              <Text className="text-crypt-bg text-lg font-bold font-mono tracking-widest">
-                ▼ ENTER THE CRYPT
-              </Text>
-            </Pressable>
-          </Link>
+        {/* Spacer between CTA and Echoes */}
+        <View className="flex-[2]" />
 
-          {/* Leaderboard */}
-          <Link href="/leaderboard" asChild>
-            <Pressable className="border border-crypt-border py-3 px-4 items-center active:border-amber">
-              <Text className="text-bone-dark text-sm font-mono">🏆 Leaderboard</Text>
-            </Pressable>
-          </Link>
-        </View>
-
-        {/* Total Deaths */}
-        <View className="items-center py-4">
-          <Text className="text-3xl text-amber-light font-mono font-bold">
-            💀 {statsLoading ? '...' : totalDeaths}
-          </Text>
-          <Text className="text-xs text-stone-600 font-mono mt-1">Total Deaths</Text>
-        </View>
-
-        {/* Recent Deaths Feed */}
-        <View className="bg-crypt-surface border border-crypt-border p-3 mb-5 flex-1">
-          <Text className="text-[10px] text-bone-dark font-mono tracking-widest mb-2">
-            DEATHS FEED
-          </Text>
-          {recentDeaths.length > 0 ? (
-            recentDeaths.slice(0, 5).map((death, i) => (
-              <View key={death.id || i} className="py-1.5 border-b border-crypt-border last:border-b-0">
-                <Text className="text-xs text-bone-muted font-mono">
-                  💀 <Text className="text-ethereal">@{death.playerName}</Text>
-                  {' fell in '}{death.zone} (Room {death.room})
+        {/* Echoes Section - anchored to bottom */}
+        <View className="mb-4">
+          {/* Header with tabs - no top decoration */}
+          <View className="items-center mb-3">
+            <View className="flex-row items-center gap-4">
+              <Pressable onPress={() => setActiveTab('echoes')}>
+                <Text className={`font-mono text-base tracking-widest ${
+                  activeTab === 'echoes' ? 'text-ethereal' : 'text-bone-dark'
+                }`}>
+                  ECHOES
                 </Text>
+              </Pressable>
+              <Text className="text-crypt-border-light font-mono">◆</Text>
+              <Pressable onPress={() => setActiveTab('victors')}>
+                <Text className={`font-mono text-base tracking-widest ${
+                  activeTab === 'victors' ? 'text-victory' : 'text-bone-dark'
+                }`}>
+                  VICTORS
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+
+          {/* Content - fixed height, centered */}
+          <View className="px-2 items-center" style={{ minHeight: 130 }}>
+            {activeTab === 'echoes' ? (
+              // Echoes (Deaths)
+              <View className="items-center">
+                {displayedDeaths.length > 0 ? (
+                  displayedDeaths.map((death, i) => (
+                    <View key={death.id || i} className="py-1">
+                      <Text className="text-xs text-bone-muted font-mono text-center" numberOfLines={1}>
+                        <Text className="text-ethereal">@{death.playerName}</Text>
+                        <Text className="text-bone-dark"> fell in </Text>
+                        <Text className="text-bone-muted">{death.zone}</Text>
+                      </Text>
+                    </View>
+                  ))
+                ) : (
+                  <Text className="text-xs text-bone-dark font-mono italic text-center">
+                    No echoes yet... be the first to fall.
+                  </Text>
+                )}
+                {recentDeaths.length > 5 && (
+                  <Pressable 
+                    className="mt-2 py-1"
+                    onPress={() => setShowAllSheet(true)}
+                  >
+                    <Text className="text-ethereal text-xs font-mono text-center">
+                      [ listen deeper ]
+                    </Text>
+                  </Pressable>
+                )}
               </View>
-            ))
-          ) : (
-            <Text className="text-xs text-bone-dark font-mono">No deaths yet... be the first.</Text>
-          )}
+            ) : (
+              // Victors (Leaderboard)
+              <View className="items-center w-full" style={{ maxWidth: 200 }}>
+                {displayedVictors.length > 0 ? (
+                  displayedVictors.map((player, i) => (
+                    <View key={player.id || i} className="py-1 flex-row justify-between w-full">
+                      <Text className="text-xs font-mono" numberOfLines={1}>
+                        <Text className="text-victory">@{player.name}</Text>
+                      </Text>
+                      <Text className="text-xs font-mono text-amber">
+                        D:{player.maxRoom || 0}
+                      </Text>
+                    </View>
+                  ))
+                ) : (
+                  <Text className="text-xs text-bone-dark font-mono italic text-center">
+                    None have escaped... yet.
+                  </Text>
+                )}
+                {leaderboard.length > 5 && (
+                  <Pressable 
+                    className="mt-2 py-1"
+                    onPress={() => setShowAllSheet(true)}
+                  >
+                    <Text className="text-victory text-xs font-mono text-center">
+                      [ witness all ]
+                    </Text>
+                  </Pressable>
+                )}
+              </View>
+            )}
+          </View>
+
+          {/* Bottom decoration */}
+          <Text className="text-crypt-border-light font-mono text-xs text-center mt-3">░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░</Text>
         </View>
       </View>
+
+      {/* "See All" Bottom Sheet */}
+      <Modal
+        visible={showAllSheet}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowAllSheet(false)}
+      >
+        <View className="flex-1 justify-end items-center">
+          <Pressable 
+            className="flex-1 w-full" 
+            onPress={() => setShowAllSheet(false)} 
+          />
+          {/* Constrained width container */}
+          <View 
+            className="bg-crypt-surface border-t border-l border-r border-crypt-border rounded-t-xl w-full"
+            style={{ 
+              maxWidth: Platform.OS === 'web' ? 500 : undefined,
+              maxHeight: '70%',
+            }}
+          >
+            {/* Handle */}
+            <View className="items-center py-3">
+              <View className="w-10 h-1 bg-crypt-border-light rounded-full" />
+            </View>
+            
+            {/* Header */}
+            <View className="px-4 pb-2 border-b border-crypt-border">
+              <Text className="text-bone font-mono font-bold text-center">
+                {activeTab === 'echoes' ? '░▒▓ ECHOES ▓▒░' : '░▒▓ VICTORS ▓▒░'}
+              </Text>
+            </View>
+            
+            {/* Scrollable content */}
+            <ScrollView className="px-4 py-2" style={{ maxHeight: 400 }}>
+              {activeTab === 'echoes' ? (
+                recentDeaths.map((death, i) => (
+                  <View key={death.id || i} className="py-2 border-b border-crypt-border">
+                    <View className="flex-row justify-between mb-1">
+                      <Text className="text-ethereal text-sm font-mono">@{death.playerName}</Text>
+                      <Text className="text-bone-dark text-xs font-mono">Room {death.room}</Text>
+                    </View>
+                    <Text className="text-bone-muted text-xs font-mono">
+                      fell in {death.zone}
+                    </Text>
+                    {death.finalMessage && (
+                      <Text className="text-bone-dark text-xs font-mono italic mt-1">
+                        "{death.finalMessage}"
+                      </Text>
+                    )}
+                  </View>
+                ))
+              ) : (
+                leaderboard.map((player, i) => (
+                  <View key={player.id || i} className="py-2 border-b border-crypt-border flex-row justify-between items-center">
+                    <View>
+                      <Text className="text-victory text-sm font-mono">@{player.name}</Text>
+                      <Text className="text-bone-dark text-xs font-mono">
+                        {player.wins || 0} escapes
+                      </Text>
+                    </View>
+                    <Text className="text-amber font-mono font-bold">
+                      D:{player.maxRoom || 0}
+                    </Text>
+                  </View>
+                ))
+              )}
+            </ScrollView>
+            
+            {/* Close button */}
+            <Pressable 
+              className="m-4 py-3 border border-crypt-border items-center"
+              onPress={() => setShowAllSheet(false)}
+            >
+              <Text className="text-bone-muted font-mono">Close</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }

@@ -396,6 +396,147 @@ export function getItemEffects(inventory: {name: string}[]): ItemEffects {
   return effects;
 }
 
+// Item descriptions from the Content Bible
+export interface ItemDetails {
+  name: string;
+  emoji: string;
+  description: string;
+  effect: string;
+  type: 'consumable' | 'weapon' | 'artifact';
+}
+
+export const ITEM_DETAILS: Record<string, ItemDetails> = {
+  // Consumables
+  'Herbs': {
+    name: 'Herbs',
+    emoji: '🌿',
+    description: 'Bitter leaves that numb pain and slow bleeding. They taste like regret.',
+    effect: 'Restores health when used',
+    type: 'consumable',
+  },
+  'Pale Rations': {
+    name: 'Pale Rations',
+    emoji: '🍖',
+    description: 'Food from below. It sustains, but you try not to think about what it was.',
+    effect: 'Restores stamina',
+    type: 'consumable',
+  },
+  'Bone Dust': {
+    name: 'Bone Dust',
+    emoji: '💨',
+    description: 'Ground remains of something old. Inhale it to see what it saw.',
+    effect: 'Reveals hidden paths',
+    type: 'consumable',
+  },
+  'Void Salt': {
+    name: 'Void Salt',
+    emoji: '🧂',
+    description: 'Black crystals that burn on contact. Creatures of water fear it.',
+    effect: '+40% damage vs aquatic enemies',
+    type: 'consumable',
+  },
+  'Poison Vial': {
+    name: 'Poison Vial',
+    emoji: '🧪',
+    description: 'Something extracted from something else. The smell alone is a weapon.',
+    effect: '+40% damage bonus',
+    type: 'consumable',
+  },
+  
+  // Weapons
+  'Rusty Blade': {
+    name: 'Rusty Blade',
+    emoji: '⚔️',
+    description: 'Pitted with age and old blood. Still sharp enough.',
+    effect: '+20% damage bonus',
+    type: 'weapon',
+  },
+  'Dagger': {
+    name: 'Dagger',
+    emoji: '🗡️',
+    description: 'Small, ceremonial. It was meant for offerings, not combat. It works anyway.',
+    effect: '+35% damage bonus',
+    type: 'weapon',
+  },
+  'Bone Hook': {
+    name: 'Bone Hook',
+    emoji: '🪝',
+    description: 'Carved from a rib. Meant for pulling things closer. Or keeping them away.',
+    effect: 'Creates distance in combat',
+    type: 'weapon',
+  },
+  'Shield': {
+    name: 'Shield',
+    emoji: '🛡️',
+    description: 'Dented, scarred, still standing. Like whoever carried it.',
+    effect: '+25% defense bonus',
+    type: 'weapon',
+  },
+  'Tattered Shield': {
+    name: 'Tattered Shield',
+    emoji: '🛡️',
+    description: 'More holes than metal. But it still catches blows that would kill you.',
+    effect: '+25% defense bonus',
+    type: 'weapon',
+  },
+  'Cloak': {
+    name: 'Cloak',
+    emoji: '🧥',
+    description: 'Wrapped around your shoulders, things have trouble finding you.',
+    effect: '+15% flee, +10% defense',
+    type: 'weapon',
+  },
+  
+  // Artifacts
+  'Torch': {
+    name: 'Torch',
+    emoji: '🔥',
+    description: 'A flickering flame. It pushes back the dark, but the dark pushes back.',
+    effect: '+25% damage, light source',
+    type: 'artifact',
+  },
+  'Bone Charm': {
+    name: 'Bone Charm',
+    emoji: '💀',
+    description: 'Carved from something\'s finger. It hums when danger is near. It never stops humming.',
+    effect: '+15% defense bonus',
+    type: 'artifact',
+  },
+  'Ancient Scroll': {
+    name: 'Ancient Scroll',
+    emoji: '📜',
+    description: 'Waterlogged pages in a language you almost understand. Reading it feels like remembering something you never knew.',
+    effect: '+20% defense, +10% flee',
+    type: 'artifact',
+  },
+  'Eye of the Hollow': {
+    name: 'Eye of the Hollow',
+    emoji: '👁️',
+    description: 'It blinks when you\'re not looking. But it shows you things you\'d otherwise miss.',
+    effect: 'Reveals hidden corpses and caches',
+    type: 'artifact',
+  },
+  'Heartstone': {
+    name: 'Heartstone',
+    emoji: '💎',
+    description: 'Cold to the touch. Warm when death is near. Yours or someone else\'s.',
+    effect: 'Shows when you\'re near death',
+    type: 'artifact',
+  },
+  'Pale Coin': {
+    name: 'Pale Coin',
+    emoji: '🪙',
+    description: 'Currency of the dead. Worth nothing above. Worth everything below.',
+    effect: 'Can be offered for passage',
+    type: 'artifact',
+  },
+};
+
+// Get item details by name
+export function getItemDetails(name: string): ItemDetails | undefined {
+  return ITEM_DETAILS[name];
+}
+
 // Generate a combat room with a specific creature assigned
 function getCombatRoomWithCreature(roomNumber: number, template?: string): RoomVariation & { enemy: string; enemyEmoji: string } {
   const baseContent = getCombatRoom(template);

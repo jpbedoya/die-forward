@@ -8,8 +8,9 @@ import { useAudio } from '../lib/audio';
 import { useCorpsesForRoom, discoverCorpse, recordTip, useGameSettings, Corpse } from '../lib/instant';
 import { ProgressBar } from '../components/ProgressBar';
 import { GameMenu, MenuButton } from '../components/GameMenu';
-import { getDepthForRoom, DungeonRoom } from '../lib/content';
+import { getDepthForRoom, DungeonRoom, getItemDetails } from '../lib/content';
 import { useUnifiedWallet, type Address } from '../lib/wallet/unified';
+import { ItemModal } from '../components/CryptModal';
 
 function HealthBar({ current, max }: { current: number; max: number }) {
   const filled = Math.round((current / max) * 8);
@@ -32,6 +33,7 @@ export default function PlayScreen() {
   const [lootedCorpse, setLootedCorpse] = useState<Corpse | null>(null);
   const [tipping, setTipping] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<{ name: string; emoji: string } | null>(null);
 
   // Handle tipping a corpse
   const handleTip = async (corpse: Corpse) => {
@@ -456,15 +458,22 @@ export default function PlayScreen() {
           </View>
         </View>
 
-        {/* Inventory */}
+        {/* Inventory - clickable items */}
         <View className="flex-row items-center">
           <Text className="text-bone-dark text-xs font-mono mr-2">ITEMS</Text>
           <ScrollView horizontal style={{ flex: 1 }} showsHorizontalScrollIndicator={false}>
             {game.inventory.length > 0 ? (
               game.inventory.map((item) => (
-                <View key={item.id} className="bg-crypt-surface border border-crypt-border py-1 px-2 mr-2">
+                <Pressable 
+                  key={item.id} 
+                  className="bg-crypt-surface border border-crypt-border py-1 px-2 mr-2 active:border-amber"
+                  onPress={() => {
+                    playSFX('ui-click');
+                    setSelectedItem(item);
+                  }}
+                >
                   <Text className="text-bone-muted text-xs font-mono">{item.emoji} {item.name}</Text>
-                </View>
+                </Pressable>
               ))
             ) : (
               <Text className="text-stone-600 text-xs font-mono italic">None</Text>
@@ -472,6 +481,17 @@ export default function PlayScreen() {
           </ScrollView>
         </View>
       </View>
+
+      {/* Item Detail Modal */}
+      <ItemModal
+        visible={!!selectedItem}
+        onClose={() => setSelectedItem(null)}
+        item={selectedItem ? {
+          ...selectedItem,
+          description: getItemDetails(selectedItem.name)?.description,
+          effect: getItemDetails(selectedItem.name)?.effect,
+        } : null}
+      />
       </SafeAreaView>
     </View>
   );
