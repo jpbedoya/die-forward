@@ -4,20 +4,7 @@ import { Link } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { usePoolStats, useDeathFeed } from '../lib/instant';
 import { useAudio } from '../lib/audio';
-
-const ASCII_LOGO = `
-  ██████  ██ ███████ 
-  ██   ██ ██ ██      
-  ██   ██ ██ █████   
-  ██   ██ ██ ██      
-  ██████  ██ ███████ 
-                     
-  ███████  ██████  ██████  ██     ██  █████  ██████  ██████  
-  ██      ██    ██ ██   ██ ██     ██ ██   ██ ██   ██ ██   ██ 
-  █████   ██    ██ ██████  ██  █  ██ ███████ ██████  ██   ██ 
-  ██      ██    ██ ██   ██ ██ ███ ██ ██   ██ ██   ██ ██   ██ 
-  ██       ██████  ██   ██  ███ ███  ██   ██ ██   ██ ██████  
-`;
+import { DieForwardLogo } from '../components/DieForwardLogo';
 
 export default function HomeScreen() {
   const [showSplash, setShowSplash] = useState(true);
@@ -90,12 +77,7 @@ export default function HomeScreen() {
               transform: [{ scale: scaleAnim }],
             }}
           >
-            <Text 
-              className="font-mono text-[6px] text-amber text-center leading-[7px]"
-              style={{ textShadowColor: '#f59e0b', textShadowRadius: 20 }}
-            >
-              {ASCII_LOGO}
-            </Text>
+            <DieForwardLogo size="large" showGlow glowColor="#f59e0b" />
           </Animated.View>
           
           {/* Subtle hint */}
@@ -125,12 +107,7 @@ export default function HomeScreen() {
       <View className="flex-1 px-5 justify-between" style={Platform.OS === 'web' ? { paddingBottom: 20 } : undefined}>
         {/* Header - ASCII Logo */}
         <View className="items-center pt-4">
-          <Text 
-            className="font-mono text-[6px] text-amber text-center leading-[7px]"
-            style={{ textShadowColor: '#f59e0b', textShadowRadius: 12 }}
-          >
-            {ASCII_LOGO}
-          </Text>
+          <DieForwardLogo size="large" showGlow glowColor="#f59e0b" />
         </View>
 
         {/* Tagline */}

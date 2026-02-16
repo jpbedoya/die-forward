@@ -4,6 +4,7 @@ import { View, Text, Pressable, Modal } from 'react-native';
 import { router } from 'expo-router';
 import { useAudio } from '../lib/audio';
 import { useGame } from '../lib/GameContext';
+import { DieForwardLogo } from './DieForwardLogo';
 
 interface GameMenuProps {
   isOpen: boolean;
@@ -57,11 +58,16 @@ export function GameMenu({ isOpen, onClose }: GameMenuProps) {
         {/* Menu card */}
         <View className="bg-crypt-surface border border-crypt-border w-[85%] max-w-[300px] p-4">
           {/* Header */}
-          <View className="flex-row items-center justify-between mb-4">
-            <Text className="text-amber text-xs font-mono tracking-wider">◈ DIE FORWARD</Text>
-            <Pressable onPress={onClose}>
-              <Text className="text-bone-muted font-mono">[X]</Text>
-            </Pressable>
+          <View className="items-center mb-4">
+            <View className="flex-row items-start justify-between w-full">
+              <View className="flex-1" />
+              <DieForwardLogo size="tiny" />
+              <View className="flex-1 items-end">
+                <Pressable onPress={onClose}>
+                  <Text className="text-bone-muted font-mono">[X]</Text>
+                </Pressable>
+              </View>
+            </View>
           </View>
 
           {/* Wallet info */}
