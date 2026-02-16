@@ -152,6 +152,7 @@ class WebAudioManager {
   private unlocked: boolean = false;
   private pendingAmbient: SoundId | null = null;
   private audioCache: Map<string, HTMLAudioElement> = new Map();
+  private fadeInterval: ReturnType<typeof setInterval> | null = null;
 
   async init() {
     if (this.initialized) return;
@@ -228,8 +229,8 @@ class WebAudioManager {
     }
   }
 
-  async playAmbient(id: SoundId) {
-    console.log('[Audio/Web] playAmbient:', id, { enabled: this.enabled, unlocked: this.unlocked });
+  async playAmbient(id: SoundId, crossfade: boolean = true) {
+    console.log('[Audio/Web] playAmbient:', id, { enabled: this.enabled, unlocked: this.unlocked, crossfade });
     
     if (!this.enabled) return;
     
@@ -245,20 +246,64 @@ class WebAudioManager {
     }
     
     try {
-      // Stop current ambient
-      await this.stopAmbient();
+      const oldAmbient = this.currentAmbient;
+      const fadeDuration = 800; // ms
+      const fadeSteps = 20;
+      const stepDuration = fadeDuration / fadeSteps;
       
       // Create and configure new ambient
       const audio = new Audio(SOUND_PATHS[id]);
-      audio.volume = this.ambientVolume;
       audio.loop = true;
       
-      this.currentAmbient = audio;
-      this.currentAmbientId = id;
-      
-      audio.play().catch(e => {
-        console.warn('[Audio/Web] Ambient play failed:', id, e);
-      });
+      if (crossfade && oldAmbient) {
+        // Start new audio at 0 volume
+        audio.volume = 0;
+        
+        this.currentAmbient = audio;
+        this.currentAmbientId = id;
+        
+        audio.play().catch(e => {
+          console.warn('[Audio/Web] Ambient play failed:', id, e);
+        });
+        
+        // Crossfade: fade out old, fade in new
+        let step = 0;
+        if (this.fadeInterval) clearInterval(this.fadeInterval);
+        
+        this.fadeInterval = setInterval(() => {
+          step++;
+          const progress = step / fadeSteps;
+          
+          // Fade out old
+          if (oldAmbient) {
+            oldAmbient.volume = Math.max(0, this.ambientVolume * (1 - progress));
+          }
+          // Fade in new
+          audio.volume = Math.min(this.ambientVolume, this.ambientVolume * progress);
+          
+          if (step >= fadeSteps) {
+            if (this.fadeInterval) clearInterval(this.fadeInterval);
+            this.fadeInterval = null;
+            
+            // Clean up old audio
+            if (oldAmbient) {
+              oldAmbient.pause();
+              oldAmbient.currentTime = 0;
+            }
+          }
+        }, stepDuration);
+      } else {
+        // No crossfade - stop old immediately
+        await this.stopAmbient();
+        
+        audio.volume = this.ambientVolume;
+        this.currentAmbient = audio;
+        this.currentAmbientId = id;
+        
+        audio.play().catch(e => {
+          console.warn('[Audio/Web] Ambient play failed:', id, e);
+        });
+      }
       
       console.log('[Audio/Web] Ambient started:', id);
     } catch (e) {
@@ -389,29 +434,71 @@ class NativeAudioManager {
     }
   }
 
-  async playAmbient(id: SoundId) {
-    console.log('[Audio/Native] playAmbient:', id, { enabled: this.enabled, hasModule: !!AudioModule?.AudioPlayer });
+  async playAmbient(id: SoundId, crossfade: boolean = true) {
+    console.log('[Audio/Native] playAmbient:', id, { enabled: this.enabled, hasModule: !!AudioModule?.AudioPlayer, crossfade });
     
     if (!this.enabled) return;
     if (this.currentAmbientId === id) return;
     if (!AudioModule?.AudioPlayer) return;
     
     try {
-      await this.stopAmbient();
+      const oldPlayer = this.currentAmbient;
       
+      // Create new player
       const player = new AudioModule.AudioPlayer(
         { uri: SOUND_PATHS[id] },
         100,
         false
       );
-      
-      player.volume = this.ambientVolume;
       player.loop = true;
       
-      this.currentAmbient = player;
-      this.currentAmbientId = id;
+      if (crossfade && oldPlayer) {
+        // Start at 0 volume and fade in
+        player.volume = 0;
+        this.currentAmbient = player;
+        this.currentAmbientId = id;
+        player.play();
+        
+        // Crossfade over 800ms
+        const fadeDuration = 800;
+        const fadeSteps = 20;
+        const stepDuration = fadeDuration / fadeSteps;
+        let step = 0;
+        
+        const fadeInterval = setInterval(() => {
+          step++;
+          const progress = step / fadeSteps;
+          
+          // Fade out old
+          if (oldPlayer) {
+            oldPlayer.volume = Math.max(0, this.ambientVolume * (1 - progress));
+          }
+          // Fade in new
+          player.volume = Math.min(this.ambientVolume, this.ambientVolume * progress);
+          
+          if (step >= fadeSteps) {
+            clearInterval(fadeInterval);
+            // Clean up old player
+            if (oldPlayer) {
+              try {
+                oldPlayer.pause();
+                oldPlayer.remove();
+              } catch (e) {
+                // Ignore
+              }
+            }
+          }
+        }, stepDuration);
+      } else {
+        // No crossfade
+        await this.stopAmbient();
+        
+        player.volume = this.ambientVolume;
+        this.currentAmbient = player;
+        this.currentAmbientId = id;
+        player.play();
+      }
       
-      player.play();
       console.log('[Audio/Native] Ambient started:', id);
     } catch (e) {
       console.warn('[Audio/Native] Failed to play ambient:', id, e);
@@ -472,7 +559,7 @@ class NativeAudioManager {
 interface IAudioManager {
   init(): Promise<void>;
   playSFX(id: SoundId): Promise<void>;
-  playAmbient(id: SoundId): Promise<void>;
+  playAmbient(id: SoundId, crossfade?: boolean): Promise<void>;
   stopAmbient(): Promise<void>;
   toggle(): Promise<boolean>;
   isEnabled(): boolean;
@@ -516,8 +603,8 @@ export function useAudio() {
     getAudioManager().playSFX(id);
   }, []);
 
-  const playAmbient = useCallback((id: SoundId) => {
-    getAudioManager().playAmbient(id);
+  const playAmbient = useCallback((id: SoundId, crossfade: boolean = true) => {
+    getAudioManager().playAmbient(id, crossfade);
   }, []);
 
   const stopAmbient = useCallback(() => {

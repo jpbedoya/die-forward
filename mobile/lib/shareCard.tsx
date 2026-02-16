@@ -5,6 +5,7 @@ import React, { useRef, useCallback } from 'react';
 import { View, Text, Platform } from 'react-native';
 import ViewShot from 'react-native-view-shot';
 import * as Sharing from 'expo-sharing';
+import { DieForwardLogoInline } from '../components/DieForwardLogo';
 
 export interface DeathCardData {
   playerName: string;
@@ -28,13 +29,10 @@ export function DeathCard({ data }: { data: DeathCardData }) {
     <View className="w-[300px] bg-[#0a0a0a] border-2 border-blood/70">
       {/* Inner content with padding */}
       <View className="m-1 border border-blood/30 p-3">
-        {/* ASCII Logo */}
-        <Text className="text-amber font-mono text-[3px] text-center leading-[4px] mb-1">
-          {ASCII_LOGO_SMALL}
-        </Text>
-        <Text className="text-amber font-mono text-[2px] text-center leading-[3px] mb-3">
-          {ASCII_FORWARD_SMALL}
-        </Text>
+        {/* Logo */}
+        <View className="mb-3">
+          <DieForwardLogoInline color="#f59e0b" />
+        </View>
         
         {/* Title */}
         <Text className="text-blood text-xl font-mono font-bold text-center tracking-[4px]">YOU DIED</Text>
@@ -63,10 +61,10 @@ export function DeathCard({ data }: { data: DeathCardData }) {
           <Text className="text-stone-300 text-xs font-mono italic text-center">"{data.epitaph}"</Text>
         </View>
         
-        {/* Stake lost */}
+        {/* Stake lost - only show if there was a stake */}
         {data.stakeLost > 0 && (
           <Text className="text-blood text-sm font-mono font-bold text-center mb-3">
-            ◎ {data.stakeLost} SOL LOST
+            {data.stakeLost} SOL LOST
           </Text>
         )}
         
@@ -77,32 +75,18 @@ export function DeathCard({ data }: { data: DeathCardData }) {
   );
 }
 
-// ASCII Logo for cards
-const ASCII_LOGO_SMALL = `██████  ██ ███████
-██   ██ ██ ██     
-██   ██ ██ █████  
-██   ██ ██ ██     
-██████  ██ ███████`;
-
-const ASCII_FORWARD_SMALL = `███████  ██████  ██████  ██     ██  █████  ██████  ██████ 
-██      ██    ██ ██   ██ ██     ██ ██   ██ ██   ██ ██   ██
-█████   ██    ██ ██████  ██  █  ██ ███████ ██████  ██   ██
-██      ██    ██ ██   ██ ██ ███ ██ ██   ██ ██   ██ ██   ██
-██       ██████  ██   ██  ███ ███  ██   ██ ██   ██ ██████ `;
-
 // Victory Card Component
 export function VictoryCard({ data }: { data: VictoryCardData }) {
+  const isEmptyHanded = data.stakeWon === 0;
+  
   return (
     <View className="w-[300px] bg-[#0a0a0a] border-2 border-amber/70">
       {/* Inner content with padding */}
       <View className="m-1 border border-amber/30 p-3">
-        {/* ASCII Logo */}
-        <Text className="text-amber font-mono text-[3px] text-center leading-[4px] mb-1">
-          {ASCII_LOGO_SMALL}
-        </Text>
-        <Text className="text-amber font-mono text-[2px] text-center leading-[3px] mb-3">
-          {ASCII_FORWARD_SMALL}
-        </Text>
+        {/* Logo */}
+        <View className="mb-3">
+          <DieForwardLogoInline color="#f59e0b" />
+        </View>
         
         {/* Title */}
         <Text className="text-victory text-xl font-mono font-bold text-center tracking-[4px]">ESCAPED</Text>
@@ -121,15 +105,20 @@ export function VictoryCard({ data }: { data: VictoryCardData }) {
             <Text className="text-stone-300 text-sm font-mono">Enemies Slain</Text>
             <Text className="text-blood text-sm font-mono font-bold">{data.enemiesDefeated}</Text>
           </View>
-          <View className="flex-row justify-between px-2">
-            <Text className="text-stone-300 text-sm font-mono">SOL Won</Text>
-            <Text className="text-amber text-sm font-mono font-bold">◎ {data.stakeWon.toFixed(3)}</Text>
-          </View>
+          {/* Only show SOL won if not empty-handed */}
+          {!isEmptyHanded && (
+            <View className="flex-row justify-between px-2">
+              <Text className="text-stone-300 text-sm font-mono">SOL Won</Text>
+              <Text className="text-amber text-sm font-mono font-bold">{data.stakeWon.toFixed(3)}</Text>
+            </View>
+          )}
         </View>
         
         {/* Victory message */}
         <Text className="text-stone-500 text-[10px] font-mono italic text-center mb-3">
-          You conquered the depths.{'\n'}Few can claim the same.
+          {isEmptyHanded 
+            ? 'You conquered the depths.\nNo stake, just glory.'
+            : 'You conquered the depths.\nFew can claim the same.'}
         </Text>
         
         {/* URL */}

@@ -56,7 +56,7 @@ const ESCAPED_ASCII = `
 
 export default function VictoryScreen() {
   const game = useGame();
-  const { playSFX, playAmbient } = useAudio();
+  const { playSFX, playAmbient, enabled: audioEnabled, toggle: toggleAudio, unlock: unlockAudio } = useAudio();
   const { settings } = useGameSettings();
   const { viewShotRef, captureAndShare } = useShareCard();
   
@@ -77,11 +77,15 @@ export default function VictoryScreen() {
   const bonusPercent = settings.victoryBonusPercent / 100;
   const victoryBonus = game.stakeAmount * bonusPercent;
   const totalReward = game.stakeAmount + victoryBonus;
+  const isEmptyHanded = game.stakeAmount === 0;
   
   const handleShare = async () => {
     setSharing(true);
     playSFX('share-click');
-    await captureAndShare('Die Forward - Victory!', `I escaped Die Forward and won ${totalReward.toFixed(3)} SOL!`);
+    const shareMessage = isEmptyHanded 
+      ? `I escaped Die Forward! No stake, just glory.`
+      : `I escaped Die Forward and won ${totalReward.toFixed(3)} SOL!`;
+    await captureAndShare('Die Forward - Victory!', shareMessage);
     setSharing(false);
     setShowShareModal(false);
   };
@@ -207,9 +211,9 @@ export default function VictoryScreen() {
             <Text className="text-bone text-base font-mono text-center mb-2">
               You conquered the depths!
             </Text>
-            {totalReward > 0 && (
+            {!isEmptyHanded && (
               <Text className="text-amber-bright text-xl font-mono text-center font-bold">
-                ◎ {totalReward.toFixed(3)} SOL
+                {totalReward.toFixed(3)} SOL
               </Text>
             )}
           </Animated.View>
@@ -220,6 +224,20 @@ export default function VictoryScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-crypt-bg">
+      {/* Sound Toggle - Top Right */}
+      <Pressable 
+        className="absolute top-12 right-4 z-10 p-2"
+        onPress={async () => {
+          unlockAudio();
+          const nowEnabled = await toggleAudio();
+          if (nowEnabled) {
+            playAmbient('ambient-victory');
+          }
+        }}
+      >
+        <Text className="text-xl">{audioEnabled ? '🔊' : '🔇'}</Text>
+      </Pressable>
+
       <Animated.View style={{ flex: 1, opacity: contentFade }}>
       <ScrollView className="flex-1" contentContainerClassName="p-6">
         {/* Victory Header */}
@@ -250,7 +268,7 @@ export default function VictoryScreen() {
         </View>
 
         {/* Reward Section */}
-        {game.stakeAmount > 0 ? (
+        {!isEmptyHanded ? (
           <View className="bg-victory/10 border-2 border-victory p-4 mb-6">
             <Text className="text-victory-light text-xs font-mono tracking-widest mb-4 text-center">
               YOUR REWARD
@@ -258,7 +276,7 @@ export default function VictoryScreen() {
             
             <View className="items-center mb-4">
               <View className="flex-row items-baseline">
-                <Text className="text-victory text-4xl font-mono font-bold">◎ {totalReward.toFixed(3)}</Text>
+                <Text className="text-victory text-4xl font-mono font-bold">{totalReward.toFixed(3)}</Text>
               </View>
               <Text className="text-victory-light text-sm font-mono mt-1">SOL</Text>
             </View>
@@ -266,11 +284,11 @@ export default function VictoryScreen() {
             <View className="bg-black/20 p-3 mb-4">
               <View className="flex-row justify-between mb-1">
                 <Text className="text-bone-dark text-xs font-mono">Original Stake</Text>
-                <Text className="text-bone text-xs font-mono">◎ {game.stakeAmount}</Text>
+                <Text className="text-bone text-xs font-mono">{game.stakeAmount}</Text>
               </View>
               <View className="flex-row justify-between">
                 <Text className="text-bone-dark text-xs font-mono">Victory Bonus ({settings.victoryBonusPercent}%)</Text>
-                <Text className="text-victory text-xs font-mono">+◎ {victoryBonus.toFixed(3)}</Text>
+                <Text className="text-victory text-xs font-mono">+{victoryBonus.toFixed(3)}</Text>
               </View>
             </View>
 
@@ -288,7 +306,7 @@ export default function VictoryScreen() {
               </Pressable>
             ) : (
               <View className="bg-victory/20 py-4 items-center">
-                <Text className="text-victory font-mono font-bold">✓ REWARD CLAIMED</Text>
+                <Text className="text-victory font-mono font-bold">REWARD CLAIMED</Text>
                 {signature && (
                   <Text className="text-victory-light text-xs font-mono mt-2">
                     TX: {signature.slice(0, 8)}...
@@ -331,14 +349,14 @@ export default function VictoryScreen() {
             className="bg-victory py-4 items-center active:bg-green-600"
             onPress={() => setShowShareModal(true)}
           >
-            <Text className="text-crypt-bg font-mono font-bold tracking-widest">📤 SHARE VICTORY</Text>
+            <Text className="text-crypt-bg font-mono font-bold tracking-widest">SHARE VICTORY</Text>
           </Pressable>
           
           <Pressable
             className="bg-amber py-4 items-center active:bg-amber-dark"
             onPress={handlePlayAgain}
           >
-            <Text className="text-crypt-bg font-mono font-bold tracking-widest">↻ PLAY AGAIN</Text>
+            <Text className="text-crypt-bg font-mono font-bold tracking-widest">PLAY AGAIN</Text>
           </Pressable>
           
           <Pressable
@@ -384,7 +402,7 @@ export default function VictoryScreen() {
               {sharing ? (
                 <ActivityIndicator color="#0d0d0d" />
               ) : (
-                <Text className="text-crypt-bg font-mono font-bold">📤 SHARE</Text>
+                <Text className="text-crypt-bg font-mono font-bold">SHARE</Text>
               )}
             </Pressable>
             

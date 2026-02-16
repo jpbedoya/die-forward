@@ -188,12 +188,16 @@ export default function PlayScreen() {
             }
           }
           
-          setTimeout(async () => {
-            await game.advance();
-            setMessage(null);
-            setShowCorpse(false);
-            setLootedCorpse(null);
-          }, 2000);
+          // Don't auto-advance - let player read corpse message and choose to continue
+          break;
+        }
+        
+        case 'loot-continue': {
+          // Player chose to continue after looting
+          setShowCorpse(false);
+          setLootedCorpse(null);
+          setMessage(null);
+          await game.advance();
           break;
         }
 
@@ -395,7 +399,17 @@ export default function PlayScreen() {
 
         {/* Options */}
         <Text className="text-bone-dark text-[10px] font-mono tracking-widest mb-3">▼ WHAT DO YOU DO?</Text>
-        {message ? (
+        {showCorpse ? (
+          // Show continue button after looting corpse (player controls when to advance)
+          <Pressable
+            className="flex-row items-center bg-crypt-surface border-l-2 border-amber py-4 px-3"
+            onPress={() => handleAction('loot-continue')}
+            disabled={processing}
+          >
+            <Text className="text-bone-dark text-sm font-mono mr-2">▶</Text>
+            <Text className="text-bone text-sm font-mono">Continue deeper...</Text>
+          </Pressable>
+        ) : message ? (
           <Pressable
             className="flex-row items-center bg-crypt-surface border-l-2 border-amber py-4 px-3"
             onPress={() => handleAction('continue')}

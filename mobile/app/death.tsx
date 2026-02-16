@@ -10,7 +10,7 @@ import { DeathCard, ShareCardCapture, useShareCard } from '../lib/shareCard';
 
 export default function DeathScreen() {
   const game = useGame();
-  const { playSFX, playAmbient } = useAudio();
+  const { playSFX, playAmbient, enabled: audioEnabled, toggle: toggleAudio, unlock: unlockAudio } = useAudio();
   const { viewShotRef, captureAndShare } = useShareCard();
   const params = useLocalSearchParams<{ killedBy?: string }>();
   
@@ -30,6 +30,7 @@ export default function DeathScreen() {
 
   const roomNumber = (game.currentRoom || 0) + 1;
   const depth = getDepthForRoom(roomNumber);
+  const isEmptyHanded = game.stakeAmount === 0;
   
   const handleShare = async () => {
     setSharing(true);
@@ -156,6 +157,20 @@ export default function DeathScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-crypt-bg">
+      {/* Sound Toggle - Top Right */}
+      <Pressable 
+        className="absolute top-12 right-4 z-10 p-2"
+        onPress={async () => {
+          unlockAudio();
+          const nowEnabled = await toggleAudio();
+          if (nowEnabled) {
+            playAmbient('ambient-death');
+          }
+        }}
+      >
+        <Text className="text-xl">{audioEnabled ? '🔊' : '🔇'}</Text>
+      </Pressable>
+
       <Animated.View style={{ flex: 1, opacity: contentFade }}>
       <ScrollView className="flex-1" contentContainerClassName="p-6">
         {/* Death Header */}
@@ -181,8 +196,8 @@ export default function DeathScreen() {
           </View>
           <View className="flex-row justify-between">
             <Text className="text-bone-dark text-sm font-mono">SOL Staked</Text>
-            <Text className={`text-sm font-mono ${game.stakeAmount > 0 ? 'text-blood' : 'text-bone-muted'}`}>
-              {game.stakeAmount > 0 ? `◎ ${game.stakeAmount} LOST` : 'FREE PLAY'}
+            <Text className={`text-sm font-mono ${!isEmptyHanded ? 'text-blood' : 'text-bone-muted'}`}>
+              {!isEmptyHanded ? `${game.stakeAmount} LOST` : 'FREE PLAY'}
             </Text>
           </View>
         </View>
@@ -231,7 +246,7 @@ export default function DeathScreen() {
           <View className="mb-6">
             <View className="bg-ethereal/20 border border-ethereal p-4 mb-4">
               <Text className="text-ethereal text-sm font-mono text-center">
-                ✓ Your final words have been etched into the crypt
+                Your final words have been etched into the crypt
               </Text>
             </View>
             <View className="bg-crypt-surface border-l-2 border-ethereal p-4">
@@ -250,7 +265,7 @@ export default function DeathScreen() {
               className="bg-ethereal py-4 items-center active:bg-purple-700"
               onPress={() => setShowShareModal(true)}
             >
-              <Text className="text-white font-mono font-bold tracking-widest">📤 SHARE DEATH CARD</Text>
+              <Text className="text-white font-mono font-bold tracking-widest">SHARE DEATH CARD</Text>
             </Pressable>
           )}
           
@@ -258,7 +273,7 @@ export default function DeathScreen() {
             className="bg-amber py-4 items-center active:bg-amber-dark"
             onPress={handlePlayAgain}
           >
-            <Text className="text-crypt-bg font-mono font-bold tracking-widest">↻ DESCEND AGAIN</Text>
+            <Text className="text-crypt-bg font-mono font-bold tracking-widest">DESCEND AGAIN</Text>
           </Pressable>
           
           <Pressable
@@ -306,7 +321,7 @@ export default function DeathScreen() {
               {sharing ? (
                 <ActivityIndicator color="#ffffff" />
               ) : (
-                <Text className="text-white font-mono font-bold">📤 SHARE</Text>
+                <Text className="text-white font-mono font-bold">SHARE</Text>
               )}
             </Pressable>
             
