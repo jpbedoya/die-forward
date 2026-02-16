@@ -29,6 +29,24 @@
     html {
       height: -webkit-fill-available;
     }
+    /* Safe area insets for notched devices */
+    #root {
+      /* iOS safe area */
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      box-sizing: border-box;
+    }
+    /* Android gesture bar fallback - add extra padding on mobile */
+    @supports not (padding-bottom: env(safe-area-inset-bottom)) {
+      #root {
+        padding-bottom: 20px;
+      }
+    }
+    /* Force safe area on all mobile */
+    @media (max-width: 768px) and (hover: none) {
+      #root {
+        padding-bottom: max(env(safe-area-inset-bottom, 0px), 16px);
+      }
+    }
   </style>
 </head>
 <body>

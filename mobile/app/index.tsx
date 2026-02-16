@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { View, Text, Pressable, Animated } from 'react-native';
+import { View, Text, Pressable, Animated, Platform, StyleSheet } from 'react-native';
 import { Link } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { usePoolStats, useDeathFeed } from '../lib/instant';
@@ -106,7 +106,7 @@ export default function HomeScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-crypt-bg">
+    <SafeAreaView className="flex-1 bg-crypt-bg" edges={['top', 'left', 'right', 'bottom']}>
       {/* Sound Toggle - Top Right */}
       <Pressable 
         className="absolute top-12 right-4 z-10 p-2"
@@ -122,7 +122,7 @@ export default function HomeScreen() {
         <Text className="text-xl">{audioEnabled ? '🔊' : '🔇'}</Text>
       </Pressable>
 
-      <View className="flex-1 px-5 justify-between">
+      <View className="flex-1 px-5 justify-between" style={Platform.OS === 'web' ? { paddingBottom: 20 } : undefined}>
         {/* Header - ASCII Logo */}
         <View className="items-center pt-4">
           <Text 

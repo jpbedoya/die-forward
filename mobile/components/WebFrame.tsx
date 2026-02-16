@@ -33,15 +33,11 @@ export function WebFrame({ children }: WebFrameProps) {
 const isMobileWeb = typeof navigator !== 'undefined' && 
   /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-// Use dvh for mobile (accounts for browser chrome), vh for desktop
-const viewportHeight = isMobileWeb ? '100dvh' : '100vh';
-
 const styles = StyleSheet.create({
   outer: {
     flex: 1,
-    minHeight: viewportHeight as any,
-    height: viewportHeight as any,
-    maxHeight: viewportHeight as any,
+    // Use 100% to respect parent's safe area padding
+    height: '100%' as any,
     backgroundColor: '#0d0d0d',
     alignItems: 'center',
     justifyContent: 'flex-start',
