@@ -20,16 +20,15 @@ async function backupExistingFile(audioDir: string, filename: string): Promise<s
     return null;
   }
   
-  // Find next version number
-  let version = 1;
-  while (await fileExists(path.join(audioDir, `${filename}-v${version}.mp3`))) {
-    version++;
-  }
+  // Use timestamp for backup name: old-YYYYMMDD-HHMM
+  const now = new Date();
+  const timestamp = now.toISOString().slice(0, 16).replace(/[-:T]/g, '').replace(/(\d{8})(\d{4})/, '$1-$2');
+  const backupName = `${filename}-old-${timestamp}.mp3`;
   
-  const backupPath = path.join(audioDir, `${filename}-v${version}.mp3`);
+  const backupPath = path.join(audioDir, backupName);
   await rename(currentPath, backupPath);
   
-  return `${filename}-v${version}.mp3`;
+  return backupName;
 }
 
 export async function POST(request: NextRequest) {
