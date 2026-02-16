@@ -27,7 +27,13 @@
     },
     "web": {
       "bundler": "metro",
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "output": "single",
+      "build": {
+        "babel": {
+          "include": ["@wallet-ui/react-native-web3js"]
+        }
+      }
     },
     "plugins": [
       "expo-router",

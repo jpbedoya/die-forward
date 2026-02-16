@@ -312,25 +312,30 @@ export default function CombatScreen() {
     );
   }
 
+  // Use dvh for mobile web, fallback to 100% for native
+  const containerStyle = Platform.OS === 'web' 
+    ? { height: '100dvh', maxHeight: '100dvh', display: 'flex', flexDirection: 'column' as const, overflow: 'hidden' as const }
+    : { flex: 1 };
+
   return (
-    <SafeAreaView className="flex-1 bg-crypt-bg" style={{ display: 'flex', flexDirection: 'column' }}>
-      <Animated.View 
-        className="flex-1 flex-col"
-        style={{ transform: [{ translateX: shakeAnim }], display: 'flex', flexDirection: 'column', flex: 1 }}
-      >
-        {/* Header */}
-        <View className="flex-row items-center justify-between px-3 py-2 border-b border-amber/30">
-          <View className="flex-row items-center gap-2">
-            <MenuButton onPress={() => setMenuOpen(true)} />
-            <Text className="text-amber text-xs font-mono">◈ {depth.name}</Text>
+    <View style={containerStyle} className="bg-crypt-bg">
+      <SafeAreaView style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <Animated.View 
+          style={{ transform: [{ translateX: shakeAnim }], flex: 1, display: 'flex', flexDirection: 'column' }}
+        >
+          {/* Header */}
+          <View className="flex-row items-center justify-between px-3 py-2 border-b border-amber/30" style={{ flexShrink: 0 }}>
+            <View className="flex-row items-center gap-2">
+              <MenuButton onPress={() => setMenuOpen(true)} />
+              <Text className="text-amber text-xs font-mono">◈ {depth.name}</Text>
+            </View>
+            <ProgressBar current={roomNumber} total={13} />
           </View>
-          <ProgressBar current={roomNumber} total={13} />
-        </View>
 
-        {/* Game Menu */}
-        <GameMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
+          {/* Game Menu */}
+          <GameMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
 
-        <ScrollView className="flex-1 flex-shrink" contentContainerClassName="p-4" style={{ flexGrow: 1, flexShrink: 1 }}>
+          <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16 }}>
         {/* Enemy Card */}
         <View className="bg-crypt-surface border border-crypt-border p-4 mb-4">
           <View className="flex-row items-center gap-3 mb-3">
@@ -437,47 +442,48 @@ export default function CombatScreen() {
         )}
       </ScrollView>
 
-      {/* Footer - Player Stats (sticky bottom) */}
-      <View className="border-t border-crypt-border p-3 bg-crypt-bg" style={{ flexShrink: 0, flexGrow: 0 }}>
-        <View className="flex-row items-center justify-between mb-3">
-          <View className="flex-row items-center gap-2">
-            <Text className="text-blood">♥</Text>
-            <HealthBar current={game.health} max={100} />
-            <Text className={`text-sm font-mono font-bold ${game.health < 30 ? 'text-blood' : 'text-blood-light'}`}>
-              {game.health}
-            </Text>
+          {/* Footer - Player Stats (sticky bottom) */}
+          <View className="border-t border-crypt-border p-3 bg-crypt-bg" style={{ flexShrink: 0, flexGrow: 0 }}>
+            <View className="flex-row items-center justify-between mb-3">
+              <View className="flex-row items-center gap-2">
+                <Text className="text-blood">♥</Text>
+                <HealthBar current={game.health} max={100} />
+                <Text className={`text-sm font-mono font-bold ${game.health < 30 ? 'text-blood' : 'text-blood-light'}`}>
+                  {game.health}
+                </Text>
+              </View>
+              <View className="flex-row items-center gap-2">
+                <Text className="text-blue-400">⚡</Text>
+                <Text className="text-blue-400 font-mono">
+                  {'◆'.repeat(game.stamina)}{'◇'.repeat(3 - game.stamina)}
+                </Text>
+              </View>
+              <View className="flex-row items-center gap-1">
+                <Text className="text-amber">◎</Text>
+                <Text className="text-amber font-mono font-bold">
+                  {game.stakeAmount > 0 ? `${game.stakeAmount}` : 'FREE'}
+                </Text>
+              </View>
+            </View>
+            
+            {/* Inventory */}
+            <View className="flex-row items-center">
+              <Text className="text-bone-dark text-xs font-mono mr-2">ITEMS</Text>
+              <ScrollView horizontal style={{ flex: 1 }} showsHorizontalScrollIndicator={false}>
+                {game.inventory.length > 0 ? (
+                  game.inventory.map((item) => (
+                    <View key={item.id} className="bg-crypt-surface border border-crypt-border py-1 px-2 mr-2">
+                      <Text className="text-bone-muted text-xs font-mono">{item.emoji} {item.name}</Text>
+                    </View>
+                  ))
+                ) : (
+                  <Text className="text-stone-600 text-xs font-mono italic">None</Text>
+                )}
+              </ScrollView>
+            </View>
           </View>
-          <View className="flex-row items-center gap-2">
-            <Text className="text-blue-400">⚡</Text>
-            <Text className="text-blue-400 font-mono">
-              {'◆'.repeat(game.stamina)}{'◇'.repeat(3 - game.stamina)}
-            </Text>
-          </View>
-          <View className="flex-row items-center gap-1">
-            <Text className="text-amber">◎</Text>
-            <Text className="text-amber font-mono font-bold">
-              {game.stakeAmount > 0 ? `${game.stakeAmount}` : 'FREE'}
-            </Text>
-          </View>
-        </View>
-        
-        {/* Inventory */}
-        <View className="flex-row items-center">
-          <Text className="text-bone-dark text-xs font-mono mr-2">ITEMS</Text>
-          <ScrollView horizontal className="flex-row flex-1" showsHorizontalScrollIndicator={false}>
-            {game.inventory.length > 0 ? (
-              game.inventory.map((item) => (
-                <View key={item.id} className="bg-crypt-surface border border-crypt-border py-1 px-2 mr-2">
-                  <Text className="text-bone-muted text-xs font-mono">{item.emoji} {item.name}</Text>
-                </View>
-              ))
-            ) : (
-              <Text className="text-stone-600 text-xs font-mono italic">None</Text>
-            )}
-          </ScrollView>
-        </View>
-      </View>
-      </Animated.View>
-    </SafeAreaView>
+        </Animated.View>
+      </SafeAreaView>
+    </View>
   );
 }

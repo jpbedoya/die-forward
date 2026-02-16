@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Die Forward</title>
+  <style>
+    /* Prevent overscroll and ensure full height */
+    html, body, #root {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #0a0a0a;
+      /* Prevent pull-to-refresh and overscroll */
+      overscroll-behavior: none;
+      touch-action: manipulation;
+    }
+    /* Fix for mobile viewport height issues */
+    body {
+      min-height: 100dvh;
+      min-height: -webkit-fill-available;
+    }
+    html {
+      height: -webkit-fill-available;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+</body>
+</html>

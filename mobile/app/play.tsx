@@ -268,31 +268,37 @@ export default function PlayScreen() {
 
   const options = getOptions();
 
+  // Use dvh for mobile web, fallback to 100% for native
+  const containerStyle = Platform.OS === 'web' 
+    ? { height: '100dvh', maxHeight: '100dvh', display: 'flex', flexDirection: 'column' as const, overflow: 'hidden' as const }
+    : { flex: 1 };
+
   return (
-    <SafeAreaView className="flex-1 bg-crypt-bg" style={{ display: 'flex', flexDirection: 'column' }}>
-      {/* Header */}
-      <View className="flex-row items-center justify-between px-3 py-2 border-b border-amber/30" style={{ flexShrink: 0 }}>
-        <View className="flex-row items-center gap-2">
-          <MenuButton onPress={() => setMenuOpen(true)} />
-          <Text className={`text-xs font-mono tracking-wider ${
-            depth.tier === 1 ? 'text-amber' : depth.tier === 2 ? 'text-amber-light' : 'text-ethereal'
-          }`}>
-            ◈ {depth.name}
-          </Text>
-          {game.stakeAmount === 0 && (
-            <View className="bg-amber/20 border border-amber/50 px-2 py-0.5">
-              <Text className="text-amber text-[10px] font-mono">FREE</Text>
-            </View>
-          )}
+    <View style={containerStyle} className="bg-crypt-bg">
+      <SafeAreaView style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        {/* Header */}
+        <View className="flex-row items-center justify-between px-3 py-2 border-b border-amber/30" style={{ flexShrink: 0 }}>
+          <View className="flex-row items-center gap-2">
+            <MenuButton onPress={() => setMenuOpen(true)} />
+            <Text className={`text-xs font-mono tracking-wider ${
+              depth.tier === 1 ? 'text-amber' : depth.tier === 2 ? 'text-amber-light' : 'text-ethereal'
+            }`}>
+              ◈ {depth.name}
+            </Text>
+            {game.stakeAmount === 0 && (
+              <View className="bg-amber/20 border border-amber/50 px-2 py-0.5">
+                <Text className="text-amber text-[10px] font-mono">FREE</Text>
+              </View>
+            )}
+          </View>
+          <ProgressBar current={roomNumber} total={dungeon.length} />
         </View>
-        <ProgressBar current={roomNumber} total={dungeon.length} />
-      </View>
 
-      {/* Game Menu */}
-      <GameMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
+        {/* Game Menu */}
+        <GameMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
 
-      {/* Main content */}
-      <ScrollView className="flex-1" contentContainerClassName="p-4">
+        {/* Main content */}
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16 }}>
         {/* Boss warning for room 12 */}
         {room.boss && (
           <View className="bg-blood/20 border-2 border-blood p-3 mb-4">
@@ -439,7 +445,7 @@ export default function PlayScreen() {
         {/* Inventory */}
         <View className="flex-row items-center">
           <Text className="text-bone-dark text-xs font-mono mr-2">ITEMS</Text>
-          <ScrollView horizontal className="flex-row flex-1" showsHorizontalScrollIndicator={false}>
+          <ScrollView horizontal style={{ flex: 1 }} showsHorizontalScrollIndicator={false}>
             {game.inventory.length > 0 ? (
               game.inventory.map((item) => (
                 <View key={item.id} className="bg-crypt-surface border border-crypt-border py-1 px-2 mr-2">
@@ -452,6 +458,7 @@ export default function PlayScreen() {
           </ScrollView>
         </View>
       </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </View>
   );
 }
