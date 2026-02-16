@@ -7,7 +7,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
-import { useDeathFeed, usePoolStats, usePlayer, getOrCreatePlayer, updatePlayerNickname, type Death } from '@/lib/instant';
+import { useDeathFeed, usePoolStats, usePlayer, useLeaderboard, getOrCreatePlayer, updatePlayerNickname, type Death, type Player } from '@/lib/instant';
 import { useAudio } from '@/lib/audio';
 import GameFrame from '@/components/GameFrame';
 
@@ -18,6 +18,36 @@ const ASCII_LOGO = `
  ██║  ██║██║██╔══╝      ██╔══╝  ██║   ██║██╔══██╗██║███╗██║██╔══██║██╔══██╗██║  ██║
  ██████╔╝██║███████╗    ██║     ╚██████╔╝██║  ██║╚███╔███╔╝██║  ██║██║  ██║██████╔╝
  ╚═════╝ ╚═╝╚══════╝    ╚═╝      ╚═════╝ ╚═╝  ╚═╝ ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ `;
+
+// CRT Scanline overlay effect
+function CRTOverlay() {
+  return (
+    <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden">
+      {/* Scanlines */}
+      <div 
+        className="absolute inset-0 opacity-[0.03]"
+        style={{
+          background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.3) 2px, rgba(0,0,0,0.3) 4px)',
+        }}
+      />
+      {/* Subtle vignette */}
+      <div 
+        className="absolute inset-0"
+        style={{
+          background: 'radial-gradient(ellipse at center, transparent 0%, transparent 60%, rgba(0,0,0,0.4) 100%)',
+        }}
+      />
+      {/* Occasional flicker - CSS only */}
+      <div className="absolute inset-0 bg-white/[0.01] animate-[flicker_0.15s_infinite_alternate]" />
+      <style jsx>{`
+        @keyframes flicker {
+          0%, 100% { opacity: 0; }
+          50% { opacity: 0.02; }
+        }
+      `}</style>
+    </div>
+  );
+}
 
 // Splash screen component
 function SplashScreen({ onEnter }: { onEnter: () => void }) {
@@ -78,8 +108,8 @@ function timeAgo(timestamp: number): string {
   return `${days}d ago`;
 }
 
-// Animated death feed item with entrance animation
-function DeathFeedItem({ playerName, room, finalMessage, createdAt, onChainSignature, isNew }: {
+// Compact echo item for the feed
+function EchoItem({ playerName, room, finalMessage, createdAt, onChainSignature, isNew }: {
   playerName: string;
   room: number;
   finalMessage: string;
@@ -87,100 +117,245 @@ function DeathFeedItem({ playerName, room, finalMessage, createdAt, onChainSigna
   onChainSignature?: string;
   isNew?: boolean;
 }) {
-  // Explorer URL for devnet
-  const explorerUrl = onChainSignature 
-    ? `https://explorer.solana.com/tx/${onChainSignature}?cluster=devnet`
-    : null;
-    
   return (
-    <div className={`py-3 border-b border-[var(--border-dim)]/50 transition-all duration-500 ${isNew ? 'animate-pulse bg-[var(--red-dim)]/10' : ''}`}>
-      <div className="flex items-start gap-3">
-        {/* Skull icon with glow effect */}
-        <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center">
-          <span className="text-lg text-[var(--red)] drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]">💀</span>
+    <div className={`py-2 border-b border-[var(--border-dim)]/30 transition-all duration-500 ${isNew ? 'bg-[var(--red-dim)]/10' : ''}`}>
+      <div className="flex items-center gap-2 text-xs">
+        <span className="text-[var(--red)] opacity-60">†</span>
+        <span className="text-[var(--purple-bright)]">@{playerName}</span>
+        <span className="text-[var(--text-dim)]">·</span>
+        <span className="text-[var(--red-dim)]">D{room}</span>
+        <span className="text-[var(--text-dim)] ml-auto text-[10px]">{timeAgo(createdAt)}</span>
+      </div>
+      <div className="text-xs text-[var(--text-muted)] italic mt-1 truncate pl-4">
+        "{finalMessage}"
+      </div>
+    </div>
+  );
+}
+
+// Victor item for leaderboard
+function VictorItem({ player, rank }: { player: Player; rank: number }) {
+  const rankDisplay = rank === 1 ? '♔' : rank === 2 ? '♕' : rank === 3 ? '♖' : `${rank}.`;
+  const rankColor = rank === 1 ? 'var(--amber-bright)' : rank === 2 ? 'var(--text-secondary)' : rank === 3 ? 'var(--amber-dim)' : 'var(--text-dim)';
+  
+  return (
+    <div className="py-2 border-b border-[var(--border-dim)]/30 flex items-center gap-3">
+      <span className="w-6 text-center" style={{ color: rankColor }}>{rankDisplay}</span>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <span className="text-[var(--amber-bright)] text-xs font-bold">@{player.nickname}</span>
+          <span className="text-[var(--text-dim)] text-[10px]">D{player.highestRoom}</span>
         </div>
-        
-        <div className="flex-1 min-w-0">
-          {/* Player name and location */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[var(--purple-bright)] font-bold text-sm">@{playerName}</span>
-            <span className="text-[var(--text-dim)] text-xs">fell in</span>
-            <span className="text-[var(--red)] text-xs font-medium">Room {room}</span>
-            <span className="text-[var(--text-dim)] text-[10px] ml-auto">{timeAgo(createdAt)}</span>
-          </div>
-          
-          {/* Final message - the star of the show */}
-          <div className="mt-1.5 text-sm text-[var(--text-primary)] italic leading-relaxed">
-            "{finalMessage}"
-          </div>
-          
-          {/* On-chain verification link */}
-          {explorerUrl && (
-            <a 
-              href={explorerUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 mt-1.5 text-[10px] text-[var(--text-dim)] hover:text-[var(--purple)] transition-colors"
-            >
-              <span>⛓️</span>
-              <span className="underline">verified on-chain</span>
-            </a>
-          )}
+        <div className="text-[10px] text-[var(--text-dim)]">
+          {player.totalClears > 0 && <span className="text-[var(--green)]">{player.totalClears}✓</span>}
+          {player.totalClears > 0 && player.totalDeaths > 0 && ' · '}
+          {player.totalDeaths > 0 && <span>{player.totalDeaths}†</span>}
         </div>
       </div>
     </div>
   );
 }
 
-// Pool stats with dramatic styling
-function PoolStats({ totalDeaths, totalStaked, isLoading }: {
+type DeathEntry = {
+  id?: string;
+  playerName: string;
+  zone?: string;
+  room: number;
+  finalMessage: string;
+  createdAt: number;
+  onChainSignature?: string;
+};
+
+// Bottom sheet for full Echoes/Victors view
+function BottomSheet({ 
+  isOpen, 
+  onClose, 
+  activeTab,
+  deaths,
+  leaderboard 
+}: { 
+  isOpen: boolean; 
+  onClose: () => void;
+  activeTab: 'echoes' | 'victors';
+  deaths: DeathEntry[];
+  leaderboard: Player[];
+}) {
+  if (!isOpen) return null;
+  
+  return (
+    <div className="fixed inset-0 z-40">
+      {/* Backdrop */}
+      <div 
+        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      
+      {/* Sheet */}
+      <div className="absolute bottom-0 left-0 right-0 max-h-[70vh] bg-[var(--bg-base)] border-t border-[var(--border-dim)] rounded-t-xl overflow-hidden animate-slideUp">
+        {/* Handle */}
+        <div className="flex justify-center py-3">
+          <div className="w-12 h-1 bg-[var(--border-dim)] rounded-full" />
+        </div>
+        
+        {/* Header */}
+        <div className="px-4 pb-3 border-b border-[var(--border-dim)]">
+          <h2 className="text-center text-sm tracking-[0.2em] text-[var(--text-muted)] uppercase">
+            {activeTab === 'echoes' ? '☠ All Echoes' : '♔ Hall of Victors'}
+          </h2>
+        </div>
+        
+        {/* Content */}
+        <div className="overflow-y-auto max-h-[calc(70vh-80px)] px-4 pb-8">
+          {activeTab === 'echoes' ? (
+            deaths.map((death, i) => (
+              <EchoItem 
+                key={(death as Death).id || i} 
+                playerName={death.playerName}
+                room={death.room}
+                finalMessage={death.finalMessage}
+                createdAt={death.createdAt}
+                onChainSignature={(death as Death).onChainSignature}
+              />
+            ))
+          ) : (
+            leaderboard.map((player, i) => (
+              <VictorItem key={player.id} player={player} rank={i + 1} />
+            ))
+          )}
+          
+          {((activeTab === 'echoes' && deaths.length === 0) || 
+            (activeTab === 'victors' && leaderboard.length === 0)) && (
+            <div className="text-center py-8 text-[var(--text-dim)] text-sm">
+              {activeTab === 'echoes' ? 'No echoes yet...' : 'No victors yet...'}
+            </div>
+          )}
+        </div>
+        
+        <style jsx>{`
+          @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+          }
+          .animate-slideUp {
+            animation: slideUp 0.3s ease-out;
+          }
+        `}</style>
+      </div>
+    </div>
+  );
+}
+
+// ASCII-framed Echoes/Victors section
+function EchoesSection({ 
+  deaths, 
+  leaderboard,
+  deathsLoading,
+  onShowAll,
+  activeTab,
+  onTabChange
+}: { 
+  deaths: DeathEntry[];
+  leaderboard: Player[];
+  deathsLoading: boolean;
+  onShowAll: () => void;
+  activeTab: 'echoes' | 'victors';
+  onTabChange: (tab: 'echoes' | 'victors') => void;
+}) {
+  const displayItems = activeTab === 'echoes' ? deaths.slice(0, 5) : leaderboard.slice(0, 5);
+  const hasMore = activeTab === 'echoes' ? deaths.length > 5 : leaderboard.length > 5;
+  
+  return (
+    <div className="mx-4 my-4">
+      {/* ASCII frame top */}
+      <div className="text-[var(--border-dim)] text-xs font-mono flex items-center">
+        <span>┌──</span>
+        {/* Tab buttons */}
+        <button 
+          onClick={() => onTabChange('echoes')}
+          className={`px-2 transition-colors ${activeTab === 'echoes' ? 'text-[var(--red)]' : 'text-[var(--text-dim)] hover:text-[var(--text-muted)]'}`}
+        >
+          ECHOES
+        </button>
+        <span className="text-[var(--border-dim)]">│</span>
+        <button 
+          onClick={() => onTabChange('victors')}
+          className={`px-2 transition-colors ${activeTab === 'victors' ? 'text-[var(--amber)]' : 'text-[var(--text-dim)] hover:text-[var(--text-muted)]'}`}
+        >
+          VICTORS
+        </button>
+        <span className="flex-1 overflow-hidden">{'─'.repeat(50)}</span>
+        <span>┐</span>
+      </div>
+      
+      {/* Content area */}
+      <div className="border-x border-[var(--border-dim)]/50 px-3 min-h-[180px]">
+        {deathsLoading ? (
+          <div className="text-[var(--text-dim)] text-xs py-8 text-center animate-pulse">
+            Loading...
+          </div>
+        ) : displayItems.length === 0 ? (
+          <div className="text-center py-8">
+            <div className="text-[var(--text-dim)] text-xl mb-2">{activeTab === 'echoes' ? '·  ·  ·' : '·  ·  ·'}</div>
+            <div className="text-[var(--text-dim)] text-xs">
+              {activeTab === 'echoes' ? 'silence...' : 'unclaimed...'}
+            </div>
+          </div>
+        ) : activeTab === 'echoes' ? (
+          deaths.slice(0, 5).map((death, i) => (
+            <EchoItem 
+              key={(death as Death).id || i} 
+              playerName={death.playerName}
+              room={death.room}
+              finalMessage={death.finalMessage}
+              createdAt={death.createdAt}
+              onChainSignature={(death as Death).onChainSignature}
+              isNew={i === 0}
+            />
+          ))
+        ) : (
+          leaderboard.slice(0, 5).map((player, i) => (
+            <VictorItem key={player.id} player={player} rank={i + 1} />
+          ))
+        )}
+      </div>
+      
+      {/* ASCII frame bottom with "see all" */}
+      <div className="text-[var(--border-dim)] text-xs font-mono flex items-center">
+        <span>└</span>
+        <span className="flex-1 overflow-hidden">{'─'.repeat(20)}</span>
+        {hasMore && (
+          <button 
+            onClick={onShowAll}
+            className="px-2 text-[var(--text-dim)] hover:text-[var(--text-muted)] transition-colors"
+          >
+            [ see all ]
+          </button>
+        )}
+        <span className="flex-1 overflow-hidden">{'─'.repeat(20)}</span>
+        <span>┘</span>
+      </div>
+    </div>
+  );
+}
+
+// Compact stats bar
+function StatsBar({ totalDeaths, totalStaked, isLoading }: {
   totalDeaths: number;
   totalStaked: number;
   isLoading: boolean;
 }) {
   return (
-    <div className="flex items-center justify-center gap-8 py-4 border-y border-[var(--border-dim)]/50">
-      {/* Deaths */}
-      <div className="text-center">
-        <div className="flex items-center justify-center gap-2">
-          <span className="text-[var(--red)] text-xl drop-shadow-[0_0_10px_rgba(239,68,68,0.6)]">☠</span>
-          <span className="text-2xl font-bold text-[var(--red-bright)]">
-            {isLoading ? '---' : totalDeaths.toLocaleString()}
-          </span>
-        </div>
-        <div className="text-[10px] text-[var(--text-dim)] uppercase tracking-wider mt-1">
-          Souls Lost
-        </div>
+    <div className="flex items-center justify-center gap-6 py-3 text-xs font-mono">
+      <div className="flex items-center gap-1">
+        <span className="text-[var(--red)]">†</span>
+        <span className="text-[var(--text-muted)]">{isLoading ? '---' : totalDeaths}</span>
+        <span className="text-[var(--text-dim)]">claimed</span>
       </div>
-
-      {/* Divider */}
-      <div className="h-8 w-px bg-[var(--border-dim)]" />
-
-      {/* Memorial Pool */}
-      <div className="text-center">
-        <div className="flex items-center justify-center gap-2">
-          <span className="text-[var(--amber)] text-xl drop-shadow-[0_0_10px_rgba(245,158,11,0.6)]">◎</span>
-          <span className="text-2xl font-bold text-[var(--amber-bright)]">
-            {isLoading ? '-.--' : totalStaked.toFixed(2)}
-          </span>
-        </div>
-        <div className="text-[10px] text-[var(--text-dim)] uppercase tracking-wider mt-1">
-          SOL in Pool
-        </div>
-      </div>
-
-      {/* Divider */}
-      <div className="h-8 w-px bg-[var(--border-dim)]" />
-
-      {/* Victory bonus */}
-      <div className="text-center">
-        <div className="flex items-center justify-center gap-2">
-          <span className="text-[var(--green)] text-xl drop-shadow-[0_0_10px_rgba(34,197,94,0.6)]">✦</span>
-          <span className="text-2xl font-bold text-[var(--green-bright)]">+50%</span>
-        </div>
-        <div className="text-[10px] text-[var(--text-dim)] uppercase tracking-wider mt-1">
-          Win Bonus
-        </div>
+      <span className="text-[var(--border-dim)]">│</span>
+      <div className="flex items-center gap-1">
+        <span className="text-[var(--amber)]">◎</span>
+        <span className="text-[var(--text-muted)]">{isLoading ? '-.-' : totalStaked.toFixed(2)}</span>
+        <span className="text-[var(--text-dim)]">pooled</span>
       </div>
     </div>
   );
@@ -328,10 +503,15 @@ export default function TitleScreen() {
   const [savingNickname, setSavingNickname] = useState(false);
   const [entered, setEntered] = useState(false);
   const [showDevnetModal, setShowDevnetModal] = useState(false);
+  const [activeTab, setActiveTab] = useState<'echoes' | 'victors'>('echoes');
+  const [showBottomSheet, setShowBottomSheet] = useState(false);
   
   // Get player data from DB
   const walletAddress = publicKey?.toBase58() || null;
   const { player, isLoading: playerLoading } = usePlayer(walletAddress);
+  
+  // Get leaderboard data
+  const { leaderboard, isLoading: leaderboardLoading } = useLeaderboard(20);
   
   // Sync player on connect - create if new, load nickname if exists
   useEffect(() => {
@@ -397,8 +577,10 @@ export default function TitleScreen() {
   const { deaths: dbDeaths, isLoading: deathsLoading } = useDeathFeed(10);
   const { totalDeaths, totalStaked, isLoading: statsLoading } = usePoolStats();
 
-  // Use real data if available, fall back to mock
-  const deathFeed = dbDeaths.length > 0 ? dbDeaths : mockDeathFeed;
+  // Use real data if available, fall back to mock - cast to DeathEntry for type safety
+  const deathFeed: DeathEntry[] = dbDeaths.length > 0 
+    ? (dbDeaths as unknown as DeathEntry[])
+    : mockDeathFeed;
 
   // Fetch balance when connected
   useEffect(() => {
@@ -502,30 +684,26 @@ export default function TitleScreen() {
                   {connecting ? (
                     <span className="flex items-center gap-3">
                       <span className="animate-spin">◎</span>
-                      Connecting...
+                      <span>Connecting...</span>
                     </span>
                   ) : (
-                    <span className="flex items-center gap-3">
-                      <span className="text-xl">◎</span>
-                      <span>Connect Wallet</span>
-                    </span>
+                    <span>CONNECT WALLET</span>
                   )}
                 </button>
                 <button
                   onClick={handleFreePlay}
                   className="text-[var(--text-dim)] hover:text-[var(--purple-bright)] text-sm transition-colors"
                 >
-                  ▶ Free Play (no wallet)
+                  or play free
                 </button>
               </>
             ) : (
               <Link
                 href="/stake"
                 onClick={() => playSFX('ui-hover')}
-                className="group relative px-8 py-4 bg-gradient-to-b from-[var(--amber)]/40 to-[var(--amber-dim)]/30 border-2 border-[var(--amber-bright)] text-[var(--amber-bright)] hover:from-[var(--amber)]/60 hover:to-[var(--amber)]/40 transition-all text-lg tracking-wider shadow-[0_0_30px_rgba(245,158,11,0.3)] hover:shadow-[0_0_50px_rgba(245,158,11,0.4)] inline-flex items-center gap-3"
+                className="group relative px-10 py-4 bg-gradient-to-b from-[var(--amber)]/30 to-transparent border border-[var(--amber)] text-[var(--amber-bright)] hover:from-[var(--amber)]/50 hover:border-[var(--amber-bright)] transition-all text-lg tracking-[0.15em] shadow-[0_0_30px_rgba(245,158,11,0.2)] hover:shadow-[0_0_50px_rgba(245,158,11,0.3)]"
               >
-                <span className="text-xl group-hover:translate-x-1 transition-transform">▶</span>
-                <span>Enter the Crypt</span>
+                DESCEND
               </Link>
             )}
           </div>
@@ -591,51 +769,22 @@ export default function TitleScreen() {
           </div>
         )}
 
-        {/* Pool stats */}
-        <PoolStats 
+        {/* Stats bar */}
+        <StatsBar 
           totalDeaths={totalDeaths}
           totalStaked={totalStaked}
           isLoading={statsLoading}
         />
 
-        {/* Death feed header */}
-        <div className="px-4 py-3 border-b border-[var(--border-dim)]/50 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-[var(--red)]">☠</span>
-            <span className="text-xs text-[var(--text-muted)] uppercase tracking-[0.2em]">Live Death Feed</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <span className="w-2 h-2 bg-[var(--red)] rounded-full animate-pulse" />
-            <span className="text-[10px] text-[var(--text-dim)]">LIVE</span>
-          </div>
-        </div>
-
-        {/* Death feed */}
-        <div className="flex-1 overflow-y-auto max-h-64 px-4">
-          {deathsLoading ? (
-            <div className="text-[var(--text-dim)] text-xs py-8 text-center animate-pulse">
-              Loading the fallen...
-            </div>
-          ) : deathFeed.length === 0 ? (
-            <div className="text-center py-8">
-              <div className="text-[var(--text-dim)] text-2xl mb-2">👻</div>
-              <div className="text-[var(--text-dim)] text-xs">No deaths yet.</div>
-              <div className="text-[var(--text-muted)] text-xs mt-1">Be the first to fall...</div>
-            </div>
-          ) : (
-            deathFeed.map((death, i: number) => (
-              <DeathFeedItem 
-                key={(death as Death).id || i} 
-                playerName={death.playerName}
-                room={death.room}
-                finalMessage={death.finalMessage}
-                createdAt={death.createdAt}
-                onChainSignature={(death as Death).onChainSignature}
-                isNew={i === 0}
-              />
-            ))
-          )}
-        </div>
+        {/* Echoes / Victors section */}
+        <EchoesSection
+          deaths={deathFeed}
+          leaderboard={leaderboard}
+          deathsLoading={deathsLoading || leaderboardLoading}
+          onShowAll={() => setShowBottomSheet(true)}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
 
         {/* Footer */}
         <footer className="px-4 py-3 border-t border-[var(--border-dim)]/50 text-center">
@@ -651,6 +800,18 @@ export default function TitleScreen() {
       {showDevnetModal && (
         <DevnetModal onClose={() => setShowDevnetModal(false)} />
       )}
+      
+      {/* Bottom Sheet for full Echoes/Victors */}
+      <BottomSheet 
+        isOpen={showBottomSheet}
+        onClose={() => setShowBottomSheet(false)}
+        activeTab={activeTab}
+        deaths={deathFeed}
+        leaderboard={leaderboard}
+      />
+      
+      {/* CRT scanline overlay */}
+      <CRTOverlay />
     </div>
     </GameFrame>
   );
