@@ -265,6 +265,80 @@ export function useGameAudio(gameState: {
 | Player dies | `playDeathSequence()` |
 | UI button click | `playSfx('button')` |
 
+## Audio Generation (ElevenLabs)
+
+We use the **ElevenLabs Sound Generation API** to create custom SFX and ambient loops.
+
+### Audio Test Lab
+
+Access the test lab at `/audio-test` (Next.js web app):
+
+```bash
+cd ~/workspace/code/die-forward
+npm run dev
+# Open http://localhost:3000/audio-test
+```
+
+**Features:**
+- All sound presets with editable prompts
+- Generate new sounds with one click
+- Play/loop existing sounds
+- Custom sound generation with arbitrary prompts
+
+### Generation Workflow
+
+1. **Generate** — Sends prompt to ElevenLabs, saves MP3 to `public/audio/`
+2. **Regenerate** — Old file is backed up, new file takes its place
+3. **Versioning** — Backups named `{id}-old-{YYYYMMDD}-{HHMM}.mp3`
+
+Example:
+```
+flee-fail.mp3                    # Current version
+flee-fail-old-20260216-1541.mp3  # Replaced on Feb 16 at 15:41
+flee-fail-old-20260215-0930.mp3  # Replaced on Feb 15 at 09:30
+```
+
+### API Route
+
+```
+POST /api/audio/generate
+```
+
+**Request:**
+```json
+{
+  "prompt": "Body stumbling and falling on stone floor, impact thud",
+  "filename": "flee-fail",
+  "duration": 1.5
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "filename": "flee-fail.mp3",
+  "path": "/audio/flee-fail.mp3",
+  "size": 24703,
+  "backedUpAs": "flee-fail-old-20260216-1541.mp3"
+}
+```
+
+### Environment
+
+Requires `ELEVENLABS_API_KEY` in `.env.local`:
+
+```
+ELEVENLABS_API_KEY=your_key_here
+```
+
+### Prompt Tips
+
+- Be specific: "no voice no scream" to avoid unwanted vocals
+- Include environment: "in a cave, echoing" for reverb
+- Specify what you DON'T want as well as what you do
+- Keep duration short for SFX (0.5-2s), longer for ambient (10-15s)
+
 ## Asset Sources (Free/CC)
 
 | Source | Good For |
@@ -274,6 +348,7 @@ export function useGameAudio(gameState: {
 | [pixabay.com/music](https://pixabay.com/music) | Ambient tracks |
 | [Suno](https://suno.ai) | AI-generated music (own output) |
 | [Udio](https://udio.com) | AI-generated music |
+| **[ElevenLabs](https://elevenlabs.io)** | **AI-generated SFX (primary)** |
 
 ## Future Enhancements (Post-MVP)
 
