@@ -79,7 +79,7 @@ export default function StakeScreen() {
     <SafeAreaView className="flex-1 bg-crypt-bg">
       {/* Header */}
       <View className="flex-row items-center justify-between px-4 py-3 border-b border-crypt-border">
-        <Pressable onPress={() => router.back()}>
+        <Pressable onPress={() => router.replace('/')}>
           <Text className="text-bone-muted text-sm font-mono">← BACK</Text>
         </Pressable>
         <Text className="text-amber text-base font-mono font-bold tracking-widest">THE TOLL</Text>
