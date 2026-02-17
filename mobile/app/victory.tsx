@@ -86,9 +86,11 @@ export default function VictoryScreen() {
     const shareMessage = isEmptyHanded 
       ? `I escaped Die Forward! No stake, just glory.`
       : `I escaped Die Forward and won ${totalReward.toFixed(3)} SOL!`;
-    await captureAndShare('Die Forward - Victory!', shareMessage);
+    const success = await captureAndShare('Die Forward - Victory!', shareMessage);
     setSharing(false);
-    setShowShareModal(false);
+    if (success) {
+      setShowShareModal(false);
+    }
   };
 
   // Dramatic victory intro animation

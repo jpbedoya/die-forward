@@ -133,41 +133,63 @@ export function useShareCard() {
   const viewShotRef = useRef<ViewShot>(null);
 
   const captureAndShare = useCallback(async (title: string, message: string) => {
-    if (!viewShotRef.current) return false;
+    console.log('[ShareCard] Starting capture...', { hasRef: !!viewShotRef.current });
+    
+    if (!viewShotRef.current) {
+      console.error('[ShareCard] No viewShotRef');
+      return false;
+    }
 
     try {
       // Capture the view as an image
+      console.log('[ShareCard] Calling capture...');
       const uri = await viewShotRef.current.capture?.();
+      console.log('[ShareCard] Capture result:', uri ? 'success' : 'null', uri?.slice(0, 50));
+      
       if (!uri) {
-        console.error('Failed to capture view');
+        console.error('[ShareCard] Failed to capture view - no URI returned');
         return false;
       }
 
       // Web: Use Web Share API or download fallback
       if (Platform.OS === 'web') {
-        // Convert data URI to blob for Web Share API
-        const response = await fetch(uri);
-        const blob = await response.blob();
-        const file = new File([blob], 'die-forward-card.png', { type: 'image/png' });
+        console.log('[ShareCard] Web platform detected');
+        
+        try {
+          // Convert data URI to blob for Web Share API
+          const response = await fetch(uri);
+          const blob = await response.blob();
+          const file = new File([blob], 'die-forward-card.png', { type: 'image/png' });
+          console.log('[ShareCard] Created file blob:', blob.size, 'bytes');
 
-        // Try Web Share API first (mobile browsers)
-        if (navigator.share && navigator.canShare?.({ files: [file] })) {
-          await navigator.share({
-            title,
-            text: message,
-            files: [file],
-          });
+          // Try Web Share API first (mobile browsers)
+          const canShare = navigator.share && navigator.canShare?.({ files: [file] });
+          console.log('[ShareCard] Can use Web Share API:', canShare);
+          
+          if (canShare) {
+            await navigator.share({
+              title,
+              text: message,
+              files: [file],
+            });
+            console.log('[ShareCard] Web Share completed');
+            return true;
+          }
+
+          // Fallback: Download the image
+          console.log('[ShareCard] Falling back to download');
+          const link = document.createElement('a');
+          link.href = uri;
+          link.download = 'die-forward-card.png';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          console.log('[ShareCard] Download triggered');
           return true;
+        } catch (webErr) {
+          console.error('[ShareCard] Web share failed:', webErr);
+          return false;
         }
-
-        // Fallback: Download the image
-        const link = document.createElement('a');
-        link.href = uri;
-        link.download = 'die-forward-card.png';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        return true;
       }
 
       // Native: Use expo-sharing

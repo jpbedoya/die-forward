@@ -36,9 +36,12 @@ export default function DeathScreen() {
   const handleShare = async () => {
     setSharing(true);
     playSFX('share-click');
-    await captureAndShare('Die Forward - Death Card', `I died in Die Forward at room ${roomNumber}. ${finalWords}`);
+    const success = await captureAndShare('Die Forward - Death Card', `I died in Die Forward at room ${roomNumber}. ${finalWords}`);
     setSharing(false);
-    setShowShareModal(false);
+    // Only close modal on success
+    if (success) {
+      setShowShareModal(false);
+    }
   };
 
   // Dramatic "YOU DIED" intro animation
@@ -204,9 +207,6 @@ export default function DeathScreen() {
         {/* Final Words Input */}
         {!submitted ? (
           <View className="mb-6">
-            <Text className="text-bone-muted text-sm font-mono mb-3 text-center">
-              {finalWordsIntro}
-            </Text>
             <TextInput
               className="bg-crypt-surface border border-crypt-border p-4 text-bone font-mono text-base mb-4"
               placeholder="Your final words..."
@@ -215,7 +215,6 @@ export default function DeathScreen() {
               onChangeText={setFinalWords}
               multiline
               maxLength={140}
-              autoFocus
             />
             <Pressable
               className={`py-4 items-center ${finalWords.trim() ? 'bg-blood active:bg-blood-dark' : 'bg-crypt-border'}`}
@@ -226,13 +225,10 @@ export default function DeathScreen() {
                 <ActivityIndicator color="#ffffff" />
               ) : (
                 <Text className={`font-mono font-bold ${finalWords.trim() ? 'text-white' : 'text-bone-dark'}`}>
-                  LEAVE YOUR MARK
+                  ETCH INTO STONE
                 </Text>
               )}
             </Pressable>
-            <Text className="text-bone-dark text-xs font-mono text-center mt-2">
-              Your words will be found by other explorers
-            </Text>
           </View>
         ) : (
           <View className="mb-6">
