@@ -291,7 +291,16 @@ export default function AdminPage() {
                   )}
                 </div>
                 <span className="text-[var(--text-dim)] text-right">
-                  {(death.createdAt || death.timestamp) ? new Date(death.createdAt || death.timestamp).toLocaleString() : 'Unknown time'}
+                  {(death.createdAt || death.timestamp) 
+                    ? new Date(death.createdAt || death.timestamp).toLocaleString('en-US', {
+                        month: '2-digit',
+                        day: '2-digit',
+                        year: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false,
+                      })
+                    : 'Unknown'}
                 </span>
               </div>
             ))}
