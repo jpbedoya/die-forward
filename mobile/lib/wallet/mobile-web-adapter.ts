@@ -151,12 +151,26 @@ export function getMobileWebAddress(): Address | null {
 
 /**
  * Sign and send a transaction
+ * On mobile web, we may need to reauthorize before signing
  */
 export async function mobileWebSignAndSend(tx: Transaction): Promise<string> {
   const adapter = getAdapter();
   
-  if (!adapter.connected || !adapter.publicKey) {
-    throw new Error('Wallet not connected');
+  if (!adapter.publicKey) {
+    throw new Error('Wallet not connected - please connect your wallet first');
+  }
+  
+  // On mobile web, the session might be stale even if adapter.connected is true
+  // Try to ensure we have a valid session by reconnecting if needed
+  if (!adapter.connected) {
+    console.log('[MWA] Adapter not connected, attempting reconnect...');
+    try {
+      await adapter.connect();
+    } catch (e) {
+      console.error('[MWA] Reconnect failed:', e);
+      authCache.clear();
+      throw new Error('Wallet session expired - please reconnect your wallet');
+    }
   }
   
   // Ensure blockhash and fee payer
@@ -166,8 +180,24 @@ export async function mobileWebSignAndSend(tx: Transaction): Promise<string> {
   }
   tx.feePayer = adapter.publicKey;
   
-  const signature = await adapter.sendTransaction(tx, mobileWebConnection);
-  return signature;
+  console.log('[MWA] Sending transaction with feePayer:', adapter.publicKey.toBase58());
+  
+  try {
+    const signature = await adapter.sendTransaction(tx, mobileWebConnection);
+    console.log('[MWA] Transaction sent, signature:', signature);
+    return signature;
+  } catch (e: any) {
+    console.error('[MWA] sendTransaction failed:', e?.message || e);
+    
+    // If signature verification failed, the session is definitely invalid
+    if (e?.message?.includes('Signature verification') || e?.message?.includes('Missing signature')) {
+      console.log('[MWA] Session invalid, clearing cache');
+      authCache.clear();
+      adapterInstance = null;
+      throw new Error('Wallet session expired - please reconnect and try again');
+    }
+    throw e;
+  }
 }
 
 /**
