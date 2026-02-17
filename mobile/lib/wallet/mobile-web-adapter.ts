@@ -77,7 +77,7 @@ export const mobileWebConnection = new Connection(RPC_ENDPOINT, 'confirmed');
  * Connect via the mobile wallet adapter (uses OS wallet picker)
  * Always forces fresh auth to avoid stale session issues
  */
-export async function mobileWebConnect(): Promise<{ address: Address }> {
+export async function mobileWebConnect(): Promise<{ address: Address } | null> {
   const adapter = getAdapter();
   
   // If adapter thinks it's connected but we're calling connect,
@@ -92,10 +92,15 @@ export async function mobileWebConnect(): Promise<{ address: Address }> {
     authCache.clear();
   }
   
+  console.log('[MWA] Calling adapter.connect()...');
   await adapter.connect();
+  console.log('[MWA] adapter.connect() returned, publicKey:', adapter.publicKey?.toBase58());
   
+  // On mobile web, if redirect happened, publicKey might not be set yet
+  // The state will sync via event handlers when returning
   if (!adapter.publicKey) {
-    throw new Error('No wallet connected');
+    console.log('[MWA] No publicKey after connect - redirect may have occurred');
+    return null;
   }
   
   return {

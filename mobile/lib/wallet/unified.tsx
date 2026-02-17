@@ -368,16 +368,7 @@ function MobileWalletProvider({ children }: { children: ReactNode }) {
       // 1. The connect returns immediately (some wallets)
       // 2. A timeout triggers (redirect case - state will sync via events)
       
-      const connectPromise = mobileWebConnect();
-      const timeoutPromise = new Promise<null>((resolve) => {
-        // If redirect happens, this won't block forever
-        setTimeout(() => {
-          console.log('[MobileWeb] Connect timeout - waiting for redirect return');
-          resolve(null);
-        }, 3000);
-      });
-      
-      const result = await Promise.race([connectPromise, timeoutPromise]);
+      const result = await mobileWebConnect();
       
       if (result?.address) {
         console.log('[MobileWeb] Connect result:', result);
