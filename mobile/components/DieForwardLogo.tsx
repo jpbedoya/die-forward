@@ -79,32 +79,29 @@ export function DieForwardLogo({
   );
 }
 
-// For share cards - simpler inline version
+// Compact ASCII art that fits better on share cards
+const ASCII_LOGO_COMPACT = `▄▀▀▄ ▀ ▄▀▀▀
+█  █ █ █▀▀ 
+▀▀▀  ▀ ▀▀▀▀
+▄▀▀▀ ▄▀▀▄ █▀▀▄ █   █ ▄▀▀▄ █▀▀▄ █▀▀▄
+█▀▀  █  █ █▀▀▄ █ █ █ █▀▀█ █▀▀▄ █  █
+▀    ▀▀▀  ▀  ▀ ▀▀ ▀▀ ▀  ▀ ▀  ▀ ▀▀▀ `;
+
+// For share cards - simpler inline version with uniform sizing
 export function DieForwardLogoInline({ color = '#f59e0b' }: { color?: string }) {
   return (
     <View className="items-center">
       <Text 
         style={{ 
           fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-          fontSize: 3,
-          lineHeight: 4,
+          fontSize: 5,
+          lineHeight: 6,
           color,
           textAlign: 'center',
+          letterSpacing: 0,
         }}
       >
-        {ASCII_DIE}
-      </Text>
-      <Text 
-        style={{ 
-          fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-          fontSize: 2,
-          lineHeight: 3,
-          color,
-          textAlign: 'center',
-          marginTop: 1,
-        }}
-      >
-        {ASCII_FORWARD}
+        {ASCII_LOGO_COMPACT}
       </Text>
     </View>
   );
