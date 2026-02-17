@@ -73,21 +73,58 @@ class ErrorBoundary extends React.Component<
     console.error('App crashed:', error, errorInfo);
   }
 
+  handleReset = () => {
+    this.setState({ hasError: false, error: null });
+    // Force reload to reset app state
+    if (Platform.OS === 'web' && typeof window !== 'undefined') {
+      window.location.href = '/';
+    }
+  };
+
   render() {
     if (this.state.hasError) {
       return (
-        <View style={{ flex: 1, backgroundColor: '#0d0d0d', padding: 20, paddingTop: 60 }}>
-          <Text style={{ color: '#f59e0b', fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>
-            💀 Die Forward Crashed
+        <View style={{ flex: 1, backgroundColor: '#0d0d0d', padding: 20, paddingTop: 80, alignItems: 'center' }}>
+          <Text style={{ fontSize: 48, marginBottom: 16 }}>💀</Text>
+          <Text style={{ color: '#d4b896', fontSize: 20, fontWeight: 'bold', marginBottom: 8, fontFamily: 'monospace', letterSpacing: 2 }}>
+            SOMETHING BROKE
           </Text>
-          <ScrollView>
-            <Text style={{ color: '#ef4444', fontSize: 14, fontFamily: 'monospace' }}>
-              {this.state.error?.toString()}
-            </Text>
-            <Text style={{ color: '#666', fontSize: 12, marginTop: 10, fontFamily: 'monospace' }}>
-              {this.state.error?.stack}
-            </Text>
-          </ScrollView>
+          <Text style={{ color: '#666', fontSize: 12, marginBottom: 24, fontFamily: 'monospace', textAlign: 'center' }}>
+            The depths claim all eventually.
+          </Text>
+          
+          <View 
+            style={{ 
+              backgroundColor: '#1a1a1a', 
+              borderWidth: 1, 
+              borderColor: '#333', 
+              padding: 16, 
+              marginBottom: 24,
+              maxHeight: 150,
+              width: '100%',
+            }}
+          >
+            <ScrollView>
+              <Text style={{ color: '#ef4444', fontSize: 11, fontFamily: 'monospace' }}>
+                {this.state.error?.message || 'Unknown error'}
+              </Text>
+            </ScrollView>
+          </View>
+
+          <Text 
+            onPress={this.handleReset}
+            style={{ 
+              color: '#f59e0b', 
+              fontSize: 14, 
+              fontWeight: 'bold', 
+              fontFamily: 'monospace',
+              padding: 16,
+              borderWidth: 1,
+              borderColor: '#f59e0b',
+            }}
+          >
+            RETURN TO SURFACE
+          </Text>
         </View>
       );
     }

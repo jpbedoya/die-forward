@@ -77,10 +77,14 @@ export default function PlayScreen() {
     playAmbient('ambient-explore');
   }, []);
 
-  // Redirect if no session
+  // Redirect if no session (delay to ensure layout is mounted)
   useEffect(() => {
     if (!game.sessionToken && dungeon.length === 0) {
-      router.replace('/stake');
+      // Small delay to ensure Root Layout is mounted before navigating
+      const timeout = setTimeout(() => {
+        router.replace('/stake');
+      }, 100);
+      return () => clearTimeout(timeout);
     }
   }, [game.sessionToken, dungeon.length]);
 
