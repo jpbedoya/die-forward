@@ -228,12 +228,18 @@ export default function CombatScreen() {
           fleeSuccess = true;
           playerDmg = calculateDamage(5 + Math.floor(Math.random() * 8), false);
           actionNarrative = getFleeNarration('hurt');
+          triggerShake('light');
+          // Light haptic for getting clipped while fleeing
+          if (Platform.OS !== 'web') {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          }
         } else {
           // Failed to escape
           fleeSuccess = false;
           playerDmg = calculateDamage(8 + Math.floor(Math.random() * 12), false);
           actionNarrative = getFleeNarration('fail');
           playSFX('flee-fail');
+          triggerShake('medium');
           // Haptic for failed escape
           if (Platform.OS !== 'web') {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
