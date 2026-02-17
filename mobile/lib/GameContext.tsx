@@ -105,6 +105,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
           loading: false,
         });
       } else {
+        // null means redirect in progress or user cancelled - not an error
+        // State will sync when returning from wallet app
         updateState({ loading: false });
       }
     } catch (err) {
@@ -113,9 +115,15 @@ export function GameProvider({ children }: { children: ReactNode }) {
         updateState({ loading: false });
         throw err;
       }
+      // Don't show error for user rejections
+      const errMsg = err instanceof Error ? err.message : String(err);
+      if (errMsg.includes('User rejected') || errMsg.includes('cancelled')) {
+        updateState({ loading: false });
+        return;
+      }
       updateState({
         loading: false,
-        error: err instanceof Error ? err.message : 'Failed to connect wallet',
+        error: errMsg || 'Failed to connect wallet',
       });
     }
   }, [updateState, unifiedWallet]);

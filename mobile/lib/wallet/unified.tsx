@@ -360,11 +360,27 @@ function MobileWalletProvider({ children }: { children: ReactNode }) {
   const connect = useCallback(async (): Promise<Address | null> => {
     console.log('[MobileWeb] Starting connect via wallet-adapter-mobile...');
     setConnecting(true);
+    
     try {
-      const result = await mobileWebConnect();
-      console.log('[MobileWeb] Connect result:', result);
+      // On mobile web, the connect() call may redirect to wallet app.
+      // The state will be synced via event listeners when returning.
+      // We use a Promise that resolves when either:
+      // 1. The connect returns immediately (some wallets)
+      // 2. A timeout triggers (redirect case - state will sync via events)
+      
+      const connectPromise = mobileWebConnect();
+      const timeoutPromise = new Promise<null>((resolve) => {
+        // If redirect happens, this won't block forever
+        setTimeout(() => {
+          console.log('[MobileWeb] Connect timeout - waiting for redirect return');
+          resolve(null);
+        }, 3000);
+      });
+      
+      const result = await Promise.race([connectPromise, timeoutPromise]);
       
       if (result?.address) {
+        console.log('[MobileWeb] Connect result:', result);
         setAddress(result.address);
         setConnected(true);
         
@@ -379,11 +395,17 @@ function MobileWalletProvider({ children }: { children: ReactNode }) {
         
         return result.address;
       } else {
-        console.warn('[MobileWeb] No address in result');
+        // Timeout case - redirect is happening
+        // State will be synced when user returns via focus/visibility events
+        console.log('[MobileWeb] Redirect in progress, state will sync on return');
         return null;
       }
     } catch (e: any) {
       console.error('[MobileWeb] Connect failed:', e?.message || e);
+      // Don't throw error for user cancellation
+      if (e?.message?.includes('User rejected') || e?.message?.includes('cancelled')) {
+        return null;
+      }
       throw new Error(e?.message || 'Wallet connection failed');
     } finally {
       setConnecting(false);
