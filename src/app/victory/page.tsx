@@ -167,46 +167,55 @@ export default function VictoryScreen() {
           </div>
           <h1 className="text-[var(--green-bright)] text-2xl tracking-widest mb-2">VICTORY</h1>
           <p className="text-[var(--text-secondary)] text-sm">
-            You conquered <span className="text-[var(--amber-bright)]">{victoryData.zone}</span>
+            {victoryData.stakeAmount > 0 
+              ? "You emerged. The depths released you."
+              : "You emerged. Unmarked, unbound."}
           </p>
         </div>
 
         {/* Stats */}
         <div className="w-full max-w-xs mb-8">
+          <div className="text-[var(--text-muted)] text-xs uppercase tracking-wider mb-3">
+            Your Passage
+          </div>
           <div className="border border-[var(--border-dim)] bg-[var(--bg-surface)] p-4 text-sm">
-            <div className="flex justify-between py-1 border-b border-[var(--border-dim)]">
+            <div className={`flex justify-between py-1 ${victoryData.stakeAmount > 0 ? 'border-b border-[var(--border-dim)]' : ''}`}>
               <span className="text-[var(--text-muted)]">Rooms Cleared</span>
               <span className="text-[var(--text-primary)]">{victoryData.roomsCleared}</span>
             </div>
-            <div className="flex justify-between py-1">
-              <span className="text-[var(--text-muted)]">Stake Amount</span>
-              <span className="text-[var(--amber)]">◎ {victoryData.stakeAmount}</span>
-            </div>
+            {victoryData.stakeAmount > 0 && (
+              <div className="flex justify-between py-1">
+                <span className="text-[var(--text-muted)]">Stake Amount</span>
+                <span className="text-[var(--amber)]">◎ {victoryData.stakeAmount}</span>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Rewards */}
-        <div className="w-full max-w-xs mb-8">
-          <div className="text-[var(--text-muted)] text-xs uppercase tracking-wider mb-3">
-            Your Reward
-          </div>
-          <div className="border border-[var(--green)]/30 bg-[var(--green)]/10 p-4">
-            <div className="flex justify-between text-sm mb-2">
-              <span className="text-[var(--text-muted)]">Your stake returned</span>
-              <span className="text-[var(--amber)]">◎ {victoryData.stakeAmount}</span>
+        {/* Rewards - only show for staked runs */}
+        {victoryData.stakeAmount > 0 && (
+          <div className="w-full max-w-xs mb-8">
+            <div className="text-[var(--text-muted)] text-xs uppercase tracking-wider mb-3">
+              What You Reclaim
             </div>
-            <div className="flex justify-between text-sm mb-2">
-              <span className="text-[var(--text-muted)]">Victory bonus (50%)</span>
-              <span className="text-[var(--green)]">+ ◎ {victoryData.bonus.toFixed(4)}</span>
-            </div>
-            <div className="border-t border-[var(--green)]/30 pt-2 mt-2">
-              <div className="flex justify-between">
-                <span className="text-[var(--text-secondary)] font-bold">Total</span>
-                <span className="text-[var(--green-bright)] text-xl font-bold">◎ {victoryData.totalReward.toFixed(4)}</span>
+            <div className="border border-[var(--green)]/30 bg-[var(--green)]/10 p-4">
+              <div className="flex justify-between text-sm mb-2">
+                <span className="text-[var(--text-muted)]">Your stake returned</span>
+                <span className="text-[var(--amber)]">◎ {victoryData.stakeAmount}</span>
+              </div>
+              <div className="flex justify-between text-sm mb-2">
+                <span className="text-[var(--text-muted)]">Victory bonus (50%)</span>
+                <span className="text-[var(--green)]">+ ◎ {victoryData.bonus.toFixed(4)}</span>
+              </div>
+              <div className="border-t border-[var(--green)]/30 pt-2 mt-2">
+                <div className="flex justify-between">
+                  <span className="text-[var(--text-secondary)] font-bold">Total</span>
+                  <span className="text-[var(--green-bright)] text-xl font-bold">◎ {victoryData.totalReward.toFixed(4)}</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Error */}
         {error && (
@@ -225,10 +234,14 @@ export default function VictoryScreen() {
             {claiming ? (
               <span className="flex items-center justify-center gap-2">
                 <span className="animate-pulse">◎</span>
-                Claiming rewards...
+                {victoryData.stakeAmount > 0 ? 'Claiming rewards...' : 'Processing...'}
               </span>
             ) : (
-              <span>▶ Claim {victoryData.totalReward.toFixed(4)} SOL</span>
+              <span>
+                {victoryData.stakeAmount > 0 
+                  ? `▶ Claim ${victoryData.totalReward.toFixed(4)} SOL`
+                  : '▶ Continue'}
+              </span>
             )}
           </button>
         ) : (
@@ -269,7 +282,7 @@ export default function VictoryScreen() {
 
       {/* Footer */}
       <footer className="text-center text-[10px] text-[var(--text-muted)] py-4">
-        The dead salute you, survivor.
+        Few emerge. Fewer return.
       </footer>
 
     </div>
