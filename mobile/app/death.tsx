@@ -158,7 +158,10 @@ export default function DeathScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-crypt-bg">
-      <AudioToggle ambientTrack="ambient-death" />
+      {/* Header with audio toggle */}
+      <View className="flex-row items-center justify-end px-4 py-2">
+        <AudioToggle ambientTrack="ambient-death" inline />
+      </View>
 
       <Animated.View style={{ flex: 1, opacity: contentFade }}>
       <ScrollView className="flex-1" contentContainerClassName="p-6">

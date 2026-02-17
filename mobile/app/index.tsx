@@ -170,7 +170,10 @@ export default function HomeScreen() {
     <SafeAreaView className="flex-1 bg-crypt-bg" edges={['top', 'left', 'right', 'bottom']}>
       <CRTOverlay />
       
-      <AudioToggle ambientTrack="ambient-title" />
+      {/* Header with audio toggle */}
+      <View className="flex-row items-center justify-end px-4 py-2">
+        <AudioToggle ambientTrack="ambient-title" inline />
+      </View>
 
       <View className="flex-1 px-4" style={Platform.OS === 'web' ? { paddingBottom: 20 } : undefined}>
         

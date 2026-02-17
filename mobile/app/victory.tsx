@@ -225,7 +225,10 @@ export default function VictoryScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-crypt-bg">
-      <AudioToggle ambientTrack="ambient-victory" />
+      {/* Header with audio toggle */}
+      <View className="flex-row items-center justify-end px-4 py-2">
+        <AudioToggle ambientTrack="ambient-victory" inline />
+      </View>
 
       <Animated.View style={{ flex: 1, opacity: contentFade }}>
       <ScrollView className="flex-1" contentContainerClassName="p-6">
