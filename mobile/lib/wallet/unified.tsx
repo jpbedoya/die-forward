@@ -81,6 +81,7 @@ if (Platform.OS === 'ios' || Platform.OS === 'android') {
 }
 
 // Mobile web: use wallet-adapter-mobile (proper OS wallet picker)
+let clearMobileWebCache: (() => void) | undefined;
 if (isMobileWeb) {
   const mwa = require('./mobile-web-adapter');
   mobileWebConnect = mwa.mobileWebConnect;
@@ -90,6 +91,7 @@ if (isMobileWeb) {
   mobileWebConnection = mwa.mobileWebConnection;
   isMobileWebConnected = mwa.isMobileWebConnected;
   getMobileWebAddress = mwa.getMobileWebAddress;
+  clearMobileWebCache = mwa.clearMobileWebCache;
 }
 
 // Wallet connector info
@@ -274,22 +276,30 @@ function MobileWalletProvider({ children }: { children: ReactNode }) {
   const [balance, setBalance] = useState<number | null>(null);
   
   // Sync state from adapter - handles returning from wallet app
-  const syncAdapterState = useCallback(async () => {
+  // Note: We don't auto-trust cached state on initial mount to avoid stale sessions
+  const syncAdapterState = useCallback(async (trustCache: boolean = false) => {
     const isConn = isMobileWebConnected?.() ?? false;
     const addr = getMobileWebAddress?.() ?? null;
     
-    console.log('[MobileWeb] Syncing state - connected:', isConn, 'address:', addr);
+    console.log('[MobileWeb] Syncing state - connected:', isConn, 'address:', addr, 'trustCache:', trustCache);
     
-    if (isConn && addr) {
+    // Only trust cached connection if explicitly told to (e.g., after returning from wallet app)
+    if (isConn && addr && trustCache) {
       setAddress(addr);
       setConnected(true);
       try {
         const bal = await getMobileWebBalance(addr);
         setBalance(bal);
       } catch (e) {
-        console.warn('[MobileWeb] Failed to fetch balance on sync:', e);
+        // If balance fetch fails, session might be stale
+        console.warn('[MobileWeb] Failed to fetch balance on sync, clearing state:', e);
+        clearMobileWebCache?.();
+        setConnected(false);
+        setAddress(null);
+        setBalance(null);
       }
-    } else {
+    } else if (!trustCache) {
+      // On initial mount, don't auto-restore - require explicit connect
       setConnected(false);
       setAddress(null);
     }
@@ -297,15 +307,16 @@ function MobileWalletProvider({ children }: { children: ReactNode }) {
   
   // Check connection state on mount and listen for adapter events
   useEffect(() => {
-    // Initial sync
-    syncAdapterState();
+    // Initial sync - don't trust cache on mount
+    syncAdapterState(false);
     
     // Listen for adapter events (handles returning from wallet app)
     const adapter = require('./mobile-web-adapter').getMobileWebAdapter?.();
     if (adapter) {
       const onConnect = () => {
         console.log('[MobileWeb] Adapter "connect" event fired');
-        syncAdapterState();
+        // Trust cache after explicit connect event from adapter
+        syncAdapterState(true);
       };
       const onDisconnect = () => {
         console.log('[MobileWeb] Adapter "disconnect" event fired');
@@ -325,12 +336,13 @@ function MobileWalletProvider({ children }: { children: ReactNode }) {
   }, [syncAdapterState]);
   
   // Also sync when window regains focus (fallback for missed events)
+  // Trust cache here since user is likely returning from wallet app
   useEffect(() => {
     if (typeof window === 'undefined') return;
     
     const handleFocus = () => {
       console.log('[MobileWeb] Window focus - syncing adapter state');
-      syncAdapterState();
+      syncAdapterState(true);
     };
     
     window.addEventListener('focus', handleFocus);
@@ -398,12 +410,44 @@ function MobileWalletProvider({ children }: { children: ReactNode }) {
       })
     );
     
-    return await mobileWebSignAndSend(tx);
+    try {
+      return await mobileWebSignAndSend(tx);
+    } catch (e: any) {
+      const errorMsg = e?.message || String(e);
+      // If signature verification failed or session invalid, clear cache and reset state
+      if (errorMsg.includes('Signature verification') || 
+          errorMsg.includes('not connected') ||
+          errorMsg.includes('session') ||
+          errorMsg.includes('authorization')) {
+        console.warn('[MobileWeb] Session appears invalid, clearing cache');
+        clearMobileWebCache?.();
+        setConnected(false);
+        setAddress(null);
+        setBalance(null);
+      }
+      throw e;
+    }
   }, [address]);
   
   const signAndSendTransaction = useCallback(async (transaction: any): Promise<string> => {
     if (!address) throw new Error('Wallet not connected');
-    return await mobileWebSignAndSend(transaction);
+    try {
+      return await mobileWebSignAndSend(transaction);
+    } catch (e: any) {
+      const errorMsg = e?.message || String(e);
+      // If signature verification failed or session invalid, clear cache and reset state
+      if (errorMsg.includes('Signature verification') || 
+          errorMsg.includes('not connected') ||
+          errorMsg.includes('session') ||
+          errorMsg.includes('authorization')) {
+        console.warn('[MobileWeb] Session appears invalid, clearing cache');
+        clearMobileWebCache?.();
+        setConnected(false);
+        setAddress(null);
+        setBalance(null);
+      }
+      throw e;
+    }
   }, [address]);
   
   const refreshBalance = useCallback(async () => {

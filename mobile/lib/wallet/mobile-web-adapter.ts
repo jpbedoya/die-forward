@@ -8,7 +8,6 @@
 import {
   SolanaMobileWalletAdapter,
   createDefaultAddressSelector,
-  createDefaultAuthorizationResultCache,
   createDefaultWalletNotFoundHandler,
 } from '@solana-mobile/wallet-adapter-mobile';
 import { Connection, PublicKey, Transaction, LAMPORTS_PER_SOL } from '@solana/web3.js';
@@ -16,11 +15,43 @@ import type { Address } from '@solana/kit';
 
 const CLUSTER = 'devnet';
 const RPC_ENDPOINT = process.env.EXPO_PUBLIC_SOLANA_RPC || 'https://api.devnet.solana.com';
+const AUTH_CACHE_KEY = 'die-forward-mwa-auth';
 
 const APP_IDENTITY = {
   name: 'Die Forward',
   uri: 'https://dieforward.com',
   icon: 'favicon.ico',
+};
+
+// Custom auth cache that we can clear
+const authCache = {
+  get: async () => {
+    try {
+      const cached = localStorage.getItem(AUTH_CACHE_KEY);
+      return cached ? JSON.parse(cached) : undefined;
+    } catch {
+      return undefined;
+    }
+  },
+  set: async (auth: any) => {
+    try {
+      if (auth) {
+        localStorage.setItem(AUTH_CACHE_KEY, JSON.stringify(auth));
+      } else {
+        localStorage.removeItem(AUTH_CACHE_KEY);
+      }
+    } catch {
+      // Ignore storage errors
+    }
+  },
+  clear: () => {
+    try {
+      localStorage.removeItem(AUTH_CACHE_KEY);
+      console.log('[MWA] Auth cache cleared');
+    } catch {
+      // Ignore
+    }
+  },
 };
 
 // Singleton adapter instance
@@ -31,7 +62,7 @@ function getAdapter(): SolanaMobileWalletAdapter {
     adapterInstance = new SolanaMobileWalletAdapter({
       addressSelector: createDefaultAddressSelector(),
       appIdentity: APP_IDENTITY,
-      authorizationResultCache: createDefaultAuthorizationResultCache(),
+      authorizationResultCache: authCache,
       chain: `solana:${CLUSTER}`,
       onWalletNotFound: createDefaultWalletNotFoundHandler(),
     });
@@ -44,9 +75,22 @@ export const mobileWebConnection = new Connection(RPC_ENDPOINT, 'confirmed');
 
 /**
  * Connect via the mobile wallet adapter (uses OS wallet picker)
+ * Always forces fresh auth to avoid stale session issues
  */
 export async function mobileWebConnect(): Promise<{ address: Address }> {
   const adapter = getAdapter();
+  
+  // If adapter thinks it's connected but we're calling connect,
+  // it's likely because of stale cache. Disconnect first.
+  if (adapter.connected) {
+    console.log('[MWA] Clearing stale connection before fresh connect');
+    try {
+      await adapter.disconnect();
+    } catch {
+      // Ignore disconnect errors
+    }
+    authCache.clear();
+  }
   
   await adapter.connect();
   
@@ -60,11 +104,28 @@ export async function mobileWebConnect(): Promise<{ address: Address }> {
 }
 
 /**
- * Disconnect
+ * Disconnect and clear cached auth
  */
 export async function mobileWebDisconnect(): Promise<void> {
   const adapter = getAdapter();
   await adapter.disconnect();
+  authCache.clear();
+}
+
+/**
+ * Clear all cached wallet state (for error recovery)
+ */
+export function clearMobileWebCache(): void {
+  authCache.clear();
+  // Reset adapter instance to force fresh connection
+  if (adapterInstance) {
+    try {
+      adapterInstance.disconnect();
+    } catch {
+      // Ignore
+    }
+    adapterInstance = null;
+  }
 }
 
 /**
