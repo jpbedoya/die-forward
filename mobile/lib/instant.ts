@@ -177,6 +177,34 @@ export async function getOrCreatePlayer(walletAddress: string, nickname?: string
   }
 }
 
+// Update player nickname
+export async function updatePlayerNickname(walletAddress: string, nickname: string): Promise<boolean> {
+  try {
+    const result = await db.queryOnce({
+      players: {
+        $: {
+          where: { walletAddress },
+          limit: 1,
+        },
+      },
+    });
+
+    const players = result.data?.players || [];
+
+    if (players && players.length > 0) {
+      const player = players[0] as unknown as Player;
+      await db.transact([
+        tx.players[player.id].update({ nickname }),
+      ]);
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('Failed to update nickname:', error);
+    return false;
+  }
+}
+
 // Update highest room reached
 export async function updateHighestRoom(walletAddress: string, room: number): Promise<void> {
   try {

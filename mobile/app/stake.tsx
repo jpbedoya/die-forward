@@ -7,6 +7,7 @@ import { useAudio } from '../lib/audio';
 import { useGameSettings } from '../lib/instant';
 import { AudioToggle } from '../components/AudioToggle';
 import { CRTOverlay } from '../components/CRTOverlay';
+import { NicknameModal } from '../components/NicknameModal';
 
 const STAKE_OPTIONS = [0.01, 0.05, 0.1, 0.25];
 
@@ -19,6 +20,8 @@ export default function StakeScreen() {
   const [staking, setStaking] = useState(false);
   const [stakingMode, setStakingMode] = useState<'stake' | 'free' | null>(null);
   const [showWalletPicker, setShowWalletPicker] = useState(false);
+  const [editingNickname, setEditingNickname] = useState(false);
+  const [nicknameInput, setNicknameInput] = useState('');
 
   useEffect(() => {
     playAmbient('ambient-title');
@@ -236,14 +239,55 @@ export default function StakeScreen() {
 
         {/* Wallet status */}
         {game.walletConnected && game.walletAddress && (
-          <View className="flex-row items-center justify-center gap-3">
-            <Text className="text-bone-dark text-xs font-mono">{formatAddress(game.walletAddress)}</Text>
-            {game.balance !== null && (
-              <Text className="text-amber-light text-xs font-mono font-bold">{game.balance.toFixed(3)} SOL</Text>
-            )}
-            <Pressable onPress={() => game.disconnect()}>
-              <Text className="text-bone-muted text-xs font-mono">[disconnect]</Text>
-            </Pressable>
+          <View className="items-center gap-2">
+            {/* Nickname row */}
+            <View className="flex-row items-center justify-center gap-2">
+              {editingNickname ? (
+                <TextInput
+                  className="bg-crypt-surface border border-amber/50 px-3 py-1 text-amber font-mono text-sm w-36 text-center"
+                  value={nicknameInput}
+                  onChangeText={(text) => setNicknameInput(text.slice(0, 16))}
+                  onBlur={() => {
+                    if (nicknameInput.trim()) {
+                      game.setNickname(nicknameInput.trim());
+                    }
+                    setEditingNickname(false);
+                  }}
+                  onSubmitEditing={() => {
+                    if (nicknameInput.trim()) {
+                      game.setNickname(nicknameInput.trim());
+                    }
+                    setEditingNickname(false);
+                  }}
+                  placeholder="Enter name..."
+                  placeholderTextColor="#57534e"
+                  maxLength={16}
+                  autoFocus
+                />
+              ) : (
+                <Pressable 
+                  className="flex-row items-center gap-1"
+                  onPress={() => {
+                    setNicknameInput(game.nickname || '');
+                    setEditingNickname(true);
+                  }}
+                >
+                  <Text className="text-amber text-sm font-mono">@{game.nickname || formatAddress(game.walletAddress)}</Text>
+                  <Text className="text-bone-dark text-xs">✎</Text>
+                </Pressable>
+              )}
+            </View>
+            
+            {/* Wallet + balance row */}
+            <View className="flex-row items-center justify-center gap-3">
+              <Text className="text-bone-dark text-xs font-mono">{formatAddress(game.walletAddress)}</Text>
+              {game.balance !== null && (
+                <Text className="text-amber-light text-xs font-mono font-bold">{game.balance.toFixed(3)} SOL</Text>
+              )}
+              <Pressable onPress={() => game.disconnect()}>
+                <Text className="text-bone-muted text-xs font-mono">[disconnect]</Text>
+              </Pressable>
+            </View>
           </View>
         )}
       </ScrollView>
@@ -286,6 +330,13 @@ export default function StakeScreen() {
           </View>
         </Pressable>
       </Modal>
+
+      {/* Nickname Modal - shows on first connect */}
+      <NicknameModal
+        visible={game.showNicknameModal}
+        onSubmit={(name) => game.setNickname(name)}
+        onSkip={() => game.dismissNicknameModal()}
+      />
     </SafeAreaView>
     <CRTOverlay />
     </View>

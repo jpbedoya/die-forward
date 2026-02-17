@@ -1,15 +1,24 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as api from './api';
 import { generateRandomDungeon, DungeonRoom } from './content';
 import { useUnifiedWallet, type Address } from './wallet/unified';
 import { GAME_POOL_PDA, buildStakeInstruction, generateSessionId } from './solana/escrow';
 import { Transaction, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { getOrCreatePlayer, updatePlayerNickname } from './instant';
+
+const NICKNAME_STORAGE_KEY = 'die-forward-nickname';
+const NICKNAME_PROMPTED_KEY = 'die-forward-nickname-prompted';
 
 interface GameState {
   // Wallet
   walletConnected: boolean;
   walletAddress: string | null;
   balance: number | null;
+  
+  // Player
+  nickname: string | null;
+  showNicknameModal: boolean;
   
   // Session
   sessionToken: string | null;
@@ -39,6 +48,10 @@ interface GameContextType extends GameState {
   disconnect: () => Promise<void>;
   refreshBalance: () => Promise<void>;
   
+  // Player actions
+  setNickname: (name: string) => Promise<void>;
+  dismissNicknameModal: () => void;
+  
   // Game actions
   startGame: (amount: number, demoMode?: boolean) => Promise<void>;
   advance: () => Promise<boolean>;
@@ -56,6 +69,8 @@ const initialState: GameState = {
   walletConnected: false,
   walletAddress: null,
   balance: null,
+  nickname: null,
+  showNicknameModal: false,
   sessionToken: null,
   stakeAmount: 0,
   currentRoom: 0,
@@ -91,6 +106,56 @@ export function GameProvider({ children }: { children: ReactNode }) {
       updateState({ balance: unifiedWallet.balance });
     }
   }, [unifiedWallet.balance, updateState]);
+
+  // Sync nickname when wallet connects
+  useEffect(() => {
+    const syncNickname = async () => {
+      if (!unifiedWallet.connected || !unifiedWallet.address) {
+        updateState({ nickname: null, showNicknameModal: false });
+        return;
+      }
+
+      // Check local storage first for fast load
+      const localNickname = await AsyncStorage.getItem(NICKNAME_STORAGE_KEY);
+      if (localNickname) {
+        updateState({ nickname: localNickname });
+      }
+
+      // Sync with DB
+      const player = await getOrCreatePlayer(unifiedWallet.address, localNickname || undefined);
+      if (player) {
+        const dbNickname = player.nickname;
+        const isDefaultNickname = dbNickname === `${unifiedWallet.address.slice(0, 4)}...${unifiedWallet.address.slice(-4)}`;
+        
+        updateState({ nickname: dbNickname });
+        await AsyncStorage.setItem(NICKNAME_STORAGE_KEY, dbNickname);
+
+        // Check if we should show the nickname prompt (first time only)
+        const alreadyPrompted = await AsyncStorage.getItem(NICKNAME_PROMPTED_KEY);
+        if (!alreadyPrompted && isDefaultNickname) {
+          updateState({ showNicknameModal: true });
+        }
+      }
+    };
+
+    syncNickname();
+  }, [unifiedWallet.connected, unifiedWallet.address, updateState]);
+
+  // Nickname actions
+  const setNicknameAction = useCallback(async (name: string) => {
+    const trimmed = name.slice(0, 16).trim();
+    if (!trimmed || !state.walletAddress) return;
+
+    updateState({ nickname: trimmed, showNicknameModal: false });
+    await AsyncStorage.setItem(NICKNAME_STORAGE_KEY, trimmed);
+    await AsyncStorage.setItem(NICKNAME_PROMPTED_KEY, 'true');
+    await updatePlayerNickname(state.walletAddress, trimmed);
+  }, [state.walletAddress, updateState]);
+
+  const dismissNicknameModal = useCallback(async () => {
+    updateState({ showNicknameModal: false });
+    await AsyncStorage.setItem(NICKNAME_PROMPTED_KEY, 'true');
+  }, [updateState]);
 
   // Wallet actions (delegate to unified wallet)
   const connect = useCallback(async () => {
@@ -325,6 +390,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
     connectors: unifiedWallet.connectors,
     disconnect,
     refreshBalance,
+    setNickname: setNicknameAction,
+    dismissNicknameModal,
     startGame,
     advance,
     recordDeath: recordDeathAction,
