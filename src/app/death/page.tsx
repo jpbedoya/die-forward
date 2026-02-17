@@ -210,7 +210,7 @@ export default function DeathScreen() {
         {/* Stats - what was lost */}
         <div className="w-full max-w-xs mb-6">
           <div className="text-center text-[var(--text-dim)] text-[10px] uppercase tracking-[0.2em] mb-2">
-            {deathData.stakeLost > 0 ? 'What You Lost' : 'Your Journey'}
+            Your Offering
           </div>
           <div className="border border-[var(--red-dim)]/50 bg-[var(--bg-surface)]/50 p-4">
             {deathData.stakeLost > 0 && (
@@ -349,17 +349,12 @@ export default function DeathScreen() {
       {/* Footer */}
       <footer className="text-center py-4 relative z-10">
         {deathData.stakeLost > 0 ? (
-          <>
-            <div className="text-[var(--amber-dim)] text-xs">
-              <span className="text-[var(--amber)]">◎</span> Your stake has been added to the Memorial Pool
-            </div>
-            <div className="text-[var(--text-dim)] text-[10px] mt-1">
-              Winners claim the spoils of the fallen
-            </div>
-          </>
+          <div className="text-[var(--amber-dim)] text-xs">
+            Your offering feeds the depths.
+          </div>
         ) : (
           <div className="text-[var(--text-dim)] text-xs">
-            Stake SOL to leave your mark in the crypt
+            Next time, leave something behind.
           </div>
         )}
       </footer>
