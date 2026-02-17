@@ -73,7 +73,7 @@ export function DeathCard({ data }: { data: DeathCardData }) {
         {/* Stake lost - only show if there was a stake */}
         {data.stakeLost > 0 && (
           <Text className="text-blood text-sm font-mono font-bold text-center mb-3">
-            {data.stakeLost} SOL LOST
+            Left {data.stakeLost} SOL behind
           </Text>
         )}
         

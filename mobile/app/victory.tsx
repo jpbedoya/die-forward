@@ -85,8 +85,8 @@ export default function VictoryScreen() {
     setSharing(true);
     playSFX('share-click');
     const shareMessage = isEmptyHanded 
-      ? `I escaped Die Forward! No stake, just glory.`
-      : `I escaped Die Forward and won ${totalReward.toFixed(3)} SOL!`;
+      ? `I escaped @dieforward! No stake, just glory.`
+      : `I escaped @dieforward and won ${totalReward.toFixed(3)} SOL!`;
     const success = await captureAndShare('Die Forward - Victory!', shareMessage);
     setSharing(false);
     if (success) {
