@@ -230,7 +230,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const advance = useCallback(async (): Promise<boolean> => {
     if (!state.sessionToken) return false;
     
-    const nextRoom = state.currentRoom + 1;
+    const currentRoom = state.currentRoom;
+    const nextRoom = currentRoom + 1;
     const maxRooms = state.dungeon?.length || 9;
     
     // Check if we've reached the end
@@ -244,9 +245,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
       stamina: Math.min(3, state.stamina + 1),
     });
     
-    // Optionally notify backend (fire and forget, don't block on it)
-    api.advanceRoom(state.sessionToken, nextRoom).catch(() => {
-      // Ignore backend errors - client-side state is authoritative for mobile
+    // Notify backend - send CURRENT room (1-indexed for server)
+    // Client is 0-indexed, server is 1-indexed
+    const serverRoom = currentRoom + 1;
+    api.advanceRoom(state.sessionToken, serverRoom).catch((err) => {
+      console.warn('[advance] Backend sync failed:', err);
+      // Don't block on backend errors - client-side state is authoritative for mobile
     });
     
     return true;
