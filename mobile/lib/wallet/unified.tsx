@@ -305,34 +305,10 @@ function MobileWalletProvider({ children }: { children: ReactNode }) {
     }
   }, []);
   
-  // Check connection state on mount and listen for adapter events
+  // Check connection state on mount
+  // With transact()-based approach, we trust cache since auth happens atomically
   useEffect(() => {
-    // Initial sync - don't trust cache on mount
-    syncAdapterState(false);
-    
-    // Listen for adapter events (handles returning from wallet app)
-    const adapter = require('./mobile-web-adapter').getMobileWebAdapter?.();
-    if (adapter) {
-      const onConnect = () => {
-        console.log('[MobileWeb] Adapter "connect" event fired');
-        // Trust cache after explicit connect event from adapter
-        syncAdapterState(true);
-      };
-      const onDisconnect = () => {
-        console.log('[MobileWeb] Adapter "disconnect" event fired');
-        setConnected(false);
-        setAddress(null);
-        setBalance(null);
-      };
-      
-      adapter.on('connect', onConnect);
-      adapter.on('disconnect', onDisconnect);
-      
-      return () => {
-        adapter.off('connect', onConnect);
-        adapter.off('disconnect', onDisconnect);
-      };
-    }
+    syncAdapterState(true);
   }, [syncAdapterState]);
   
   // Also sync when window regains focus (fallback for missed events)

@@ -1,16 +1,16 @@
 /**
  * Mobile Web Wallet Adapter
  * 
- * Uses @solana-mobile/wallet-adapter-mobile for proper wallet selection
- * on Android Chrome (uses OS intent picker, not hardcoded Phantom)
+ * Uses two approaches:
+ * 1. SolanaMobileWalletAdapter for connect (wallet picker)
+ * 2. transact() from protocol-web3js for signing (atomic session)
+ * 
+ * This fixes the "session lost on redirect" issue on mobile Chrome.
  */
 
-import {
-  SolanaMobileWalletAdapter,
-  createDefaultAddressSelector,
-  createDefaultWalletNotFoundHandler,
-} from '@solana-mobile/wallet-adapter-mobile';
+import { transact } from '@solana-mobile/mobile-wallet-adapter-protocol-web3js';
 import { Connection, PublicKey, Transaction, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import base58 from 'bs58';
 import type { Address } from '@solana/kit';
 
 const CLUSTER = 'devnet';
@@ -23,51 +23,55 @@ const APP_IDENTITY = {
   icon: 'favicon.ico',
 };
 
-// Custom auth cache that we can clear
-const authCache = {
-  get: async () => {
-    try {
-      const cached = localStorage.getItem(AUTH_CACHE_KEY);
-      return cached ? JSON.parse(cached) : undefined;
-    } catch {
-      return undefined;
-    }
-  },
-  set: async (auth: any) => {
-    try {
-      if (auth) {
-        localStorage.setItem(AUTH_CACHE_KEY, JSON.stringify(auth));
-      } else {
-        localStorage.removeItem(AUTH_CACHE_KEY);
-      }
-    } catch {
-      // Ignore storage errors
-    }
-  },
-  clear: () => {
-    try {
-      localStorage.removeItem(AUTH_CACHE_KEY);
-      console.log('[MWA] Auth cache cleared');
-    } catch {
-      // Ignore
-    }
-  },
-};
+// Auth cache for reauthorization
+interface CachedAuth {
+  authToken: string;
+  publicKey: string;
+}
 
-// Singleton adapter instance
-let adapterInstance: SolanaMobileWalletAdapter | null = null;
-
-function getAdapter(): SolanaMobileWalletAdapter {
-  if (!adapterInstance) {
-    adapterInstance = new SolanaMobileWalletAdapter({
-      addressSelector: createDefaultAddressSelector(),
-      appIdentity: APP_IDENTITY,
-      authorizationResultCache: authCache,
-      chain: `solana:${CLUSTER}`,
-      onWalletNotFound: createDefaultWalletNotFoundHandler(),
-    });
+function getCachedAuth(): CachedAuth | null {
+  try {
+    const cached = localStorage.getItem(AUTH_CACHE_KEY);
+    if (cached) {
+      return JSON.parse(cached);
+    }
+  } catch {
+    // Ignore
   }
-  return adapterInstance;
+  return null;
+}
+
+function setCachedAuth(authToken: string, publicKey: string): void {
+  try {
+    localStorage.setItem(AUTH_CACHE_KEY, JSON.stringify({ authToken, publicKey }));
+    console.log('[MWA] Auth cached for', publicKey.slice(0, 8) + '...');
+  } catch {
+    // Ignore
+  }
+}
+
+function clearCachedAuth(): void {
+  try {
+    localStorage.removeItem(AUTH_CACHE_KEY);
+    console.log('[MWA] Auth cache cleared');
+  } catch {
+    // Ignore
+  }
+}
+
+// Helper to decode address (handles base64 from MWA)
+function decodeAddress(addressRaw: string | Uint8Array): string {
+  if (typeof addressRaw === 'object' && addressRaw !== null && 'byteLength' in addressRaw) {
+    return new PublicKey(addressRaw as Uint8Array).toBase58();
+  } else if (typeof addressRaw === 'string') {
+    // Check if base64 encoded
+    if (addressRaw.includes('+') || addressRaw.includes('/') || addressRaw.endsWith('=')) {
+      const bytes = Uint8Array.from(atob(addressRaw), c => c.charCodeAt(0));
+      return new PublicKey(bytes).toBase58();
+    }
+    return addressRaw;
+  }
+  throw new Error(`Unknown address format: ${typeof addressRaw}`);
 }
 
 // Connection for RPC calls
@@ -75,129 +79,159 @@ export const mobileWebConnection = new Connection(RPC_ENDPOINT, 'confirmed');
 
 /**
  * Connect via the mobile wallet adapter (uses OS wallet picker)
- * Always forces fresh auth to avoid stale session issues
+ * This caches the auth token for later use with transact()
  */
 export async function mobileWebConnect(): Promise<{ address: Address } | null> {
-  const adapter = getAdapter();
+  console.log('[MWA] Starting connect...');
   
-  // If adapter thinks it's connected but we're calling connect,
-  // it's likely because of stale cache. Disconnect first.
-  if (adapter.connected) {
-    console.log('[MWA] Clearing stale connection before fresh connect');
-    try {
-      await adapter.disconnect();
-    } catch {
-      // Ignore disconnect errors
-    }
-    authCache.clear();
-  }
+  // Use transact() for connect too, to get proper auth token
+  const result = await transact(async (wallet) => {
+    console.log('[MWA] Connect session started, authorizing...');
+    
+    const authResult = await wallet.authorize({
+      cluster: CLUSTER,
+      identity: APP_IDENTITY,
+    });
+    
+    const addressRaw = authResult.accounts[0]?.address;
+    const address = decodeAddress(addressRaw as string | Uint8Array);
+    
+    // Cache the auth token for later signing
+    setCachedAuth(authResult.auth_token, address);
+    
+    console.log('[MWA] Connected:', address.slice(0, 8) + '...');
+    return { address: address as Address };
+  });
   
-  console.log('[MWA] Calling adapter.connect()...');
-  await adapter.connect();
-  console.log('[MWA] adapter.connect() returned, publicKey:', adapter.publicKey?.toBase58());
-  
-  // On mobile web, if redirect happened, publicKey might not be set yet
-  // The state will sync via event handlers when returning
-  if (!adapter.publicKey) {
-    console.log('[MWA] No publicKey after connect - redirect may have occurred');
-    return null;
-  }
-  
-  return {
-    address: adapter.publicKey.toBase58() as Address,
-  };
+  return result;
 }
 
 /**
  * Disconnect and clear cached auth
  */
 export async function mobileWebDisconnect(): Promise<void> {
-  const adapter = getAdapter();
-  await adapter.disconnect();
-  authCache.clear();
+  clearCachedAuth();
 }
 
 /**
  * Clear all cached wallet state (for error recovery)
  */
 export function clearMobileWebCache(): void {
-  authCache.clear();
-  // Reset adapter instance to force fresh connection
-  if (adapterInstance) {
-    try {
-      adapterInstance.disconnect();
-    } catch {
-      // Ignore
-    }
-    adapterInstance = null;
-  }
+  clearCachedAuth();
 }
 
 /**
- * Check if connected
+ * Check if connected (based on cached auth)
  */
 export function isMobileWebConnected(): boolean {
-  const adapter = getAdapter();
-  return adapter.connected;
+  const cached = getCachedAuth();
+  return !!cached?.publicKey;
 }
 
 /**
- * Get connected address
+ * Get connected address (from cache)
  */
 export function getMobileWebAddress(): Address | null {
-  const adapter = getAdapter();
-  return adapter.publicKey?.toBase58() as Address | null;
+  const cached = getCachedAuth();
+  return cached?.publicKey as Address | null;
 }
 
 /**
- * Sign and send a transaction
- * On mobile web, we may need to reauthorize before signing
+ * Sign and send a transaction using transact() for atomic session
+ * This ensures authorization and signing happen in one wallet interaction
  */
 export async function mobileWebSignAndSend(tx: Transaction): Promise<string> {
-  const adapter = getAdapter();
+  const cached = getCachedAuth();
   
-  if (!adapter.publicKey) {
+  if (!cached?.publicKey) {
     throw new Error('Wallet not connected - please connect your wallet first');
   }
   
-  // On mobile web, the session might be stale even if adapter.connected is true
-  // Try to ensure we have a valid session by reconnecting if needed
-  if (!adapter.connected) {
-    console.log('[MWA] Adapter not connected, attempting reconnect...');
-    try {
-      await adapter.connect();
-    } catch (e) {
-      console.error('[MWA] Reconnect failed:', e);
-      authCache.clear();
-      throw new Error('Wallet session expired - please reconnect your wallet');
-    }
-  }
+  console.log('[MWA] Starting transact() for signing...');
+  console.log('[MWA] Cached auth for:', cached.publicKey.slice(0, 8) + '...');
   
-  // Ensure blockhash and fee payer
-  if (!tx.recentBlockhash) {
+  const signature = await transact(async (wallet) => {
+    console.log('[MWA] Session started, attempting reauthorize...');
+    
+    let pubkey: PublicKey;
+    let authToken: string;
+    
+    // Try reauthorize first (uses cached token, no popup if valid)
+    if (cached.authToken) {
+      try {
+        const reAuthResult = await wallet.reauthorize({
+          auth_token: cached.authToken,
+          identity: APP_IDENTITY,
+        });
+        authToken = reAuthResult.auth_token;
+        const addressRaw = reAuthResult.accounts[0]?.address;
+        pubkey = new PublicKey(decodeAddress(addressRaw as string | Uint8Array));
+        console.log('[MWA] Reauthorized:', pubkey.toBase58().slice(0, 8) + '...');
+        
+        // Update cache with new token
+        setCachedAuth(authToken, pubkey.toBase58());
+      } catch (reAuthErr) {
+        console.log('[MWA] Reauthorize failed, trying fresh authorize...');
+        
+        // Fall back to full authorize
+        const authResult = await wallet.authorize({
+          cluster: CLUSTER,
+          identity: APP_IDENTITY,
+        });
+        authToken = authResult.auth_token;
+        const addressRaw = authResult.accounts[0]?.address;
+        pubkey = new PublicKey(decodeAddress(addressRaw as string | Uint8Array));
+        console.log('[MWA] Fresh authorize:', pubkey.toBase58().slice(0, 8) + '...');
+        
+        // Cache the new token
+        setCachedAuth(authToken, pubkey.toBase58());
+      }
+    } else {
+      // No cached token, do full authorize
+      console.log('[MWA] No cached token, authorizing...');
+      const authResult = await wallet.authorize({
+        cluster: CLUSTER,
+        identity: APP_IDENTITY,
+      });
+      authToken = authResult.auth_token;
+      const addressRaw = authResult.accounts[0]?.address;
+      pubkey = new PublicKey(decodeAddress(addressRaw as string | Uint8Array));
+      console.log('[MWA] Authorized:', pubkey.toBase58().slice(0, 8) + '...');
+      
+      setCachedAuth(authToken, pubkey.toBase58());
+    }
+    
+    // Get fresh blockhash and set fee payer
     const { blockhash } = await mobileWebConnection.getLatestBlockhash();
     tx.recentBlockhash = blockhash;
-  }
-  tx.feePayer = adapter.publicKey;
-  
-  console.log('[MWA] Sending transaction with feePayer:', adapter.publicKey.toBase58());
-  
-  try {
-    const signature = await adapter.sendTransaction(tx, mobileWebConnection);
-    console.log('[MWA] Transaction sent, signature:', signature);
-    return signature;
-  } catch (e: any) {
-    console.error('[MWA] sendTransaction failed:', e?.message || e);
+    tx.feePayer = pubkey;
     
-    // If signature verification failed, the session is definitely invalid
-    if (e?.message?.includes('Signature verification') || e?.message?.includes('Missing signature')) {
-      console.log('[MWA] Session invalid, clearing cache');
-      authCache.clear();
-      adapterInstance = null;
-      throw new Error('Wallet session expired - please reconnect and try again');
+    console.log('[MWA] Requesting signature...');
+    
+    // Sign and send in the same session
+    const signatures = await wallet.signAndSendTransactions({
+      transactions: [tx],
+    });
+    
+    // Decode signature
+    const sigRaw = signatures[0];
+    let sigString: string;
+    
+    if (typeof sigRaw === 'object' && sigRaw !== null && 'byteLength' in sigRaw) {
+      sigString = base58.encode(sigRaw as Uint8Array);
+    } else {
+      sigString = sigRaw as string;
     }
-    throw e;
+    
+    console.log('[MWA] Got signature:', sigString.slice(0, 20) + '...');
+    return sigString;
+  });
+  
+  if (!signature) {
+    throw new Error('Transaction failed - no signature returned');
   }
+  
+  return signature;
 }
 
 /**
@@ -209,9 +243,4 @@ export async function getMobileWebBalance(address: Address): Promise<number> {
   return lamports / LAMPORTS_PER_SOL;
 }
 
-/**
- * Get the adapter instance (for direct access if needed)
- */
-export function getMobileWebAdapter(): SolanaMobileWalletAdapter {
-  return getAdapter();
-}
+// getMobileWebAdapter removed - using transact() directly now
