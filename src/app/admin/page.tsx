@@ -87,7 +87,7 @@ export default function AdminPage() {
   
   // Deaths in last 24h
   const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
-  const recentDeaths = deaths.filter((d: any) => d.timestamp > oneDayAgo).length;
+  const recentDeaths = deaths.filter((d: any) => (d.createdAt || d.timestamp) > oneDayAgo).length;
   
   // Most common death room
   const roomCounts: Record<number, number> = {};
@@ -280,13 +280,18 @@ export default function AdminPage() {
         <div className="mt-8 bg-[var(--bg-surface)] border border-[var(--border)] p-6 rounded-lg">
           <h2 className="text-lg text-[var(--amber)] mb-4">💀 Recent Deaths</h2>
           <div className="space-y-2 max-h-64 overflow-y-auto">
-            {deaths.slice(0, 20).map((death: any, i: number) => (
+            {[...deaths].sort((a: any, b: any) => (b.createdAt || 0) - (a.createdAt || 0)).slice(0, 20).map((death: any, i: number) => (
               <div key={death.id || i} className="flex justify-between text-sm border-b border-[var(--border)] pb-2">
-                <span className="text-[var(--text)]">
-                  {death.playerName || 'Unknown'} — Room {death.room || '?'}
-                </span>
-                <span className="text-[var(--text-dim)]">
-                  {death.timestamp ? new Date(death.timestamp).toLocaleString() : 'Unknown time'}
+                <div className="flex flex-col">
+                  <span className="text-[var(--text)]">
+                    {death.playerName || 'Unknown'} — Room {death.room || '?'}
+                  </span>
+                  {death.killedBy && (
+                    <span className="text-[var(--text-muted)] text-xs">Killed by: {death.killedBy}</span>
+                  )}
+                </div>
+                <span className="text-[var(--text-dim)] text-right">
+                  {(death.createdAt || death.timestamp) ? new Date(death.createdAt || death.timestamp).toLocaleString() : 'Unknown time'}
                 </span>
               </div>
             ))}
