@@ -1,11 +1,20 @@
 // Share card generation for React Native
-// Uses react-native-view-shot to capture views as images
+// Uses html2canvas on web, react-native-view-shot on native
 
 import React, { useRef, useCallback } from 'react';
 import { View, Text, Platform } from 'react-native';
 import ViewShot from 'react-native-view-shot';
 import * as Sharing from 'expo-sharing';
 import { DieForwardLogoInline } from '../components/DieForwardLogo';
+
+// Web-only import
+let html2canvas: ((element: HTMLElement, options?: object) => Promise<HTMLCanvasElement>) | null = null;
+if (Platform.OS === 'web') {
+  // Dynamic import for web only
+  import('html2canvas').then((module) => {
+    html2canvas = module.default;
+  });
+}
 
 export interface DeathCardData {
   playerName: string;
@@ -131,65 +140,92 @@ export function VictoryCard({ data }: { data: VictoryCardData }) {
 // Hook to capture and share cards
 export function useShareCard() {
   const viewShotRef = useRef<ViewShot>(null);
+  const webRef = useRef<HTMLDivElement>(null);
 
   const captureAndShare = useCallback(async (title: string, message: string) => {
-    console.log('[ShareCard] Starting capture...', { hasRef: !!viewShotRef.current });
-    
+    console.log('[ShareCard] Starting capture...', { 
+      platform: Platform.OS,
+      hasViewShotRef: !!viewShotRef.current,
+      hasWebRef: !!webRef.current,
+    });
+
+    // Web: Use html2canvas
+    if (Platform.OS === 'web') {
+      console.log('[ShareCard] Web platform - using html2canvas');
+      
+      if (!webRef.current) {
+        console.error('[ShareCard] No webRef for html2canvas');
+        return false;
+      }
+
+      if (!html2canvas) {
+        console.error('[ShareCard] html2canvas not loaded yet');
+        return false;
+      }
+
+      try {
+        const canvas = await html2canvas(webRef.current, {
+          backgroundColor: '#0a0a0a',
+          scale: 2, // Higher quality
+        });
+        console.log('[ShareCard] Canvas captured:', canvas.width, 'x', canvas.height);
+
+        // Convert canvas to blob
+        const blob = await new Promise<Blob>((resolve, reject) => {
+          canvas.toBlob((b) => {
+            if (b) resolve(b);
+            else reject(new Error('Failed to create blob'));
+          }, 'image/png');
+        });
+
+        const file = new File([blob], 'die-forward-card.png', { type: 'image/png' });
+        console.log('[ShareCard] Created file blob:', blob.size, 'bytes');
+
+        // Try Web Share API first (mobile browsers)
+        const canShare = navigator.share && navigator.canShare?.({ files: [file] });
+        console.log('[ShareCard] Can use Web Share API:', canShare);
+        
+        if (canShare) {
+          await navigator.share({
+            title,
+            text: message,
+            files: [file],
+          });
+          console.log('[ShareCard] Web Share completed');
+          return true;
+        }
+
+        // Fallback: Download the image
+        console.log('[ShareCard] Falling back to download');
+        const uri = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = uri;
+        link.download = 'die-forward-card.png';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        console.log('[ShareCard] Download triggered');
+        return true;
+      } catch (webErr) {
+        console.error('[ShareCard] Web capture failed:', webErr);
+        return false;
+      }
+    }
+
+    // Native: Use react-native-view-shot
     if (!viewShotRef.current) {
       console.error('[ShareCard] No viewShotRef');
       return false;
     }
 
     try {
-      // Capture the view as an image
-      console.log('[ShareCard] Calling capture...');
+      console.log('[ShareCard] Native platform - using view-shot');
       const uri = await viewShotRef.current.capture?.();
-      console.log('[ShareCard] Capture result:', uri ? 'success' : 'null', uri?.slice(0, 50));
+      console.log('[ShareCard] Capture result:', uri ? 'success' : 'null');
       
       if (!uri) {
         console.error('[ShareCard] Failed to capture view - no URI returned');
         return false;
-      }
-
-      // Web: Use Web Share API or download fallback
-      if (Platform.OS === 'web') {
-        console.log('[ShareCard] Web platform detected');
-        
-        try {
-          // Convert data URI to blob for Web Share API
-          const response = await fetch(uri);
-          const blob = await response.blob();
-          const file = new File([blob], 'die-forward-card.png', { type: 'image/png' });
-          console.log('[ShareCard] Created file blob:', blob.size, 'bytes');
-
-          // Try Web Share API first (mobile browsers)
-          const canShare = navigator.share && navigator.canShare?.({ files: [file] });
-          console.log('[ShareCard] Can use Web Share API:', canShare);
-          
-          if (canShare) {
-            await navigator.share({
-              title,
-              text: message,
-              files: [file],
-            });
-            console.log('[ShareCard] Web Share completed');
-            return true;
-          }
-
-          // Fallback: Download the image
-          console.log('[ShareCard] Falling back to download');
-          const link = document.createElement('a');
-          link.href = uri;
-          link.download = 'die-forward-card.png';
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          console.log('[ShareCard] Download triggered');
-          return true;
-        } catch (webErr) {
-          console.error('[ShareCard] Web share failed:', webErr);
-          return false;
-        }
       }
 
       // Native: Use expo-sharing
@@ -212,17 +248,29 @@ export function useShareCard() {
     }
   }, []);
 
-  return { viewShotRef, captureAndShare };
+  return { viewShotRef, webRef, captureAndShare };
 }
 
 // Wrapper component for capturing
 export function ShareCardCapture({ 
   children, 
-  viewShotRef 
+  viewShotRef,
+  webRef,
 }: { 
   children: React.ReactNode;
   viewShotRef: React.RefObject<ViewShot | null>;
+  webRef?: React.RefObject<HTMLDivElement | null>;
 }) {
+  // Web: Use a div for html2canvas
+  if (Platform.OS === 'web') {
+    return (
+      <div ref={webRef as React.RefObject<HTMLDivElement>}>
+        {children}
+      </div>
+    );
+  }
+
+  // Native: Use ViewShot
   return (
     <ViewShot 
       ref={viewShotRef} 

@@ -12,7 +12,7 @@ import { AudioToggle } from '../components/AudioToggle';
 export default function DeathScreen() {
   const game = useGame();
   const { playSFX, playAmbient } = useAudio();
-  const { viewShotRef, captureAndShare } = useShareCard();
+  const { viewShotRef, webRef, captureAndShare } = useShareCard();
   const params = useLocalSearchParams<{ killedBy?: string }>();
   
   // Dramatic intro state
@@ -287,7 +287,7 @@ export default function DeathScreen() {
             
             {/* Card Preview */}
             <View className="items-center mb-4">
-              <ShareCardCapture viewShotRef={viewShotRef}>
+              <ShareCardCapture viewShotRef={viewShotRef} webRef={webRef}>
                 <DeathCard 
                   data={{
                     playerName: game.walletAddress?.slice(0, 8) || 'Anonymous',

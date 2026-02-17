@@ -59,7 +59,7 @@ export default function VictoryScreen() {
   const game = useGame();
   const { playSFX, playAmbient } = useAudio();
   const { settings } = useGameSettings();
-  const { viewShotRef, captureAndShare } = useShareCard();
+  const { viewShotRef, webRef, captureAndShare } = useShareCard();
   
   // Dramatic intro state
   const [showDramaticIntro, setShowDramaticIntro] = useState(true);
@@ -376,7 +376,7 @@ export default function VictoryScreen() {
             
             {/* Card Preview */}
             <View className="items-center mb-4">
-              <ShareCardCapture viewShotRef={viewShotRef}>
+              <ShareCardCapture viewShotRef={viewShotRef} webRef={webRef}>
                 <VictoryCard 
                   data={{
                     playerName: game.walletAddress?.slice(0, 8) || 'Champion',
