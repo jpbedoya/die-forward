@@ -589,16 +589,17 @@ src/
 
 | Doc | Description |
 |-----|-------------|
+| [Development](docs/DEVELOPMENT.md) | **Start here** — Code patterns, git workflow, architecture |
+| [Feedback Patterns](docs/FEEDBACK_PATTERNS.md) | Audio, haptics, screen shake — coordinated feedback |
 | [Game Design](docs/GAME_DESIGN.md) | Mechanics, combat, death system |
+| [Content Bible](docs/CONTENT_BIBLE.md) | Voice, tone, lore, writing guidelines |
+| [Audio](docs/AUDIO.md) | Sound effects, ambient, generation workflow |
 | [Admin Settings](docs/ADMIN_SETTINGS.md) | Configurable game mechanics via InstantDB |
 | [Staking Flows](docs/STAKING_FLOWS.md) | On-chain escrow vs pool wallet flows |
 | [Tech Stack](docs/TECH_STACK.md) | Architecture decisions |
-| [Content Bible](docs/CONTENT_BIBLE.md) | World building, tone, vocabulary |
-| [Audio](docs/AUDIO.md) | Sound effects, ambient, voice-over |
 | [Mobile Wallet](docs/MOBILE_WALLET.md) | MWA integration details |
-| [MVP Scope](docs/MVP_SCOPE.md) | Hackathon deliverables |
 | [Known Issues](docs/KNOWN_ISSUES.md) | Current bugs and workarounds |
-| [Roadmap](docs/ROADMAP.md) | Development roadmap |
+| [Roadmap](docs/ROADMAP.md) | Post-hackathon plans |
 | [Agent Skill](/public/skill.md) | API docs for agent players |
 
 ---
