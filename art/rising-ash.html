@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rising Ash — Die Forward</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --crypt-bg: #0a0908;
+            --abyssal-blue: #1a3a4a;
+            --drowned-green: #3d5c4a;
+            --bone-white: #d4d0c8;
+            --ember: #8b4513;
+            --amber: #f59e0b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0d0d0d 0%, #1a1a18 100%);
+            min-height: 100vh;
+            color: var(--bone-white);
+        }
+        .container { display: flex; min-height: 100vh; padding: 20px; gap: 20px; }
+        .sidebar {
+            width: 300px;
+            flex-shrink: 0;
+            background: rgba(20, 18, 16, 0.95);
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid rgba(212, 208, 200, 0.1);
+            overflow-y: auto;
+        }
+        .sidebar h1 {
+            font-family: 'Lora', serif;
+            font-size: 20px;
+            color: var(--amber);
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+        }
+        .sidebar .subtitle {
+            color: rgba(212, 208, 200, 0.6);
+            font-size: 12px;
+            margin-bottom: 28px;
+            line-height: 1.5;
+            font-style: italic;
+        }
+        .control-section { margin-bottom: 24px; }
+        .control-section h3 {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--bone-white);
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .control-section h3::before { content: '◈ '; color: var(--amber); }
+        .seed-input {
+            width: 100%;
+            background: var(--crypt-bg);
+            padding: 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 14px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(212, 208, 200, 0.2);
+            text-align: center;
+            color: var(--bone-white);
+        }
+        .seed-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+        .control-group { margin-bottom: 16px; }
+        .control-group label {
+            display: block;
+            font-size: 11px;
+            color: rgba(212, 208, 200, 0.7);
+            margin-bottom: 6px;
+        }
+        .slider-container { display: flex; align-items: center; gap: 10px; }
+        .slider-container input[type="range"] {
+            flex: 1; height: 4px;
+            background: rgba(212, 208, 200, 0.2);
+            border-radius: 2px;
+            -webkit-appearance: none;
+        }
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px; height: 12px;
+            background: var(--amber);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .value-display {
+            font-family: monospace;
+            font-size: 10px;
+            color: rgba(212, 208, 200, 0.5);
+            min-width: 40px;
+            text-align: right;
+        }
+        .button {
+            background: var(--amber);
+            color: #0a0908;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+        .button:hover { background: #e8940a; }
+        .button.secondary { background: var(--abyssal-blue); color: var(--bone-white); }
+        .button.tertiary { background: var(--drowned-green); color: var(--bone-white); }
+        .button-row { display: flex; gap: 6px; }
+        .button-row .button { flex: 1; }
+        .canvas-area { flex: 1; display: flex; align-items: center; justify-content: center; }
+        #canvas-container {
+            width: 100%; max-width: 900px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(212, 208, 200, 0.1);
+        }
+        #canvas-container canvas { display: block; width: 100% !important; height: auto !important; }
+        .loading { padding: 200px; text-align: center; color: rgba(212, 208, 200, 0.5); }
+        @media (max-width: 900px) {
+            .container { flex-direction: column; }
+            .sidebar { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h1>RISING ASH</h1>
+            <div class="subtitle">Something burns in the depths below. Ash and embers drift upward — remnants of the fallen, memories turned to cinder. The underworld consumes and exhales.</div>
+
+            <div class="control-section">
+                <h3>Seed</h3>
+                <input type="number" id="seed-input" class="seed-input" value="42" onchange="updateSeed()">
+                <div class="seed-controls">
+                    <button class="button secondary" onclick="previousSeed()">← Prev</button>
+                    <button class="button secondary" onclick="nextSeed()">Next →</button>
+                </div>
+                <button class="button tertiary" onclick="randomSeedAndUpdate()">↻ Random</button>
+            </div>
+
+            <div class="control-section">
+                <h3>The Pyre</h3>
+                
+                <div class="control-group">
+                    <label>Particle Count</label>
+                    <div class="slider-container">
+                        <input type="range" id="particleCount" min="200" max="1500" step="100" value="600" oninput="updateParam('particleCount', this.value)">
+                        <span class="value-display" id="particleCount-value">600</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Rise Speed</label>
+                    <div class="slider-container">
+                        <input type="range" id="riseSpeed" min="0.3" max="2.0" step="0.1" value="0.8" oninput="updateParam('riseSpeed', this.value)">
+                        <span class="value-display" id="riseSpeed-value">0.8</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Drift Amount</label>
+                    <div class="slider-container">
+                        <input type="range" id="drift" min="0.5" max="3.0" step="0.1" value="1.5" oninput="updateParam('drift', this.value)">
+                        <span class="value-display" id="drift-value">1.5</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Ember Ratio</label>
+                    <div class="slider-container">
+                        <input type="range" id="emberRatio" min="0.05" max="0.4" step="0.05" value="0.15" oninput="updateParam('emberRatio', this.value)">
+                        <span class="value-display" id="emberRatio-value">0.15</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Trail Fade</label>
+                    <div class="slider-container">
+                        <input type="range" id="fadeRate" min="3" max="20" step="1" value="8" oninput="updateParam('fadeRate', this.value)">
+                        <span class="value-display" id="fadeRate-value">8</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h3>Actions</h3>
+                <div class="button-row" style="margin-bottom: 6px;">
+                    <button class="button" onclick="resetParameters()">Reset</button>
+                    <button class="button secondary" onclick="downloadImage()">Download</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="canvas-area">
+            <div id="canvas-container">
+                <div class="loading">The embers rise...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let params = {
+            seed: 42,
+            particleCount: 600,
+            riseSpeed: 0.8,
+            drift: 1.5,
+            emberRatio: 0.15,
+            fadeRate: 8
+        };
+        let defaultParams = {...params};
+
+        const COLORS = {
+            abyss: [8, 6, 5],
+            ash: [80, 75, 70],
+            ashDark: [45, 42, 40],
+            ember: [180, 80, 30],
+            emberBright: [255, 140, 50],
+            emberDim: [120, 50, 20],
+            bone: [140, 135, 125]
+        };
+
+        let particles = [];
+        let time = 0;
+
+        function setup() {
+            let canvas = createCanvas(1200, 1200);
+            canvas.parent('canvas-container');
+            initializeSystem();
+            document.querySelector('.loading').style.display = 'none';
+        }
+
+        function initializeSystem() {
+            randomSeed(params.seed);
+            noiseSeed(params.seed);
+            
+            particles = [];
+            
+            for (let i = 0; i < params.particleCount; i++) {
+                particles.push(new AshParticle(true));
+            }
+            
+            background(COLORS.abyss[0], COLORS.abyss[1], COLORS.abyss[2]);
+            time = 0;
+        }
+
+        function draw() {
+            // Slow fade for trails
+            fill(COLORS.abyss[0], COLORS.abyss[1], COLORS.abyss[2], params.fadeRate);
+            noStroke();
+            rect(0, 0, width, height);
+            
+            // Subtle glow from below
+            drawUnderglow();
+            
+            // Update and draw particles
+            for (let p of particles) {
+                p.update();
+                p.display();
+            }
+            
+            time += 0.01;
+        }
+
+        function drawUnderglow() {
+            // Warm glow emanating from bottom center
+            noStroke();
+            let glowX = width / 2;
+            let glowY = height + 100;
+            
+            for (let r = 800; r > 0; r -= 50) {
+                let alpha = map(r, 0, 800, 8, 0);
+                // Shift between orange and deep red
+                let colorShift = noise(time * 0.5) * 0.3;
+                fill(
+                    lerp(COLORS.emberDim[0], COLORS.ember[0], colorShift),
+                    lerp(COLORS.emberDim[1], COLORS.ember[1], colorShift),
+                    lerp(COLORS.emberDim[2], COLORS.ember[2], colorShift),
+                    alpha
+                );
+                ellipse(glowX, glowY, r * 2, r);
+            }
+        }
+
+        class AshParticle {
+            constructor(initial = false) {
+                this.reset(initial);
+            }
+
+            reset(initial = false) {
+                // Spawn from bottom region
+                this.x = random(width * 0.1, width * 0.9);
+                this.y = initial ? random(height) : random(height + 20, height + 100);
+                
+                // Is this ash or ember?
+                this.isEmber = random() < params.emberRatio;
+                
+                // Size
+                if (this.isEmber) {
+                    this.size = random(2, 5);
+                    this.color = random() < 0.3 ? COLORS.emberBright : COLORS.ember;
+                    this.alpha = random(150, 255);
+                    this.flicker = true;
+                } else {
+                    this.size = random(1, 3);
+                    // Ash color varies
+                    let ashType = random();
+                    if (ashType < 0.6) {
+                        this.color = COLORS.ashDark;
+                    } else if (ashType < 0.9) {
+                        this.color = COLORS.ash;
+                    } else {
+                        this.color = COLORS.bone; // Occasional bone-white
+                    }
+                    this.alpha = random(60, 150);
+                    this.flicker = false;
+                }
+                
+                // Movement
+                this.baseSpeed = params.riseSpeed * random(0.5, 1.5);
+                this.driftOffset = random(1000);
+                this.rotationSpeed = random(-0.02, 0.02);
+                this.rotation = random(TWO_PI);
+                
+                // Lifespan
+                this.life = 1.0;
+                this.fadeStart = random(0.3, 0.5); // When to start fading
+            }
+
+            update() {
+                // Rise upward
+                let speed = this.baseSpeed * (this.isEmber ? 1.2 : 1);
+                this.y -= speed;
+                
+                // Horizontal drift using noise
+                let driftNoise = noise(this.y * 0.005, this.driftOffset, time);
+                let driftForce = map(driftNoise, 0, 1, -params.drift, params.drift);
+                this.x += driftForce;
+                
+                // Slight wobble
+                this.x += sin(this.y * 0.02 + this.driftOffset) * 0.3;
+                
+                // Rotation for ash
+                this.rotation += this.rotationSpeed;
+                
+                // Life decreases as it rises
+                this.life = map(this.y, height + 100, -50, 1, 0);
+                this.life = constrain(this.life, 0, 1);
+                
+                // Reset if off screen
+                if (this.y < -50 || this.x < -50 || this.x > width + 50) {
+                    this.reset();
+                }
+            }
+
+            display() {
+                // Calculate alpha based on life
+                let displayAlpha = this.alpha;
+                if (this.life < this.fadeStart) {
+                    displayAlpha *= map(this.life, 0, this.fadeStart, 0, 1);
+                }
+                
+                // Ember flicker
+                if (this.flicker) {
+                    let flick = noise(time * 5 + this.driftOffset) * 0.4 + 0.6;
+                    displayAlpha *= flick;
+                    
+                    // Ember glow
+                    noStroke();
+                    fill(this.color[0], this.color[1], this.color[2], displayAlpha * 0.3);
+                    ellipse(this.x, this.y, this.size * 4, this.size * 4);
+                }
+                
+                noStroke();
+                fill(this.color[0], this.color[1], this.color[2], displayAlpha);
+                
+                if (this.isEmber) {
+                    // Embers are round with glow
+                    ellipse(this.x, this.y, this.size, this.size);
+                } else {
+                    // Ash particles are irregular
+                    push();
+                    translate(this.x, this.y);
+                    rotate(this.rotation);
+                    
+                    // Draw as irregular shape
+                    beginShape();
+                    let points = 5;
+                    for (let i = 0; i < points; i++) {
+                        let angle = map(i, 0, points, 0, TWO_PI);
+                        let r = this.size * random(0.5, 1);
+                        vertex(cos(angle) * r, sin(angle) * r);
+                    }
+                    endShape(CLOSE);
+                    pop();
+                }
+            }
+        }
+
+        // UI Handlers
+        function updateParam(name, value) {
+            params[name] = parseFloat(value);
+            document.getElementById(name + '-value').textContent = value;
+            if (name === 'particleCount') {
+                initializeSystem();
+            }
+        }
+
+        function updateSeed() {
+            params.seed = parseInt(document.getElementById('seed-input').value) || 42;
+            initializeSystem();
+        }
+
+        function previousSeed() {
+            params.seed = Math.max(1, params.seed - 1);
+            document.getElementById('seed-input').value = params.seed;
+            initializeSystem();
+        }
+
+        function nextSeed() {
+            params.seed++;
+            document.getElementById('seed-input').value = params.seed;
+            initializeSystem();
+        }
+
+        function randomSeedAndUpdate() {
+            params.seed = Math.floor(Math.random() * 999999) + 1;
+            document.getElementById('seed-input').value = params.seed;
+            initializeSystem();
+        }
+
+        function resetParameters() {
+            params = {...defaultParams};
+            document.getElementById('particleCount').value = params.particleCount;
+            document.getElementById('particleCount-value').textContent = params.particleCount;
+            document.getElementById('riseSpeed').value = params.riseSpeed;
+            document.getElementById('riseSpeed-value').textContent = params.riseSpeed;
+            document.getElementById('drift').value = params.drift;
+            document.getElementById('drift-value').textContent = params.drift;
+            document.getElementById('emberRatio').value = params.emberRatio;
+            document.getElementById('emberRatio-value').textContent = params.emberRatio;
+            document.getElementById('fadeRate').value = params.fadeRate;
+            document.getElementById('fadeRate-value').textContent = params.fadeRate;
+            document.getElementById('seed-input').value = params.seed;
+            initializeSystem();
+        }
+
+        function downloadImage() {
+            saveCanvas('rising-ash-' + params.seed, 'png');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corpse Architecture — Die Forward</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --crypt-bg: #0a0908;
+            --abyssal-blue: #1a3a4a;
+            --drowned-green: #3d5c4a;
+            --bone-white: #d4d0c8;
+            --blood-rust: #8b3a3a;
+            --amber: #f59e0b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0d0d0d 0%, #1a1a18 100%);
+            min-height: 100vh;
+            color: var(--bone-white);
+        }
+        .container { display: flex; min-height: 100vh; padding: 20px; gap: 20px; }
+        .sidebar {
+            width: 300px;
+            flex-shrink: 0;
+            background: rgba(20, 18, 16, 0.95);
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid rgba(212, 208, 200, 0.1);
+            overflow-y: auto;
+        }
+        .sidebar h1 {
+            font-family: 'Lora', serif;
+            font-size: 20px;
+            color: var(--amber);
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+        }
+        .sidebar .subtitle {
+            color: rgba(212, 208, 200, 0.6);
+            font-size: 12px;
+            margin-bottom: 28px;
+            line-height: 1.5;
+            font-style: italic;
+        }
+        .control-section { margin-bottom: 24px; }
+        .control-section h3 {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--bone-white);
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .control-section h3::before { content: '◈ '; color: var(--amber); }
+        .seed-input {
+            width: 100%;
+            background: var(--crypt-bg);
+            padding: 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 14px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(212, 208, 200, 0.2);
+            text-align: center;
+            color: var(--bone-white);
+        }
+        .seed-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+        .control-group { margin-bottom: 16px; }
+        .control-group label {
+            display: block;
+            font-size: 11px;
+            color: rgba(212, 208, 200, 0.7);
+            margin-bottom: 6px;
+        }
+        .slider-container { display: flex; align-items: center; gap: 10px; }
+        .slider-container input[type="range"] {
+            flex: 1; height: 4px;
+            background: rgba(212, 208, 200, 0.2);
+            border-radius: 2px;
+            -webkit-appearance: none;
+        }
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px; height: 12px;
+            background: var(--amber);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .value-display {
+            font-family: monospace;
+            font-size: 10px;
+            color: rgba(212, 208, 200, 0.5);
+            min-width: 40px;
+            text-align: right;
+        }
+        .button {
+            background: var(--amber);
+            color: #0a0908;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+        .button:hover { background: #e8940a; }
+        .button.secondary { background: var(--abyssal-blue); color: var(--bone-white); }
+        .button.tertiary { background: var(--drowned-green); color: var(--bone-white); }
+        .button-row { display: flex; gap: 6px; }
+        .button-row .button { flex: 1; }
+        .canvas-area { flex: 1; display: flex; align-items: center; justify-content: center; }
+        #canvas-container {
+            width: 100%; max-width: 900px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(212, 208, 200, 0.1);
+        }
+        #canvas-container canvas { display: block; width: 100% !important; height: auto !important; }
+        .loading { padding: 200px; text-align: center; color: rgba(212, 208, 200, 0.5); }
+        @media (max-width: 900px) {
+            .container { flex-direction: column; }
+            .sidebar { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h1>CORPSE ARCHITECTURE</h1>
+            <div class="subtitle">The walls remember everyone who drowned. Every death makes it stronger. Every corpse becomes part of its architecture — veins of memory spreading through ancient stone.</div>
+
+            <div class="control-section">
+                <h3>Seed</h3>
+                <input type="number" id="seed-input" class="seed-input" value="42" onchange="updateSeed()">
+                <div class="seed-controls">
+                    <button class="button secondary" onclick="previousSeed()">← Prev</button>
+                    <button class="button secondary" onclick="nextSeed()">Next →</button>
+                </div>
+                <button class="button tertiary" onclick="randomSeedAndUpdate()">↻ Random</button>
+            </div>
+
+            <div class="control-section">
+                <h3>Growth</h3>
+                
+                <div class="control-group">
+                    <label>Branch Count</label>
+                    <div class="slider-container">
+                        <input type="range" id="branchCount" min="3" max="12" step="1" value="6" oninput="updateParam('branchCount', this.value)">
+                        <span class="value-display" id="branchCount-value">6</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Growth Speed</label>
+                    <div class="slider-container">
+                        <input type="range" id="growthSpeed" min="1" max="8" step="0.5" value="3" oninput="updateParam('growthSpeed', this.value)">
+                        <span class="value-display" id="growthSpeed-value">3</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Branch Probability</label>
+                    <div class="slider-container">
+                        <input type="range" id="branchProb" min="0.01" max="0.08" step="0.01" value="0.03" oninput="updateParam('branchProb', this.value)">
+                        <span class="value-display" id="branchProb-value">0.03</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Tendril Thickness</label>
+                    <div class="slider-container">
+                        <input type="range" id="thickness" min="1" max="6" step="0.5" value="2.5" oninput="updateParam('thickness', this.value)">
+                        <span class="value-display" id="thickness-value">2.5</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Wander Amount</label>
+                    <div class="slider-container">
+                        <input type="range" id="wander" min="0.02" max="0.15" step="0.01" value="0.06" oninput="updateParam('wander', this.value)">
+                        <span class="value-display" id="wander-value">0.06</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h3>Actions</h3>
+                <div class="button-row" style="margin-bottom: 6px;">
+                    <button class="button" onclick="regenerate()">Regrow</button>
+                    <button class="button secondary" onclick="downloadImage()">Download</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="canvas-area">
+            <div id="canvas-container">
+                <div class="loading">The architecture grows...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let params = {
+            seed: 42,
+            branchCount: 6,
+            growthSpeed: 3,
+            branchProb: 0.03,
+            thickness: 2.5,
+            wander: 0.06
+        };
+        let defaultParams = {...params};
+
+        const COLORS = {
+            abyss: [10, 9, 8],
+            deep: [26, 58, 74],
+            drowned: [50, 82, 65],
+            bone: [160, 155, 145],
+            blood: [120, 50, 50],
+            glow: [70, 110, 85]
+        };
+
+        let tendrils = [];
+        let isGrowing = true;
+
+        function setup() {
+            let canvas = createCanvas(1200, 1200);
+            canvas.parent('canvas-container');
+            initializeSystem();
+            document.querySelector('.loading').style.display = 'none';
+        }
+
+        function initializeSystem() {
+            randomSeed(params.seed);
+            noiseSeed(params.seed);
+            background(COLORS.abyss[0], COLORS.abyss[1], COLORS.abyss[2]);
+            
+            tendrils = [];
+            isGrowing = true;
+            
+            // Spawn initial tendrils from edges and center
+            for (let i = 0; i < params.branchCount; i++) {
+                let startPos = getStartPosition(i);
+                tendrils.push(new Tendril(startPos.x, startPos.y, startPos.angle));
+            }
+        }
+
+        function getStartPosition(index) {
+            let edge = index % 5;
+            let x, y, angle;
+            
+            switch(edge) {
+                case 0: // Top
+                    x = random(width * 0.2, width * 0.8);
+                    y = 0;
+                    angle = random(PI * 0.3, PI * 0.7);
+                    break;
+                case 1: // Bottom
+                    x = random(width * 0.2, width * 0.8);
+                    y = height;
+                    angle = random(-PI * 0.7, -PI * 0.3);
+                    break;
+                case 2: // Left
+                    x = 0;
+                    y = random(height * 0.2, height * 0.8);
+                    angle = random(-PI * 0.3, PI * 0.3);
+                    break;
+                case 3: // Right
+                    x = width;
+                    y = random(height * 0.2, height * 0.8);
+                    angle = random(PI * 0.7, PI * 1.3);
+                    break;
+                default: // Center outward
+                    x = width/2 + random(-100, 100);
+                    y = height/2 + random(-100, 100);
+                    angle = random(TWO_PI);
+            }
+            
+            return { x, y, angle };
+        }
+
+        function draw() {
+            if (!isGrowing) return;
+            
+            let anyAlive = false;
+            
+            for (let i = tendrils.length - 1; i >= 0; i--) {
+                let t = tendrils[i];
+                if (t.alive) {
+                    anyAlive = true;
+                    t.grow();
+                    t.display();
+                    
+                    // Branching
+                    if (random() < params.branchProb && t.generation < 4) {
+                        let branchAngle = t.angle + random(-PI/3, PI/3);
+                        tendrils.push(new Tendril(t.x, t.y, branchAngle, t.generation + 1, t.thickness * 0.7));
+                    }
+                }
+            }
+            
+            // Add subtle glow layer occasionally
+            if (frameCount % 60 === 0) {
+                addGlow();
+            }
+            
+            if (!anyAlive) {
+                isGrowing = false;
+            }
+        }
+
+        function addGlow() {
+            // Very subtle ambient glow at random points
+            for (let i = 0; i < 3; i++) {
+                let gx = random(width);
+                let gy = random(height);
+                
+                noStroke();
+                for (let r = 80; r > 0; r -= 20) {
+                    fill(COLORS.glow[0], COLORS.glow[1], COLORS.glow[2], 2);
+                    ellipse(gx, gy, r, r);
+                }
+            }
+        }
+
+        class Tendril {
+            constructor(x, y, angle, generation = 0, thickness = null) {
+                this.x = x;
+                this.y = y;
+                this.angle = angle;
+                this.generation = generation;
+                this.thickness = thickness || params.thickness;
+                this.alive = true;
+                this.age = 0;
+                this.noiseOffset = random(1000);
+                
+                // Color based on generation
+                if (generation === 0) {
+                    this.color = random() < 0.7 ? COLORS.drowned : COLORS.deep;
+                } else if (generation === 1) {
+                    this.color = random() < 0.5 ? COLORS.deep : COLORS.drowned;
+                } else {
+                    // Deeper generations get bone or blood hints
+                    let roll = random();
+                    if (roll < 0.6) this.color = COLORS.deep;
+                    else if (roll < 0.85) this.color = COLORS.bone;
+                    else this.color = COLORS.blood;
+                }
+                
+                this.alpha = map(generation, 0, 4, 180, 80);
+            }
+
+            grow() {
+                this.age++;
+                
+                // Perlin noise wandering
+                let noiseVal = noise(this.x * params.wander, this.y * params.wander, this.noiseOffset);
+                this.angle += map(noiseVal, 0, 1, -0.3, 0.3);
+                
+                // Move forward
+                let speed = params.growthSpeed * map(this.generation, 0, 4, 1, 0.5);
+                let prevX = this.x;
+                let prevY = this.y;
+                
+                this.x += cos(this.angle) * speed;
+                this.y += sin(this.angle) * speed;
+                
+                // Draw segment
+                this.drawSegment(prevX, prevY, this.x, this.y);
+                
+                // Die if out of bounds or too old
+                let margin = 50;
+                if (this.x < -margin || this.x > width + margin || 
+                    this.y < -margin || this.y > height + margin) {
+                    this.alive = false;
+                }
+                
+                if (this.age > 800 / (this.generation + 1)) {
+                    this.alive = false;
+                }
+                
+                // Random death (natural ending)
+                if (random() < 0.002 * (this.generation + 1)) {
+                    this.alive = false;
+                }
+            }
+
+            drawSegment(x1, y1, x2, y2) {
+                // Main tendril
+                stroke(this.color[0], this.color[1], this.color[2], this.alpha);
+                strokeWeight(this.thickness);
+                line(x1, y1, x2, y2);
+                
+                // Subtle glow
+                stroke(this.color[0], this.color[1], this.color[2], this.alpha * 0.2);
+                strokeWeight(this.thickness * 3);
+                line(x1, y1, x2, y2);
+            }
+
+            display() {
+                // Node at current position (subtle)
+                if (random() < 0.1) {
+                    noStroke();
+                    fill(this.color[0], this.color[1], this.color[2], this.alpha * 0.5);
+                    ellipse(this.x, this.y, this.thickness * 2, this.thickness * 2);
+                }
+            }
+        }
+
+        // UI Handlers
+        function updateParam(name, value) {
+            params[name] = parseFloat(value);
+            document.getElementById(name + '-value').textContent = value;
+        }
+
+        function updateSeed() {
+            params.seed = parseInt(document.getElementById('seed-input').value) || 42;
+            initializeSystem();
+        }
+
+        function previousSeed() {
+            params.seed = Math.max(1, params.seed - 1);
+            document.getElementById('seed-input').value = params.seed;
+            initializeSystem();
+        }
+
+        function nextSeed() {
+            params.seed++;
+            document.getElementById('seed-input').value = params.seed;
+            initializeSystem();
+        }
+
+        function randomSeedAndUpdate() {
+            params.seed = Math.floor(Math.random() * 999999) + 1;
+            document.getElementById('seed-input').value = params.seed;
+            initializeSystem();
+        }
+
+        function regenerate() {
+            initializeSystem();
+        }
+
+        function downloadImage() {
+            saveCanvas('corpse-architecture-' + params.seed, 'png');
+        }
+    </script>
+</body>
+</html>

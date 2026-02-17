@@ -237,11 +237,13 @@ export default function StakeScreen() {
         {/* Wallet status */}
         {game.walletConnected && game.walletAddress && (
           <View className="flex-row items-center justify-center gap-3">
-            <Text className="text-victory text-xs font-mono">✓ Connected</Text>
             <Text className="text-bone-dark text-xs font-mono">{formatAddress(game.walletAddress)}</Text>
             {game.balance !== null && (
               <Text className="text-amber-light text-xs font-mono font-bold">{game.balance.toFixed(3)} SOL</Text>
             )}
+            <Pressable onPress={() => game.disconnect()}>
+              <Text className="text-bone-muted text-xs font-mono">[disconnect]</Text>
+            </Pressable>
           </View>
         )}
       </ScrollView>

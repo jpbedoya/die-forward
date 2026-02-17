@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Water — Die Forward</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --crypt-bg: #0a0908;
+            --abyssal-blue: #1a3a4a;
+            --drowned-green: #3d5c4a;
+            --bone-white: #d4d0c8;
+            --amber: #f59e0b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0d0d0d 0%, #1a1a18 100%);
+            min-height: 100vh;
+            color: var(--bone-white);
+        }
+        .container { display: flex; min-height: 100vh; padding: 20px; gap: 20px; }
+        .sidebar {
+            width: 300px;
+            flex-shrink: 0;
+            background: rgba(20, 18, 16, 0.95);
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid rgba(212, 208, 200, 0.1);
+            overflow-y: auto;
+        }
+        .sidebar h1 {
+            font-family: 'Lora', serif;
+            font-size: 20px;
+            color: var(--amber);
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+        }
+        .sidebar .subtitle {
+            color: rgba(212, 208, 200, 0.6);
+            font-size: 12px;
+            margin-bottom: 28px;
+            line-height: 1.5;
+            font-style: italic;
+        }
+        .control-section { margin-bottom: 24px; }
+        .control-section h3 {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--bone-white);
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .control-section h3::before { content: '◈ '; color: var(--amber); }
+        .seed-input {
+            width: 100%;
+            background: var(--crypt-bg);
+            padding: 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 14px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(212, 208, 200, 0.2);
+            text-align: center;
+            color: var(--bone-white);
+        }
+        .seed-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+        .control-group { margin-bottom: 16px; }
+        .control-group label {
+            display: block;
+            font-size: 11px;
+            color: rgba(212, 208, 200, 0.7);
+            margin-bottom: 6px;
+        }
+        .slider-container { display: flex; align-items: center; gap: 10px; }
+        .slider-container input[type="range"] {
+            flex: 1; height: 4px;
+            background: rgba(212, 208, 200, 0.2);
+            border-radius: 2px;
+            -webkit-appearance: none;
+        }
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px; height: 12px;
+            background: var(--amber);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .value-display {
+            font-family: monospace;
+            font-size: 10px;
+            color: rgba(212, 208, 200, 0.5);
+            min-width: 40px;
+            text-align: right;
+        }
+        .button {
+            background: var(--amber);
+            color: #0a0908;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+        .button:hover { background: #e8940a; }
+        .button.secondary { background: var(--abyssal-blue); color: var(--bone-white); }
+        .button.tertiary { background: var(--drowned-green); color: var(--bone-white); }
+        .button-row { display: flex; gap: 6px; }
+        .button-row .button { flex: 1; }
+        .canvas-area { flex: 1; display: flex; align-items: center; justify-content: center; }
+        #canvas-container {
+            width: 100%; max-width: 900px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(212, 208, 200, 0.1);
+        }
+        #canvas-container canvas { display: block; width: 100% !important; height: auto !important; }
+        .loading { padding: 200px; text-align: center; color: rgba(212, 208, 200, 0.5); }
+        @media (max-width: 900px) {
+            .container { flex-direction: column; }
+            .sidebar { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h1>DARK WATER</h1>
+            <div class="subtitle">Something patient moves beneath the surface. Black water, still as glass. Ripples from below — something watching, waiting.</div>
+
+            <div class="control-section">
+                <h3>Seed</h3>
+                <input type="number" id="seed-input" class="seed-input" value="42" onchange="updateSeed()">
+                <div class="seed-controls">
+                    <button class="button secondary" onclick="previousSeed()">← Prev</button>
+                    <button class="button secondary" onclick="nextSeed()">Next →</button>
+                </div>
+                <button class="button tertiary" onclick="randomSeedAndUpdate()">↻ Random</button>
+            </div>
+
+            <div class="control-section">
+                <h3>The Deep</h3>
+                
+                <div class="control-group">
+                    <label>Disturbance Rate</label>
+                    <div class="slider-container">
+                        <input type="range" id="spawnRate" min="0.5" max="5" step="0.5" value="2" oninput="updateParam('spawnRate', this.value)">
+                        <span class="value-display" id="spawnRate-value">2</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Ripple Speed</label>
+                    <div class="slider-container">
+                        <input type="range" id="rippleSpeed" min="0.5" max="3" step="0.1" value="1.2" oninput="updateParam('rippleSpeed', this.value)">
+                        <span class="value-display" id="rippleSpeed-value">1.2</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Max Ripple Size</label>
+                    <div class="slider-container">
+                        <input type="range" id="maxSize" min="100" max="400" step="20" value="200" oninput="updateParam('maxSize', this.value)">
+                        <span class="value-display" id="maxSize-value">200</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Ring Count</label>
+                    <div class="slider-container">
+                        <input type="range" id="ringCount" min="2" max="8" step="1" value="4" oninput="updateParam('ringCount', this.value)">
+                        <span class="value-display" id="ringCount-value">4</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Fade Rate</label>
+                    <div class="slider-container">
+                        <input type="range" id="fadeRate" min="1" max="15" step="1" value="5" oninput="updateParam('fadeRate', this.value)">
+                        <span class="value-display" id="fadeRate-value">5</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h3>Actions</h3>
+                <div class="button-row" style="margin-bottom: 6px;">
+                    <button class="button" onclick="resetParameters()">Reset</button>
+                    <button class="button secondary" onclick="downloadImage()">Download</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="canvas-area">
+            <div id="canvas-container">
+                <div class="loading">The water stirs...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let params = {
+            seed: 42,
+            spawnRate: 2,
+            rippleSpeed: 1.2,
+            maxSize: 200,
+            ringCount: 4,
+            fadeRate: 5
+        };
+        let defaultParams = {...params};
+
+        const COLORS = {
+            abyss: [10, 9, 8],
+            deep: [26, 58, 74],
+            drowned: [45, 75, 62],
+            bone: [180, 175, 165],
+            surface: [20, 35, 45]
+        };
+
+        let ripples = [];
+        let lastSpawn = 0;
+
+        function setup() {
+            let canvas = createCanvas(1200, 1200);
+            canvas.parent('canvas-container');
+            randomSeed(params.seed);
+            noiseSeed(params.seed);
+            background(COLORS.abyss[0], COLORS.abyss[1], COLORS.abyss[2]);
+            document.querySelector('.loading').style.display = 'none';
+        }
+
+        function draw() {
+            // Very slow fade - builds atmosphere
+            fill(COLORS.abyss[0], COLORS.abyss[1], COLORS.abyss[2], params.fadeRate);
+            noStroke();
+            rect(0, 0, width, height);
+
+            // Spawn new ripples based on rate
+            if (frameCount - lastSpawn > (60 / params.spawnRate)) {
+                spawnRipple();
+                lastSpawn = frameCount;
+            }
+
+            // Occasionally spawn clustered ripples (something big moved)
+            if (random() < 0.005) {
+                let cx = random(width * 0.2, width * 0.8);
+                let cy = random(height * 0.2, height * 0.8);
+                for (let i = 0; i < floor(random(2, 5)); i++) {
+                    ripples.push(new Ripple(
+                        cx + random(-100, 100),
+                        cy + random(-100, 100),
+                        random(0.7, 1.3)
+                    ));
+                }
+            }
+
+            // Update and draw ripples
+            for (let i = ripples.length - 1; i >= 0; i--) {
+                ripples[i].update();
+                ripples[i].display();
+                if (ripples[i].isDead()) {
+                    ripples.splice(i, 1);
+                }
+            }
+        }
+
+        function spawnRipple() {
+            // Weighted toward center but can appear anywhere
+            let x, y;
+            if (random() < 0.6) {
+                // Center-weighted
+                x = width/2 + randomGaussian() * width * 0.25;
+                y = height/2 + randomGaussian() * height * 0.25;
+            } else {
+                // Random
+                x = random(width);
+                y = random(height);
+            }
+            ripples.push(new Ripple(x, y));
+        }
+
+        class Ripple {
+            constructor(x, y, sizeMultiplier = 1) {
+                this.x = x;
+                this.y = y;
+                this.radius = 0;
+                this.maxRadius = params.maxSize * sizeMultiplier * random(0.6, 1.4);
+                this.alpha = 255;
+                this.speed = params.rippleSpeed * random(0.8, 1.2);
+                
+                // Color variation - mostly deep blue, occasionally green or bone
+                let colorRoll = random();
+                if (colorRoll < 0.7) {
+                    this.color = COLORS.deep;
+                } else if (colorRoll < 0.9) {
+                    this.color = COLORS.drowned;
+                } else {
+                    this.color = COLORS.bone;
+                    this.alpha = 150; // Bone ripples are fainter
+                }
+            }
+
+            update() {
+                this.radius += this.speed;
+                // Fade as it expands
+                this.alpha = map(this.radius, 0, this.maxRadius, 200, 0);
+            }
+
+            display() {
+                noFill();
+                
+                // Draw multiple concentric rings
+                for (let i = 0; i < params.ringCount; i++) {
+                    let ringRadius = this.radius - (i * 15);
+                    if (ringRadius > 0) {
+                        let ringAlpha = this.alpha * map(i, 0, params.ringCount, 1, 0.3);
+                        stroke(this.color[0], this.color[1], this.color[2], ringAlpha);
+                        strokeWeight(map(i, 0, params.ringCount, 2, 0.5));
+                        ellipse(this.x, this.y, ringRadius * 2, ringRadius * 2);
+                    }
+                }
+            }
+
+            isDead() {
+                return this.radius > this.maxRadius;
+            }
+        }
+
+        // UI Handlers
+        function updateParam(name, value) {
+            params[name] = parseFloat(value);
+            document.getElementById(name + '-value').textContent = value;
+        }
+
+        function updateSeed() {
+            params.seed = parseInt(document.getElementById('seed-input').value) || 42;
+            randomSeed(params.seed);
+            noiseSeed(params.seed);
+            ripples = [];
+            background(COLORS.abyss[0], COLORS.abyss[1], COLORS.abyss[2]);
+        }
+
+        function previousSeed() {
+            params.seed = Math.max(1, params.seed - 1);
+            document.getElementById('seed-input').value = params.seed;
+            updateSeed();
+        }
+
+        function nextSeed() {
+            params.seed++;
+            document.getElementById('seed-input').value = params.seed;
+            updateSeed();
+        }
+
+        function randomSeedAndUpdate() {
+            params.seed = Math.floor(Math.random() * 999999) + 1;
+            document.getElementById('seed-input').value = params.seed;
+            updateSeed();
+        }
+
+        function resetParameters() {
+            params = {...defaultParams};
+            document.getElementById('spawnRate').value = params.spawnRate;
+            document.getElementById('spawnRate-value').textContent = params.spawnRate;
+            document.getElementById('rippleSpeed').value = params.rippleSpeed;
+            document.getElementById('rippleSpeed-value').textContent = params.rippleSpeed;
+            document.getElementById('maxSize').value = params.maxSize;
+            document.getElementById('maxSize-value').textContent = params.maxSize;
+            document.getElementById('ringCount').value = params.ringCount;
+            document.getElementById('ringCount-value').textContent = params.ringCount;
+            document.getElementById('fadeRate').value = params.fadeRate;
+            document.getElementById('fadeRate-value').textContent = params.fadeRate;
+            document.getElementById('seed-input').value = params.seed;
+            updateSeed();
+        }
+
+        function downloadImage() {
+            saveCanvas('dark-water-' + params.seed, 'png');
+        }
+    </script>
+</body>
+</html>
