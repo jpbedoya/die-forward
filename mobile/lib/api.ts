@@ -115,13 +115,23 @@ export async function advanceRoom(
 // Record death
 export async function recordDeath(
   sessionToken: string,
+  room: number,
   finalMessage: string,
-  killedBy?: string
+  inventory: { id: string; name: string; emoji: string }[],
+  killedBy?: string,
+  playerName?: string
 ): Promise<DeathResponse> {
   const response = await fetch(`${API_BASE}/api/session/death`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ sessionToken, finalMessage, killedBy }),
+    body: JSON.stringify({ 
+      sessionToken, 
+      room, 
+      finalMessage, 
+      inventory,
+      killedBy,
+      playerName,
+    }),
   });
 
   if (!response.ok) {

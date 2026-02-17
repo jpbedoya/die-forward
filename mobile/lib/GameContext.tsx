@@ -257,7 +257,19 @@ export function GameProvider({ children }: { children: ReactNode }) {
     
     updateState({ loading: true });
     try {
-      await api.recordDeath(state.sessionToken, finalMessage, killedBy);
+      const room = (state.currentRoom || 0) + 1; // Room is 1-indexed for display
+      const playerName = state.walletAddress 
+        ? `${state.walletAddress.slice(0, 4)}...${state.walletAddress.slice(-4)}`
+        : undefined;
+      
+      await api.recordDeath(
+        state.sessionToken, 
+        room, 
+        finalMessage, 
+        state.inventory,
+        killedBy,
+        playerName
+      );
       updateState({ loading: false });
     } catch (err) {
       updateState({
@@ -265,7 +277,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         error: err instanceof Error ? err.message : 'Failed to record death',
       });
     }
-  }, [state.sessionToken, updateState]);
+  }, [state.sessionToken, state.currentRoom, state.inventory, state.walletAddress, updateState]);
 
   const claimVictoryAction = useCallback(async () => {
     if (!state.sessionToken) return;
