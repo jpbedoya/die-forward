@@ -64,22 +64,7 @@ import { usePoolStats, useDeathFeed, useLeaderboard } from '../lib/instant';
 import { DieForwardLogo } from '../components/DieForwardLogo';
 import { AudioToggle } from '../components/AudioToggle';
 
-// CRT Scanline + vignette overlay effect
-function CRTOverlay() {
-  return (
-    <View 
-      pointerEvents="none"
-      className="absolute inset-0 z-50"
-      style={{
-        // Scanlines
-        backgroundImage: Platform.OS === 'web' 
-          ? `repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 2px),
-             radial-gradient(ellipse at center, transparent 0%, transparent 50%, rgba(0,0,0,0.4) 100%)`
-          : undefined,
-      }}
-    />
-  );
-}
+import { CRTOverlay } from '../components/CRTOverlay';
 
 export default function HomeScreen() {
   const [showSplash, setShowSplash] = useState(true);

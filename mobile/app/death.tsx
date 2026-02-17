@@ -8,6 +8,7 @@ import { useAudio } from '../lib/audio';
 import { getDeathMoment, getFinalWordsIntro, getDepthForRoom } from '../lib/content';
 import { DeathCard, ShareCardCapture, useShareCard } from '../lib/shareCard';
 import { AudioToggle } from '../components/AudioToggle';
+import { CRTOverlay } from '../components/CRTOverlay';
 
 export default function DeathScreen() {
   const game = useGame();
@@ -160,6 +161,7 @@ export default function DeathScreen() {
   }
 
   return (
+    <View className="flex-1 bg-crypt-bg">
     <SafeAreaView className="flex-1 bg-crypt-bg">
       {/* Header with audio toggle */}
       <View className="flex-row items-center justify-end px-4 py-2">
@@ -323,5 +325,7 @@ export default function DeathScreen() {
         </View>
       </Modal>
     </SafeAreaView>
+    <CRTOverlay />
+    </View>
   );
 }

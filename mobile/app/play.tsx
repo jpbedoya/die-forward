@@ -8,6 +8,7 @@ import { useAudio } from '../lib/audio';
 import { useCorpsesForRoom, discoverCorpse, recordTip, useGameSettings, Corpse } from '../lib/instant';
 import { ProgressBar } from '../components/ProgressBar';
 import { GameMenu, MenuButton } from '../components/GameMenu';
+import { CRTOverlay } from '../components/CRTOverlay';
 import { getDepthForRoom, DungeonRoom, getItemDetails } from '../lib/content';
 import { useUnifiedWallet, type Address } from '../lib/wallet/unified';
 import { ItemModal } from '../components/CryptModal';
@@ -497,6 +498,7 @@ export default function PlayScreen() {
         } : null}
       />
       </SafeAreaView>
+      <CRTOverlay />
     </View>
   );
 }

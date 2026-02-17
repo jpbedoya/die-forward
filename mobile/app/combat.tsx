@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
 import { ProgressBar } from '../components/ProgressBar';
 import { GameMenu, MenuButton } from '../components/GameMenu';
+import { CRTOverlay } from '../components/CRTOverlay';
 import { useAudio } from '../lib/audio';
 import { useGameSettings, DEFAULT_GAME_SETTINGS } from '../lib/instant';
 import {
@@ -233,6 +234,10 @@ export default function CombatScreen() {
           playerDmg = calculateDamage(8 + Math.floor(Math.random() * 12), false);
           actionNarrative = getFleeNarration('fail');
           playSFX('flee-fail');
+          // Haptic for failed escape
+          if (Platform.OS !== 'web') {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+          }
         }
         break;
       }
@@ -252,6 +257,15 @@ export default function CombatScreen() {
     if (playerDmg > 0) {
       const intensity = playerDmg >= 20 ? 'heavy' : playerDmg >= 10 ? 'medium' : 'light';
       triggerShake(intensity);
+      // Haptic feedback for taking damage
+      if (Platform.OS !== 'web') {
+        const hapticStyle = playerDmg >= 20 
+          ? Haptics.ImpactFeedbackStyle.Heavy 
+          : playerDmg >= 10 
+            ? Haptics.ImpactFeedbackStyle.Medium 
+            : Haptics.ImpactFeedbackStyle.Light;
+        Haptics.impactAsync(hapticStyle);
+      }
     }
     
     // Check outcomes
@@ -484,6 +498,7 @@ export default function CombatScreen() {
           </View>
         </Animated.View>
       </SafeAreaView>
+      <CRTOverlay />
     </View>
   );
 }

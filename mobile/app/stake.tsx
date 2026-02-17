@@ -6,6 +6,7 @@ import { useGame } from '../lib/GameContext';
 import { useAudio } from '../lib/audio';
 import { useGameSettings } from '../lib/instant';
 import { AudioToggle } from '../components/AudioToggle';
+import { CRTOverlay } from '../components/CRTOverlay';
 
 const STAKE_OPTIONS = [0.01, 0.05, 0.1, 0.25];
 
@@ -71,6 +72,7 @@ export default function StakeScreen() {
   };
 
   return (
+    <View className="flex-1 bg-crypt-bg">
     <SafeAreaView className="flex-1 bg-crypt-bg">
       {/* Header */}
       <View className="flex-row items-center justify-between px-4 py-3 border-b border-crypt-border">
@@ -283,5 +285,7 @@ export default function StakeScreen() {
         </Pressable>
       </Modal>
     </SafeAreaView>
+    <CRTOverlay />
+    </View>
   );
 }
