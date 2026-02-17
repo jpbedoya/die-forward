@@ -105,10 +105,15 @@ export async function generateDeathCard(data: DeathCardData): Promise<Blob> {
     ctx.fillText(`"${line.trim()}"`, 300, y);
   }
   
-  // Stake lost
+  // Stake lost (only show if > 0)
   ctx.font = 'bold 24px "Courier New", monospace';
   ctx.fillStyle = '#f59e0b';
-  ctx.fillText(`◎ ${data.stakeLost} SOL LOST`, 300, 580);
+  if (data.stakeLost > 0) {
+    ctx.fillText(`◎ ${data.stakeLost} SOL LOST`, 300, 580);
+  } else {
+    ctx.fillStyle = '#71717a';
+    ctx.fillText('FREE PLAY', 300, 580);
+  }
   
   // Divider
   ctx.strokeStyle = '#333333';

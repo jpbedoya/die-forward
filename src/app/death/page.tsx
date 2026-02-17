@@ -210,14 +210,16 @@ export default function DeathScreen() {
         {/* Stats - what was lost */}
         <div className="w-full max-w-xs mb-6">
           <div className="text-center text-[var(--text-dim)] text-[10px] uppercase tracking-[0.2em] mb-2">
-            What You Lost
+            {deathData.stakeLost > 0 ? 'What You Lost' : 'Your Journey'}
           </div>
           <div className="border border-[var(--red-dim)]/50 bg-[var(--bg-surface)]/50 p-4">
-            <div className="flex justify-between py-1.5 border-b border-[var(--border-dim)]/50">
-              <span className="text-[var(--text-muted)] text-sm">Stake</span>
-              <span className="text-[var(--amber)] font-bold">◎ {deathData.stakeLost} SOL</span>
-            </div>
-            <div className="flex justify-between py-1.5">
+            {deathData.stakeLost > 0 && (
+              <div className="flex justify-between py-1.5 border-b border-[var(--border-dim)]/50">
+                <span className="text-[var(--text-muted)] text-sm">Stake</span>
+                <span className="text-[var(--amber)] font-bold">◎ {deathData.stakeLost} SOL</span>
+              </div>
+            )}
+            <div className={`flex justify-between py-1.5 ${deathData.stakeLost > 0 ? '' : 'border-b border-[var(--border-dim)]/50'}`}>
               <span className="text-[var(--text-muted)] text-sm">Items</span>
               <div className="flex items-center gap-1">
                 {deathData.inventory.slice(0, 3).map((item, i) => (
@@ -231,6 +233,12 @@ export default function DeathScreen() {
                 )}
               </div>
             </div>
+            {deathData.stakeLost === 0 && (
+              <div className="flex justify-between py-1.5">
+                <span className="text-[var(--text-muted)] text-sm">Mode</span>
+                <span className="text-[var(--text-dim)] text-sm">Free Play</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -340,12 +348,20 @@ export default function DeathScreen() {
 
       {/* Footer */}
       <footer className="text-center py-4 relative z-10">
-        <div className="text-[var(--amber-dim)] text-xs">
-          <span className="text-[var(--amber)]">◎</span> Your stake has been added to the Memorial Pool
-        </div>
-        <div className="text-[var(--text-dim)] text-[10px] mt-1">
-          Winners claim the spoils of the fallen
-        </div>
+        {deathData.stakeLost > 0 ? (
+          <>
+            <div className="text-[var(--amber-dim)] text-xs">
+              <span className="text-[var(--amber)]">◎</span> Your stake has been added to the Memorial Pool
+            </div>
+            <div className="text-[var(--text-dim)] text-[10px] mt-1">
+              Winners claim the spoils of the fallen
+            </div>
+          </>
+        ) : (
+          <div className="text-[var(--text-dim)] text-xs">
+            Stake SOL to leave your mark in the crypt
+          </div>
+        )}
       </footer>
 
     </div>
