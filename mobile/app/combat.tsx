@@ -7,6 +7,7 @@ import { useGame } from '../lib/GameContext';
 import { ProgressBar } from '../components/ProgressBar';
 import { GameMenu, MenuButton } from '../components/GameMenu';
 import { MiniPlayer } from '../components/MiniPlayer';
+import { AudioToggle } from '../components/AudioToggle';
 import { CRTOverlay } from '../components/CRTOverlay';
 import { useAudio } from '../lib/audio';
 import { useGameSettings, DEFAULT_GAME_SETTINGS } from '../lib/instant';
@@ -350,7 +351,10 @@ export default function CombatScreen() {
               <MenuButton onPress={() => setMenuOpen(true)} />
               <Text className="text-amber text-xs font-mono">◈ {depth.name}</Text>
             </View>
-            <ProgressBar current={roomNumber} total={13} />
+            <View className="flex-row items-center gap-1">
+              <AudioToggle inline onSettingsPress={() => setMenuOpen(true)} />
+              <ProgressBar current={roomNumber} total={13} />
+            </View>
           </View>
 
           {/* Game Menu */}

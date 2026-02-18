@@ -9,6 +9,7 @@ import { useCorpsesForRoom, discoverCorpse, recordTip, useGameSettings, Corpse }
 import { ProgressBar } from '../components/ProgressBar';
 import { GameMenu, MenuButton } from '../components/GameMenu';
 import { MiniPlayer } from '../components/MiniPlayer';
+import { AudioToggle } from '../components/AudioToggle';
 import { CRTOverlay } from '../components/CRTOverlay';
 import { getDepthForRoom, DungeonRoom, getItemDetails } from '../lib/content';
 import { useUnifiedWallet, type Address } from '../lib/wallet/unified';
@@ -303,7 +304,10 @@ export default function PlayScreen() {
               </View>
             )}
           </View>
-          <ProgressBar current={roomNumber} total={dungeon.length} />
+          <View className="flex-row items-center gap-1">
+            <AudioToggle inline onSettingsPress={() => setMenuOpen(true)} />
+            <ProgressBar current={roomNumber} total={dungeon.length} />
+          </View>
         </View>
 
         {/* Game Menu */}
