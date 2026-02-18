@@ -33,7 +33,9 @@ export function AudioToggle({ ambientTrack, className = '', inline = false }: Au
         }
       }}
     >
-      <Text className="text-xl">{enabled ? '🔊' : '🔇'}</Text>
+      <Text className={`text-xs font-mono ${enabled ? 'text-amber' : 'text-bone-dark'}`}>
+        {enabled ? '[SND]' : '[MUTE]'}
+      </Text>
     </Pressable>
   );
 }
