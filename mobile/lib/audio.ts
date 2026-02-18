@@ -153,6 +153,7 @@ class WebAudioManager {
   private pendingAmbient: SoundId | null = null;
   private audioCache: Map<string, HTMLAudioElement> = new Map();
   private fadeInterval: ReturnType<typeof setInterval> | null = null;
+  private suppressAmbient: boolean = false;
 
   async init() {
     if (this.initialized) return;
@@ -229,10 +230,15 @@ class WebAudioManager {
     }
   }
 
+  setSuppressAmbient(suppress: boolean) {
+    this.suppressAmbient = suppress;
+  }
+
   async playAmbient(id: SoundId, crossfade: boolean = true) {
-    console.log('[Audio/Web] playAmbient:', id, { enabled: this.enabled, unlocked: this.unlocked, crossfade });
+    console.log('[Audio/Web] playAmbient:', id, { enabled: this.enabled, unlocked: this.unlocked, crossfade, suppressed: this.suppressAmbient });
     
     if (!this.enabled) return;
+    if (this.suppressAmbient) return;
     
     if (!this.unlocked) {
       console.log('[Audio/Web] Ambient queued (waiting for unlock):', id);
@@ -379,6 +385,7 @@ class NativeAudioManager {
   private ambientVolume: number = 0.3;
   private initialized: boolean = false;
   private unlocked: boolean = true; // Native doesn't need unlock
+  private suppressAmbient: boolean = false;
 
   async init() {
     if (this.initialized) return;
@@ -434,10 +441,15 @@ class NativeAudioManager {
     }
   }
 
+  setSuppressAmbient(suppress: boolean) {
+    this.suppressAmbient = suppress;
+  }
+
   async playAmbient(id: SoundId, crossfade: boolean = true) {
-    console.log('[Audio/Native] playAmbient:', id, { enabled: this.enabled, hasModule: !!AudioModule?.AudioPlayer, crossfade });
+    console.log('[Audio/Native] playAmbient:', id, { enabled: this.enabled, hasModule: !!AudioModule?.AudioPlayer, crossfade, suppressed: this.suppressAmbient });
     
     if (!this.enabled) return;
+    if (this.suppressAmbient) return;
     if (this.currentAmbientId === id) return;
     if (!AudioModule?.AudioPlayer) return;
     
@@ -566,6 +578,7 @@ interface IAudioManager {
   setEnabled(enabled: boolean): Promise<void>;
   isUnlocked(): boolean;
   unlock(): Promise<void>;
+  setSuppressAmbient(suppress: boolean): void;
 }
 
 // Singleton instance - platform-appropriate

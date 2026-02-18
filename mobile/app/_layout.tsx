@@ -15,6 +15,8 @@ import { View, Text, ScrollView, Platform } from 'react-native';
 import { GameProvider } from '../lib/GameContext';
 import { UnifiedWalletProvider } from '../lib/wallet/unified';
 import { WebFrame } from '../components/WebFrame';
+import { AudiusProvider } from '../lib/AudiusContext';
+import { MiniPlayer } from '../components/MiniPlayer';
 
 // Inject critical CSS for web safe areas
 function useWebSafeAreaCSS() {
@@ -141,14 +143,17 @@ export default function RootLayout() {
         <WebFrame>
           <UnifiedWalletProvider>
             <GameProvider>
-              <StatusBar style="light" />
-              <Stack
-                screenOptions={{
-                  headerShown: false,
-                  contentStyle: { backgroundColor: '#0d0d0d' },
-                  animation: 'fade',
-                }}
-              />
+              <AudiusProvider>
+                <StatusBar style="light" />
+                <Stack
+                  screenOptions={{
+                    headerShown: false,
+                    contentStyle: { backgroundColor: '#0d0d0d' },
+                    animation: 'fade',
+                  }}
+                />
+                <MiniPlayer />
+              </AudiusProvider>
             </GameProvider>
           </UnifiedWalletProvider>
         </WebFrame>
