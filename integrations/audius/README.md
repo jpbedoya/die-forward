@@ -63,6 +63,35 @@ No API key required for reads/streaming.
 - [ ] Integrate into settings screen
 - [ ] Add "Now Playing" to share cards
 
+## Integration Plan
+
+### Core Features
+- [ ] Ambient music from Audius API
+- [ ] Player playlist selection before descent
+- [ ] Track attribution in-game ("Now Playing")
+- [ ] Log which track playing at death/victory
+
+### Leaderboards & Discovery
+- [ ] Most played tracks/playlists (Audius could sponsor prizes)
+- [ ] "Death Soundtrack" — songs playing at most deaths
+- [ ] Artist notifications at X plays
+
+### Share Cards
+- [ ] Audius logo + "🎵 Died to [Track] by [Artist]"
+- [ ] Link to track on Audius
+- [ ] Attribution = organic promo for artists
+
+### Tapestry Integration
+- [ ] Music taste → social profile
+- [ ] Cross-post death cards with track attribution
+- [ ] "Players who like this playlist also died to..."
+
+### Partnership Opportunities
+- Promoted playlists from Audius
+- Sponsorship for leaderboard giveaways
+- Play data = discovery proof for artists
+- Attribution on shares = organic promo
+
 ## Links
 
 - Docs: https://docs.audius.co
