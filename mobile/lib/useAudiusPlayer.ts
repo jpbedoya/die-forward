@@ -67,9 +67,56 @@ export function useAudiusPlayer() {
       playThroughEarpieceAndroid: false,
     });
     return () => {
+      clearCrossfade();
       soundRef.current?.unloadAsync();
     };
   }, []);
+
+  // ── Crossfade helpers ────────────────────────────────────────────────────────
+  const CROSSFADE_MS   = 1500;
+  const CROSSFADE_STEPS = 20;
+
+  const crossfadeRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const clearCrossfade = () => {
+    if (crossfadeRef.current) {
+      clearInterval(crossfadeRef.current);
+      crossfadeRef.current = null;
+    }
+  };
+
+  // Fade out + unload a sound we're done with
+  const fadeOutAndUnload = (sound: Audio.Sound, fromVolume: number) => {
+    const steps = CROSSFADE_STEPS;
+    const stepMs = CROSSFADE_MS / steps;
+    let step = 0;
+    const interval = setInterval(async () => {
+      step++;
+      try {
+        await sound.setVolumeAsync(Math.max(0, fromVolume * (1 - step / steps)));
+      } catch { /* sound may already be unloaded */ }
+      if (step >= steps) {
+        clearInterval(interval);
+        try { await sound.stopAsync(); } catch {}
+        try { await sound.unloadAsync(); } catch {}
+      }
+    }, stepMs);
+  };
+
+  // Fade a sound in from 0 to target volume
+  const fadeIn = (sound: Audio.Sound, targetVolume: number) => {
+    const steps = CROSSFADE_STEPS;
+    const stepMs = CROSSFADE_MS / steps;
+    let step = 0;
+    clearCrossfade();
+    crossfadeRef.current = setInterval(async () => {
+      step++;
+      try {
+        await sound.setVolumeAsync(Math.min(targetVolume, targetVolume * (step / steps)));
+      } catch { /* sound may have changed */ }
+      if (step >= steps) clearCrossfade();
+    }, stepMs);
+  };
 
   // ── Internal play ───────────────────────────────────────────────────────────
   const playTrackInner = async (
@@ -78,21 +125,29 @@ export function useAudiusPlayer() {
     trackList?: AudiusTrack[],
   ) => {
     try {
-      if (soundRef.current) {
-        await soundRef.current.unloadAsync();
-        soundRef.current = null;
-      }
+      // Hold onto old sound for crossfade — don't unload yet
+      const oldSound  = soundRef.current;
+      const oldVolume = volumeRef.current;
+      soundRef.current = null;
+      clearCrossfade();
 
       setCurrentTrack(track);
       setCurrentIndex(index);
       setIsPlaying(true);
       setError(null);
 
+      // Start new sound at 0 so we can fade it in
       const { sound } = await Audio.Sound.createAsync(
         { uri: `${API_BASE}/tracks/${track.id}/stream` },
-        { shouldPlay: true, volume: volumeRef.current },
+        { shouldPlay: true, volume: 0 },
       );
       soundRef.current = sound;
+
+      // Kick off crossfade: new fades in, old fades out simultaneously
+      if (oldSound) {
+        fadeOutAndUnload(oldSound, oldVolume);
+      }
+      fadeIn(sound, volumeRef.current);
 
       // Auto-advance on track end
       sound.setOnPlaybackStatusUpdate((status) => {
