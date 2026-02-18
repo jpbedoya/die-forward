@@ -23,11 +23,21 @@ export function MiniPlayer() {
           <Text className="text-stone-600 font-mono text-xs">No track</Text>
         )}
       </View>
-      <Pressable onPress={togglePlayPause} className="px-3 py-1" hitSlop={{ top: 12, bottom: 12, left: 12, right: 8 }}>
-        <Text className="text-bone-dark font-mono" style={{ fontSize: 13 }}>{isPlaying ? '⏸' : '▶'}</Text>
+      <Pressable
+        onPress={togglePlayPause}
+        hitSlop={{ top: 12, bottom: 12, left: 12, right: 8 }}
+        style={{ paddingHorizontal: 12, height: 28, alignItems: 'center', justifyContent: 'center' }}
+      >
+        <Text style={{ fontSize: 14, lineHeight: 16, color: '#a8a29e' }}>
+          {isPlaying ? '⏸' : '▶'}
+        </Text>
       </Pressable>
-      <Pressable onPress={playNext} className="px-3 py-1" hitSlop={{ top: 12, bottom: 12, left: 8, right: 12 }}>
-        <Text className="text-bone-dark font-mono" style={{ fontSize: 13 }}>⏭</Text>
+      <Pressable
+        onPress={playNext}
+        hitSlop={{ top: 12, bottom: 12, left: 8, right: 12 }}
+        style={{ paddingHorizontal: 12, height: 28, alignItems: 'center', justifyContent: 'center' }}
+      >
+        <Text style={{ fontSize: 14, lineHeight: 16, color: '#a8a29e' }}>⏭</Text>
       </Pressable>
     </View>
   );

@@ -44,15 +44,18 @@ export function useAudiusPlayer() {
   const [volume, setVolumeState]        = useState(0.7);
   const [error, setError]               = useState<string | null>(null);
 
-  const soundRef     = useRef<Audio.Sound | null>(null);
-  const tracksRef    = useRef<AudiusTrack[]>([]);
-  const indexRef     = useRef(0);
-  const volumeRef    = useRef(0.7);
+  const soundRef        = useRef<Audio.Sound | null>(null);
+  const tracksRef       = useRef<AudiusTrack[]>([]);
+  const indexRef        = useRef(0);
+  const volumeRef       = useRef(0.7);
+  const currentTrackRef = useRef<AudiusTrack | null>(null);
+  const actionLockRef   = useRef(false); // prevents overlapping async calls
 
   // Keep refs in sync so callbacks always see latest values
   useEffect(() => { tracksRef.current = tracks; }, [tracks]);
   useEffect(() => { indexRef.current = currentIndex; }, [currentIndex]);
   useEffect(() => { volumeRef.current = volume; }, [volume]);
+  useEffect(() => { currentTrackRef.current = currentTrack; }, [currentTrack]);
 
   // Configure audio mode for background streaming
   useEffect(() => {
@@ -141,21 +144,29 @@ export function useAudiusPlayer() {
   }, []);
 
   const togglePlayPause = useCallback(async () => {
-    if (!soundRef.current) {
-      if (currentTrack) await playTrackInner(currentTrack, indexRef.current);
-      return;
-    }
-    const status = await soundRef.current.getStatusAsync();
-    if (status.isLoaded) {
-      if (status.isPlaying) {
-        await soundRef.current.pauseAsync();
-        setIsPlaying(false);
-      } else {
-        await soundRef.current.playAsync();
-        setIsPlaying(true);
+    // Prevent overlapping calls (e.g. tapping rapidly while track is loading)
+    if (actionLockRef.current) return;
+    actionLockRef.current = true;
+    try {
+      if (!soundRef.current) {
+        const track = currentTrackRef.current;
+        if (track) await playTrackInner(track, indexRef.current);
+        return;
       }
+      const status = await soundRef.current.getStatusAsync();
+      if (status.isLoaded) {
+        if (status.isPlaying) {
+          await soundRef.current.pauseAsync();
+          setIsPlaying(false);
+        } else {
+          await soundRef.current.playAsync();
+          setIsPlaying(true);
+        }
+      }
+    } finally {
+      actionLockRef.current = false;
     }
-  }, [currentTrack]);
+  }, []); // stable — reads everything via refs
 
   const playNext = useCallback(() => {
     if (tracksRef.current.length === 0) return;
