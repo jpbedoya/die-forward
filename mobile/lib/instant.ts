@@ -356,6 +356,8 @@ export interface GameSettings {
   staminaRegen: number;        // Stamina recovered per turn
   // Victory settings
   victoryBonusPercent: number;
+  // UI settings
+  showVictorsFeed: boolean;    // Show victors tab on title screen
 }
 
 // Default settings (fallback if not set in DB)
@@ -375,6 +377,7 @@ export const DEFAULT_GAME_SETTINGS: Omit<GameSettings, 'id'> = {
   fleeCleanRatio: 0.6,
   staminaRegen: 1,
   victoryBonusPercent: 50,
+  showVictorsFeed: false,
 };
 
 // Hook to get game settings (from admin panel)
@@ -404,6 +407,7 @@ export function useGameSettings() {
     fleeCleanRatio: dbSettings?.fleeCleanRatio ?? DEFAULT_GAME_SETTINGS.fleeCleanRatio,
     staminaRegen: dbSettings?.staminaRegen ?? DEFAULT_GAME_SETTINGS.staminaRegen,
     victoryBonusPercent: dbSettings?.victoryBonusPercent ?? DEFAULT_GAME_SETTINGS.victoryBonusPercent,
+    showVictorsFeed: dbSettings?.showVictorsFeed ?? DEFAULT_GAME_SETTINGS.showVictorsFeed,
   };
 
   return { settings, isLoading, error };

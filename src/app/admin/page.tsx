@@ -31,6 +31,8 @@ interface GameSettings {
   tier3Multiplier: number;
   // Victory settings
   victoryBonusPercent: number; // % of pool for winners
+  // UI settings
+  showVictorsFeed: boolean;    // Show victors tab on title screen
 }
 
 const DEFAULT_SETTINGS: Omit<GameSettings, 'id'> = {
@@ -42,6 +44,7 @@ const DEFAULT_SETTINGS: Omit<GameSettings, 'id'> = {
   tier2Multiplier: 1.5,
   tier3Multiplier: 2.0,
   victoryBonusPercent: 50,
+  showVictorsFeed: false,
 };
 
 export default function AdminPage() {
@@ -157,6 +160,7 @@ export default function AdminPage() {
     tier2Multiplier: settings?.tier2Multiplier ?? DEFAULT_SETTINGS.tier2Multiplier,
     tier3Multiplier: settings?.tier3Multiplier ?? DEFAULT_SETTINGS.tier3Multiplier,
     victoryBonusPercent: settings?.victoryBonusPercent ?? DEFAULT_SETTINGS.victoryBonusPercent,
+    showVictorsFeed: settings?.showVictorsFeed ?? DEFAULT_SETTINGS.showVictorsFeed,
   };
 
   return (
@@ -274,6 +278,16 @@ export default function AdminPage() {
               onChange={(v) => saveSettings({ victoryBonusPercent: v })}
             />
           </SettingsSection>
+
+          {/* UI Settings */}
+          <SettingsSection title="UI">
+            <SettingToggle
+              label="Show Victors Feed"
+              description="Display the victors tab on the title screen"
+              value={currentSettings.showVictorsFeed}
+              onChange={(v) => saveSettings({ showVictorsFeed: v })}
+            />
+          </SettingsSection>
         </div>
 
         {/* Recent Deaths */}
@@ -370,6 +384,42 @@ function SettingSlider({
       <span className="text-[var(--amber)] text-sm w-16 text-right font-mono">
         {format(value)}
       </span>
+    </div>
+  );
+}
+
+// Setting Toggle Component
+function SettingToggle({
+  label,
+  description,
+  value,
+  onChange,
+}: {
+  label: string;
+  description?: string;
+  value: boolean;
+  onChange: (v: boolean) => void;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-4">
+      <div>
+        <label className="text-[var(--text-dim)] text-sm">{label}</label>
+        {description && (
+          <p className="text-[var(--text-muted)] text-xs mt-0.5">{description}</p>
+        )}
+      </div>
+      <button
+        onClick={() => onChange(!value)}
+        className={`w-12 h-6 rounded-full transition-colors relative ${
+          value ? 'bg-[var(--amber)]' : 'bg-[var(--bg-surface)]'
+        } border border-[var(--border)]`}
+      >
+        <span
+          className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-transform ${
+            value ? 'translate-x-6' : 'translate-x-0.5'
+          }`}
+        />
+      </button>
     </div>
   );
 }

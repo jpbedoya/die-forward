@@ -60,7 +60,7 @@ function AnimatedDescendButton() {
   );
 }
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { usePoolStats, useDeathFeed, useLeaderboard } from '../lib/instant';
+import { usePoolStats, useDeathFeed, useLeaderboard, useGameSettings } from '../lib/instant';
 import { DieForwardLogo } from '../components/DieForwardLogo';
 import { AudioToggle } from '../components/AudioToggle';
 
@@ -80,6 +80,7 @@ export default function HomeScreen() {
   const { deaths: recentDeaths } = useDeathFeed(20);
   const { leaderboard: rawLeaderboard } = useLeaderboard(20);
   const { playAmbient, unlock: unlockAudio } = useAudio();
+  const { settings } = useGameSettings();
 
   // Filter out empty leaderboard entries
   const leaderboard = rawLeaderboard.filter(p => p.name && p.name.trim() !== '');
@@ -194,14 +195,18 @@ export default function HomeScreen() {
                   ECHOES
                 </Text>
               </Pressable>
-              <Text className="text-crypt-border-light font-mono">◆</Text>
-              <Pressable onPress={() => setActiveTab('victors')}>
-                <Text className={`font-mono text-base tracking-widest ${
-                  activeTab === 'victors' ? 'text-victory' : 'text-bone-dark'
-                }`}>
-                  VICTORS
-                </Text>
-              </Pressable>
+              {settings.showVictorsFeed && (
+                <>
+                  <Text className="text-crypt-border-light font-mono">◆</Text>
+                  <Pressable onPress={() => setActiveTab('victors')}>
+                    <Text className={`font-mono text-base tracking-widest ${
+                      activeTab === 'victors' ? 'text-victory' : 'text-bone-dark'
+                    }`}>
+                      VICTORS
+                    </Text>
+                  </Pressable>
+                </>
+              )}
             </View>
           </View>
 
