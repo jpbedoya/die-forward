@@ -50,6 +50,7 @@ export function useAudiusPlayer() {
   const volumeRef       = useRef(0.7);
   const currentTrackRef = useRef<AudiusTrack | null>(null);
   const actionLockRef   = useRef(false); // prevents overlapping async calls
+  const loadRequestIdRef = useRef(0); // cancels stale async playlist loads
 
   // Keep refs in sync so callbacks always see latest values
   useEffect(() => { tracksRef.current = tracks; }, [tracks]);
@@ -68,6 +69,13 @@ export function useAudiusPlayer() {
     });
     return () => {
       clearCrossfade();
+      clearFadeOuts();
+      for (const sound of fadingSoundsRef.current) {
+        try { sound.setOnPlaybackStatusUpdate(null); } catch {}
+        try { sound.stopAsync(); } catch {}
+        try { sound.unloadAsync(); } catch {}
+      }
+      fadingSoundsRef.current.clear();
       soundRef.current?.unloadAsync();
     };
   }, []);
@@ -77,6 +85,8 @@ export function useAudiusPlayer() {
   const CROSSFADE_STEPS = 20;
 
   const crossfadeRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const fadeOutIntervalsRef = useRef<Set<ReturnType<typeof setInterval>>>(new Set());
+  const fadingSoundsRef = useRef<Set<Audio.Sound>>(new Set());
 
   const clearCrossfade = () => {
     if (crossfadeRef.current) {
@@ -85,8 +95,16 @@ export function useAudiusPlayer() {
     }
   };
 
+  const clearFadeOuts = () => {
+    for (const interval of fadeOutIntervalsRef.current) {
+      clearInterval(interval);
+    }
+    fadeOutIntervalsRef.current.clear();
+  };
+
   // Fade out + unload a sound we're done with
   const fadeOutAndUnload = (sound: Audio.Sound, fromVolume: number) => {
+    fadingSoundsRef.current.add(sound);
     const steps = CROSSFADE_STEPS;
     const stepMs = CROSSFADE_MS / steps;
     let step = 0;
@@ -97,10 +115,14 @@ export function useAudiusPlayer() {
       } catch { /* sound may already be unloaded */ }
       if (step >= steps) {
         clearInterval(interval);
+        fadeOutIntervalsRef.current.delete(interval);
+        try { sound.setOnPlaybackStatusUpdate(null); } catch {}
         try { await sound.stopAsync(); } catch {}
         try { await sound.unloadAsync(); } catch {}
+        fadingSoundsRef.current.delete(sound);
       }
     }, stepMs);
+    fadeOutIntervalsRef.current.add(interval);
   };
 
   // Fade a sound in from 0 to target volume
@@ -174,6 +196,7 @@ export function useAudiusPlayer() {
   // ── Public API ──────────────────────────────────────────────────────────────
 
   const loadPlaylist = useCallback(async (id: string) => {
+    const requestId = ++loadRequestIdRef.current;
     setIsLoading(true);
     setError(null);
     setLoadedPlaylistId(id);
@@ -181,6 +204,9 @@ export function useAudiusPlayer() {
     try {
       const res = await fetch(`${API_BASE}/playlists/${id}/tracks`);
       const { data } = await res.json();
+
+      // Ignore stale async responses (e.g. source switched to game/none)
+      if (requestId !== loadRequestIdRef.current) return;
 
       if (!data || data.length === 0) {
         setError('Playlist is empty');
@@ -195,9 +221,11 @@ export function useAudiusPlayer() {
     } catch (e) {
       console.error('[Audius] loadPlaylist error:', e);
       setError('Failed to load playlist');
+    } finally {
+      if (requestId === loadRequestIdRef.current) {
+        setIsLoading(false);
+      }
     }
-
-    setIsLoading(false);
   }, []);
 
   const playTrack = useCallback((track: AudiusTrack, index: number) => {
@@ -242,6 +270,9 @@ export function useAudiusPlayer() {
   }, []);
 
   const stop = useCallback(async () => {
+    // Cancel any in-flight playlist load so stale fetches can't restart audio
+    loadRequestIdRef.current++;
+
     const sound = soundRef.current;
     soundRef.current = null; // clear immediately so nothing else touches it
     if (sound) {
@@ -249,7 +280,17 @@ export function useAudiusPlayer() {
       try { await sound.stopAsync(); } catch (_) { /* already stopped */ }
       try { await sound.unloadAsync(); } catch (_) { /* already unloaded */ }
     }
+
     clearCrossfade();
+    clearFadeOuts();
+
+    for (const fadingSound of fadingSoundsRef.current) {
+      try { fadingSound.setOnPlaybackStatusUpdate(null); } catch (_) {}
+      try { await fadingSound.stopAsync(); } catch (_) {}
+      try { await fadingSound.unloadAsync(); } catch (_) {}
+    }
+    fadingSoundsRef.current.clear();
+
     setIsPlaying(false);
   }, []);
 
