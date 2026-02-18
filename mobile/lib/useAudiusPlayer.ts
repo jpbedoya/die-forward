@@ -181,9 +181,15 @@ export function useAudiusPlayer() {
   }, []);
 
   const stop = useCallback(async () => {
-    if (soundRef.current) {
-      await soundRef.current.unloadAsync();
-      soundRef.current = null;
+    const sound = soundRef.current;
+    soundRef.current = null; // clear immediately so nothing else touches it
+    if (sound) {
+      try {
+        await sound.stopAsync();
+      } catch (_) { /* already stopped */ }
+      try {
+        await sound.unloadAsync();
+      } catch (_) { /* already unloaded */ }
     }
     setIsPlaying(false);
   }, []);

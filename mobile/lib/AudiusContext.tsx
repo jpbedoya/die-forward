@@ -1,6 +1,6 @@
 // Audius Context — persistent music player across all screens
 // Manages music source preference (game / audius / none) + active playlist
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAudiusPlayer, AudiusTrack, CURATED_PLAYLISTS } from './useAudiusPlayer';
 import { getAudioManager } from './audio';
@@ -38,9 +38,15 @@ interface AudioPrefs {
 export function AudiusProvider({ children }: { children: React.ReactNode }) {
   const player = useAudiusPlayer();
 
-  const [musicSource, setMusicSourceState]       = useState<MusicSource>('game');
+  const [musicSource, setMusicSourceState]           = useState<MusicSource>('game');
   const [activePlaylistId, setActivePlaylistIdState] = useState<string>(DEFAULT_PLAYLIST);
-  const [prefsLoaded, setPrefsLoaded]             = useState(false);
+  const [prefsLoaded, setPrefsLoaded]                = useState(false);
+
+  // Keep stable refs to player actions so effects always call the live version
+  const stopRef         = useRef(player.stop);
+  const loadPlaylistRef = useRef(player.loadPlaylist);
+  useEffect(() => { stopRef.current = player.stop; }, [player.stop]);
+  useEffect(() => { loadPlaylistRef.current = player.loadPlaylist; }, [player.loadPlaylist]);
 
   // ── Load persisted prefs on mount ──────────────────────────────────────────
   useEffect(() => {
@@ -65,15 +71,18 @@ export function AudiusProvider({ children }: { children: React.ReactNode }) {
     const audioManager = getAudioManager();
 
     if (musicSource === 'audius') {
-      // Tell game audio to stop playing ambients
       audioManager.setSuppressAmbient(true);
       audioManager.stopAmbient();
-      // Load + play the active playlist
-      player.loadPlaylist(activePlaylistId);
+      loadPlaylistRef.current(activePlaylistId);
+    } else if (musicSource === 'none') {
+      // Silence everything — suppress game ambient AND stop Audius
+      audioManager.setSuppressAmbient(true);
+      audioManager.stopAmbient();
+      stopRef.current();
     } else {
-      // Re-enable game ambient, stop Audius
+      // 'game' — let game ambient play normally, stop any Audius
       audioManager.setSuppressAmbient(false);
-      player.stop();
+      stopRef.current();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [musicSource, prefsLoaded]);
