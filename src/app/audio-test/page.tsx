@@ -97,26 +97,29 @@ export default function AudioTestPage() {
   const [customDuration, setCustomDuration] = useState(2);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Check for existing audio files on mount
+  // Check for existing audio files on mount (parallel for speed)
   React.useEffect(() => {
     const checkExisting = async () => {
-      const existing: GeneratedSound[] = [];
-      for (const preset of presets) {
+      const checks = presets.map(async (preset) => {
         try {
           const res = await fetch(`/audio/${preset.id}.mp3`, { method: 'HEAD' });
           if (res.ok) {
             const size = parseInt(res.headers.get('content-length') || '0');
-            existing.push({
+            return {
               id: preset.id,
               name: preset.name,
               path: `/audio/${preset.id}.mp3`,
               size,
-            });
+            };
           }
         } catch {
           // File doesn't exist
         }
-      }
+        return null;
+      });
+      
+      const results = await Promise.all(checks);
+      const existing = results.filter((r): r is GeneratedSound => r !== null);
       if (existing.length > 0) {
         setGenerated(existing);
       }
@@ -247,44 +250,41 @@ export default function AudioTestPage() {
               return (
                 <div 
                   key={preset.id}
-                  className="bg-[var(--bg-surface)] border border-[var(--border-dim)] p-3 flex items-center justify-between"
+                  className="bg-[var(--bg-surface)] border border-[var(--border-dim)] p-3 flex items-start justify-between gap-3"
                 >
-                  <div className="flex-1">
-                    <div className="text-[var(--text-primary)] text-sm">{preset.name}</div>
-                    <div className="text-[var(--text-dim)] text-[10px] mt-0.5">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[var(--text-primary)] text-sm flex items-center gap-2">
+                      {preset.name}
+                      <span className="text-[var(--text-dim)] text-[10px]">{preset.duration}s</span>
+                      {sound && <span className="text-[var(--green)] text-[10px]">{Math.round(sound.size / 1024)}KB</span>}
+                    </div>
+                    <div className="text-[var(--text-dim)] text-[10px] mt-0.5 break-words">
                       {preset.prompt}
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-2 ml-4">
-                    <span className="text-[var(--text-dim)] text-[10px]">{preset.duration}s</span>
-                    
-                    {/* Always show Generate/Regenerate button */}
+                  <div className="flex flex-col gap-1 shrink-0">
+                    {/* Generate/Regenerate button */}
                     <button
                       onClick={() => generateSound(preset)}
                       disabled={isGenerating}
-                      className="px-3 py-1.5 text-xs bg-[var(--amber-dim)]/30 border border-[var(--amber)] text-[var(--amber-bright)] disabled:opacity-50"
+                      className="px-3 py-1.5 text-xs bg-[var(--amber-dim)]/30 border border-[var(--amber)] text-[var(--amber-bright)] disabled:opacity-50 w-20"
                     >
-                      {isGenerating ? '◈ ...' : sound ? '⚡ Regen' : '⚡ Generate'}
+                      {isGenerating ? '◈ ...' : sound ? '⚡ Regen' : '⚡ Gen'}
                     </button>
                     
-                    {/* Show Play/Stop if file exists */}
+                    {/* Play/Stop if file exists */}
                     {sound && (
-                      <>
-                        <button
-                          onClick={() => isPlaying ? stopSound() : playSound(sound.path, sound.id, preset.category === 'Ambient')}
-                          className={`px-3 py-1.5 text-xs border ${
-                            isPlaying 
-                              ? 'bg-[var(--red-dim)]/30 border-[var(--red)] text-[var(--red-bright)]' 
-                              : 'bg-[var(--green-dim)]/30 border-[var(--green)] text-[var(--green-bright)]'
-                          }`}
-                        >
-                          {isPlaying ? '■ Stop' : preset.category === 'Ambient' ? '🔁 Loop' : '▶ Play'}
-                        </button>
-                        <span className="text-[var(--green)] text-[10px]">
-                          {Math.round(sound.size / 1024)}KB
-                        </span>
-                      </>
+                      <button
+                        onClick={() => isPlaying ? stopSound() : playSound(sound.path, sound.id, preset.category === 'Ambient')}
+                        className={`px-3 py-1.5 text-xs border w-20 ${
+                          isPlaying 
+                            ? 'bg-[var(--red-dim)]/30 border-[var(--red)] text-[var(--red-bright)]' 
+                            : 'bg-[var(--green-dim)]/30 border-[var(--green)] text-[var(--green-bright)]'
+                        }`}
+                      >
+                        {isPlaying ? '■ Stop' : preset.category === 'Ambient' ? '🔁 Loop' : '▶ Play'}
+                      </button>
                     )}
                   </div>
                 </div>
