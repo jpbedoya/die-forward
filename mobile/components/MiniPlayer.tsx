@@ -1,5 +1,5 @@
-// MiniPlayer — fixed bottom bar showing now-playing Audius track
-// Renders only when musicSource === 'audius' and a track is loaded
+// MiniPlayer — inline single-line row for game screen footers
+// Drop inside any footer view; renders nothing when Audius is off
 import { View, Text, Pressable } from 'react-native';
 import { useAudius } from '../lib/AudiusContext';
 
@@ -9,29 +9,25 @@ export function MiniPlayer() {
   if (musicSource !== 'audius') return null;
 
   return (
-    <View className="absolute bottom-0 left-0 right-0 bg-stone-950 border-t border-stone-700 px-4 py-2 flex-row items-center">
+    <View className="flex-row items-center border-t border-crypt-border pt-2 mt-1">
+      <Text className="text-amber text-xs font-mono mr-2">♪</Text>
       <View className="flex-1 mr-2">
         {isLoading && !currentTrack ? (
-          <Text className="text-stone-500 font-mono text-xs">Loading playlist...</Text>
+          <Text className="text-stone-600 font-mono text-xs">Loading...</Text>
         ) : currentTrack ? (
-          <>
-            <Text className="text-amber-100 font-mono text-xs" numberOfLines={1}>
-              🎵 {currentTrack.title}
-            </Text>
-            <Text className="text-stone-500 font-mono text-xs" numberOfLines={1}>
-              {currentTrack.user.name}
-            </Text>
-          </>
+          <Text className="text-bone-muted font-mono text-xs" numberOfLines={1}>
+            {currentTrack.title}
+            <Text className="text-stone-600"> · {currentTrack.user.name}</Text>
+          </Text>
         ) : (
-          <Text className="text-stone-600 font-mono text-xs">No track loaded</Text>
+          <Text className="text-stone-600 font-mono text-xs">No track</Text>
         )}
       </View>
-
-      <Pressable onPress={togglePlayPause} className="p-2 mr-1" hitSlop={8}>
-        <Text className="text-base">{isPlaying ? '⏸️' : '▶️'}</Text>
+      <Pressable onPress={togglePlayPause} className="px-2" hitSlop={8}>
+        <Text className="text-bone-dark font-mono text-xs">{isPlaying ? '[⏸]' : '[▶]'}</Text>
       </Pressable>
-      <Pressable onPress={playNext} className="p-2" hitSlop={8}>
-        <Text className="text-base">⏭️</Text>
+      <Pressable onPress={playNext} className="px-1" hitSlop={8}>
+        <Text className="text-bone-dark font-mono text-xs">[⏭]</Text>
       </Pressable>
     </View>
   );

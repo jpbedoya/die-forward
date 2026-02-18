@@ -16,7 +16,6 @@ import { GameProvider } from '../lib/GameContext';
 import { UnifiedWalletProvider } from '../lib/wallet/unified';
 import { WebFrame } from '../components/WebFrame';
 import { AudiusProvider } from '../lib/AudiusContext';
-import { MiniPlayer } from '../components/MiniPlayer';
 
 // Inject critical CSS for web safe areas
 function useWebSafeAreaCSS() {
@@ -152,7 +151,6 @@ export default function RootLayout() {
                     animation: 'fade',
                   }}
                 />
-                <MiniPlayer />
               </AudiusProvider>
             </GameProvider>
           </UnifiedWalletProvider>

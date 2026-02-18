@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
 import { ProgressBar } from '../components/ProgressBar';
 import { GameMenu, MenuButton } from '../components/GameMenu';
+import { MiniPlayer } from '../components/MiniPlayer';
 import { CRTOverlay } from '../components/CRTOverlay';
 import { useAudio } from '../lib/audio';
 import { useGameSettings, DEFAULT_GAME_SETTINGS } from '../lib/instant';
@@ -501,6 +502,8 @@ export default function CombatScreen() {
                 )}
               </ScrollView>
             </View>
+
+            <MiniPlayer />
           </View>
         </Animated.View>
       </SafeAreaView>

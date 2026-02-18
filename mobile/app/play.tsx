@@ -8,6 +8,7 @@ import { useAudio } from '../lib/audio';
 import { useCorpsesForRoom, discoverCorpse, recordTip, useGameSettings, Corpse } from '../lib/instant';
 import { ProgressBar } from '../components/ProgressBar';
 import { GameMenu, MenuButton } from '../components/GameMenu';
+import { MiniPlayer } from '../components/MiniPlayer';
 import { CRTOverlay } from '../components/CRTOverlay';
 import { getDepthForRoom, DungeonRoom, getItemDetails } from '../lib/content';
 import { useUnifiedWallet, type Address } from '../lib/wallet/unified';
@@ -485,6 +486,8 @@ export default function PlayScreen() {
             )}
           </ScrollView>
         </View>
+
+        <MiniPlayer />
       </View>
 
       {/* Item Detail Modal */}
