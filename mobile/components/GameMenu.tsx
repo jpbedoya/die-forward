@@ -140,6 +140,11 @@ export function GameMenu({ isOpen, onClose }: GameMenuProps) {
                     >
                       {p.emoji} {p.name}
                     </Text>
+                    <Text className={`font-mono text-[10px] ${
+                      activePlaylistId === p.id ? 'text-black/70' : 'text-stone-600'
+                    }`}>
+                      {p.trackCount} tracks
+                    </Text>
                   </Pressable>
                 ))}
               </View>

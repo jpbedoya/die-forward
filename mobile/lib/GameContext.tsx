@@ -55,7 +55,7 @@ interface GameContextType extends GameState {
   // Game actions
   startGame: (amount: number, demoMode?: boolean) => Promise<void>;
   advance: () => Promise<boolean>;
-  recordDeath: (finalMessage: string, killedBy?: string) => Promise<void>;
+  recordDeath: (finalMessage: string, killedBy?: string, nowPlaying?: { title: string; artist: string }) => Promise<void>;
   claimVictory: () => Promise<void>;
   
   // State helpers
@@ -321,7 +321,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   }, [state.sessionToken, state.currentRoom, state.stamina, state.dungeon?.length, updateState]);
 
-  const recordDeathAction = useCallback(async (finalMessage: string, killedBy?: string) => {
+  const recordDeathAction = useCallback(async (finalMessage: string, killedBy?: string, nowPlaying?: { title: string; artist: string }) => {
     if (!state.sessionToken) return;
     
     updateState({ loading: true });
@@ -337,7 +337,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
         finalMessage, 
         state.inventory,
         killedBy,
-        playerName
+        playerName,
+        nowPlaying,
       );
       updateState({ loading: false });
     } catch (err) {
@@ -394,7 +395,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     dismissNicknameModal,
     startGame,
     advance,
-    recordDeath: recordDeathAction,
+    recordDeath: recordDeathAction as (finalMessage: string, killedBy?: string, nowPlaying?: { title: string; artist: string }) => Promise<void>,
     claimVictory: claimVictoryAction,
     setHealth,
     setStamina,

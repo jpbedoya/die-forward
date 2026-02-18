@@ -19,6 +19,8 @@ export interface Death {
   inventory: string[];
   deathHash?: string;
   onChainSignature?: string;
+  nowPlayingTitle?: string;
+  nowPlayingArtist?: string;
   createdAt: number;
 }
 
@@ -411,4 +413,44 @@ export function useGameSettings() {
   };
 
   return { settings, isLoading, error };
+}
+
+// ============ DEATH SOUNDTRACK ============
+
+export interface SoundtrackEntry {
+  title: string;
+  artist: string;
+  deathCount: number;
+}
+
+// Hook to get the most-died-to tracks (Death Soundtrack leaderboard)
+export function useDeathSoundtrack(limit = 10) {
+  const { data, isLoading, error } = db.useQuery({
+    deaths: {
+      $: { limit: 500 },
+    },
+  });
+
+  const deaths = (data?.deaths || []) as unknown as Death[];
+
+  const trackMap = new Map<string, SoundtrackEntry>();
+  for (const d of deaths) {
+    if (!d.nowPlayingTitle) continue;
+    const key = d.nowPlayingTitle;
+    if (trackMap.has(key)) {
+      trackMap.get(key)!.deathCount++;
+    } else {
+      trackMap.set(key, {
+        title: d.nowPlayingTitle,
+        artist: d.nowPlayingArtist || 'Unknown',
+        deathCount: 1,
+      });
+    }
+  }
+
+  const soundtrack = [...trackMap.values()]
+    .sort((a, b) => b.deathCount - a.deathCount)
+    .slice(0, limit);
+
+  return { soundtrack, isLoading, error };
 }

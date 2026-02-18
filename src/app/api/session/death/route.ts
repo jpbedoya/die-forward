@@ -25,7 +25,7 @@ export async function OPTIONS() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { sessionToken, room, finalMessage, inventory, playerName, killedBy } = body;
+    const { sessionToken, room, finalMessage, inventory, playerName, killedBy, nowPlayingTitle, nowPlayingArtist } = body;
 
     // Validate inputs
     if (!sessionToken || typeof sessionToken !== 'string') {
@@ -121,9 +121,10 @@ export async function POST(request: NextRequest) {
         room,
         stakeAmount: session.stakeAmount,
         finalMessage: finalMessage.trim(),
-        killedBy: killedBy || 'Unknown', // What killed the player
+        killedBy: killedBy || 'Unknown',
         inventory: JSON.stringify(inventoryArray),
-        deathHash, // Verifiable hash
+        deathHash,
+        ...(nowPlayingTitle ? { nowPlayingTitle, nowPlayingArtist: nowPlayingArtist || '' } : {}),
         createdAt: timestamp,
       }),
       // Create a corpse for other players to find

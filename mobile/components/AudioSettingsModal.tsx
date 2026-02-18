@@ -95,6 +95,11 @@ export function AudioSettingsModal({ visible, onClose }: AudioSettingsModalProps
                     }`}>
                       {p.emoji} {p.name}
                     </Text>
+                    <Text className={`font-mono text-[10px] ${
+                      activePlaylistId === p.id ? 'text-black/70' : 'text-stone-600'
+                    }`}>
+                      {p.trackCount} tracks
+                    </Text>
                   </Pressable>
                 ))}
               </View>

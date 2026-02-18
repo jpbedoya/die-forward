@@ -101,7 +101,13 @@ export default function DeathScreen() {
     playSFX('confirm-action');
     
     try {
-      await game.recordDeath(finalWords.trim(), params.killedBy);
+      await game.recordDeath(
+        finalWords.trim(),
+        params.killedBy,
+        musicSource === 'audius' && currentTrack
+          ? { title: currentTrack.title, artist: currentTrack.user.name }
+          : undefined,
+      );
       setSubmitted(true);
     } catch (e) {
       console.error('Failed to record death:', e);

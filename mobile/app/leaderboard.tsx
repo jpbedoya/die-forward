@@ -1,13 +1,16 @@
+import { useState } from 'react';
 import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useLeaderboard, usePlayer } from '../lib/instant';
+import { useLeaderboard, usePlayer, useDeathSoundtrack } from '../lib/instant';
 import { useGame } from '../lib/GameContext';
 
 export default function LeaderboardScreen() {
   const game = useGame();
   const { leaderboard, isLoading } = useLeaderboard(25);
   const { player } = usePlayer(game.walletAddress);
+  const { soundtrack, isLoading: soundtrackLoading } = useDeathSoundtrack(20);
+  const [activeTab, setActiveTab] = useState<'wanderers' | 'soundtrack'>('wanderers');
 
   return (
     <SafeAreaView className="flex-1 bg-crypt-bg">
@@ -20,11 +23,83 @@ export default function LeaderboardScreen() {
         <View className="w-16" />
       </View>
 
-      {isLoading ? (
+      {/* Tabs */}
+      <View className="flex-row border-b border-crypt-border">
+        {(['wanderers', 'soundtrack'] as const).map((tab) => (
+          <Pressable
+            key={tab}
+            onPress={() => setActiveTab(tab)}
+            className={`flex-1 py-2 items-center border-b-2 ${
+              activeTab === tab ? 'border-amber' : 'border-transparent'
+            }`}
+          >
+            <Text className={`text-xs font-mono tracking-widest ${
+              activeTab === tab ? 'text-amber' : 'text-bone-dark'
+            }`}>
+              {tab === 'wanderers' ? '◈ WANDERERS' : '♪ SOUNDTRACK'}
+            </Text>
+          </Pressable>
+        ))}
+      </View>
+
+      {isLoading && activeTab === 'wanderers' ? (
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#f59e0b" />
           <Text className="text-amber text-sm font-mono mt-4">Loading ranks...</Text>
         </View>
+      ) : activeTab === 'soundtrack' ? (
+        <ScrollView className="flex-1" contentContainerClassName="p-4">
+          <Text className="text-bone-dark text-xs font-mono tracking-widest mb-1">
+            ▼ DEATH SOUNDTRACK
+          </Text>
+          <Text className="text-stone-600 text-[10px] font-mono mb-4 italic">
+            Tracks playing when wanderers fell
+          </Text>
+
+          {soundtrackLoading ? (
+            <ActivityIndicator color="#f59e0b" />
+          ) : soundtrack.length === 0 ? (
+            <View className="bg-crypt-surface border border-crypt-border p-6">
+              <Text className="text-bone-dark text-sm font-mono text-center italic">
+                No death soundtracks yet.{'\n'}Play with Audius to contribute.
+              </Text>
+            </View>
+          ) : (
+            soundtrack.map((entry, index) => {
+              const rank = index + 1;
+              const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : null;
+              return (
+                <View
+                  key={entry.title}
+                  className="bg-crypt-surface border border-crypt-border mb-2 p-3 flex-row items-center"
+                >
+                  <View className="w-10 items-center mr-3">
+                    {medal
+                      ? <Text className="text-xl">{medal}</Text>
+                      : <Text className="text-bone-dark text-sm font-mono font-bold">#{rank}</Text>
+                    }
+                  </View>
+                  <View className="flex-1">
+                    <Text className="text-bone text-sm font-mono font-bold" numberOfLines={1}>
+                      {entry.title}
+                    </Text>
+                    <Text className="text-stone-500 text-xs font-mono" numberOfLines={1}>
+                      {entry.artist}
+                    </Text>
+                  </View>
+                  <View className="items-end">
+                    <Text className="text-blood text-base font-mono font-bold">{entry.deathCount}</Text>
+                    <Text className="text-stone-600 text-[10px] font-mono">deaths</Text>
+                  </View>
+                </View>
+              );
+            })
+          )}
+
+          <Text className="text-bone-dark text-xs font-mono text-center mt-6 mb-4 italic">
+            The crypt echoes with their music.
+          </Text>
+        </ScrollView>
       ) : (
         <ScrollView className="flex-1" contentContainerClassName="p-4">
           {/* Current player card */}
@@ -140,3 +215,4 @@ export default function LeaderboardScreen() {
     </SafeAreaView>
   );
 }
+

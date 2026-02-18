@@ -18,12 +18,12 @@ export interface AudiusTrack {
 }
 
 export const CURATED_PLAYLISTS = [
-  { id: 'emQa2', name: 'Dungeon Synth', emoji: '🏰', vibe: 'Dark, atmospheric' },
-  { id: 'DN6Pp', name: 'Gaming Arena',   emoji: '🎮', vibe: 'High energy' },
-  { id: 'nqZmb', name: 'Lo-Fi Nights',  emoji: '🌙', vibe: 'Chill' },
-  { id: '3AA6Z', name: 'Dark Ambient',  emoji: '🌑', vibe: 'Moody, intense' },
-  { id: '5ON2AWX', name: 'Gaming Mix',  emoji: '🕹️', vibe: '331 tracks' },
-  { id: 'ebd1O', name: 'Lofi Road Trip', emoji: '🚗', vibe: 'Chill vibes' },
+  { id: 'emQa2',   name: 'Dungeon Synth',  emoji: '🏰', vibe: 'Dark, atmospheric', trackCount: 21 },
+  { id: 'DN6Pp',   name: 'Gaming Arena',   emoji: '🎮', vibe: 'High energy',        trackCount: 33 },
+  { id: 'nqZmb',   name: 'Lo-Fi Nights',  emoji: '🌙', vibe: 'Chill',              trackCount: 198 },
+  { id: '3AA6Z',   name: 'Dark Ambient',  emoji: '🌑', vibe: 'Moody, intense',     trackCount: 9 },
+  { id: '5ON2AWX', name: 'Gaming Mix',    emoji: '🕹️', vibe: 'Variety',            trackCount: 331 },
+  { id: 'ebd1O',   name: 'Lofi Road Trip', emoji: '🚗', vibe: 'Chill vibes',       trackCount: 112 },
 ] as const;
 
 export type CuratedPlaylistId = typeof CURATED_PLAYLISTS[number]['id'];

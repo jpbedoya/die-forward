@@ -119,7 +119,8 @@ export async function recordDeath(
   finalMessage: string,
   inventory: { id: string; name: string; emoji: string }[],
   killedBy?: string,
-  playerName?: string
+  playerName?: string,
+  nowPlaying?: { title: string; artist: string },
 ): Promise<DeathResponse> {
   const response = await fetch(`${API_BASE}/api/session/death`, {
     method: 'POST',
@@ -131,6 +132,8 @@ export async function recordDeath(
       inventory,
       killedBy,
       playerName,
+      nowPlayingTitle: nowPlaying?.title,
+      nowPlayingArtist: nowPlaying?.artist,
     }),
   });
 
