@@ -94,7 +94,7 @@ export default function LandingPage() {
         {/* CTA Button */}
         <div className="relative z-10 flex flex-col sm:flex-row gap-4 mb-12">
           <a 
-            href="/game"
+            href="https://play.dieforward.com"
             className="px-8 py-4 bg-[var(--amber)] text-[var(--bg-base)] font-bold text-lg hover:bg-[var(--amber-bright)] transition-all hover:scale-105 text-center cursor-pointer"
           >
             ▶ PLAY NOW
