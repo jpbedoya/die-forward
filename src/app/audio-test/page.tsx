@@ -268,7 +268,7 @@ export default function AudioTestPage() {
                     <button
                       onClick={() => generateSound(preset)}
                       disabled={isGenerating}
-                      className="px-3 py-1.5 text-xs bg-[var(--amber-dim)]/30 border border-[var(--amber)] text-[var(--amber-bright)] disabled:opacity-50 w-20"
+                      className="px-3 py-1.5 text-xs bg-[var(--amber-dim)]/30 border border-[var(--amber)] text-[var(--amber-bright)] disabled:opacity-50 whitespace-nowrap"
                     >
                       {isGenerating ? '◈ ...' : sound ? '⚡ Regen' : '⚡ Gen'}
                     </button>
@@ -277,7 +277,7 @@ export default function AudioTestPage() {
                     {sound && (
                       <button
                         onClick={() => isPlaying ? stopSound() : playSound(sound.path, sound.id, preset.category === 'Ambient')}
-                        className={`px-3 py-1.5 text-xs border w-20 ${
+                        className={`px-3 py-1.5 text-xs border whitespace-nowrap ${
                           isPlaying 
                             ? 'bg-[var(--red-dim)]/30 border-[var(--red)] text-[var(--red-bright)]' 
                             : 'bg-[var(--green-dim)]/30 border-[var(--green)] text-[var(--green-bright)]'
