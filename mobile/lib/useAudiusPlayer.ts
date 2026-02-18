@@ -145,6 +145,7 @@ export function useAudiusPlayer() {
     track: AudiusTrack,
     index: number,
     trackList?: AudiusTrack[],
+    options?: { immediateSwitch?: boolean },
   ) => {
     try {
       // Silence the old sound's callback FIRST — prevents it from spawning
@@ -153,11 +154,17 @@ export function useAudiusPlayer() {
         soundRef.current.setOnPlaybackStatusUpdate(null);
       }
 
-      // Hold onto old sound for crossfade — don't unload yet
+      // Hold onto old sound
       const oldSound  = soundRef.current;
       const oldVolume = volumeRef.current;
       soundRef.current = null;
       clearCrossfade();
+
+      // Manual next/prev should feel snappy: kill current audio immediately
+      if (options?.immediateSwitch && oldSound) {
+        try { oldSound.stopAsync(); } catch {}
+        try { oldSound.unloadAsync(); } catch {}
+      }
 
       setCurrentTrack(track);
       setCurrentIndex(index);
@@ -171,11 +178,17 @@ export function useAudiusPlayer() {
       );
       soundRef.current = sound;
 
-      // Kick off crossfade: new fades in, old fades out simultaneously
-      if (oldSound) {
-        fadeOutAndUnload(oldSound, oldVolume);
+      // Kick off transition
+      if (options?.immediateSwitch) {
+        // Snappy manual skip: no crossfade, start full volume right away
+        try { await sound.setVolumeAsync(volumeRef.current); } catch {}
+      } else {
+        // Smooth automatic transition
+        if (oldSound) {
+          fadeOutAndUnload(oldSound, oldVolume);
+        }
+        fadeIn(sound, volumeRef.current);
       }
-      fadeIn(sound, volumeRef.current);
 
       // Auto-advance on track end
       sound.setOnPlaybackStatusUpdate((status) => {
@@ -229,7 +242,7 @@ export function useAudiusPlayer() {
   }, []);
 
   const playTrack = useCallback((track: AudiusTrack, index: number) => {
-    return playTrackInner(track, index);
+    return playTrackInner(track, index, undefined, { immediateSwitch: true });
   }, []);
 
   const togglePlayPause = useCallback(async () => {
@@ -260,13 +273,13 @@ export function useAudiusPlayer() {
   const playNext = useCallback(() => {
     if (tracksRef.current.length === 0) return;
     const next = (indexRef.current + 1) % tracksRef.current.length;
-    playTrackInner(tracksRef.current[next], next);
+    playTrackInner(tracksRef.current[next], next, undefined, { immediateSwitch: true });
   }, []);
 
   const playPrev = useCallback(() => {
     if (tracksRef.current.length === 0) return;
     const prev = (indexRef.current - 1 + tracksRef.current.length) % tracksRef.current.length;
-    playTrackInner(tracksRef.current[prev], prev);
+    playTrackInner(tracksRef.current[prev], prev, undefined, { immediateSwitch: true });
   }, []);
 
   const stop = useCallback(async () => {
