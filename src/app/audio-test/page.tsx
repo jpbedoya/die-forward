@@ -3,6 +3,9 @@
 import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 
+// Disable regen in production (set NEXT_PUBLIC_DISABLE_AUDIO_REGEN=true in Vercel)
+const REGEN_DISABLED = process.env.NEXT_PUBLIC_DISABLE_AUDIO_REGEN === 'true';
+
 interface SoundPreset {
   id: string;
   name: string;
@@ -264,14 +267,16 @@ export default function AudioTestPage() {
                   </div>
                   
                   <div className="flex flex-col gap-1 shrink-0">
-                    {/* Generate/Regenerate button */}
-                    <button
-                      onClick={() => generateSound(preset)}
-                      disabled={isGenerating}
-                      className="px-3 py-1.5 text-xs bg-[var(--amber-dim)]/30 border border-[var(--amber)] text-[var(--amber-bright)] disabled:opacity-50 whitespace-nowrap"
-                    >
-                      {isGenerating ? '◈ ...' : sound ? '⚡ Regen' : '⚡ Gen'}
-                    </button>
+                    {/* Generate/Regenerate button (hidden in prod) */}
+                    {!REGEN_DISABLED && (
+                      <button
+                        onClick={() => generateSound(preset)}
+                        disabled={isGenerating}
+                        className="px-3 py-1.5 text-xs bg-[var(--amber-dim)]/30 border border-[var(--amber)] text-[var(--amber-bright)] disabled:opacity-50 whitespace-nowrap"
+                      >
+                        {isGenerating ? '◈ ...' : sound ? '⚡ Regen' : '⚡ Gen'}
+                      </button>
+                    )}
                     
                     {/* Play/Stop if file exists */}
                     {sound && (
@@ -294,49 +299,51 @@ export default function AudioTestPage() {
         </div>
       ))}
 
-      {/* Custom Generation */}
-      <div className="border border-[var(--border-dim)] bg-[var(--bg-surface)] p-4 mt-8">
-        <h2 className="text-[var(--text-secondary)] text-sm uppercase tracking-wider mb-3">
-          ✨ Custom Sound
-        </h2>
-        <div className="space-y-3">
-          <input
-            type="text"
-            placeholder="Sound name (e.g., 'Boss Roar')"
-            value={customName}
-            onChange={(e) => setCustomName(e.target.value)}
-            className="w-full bg-[var(--bg-base)] border border-[var(--border-dim)] px-3 py-2 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-dim)]"
-          />
-          <textarea
-            placeholder="Describe the sound... (e.g., 'massive creature roar echoing through cavern deep bass rumble')"
-            value={customPrompt}
-            onChange={(e) => setCustomPrompt(e.target.value)}
-            className="w-full bg-[var(--bg-base)] border border-[var(--border-dim)] px-3 py-2 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-dim)] h-20 resize-none"
-          />
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <span className="text-[var(--text-muted)] text-xs">Duration:</span>
-              <input
-                type="number"
-                min={0.5}
-                max={5}
-                step={0.5}
-                value={customDuration}
-                onChange={(e) => setCustomDuration(Number(e.target.value))}
-                className="w-16 bg-[var(--bg-base)] border border-[var(--border-dim)] px-2 py-1 text-sm text-[var(--text-primary)] text-center"
-              />
-              <span className="text-[var(--text-muted)] text-xs">sec</span>
+      {/* Custom Generation (hidden in prod) */}
+      {!REGEN_DISABLED && (
+        <div className="border border-[var(--border-dim)] bg-[var(--bg-surface)] p-4 mt-8">
+          <h2 className="text-[var(--text-secondary)] text-sm uppercase tracking-wider mb-3">
+            ✨ Custom Sound
+          </h2>
+          <div className="space-y-3">
+            <input
+              type="text"
+              placeholder="Sound name (e.g., 'Boss Roar')"
+              value={customName}
+              onChange={(e) => setCustomName(e.target.value)}
+              className="w-full bg-[var(--bg-base)] border border-[var(--border-dim)] px-3 py-2 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-dim)]"
+            />
+            <textarea
+              placeholder="Describe the sound... (e.g., 'massive creature roar echoing through cavern deep bass rumble')"
+              value={customPrompt}
+              onChange={(e) => setCustomPrompt(e.target.value)}
+              className="w-full bg-[var(--bg-base)] border border-[var(--border-dim)] px-3 py-2 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-dim)] h-20 resize-none"
+            />
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <span className="text-[var(--text-muted)] text-xs">Duration:</span>
+                <input
+                  type="number"
+                  min={0.5}
+                  max={5}
+                  step={0.5}
+                  value={customDuration}
+                  onChange={(e) => setCustomDuration(Number(e.target.value))}
+                  className="w-16 bg-[var(--bg-base)] border border-[var(--border-dim)] px-2 py-1 text-sm text-[var(--text-primary)] text-center"
+                />
+                <span className="text-[var(--text-muted)] text-xs">sec</span>
+              </div>
+              <button
+                onClick={generateCustom}
+                disabled={!customPrompt.trim() || !customName.trim() || generating !== null}
+                className="px-4 py-2 text-xs bg-[var(--amber-dim)]/30 border border-[var(--amber)] text-[var(--amber-bright)] disabled:opacity-50"
+              >
+                ⚡ Generate Custom
+              </button>
             </div>
-            <button
-              onClick={generateCustom}
-              disabled={!customPrompt.trim() || !customName.trim() || generating !== null}
-              className="px-4 py-2 text-xs bg-[var(--amber-dim)]/30 border border-[var(--amber)] text-[var(--amber-bright)] disabled:opacity-50"
-            >
-              ⚡ Generate Custom
-            </button>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Generated List */}
       {generated.length > 0 && (
