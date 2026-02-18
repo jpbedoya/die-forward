@@ -464,7 +464,7 @@ GET /api/leaderboard`}
               GitHub
             </a>
             <a 
-              href="https://dieforward.com"
+              href="https://play.dieforward.com"
               target="_blank"
               rel="noopener noreferrer"
               className="text-[var(--text-muted)] hover:text-[var(--amber)]"
