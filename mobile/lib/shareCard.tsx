@@ -16,6 +16,11 @@ if (Platform.OS === 'web') {
   });
 }
 
+export interface NowPlaying {
+  title: string;
+  artist: string;
+}
+
 export interface DeathCardData {
   playerName: string;
   room: number;
@@ -23,6 +28,7 @@ export interface DeathCardData {
   killedBy: string | null;
   epitaph: string;
   stakeLost: number;
+  nowPlaying?: NowPlaying;
 }
 
 export interface VictoryCardData {
@@ -30,6 +36,7 @@ export interface VictoryCardData {
   roomsCleared: number;
   stakeWon: number;
   enemiesDefeated: number;
+  nowPlaying?: NowPlaying;
 }
 
 // Death Card Component
@@ -76,7 +83,21 @@ export function DeathCard({ data }: { data: DeathCardData }) {
             Left {data.stakeLost} SOL behind
           </Text>
         )}
-        
+
+        {/* Now Playing */}
+        {data.nowPlaying && (
+          <View className="border-t border-stone-800 mt-2 pt-2 mb-2 flex-row items-center justify-center gap-1">
+            <Text className="text-stone-600 text-[9px] font-mono">♪</Text>
+            <Text className="text-stone-500 text-[9px] font-mono italic" numberOfLines={1}>
+              {data.nowPlaying.title}
+            </Text>
+            <Text className="text-stone-600 text-[9px] font-mono">·</Text>
+            <Text className="text-stone-600 text-[9px] font-mono" numberOfLines={1}>
+              {data.nowPlaying.artist}
+            </Text>
+          </View>
+        )}
+
         {/* URL */}
         <Text className="text-amber text-[10px] font-mono text-center">dieforward.com</Text>
       </View>
@@ -129,7 +150,21 @@ export function VictoryCard({ data }: { data: VictoryCardData }) {
             ? 'You conquered the depths.\nNo stake, just glory.'
             : 'You conquered the depths.\nFew can claim the same.'}
         </Text>
-        
+
+        {/* Now Playing */}
+        {data.nowPlaying && (
+          <View className="border-t border-stone-800 mt-2 pt-2 mb-2 flex-row items-center justify-center gap-1">
+            <Text className="text-stone-600 text-[9px] font-mono">♪</Text>
+            <Text className="text-stone-500 text-[9px] font-mono italic" numberOfLines={1}>
+              {data.nowPlaying.title}
+            </Text>
+            <Text className="text-stone-600 text-[9px] font-mono">·</Text>
+            <Text className="text-stone-600 text-[9px] font-mono" numberOfLines={1}>
+              {data.nowPlaying.artist}
+            </Text>
+          </View>
+        )}
+
         {/* URL */}
         <Text className="text-amber text-[10px] font-mono text-center">dieforward.com</Text>
       </View>

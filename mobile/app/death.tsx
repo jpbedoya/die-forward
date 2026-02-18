@@ -7,6 +7,7 @@ import { useGame } from '../lib/GameContext';
 import { useAudio } from '../lib/audio';
 import { getDeathMoment, getFinalWordsIntro, getDepthForRoom } from '../lib/content';
 import { DeathCard, ShareCardCapture, useShareCard } from '../lib/shareCard';
+import { useAudius } from '../lib/AudiusContext';
 import { AudioToggle } from '../components/AudioToggle';
 import { CRTOverlay } from '../components/CRTOverlay';
 
@@ -14,6 +15,7 @@ export default function DeathScreen() {
   const game = useGame();
   const { playSFX, playAmbient } = useAudio();
   const { viewShotRef, webRef, captureAndShare } = useShareCard();
+  const { currentTrack, musicSource } = useAudius();
   const params = useLocalSearchParams<{ killedBy?: string }>();
   
   // Dramatic intro state
@@ -304,6 +306,9 @@ export default function DeathScreen() {
                     killedBy: params.killedBy || null,
                     epitaph: finalWords || 'No final words...',
                     stakeLost: game.stakeAmount,
+                    nowPlaying: musicSource === 'audius' && currentTrack
+                      ? { title: currentTrack.title, artist: currentTrack.user.name }
+                      : undefined,
                   }}
                 />
               </ShareCardCapture>

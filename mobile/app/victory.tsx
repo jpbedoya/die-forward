@@ -7,6 +7,7 @@ import { useGame } from '../lib/GameContext';
 import { useAudio } from '../lib/audio';
 import { useGameSettings } from '../lib/instant';
 import { VictoryCard, ShareCardCapture, useShareCard } from '../lib/shareCard';
+import { useAudius } from '../lib/AudiusContext';
 import { AudioToggle } from '../components/AudioToggle';
 import { CRTOverlay } from '../components/CRTOverlay';
 
@@ -61,7 +62,8 @@ export default function VictoryScreen() {
   const { playSFX, playAmbient } = useAudio();
   const { settings } = useGameSettings();
   const { viewShotRef, webRef, captureAndShare } = useShareCard();
-  
+  const { currentTrack, musicSource } = useAudius();
+
   // Dramatic intro state
   const [showDramaticIntro, setShowDramaticIntro] = useState(true);
   const introFade = useRef(new Animated.Value(0)).current;
@@ -388,6 +390,9 @@ export default function VictoryScreen() {
                     roomsCleared: game.dungeon?.length || 12,
                     stakeWon: totalReward,
                     enemiesDefeated: 4, // TODO: Track actual kills
+                    nowPlaying: musicSource === 'audius' && currentTrack
+                      ? { title: currentTrack.title, artist: currentTrack.user.name }
+                      : undefined,
                   }}
                 />
               </ShareCardCapture>
