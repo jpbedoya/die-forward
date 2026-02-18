@@ -123,7 +123,7 @@ export default function MusicTestScreen() {
   };
 
   // Load playlist tracks
-  const loadPlaylist = async (playlist: AudiusPlaylist) => {
+  const loadPlaylist = async (playlist: AudiusPlaylist, autoPlay: boolean = true) => {
     setSelectedPlaylist(playlist);
     setIsLoading(true);
     setError(null);
@@ -133,7 +133,12 @@ export default function MusicTestScreen() {
       setPlaylistTracks(data || []);
       setCurrentIndex(0);
       if (data?.length > 0) {
-        setCurrentTrack(data[0]);
+        if (autoPlay) {
+          // Actually play the first track, don't just display it
+          playTrack(data[0], 0);
+        } else {
+          setCurrentTrack(data[0]);
+        }
       }
     } catch (e) {
       setError('Failed to load playlist');
