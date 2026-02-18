@@ -103,10 +103,6 @@ export function AudioSettingsModal({ visible, onClose }: AudioSettingsModalProps
         )}
       </View>
 
-      {/* Close */}
-      <Pressable className="mt-3 py-3 border border-crypt-border items-center" onPress={onClose}>
-        <Text className="text-bone-muted font-mono text-sm">Close</Text>
-      </Pressable>
     </CryptModal>
   );
 }

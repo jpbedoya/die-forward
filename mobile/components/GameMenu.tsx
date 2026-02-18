@@ -181,10 +181,6 @@ export function GameMenu({ isOpen, onClose }: GameMenuProps) {
         </View>
       )}
 
-      {/* Close */}
-      <Pressable className="py-3 border border-crypt-border items-center" onPress={handleClose}>
-        <Text className="text-bone-muted font-mono">Close</Text>
-      </Pressable>
     </CryptModal>
   );
 }
