@@ -63,6 +63,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { usePoolStats, useDeathFeed, useLeaderboard, useGameSettings } from '../lib/instant';
 import { DieForwardLogo } from '../components/DieForwardLogo';
 import { AudioToggle } from '../components/AudioToggle';
+import { AudioSettingsModal } from '../components/AudioSettingsModal';
 
 import { CRTOverlay } from '../components/CRTOverlay';
 
@@ -70,6 +71,7 @@ export default function HomeScreen() {
   const [showSplash, setShowSplash] = useState(true);
   const [activeTab, setActiveTab] = useState<'echoes' | 'victors'>('echoes');
   const [showAllSheet, setShowAllSheet] = useState(false);
+  const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
   
   // Animations
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -158,8 +160,9 @@ export default function HomeScreen() {
       
       {/* Header with audio toggle */}
       <View className="flex-row items-center justify-end px-4 py-2">
-        <AudioToggle ambientTrack="ambient-title" inline />
+        <AudioToggle ambientTrack="ambient-title" inline onSettingsPress={() => setAudioSettingsOpen(true)} />
       </View>
+      <AudioSettingsModal visible={audioSettingsOpen} onClose={() => setAudioSettingsOpen(false)} />
 
       <View className="flex-1 px-4" style={Platform.OS === 'web' ? { paddingBottom: 20 } : undefined}>
         

@@ -8,6 +8,7 @@ import { useAudio } from '../lib/audio';
 import { getDeathMoment, getFinalWordsIntro, getDepthForRoom } from '../lib/content';
 import { DeathCard, ShareCardCapture, useShareCard } from '../lib/shareCard';
 import { useAudius } from '../lib/AudiusContext';
+import { AudioSettingsModal } from '../components/AudioSettingsModal';
 import { AudioToggle } from '../components/AudioToggle';
 import { CRTOverlay } from '../components/CRTOverlay';
 
@@ -29,6 +30,7 @@ export default function DeathScreen() {
   const [submitting, setSubmitting] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [sharing, setSharing] = useState(false);
+  const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
   const [deathMoment] = useState(() => getDeathMoment());
   const [finalWordsIntro] = useState(() => getFinalWordsIntro());
 
@@ -167,7 +169,7 @@ export default function DeathScreen() {
     <SafeAreaView className="flex-1 bg-crypt-bg">
       {/* Header with audio toggle */}
       <View className="flex-row items-center justify-end px-4 py-2">
-        <AudioToggle ambientTrack="ambient-death" inline />
+        <AudioToggle ambientTrack="ambient-death" inline onSettingsPress={() => setAudioSettingsOpen(true)} />
       </View>
 
       <Animated.View style={{ flex: 1, opacity: contentFade }}>
@@ -335,6 +337,7 @@ export default function DeathScreen() {
           </View>
         </View>
       </Modal>
+      <AudioSettingsModal visible={audioSettingsOpen} onClose={() => setAudioSettingsOpen(false)} />
     </SafeAreaView>
     <CRTOverlay />
     </View>

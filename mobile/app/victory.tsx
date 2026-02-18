@@ -8,6 +8,7 @@ import { useAudio } from '../lib/audio';
 import { useGameSettings } from '../lib/instant';
 import { VictoryCard, ShareCardCapture, useShareCard } from '../lib/shareCard';
 import { useAudius } from '../lib/AudiusContext';
+import { AudioSettingsModal } from '../components/AudioSettingsModal';
 import { AudioToggle } from '../components/AudioToggle';
 import { CRTOverlay } from '../components/CRTOverlay';
 
@@ -76,6 +77,7 @@ export default function VictoryScreen() {
   const [signature, setSignature] = useState<string | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
   const [sharing, setSharing] = useState(false);
+  const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
 
   // Use victory bonus from admin settings
   const bonusPercent = settings.victoryBonusPercent / 100;
@@ -233,7 +235,7 @@ export default function VictoryScreen() {
     <SafeAreaView className="flex-1 bg-crypt-bg">
       {/* Header with audio toggle */}
       <View className="flex-row items-center justify-end px-4 py-2">
-        <AudioToggle ambientTrack="ambient-victory" inline />
+        <AudioToggle ambientTrack="ambient-victory" inline onSettingsPress={() => setAudioSettingsOpen(true)} />
       </View>
 
       <Animated.View style={{ flex: 1, opacity: contentFade }}>
@@ -419,6 +421,7 @@ export default function VictoryScreen() {
           </View>
         </View>
       </Modal>
+      <AudioSettingsModal visible={audioSettingsOpen} onClose={() => setAudioSettingsOpen(false)} />
     </SafeAreaView>
     <CRTOverlay />
     </View>

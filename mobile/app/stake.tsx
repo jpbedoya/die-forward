@@ -6,6 +6,7 @@ import { useGame } from '../lib/GameContext';
 import { useAudio } from '../lib/audio';
 import { useGameSettings } from '../lib/instant';
 import { AudioToggle } from '../components/AudioToggle';
+import { AudioSettingsModal } from '../components/AudioSettingsModal';
 import { CRTOverlay } from '../components/CRTOverlay';
 import { NicknameModal } from '../components/NicknameModal';
 
@@ -15,6 +16,7 @@ export default function StakeScreen() {
   const game = useGame();
   const { playSFX, playAmbient } = useAudio();
   const { settings } = useGameSettings();
+  const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
   const [selectedStake, setSelectedStake] = useState(0.05);
   const [customStake, setCustomStake] = useState('');
   const [staking, setStaking] = useState(false);
@@ -83,7 +85,7 @@ export default function StakeScreen() {
           <Text className="text-bone-muted text-sm font-mono">← BACK</Text>
         </Pressable>
         <Text className="text-amber text-base font-mono font-bold tracking-widest">THE TOLL</Text>
-        <AudioToggle ambientTrack="ambient-title" inline />
+        <AudioToggle ambientTrack="ambient-title" inline onSettingsPress={() => setAudioSettingsOpen(true)} />
       </View>
 
       <ScrollView className="flex-1" contentContainerClassName="p-5">
@@ -337,6 +339,7 @@ export default function StakeScreen() {
         onSubmit={(name) => game.setNickname(name)}
         onSkip={() => game.dismissNicknameModal()}
       />
+      <AudioSettingsModal visible={audioSettingsOpen} onClose={() => setAudioSettingsOpen(false)} />
     </SafeAreaView>
     <CRTOverlay />
     </View>
