@@ -182,6 +182,7 @@ export default function DeathScreen() {
         </View>
 
         {/* Death Stats */}
+        <Text className="text-bone-dark text-xs font-mono tracking-widest mb-2 text-center">YOUR OFFERING</Text>
         <View className="bg-crypt-surface border border-crypt-border p-4 mb-6">
           <View className="flex-row justify-between mb-2">
             <Text className="text-bone-dark text-sm font-mono">Depth Reached</Text>
@@ -191,12 +192,12 @@ export default function DeathScreen() {
             <Text className="text-bone-dark text-sm font-mono">Room</Text>
             <Text className="text-bone text-sm font-mono">{roomNumber}</Text>
           </View>
-          <View className="flex-row justify-between">
-            <Text className="text-bone-dark text-sm font-mono">SOL Staked</Text>
-            <Text className={`text-sm font-mono ${!isEmptyHanded ? 'text-blood' : 'text-bone-muted'}`}>
-              {!isEmptyHanded ? `${game.stakeAmount} LOST` : 'FREE PLAY'}
-            </Text>
-          </View>
+          {!isEmptyHanded && (
+            <View className="flex-row justify-between">
+              <Text className="text-bone-dark text-sm font-mono">SOL Lost</Text>
+              <Text className="text-blood text-sm font-mono">{game.stakeAmount}</Text>
+            </View>
+          )}
         </View>
 
         {/* Death Moment */}
@@ -273,6 +274,11 @@ export default function DeathScreen() {
             <Text className="text-bone-muted font-mono">Return to Surface</Text>
           </Pressable>
         </View>
+
+        {/* Footer */}
+        <Text className="text-bone-dark text-xs font-mono text-center mt-6">
+          {!isEmptyHanded ? 'Your offering feeds the depths.' : 'Next time, leave something behind.'}
+        </Text>
       </ScrollView>
       </Animated.View>
       

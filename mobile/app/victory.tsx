@@ -213,7 +213,7 @@ export default function VictoryScreen() {
               · · ◆ · ◆ · ◆ · ·
             </Text>
             <Text className="text-bone text-base font-mono text-center mb-2">
-              You conquered the depths!
+              {isEmptyHanded ? 'You emerged. Unmarked, unbound.' : 'You emerged. The depths released you.'}
             </Text>
             {!isEmptyHanded && (
               <Text className="text-amber-bright text-xl font-mono text-center font-bold">
@@ -241,11 +241,12 @@ export default function VictoryScreen() {
           <Text className="text-6xl mb-4">🏆</Text>
           <Text className="text-victory text-2xl font-mono font-bold tracking-widest">ESCAPED</Text>
           <Text className="text-bone-muted text-sm font-mono mt-2">
-            You escaped the depths
+            {isEmptyHanded ? 'You emerged. Unmarked, unbound.' : 'You emerged. The depths released you.'}
           </Text>
         </View>
 
         {/* Victory Stats */}
+        <Text className="text-bone-dark text-xs font-mono tracking-widest mb-2 text-center">YOUR PASSAGE</Text>
         <View className="bg-crypt-surface border border-victory/30 p-4 mb-6">
           <View className="flex-row justify-between mb-2">
             <Text className="text-bone-dark text-sm font-mono">Rooms Cleared</Text>
@@ -267,7 +268,7 @@ export default function VictoryScreen() {
         {!isEmptyHanded ? (
           <View className="bg-victory/10 border-2 border-victory p-4 mb-6">
             <Text className="text-victory-light text-xs font-mono tracking-widest mb-4 text-center">
-              YOUR REWARD
+              WHAT YOU RECLAIM
             </Text>
             
             <View className="items-center mb-4">
@@ -313,11 +314,8 @@ export default function VictoryScreen() {
           </View>
         ) : (
           <View className="bg-crypt-surface border border-crypt-border p-4 mb-6">
-            <Text className="text-bone-muted text-sm font-mono text-center">
-              Free play - no SOL at stake
-            </Text>
-            <Text className="text-amber text-sm font-mono text-center mt-2">
-              Stake SOL next time to earn rewards!
+            <Text className="text-bone-muted text-sm font-mono text-center italic">
+              An unbound soul. No debt to pay.
             </Text>
           </View>
         )}
@@ -362,6 +360,11 @@ export default function VictoryScreen() {
             <Text className="text-bone-muted font-mono">Return Home</Text>
           </Pressable>
         </View>
+
+        {/* Footer */}
+        <Text className="text-bone-dark text-xs font-mono text-center mt-6">
+          Few emerge. Fewer return.
+        </Text>
       </ScrollView>
       </Animated.View>
       
