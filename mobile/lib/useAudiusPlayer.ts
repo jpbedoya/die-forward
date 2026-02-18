@@ -125,6 +125,12 @@ export function useAudiusPlayer() {
     trackList?: AudiusTrack[],
   ) => {
     try {
+      // Silence the old sound's callback FIRST — prevents it from spawning
+      // another playTrackInner call while crossfade is in progress
+      if (soundRef.current) {
+        soundRef.current.setOnPlaybackStatusUpdate(null);
+      }
+
       // Hold onto old sound for crossfade — don't unload yet
       const oldSound  = soundRef.current;
       const oldVolume = volumeRef.current;
@@ -239,13 +245,11 @@ export function useAudiusPlayer() {
     const sound = soundRef.current;
     soundRef.current = null; // clear immediately so nothing else touches it
     if (sound) {
-      try {
-        await sound.stopAsync();
-      } catch (_) { /* already stopped */ }
-      try {
-        await sound.unloadAsync();
-      } catch (_) { /* already unloaded */ }
+      try { sound.setOnPlaybackStatusUpdate(null); } catch (_) {}
+      try { await sound.stopAsync(); } catch (_) { /* already stopped */ }
+      try { await sound.unloadAsync(); } catch (_) { /* already unloaded */ }
     }
+    clearCrossfade();
     setIsPlaying(false);
   }, []);
 
