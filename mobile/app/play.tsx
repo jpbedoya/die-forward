@@ -37,6 +37,7 @@ export default function PlayScreen() {
   const [tipping, setTipping] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<{ name: string; emoji: string } | null>(null);
+  const [lastFoundItem, setLastFoundItem] = useState<{ name: string; emoji: string } | null>(null);
   const [selectedCreature, setSelectedCreature] = useState<CreatureInfo | null>(null);
 
   // Handle tipping a corpse
@@ -174,6 +175,7 @@ export default function PlayScreen() {
                 name: realCorpse.loot, 
                 emoji: realCorpse.lootEmoji 
               });
+              setLastFoundItem({ name: realCorpse.loot, emoji: realCorpse.lootEmoji });
               setMessage(`Found: ${realCorpse.lootEmoji} ${realCorpse.loot}`);
             } else {
               setMessage('The corpse has nothing you need.');
@@ -194,6 +196,7 @@ export default function PlayScreen() {
               if (!game.inventory.some(i => i.name === loot.name)) {
                 playSFX('loot-discover');
                 game.addToInventory({ id: Date.now().toString(), ...loot });
+                setLastFoundItem({ name: loot.name, emoji: loot.emoji });
                 setMessage(`Found: ${loot.emoji} ${loot.name}`);
               } else {
                 setMessage('Nothing new here.');
@@ -380,9 +383,24 @@ export default function PlayScreen() {
 
         {/* Message */}
         {message && (
-          <View className="bg-amber/20 border-2 border-amber p-4 mb-4">
-            <Text className="text-amber-light text-sm font-mono">✦ {message}</Text>
-          </View>
+          message.startsWith('Found:') && lastFoundItem ? (
+            <Pressable
+              className="bg-amber/20 border-2 border-amber p-4 mb-4 active:border-amber-bright active:bg-amber/30"
+              onPress={() => {
+                playSFX('ui-click');
+                setSelectedItem(lastFoundItem);
+              }}
+            >
+              <View className="flex-row items-center justify-between">
+                <Text className="text-amber-light text-sm font-mono">✦ {message}</Text>
+                <Text className="text-amber-dark text-xs font-mono ml-2">[tap]</Text>
+              </View>
+            </Pressable>
+          ) : (
+            <View className="bg-amber/20 border-2 border-amber p-4 mb-4">
+              <Text className="text-amber-light text-sm font-mono">✦ {message}</Text>
+            </View>
+          )
         )}
 
         {/* Corpse card */}

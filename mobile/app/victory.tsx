@@ -60,7 +60,7 @@ const ESCAPED_ASCII = `
 
 export default function VictoryScreen() {
   const game = useGame();
-  const { playSFX, playAmbient } = useAudio();
+  const { playSFX, playAmbient, ready: audioReady } = useAudio();
   const { settings } = useGameSettings();
   const { viewShotRef, webRef, captureAndShare } = useShareCard();
   const { currentTrack, musicSource } = useAudius();
@@ -80,17 +80,18 @@ export default function VictoryScreen() {
   const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
 
   // Use victory bonus from admin settings
+  const stakeNum = Number(game.stakeAmount || 0);
   const bonusPercent = settings.victoryBonusPercent / 100;
-  const victoryBonus = game.stakeAmount * bonusPercent;
-  const totalReward = game.stakeAmount + victoryBonus;
-  const isEmptyHanded = game.stakeAmount === 0;
+  const victoryBonus = stakeNum * bonusPercent;
+  const totalReward = stakeNum + victoryBonus;
+  const isEmptyHanded = stakeNum <= 0;
   
   const handleShare = async () => {
     setSharing(true);
     playSFX('share-click');
     const shareMessage = isEmptyHanded 
-      ? `I escaped @dieforward! No stake, just glory.`
-      : `I escaped @dieforward and won ${totalReward.toFixed(3)} SOL!`;
+      ? `I escaped Die Forward! No stake, just glory. dieforward.com`
+      : `I escaped Die Forward and won ${totalReward.toFixed(3)} SOL! dieforward.com`;
     const success = await captureAndShare('Die Forward - Victory!', shareMessage);
     setSharing(false);
     if (success) {
@@ -98,8 +99,9 @@ export default function VictoryScreen() {
     }
   };
 
-  // Dramatic victory intro animation
+  // Dramatic victory intro animation — wait for audio module to be ready
   useEffect(() => {
+    if (!audioReady) return;
     playAmbient('ambient-victory');
     playSFX('victory-fanfare');
     
@@ -152,7 +154,7 @@ export default function VictoryScreen() {
     }, 3000);
     
     return () => clearTimeout(timer);
-  }, []);
+  }, [audioReady]);
 
   const handleClaim = async () => {
     if (claiming || claimed) return;
