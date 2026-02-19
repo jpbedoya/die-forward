@@ -1,184 +1,122 @@
-# Mobile Wallet Adapter Integration
+# Mobile Wallet — Unified Codebase
 
-## Overview
+## Scope
 
-Die Forward supports Solana Mobile Wallet Adapter (MWA) for Android devices, including the Solana Seeker phone. This document covers the implementation details and lessons learned.
+This document describes the **current unified app wallet architecture** (Expo mobile + web).
 
-## The Challenge
+If you need the old web-MWA notes, see:
+- `docs/archive/MOBILE_WALLET_WEB_LEGACY.md`
 
-Mobile wallet integration differs significantly from desktop:
+---
 
-| Desktop | Mobile (MWA) |
-|---------|--------------|
-| Browser extension injects `window.solana` | Wallet is separate app |
-| Persistent connection | Session-based (opens/closes) |
-| `signTransaction()` works directly | Requires `transact()` protocol |
-| One approval to connect | Each session needs auth |
+## Platform Routing
 
-## Solution Architecture
+`lib/wallet/unified.tsx` is the single entry point and routes by platform:
 
-### 1. Wallet Adapter Setup
+- **Desktop web** (`Platform.OS === 'web'` and not mobile web)
+  - Uses `@solana/react-hooks` + web wallet flow
+- **Native mobile** (iOS/Android)
+  - Uses `MWAWalletProvider` from `lib/wallet/mwa-provider.tsx`
+  - Backed by `@wallet-ui/react-native-web3js`
+- **Mobile web browser**
+  - Uses `mobile-web-adapter` deep-link flow
 
-```typescript
-// src/components/WalletProvider.tsx
-import { SolanaMobileWalletAdapter } from '@solana-mobile/wallet-adapter-mobile';
+---
 
-new SolanaMobileWalletAdapter({
-  appIdentity: {
-    name: 'Die Forward',
-    uri: window.location.origin,
-    icon: '/favicon.ico',
-  },
-  addressSelector: createDefaultAddressSelector(),
-  authorizationResultCache: createDefaultAuthorizationResultCache(),
-  cluster: 'devnet',
-  onWalletNotFound: async () => {
-    console.log('Mobile wallet not found');
-  },
-})
+## Native Android/iOS (MWA)
+
+### Provider Chain
+
+```
+UnifiedWalletProvider
+  -> MWAWalletProvider
+    -> WalletUIProvider (@wallet-ui/react-native-web3js)
+      -> MobileWalletConsumer
+        -> UnifiedWalletContext.Provider
 ```
 
-### 2. Transaction Handling
+### Critical Context Rule
 
-The standard `sendTransaction()` doesn't work reliably with MWA. We use the native protocol instead:
+`mwa-provider.tsx` **must** provide values to the exported `UnifiedWalletContext` from `unified.tsx`.
 
-```typescript
-// src/lib/mobileWallet.ts
-import { transact } from '@solana-mobile/mobile-wallet-adapter-protocol-web3js';
+A previous bug created a private context in `mwa-provider`, which made `connect` a no-op in game screens. This is fixed.
 
-export async function signAndSendWithMWA(transaction, connection, log) {
-  return await transact(async (wallet) => {
-    // Check for cached auth
-    const cached = getCachedAuth(log);
-    
-    if (cached) {
-      // Reauthorize without popup
-      await wallet.reauthorize({
-        auth_token: cached.authToken,
-        identity: APP_IDENTITY,
-      });
-    } else {
-      // Full authorize (shows popup)
-      await wallet.authorize({
-        cluster: 'devnet',
-        identity: APP_IDENTITY,
-      });
-    }
-    
-    // Sign and send
-    const signatures = await wallet.signAndSendTransactions({
-      transactions: [transaction],
-    });
-    
-    return signatures[0];
-  });
-}
+### Required Context Fields
+
+Native context value must include:
+- `connected`
+- `connecting`
+- `address`
+- `balance`
+- `connect`
+- `connectTo` (alias to `connect`)
+- `connectors` (empty array on native)
+- `disconnect`
+- `sendSOL`
+- `signAndSendTransaction`
+- `refreshBalance`
+
+---
+
+## Android 11+ Wallet Discovery
+
+MWA requires manifest query entries for wallet app discovery.
+
+Config plugin:
+- `mobile/plugins/with-mwa-android.js`
+
+It injects:
+```xml
+<queries>
+  <intent>
+    <action android:name="solana.mobilewalletadapter.walletlib.action.LINK_MWA_REQUEST" />
+  </intent>
+</queries>
 ```
 
-### 3. Auth Token Caching
+Without this, wallet apps may not be discoverable on Android 11+.
 
-The wallet adapter caches auth tokens in localStorage. We read from its cache:
+---
 
-```typescript
-// src/lib/mwaAuthCache.ts
-const WALLET_ADAPTER_CACHE_KEY = 'SolanaMobileWalletAdapterDefaultAuthorizationCache';
+## Seeker / Seed Vault Notes
 
-export function getCachedAuth(log) {
-  const adapterCache = localStorage.getItem(WALLET_ADAPTER_CACHE_KEY);
-  
-  if (adapterCache) {
-    const data = JSON.parse(adapterCache);
-    // Flat structure: { auth_token, accounts, wallet_icon, ... }
-    if (data?.auth_token) {
-      return {
-        authToken: data.auth_token,
-        publicKey: data.accounts?.[0]?.address || '',
-      };
-    }
-  }
-  
-  return null;
-}
-```
+- Seeker native wallet (Seed Vault) should respond to MWA intents.
+- Chain format normalization (`devnet` -> `solana:devnet`) is handled by protocol libs.
+- Error propagation in `mwa-provider.tsx` is surfaced to UI for stake/connect debugging.
 
-### 4. Address Encoding
+---
 
-MWA returns addresses as **base64**, not base58:
+## Integration Points in Game
 
-```typescript
-function decodeAddress(addressRaw, log) {
-  if (typeof addressRaw === 'string') {
-    // Check for base64 indicators
-    if (addressRaw.includes('+') || addressRaw.includes('/') || addressRaw.endsWith('=')) {
-      const bytes = Uint8Array.from(atob(addressRaw), c => c.charCodeAt(0));
-      return new PublicKey(bytes);
-    }
-    // Otherwise assume base58
-    return new PublicKey(addressRaw);
-  }
-  // Handle Uint8Array
-  return new PublicKey(addressRaw);
-}
-```
+- `stake.tsx` uses wallet connect + stake start flow
+- `GameContext.tsx` consumes `useUnifiedWallet()`
+- `startGame(amount, demoMode)`
+  - demo/free mode now persists `stakeAmount: 0`
+  - staked mode persists real amount and can claim rewards on victory
 
-## Packages Required
+---
 
-```json
-{
-  "@solana-mobile/wallet-adapter-mobile": "^2.x",
-  "@solana-mobile/mobile-wallet-adapter-protocol": "^2.x",
-  "@solana-mobile/mobile-wallet-adapter-protocol-web3js": "^2.x"
-}
-```
+## Quick Smoke Test (Native)
 
-## User Flow
+1. Open app on Android (Seeker device)
+2. Tap **BIND WALLET** on stake screen
+3. Wallet picker/dialog appears
+4. Confirm wallet connected in UI
+5. Start staked run
+6. Verify transaction path + gameplay
 
-### First Time
-1. User taps "Connect Wallet" on title screen
-2. MWA opens wallet app → user approves → returns with pubkey
-3. Auth token cached in localStorage
-4. User goes to stake screen, taps stake
-5. MWA detects cached auth → uses `reauthorize()` (no popup)
-6. Transaction approval popup only
-7. Done
+If bind does nothing, verify:
+- context is shared (`UnifiedWalletContext` import in mwa-provider)
+- `connectors: []` exists in native context value
+- manifest queries block exists in generated `AndroidManifest.xml`
 
-### Subsequent Times
-- Auth already cached
-- Only transaction approval needed
+---
 
-## Debugging Tips
+## Related Files
 
-### Debug Logging
-
-Add visible debug output on the stake screen:
-
-```typescript
-const [debugLog, setDebugLog] = useState<string[]>([]);
-const log = (msg) => setDebugLog(prev => [...prev, `${time}: ${msg}`]);
-
-// Display in UI
-{debugLog.map((msg, i) => <div key={i}>{msg}</div>)}
-```
-
-### Common Issues
-
-| Issue | Cause | Fix |
-|-------|-------|-----|
-| "Non-base58 character" | MWA returns base64 | Decode with `atob()` |
-| "Missing signature" | Using wrong adapter method | Use `transact()` protocol |
-| Double popup | Not reading adapter's cache | Check localStorage key |
-| Transaction fails silently | `sendTransaction()` doesn't work | Use `signAndSendTransactions()` |
-
-## Testing
-
-1. Deploy to Vercel (localhost won't work with MWA)
-2. Open in Chrome on Android device
-3. Have Phantom/Solflare installed
-4. Test connect → stake → play → die flow
-5. Check debug log for issues
-
-## References
-
-- [Solana Mobile Docs](https://docs.solanamobile.com/)
-- [Wallet Adapter Mobile](https://github.com/solana-mobile/mobile-wallet-adapter)
-- [MWA Protocol](https://github.com/solana-mobile/mobile-wallet-adapter/tree/main/js/packages/mobile-wallet-adapter-protocol)
+- `mobile/lib/wallet/unified.tsx`
+- `mobile/lib/wallet/mwa-provider.tsx`
+- `mobile/lib/wallet/mobile-adapter.ts`
+- `mobile/plugins/with-mwa-android.js`
+- `mobile/app/stake.tsx`
+- `mobile/lib/GameContext.tsx`
