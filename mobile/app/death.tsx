@@ -36,7 +36,8 @@ export default function DeathScreen() {
 
   const roomNumber = (game.currentRoom || 0) + 1;
   const depth = getDepthForRoom(roomNumber);
-  const isEmptyHanded = game.stakeAmount === 0;
+  const stakeAmountNum = Number(game.stakeAmount || 0);
+  const isEmptyHanded = !Number.isFinite(stakeAmountNum) || stakeAmountNum <= 0;
   
   const handleShare = async () => {
     setSharing(true);
@@ -205,7 +206,7 @@ export default function DeathScreen() {
           {!isEmptyHanded && (
             <View className="flex-row justify-between">
               <Text className="text-bone-dark text-sm font-mono">SOL Lost</Text>
-              <Text className="text-blood text-sm font-mono">{game.stakeAmount}</Text>
+              <Text className="text-blood text-sm font-mono">{stakeAmountNum}</Text>
             </View>
           )}
         </View>
@@ -313,7 +314,7 @@ export default function DeathScreen() {
                     totalRooms: game.dungeon?.length || 12,
                     killedBy: params.killedBy || null,
                     epitaph: finalWords || 'No final words...',
-                    stakeLost: game.stakeAmount,
+                    stakeLost: stakeAmountNum,
                     nowPlaying: musicSource === 'audius' && currentTrack
                       ? { title: currentTrack.title, artist: currentTrack.user.name }
                       : undefined,
