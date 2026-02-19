@@ -116,7 +116,7 @@ interface UnifiedWalletContextState {
   refreshBalance: () => Promise<void>;
 }
 
-const UnifiedWalletContext = createContext<UnifiedWalletContextState>({
+export const UnifiedWalletContext = createContext<UnifiedWalletContextState>({
   connected: false,
   connecting: false,
   address: null,

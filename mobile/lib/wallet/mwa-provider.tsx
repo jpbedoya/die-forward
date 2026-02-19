@@ -3,10 +3,12 @@
  * This is the official Solana Foundation approach for Expo apps
  */
 
-import React, { createContext, useContext, useMemo, useCallback, ReactNode } from 'react';
+import React, { useMemo, useCallback, ReactNode } from 'react';
 import { MobileWalletProvider as WalletUIProvider, useMobileWallet } from '@wallet-ui/react-native-web3js';
 import type { Address } from '@solana/kit';
 import { LAMPORTS_PER_SOL, Transaction, SystemProgram, PublicKey } from '@solana/web3.js';
+// Import the shared context from unified — NOT a local duplicate
+import { UnifiedWalletContext } from './unified';
 
 const RPC_ENDPOINT = process.env.EXPO_PUBLIC_SOLANA_RPC || 'https://api.devnet.solana.com';
 
@@ -15,35 +17,6 @@ const APP_IDENTITY = {
   uri: 'https://dieforward.com',
   icon: 'favicon.ico',
 };
-
-// Unified wallet context interface (same as before)
-interface UnifiedWalletContextState {
-  connected: boolean;
-  connecting: boolean;
-  address: Address | null;
-  balance: number | null;
-  connect: () => Promise<Address | null>;
-  disconnect: () => Promise<void>;
-  sendSOL: (to: Address, amount: number) => Promise<string>;
-  signAndSendTransaction: (transaction: any) => Promise<string>;
-  refreshBalance: () => Promise<void>;
-}
-
-const UnifiedWalletContext = createContext<UnifiedWalletContextState>({
-  connected: false,
-  connecting: false,
-  address: null,
-  balance: null,
-  connect: async () => null,
-  disconnect: async () => {},
-  sendSOL: async () => { throw new Error('Not connected'); },
-  signAndSendTransaction: async () => { throw new Error('Not connected'); },
-  refreshBalance: async () => {},
-});
-
-export function useUnifiedWallet() {
-  return useContext(UnifiedWalletContext);
-}
 
 // Inner component that uses the wallet hooks
 function MobileWalletConsumer({ children }: { children: ReactNode }) {
