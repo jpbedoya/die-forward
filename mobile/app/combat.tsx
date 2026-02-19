@@ -365,17 +365,19 @@ export default function CombatScreen() {
           <GameMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
 
           <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16 }}>
-        {/* Enemy Card */}
+        {/* Enemy Card — tap header to inspect creature */}
         <View className="bg-crypt-surface border border-crypt-border p-4 mb-4">
-          <View className="flex-row items-center gap-3 mb-3">
+          <Pressable
+            className="flex-row items-center gap-3 mb-3 active:opacity-70"
+            onPress={() => setCreatureModalOpen(true)}
+          >
             <Text className="text-4xl">{creature.emoji}</Text>
             <View className="flex-1">
-              <Pressable onPress={() => setCreatureModalOpen(true)}>
-                <Text className="text-bone text-lg font-mono font-bold underline">{creature.name}</Text>
-              </Pressable>
-              <Text className="text-bone-dark text-xs font-mono">Tier {creature.tier}</Text>
+              <Text className="text-bone text-lg font-mono font-bold underline">{creature.name}</Text>
+              <Text className="text-bone-dark text-xs font-mono">Tier {creature.tier} · tap to inspect</Text>
             </View>
-          </View>
+            <Text className="text-bone-dark text-xs font-mono">[?]</Text>
+          </Pressable>
           
           {/* Enemy Health */}
           <View className="flex-row items-center gap-2 mb-2">

@@ -102,33 +102,7 @@ export default function PlayScreen() {
 
   const renderNarrative = () => {
     const text = getNarrative();
-    const enemyName = room?.content?.enemy;
-
-    if (!enemyName || !text.includes(enemyName)) {
-      return <Text className="text-bone text-base font-mono leading-6 mb-4">{text}</Text>;
-    }
-
-    const [before, ...rest] = text.split(enemyName);
-    const after = rest.join(enemyName);
-
-    return (
-      <Text className="text-bone text-base font-mono leading-6 mb-4">
-        {before}
-        <Text
-          className="text-blood-light underline"
-          onPress={() => {
-            const c = getCreatureInfo(enemyName);
-            if (c) {
-              playSFX('ui-click');
-              setSelectedCreature(c);
-            }
-          }}
-        >
-          {enemyName}
-        </Text>
-        {after}
-      </Text>
-    );
+    return <Text className="text-bone text-base font-mono leading-6 mb-4">{text}</Text>;
   };
 
   const handleAction = async (action: string) => {
@@ -383,26 +357,25 @@ export default function PlayScreen() {
           </View>
         )}
 
-        {/* Enemy preview for combat rooms */}
+        {/* Enemy preview for combat rooms — tap to inspect */}
         {room.type === 'combat' && room.content?.enemy && (
-          <View className="bg-crypt-surface border border-blood/30 p-3 mb-4">
-            <Text className="text-blood-light text-sm font-mono">
-              {room.content.enemyEmoji || '👁️'}
-              <Text
-                className="underline"
-                onPress={() => {
-                  const c = getCreatureInfo(room.content!.enemy!);
-                  if (c) {
-                    playSFX('ui-click');
-                    setSelectedCreature(c);
-                  }
-                }}
-              >
-                {' '}{room.content.enemy}
+          <Pressable
+            className="bg-crypt-surface border border-blood/30 p-3 mb-4 active:border-blood active:bg-blood/10"
+            onPress={() => {
+              const c = getCreatureInfo(room.content!.enemy!);
+              if (c) {
+                playSFX('ui-click');
+                setSelectedCreature(c);
+              }
+            }}
+          >
+            <View className="flex-row items-center justify-between">
+              <Text className="text-blood-light text-sm font-mono">
+                {room.content.enemyEmoji || '👁️'} {room.content.enemy} blocks your path...
               </Text>
-              {' '}blocks your path...
-            </Text>
-          </View>
+              <Text className="text-blood-dark text-xs font-mono ml-2">[tap]</Text>
+            </View>
+          </Pressable>
         )}
 
         {/* Message */}
