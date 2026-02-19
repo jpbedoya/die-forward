@@ -6,7 +6,7 @@ All prompts are optimized for **DALL·E (ChatGPT)**. Use 1024×1024 for square a
 
 ## ⚠️ Shared Style Block
 
-Every asset uses this same visual language. **Paste this at the end of every prompt** to lock the style:
+Every asset uses this same visual language (now already baked into the prompts below):
 
 > Style: hyper-detailed dark fantasy digital painting, photorealistic, cinematic. Pure black background. Single dramatic amber/gold light source (torchlight) — strong contrast, deep shadows. Color palette: near-black, deep charcoal, amber gold, bone white, blood-rust red accents. Atmospheric fog, subtle glow. No bright colors, no neon, no cartoon style, no gradients. Ultra detailed, 1024x1024.
 
@@ -37,13 +37,40 @@ This style is confirmed from two generated assets: the dagger icon (blade plungi
 
 ### Variant A — Blade (original v1)
 
-Mobile game icon. A downward-pointing rusted blade plunging into black still water, creating a single ripple. Pale bone white handle against pure black background. Amber light catching the rust on the blade. Minimal, bold, iconic. Dark souls aesthetic meets ancient flooded temple. No text. Square format, strong silhouette, readable at small sizes. Matte painterly finish.
+```
+Mobile game app icon for a dark roguelite.
+A downward-pointing rusted blade plunges into perfectly still black water,
+creating a single amber ripple radiating outward.
+Pale bone-white wrapped handle, weathered metal, blood-rust texture on the blade.
+Centered composition, strong silhouette, readable at 64x64px. No text.
+
+Style: hyper-detailed dark fantasy digital painting, photorealistic, cinematic.
+Pure black background.
+Single dramatic amber/gold light source catching rust and water highlights.
+Color palette: near-black, deep charcoal, amber gold dominant, bone white, blood-rust red accents.
+Atmospheric fog, subtle glow. No bright colors, no neon, no cartoon style, no gradients.
+Ultra detailed. Square format 1024x1024.
+```
 
 ---
 
 ### Variant B — Skull (current, live in app)
 
-Epic mobile game app icon for a dark roguelite. Central image: a weathered skull half-submerged in perfectly still black water, a flickering amber torch flame reflected on the surface, ancient flooded stone stairs descending into darkness behind it. Color palette: deep black, abyssal dark blue, pale bone white, sickly muted green, amber gold. Style: dark gothic, hand-painted texture, painterly but readable at small sizes. Dramatic low-angle lighting, single strong light source (the torch). Atmosphere of cold ancient dread — patient, not aggressive. No text. Square composition, centered subject, bold silhouette that reads clearly at 64x64px. Ultra detailed, cinematic, 1024x1024.
+```
+Epic mobile game app icon for a dark roguelite.
+A weathered skull half-submerged in perfectly still black water,
+with a flickering amber torch reflection on the surface.
+Ancient flooded stone stairs fade into darkness behind the skull.
+Centered composition, bold silhouette readable at 64x64px. No text.
+Atmosphere: cold ancient dread, patient not aggressive.
+
+Style: hyper-detailed dark fantasy digital painting, photorealistic, cinematic.
+Pure black background.
+Single dramatic amber/gold light source from torchlight — strong contrast, deep shadows.
+Color palette: near-black, deep charcoal, abyssal dark blue, bone white, muted decay green, amber gold.
+Atmospheric fog, subtle glow. No bright colors, no neon, no cartoon style, no gradients.
+Ultra detailed. Square format 1024x1024.
+```
 
 ---
 
