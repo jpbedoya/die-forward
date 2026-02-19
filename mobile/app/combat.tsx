@@ -373,7 +373,7 @@ export default function CombatScreen() {
           >
             <Text className="text-4xl">{creature.emoji}</Text>
             <View className="flex-1">
-              <Text className="text-bone text-lg font-mono font-bold underline">{creature.name}</Text>
+              <Text className="text-bone text-lg font-mono font-bold">{creature.name}</Text>
               <Text className="text-bone-dark text-xs font-mono">Tier {creature.tier} · tap to inspect</Text>
             </View>
             <Text className="text-bone-dark text-xs font-mono">[?]</Text>
