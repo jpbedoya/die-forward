@@ -1,37 +1,47 @@
 # Die Forward — Image Generation Prompts
 
-All prompts are optimized for **DALL·E (ChatGPT)** but work with Midjourney and Flux too.
+All prompts are optimized for **DALL·E (ChatGPT)**. Use 1024×1024 for square assets, 1792×1024 for wide/banner assets.
+
+---
+
+## ⚠️ Shared Style Block
+
+Every asset uses this same visual language. **Paste this at the end of every prompt** to lock the style:
+
+> Style: dark gothic, hand-painted texture, painterly, matte finish. Color palette: deep black, abyssal dark blue, pale bone white, sickly muted green, amber gold. Dramatic single-source amber torchlight. Atmosphere of cold ancient dread — patient, not aggressive. No bright colors, no neon, no cartoon style, no chrome or gradients. Ultra detailed, cinematic.
+
+This is derived directly from Prompt B (the skull icon that's live in the app) so all new assets will match it.
 
 ---
 
 ## Brand Reference
 
-**Color palette**
-- Background: near-black / charcoal `#0a0a0a`
-- Amber / gold highlights `#f59e0b`
-- Bone white `#d4d0c8`
-- Blood red accents `#8b3a3a`
-- Ethereal violet `#7c3aed`
-- Victory green `#22c55e`
-
-**Tone keywords:** terminal-gothic, dark dungeon horror, minimal CRT aesthetic, roguelite, ominous but beautiful, lonely-but-not-alone
+| Color | Hex | Usage |
+|-------|-----|-------|
+| Background | `#0a0a0a` | Pure near-black base |
+| Amber / torch | `#f59e0b` | Primary highlight, torch glow |
+| Bone white | `#d4d0c8` | Skulls, stone, text |
+| Abyssal blue | `#1a3a4a` | Deep water, shadows |
+| Muted green | `#3d5c4a` | Decay, moss, slime |
+| Blood red | `#8b3a3a` | Sparse accents only |
+| Ethereal violet | `#7c3aed` | Death, ghost effects |
+| Victory green | `#22c55e` | Tips, win states |
 
 ---
 
 ## 1. App Icon
 
-### Usage
-- Android launcher + adaptive icon
-- iOS App Store icon
-- Square, multiple sizes (512×512 master)
+**Usage:** Android launcher + iOS App Store. Square. 512×512 master.
 
-### Prompt A — Blade (variant 1)
+---
+
+### Variant A — Blade (original v1)
 
 Mobile game icon. A downward-pointing rusted blade plunging into black still water, creating a single ripple. Pale bone white handle against pure black background. Amber light catching the rust on the blade. Minimal, bold, iconic. Dark souls aesthetic meets ancient flooded temple. No text. Square format, strong silhouette, readable at small sizes. Matte painterly finish.
 
 ---
 
-### Prompt B — Skull (variant 2, currently used)
+### Variant B — Skull (current, live in app)
 
 Epic mobile game app icon for a dark roguelite. Central image: a weathered skull half-submerged in perfectly still black water, a flickering amber torch flame reflected on the surface, ancient flooded stone stairs descending into darkness behind it. Color palette: deep black, abyssal dark blue, pale bone white, sickly muted green, amber gold. Style: dark gothic, hand-painted texture, painterly but readable at small sizes. Dramatic low-angle lighting, single strong light source (the torch). Atmosphere of cold ancient dread — patient, not aggressive. No text. Square composition, centered subject, bold silhouette that reads clearly at 64x64px. Ultra detailed, cinematic, 1024x1024.
 
@@ -39,137 +49,90 @@ Epic mobile game app icon for a dark roguelite. Central image: a weathered skull
 
 ## 2. Twitter / X Banner
 
-### Usage
-- Twitter/X profile header
-- 1500×500px
-- Profile avatar overlaps lower-left in display — keep lower-left clean
-
-### Prompt
-
-Create a **Twitter/X profile banner** (1500×500, wide landscape) for an indie dark-fantasy roguelite called **"Die Forward."**
-
-Style: cinematic terminal-gothic. Dark, minimal, atmospheric.
-
-**Composition:**
-- Left side: smaller skull sigil / crypt symbol / subtle rune decoration
-- Center (slightly left): title text **DIE FORWARD** in bold distressed monospace lettering — this is the hero element
-- Right side: silhouetted lone adventurer descending stone steps into a flooded crypt corridor, seen from behind, torch in hand
-- Background: dripping cavern walls, shallow reflective water, fog, distant amber torch glow
-- Subtle UI motifs scattered: small HP glyphs, ASCII-style thin separator lines, cryptic symbols
-- Overall: dark, wide, cinematic — like a game's title screen letterboxed to banner shape
-
-**Colors:**
-- Near-black charcoal base
-- Amber highlight on the title text and torch glow
-- Bone white for adventurer silhouette outline
-- Blood red used very sparingly (maybe a single detail)
-- Faint violet-tinted fog
-
-**Typography feel:** brutalist, monospaced, cracked stone engraving — "DIE FORWARD" should be immediately legible
-
-**Avoid:** bright cheerful colors, anime style, cartoon faces, sci-fi neon, watermarks, logos, clutter, illegible title text. Do not put text in lower-left corner (profile avatar area).
+**Usage:** Twitter/X profile header. 1792×1024 output (DALL·E wide), will be cropped to 1500×500. Keep lower-left corner clear — profile avatar overlaps there.
 
 ---
 
-## 3. Marketing Page — Hero Section
-
-### Usage
-- `dieforward.com` landing page hero image or background
-- Wide / fullscreen, darkens behind overlaid text
-- Can be animated (HTML canvas) or static
-
 ### Prompt
 
-Create a **fullscreen hero background image** for the marketing website of an indie dark-fantasy roguelite called **"Die Forward."**
+Wide cinematic banner for a dark roguelite mobile game called **"Die Forward."** A lone adventurer seen from behind, descending ancient flooded stone stairs into a vast underground crypt corridor. Torch held aloft, amber light reflecting off the perfectly still black water below. Stone archways receding into total darkness ahead. Title text **"DIE FORWARD"** etched in weathered monospace lettering into the stone on the left side of the image — as if carved. Subtle skull motif and crypt runes flanking the title. Atmosphere: ominous, lonely, ancient. No modern elements. No faces. No bright colors.
 
-Style: moody, painterly, dark atmospheric. This sits behind white/amber text overlays — must not compete visually.
-
-**Visual concept:**
-- A vast flooded underground crypt chamber, viewed as if standing inside looking down a long central corridor
-- Stone archways recede into deep darkness — strong one-point perspective
-- Shallow dark water covers the floor, perfectly reflecting the arches and a distant amber light source
-- Scattered: fallen armor fragments, bones, small floating embers
-- Atmosphere: heavy fog, volumetric light rays from a single distant source (amber/gold torchlight)
-- A faint distant figure (barely visible silhouette) at the far end of the corridor — tiny, alone
-
-**Colors:**
-- Predominantly black and deep charcoal
-- Reflective water surface with amber and violet streaks
-- Focal amber glow at vanishing point
-- Bone white stone texture on walls/arches
-
-**Requirements:**
-- Very dark overall — image should NOT overpower text overlaid on it
-- Lots of "negative space" darkness around the edges (vignette naturally)
-- Horizontal composition 16:9 or wider
-- Cinematic, like a AAA concept art piece
-- No characters with faces, no text in image
-
-**Avoid:** bright sky, outdoor scenes, fantasy castles, colorful lighting, cartoon style.
+*Append shared style block.*
 
 ---
 
-## 4. Marketing Page — Descent Timeline Icons
+## 3. Marketing Page — Hero Background
 
-### Usage
-- Circular icon badges used in the 5-step descent timeline on `dieforward.com`
-- Each step in the game loop gets a custom icon inside a circle
-- Current icons are emoji — replace with custom illustrations
-- 5 icons, same style set, different accent colors per step
+**Usage:** `dieforward.com` fullscreen hero section. Must sit behind white/amber text — should be dark and not compete. 1792×1024.
 
-**Shared style for all icons:**
-- Minimal flat illustration inside a circle
-- Dark near-black interior `#0a0a0a`, thin colored rim border
-- Single primary symbol, centered, simplified — readable at 48px
-- No text inside icon
-- Line weight: medium, slightly rough / hand-chiseled feel
-- Background should be transparent or very dark
+---
+
+### Prompt
+
+Fullscreen background painting for a dark roguelite website. A vast flooded underground crypt chamber viewed in one-point perspective — stone archways receding deep into darkness, shallow black water covering the floor reflecting distant amber torchlight. Fallen bones and armor fragments half-submerged. Volumetric fog drifting between columns. A single tiny silhouetted figure at the far vanishing point, alone. Very dark overall — most of the image is near-black with a single amber glow at the center horizon. No text, no characters with faces. Horizontal composition, heavy vignette around all edges.
+
+*Append shared style block.*
+
+---
+
+## 4. Descent Timeline Icons
+
+**Usage:** 5 circular badge icons for the game loop timeline on `dieforward.com`. Currently emoji — replace with illustrated icons. Each rendered at 512×512, circle format, each has its own accent color.
+
+**Shared icon style:** Dark gothic, hand-painted, matte. Single centered symbol on near-black `#0a0a0a` background. Bold readable silhouette, no fine detail that disappears at 64px. Circular composition. No text. Matte finish. Same hand-painted style as the skull app icon.
+
+> 💡 **Tip:** Generate Icon 1 first. When you get a result you like, describe its exact style back into the remaining 4 prompts so they all match.
 
 ---
 
 ### Icon 1 — STAKE YOUR SOL
-
 **Accent color:** Amber `#f59e0b`
 
-Create a circular icon showing a **Solana coin (◎ symbol)** falling/dropping into dark water, with a small ripple below it. The coin should be amber/gold-tinted. Simple, flat, iconic.
+Dark gothic circular game icon. A single Solana coin (◎ symbol) falling and breaking the surface of black still water, a single amber ripple radiating outward. The coin glints amber-gold in torchlight. Centered composition, bold silhouette, no text. 512×512.
+
+*Append shared style block.*
 
 ---
 
 ### Icon 2 — FIGHT OR FLEE
+**Accent color:** Blood red `#8b3a3a`
 
-**Accent color:** Blood red `#ef4444`
+Dark gothic circular game icon. Two crossed rusted swords — battle-worn, ancient — forming an X. Faint red blood-rust tint on the blades. Centered, strong silhouette. No text. 512×512.
 
-Create a circular icon showing **two crossed swords** in a minimalist style — like a battle emblem. Slightly worn, not cartoonish. The swords should have a subtle glow or motion blur suggesting combat. Dark background, red-tinted blades.
+*Append shared style block.*
 
 ---
 
 ### Icon 3 — DIE & LEAVE YOUR MARK
-
 **Accent color:** Ethereal violet `#7c3aed`
 
-Create a circular icon showing a **skull with a quill pen** — the quill is mid-writing, as if etching final words. The skull is simple and flat, the quill suggestion is minimal. Violet tint, bone white skull.
+Dark gothic circular game icon. A weathered skull with a bone quill pen resting against it — as if writing final words into stone. Skull is bone white, quill has a faint violet ethereal glow. Centered, bold silhouette. No text. 512×512.
+
+*Append shared style block.*
 
 ---
 
 ### Icon 4 — TIP THE FALLEN
-
 **Accent color:** Victory green `#22c55e`
 
-Create a circular icon showing a **hand dropping a coin** — a simple silhouetted hand from above, releasing a single glowing coin downward toward a small grave marker or stone below. Green-tinted coin, dark hand.
+Dark gothic circular game icon. A silhouetted hand from above releasing a single glowing coin downward toward a small grave marker half-submerged in water. The coin glows faint green. Centered, bold silhouette. No text. 512×512.
+
+*Append shared style block.*
 
 ---
 
-### Icon 5 — REST IN SOL (Tombstone)
+### Icon 5 — REST IN SOL
+**Accent color:** Stone grey `#6b7280`
 
-**Accent color:** Stone grey / muted `#6b7280`
+Dark gothic circular game icon. A simple ancient tombstone, cracked and weathered, half-submerged in dark water. A skull or ◈ symbol faintly carved into the stone face. Mossy base. Muted grey tones, heavy shadow. Centered, bold silhouette. No text. 512×512.
 
-Create a circular icon of a **simple gothic tombstone** — flat, carved stone, slightly cracked. The tombstone has a minimal skull or "◈" engraved in it. No text on the stone. Muted grey, heavy shadow, mossy bottom edge suggesting depth.
+*Append shared style block.*
 
 ---
 
-## Generation Notes
+## Usage Notes
 
-- **DALL·E output size:** use 1024×1024 square for icons/app icon, 1792×1024 for banner + hero
-- **Iteration tip:** if first result is too colorful or cartoony, add: *"Dark, almost monochromatic, matte finish, no bright colors"*
-- **Style lock:** once you get a style you like for the timeline icons, paste the first result description back into subsequent prompts as a "style reference" line
-- All assets should live in `art/generated/` once finalized
+- All final assets → `art/generated/`
+- If output is too colorful: add *"almost monochromatic, muted, desaturated"* to the prompt
+- If output is too flat/cartoon: add *"oil painting texture, visible brushstrokes, not vector"*
+- If output has wrong proportions: specify *"square 1:1 composition, centered, nothing near the edges"*
