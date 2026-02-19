@@ -394,12 +394,12 @@ class NativeAudioManager {
       // Load audio module
       await loadNativeAudioModule();
       
-      // Configure audio mode for background playback
+      // Configure audio mode (expo-audio options, NOT expo-av)
       if (setAudioModeAsync) {
         await setAudioModeAsync({
           playsInSilentModeIOS: true,
-          shouldPlayInBackground: false,
-          shouldReduceOtherAudioVolume: true,
+          shouldDuckAndroid: true,
+          staysActiveInBackground: false,
         });
       }
       
@@ -423,14 +423,13 @@ class NativeAudioManager {
     try {
       const player = new AudioModule.AudioPlayer(
         { uri: SOUND_PATHS[id] },
-        100,
-        false
+        100
       );
       
       player.volume = this.sfxVolume;
       
       player.addListener('playbackStatusUpdate', (status: any) => {
-        if (status.didJustFinish || (!status.playing && status.currentTime >= status.duration - 0.1)) {
+        if (status.didJustFinish || (!status.isPlaying && status.currentTime >= status.duration - 0.1)) {
           player.remove();
         }
       });
@@ -459,8 +458,7 @@ class NativeAudioManager {
       // Create new player
       const player = new AudioModule.AudioPlayer(
         { uri: SOUND_PATHS[id] },
-        100,
-        false
+        100
       );
       player.loop = true;
       

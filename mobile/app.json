@@ -37,7 +37,9 @@
     },
     "plugins": [
       "expo-router",
-      "expo-asset"
+      "expo-asset",
+      "expo-audio",
+      "./plugins/with-mwa-android"
     ],
     "extra": {
       "router": {

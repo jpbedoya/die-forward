@@ -110,7 +110,7 @@ export function useAudiusPlayer() {
     }
 
     await loadNativeAudio();
-    const p = new NativeAudioModule.AudioPlayer({ uri }, 100, false);
+    const p = new NativeAudioModule.AudioPlayer({ uri }, 100);
     p.loop = false;
     p.volume = initialVolume;
 
@@ -143,8 +143,8 @@ export function useAudiusPlayer() {
         if (nativeSetAudioModeAsync) {
           await nativeSetAudioModeAsync({
             playsInSilentModeIOS: true,
-            shouldPlayInBackground: false,
-            shouldReduceOtherAudioVolume: true,
+            shouldDuckAndroid: true,
+            staysActiveInBackground: false,
           });
         }
       }).catch(() => {});
