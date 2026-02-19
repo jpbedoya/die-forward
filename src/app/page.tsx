@@ -173,8 +173,8 @@ export default function LandingPage() {
 
             {/* Step 2: Fight */}
             <div className="relative flex items-start gap-6 sm:gap-12 mb-16">
-              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-[var(--bg-base)] border-2 border-[var(--red)] flex items-center justify-center text-2xl z-10 sm:absolute sm:left-1/2 sm:-translate-x-1/2">
-                ⚔️
+              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-[var(--bg-base)] border-2 border-[var(--red)] overflow-hidden z-10 sm:absolute sm:left-1/2 sm:-translate-x-1/2">
+                <Image src="/images/icons/icon-fight-256.webp" alt="Fight or flee" width={48} height={48} className="w-full h-full object-cover" />
               </div>
               <div className="hidden sm:block flex-1" />
               <div className="flex-1 sm:w-[calc(50%-4rem)] sm:pl-8">
