@@ -31,6 +31,25 @@ jobs:
         working-directory: mobile
         run: npm ci
 
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ hashFiles('mobile/android/**/*.gradle*', 'mobile/android/**/gradle-wrapper.properties') }}
+          restore-keys: gradle-
+
+      - name: Cache NDK build outputs (.cxx)
+        uses: actions/cache@v4
+        with:
+          path: |
+            mobile/node_modules/react-native-reanimated/android/.cxx
+            mobile/node_modules/react-native-worklets/android/.cxx
+            mobile/android/app/.cxx
+          key: ndk-arm64-${{ hashFiles('mobile/package-lock.json') }}
+          restore-keys: ndk-arm64-
+
       - name: Prebuild Android
         working-directory: mobile
         env:
