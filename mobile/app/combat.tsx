@@ -279,16 +279,8 @@ export default function CombatScreen() {
     }
     
     // Check outcomes
-    if (fleeSuccess) {
-      playSFX('footstep');
-      setPhase('resolve');
-      setTimeout(() => {
-        game.advance();
-        router.replace('/play');
-      }, 1500);
-      return;
-    }
-    
+    // IMPORTANT: death check must come before flee success.
+    // Edge case: player can "successfully flee" but still die from flee damage.
     if (newPlayerHealth <= 0) {
       playSFX('player-death');
       triggerShake('heavy');
@@ -299,6 +291,16 @@ export default function CombatScreen() {
       setTimeout(() => {
         router.replace({ pathname: '/death', params: { killedBy: creature?.name } });
       }, 2000);
+      return;
+    }
+
+    if (fleeSuccess) {
+      playSFX('footstep');
+      setPhase('resolve');
+      setTimeout(() => {
+        game.advance();
+        router.replace('/play');
+      }, 1500);
       return;
     }
     
