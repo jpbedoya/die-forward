@@ -358,7 +358,7 @@ export default function CombatScreen() {
               <Text className="text-amber text-xs font-mono">◈ {depth.name}</Text>
             </View>
             <View className="flex-row items-center gap-1">
-              <AudioToggle inline onSettingsPress={() => setMenuOpen(true)} />
+              <AudioToggle ambientTrack="ambient-combat" inline onSettingsPress={() => setMenuOpen(true)} />
               <ProgressBar current={roomNumber} total={13} />
             </View>
           </View>
