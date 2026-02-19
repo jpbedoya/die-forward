@@ -167,7 +167,7 @@ export function useAudiusPlayer() {
   const fadeOutAndUnload = (sound: Player, fromVolume: number) => {
     fadingSoundsRef.current.add(sound);
     const steps = 20;
-    const stepMs = 1500 / steps;
+    const stepMs = 500 / steps;
     let step = 0;
     const interval = setInterval(async () => {
       step++;
@@ -186,7 +186,7 @@ export function useAudiusPlayer() {
 
   const fadeIn = (sound: Player, targetVolume: number) => {
     const steps = 20;
-    const stepMs = 1500 / steps;
+    const stepMs = 500 / steps;
     let step = 0;
     clearCrossfade();
     crossfadeRef.current = setInterval(async () => {
