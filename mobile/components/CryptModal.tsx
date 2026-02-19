@@ -97,7 +97,7 @@ export function ItemModal({ visible, onClose, item }: ItemModalProps) {
       visible={visible}
       onClose={onClose}
       title={`${item.emoji} ${item.name}`}
-      closeButtonText="Done"
+      showCloseButton={false}
     >
       <View>
         {/* Description */}
