@@ -72,8 +72,19 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-[var(--bg-base)] font-mono">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center px-4 py-16">
-        {/* Background glow - pointer-events-none so it doesn't block clicks */}
+      <section className="relative min-h-screen flex flex-col items-center justify-center px-4 py-16 overflow-hidden">
+        {/* Hero image background */}
+        <Image
+          src="/images/hero-home.webp"
+          alt="Flooded crypt hallway"
+          fill
+          priority
+          className="object-cover object-center"
+        />
+
+        {/* Dark overlays for text readability */}
+        <div className="absolute inset-0 bg-black/55 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/25 to-black/70 pointer-events-none" />
         <div className="absolute inset-0 bg-gradient-radial from-[var(--amber-dim)]/10 via-transparent to-transparent pointer-events-none" />
         
         {/* Logo */}
