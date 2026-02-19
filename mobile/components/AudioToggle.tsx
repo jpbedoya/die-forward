@@ -1,5 +1,6 @@
 import { View, Pressable, Text } from 'react-native';
 import { useAudio, SoundId } from '../lib/audio';
+import { useAudius } from '../lib/AudiusContext';
 
 interface AudioToggleProps {
   /** Ambient track to play when toggling audio ON */
@@ -14,12 +15,13 @@ interface AudioToggleProps {
 
 /**
  * Reusable audio toggle button ([SND]/[MUTE]).
- * Pass onSettingsPress to show a ⚙ icon that opens audio settings.
- * Default: absolute positioned top-right.
- * Use inline=true for header placement.
+ * - Acts as a MASTER switch (all audio on/off)
+ * - Keeps menu selections (SFX/music source) as preferences
+ * - Pass onSettingsPress to show a ⚙ icon that opens audio settings
  */
 export function AudioToggle({ ambientTrack, className = '', inline = false, onSettingsPress }: AudioToggleProps) {
   const { enabled, toggle, unlock, playAmbient } = useAudio();
+  const { setMasterEnabled } = useAudius();
 
   const wrapperClass = inline
     ? 'flex-row items-center gap-1'
@@ -27,7 +29,12 @@ export function AudioToggle({ ambientTrack, className = '', inline = false, onSe
 
   const handleToggle = async () => {
     unlock();
-    const nowEnabled = await toggle();
+    const nowEnabled = await toggle(); // existing SFX/audio manager switch
+
+    // Keep Audius layer in sync with the master switch
+    setMasterEnabled(nowEnabled);
+
+    // If re-enabled and this screen has game ambient, kick it back on
     if (nowEnabled && ambientTrack) {
       playAmbient(ambientTrack);
     }
