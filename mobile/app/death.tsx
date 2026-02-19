@@ -205,7 +205,7 @@ export default function DeathScreen() {
           </View>
           {!isEmptyHanded && (
             <View className="flex-row justify-between">
-              <Text className="text-bone-dark text-sm font-mono">SOL Lost</Text>
+              <Text className="text-bone-dark text-sm font-mono">SOL Left</Text>
               <Text className="text-blood text-sm font-mono">{stakeAmountNum}</Text>
             </View>
           )}
