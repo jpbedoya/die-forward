@@ -9,6 +9,7 @@ import { GameMenu, MenuButton } from '../components/GameMenu';
 import { MiniPlayer } from '../components/MiniPlayer';
 import { AudioToggle } from '../components/AudioToggle';
 import { CRTOverlay } from '../components/CRTOverlay';
+import { CreatureModal } from '../components/CryptModal';
 import { useAudio } from '../lib/audio';
 import { useGameSettings, DEFAULT_GAME_SETTINGS } from '../lib/instant';
 import {
@@ -71,6 +72,7 @@ export default function CombatScreen() {
   const [playerDmgTaken, setPlayerDmgTaken] = useState(0);
   const [enemyDmgTaken, setEnemyDmgTaken] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [creatureModalOpen, setCreatureModalOpen] = useState(false);
   
   // Screen shake animation
   const shakeAnim = useRef(new Animated.Value(0)).current;
@@ -366,7 +368,9 @@ export default function CombatScreen() {
           <View className="flex-row items-center gap-3 mb-3">
             <Text className="text-4xl">{creature.emoji}</Text>
             <View className="flex-1">
-              <Text className="text-bone text-lg font-mono font-bold">{creature.name}</Text>
+              <Pressable onPress={() => setCreatureModalOpen(true)}>
+                <Text className="text-bone text-lg font-mono font-bold underline">{creature.name}</Text>
+              </Pressable>
               <Text className="text-bone-dark text-xs font-mono">Tier {creature.tier}</Text>
             </View>
           </View>
@@ -509,6 +513,12 @@ export default function CombatScreen() {
 
             <MiniPlayer />
           </View>
+
+          <CreatureModal
+            visible={creatureModalOpen}
+            onClose={() => setCreatureModalOpen(false)}
+            creature={creature}
+          />
         </Animated.View>
       </SafeAreaView>
       <CRTOverlay />

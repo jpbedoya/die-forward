@@ -11,9 +11,9 @@ import { GameMenu, MenuButton } from '../components/GameMenu';
 import { MiniPlayer } from '../components/MiniPlayer';
 import { AudioToggle } from '../components/AudioToggle';
 import { CRTOverlay } from '../components/CRTOverlay';
-import { getDepthForRoom, DungeonRoom, getItemDetails } from '../lib/content';
+import { getDepthForRoom, DungeonRoom, getItemDetails, getCreatureInfo, CreatureInfo } from '../lib/content';
 import { useUnifiedWallet, type Address } from '../lib/wallet/unified';
-import { ItemModal } from '../components/CryptModal';
+import { ItemModal, CreatureModal } from '../components/CryptModal';
 
 function HealthBar({ current, max }: { current: number; max: number }) {
   const filled = Math.round((current / max) * 8);
@@ -37,6 +37,7 @@ export default function PlayScreen() {
   const [tipping, setTipping] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<{ name: string; emoji: string } | null>(null);
+  const [selectedCreature, setSelectedCreature] = useState<CreatureInfo | null>(null);
 
   // Handle tipping a corpse
   const handleTip = async (corpse: Corpse) => {
@@ -97,6 +98,37 @@ export default function PlayScreen() {
     if (room.content?.narrative) return room.content.narrative;
     // Fallback for old dungeon format
     return (room as any).narrative || 'You proceed deeper into the crypt.';
+  };
+
+  const renderNarrative = () => {
+    const text = getNarrative();
+    const enemyName = room?.content?.enemy;
+
+    if (!enemyName || !text.includes(enemyName)) {
+      return <Text className="text-bone text-base font-mono leading-6 mb-4">{text}</Text>;
+    }
+
+    const [before, ...rest] = text.split(enemyName);
+    const after = rest.join(enemyName);
+
+    return (
+      <Text className="text-bone text-base font-mono leading-6 mb-4">
+        {before}
+        <Text
+          className="text-blood-light underline"
+          onPress={() => {
+            const c = getCreatureInfo(enemyName);
+            if (c) {
+              playSFX('ui-click');
+              setSelectedCreature(c);
+            }
+          }}
+        >
+          {enemyName}
+        </Text>
+        {after}
+      </Text>
+    );
   };
 
   const handleAction = async (action: string) => {
@@ -323,9 +355,7 @@ export default function PlayScreen() {
         )}
 
         {/* Narrative */}
-        <Text className="text-bone text-base font-mono leading-6 mb-4">
-          {getNarrative()}
-        </Text>
+        {renderNarrative()}
 
         {/* Corpse discovery - show fallen player in purple BEFORE looting */}
         {room.type === 'corpse' && realCorpse && !showCorpse && (
@@ -357,7 +387,20 @@ export default function PlayScreen() {
         {room.type === 'combat' && room.content?.enemy && (
           <View className="bg-crypt-surface border border-blood/30 p-3 mb-4">
             <Text className="text-blood-light text-sm font-mono">
-              {room.content.enemyEmoji || '👁️'} {room.content.enemy} blocks your path...
+              {room.content.enemyEmoji || '👁️'}
+              <Text
+                className="underline"
+                onPress={() => {
+                  const c = getCreatureInfo(room.content!.enemy!);
+                  if (c) {
+                    playSFX('ui-click');
+                    setSelectedCreature(c);
+                  }
+                }}
+              >
+                {' '}{room.content.enemy}
+              </Text>
+              {' '}blocks your path...
             </Text>
           </View>
         )}
@@ -503,6 +546,13 @@ export default function PlayScreen() {
           description: getItemDetails(selectedItem.name)?.description,
           effect: getItemDetails(selectedItem.name)?.effect,
         } : null}
+      />
+
+      {/* Creature Detail Modal */}
+      <CreatureModal
+        visible={!!selectedCreature}
+        onClose={() => setSelectedCreature(null)}
+        creature={selectedCreature}
       />
       </SafeAreaView>
       <CRTOverlay />

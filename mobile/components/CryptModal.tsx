@@ -89,9 +89,22 @@ interface ItemModalProps {
   } | null;
 }
 
+interface CreatureModalProps {
+  visible: boolean;
+  onClose: () => void;
+  creature: {
+    name: string;
+    emoji: string;
+    tier: 1 | 2 | 3;
+    health: { min: number; max: number };
+    behaviors: string[];
+    description: string;
+  } | null;
+}
+
 export function ItemModal({ visible, onClose, item }: ItemModalProps) {
   if (!item) return null;
-  
+
   return (
     <CryptModal
       visible={visible}
@@ -106,7 +119,7 @@ export function ItemModal({ visible, onClose, item }: ItemModalProps) {
             "{item.description}"
           </Text>
         )}
-        
+
         {/* Effect */}
         {item.effect && (
           <View className="bg-crypt-bg border border-crypt-border p-3">
@@ -114,6 +127,47 @@ export function ItemModal({ visible, onClose, item }: ItemModalProps) {
             <Text className="text-amber font-mono text-sm">{item.effect}</Text>
           </View>
         )}
+      </View>
+    </CryptModal>
+  );
+}
+
+export function CreatureModal({ visible, onClose, creature }: CreatureModalProps) {
+  if (!creature) return null;
+
+  return (
+    <CryptModal
+      visible={visible}
+      onClose={onClose}
+      title={`${creature.emoji} ${creature.name}`}
+      showCloseButton={false}
+    >
+      <View>
+        <View className="bg-crypt-bg border border-crypt-border p-3 mb-3">
+          <Text className="text-bone-dark font-mono text-xs tracking-wider mb-1">TIER</Text>
+          <Text className="text-amber font-mono text-sm">{creature.tier}</Text>
+        </View>
+
+        <View className="bg-crypt-bg border border-crypt-border p-3 mb-3">
+          <Text className="text-bone-dark font-mono text-xs tracking-wider mb-1">HP RANGE</Text>
+          <Text className="text-blood-light font-mono text-sm">{creature.health.min} - {creature.health.max}</Text>
+        </View>
+
+        <View className="bg-crypt-bg border border-crypt-border p-3 mb-3">
+          <Text className="text-bone-dark font-mono text-xs tracking-wider mb-2">TRAITS</Text>
+          <View className="flex-row flex-wrap">
+            {creature.behaviors.map((b) => (
+              <View key={b} className="border border-crypt-border px-2 py-1 mr-2 mb-2">
+                <Text className="text-ethereal text-xs font-mono">{b}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        <View className="bg-crypt-bg border border-crypt-border p-3">
+          <Text className="text-bone-dark font-mono text-xs tracking-wider mb-1">DESCRIPTION</Text>
+          <Text className="text-bone font-mono text-sm italic leading-5">{creature.description}</Text>
+        </View>
       </View>
     </CryptModal>
   );
