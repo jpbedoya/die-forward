@@ -266,7 +266,7 @@ export default function VictoryScreen() {
           </View>
           <View className="flex-row justify-between">
             <Text className="text-bone-dark text-sm font-mono">Items Found</Text>
-            <Text className="text-ethereal text-sm font-mono">{game.inventory.length}</Text>
+            <Text className="text-ethereal text-sm font-mono">{game.itemsFound || 0}</Text>
           </View>
         </View>
 

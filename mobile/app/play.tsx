@@ -175,6 +175,7 @@ export default function PlayScreen() {
                 name: realCorpse.loot, 
                 emoji: realCorpse.lootEmoji 
               });
+              game.incrementItemsFound();
               setLastFoundItem({ name: realCorpse.loot, emoji: realCorpse.lootEmoji });
               setMessage(`Found: ${realCorpse.lootEmoji} ${realCorpse.loot}`);
             } else {
@@ -196,6 +197,7 @@ export default function PlayScreen() {
               if (!game.inventory.some(i => i.name === loot.name)) {
                 playSFX('loot-discover');
                 game.addToInventory({ id: Date.now().toString(), ...loot });
+                game.incrementItemsFound();
                 setLastFoundItem({ name: loot.name, emoji: loot.emoji });
                 setMessage(`Found: ${loot.emoji} ${loot.name}`);
               } else {
@@ -222,6 +224,7 @@ export default function PlayScreen() {
         case 'heal':
           playSFX('heal');
           game.setHealth(Math.min(100, game.health + 30));
+          game.incrementItemsFound();
           setMessage('Found supplies. +30 HP');
           
           setTimeout(async () => {

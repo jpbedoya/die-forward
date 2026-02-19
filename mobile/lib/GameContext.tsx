@@ -63,6 +63,8 @@ interface GameContextType extends GameState {
   setStamina: (stamina: number) => void;
   addToInventory: (item: { id: string; name: string; emoji: string }) => void;
   removeFromInventory: (itemId: string) => void;
+  itemsFound: number;
+  incrementItemsFound: () => void;
   clearError: () => void;
 }
 
@@ -78,6 +80,7 @@ const initialState: GameState = {
   health: 100,
   stamina: 3,
   inventory: [],
+  itemsFound: 0,
   dungeon: [],
   loading: false,
   error: null,
@@ -276,11 +279,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
       
       updateState({
         sessionToken: session.sessionToken,
-        stakeAmount: amount,
+        stakeAmount: demoMode ? 0 : amount,  // Free mode stores 0 so isEmptyHanded works correctly
         currentRoom: 0,
         health: 100,
         stamina: 3,
         inventory: [],
+        itemsFound: 0,
         dungeon,
         loading: false,
       });
@@ -388,6 +392,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
     }));
   }, []);
 
+  const incrementItemsFound = useCallback(() => {
+    setState(prev => ({ ...prev, itemsFound: (prev.itemsFound || 0) + 1 }));
+  }, []);
+
   const clearError = useCallback(() => {
     updateState({ error: null });
   }, [updateState]);
@@ -409,6 +417,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
     setStamina,
     addToInventory,
     removeFromInventory,
+    itemsFound: state.itemsFound || 0,
+    incrementItemsFound,
     clearError,
   };
 
