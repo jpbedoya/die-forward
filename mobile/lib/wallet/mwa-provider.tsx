@@ -68,11 +68,14 @@ function MobileWalletConsumer({ children }: { children: ReactNode }) {
   const connect = useCallback(async (): Promise<Address | null> => {
     setConnecting(true);
     try {
+      console.log('[MWA] Calling wallet.connect()...');
       const account = await wallet.connect();
+      console.log('[MWA] Connect success, account:', account?.address?.toBase58?.());
       return account?.address?.toBase58() as Address | null;
     } catch (e: any) {
-      console.error('[MWA] Connect failed:', e?.message || e);
-      throw new Error(e?.message || 'Wallet connection failed');
+      const msg = e?.message || String(e) || 'Wallet connection failed';
+      console.error('[MWA] Connect failed:', msg, e);
+      throw new Error(msg);
     } finally {
       setConnecting(false);
     }

@@ -6,6 +6,9 @@ import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Native audio module (expo-audio) - only loaded on native platforms
+// IMPORTANT: AudioPlayer is NOT a top-level export of expo-audio.
+// It lives on the NativeAudioModule instance (requireNativeModule('ExpoAudio')).
+// Must import from 'expo-audio/build/AudioModule' to get the instance with .AudioPlayer.
 let AudioModule: any = null;
 let setAudioModeAsync: any = null;
 
@@ -15,9 +18,12 @@ async function loadNativeAudioModule() {
   
   try {
     console.log('[Audio] Loading expo-audio module (native)...');
-    const mod = await import('expo-audio');
-    AudioModule = (mod as any).default || mod;
-    setAudioModeAsync = mod.setAudioModeAsync;
+    // Get NativeAudioModule instance — this has .AudioPlayer as a property
+    const audioModMod = await import('expo-audio/build/AudioModule');
+    AudioModule = audioModMod.default; // requireNativeModule('ExpoAudio')
+    // Get setAudioModeAsync from main package
+    const expoAudio = await import('expo-audio');
+    setAudioModeAsync = expoAudio.setAudioModeAsync;
     console.log('[Audio] expo-audio loaded:', !!AudioModule?.AudioPlayer);
   } catch (e) {
     console.warn('[Audio] Failed to load expo-audio:', e);

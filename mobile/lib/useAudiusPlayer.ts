@@ -41,9 +41,11 @@ let nativeSetAudioModeAsync: any = null;
 async function loadNativeAudio() {
   if (Platform.OS === 'web') return;
   if (NativeAudioModule) return;
-  const mod = await import('expo-audio');
-  NativeAudioModule = (mod as any).default || mod;
-  nativeSetAudioModeAsync = (mod as any).setAudioModeAsync;
+  // Must use AudioModule directly — AudioPlayer is not a top-level expo-audio export
+  const audioModMod = await import('expo-audio/build/AudioModule');
+  NativeAudioModule = audioModMod.default; // requireNativeModule('ExpoAudio') — has .AudioPlayer
+  const expoAudio = await import('expo-audio');
+  nativeSetAudioModeAsync = expoAudio.setAudioModeAsync;
 }
 
 type Player = {
