@@ -151,12 +151,12 @@ export default function LandingPage() {
           {/* Vertical timeline */}
           <div className="relative">
             {/* Vertical line - stops before tombstone (calc: 4 steps * spacing, not extending to 5th) */}
-            <div className="absolute left-6 sm:left-1/2 top-0 h-[calc(100%-8rem)] w-px bg-gradient-to-b from-[var(--amber)] via-[var(--red)] via-[var(--purple)] via-[var(--green)] to-[var(--text-dim)] sm:-translate-x-px" />
+            <div className="absolute left-10 sm:left-1/2 top-0 h-[calc(100%-8rem)] w-px bg-gradient-to-b from-[var(--amber)] via-[var(--red)] via-[var(--purple)] via-[var(--green)] to-[var(--text-dim)] sm:-translate-x-px" />
             
             {/* Step 1: Stake */}
             <div className="relative flex items-start gap-6 sm:gap-12 mb-16">
-              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-[var(--bg-base)] border-2 border-[var(--amber)] overflow-hidden z-10 sm:absolute sm:left-1/2 sm:-translate-x-1/2">
-                <Image src="/images/icons/icon-stake-256.webp" alt="Stake your SOL" width={48} height={48} className="w-full h-full object-cover" />
+              <div className="flex-shrink-0 w-20 h-20 rounded-full bg-[var(--bg-base)] border-2 border-[var(--amber)] overflow-hidden z-10 sm:absolute sm:left-1/2 sm:-translate-x-1/2">
+                <Image src="/images/icons/icon-stake-256.webp" alt="Stake your SOL" width={80} height={80} className="w-full h-full object-cover" />
               </div>
               <div className="flex-1 sm:w-[calc(50%-4rem)] sm:pr-8 sm:text-right">
                 <div className="bg-[var(--bg-surface)] border border-[var(--border-dim)] p-5 relative">
@@ -173,8 +173,8 @@ export default function LandingPage() {
 
             {/* Step 2: Fight */}
             <div className="relative flex items-start gap-6 sm:gap-12 mb-16">
-              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-[var(--bg-base)] border-2 border-[var(--red)] overflow-hidden z-10 sm:absolute sm:left-1/2 sm:-translate-x-1/2">
-                <Image src="/images/icons/icon-fight-256.webp" alt="Fight or flee" width={48} height={48} className="w-full h-full object-cover" />
+              <div className="flex-shrink-0 w-20 h-20 rounded-full bg-[var(--bg-base)] border-2 border-[var(--red)] overflow-hidden z-10 sm:absolute sm:left-1/2 sm:-translate-x-1/2">
+                <Image src="/images/icons/icon-fight-256.webp" alt="Fight or flee" width={80} height={80} className="w-full h-full object-cover" />
               </div>
               <div className="hidden sm:block flex-1" />
               <div className="flex-1 sm:w-[calc(50%-4rem)] sm:pl-8">
@@ -191,8 +191,8 @@ export default function LandingPage() {
 
             {/* Step 3: Die */}
             <div className="relative flex items-start gap-6 sm:gap-12 mb-16">
-              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-[var(--bg-base)] border-2 border-[var(--purple)] overflow-hidden z-10 sm:absolute sm:left-1/2 sm:-translate-x-1/2">
-                <Image src="/images/icons/icon-die-256.webp" alt="Die and leave your mark" width={48} height={48} className="w-full h-full object-cover" />
+              <div className="flex-shrink-0 w-20 h-20 rounded-full bg-[var(--bg-base)] border-2 border-[var(--purple)] overflow-hidden z-10 sm:absolute sm:left-1/2 sm:-translate-x-1/2">
+                <Image src="/images/icons/icon-die-256.webp" alt="Die and leave your mark" width={80} height={80} className="w-full h-full object-cover" />
               </div>
               <div className="flex-1 sm:w-[calc(50%-4rem)] sm:pr-8 sm:text-right">
                 <div className="bg-[var(--bg-surface)] border border-[var(--border-dim)] p-5 relative">
@@ -209,8 +209,8 @@ export default function LandingPage() {
 
             {/* Step 4: Tip */}
             <div className="relative flex items-start gap-6 sm:gap-12 mb-16">
-              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-[var(--bg-base)] border-2 border-[var(--green)] overflow-hidden z-10 sm:absolute sm:left-1/2 sm:-translate-x-1/2">
-                <Image src="/images/icons/icon-tip-256.webp" alt="Tip the fallen" width={48} height={48} className="w-full h-full object-cover" />
+              <div className="flex-shrink-0 w-20 h-20 rounded-full bg-[var(--bg-base)] border-2 border-[var(--green)] overflow-hidden z-10 sm:absolute sm:left-1/2 sm:-translate-x-1/2">
+                <Image src="/images/icons/icon-tip-256.webp" alt="Tip the fallen" width={80} height={80} className="w-full h-full object-cover" />
               </div>
               <div className="hidden sm:block flex-1" />
               <div className="flex-1 sm:w-[calc(50%-4rem)] sm:pl-8">
@@ -227,8 +227,8 @@ export default function LandingPage() {
 
             {/* Step 5: Rest in SOL - Tombstone */}
             <div className="relative flex items-start gap-6 sm:gap-12">
-              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-[var(--bg-base)] border-2 border-[var(--text-dim)] overflow-hidden z-10 sm:absolute sm:left-1/2 sm:-translate-x-1/2">
-                <Image src="/images/icons/icon-rest-256.webp" alt="Rest in SOL" width={48} height={48} className="w-full h-full object-cover" />
+              <div className="flex-shrink-0 w-20 h-20 rounded-full bg-[var(--bg-base)] border-2 border-[var(--text-dim)] overflow-hidden z-10 sm:absolute sm:left-1/2 sm:-translate-x-1/2">
+                <Image src="/images/icons/icon-rest-256.webp" alt="Rest in SOL" width={80} height={80} className="w-full h-full object-cover" />
               </div>
               <div className="flex-1 sm:w-[calc(50%-4rem)] sm:pr-8 sm:text-right">
                 <div className="bg-[var(--bg-surface)] border border-[var(--border-dim)] p-5 relative">
