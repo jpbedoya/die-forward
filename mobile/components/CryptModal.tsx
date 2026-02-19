@@ -153,32 +153,24 @@ export function CreatureModal({ visible, onClose, creature }: CreatureModalProps
       showCloseButton={false}
     >
       <View className="bg-crypt-bg border border-crypt-border p-4">
-        {/* Tier + HP on one line */}
-        <View className="flex-row gap-6 mb-3">
-          <View>
-            <Text className="text-bone-dark font-mono text-xs tracking-wider mb-1">TIER</Text>
-            <Text className="text-amber font-mono text-sm">{creature.tier}</Text>
-          </View>
-          <View>
-            <Text className="text-bone-dark font-mono text-xs tracking-wider mb-1">HP</Text>
-            <Text className="text-blood-light font-mono text-sm">{creature.health.min}–{creature.health.max}</Text>
-          </View>
-        </View>
+        {/* Tier · HP inline */}
+        <Text className="text-bone-dark font-mono text-xs mb-3">
+          <Text className="text-amber">Tier {creature.tier}</Text>
+          <Text className="text-bone-dark">  ·  </Text>
+          <Text className="text-blood-light">HP {creature.health.min}–{creature.health.max}</Text>
+        </Text>
 
-        {/* Divider */}
-        <View className="border-t border-crypt-border mb-3" />
+        {/* Description */}
+        <Text className="text-bone font-mono text-sm italic leading-5 mb-3">{creature.description}</Text>
 
         {/* Traits */}
-        <View className="flex-row flex-wrap mb-3">
+        <View className="flex-row flex-wrap">
           {creature.behaviors.map((b) => (
-            <View key={b} className="border border-crypt-border px-2 py-1 mr-2 mb-2">
+            <View key={b} className="border border-crypt-border px-2 py-1 mr-2 mb-1">
               <Text className="text-ethereal text-xs font-mono">{b}</Text>
             </View>
           ))}
         </View>
-
-        {/* Description */}
-        <Text className="text-bone font-mono text-sm italic leading-5">{creature.description}</Text>
       </View>
     </CryptModal>
   );
