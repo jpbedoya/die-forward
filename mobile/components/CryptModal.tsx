@@ -152,18 +152,21 @@ export function CreatureModal({ visible, onClose, creature }: CreatureModalProps
       title={`${creature.emoji} ${creature.name}`}
       showCloseButton={false}
     >
-      <View>
+      <View className="bg-crypt-bg border border-crypt-border p-4">
         {/* Tier + HP on one line */}
-        <View className="flex-row gap-3 mb-3">
-          <View className="flex-1 bg-crypt-bg border border-crypt-border p-3">
+        <View className="flex-row gap-6 mb-3">
+          <View>
             <Text className="text-bone-dark font-mono text-xs tracking-wider mb-1">TIER</Text>
             <Text className="text-amber font-mono text-sm">{creature.tier}</Text>
           </View>
-          <View className="flex-1 bg-crypt-bg border border-crypt-border p-3">
+          <View>
             <Text className="text-bone-dark font-mono text-xs tracking-wider mb-1">HP</Text>
             <Text className="text-blood-light font-mono text-sm">{creature.health.min}–{creature.health.max}</Text>
           </View>
         </View>
+
+        {/* Divider */}
+        <View className="border-t border-crypt-border mb-3" />
 
         {/* Traits */}
         <View className="flex-row flex-wrap mb-3">
