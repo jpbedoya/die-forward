@@ -43,7 +43,7 @@ export function AudioToggle({ ambientTrack, className = '', inline = false, onSe
   return (
     <View className={`${wrapperClass} ${className}`}>
       <Pressable onPress={handleToggle} className="p-2" hitSlop={8}>
-        <Text className={`text-xs font-mono ${enabled ? 'text-amber' : 'text-bone-dark'}`}>
+        <Text className={`text-xs font-mono text-center w-14 ${enabled ? 'text-amber' : 'text-bone-dark'}`}>
           {enabled ? '[SND]' : '[MUTE]'}
         </Text>
       </Pressable>

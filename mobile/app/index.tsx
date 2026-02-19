@@ -81,16 +81,18 @@ export default function HomeScreen() {
   const { totalDeaths, isLoading: statsLoading } = usePoolStats();
   const { deaths: recentDeaths } = useDeathFeed(20);
   const { leaderboard: rawLeaderboard } = useLeaderboard(20);
-  const { playAmbient, unlock: unlockAudio } = useAudio();
+  const { playAmbient, unlock: unlockAudio, ready: audioReady } = useAudio();
   const { settings } = useGameSettings();
 
   // Filter out empty leaderboard entries
   const leaderboard = rawLeaderboard.filter(p => p.name && p.name.trim() !== '');
 
-  // Play title ambient
+  // Play title ambient once audio module is ready
   useEffect(() => {
-    playAmbient('ambient-title');
-  }, []);
+    if (audioReady) {
+      playAmbient('ambient-title');
+    }
+  }, [audioReady]);
 
   // Splash intro animation
   useEffect(() => {
