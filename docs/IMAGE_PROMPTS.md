@@ -25,34 +25,15 @@ All prompts are optimized for **DALL·E (ChatGPT)** but work with Midjourney and
 - iOS App Store icon
 - Square, multiple sizes (512×512 master)
 
-### Prompt
+### Prompt A — Blade (variant 1)
 
-Create a **mobile app icon** for a dark dungeon roguelite called **"Die Forward."**
+Mobile game icon. A downward-pointing rusted blade plunging into black still water, creating a single ripple. Pale bone white handle against pure black background. Amber light catching the rust on the blade. Minimal, bold, iconic. Dark souls aesthetic meets ancient flooded temple. No text. Square format, strong silhouette, readable at small sizes. Matte painterly finish.
 
-Style: gothic, minimal, high-contrast. Flat-meets-illustration hybrid. Must read clearly at small sizes (60×60px).
+---
 
-**Visual concept:**
-- Central subject: a stylized skull viewed slightly from below, looking upward — conveying defiance, not horror
-- The skull should have a faint cracked hairline, a single amber/gold glowing eye socket
-- Surrounding elements: subtle falling droplets or stone dust particles around it, very minimal
-- Behind the skull: a very dark deep-water reflection or flooded crypt floor texture (barely visible)
-- A faint amber halo / glow emanates from behind — like torchlight from below
+### Prompt B — Skull (variant 2, currently used)
 
-**Colors:**
-- Near-black `#0a0a0a` background
-- Skull in bone white with subtle shadow depth
-- Single amber/gold glowing eye `#f59e0b`
-- Blood-red hairline crack
-- Very subtle violet mist around edges
-
-**Requirements:**
-- No text, no letters
-- Centered composition, nothing near edge corners
-- Matte finish, no chrome or gradients
-- App icon safe: no fine detail that disappears at 60px
-- Square format, 1:1
-
-**Avoid:** neon colors, cartoon style, realistic photo skull, horror gore, busy background, white background, rounded corners (those are applied by the OS).
+Epic mobile game app icon for a dark roguelite. Central image: a weathered skull half-submerged in perfectly still black water, a flickering amber torch flame reflected on the surface, ancient flooded stone stairs descending into darkness behind it. Color palette: deep black, abyssal dark blue, pale bone white, sickly muted green, amber gold. Style: dark gothic, hand-painted texture, painterly but readable at small sizes. Dramatic low-angle lighting, single strong light source (the torch). Atmosphere of cold ancient dread — patient, not aggressive. No text. Square composition, centered subject, bold silhouette that reads clearly at 64x64px. Ultra detailed, cinematic, 1024x1024.
 
 ---
 
