@@ -70,7 +70,7 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] font-mono">
+    <div className="min-h-screen bg-[var(--bg-base)] font-mono scroll-smooth">
       {/* Hero Section */}
       <section className="relative min-h-screen flex flex-col items-center justify-center px-4 py-16 overflow-hidden">
         {/* Hero image background */}
@@ -83,8 +83,8 @@ export default function LandingPage() {
         />
 
         {/* Dark overlays for text readability */}
-        <div className="absolute inset-0 bg-black/38 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/15 to-black/52 pointer-events-none" />
+        <div className="absolute inset-0 bg-black/46 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/36 via-black/20 to-black/60 pointer-events-none" />
         <div className="absolute inset-0 bg-gradient-radial from-[var(--amber-dim)]/10 via-transparent to-transparent pointer-events-none" />
         
         {/* Logo */}
@@ -147,13 +147,17 @@ export default function LandingPage() {
         </div>
 
         {/* Scroll indicator */}
-        <div className="absolute bottom-8 animate-bounce text-[var(--text-muted)]">
+        <a
+          href="#descent"
+          className="absolute bottom-8 animate-bounce text-[var(--text-muted)] hover:text-[var(--amber)] transition-colors cursor-pointer"
+          aria-label="Scroll to The Descent section"
+        >
           ▼
-        </div>
+        </a>
       </section>
 
       {/* The Descent - Vertical Timeline */}
-      <section className="py-20 px-4 border-t border-[var(--border-dim)]">
+      <section id="descent" className="py-20 px-4 border-t border-[var(--border-dim)]">
         <div className="max-w-2xl mx-auto">
           <h2 className="text-[var(--amber)] text-2xl mb-16 text-center tracking-wider">
             ◈ THE DESCENT
