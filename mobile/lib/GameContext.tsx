@@ -62,6 +62,7 @@ interface GameContextType extends GameState {
   setHealth: (health: number) => void;
   setStamina: (stamina: number) => void;
   addToInventory: (item: { id: string; name: string; emoji: string }) => void;
+  removeFromInventory: (itemId: string) => void;
   clearError: () => void;
 }
 
@@ -380,6 +381,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
     }));
   }, []);
 
+  const removeFromInventory = useCallback((itemId: string) => {
+    setState(prev => ({
+      ...prev,
+      inventory: prev.inventory.filter(i => i.id !== itemId),
+    }));
+  }, []);
+
   const clearError = useCallback(() => {
     updateState({ error: null });
   }, [updateState]);
@@ -400,6 +408,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     setHealth,
     setStamina,
     addToInventory,
+    removeFromInventory,
     clearError,
   };
 

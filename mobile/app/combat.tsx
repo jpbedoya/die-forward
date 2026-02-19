@@ -9,7 +9,7 @@ import { GameMenu, MenuButton } from '../components/GameMenu';
 import { MiniPlayer } from '../components/MiniPlayer';
 import { AudioToggle } from '../components/AudioToggle';
 import { CRTOverlay } from '../components/CRTOverlay';
-import { CreatureModal } from '../components/CryptModal';
+import { CreatureModal, ItemModal } from '../components/CryptModal';
 import { useAudio } from '../lib/audio';
 import { useGameSettings, DEFAULT_GAME_SETTINGS } from '../lib/instant';
 import {
@@ -19,6 +19,7 @@ import {
   getCreatureIntent,
   getIntentEffects,
   getItemEffects,
+  getItemDetails,
   getDepthForRoom,
   getStrikeNarration,
   getDodgeNarration,
@@ -73,6 +74,7 @@ export default function CombatScreen() {
   const [enemyDmgTaken, setEnemyDmgTaken] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [creatureModalOpen, setCreatureModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<{ id: string; name: string; emoji: string } | null>(null);
   
   // Screen shake animation
   const shakeAnim = useRef(new Animated.Value(0)).current;
@@ -345,7 +347,7 @@ export default function CombatScreen() {
 
   return (
     <View style={containerStyle} className="bg-crypt-bg">
-      <SafeAreaView style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#0c0a09' }} edges={['top']}>
+      <SafeAreaView style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#0c0a09' }} edges={['top', 'bottom']}>
         <Animated.View 
           style={{ transform: [{ translateX: shakeAnim }], flex: 1, display: 'flex', flexDirection: 'column' }}
         >
@@ -505,9 +507,13 @@ export default function CombatScreen() {
               <ScrollView horizontal style={{ flex: 1 }} showsHorizontalScrollIndicator={false}>
                 {game.inventory.length > 0 ? (
                   game.inventory.map((item) => (
-                    <View key={item.id} className="bg-crypt-surface border border-crypt-border py-1 px-2 mr-2">
+                    <Pressable
+                      key={item.id}
+                      className="bg-crypt-surface border border-crypt-border py-1 px-2 mr-2 active:border-amber"
+                      onPress={() => { playSFX('ui-click'); setSelectedItem(item); }}
+                    >
                       <Text className="text-bone-muted text-xs font-mono">{item.emoji} {item.name}</Text>
-                    </View>
+                    </Pressable>
                   ))
                 ) : (
                   <Text className="text-stone-600 text-xs font-mono italic">None</Text>
@@ -522,6 +528,35 @@ export default function CombatScreen() {
             visible={creatureModalOpen}
             onClose={() => setCreatureModalOpen(false)}
             creature={creature}
+          />
+
+          <ItemModal
+            visible={!!selectedItem}
+            onClose={() => setSelectedItem(null)}
+            item={selectedItem ? {
+              ...selectedItem,
+              description: getItemDetails(selectedItem.name)?.description,
+              effect: getItemDetails(selectedItem.name)?.effect,
+              type: getItemDetails(selectedItem.name)?.type,
+            } : null}
+            onUse={() => {
+              if (!selectedItem) return;
+              const name = selectedItem.name;
+              if (name === 'Herbs') {
+                const heal = Math.floor(Math.random() * 15) + 25; // 25-40 HP
+                game.setHealth(Math.min(100, game.health + heal));
+                setNarrative(`You quickly apply the herbs. Wounds close. +${heal} HP.`);
+                playSFX('heal');
+              } else if (name === 'Pale Rations') {
+                game.setStamina(Math.min(3, game.stamina + 1));
+                setNarrative('You eat quickly. Strength returns to your legs.');
+                playSFX('loot-discover');
+              } else if (name === 'Bone Dust') {
+                setNarrative('The dust swirls. Your senses sharpen — you feel the creature\'s next move.');
+                playSFX('ui-click');
+              }
+              game.removeFromInventory(selectedItem.id);
+            }}
           />
         </Animated.View>
       </SafeAreaView>

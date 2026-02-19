@@ -81,11 +81,13 @@ export function CryptModal({
 interface ItemModalProps {
   visible: boolean;
   onClose: () => void;
+  onUse?: () => void;
   item: {
     name: string;
     emoji: string;
     description?: string;
     effect?: string;
+    type?: 'consumable' | 'weapon' | 'artifact';
   } | null;
 }
 
@@ -102,8 +104,9 @@ interface CreatureModalProps {
   } | null;
 }
 
-export function ItemModal({ visible, onClose, item }: ItemModalProps) {
+export function ItemModal({ visible, onClose, onUse, item }: ItemModalProps) {
   if (!item) return null;
+  const isConsumable = item.type === 'consumable';
 
   return (
     <CryptModal
@@ -122,10 +125,17 @@ export function ItemModal({ visible, onClose, item }: ItemModalProps) {
 
         {/* Effect */}
         {item.effect && (
-          <View className="bg-crypt-bg border border-crypt-border p-3">
-            <Text className="text-bone-dark font-mono text-xs tracking-wider mb-1">EFFECT</Text>
-            <Text className="text-amber font-mono text-sm">{item.effect}</Text>
-          </View>
+          <Text className="text-amber font-mono text-sm mb-4">{item.effect}</Text>
+        )}
+
+        {/* USE button for consumables */}
+        {isConsumable && onUse && (
+          <Pressable
+            className="bg-victory active:bg-green-600 py-3 items-center mt-2"
+            onPress={() => { onUse(); onClose(); }}
+          >
+            <Text className="text-crypt-bg font-mono font-bold text-sm">USE</Text>
+          </Pressable>
         )}
       </View>
     </CryptModal>

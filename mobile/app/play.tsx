@@ -536,7 +536,27 @@ export default function PlayScreen() {
           ...selectedItem,
           description: getItemDetails(selectedItem.name)?.description,
           effect: getItemDetails(selectedItem.name)?.effect,
+          type: getItemDetails(selectedItem.name)?.type,
         } : null}
+        onUse={() => {
+          if (!selectedItem) return;
+          const name = selectedItem.name;
+          if (name === 'Herbs') {
+            const heal = Math.floor(Math.random() * 15) + 25;
+            game.setHealth(Math.min(100, game.health + heal));
+            setMessage(`You apply the herbs. +${heal} HP.`);
+            playSFX('heal');
+          } else if (name === 'Pale Rations') {
+            game.setStamina(Math.min(3, game.stamina + 1));
+            setMessage('You eat quickly. Stamina restored.');
+            playSFX('loot-discover');
+          } else if (name === 'Bone Dust') {
+            setMessage('The dust reveals hidden signs. Your path feels clearer.');
+            playSFX('ui-click');
+          }
+          game.removeFromInventory((selectedItem as any).id);
+          setSelectedItem(null);
+        }}
       />
 
       {/* Creature Detail Modal */}
