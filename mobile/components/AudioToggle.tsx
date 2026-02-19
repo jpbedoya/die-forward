@@ -42,14 +42,14 @@ export function AudioToggle({ ambientTrack, className = '', inline = false, onSe
 
   return (
     <View className={`${wrapperClass} ${className}`}>
-      <Pressable onPress={handleToggle} className="p-2" hitSlop={8}>
+      <Pressable onPress={handleToggle} className="py-2 pl-2 pr-1" hitSlop={8}>
         <Text className={`text-xs font-mono text-center w-14 ${enabled ? 'text-amber' : 'text-bone-dark'}`}>
           {enabled ? '[SND]' : '[MUTE]'}
         </Text>
       </Pressable>
 
       {onSettingsPress && (
-        <Pressable onPress={onSettingsPress} className="p-2" hitSlop={8}>
+        <Pressable onPress={onSettingsPress} className="py-2 pl-0 pr-2" hitSlop={8}>
           <Text className="text-bone-dark text-xs font-mono">⚙</Text>
         </Pressable>
       )}
