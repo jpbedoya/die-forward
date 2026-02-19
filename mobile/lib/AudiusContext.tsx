@@ -112,14 +112,23 @@ export function AudiusProvider({ children }: { children: React.ReactNode }) {
     await AsyncStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
   }, []);
 
+  const musicSourceRef = useRef(musicSource);
+  useEffect(() => { musicSourceRef.current = musicSource; }, [musicSource]);
+
   const setMasterEnabled = useCallback((enabled: boolean) => {
     setMasterEnabledState(enabled);
+    const audioManager = getAudioManager();
     if (!enabled) {
       // Hard stop now; effect also enforces this on next render
       stopRef.current();
-      const audioManager = getAudioManager();
       audioManager.setSuppressAmbient(true);
       audioManager.stopAmbient();
+    } else {
+      // Re-enabling: synchronously clear suppress for game audio so playAmbient
+      // can restart immediately (before the React effect fires next render)
+      if (musicSourceRef.current === 'game') {
+        audioManager.setSuppressAmbient(false);
+      }
     }
   }, []);
 
