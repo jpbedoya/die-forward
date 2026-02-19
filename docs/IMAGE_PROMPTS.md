@@ -83,7 +83,23 @@ Ultra detailed. Square format 1024x1024.
 ### Prompt
 
 ```
-Wide cinematic banner for a dark roguelite mobile game called "Die Forward." A lone adventurer seen from behind, descending ancient flooded stone stairs into a vast underground crypt corridor. Torch held aloft, amber light reflecting off the perfectly still black water below. Stone archways receding into total darkness ahead. Title text "DIE FORWARD" etched in weathered monospace lettering into the stone on the left side of the image — as if carved. Subtle skull motif and crypt runes flanking the title. Atmosphere: ominous, lonely, ancient. No modern elements. No faces. No bright colors. Style: hyper-detailed dark fantasy digital painting, photorealistic, cinematic. Pure black background. Single dramatic amber/gold light source (torchlight) — strong contrast, deep shadows. Color palette: near-black, deep charcoal, amber gold, bone white, blood-rust red accents. Atmospheric fog, subtle glow. No bright colors, no neon, no cartoon style, no gradients. Ultra detailed, 1024x1024.
+Wide cinematic banner for a dark roguelite mobile game called "Die Forward."
+A lone adventurer seen from behind, descending ancient flooded stone stairs
+into a vast underground crypt corridor.
+Torch held aloft, amber light reflecting off perfectly still black water below.
+Stone archways receding into total darkness ahead.
+Title text "DIE FORWARD" etched in weathered monospace lettering into stone on the left,
+as if carved.
+Subtle skull motif and crypt runes flanking the title.
+Atmosphere: ominous, lonely, ancient. No modern elements. No faces. No bright colors.
+
+Style: hyper-detailed dark fantasy digital painting, photorealistic, cinematic.
+Pure black background.
+Single dramatic amber/gold light source (torchlight) — strong contrast, deep shadows.
+Color palette: near-black, deep charcoal, amber gold, bone white, blood-rust red accents.
+Atmospheric fog, subtle glow.
+No bright colors, no neon, no cartoon style, no gradients.
+Ultra detailed. 1024x1024.
 ```
 
 ---
@@ -97,7 +113,24 @@ Wide cinematic banner for a dark roguelite mobile game called "Die Forward." A l
 ### Prompt
 
 ```
-Fullscreen background painting for a dark roguelite website. A vast flooded underground crypt chamber viewed in one-point perspective — stone archways receding deep into darkness, shallow black water covering the floor reflecting distant amber torchlight. Fallen bones and armor fragments half-submerged. Volumetric fog drifting between columns. A single tiny silhouetted figure at the far vanishing point, alone. Very dark overall — most of the image is near-black with a single amber glow at the center horizon. No text, no characters with faces. Horizontal composition, heavy vignette around all edges. Style: hyper-detailed dark fantasy digital painting, photorealistic, cinematic. Pure black background. Single dramatic amber/gold light source (torchlight) — strong contrast, deep shadows. Color palette: near-black, deep charcoal, amber gold, bone white, blood-rust red accents. Atmospheric fog, subtle glow. No bright colors, no neon, no cartoon style, no gradients. Ultra detailed, 1024x1024.
+Fullscreen background painting for a dark roguelite website.
+A vast flooded underground crypt chamber viewed in one-point perspective.
+Stone archways receding deep into darkness,
+shallow black water covering the floor reflecting distant amber torchlight.
+Fallen bones and armor fragments half-submerged.
+Volumetric fog drifting between columns.
+A single tiny silhouetted figure at the far vanishing point, alone.
+Very dark overall — most of the image is near-black with a single amber glow at center horizon.
+No text, no characters with faces.
+Horizontal composition, heavy vignette around all edges.
+
+Style: hyper-detailed dark fantasy digital painting, photorealistic, cinematic.
+Pure black background.
+Single dramatic amber/gold light source (torchlight) — strong contrast, deep shadows.
+Color palette: near-black, deep charcoal, amber gold, bone white, blood-rust red accents.
+Atmospheric fog, subtle glow.
+No bright colors, no neon, no cartoon style, no gradients.
+Ultra detailed. 1024x1024.
 ```
 
 ---
