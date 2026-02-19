@@ -8,9 +8,9 @@ All prompts are optimized for **DALL·E (ChatGPT)**. Use 1024×1024 for square a
 
 Every asset uses this same visual language. **Paste this at the end of every prompt** to lock the style:
 
-> Style: dark gothic, hand-painted texture, painterly, matte finish. Color palette: deep black, abyssal dark blue, pale bone white, sickly muted green, amber gold. Dramatic single-source amber torchlight. Atmosphere of cold ancient dread — patient, not aggressive. No bright colors, no neon, no cartoon style, no chrome or gradients. Ultra detailed, cinematic.
+> Style: hyper-detailed dark fantasy digital painting, photorealistic, cinematic. Pure black background. Single dramatic amber/gold light source (torchlight) — strong contrast, deep shadows. Color palette: near-black, deep charcoal, amber gold, bone white, blood-rust red accents. Atmospheric fog, subtle glow. No bright colors, no neon, no cartoon style, no gradients. Ultra detailed, 1024x1024.
 
-This is derived directly from Prompt B (the skull icon that's live in the app) so all new assets will match it.
+This style is confirmed from two generated assets: the dagger icon (blade plunging into water, amber ripple glow) and the Twitter banner (adventurer, skull sigil, HP/ST bars). All new assets should match these.
 
 ---
 
