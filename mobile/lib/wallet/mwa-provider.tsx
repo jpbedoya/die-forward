@@ -105,7 +105,9 @@ function MobileWalletConsumer({ children }: { children: ReactNode }) {
     connecting,
     address,
     balance,
+    connectors: [],      // Native MWA uses OS wallet picker, no connector list needed
     connect,
+    connectTo: connect,  // Alias — native doesn't need specific wallet selection
     disconnect,
     sendSOL,
     signAndSendTransaction,
