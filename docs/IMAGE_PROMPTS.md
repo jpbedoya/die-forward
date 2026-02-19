@@ -55,9 +55,9 @@ Epic mobile game app icon for a dark roguelite. Central image: a weathered skull
 
 ### Prompt
 
-Wide cinematic banner for a dark roguelite mobile game called **"Die Forward."** A lone adventurer seen from behind, descending ancient flooded stone stairs into a vast underground crypt corridor. Torch held aloft, amber light reflecting off the perfectly still black water below. Stone archways receding into total darkness ahead. Title text **"DIE FORWARD"** etched in weathered monospace lettering into the stone on the left side of the image — as if carved. Subtle skull motif and crypt runes flanking the title. Atmosphere: ominous, lonely, ancient. No modern elements. No faces. No bright colors.
-
-*Append shared style block.*
+```
+Wide cinematic banner for a dark roguelite mobile game called "Die Forward." A lone adventurer seen from behind, descending ancient flooded stone stairs into a vast underground crypt corridor. Torch held aloft, amber light reflecting off the perfectly still black water below. Stone archways receding into total darkness ahead. Title text "DIE FORWARD" etched in weathered monospace lettering into the stone on the left side of the image — as if carved. Subtle skull motif and crypt runes flanking the title. Atmosphere: ominous, lonely, ancient. No modern elements. No faces. No bright colors. Style: hyper-detailed dark fantasy digital painting, photorealistic, cinematic. Pure black background. Single dramatic amber/gold light source (torchlight) — strong contrast, deep shadows. Color palette: near-black, deep charcoal, amber gold, bone white, blood-rust red accents. Atmospheric fog, subtle glow. No bright colors, no neon, no cartoon style, no gradients. Ultra detailed, 1024x1024.
+```
 
 ---
 
@@ -69,9 +69,9 @@ Wide cinematic banner for a dark roguelite mobile game called **"Die Forward."**
 
 ### Prompt
 
-Fullscreen background painting for a dark roguelite website. A vast flooded underground crypt chamber viewed in one-point perspective — stone archways receding deep into darkness, shallow black water covering the floor reflecting distant amber torchlight. Fallen bones and armor fragments half-submerged. Volumetric fog drifting between columns. A single tiny silhouetted figure at the far vanishing point, alone. Very dark overall — most of the image is near-black with a single amber glow at the center horizon. No text, no characters with faces. Horizontal composition, heavy vignette around all edges.
-
-*Append shared style block.*
+```
+Fullscreen background painting for a dark roguelite website. A vast flooded underground crypt chamber viewed in one-point perspective — stone archways receding deep into darkness, shallow black water covering the floor reflecting distant amber torchlight. Fallen bones and armor fragments half-submerged. Volumetric fog drifting between columns. A single tiny silhouetted figure at the far vanishing point, alone. Very dark overall — most of the image is near-black with a single amber glow at the center horizon. No text, no characters with faces. Horizontal composition, heavy vignette around all edges. Style: hyper-detailed dark fantasy digital painting, photorealistic, cinematic. Pure black background. Single dramatic amber/gold light source (torchlight) — strong contrast, deep shadows. Color palette: near-black, deep charcoal, amber gold, bone white, blood-rust red accents. Atmospheric fog, subtle glow. No bright colors, no neon, no cartoon style, no gradients. Ultra detailed, 1024x1024.
+```
 
 ---
 
@@ -88,45 +88,45 @@ Fullscreen background painting for a dark roguelite website. A vast flooded unde
 ### Icon 1 — STAKE YOUR SOL
 **Accent color:** Amber `#f59e0b`
 
-Dark gothic circular game icon. A single Solana coin (◎ symbol) falling and breaking the surface of black still water, a single amber ripple radiating outward. The coin glints amber-gold in torchlight. Centered composition, bold silhouette, no text. 512×512.
-
-*Append shared style block.*
+```
+Dark gothic circular game icon. A single Solana coin (◎ symbol) falling and breaking the surface of black still water, a single amber ripple radiating outward. The coin glints amber-gold in torchlight. Centered composition, bold silhouette, no text. 512×512. Style: hyper-detailed dark fantasy digital painting, photorealistic, cinematic. Pure black background. Single dramatic amber/gold light source (torchlight) — strong contrast, deep shadows. Color palette: near-black, deep charcoal, amber gold, bone white, blood-rust red accents. Atmospheric fog, subtle glow. No bright colors, no neon, no cartoon style, no gradients. Ultra detailed, 1024x1024.
+```
 
 ---
 
 ### Icon 2 — FIGHT OR FLEE
 **Accent color:** Blood red `#8b3a3a`
 
-Dark gothic circular game icon. Two crossed rusted swords — battle-worn, ancient — forming an X. Faint red blood-rust tint on the blades. Centered, strong silhouette. No text. 512×512.
-
-*Append shared style block.*
+```
+Dark gothic circular game icon. Two crossed rusted swords — battle-worn, ancient — forming an X. Faint red blood-rust tint on the blades. Centered, strong silhouette. No text. 512×512. Style: hyper-detailed dark fantasy digital painting, photorealistic, cinematic. Pure black background. Single dramatic amber/gold light source (torchlight) — strong contrast, deep shadows. Color palette: near-black, deep charcoal, amber gold, bone white, blood-rust red accents. Atmospheric fog, subtle glow. No bright colors, no neon, no cartoon style, no gradients. Ultra detailed, 1024x1024.
+```
 
 ---
 
 ### Icon 3 — DIE & LEAVE YOUR MARK
 **Accent color:** Ethereal violet `#7c3aed`
 
-Dark gothic circular game icon. A weathered skull with a bone quill pen resting against it — as if writing final words into stone. Skull is bone white, quill has a faint violet ethereal glow. Centered, bold silhouette. No text. 512×512.
-
-*Append shared style block.*
+```
+Dark gothic circular game icon. A weathered skull with a bone quill pen resting against it — as if writing final words into stone. Skull is bone white, quill has a faint violet ethereal glow. Centered, bold silhouette. No text. 512×512. Style: hyper-detailed dark fantasy digital painting, photorealistic, cinematic. Pure black background. Single dramatic amber/gold light source (torchlight) — strong contrast, deep shadows. Color palette: near-black, deep charcoal, amber gold, bone white, blood-rust red accents. Atmospheric fog, subtle glow. No bright colors, no neon, no cartoon style, no gradients. Ultra detailed, 1024x1024.
+```
 
 ---
 
 ### Icon 4 — TIP THE FALLEN
 **Accent color:** Victory green `#22c55e`
 
-Dark gothic circular game icon. A silhouetted hand from above releasing a single glowing coin downward toward a small grave marker half-submerged in water. The coin glows faint green. Centered, bold silhouette. No text. 512×512.
-
-*Append shared style block.*
+```
+Dark gothic circular game icon. A silhouetted hand from above releasing a single glowing coin downward toward a small grave marker half-submerged in water. The coin glows faint green. Centered, bold silhouette. No text. 512×512. Style: hyper-detailed dark fantasy digital painting, photorealistic, cinematic. Pure black background. Single dramatic amber/gold light source (torchlight) — strong contrast, deep shadows. Color palette: near-black, deep charcoal, amber gold, bone white, blood-rust red accents. Atmospheric fog, subtle glow. No bright colors, no neon, no cartoon style, no gradients. Ultra detailed, 1024x1024.
+```
 
 ---
 
 ### Icon 5 — REST IN SOL
 **Accent color:** Stone grey `#6b7280`
 
-Dark gothic circular game icon. A simple ancient tombstone, cracked and weathered, half-submerged in dark water. A skull or ◈ symbol faintly carved into the stone face. Mossy base. Muted grey tones, heavy shadow. Centered, bold silhouette. No text. 512×512.
-
-*Append shared style block.*
+```
+Dark gothic circular game icon. A simple ancient tombstone, cracked and weathered, half-submerged in dark water. A skull faintly carved into the stone face. Mossy base. Muted grey tones, heavy shadow. Centered, bold silhouette. No text. 512×512. Style: hyper-detailed dark fantasy digital painting, photorealistic, cinematic. Pure black background. Single dramatic amber/gold light source (torchlight) — strong contrast, deep shadows. Color palette: near-black, deep charcoal, amber gold, bone white, blood-rust red accents. Atmospheric fog, subtle glow. No bright colors, no neon, no cartoon style, no gradients. Ultra detailed, 1024x1024.
+```
 
 ---
 
