@@ -83,8 +83,8 @@ export default function LandingPage() {
         />
 
         {/* Dark overlays for text readability */}
-        <div className="absolute inset-0 bg-black/55 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/25 to-black/70 pointer-events-none" />
+        <div className="absolute inset-0 bg-black/38 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/15 to-black/52 pointer-events-none" />
         <div className="absolute inset-0 bg-gradient-radial from-[var(--amber-dim)]/10 via-transparent to-transparent pointer-events-none" />
         
         {/* Logo */}
