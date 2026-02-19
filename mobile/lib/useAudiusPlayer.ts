@@ -1,6 +1,6 @@
-// Audius music player hook — streaming from Audius API using expo-av
+// Audius music player hook — unified on expo-audio (native) + HTMLAudio (web)
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Audio } from 'expo-av';
+import { Platform } from 'react-native';
 
 export interface AudiusTrack {
   id: string;
@@ -18,12 +18,12 @@ export interface AudiusTrack {
 }
 
 export const CURATED_PLAYLISTS = [
-  { id: 'emQa2',   name: 'Dungeon Synth',  emoji: '🏰', vibe: 'Dark, atmospheric', trackCount: 21 },
-  { id: 'DN6Pp',   name: 'Gaming Arena',   emoji: '🎮', vibe: 'High energy',        trackCount: 33 },
-  { id: 'nqZmb',   name: 'Lo-Fi Nights',  emoji: '🌙', vibe: 'Chill',              trackCount: 198 },
-  { id: '3AA6Z',   name: 'Dark Ambient',  emoji: '🌑', vibe: 'Moody, intense',     trackCount: 9 },
-  { id: '5ON2AWX', name: 'Gaming Mix',    emoji: '🕹️', vibe: 'Variety',            trackCount: 331 },
-  { id: 'ebd1O',   name: 'Lofi Road Trip', emoji: '🚗', vibe: 'Chill vibes',       trackCount: 112 },
+  { id: 'emQa2', name: 'Dungeon Synth', emoji: '🏰', vibe: 'Dark, atmospheric', trackCount: 21 },
+  { id: 'DN6Pp', name: 'Gaming Arena', emoji: '🎮', vibe: 'High energy', trackCount: 33 },
+  { id: 'nqZmb', name: 'Lo-Fi Nights', emoji: '🌙', vibe: 'Chill', trackCount: 198 },
+  { id: '3AA6Z', name: 'Dark Ambient', emoji: '🌑', vibe: 'Moody, intense', trackCount: 9 },
+  { id: '5ON2AWX', name: 'Gaming Mix', emoji: '🕹️', vibe: 'Variety', trackCount: 331 },
+  { id: 'ebd1O', name: 'Lofi Road Trip', emoji: '🚗', vibe: 'Chill vibes', trackCount: 112 },
 ] as const;
 
 export type CuratedPlaylistId = typeof CURATED_PLAYLISTS[number]['id'];
@@ -34,59 +34,53 @@ function shuffle<T>(arr: T[]): T[] {
   return [...arr].sort(() => Math.random() - 0.5);
 }
 
+// expo-audio (native only)
+let NativeAudioModule: any = null;
+let nativeSetAudioModeAsync: any = null;
+
+async function loadNativeAudio() {
+  if (Platform.OS === 'web') return;
+  if (NativeAudioModule) return;
+  const mod = await import('expo-audio');
+  NativeAudioModule = (mod as any).default || mod;
+  nativeSetAudioModeAsync = (mod as any).setAudioModeAsync;
+}
+
+type Player = {
+  play: () => Promise<void>;
+  pause: () => Promise<void>;
+  stop: () => Promise<void>;
+  unload: () => Promise<void>;
+  setVolume: (v: number) => Promise<void>;
+  setOnEnded: (cb: (() => void) | null) => void;
+};
+
 export function useAudiusPlayer() {
-  const [tracks, setTracks]             = useState<AudiusTrack[]>([]);
+  const [tracks, setTracks] = useState<AudiusTrack[]>([]);
   const [currentTrack, setCurrentTrack] = useState<AudiusTrack | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPlaying, setIsPlaying]       = useState(false);
-  const [isLoading, setIsLoading]       = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [loadedPlaylistId, setLoadedPlaylistId] = useState<string | null>(null);
-  const [volume, setVolumeState]        = useState(0.7);
-  const [error, setError]               = useState<string | null>(null);
+  const [volume, setVolumeState] = useState(0.7);
+  const [error, setError] = useState<string | null>(null);
 
-  const soundRef        = useRef<Audio.Sound | null>(null);
-  const tracksRef       = useRef<AudiusTrack[]>([]);
-  const indexRef        = useRef(0);
-  const volumeRef       = useRef(0.7);
+  const soundRef = useRef<Player | null>(null);
+  const tracksRef = useRef<AudiusTrack[]>([]);
+  const indexRef = useRef(0);
+  const volumeRef = useRef(0.7);
   const currentTrackRef = useRef<AudiusTrack | null>(null);
-  const actionLockRef   = useRef(false); // prevents overlapping async calls
-  const loadRequestIdRef = useRef(0); // cancels stale async playlist loads
+  const actionLockRef = useRef(false);
+  const loadRequestIdRef = useRef(0);
 
-  // Keep refs in sync so callbacks always see latest values
+  const crossfadeRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const fadeOutIntervalsRef = useRef<Set<ReturnType<typeof setInterval>>>(new Set());
+  const fadingSoundsRef = useRef<Set<Player>>(new Set());
+
   useEffect(() => { tracksRef.current = tracks; }, [tracks]);
   useEffect(() => { indexRef.current = currentIndex; }, [currentIndex]);
   useEffect(() => { volumeRef.current = volume; }, [volume]);
   useEffect(() => { currentTrackRef.current = currentTrack; }, [currentTrack]);
-
-  // Configure audio mode for background streaming
-  useEffect(() => {
-    Audio.setAudioModeAsync({
-      allowsRecordingIOS: false,
-      staysActiveInBackground: true,
-      playsInSilentModeIOS: true,
-      shouldDuckAndroid: true,
-      playThroughEarpieceAndroid: false,
-    });
-    return () => {
-      clearCrossfade();
-      clearFadeOuts();
-      for (const sound of fadingSoundsRef.current) {
-        try { sound.setOnPlaybackStatusUpdate(null); } catch {}
-        try { sound.stopAsync(); } catch {}
-        try { sound.unloadAsync(); } catch {}
-      }
-      fadingSoundsRef.current.clear();
-      soundRef.current?.unloadAsync();
-    };
-  }, []);
-
-  // ── Crossfade helpers ────────────────────────────────────────────────────────
-  const CROSSFADE_MS   = 1500;
-  const CROSSFADE_STEPS = 20;
-
-  const crossfadeRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const fadeOutIntervalsRef = useRef<Set<ReturnType<typeof setInterval>>>(new Set());
-  const fadingSoundsRef = useRef<Set<Audio.Sound>>(new Set());
 
   const clearCrossfade = () => {
     if (crossfadeRef.current) {
@@ -96,51 +90,112 @@ export function useAudiusPlayer() {
   };
 
   const clearFadeOuts = () => {
-    for (const interval of fadeOutIntervalsRef.current) {
-      clearInterval(interval);
-    }
+    for (const interval of fadeOutIntervalsRef.current) clearInterval(interval);
     fadeOutIntervalsRef.current.clear();
   };
 
-  // Fade out + unload a sound we're done with
-  const fadeOutAndUnload = (sound: Audio.Sound, fromVolume: number) => {
+  const createStreamPlayer = useCallback(async (uri: string, initialVolume: number): Promise<Player> => {
+    if (Platform.OS === 'web') {
+      const audio = new Audio(uri);
+      audio.preload = 'auto';
+      audio.volume = initialVolume;
+      return {
+        play: async () => { try { await audio.play(); } catch {} },
+        pause: async () => { audio.pause(); },
+        stop: async () => { audio.pause(); audio.currentTime = 0; },
+        unload: async () => { audio.pause(); audio.src = ''; },
+        setVolume: async (v: number) => { audio.volume = v; },
+        setOnEnded: (cb) => { audio.onended = cb; },
+      };
+    }
+
+    await loadNativeAudio();
+    const p = new NativeAudioModule.AudioPlayer({ uri }, 100, false);
+    p.loop = false;
+    p.volume = initialVolume;
+
+    let sub: any = null;
+    return {
+      play: async () => { p.play(); },
+      pause: async () => { p.pause(); },
+      stop: async () => { p.pause(); },
+      unload: async () => {
+        try { p.pause(); } catch {}
+        try { p.remove(); } catch {}
+      },
+      setVolume: async (v: number) => { p.volume = v; },
+      setOnEnded: (cb) => {
+        try { sub?.remove?.(); } catch {}
+        sub = null;
+        if (!cb) return;
+        sub = p.addListener?.('playbackStatusUpdate', (status: any) => {
+          if (status?.didJustFinish || (!status?.playing && status?.duration && status?.currentTime >= status.duration - 0.05)) {
+            cb();
+          }
+        });
+      },
+    };
+  }, []);
+
+  useEffect(() => {
+    if (Platform.OS !== 'web') {
+      loadNativeAudio().then(async () => {
+        if (nativeSetAudioModeAsync) {
+          await nativeSetAudioModeAsync({
+            playsInSilentModeIOS: true,
+            shouldPlayInBackground: false,
+            shouldReduceOtherAudioVolume: true,
+          });
+        }
+      }).catch(() => {});
+    }
+
+    return () => {
+      clearCrossfade();
+      clearFadeOuts();
+      for (const s of fadingSoundsRef.current) {
+        try { s.setOnEnded(null); } catch {}
+        try { s.stop(); } catch {}
+        try { s.unload(); } catch {}
+      }
+      fadingSoundsRef.current.clear();
+      soundRef.current?.setOnEnded(null);
+      soundRef.current?.unload();
+    };
+  }, []);
+
+  const fadeOutAndUnload = (sound: Player, fromVolume: number) => {
     fadingSoundsRef.current.add(sound);
-    const steps = CROSSFADE_STEPS;
-    const stepMs = CROSSFADE_MS / steps;
+    const steps = 20;
+    const stepMs = 1500 / steps;
     let step = 0;
     const interval = setInterval(async () => {
       step++;
-      try {
-        await sound.setVolumeAsync(Math.max(0, fromVolume * (1 - step / steps)));
-      } catch { /* sound may already be unloaded */ }
+      await sound.setVolume(Math.max(0, fromVolume * (1 - step / steps)));
       if (step >= steps) {
         clearInterval(interval);
         fadeOutIntervalsRef.current.delete(interval);
-        try { sound.setOnPlaybackStatusUpdate(null); } catch {}
-        try { await sound.stopAsync(); } catch {}
-        try { await sound.unloadAsync(); } catch {}
+        try { sound.setOnEnded(null); } catch {}
+        try { await sound.stop(); } catch {}
+        try { await sound.unload(); } catch {}
         fadingSoundsRef.current.delete(sound);
       }
     }, stepMs);
     fadeOutIntervalsRef.current.add(interval);
   };
 
-  // Fade a sound in from 0 to target volume
-  const fadeIn = (sound: Audio.Sound, targetVolume: number) => {
-    const steps = CROSSFADE_STEPS;
-    const stepMs = CROSSFADE_MS / steps;
+  const fadeIn = (sound: Player, targetVolume: number) => {
+    const steps = 20;
+    const stepMs = 1500 / steps;
     let step = 0;
     clearCrossfade();
     crossfadeRef.current = setInterval(async () => {
       step++;
-      try {
-        await sound.setVolumeAsync(Math.min(targetVolume, targetVolume * (step / steps)));
-      } catch { /* sound may have changed */ }
+      await sound.setVolume(Math.min(targetVolume, targetVolume * (step / steps)));
       if (step >= steps) clearCrossfade();
     }, stepMs);
   };
 
-  // ── Internal play ───────────────────────────────────────────────────────────
   const playTrackInner = async (
     track: AudiusTrack,
     index: number,
@@ -148,22 +203,15 @@ export function useAudiusPlayer() {
     options?: { immediateSwitch?: boolean },
   ) => {
     try {
-      // Silence the old sound's callback FIRST — prevents it from spawning
-      // another playTrackInner call while crossfade is in progress
-      if (soundRef.current) {
-        soundRef.current.setOnPlaybackStatusUpdate(null);
-      }
-
-      // Hold onto old sound
-      const oldSound  = soundRef.current;
+      if (soundRef.current) soundRef.current.setOnEnded(null);
+      const oldSound = soundRef.current;
       const oldVolume = volumeRef.current;
       soundRef.current = null;
       clearCrossfade();
 
-      // Manual next/prev should feel snappy: kill current audio immediately
       if (options?.immediateSwitch && oldSound) {
-        try { oldSound.stopAsync(); } catch {}
-        try { oldSound.unloadAsync(); } catch {}
+        await oldSound.stop();
+        await oldSound.unload();
       }
 
       setCurrentTrack(track);
@@ -171,33 +219,23 @@ export function useAudiusPlayer() {
       setIsPlaying(true);
       setError(null);
 
-      // Start new sound at 0 so we can fade it in
-      const { sound } = await Audio.Sound.createAsync(
-        { uri: `${API_BASE}/tracks/${track.id}/stream` },
-        { shouldPlay: true, volume: 0 },
-      );
-      soundRef.current = sound;
+      const streamUrl = `${API_BASE}/tracks/${track.id}/stream`;
+      const newSound = await createStreamPlayer(streamUrl, options?.immediateSwitch ? volumeRef.current : 0);
+      soundRef.current = newSound;
+      await newSound.play();
 
-      // Kick off transition
       if (options?.immediateSwitch) {
-        // Snappy manual skip: no crossfade, start full volume right away
-        try { await sound.setVolumeAsync(volumeRef.current); } catch {}
+        await newSound.setVolume(volumeRef.current);
       } else {
-        // Smooth automatic transition
-        if (oldSound) {
-          fadeOutAndUnload(oldSound, oldVolume);
-        }
-        fadeIn(sound, volumeRef.current);
+        if (oldSound) fadeOutAndUnload(oldSound, oldVolume);
+        fadeIn(newSound, volumeRef.current);
       }
 
-      // Auto-advance on track end
-      sound.setOnPlaybackStatusUpdate((status) => {
-        if (status.isLoaded && status.didJustFinish) {
-          const list = trackList ?? tracksRef.current;
-          if (list.length === 0) return;
-          const next = (index + 1) % list.length;
-          playTrackInner(list[next], next, list);
-        }
+      newSound.setOnEnded(() => {
+        const list = trackList ?? tracksRef.current;
+        if (list.length === 0) return;
+        const next = (index + 1) % list.length;
+        playTrackInner(list[next], next, list);
       });
     } catch (e) {
       console.error('[Audius] playTrack error:', e);
@@ -205,8 +243,6 @@ export function useAudiusPlayer() {
       setIsPlaying(false);
     }
   };
-
-  // ── Public API ──────────────────────────────────────────────────────────────
 
   const loadPlaylist = useCallback(async (id: string) => {
     const requestId = ++loadRequestIdRef.current;
@@ -217,13 +253,10 @@ export function useAudiusPlayer() {
     try {
       const res = await fetch(`${API_BASE}/playlists/${id}/tracks`);
       const { data } = await res.json();
-
-      // Ignore stale async responses (e.g. source switched to game/none)
       if (requestId !== loadRequestIdRef.current) return;
 
       if (!data || data.length === 0) {
         setError('Playlist is empty');
-        setIsLoading(false);
         return;
       }
 
@@ -235,9 +268,7 @@ export function useAudiusPlayer() {
       console.error('[Audius] loadPlaylist error:', e);
       setError('Failed to load playlist');
     } finally {
-      if (requestId === loadRequestIdRef.current) {
-        setIsLoading(false);
-      }
+      if (requestId === loadRequestIdRef.current) setIsLoading(false);
     }
   }, []);
 
@@ -246,7 +277,6 @@ export function useAudiusPlayer() {
   }, []);
 
   const togglePlayPause = useCallback(async () => {
-    // Prevent overlapping calls (e.g. tapping rapidly while track is loading)
     if (actionLockRef.current) return;
     actionLockRef.current = true;
     try {
@@ -255,20 +285,18 @@ export function useAudiusPlayer() {
         if (track) await playTrackInner(track, indexRef.current);
         return;
       }
-      const status = await soundRef.current.getStatusAsync();
-      if (status.isLoaded) {
-        if (status.isPlaying) {
-          await soundRef.current.pauseAsync();
-          setIsPlaying(false);
-        } else {
-          await soundRef.current.playAsync();
-          setIsPlaying(true);
-        }
+
+      if (isPlaying) {
+        await soundRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        await soundRef.current.play();
+        setIsPlaying(true);
       }
     } finally {
       actionLockRef.current = false;
     }
-  }, []); // stable — reads everything via refs
+  }, [isPlaying]);
 
   const playNext = useCallback(() => {
     if (tracksRef.current.length === 0) return;
@@ -283,24 +311,23 @@ export function useAudiusPlayer() {
   }, []);
 
   const stop = useCallback(async () => {
-    // Cancel any in-flight playlist load so stale fetches can't restart audio
     loadRequestIdRef.current++;
+    const s = soundRef.current;
+    soundRef.current = null;
 
-    const sound = soundRef.current;
-    soundRef.current = null; // clear immediately so nothing else touches it
-    if (sound) {
-      try { sound.setOnPlaybackStatusUpdate(null); } catch (_) {}
-      try { await sound.stopAsync(); } catch (_) { /* already stopped */ }
-      try { await sound.unloadAsync(); } catch (_) { /* already unloaded */ }
+    if (s) {
+      try { s.setOnEnded(null); } catch {}
+      try { await s.stop(); } catch {}
+      try { await s.unload(); } catch {}
     }
 
     clearCrossfade();
     clearFadeOuts();
 
-    for (const fadingSound of fadingSoundsRef.current) {
-      try { fadingSound.setOnPlaybackStatusUpdate(null); } catch (_) {}
-      try { await fadingSound.stopAsync(); } catch (_) {}
-      try { await fadingSound.unloadAsync(); } catch (_) {}
+    for (const fading of fadingSoundsRef.current) {
+      try { fading.setOnEnded(null); } catch {}
+      try { await fading.stop(); } catch {}
+      try { await fading.unload(); } catch {}
     }
     fadingSoundsRef.current.clear();
 
@@ -311,7 +338,7 @@ export function useAudiusPlayer() {
     const clamped = Math.max(0, Math.min(1, vol));
     setVolumeState(clamped);
     volumeRef.current = clamped;
-    if (soundRef.current) await soundRef.current.setVolumeAsync(clamped);
+    if (soundRef.current) await soundRef.current.setVolume(clamped);
   }, []);
 
   return {
