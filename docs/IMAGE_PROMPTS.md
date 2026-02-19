@@ -88,7 +88,17 @@ Fullscreen background painting for a dark roguelite website. A vast flooded unde
 ### Icon 1 — STAKE YOUR SOL
 
 ```
-Dark gothic circular game icon. A single ancient coin with a circular ◎ symbol on its face, falling point-down into perfectly still black water, creating a single ripple radiating outward. The coin glints amber-gold as if lit by a distant torch — amber is the dominant accent color. The ◎ symbol is clearly visible on the coin face. Pure black background, centered composition, bold silhouette readable at 64x64px. No text. Square format 1024x1024. Style: hyper-detailed dark fantasy digital painting, photorealistic, cinematic. Single dramatic amber/gold light source — strong contrast, deep shadows. Color palette: near-black, deep charcoal, amber gold dominant, bone white. No bright colors, no neon, no cartoon style, no gradients. Ultra detailed.
+Dark gothic circular game icon.
+A single ancient coin with a circular ◎ symbol on its face, falling point-down
+into perfectly still black water, creating a single ripple radiating outward.
+The coin glints amber-gold as if lit by a distant torch — amber is the dominant accent color.
+The ◎ symbol is clearly visible on the coin face.
+Pure black background, centered composition, bold silhouette readable at 64x64px. No text.
+
+Style: hyper-detailed dark fantasy digital painting, photorealistic, cinematic.
+Single dramatic amber/gold light source — strong contrast, deep shadows.
+Color palette: near-black, deep charcoal, amber gold dominant, bone white.
+No bright colors, no neon, no cartoon style, no gradients. Ultra detailed. Square format 1024x1024.
 ```
 
 ---
@@ -96,7 +106,17 @@ Dark gothic circular game icon. A single ancient coin with a circular ◎ symbol
 ### Icon 2 — FIGHT OR FLEE
 
 ```
-Dark gothic circular game icon. Two ancient rusted swords crossed to form an X, blades pointed downward into black water below. The blades are stained with blood-rust red — deep crimson is the dominant accent color. Weathered, battle-worn metal with visible nicks and corrosion. Dramatic single torch-light catching the rust on the blade edges. Pure black background, centered composition, bold silhouette readable at 64x64px. No text. Square format 1024x1024. Style: hyper-detailed dark fantasy digital painting, photorealistic, cinematic. Single dramatic amber/gold light source — strong contrast, deep shadows. Color palette: near-black, deep charcoal, blood-rust red dominant, bone white, amber gold. No bright colors, no neon, no cartoon style, no gradients. Ultra detailed.
+Dark gothic circular game icon.
+Two ancient rusted swords crossed to form an X, blades pointed downward into black water below.
+The blades are stained with blood-rust red — deep crimson is the dominant accent color.
+Weathered, battle-worn metal with visible nicks and corrosion.
+Dramatic single torch-light catching the rust on the blade edges.
+Pure black background, centered composition, bold silhouette readable at 64x64px. No text.
+
+Style: hyper-detailed dark fantasy digital painting, photorealistic, cinematic.
+Single dramatic amber/gold light source — strong contrast, deep shadows.
+Color palette: near-black, deep charcoal, blood-rust red dominant, bone white, amber gold.
+No bright colors, no neon, no cartoon style, no gradients. Ultra detailed. Square format 1024x1024.
 ```
 
 ---
@@ -104,7 +124,18 @@ Dark gothic circular game icon. Two ancient rusted swords crossed to form an X, 
 ### Icon 3 — DIE & LEAVE YOUR MARK
 
 ```
-Dark gothic circular game icon. A weathered bone-white skull resting on a stone surface, a quill pen leaning against it as if mid-writing, scratching final words into the stone. A faint ethereal violet glow emanates from the quill tip and the skull's eye sockets — deep violet is the dominant accent color. Dramatic single torch-light from below casting heavy upward shadows on the skull. Pure black background, centered composition, bold silhouette readable at 64x64px. No text. Square format 1024x1024. Style: hyper-detailed dark fantasy digital painting, photorealistic, cinematic. Single dramatic amber/gold light source with violet secondary glow — strong contrast, deep shadows. Color palette: near-black, bone white, ethereal violet dominant, amber gold. No bright colors, no neon, no cartoon style, no gradients. Ultra detailed.
+Dark gothic circular game icon.
+A weathered bone-white skull resting on a stone surface, a quill pen leaning against it
+as if mid-writing, scratching final words into the stone.
+A faint ethereal violet glow emanates from the quill tip and the skull's eye sockets
+— deep violet is the dominant accent color.
+Dramatic single torch-light from below casting heavy upward shadows on the skull.
+Pure black background, centered composition, bold silhouette readable at 64x64px. No text.
+
+Style: hyper-detailed dark fantasy digital painting, photorealistic, cinematic.
+Single dramatic amber/gold light source with violet secondary glow — strong contrast, deep shadows.
+Color palette: near-black, bone white, ethereal violet dominant, amber gold.
+No bright colors, no neon, no cartoon style, no gradients. Ultra detailed. Square format 1024x1024.
 ```
 
 ---
@@ -112,7 +143,17 @@ Dark gothic circular game icon. A weathered bone-white skull resting on a stone 
 ### Icon 4 — TIP THE FALLEN
 
 ```
-Dark gothic circular game icon. A skeletal hand seen from above, fingers extended downward, releasing a single glowing coin that falls toward a small ancient grave marker half-submerged in black water below. The coin emits a faint green glow as it falls — muted green is the dominant accent color. The water surface reflects the green coin light in a faint shimmer. Pure black background, centered composition, bold silhouette readable at 64x64px. No text. Square format 1024x1024. Style: hyper-detailed dark fantasy digital painting, photorealistic, cinematic. Single dramatic green-tinted light source from the falling coin — strong contrast, deep shadows. Color palette: near-black, deep charcoal, muted green dominant, bone white. No bright colors, no neon, no cartoon style, no gradients. Ultra detailed.
+Dark gothic circular game icon.
+A skeletal hand seen from above, fingers extended downward, releasing a single glowing coin
+that falls toward a small ancient grave marker half-submerged in black water below.
+The coin emits a faint green glow as it falls — muted green is the dominant accent color.
+The water surface reflects the green coin light in a faint shimmer.
+Pure black background, centered composition, bold silhouette readable at 64x64px. No text.
+
+Style: hyper-detailed dark fantasy digital painting, photorealistic, cinematic.
+Single dramatic green-tinted light source from the falling coin — strong contrast, deep shadows.
+Color palette: near-black, deep charcoal, muted green dominant, bone white.
+No bright colors, no neon, no cartoon style, no gradients. Ultra detailed. Square format 1024x1024.
 ```
 
 ---
@@ -120,7 +161,18 @@ Dark gothic circular game icon. A skeletal hand seen from above, fingers extende
 ### Icon 5 — REST IN SOL
 
 ```
-Dark gothic circular game icon. A single ancient stone tombstone, cracked and weathered with age, half-submerged in perfectly still black water. A skull symbol is carved into the face of the stone. Moss and decay creeping up the base. Cold grey stone is the dominant tone — muted stone grey with no warm colors. The water reflects the tombstone in perfect stillness. Pure black background, centered composition, bold silhouette readable at 64x64px. No text. Square format 1024x1024. Style: hyper-detailed dark fantasy digital painting, photorealistic, cinematic. Cold desaturated light source — strong contrast, deep shadows, almost no warmth. Color palette: near-black, deep charcoal, cold stone grey dominant, bone white. No bright colors, no neon, no cartoon style, no gradients. Ultra detailed.
+Dark gothic circular game icon.
+A single ancient stone tombstone, cracked and weathered with age,
+half-submerged in perfectly still black water.
+A skull symbol carved into the face of the stone. Moss and decay creeping up the base.
+Cold grey stone is the dominant tone — muted stone grey with no warm colors.
+The water reflects the tombstone in perfect stillness.
+Pure black background, centered composition, bold silhouette readable at 64x64px. No text.
+
+Style: hyper-detailed dark fantasy digital painting, photorealistic, cinematic.
+Cold desaturated light source — strong contrast, deep shadows, almost no warmth.
+Color palette: near-black, deep charcoal, cold stone grey dominant, bone white.
+No bright colors, no neon, no cartoon style, no gradients. Ultra detailed. Square format 1024x1024.
 ```
 
 ---
