@@ -345,3 +345,51 @@ All audio generated via ElevenLabs Sound Effects API with prompts matching the C
 **Rewards**: tip-chime, loot-discover, victory-fanfare, share-click
 
 **UI**: menu-open/close, confirm-action, error-buzz
+
+---
+
+## Recent Gameplay Updates (Feb 2026)
+
+### Inspect Modals (Combat + Play)
+
+- **Creature inspect modal** is now available directly from enemy names in:
+  - play screen combat preview
+  - combat screen enemy header
+- Modal layout is streamlined:
+  - `Tier X · HP min-max` on one row
+  - description below
+  - traits chips below description
+  - all content inside one dark container
+
+### Item Inspect + Consumable Use
+
+- Inventory items are tappable in both **play** and **combat**.
+- Item modal now supports **USE** for consumables:
+  - **Herbs** → restores HP
+  - **Pale Rations** → restores stamina
+  - **Bone Dust** → flavor/intel message
+- Using consumables removes them from inventory.
+
+### Flee + Death Edge Case
+
+- Fixed edge case where flee could resolve as success even when flee damage dropped player HP to 0.
+- Death now resolves first when HP reaches 0.
+
+### Victory / Free Run Logic
+
+- Free-mode runs now correctly store `stakeAmount = 0`.
+- Victory screen in free mode does **not** show claim reward section.
+
+### Stats Tracking
+
+- `Items Found` is now a dedicated counter (`itemsFound`) and includes:
+  - inventory loot
+  - supplies pickups
+- This replaces misleading `inventory.length` as a proxy for discovery.
+
+### Audio UX
+
+- `[SND]/[MUTE]` is a true master switch.
+- Toggle width fixed to prevent layout shift between `[SND]` and `[MUTE]`.
+- Spacing between toggle and ⚙ settings icon tightened.
+

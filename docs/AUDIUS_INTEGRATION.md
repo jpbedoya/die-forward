@@ -1,36 +1,92 @@
 # Audius Integration — Die Forward
 
-## Core Integration
+## Status
 
-- **Ambient Music** — Pull tracks/playlists from Audius API for dungeon soundtrack
-- **Player Choice** — Let players pick playlist before descending (or random)
-- **Track Attribution** — Show current track + artist in-game UI
-- **Death Recording** — Log which track was playing at death
+**Phase 1 + core Phase 2 complete** on mobile.
 
-## Leaderboards & Engagement
+Implemented:
+- Curated Audius playlists
+- Persistent player with play/pause/next/prev
+- 500ms auto crossfade
+- Track attribution throughout game + share cards
+- Death now-playing recording
+- Leaderboard soundtrack surface
 
-- **Most Played Tracks** — Leaderboard of top songs across all runs
-- **Most Chosen Playlists** — Which playlists players pick most
-- **"Death Soundtrack"** — Which songs were playing when players died most
-- Weekly **"Crypt Curator"** badge for top playlist contributors
-- Audius artists get notified when their track hits X plays in-game
+---
 
-## Tapestry Integration
+## Current Scope
 
-- Pull player's Tapestry music taste to suggest dungeon soundtracks
-- **"Musical Soul"** — Tapestry profile influences creatures/loot encountered
-- Cross-post death cards to Tapestry with track attribution
+### Music Source Modes
 
-## Share Cards
+Players can choose audio source in settings:
+- `none` (no Audius stream)
+- `audius` (stream curated playlists)
 
-- Audius logo next to the soundtrack name
-- "🎵 Died to [Track Name] by [Artist]" on death cards
-- Track link included in share text
+Master toggle `[SND]/[MUTE]` controls final output state without erasing source preference.
 
-## Partnership Pitch
+### Core Components
 
-- **Promoted Playlists** — Featured/sponsored playlists from Audius in selection UI
-- **Sponsorship Opportunities** — Audius sponsors leaderboard prizes/giveaways for top tracks
-- Real play data = proof of music discovery
-- Artists see which game moments their music soundtracks
-- Built-in attribution on every share = organic promo
+- `lib/useAudiusPlayer.ts`
+  - fetches Audius playlist tracks
+  - manages playback queue
+  - handles auto-advance + crossfade
+- `lib/AudiusContext.tsx`
+  - persistent provider
+  - stores source + master state
+- `components/MiniPlayer.tsx`
+  - compact controls shown in play/combat footers
+- `components/AudioSettingsSection.tsx`
+  - shared settings UI for source selection
+
+### Crossfade Behavior
+
+- **Automatic track transitions:** 500ms crossfade
+- **Manual skip (next/prev/select):** immediate switch (no crossfade)
+
+### Death & Sharing Attribution
+
+When a player dies, current track metadata is threaded through:
+
+`death.tsx -> GameContext.recordDeath(...) -> /api/session/death`
+
+Stored fields:
+- `nowPlayingTitle`
+- `nowPlayingArtist`
+
+Share cards include:
+- `♪ Track · Artist` when Audius was active
+
+### Leaderboard Integration
+
+`/leaderboard` includes a `♪ SOUNDTRACK` tab to surface soundtrack context.
+
+---
+
+## Curated Playlist IDs (current)
+
+- `emQa2`
+- `DN6Pp`
+- `nqZmb`
+- `3AA6Z`
+- `5ON2AWX`
+- `ebd1O`
+
+API base:
+- `https://api.audius.co/v1`
+
+---
+
+## Notes
+
+- Integration is mobile-first and tied into existing game audio settings.
+- `none` mode must fully silence Audius and prevent stale restarts after source switches.
+- Crossfade is intentionally short (500ms) to keep game pacing tight.
+
+---
+
+## Next Phase Candidates
+
+- User search/import of custom playlists
+- Track links in share payloads
+- Death soundtrack aggregation improvements
+- Better per-run soundtrack stats

@@ -98,3 +98,41 @@ Works with Phantom mobile browser. Deep-link flow may have issues with some wall
 | No HP recovery between rooms | Roguelite resource management |
 | Final message is permanent | Core mechanic — death = content |
 | Stake is locked until run ends | Prevents gaming the system |
+
+---
+
+## Recently Resolved (Feb 2026)
+
+### Android Stake Screen Crash (`.map` of undefined)
+**Status:** ✅ Fixed
+
+Root cause: MWA provider context value omitted `connectors`, so stake screen attempted `.map()` on undefined.
+
+Fix:
+- Added `connectors: []` and `connectTo` to native MWA context value.
+
+### Native Wallet Connect No-Op
+**Status:** ✅ Fixed
+
+Root cause: `mwa-provider.tsx` used a private context instance, while `GameContext` read from `unified.tsx` context.
+
+Fix:
+- Exported shared `UnifiedWalletContext` from `unified.tsx`
+- Native provider now writes to same context consumed by game state.
+
+### Audio Not Starting on Title/Victory
+**Status:** ✅ Fixed
+
+Root cause: `playAmbient()` called before native audio module init completed.
+
+Fix:
+- Added `audioReady` gating in title and victory `useEffect` hooks.
+
+### Free Mode Showing Claim Rewards
+**Status:** ✅ Fixed
+
+Root cause: free mode runs were persisting selected stake amount instead of zero.
+
+Fix:
+- In `startGame`, demo/free mode now stores `stakeAmount: 0`.
+
