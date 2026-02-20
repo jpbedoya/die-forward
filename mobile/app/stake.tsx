@@ -180,16 +180,7 @@ export default function StakeScreen() {
       </View>
 
       <ScrollView className="flex-1" contentContainerClassName="p-5" style={{ backgroundColor: 'transparent' }}>
-        {/* Error display — wallet errors handled inline on button, only show game-level errors */}
-        {game.error && !game.error.includes('wallet') && !game.error.includes('Wallet') && (
-          <Pressable 
-            className="bg-blood/20 border border-blood p-3 mb-4"
-            onPress={game.clearError}
-          >
-            <Text className="text-blood-light text-sm font-mono">⚠️ {game.error}</Text>
-            <Text className="text-bone-dark text-xs font-mono mt-1">Tap to dismiss</Text>
-          </Pressable>
-        )}
+        {/* Top error banner removed — action errors are shown inline on buttons */}
 
         {/* Warning */}
         <View className="bg-blood/10 border border-blood-dark p-4 mb-6">
@@ -290,7 +281,7 @@ export default function StakeScreen() {
                 {walletStatus === 'connecting' ? (
                   <ActivityIndicator color="#ffffff" />
                 ) : walletStatus === 'cancelled' ? (
-                  <Text className="text-bone-muted font-mono font-bold tracking-wider">CANCELLED</Text>
+                  <Text className="text-bone-muted font-mono font-bold tracking-wider">REJECTED</Text>
                 ) : walletStatus === 'error' ? (
                   <Text className="text-blood-light font-mono font-bold tracking-wider">FAILED — TAP TO RETRY</Text>
                 ) : (
@@ -327,7 +318,7 @@ export default function StakeScreen() {
                 {staking && stakingMode === 'stake' ? (
                   <ActivityIndicator color="#0d0d0d" />
                 ) : sealStatus === 'cancelled' ? (
-                  <Text className="text-bone-muted font-mono font-bold tracking-wider">CANCELLED</Text>
+                  <Text className="text-bone-muted font-mono font-bold tracking-wider">REJECTED</Text>
                 ) : sealStatus === 'error' ? (
                   <Text className="text-blood-light font-mono font-bold tracking-wider">FAILED — TAP TO RETRY</Text>
                 ) : (
