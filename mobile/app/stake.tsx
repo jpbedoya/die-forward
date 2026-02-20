@@ -327,8 +327,8 @@ export default function StakeScreen() {
         {/* Wallet status */}
         {game.walletConnected && game.walletAddress && (
           <View className="items-center gap-2">
-            {/* Nickname row */}
-            <View className="flex-row items-center justify-center gap-2">
+            {/* Combined nickname + wallet row */}
+            <View className="flex-row items-center justify-center gap-2 flex-wrap">
               {editingNickname ? (
                 <TextInput
                   className="bg-crypt-surface border border-amber/50 px-3 py-1 text-amber font-mono text-sm w-36 text-center"
@@ -363,16 +363,16 @@ export default function StakeScreen() {
                   <Text className="text-bone-dark text-xs">✎</Text>
                 </Pressable>
               )}
-            </View>
-            
-            {/* Wallet + balance row */}
-            <View className="flex-row items-center justify-center gap-3">
+              <Text className="text-bone-dark text-xs">•</Text>
               <Text className="text-bone-dark text-xs font-mono">{formatAddress(game.walletAddress)}</Text>
               {game.balance !== null && (
-                <Text className="text-amber-light text-xs font-mono font-bold">{game.balance.toFixed(3)} SOL</Text>
+                <>
+                  <Text className="text-bone-dark text-xs">•</Text>
+                  <Text className="text-amber-light text-xs font-mono font-bold">{game.balance.toFixed(3)} SOL</Text>
+                </>
               )}
               <Pressable onPress={() => game.disconnect()}>
-                <Text className="text-bone-muted text-xs font-mono">[disconnect]</Text>
+                <Text className="text-bone-muted text-xs font-mono">[×]</Text>
               </Pressable>
             </View>
           </View>
