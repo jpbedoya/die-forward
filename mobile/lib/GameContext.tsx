@@ -184,11 +184,18 @@ export function GameProvider({ children }: { children: ReactNode }) {
         updateState({ loading: false });
         throw err;
       }
-      // Don't show error for user rejections
+      // Don't show error for user rejections / cancellations
       const errMsg = err instanceof Error ? err.message : String(err);
-      if (errMsg.includes('User rejected') || errMsg.includes('cancelled')) {
+      const isCancellation =
+        errMsg.includes('User rejected') ||
+        errMsg.includes('cancelled') ||
+        errMsg.includes('Cancelled') ||
+        errMsg.includes('CancellationException') ||
+        errMsg.includes('user rejected') ||
+        errMsg.includes('ACTION_CANCELLED');
+      if (isCancellation) {
         updateState({ loading: false });
-        return;
+        throw Object.assign(new Error('WALLET_CANCELLED'), { isCancellation: true });
       }
       updateState({
         loading: false,
@@ -212,9 +219,21 @@ export function GameProvider({ children }: { children: ReactNode }) {
         updateState({ loading: false });
       }
     } catch (err) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      const isCancellation =
+        errMsg.includes('User rejected') ||
+        errMsg.includes('cancelled') ||
+        errMsg.includes('Cancelled') ||
+        errMsg.includes('CancellationException') ||
+        errMsg.includes('user rejected') ||
+        errMsg.includes('ACTION_CANCELLED');
+      if (isCancellation) {
+        updateState({ loading: false });
+        throw Object.assign(new Error('WALLET_CANCELLED'), { isCancellation: true });
+      }
       updateState({
         loading: false,
-        error: err instanceof Error ? err.message : 'Failed to connect wallet',
+        error: errMsg || 'Failed to connect wallet',
       });
     }
   }, [updateState, unifiedWallet]);

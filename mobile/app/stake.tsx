@@ -22,6 +22,7 @@ export default function StakeScreen() {
   const [staking, setStaking] = useState(false);
   const [stakingMode, setStakingMode] = useState<'stake' | 'free' | null>(null);
   const [showWalletPicker, setShowWalletPicker] = useState(false);
+  const [walletStatus, setWalletStatus] = useState<'idle' | 'connecting' | 'cancelled' | 'error'>('idle');
   const [editingNickname, setEditingNickname] = useState(false);
   const [nicknameInput, setNicknameInput] = useState('');
 
@@ -29,21 +30,33 @@ export default function StakeScreen() {
     playAmbient('ambient-title');
   }, []);
 
+  const flashWalletStatus = (status: 'cancelled' | 'error') => {
+    setWalletStatus(status);
+    setTimeout(() => setWalletStatus('idle'), 2000);
+  };
+
   const handleConnect = async () => {
     playSFX('ui-click');
-    
+    game.clearError();
+
     // If multiple wallets available, show picker
     if (game.connectors.length > 1) {
       setShowWalletPicker(true);
       return;
     }
-    
+
+    setWalletStatus('connecting');
     try {
       await game.connect();
+      setWalletStatus('idle');
     } catch (err) {
-      // If MULTIPLE_WALLETS error, show picker
       if (err instanceof Error && err.message === 'MULTIPLE_WALLETS') {
+        setWalletStatus('idle');
         setShowWalletPicker(true);
+      } else if (err instanceof Error && err.message === 'WALLET_CANCELLED') {
+        flashWalletStatus('cancelled');
+      } else {
+        flashWalletStatus('error');
       }
     }
   };
@@ -51,7 +64,17 @@ export default function StakeScreen() {
   const handleSelectWallet = async (connectorId: string) => {
     playSFX('ui-click');
     setShowWalletPicker(false);
-    await game.connectTo(connectorId);
+    setWalletStatus('connecting');
+    try {
+      await game.connectTo(connectorId);
+      setWalletStatus('idle');
+    } catch (err) {
+      if (err instanceof Error && err.message === 'WALLET_CANCELLED') {
+        flashWalletStatus('cancelled');
+      } else {
+        flashWalletStatus('error');
+      }
+    }
   };
 
   const handleStake = async (demoMode = false) => {
@@ -89,8 +112,8 @@ export default function StakeScreen() {
       </View>
 
       <ScrollView className="flex-1" contentContainerClassName="p-5">
-        {/* Error display */}
-        {game.error && (
+        {/* Error display — wallet errors handled inline on button, only show game-level errors */}
+        {game.error && !game.error.includes('wallet') && !game.error.includes('Wallet') && (
           <Pressable 
             className="bg-blood/20 border border-blood p-3 mb-4"
             onPress={game.clearError}
@@ -176,13 +199,22 @@ export default function StakeScreen() {
         <View className="gap-3 mb-4">
           {!game.walletConnected ? (
             <>
-              <Pressable 
-                className="bg-purple-700 py-5 items-center active:bg-purple-800"
+              <Pressable
+                className={`py-5 items-center ${
+                  walletStatus === 'cancelled' ? 'bg-stone-700' :
+                  walletStatus === 'error' ? 'bg-blood/60' :
+                  walletStatus === 'connecting' ? 'bg-purple-900' :
+                  'bg-purple-700 active:bg-purple-800'
+                }`}
                 onPress={handleConnect}
-                disabled={game.loading || staking}
+                disabled={game.loading || staking || walletStatus === 'connecting'}
               >
-                {game.loading && !staking ? (
+                {walletStatus === 'connecting' ? (
                   <ActivityIndicator color="#ffffff" />
+                ) : walletStatus === 'cancelled' ? (
+                  <Text className="text-bone-muted font-mono font-bold tracking-wider">CANCELLED</Text>
+                ) : walletStatus === 'error' ? (
+                  <Text className="text-blood-light font-mono font-bold tracking-wider">FAILED — TAP TO RETRY</Text>
                 ) : (
                   <Text className="text-white font-mono font-bold tracking-wider">BIND WALLET</Text>
                 )}
