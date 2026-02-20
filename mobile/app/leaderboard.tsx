@@ -109,7 +109,7 @@ export default function LeaderboardScreen() {
               <View className="flex-row justify-between items-center mb-2">
                 <Text className="text-bone text-base font-mono font-bold">@{player.nickname}</Text>
                 <Text className="text-bone-dark text-xs font-mono">
-                  {player.walletAddress.slice(0, 4)}...{player.walletAddress.slice(-4)}
+                  {player.walletAddress?.slice(0, 4) || '????'}...{player.walletAddress?.slice(-4) || '????'}
                 </Text>
               </View>
               <View className="flex-row justify-between border-t border-crypt-border pt-2">

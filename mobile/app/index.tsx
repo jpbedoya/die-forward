@@ -81,7 +81,7 @@ export default function HomeScreen() {
   const { settings } = useGameSettings();
 
   // Filter out empty leaderboard entries
-  const leaderboard = rawLeaderboard.filter(p => p.name && p.name.trim() !== '');
+  const leaderboard = rawLeaderboard.filter(p => p.nickname && p.nickname.trim() !== '');
 
   // Play title ambient once audio module is ready
   useEffect(() => {
@@ -191,10 +191,10 @@ export default function HomeScreen() {
                   displayedVictors.map((player, i) => (
                     <View key={player.id || i} className="py-1 flex-row justify-between w-full">
                       <Text className="text-xs font-mono" numberOfLines={1}>
-                        <Text className="text-victory">@{player.name}</Text>
+                        <Text className="text-victory">@{player.nickname}</Text>
                       </Text>
                       <Text className="text-xs font-mono text-amber">
-                        D:{player.maxRoom || 0}
+                        D:{player.highestRoom || 0}
                       </Text>
                     </View>
                   ))
@@ -274,13 +274,13 @@ export default function HomeScreen() {
                 leaderboard.map((player, i) => (
                   <View key={player.id || i} className="py-2 border-b border-crypt-border flex-row justify-between items-center">
                     <View>
-                      <Text className="text-victory text-sm font-mono">@{player.name}</Text>
+                      <Text className="text-victory text-sm font-mono">@{player.nickname}</Text>
                       <Text className="text-bone-dark text-xs font-mono">
-                        {player.wins || 0} escapes
+                        {player.totalClears || 0} escapes
                       </Text>
                     </View>
                     <Text className="text-amber font-mono font-bold">
-                      D:{player.maxRoom || 0}
+                      D:{player.highestRoom || 0}
                     </Text>
                   </View>
                 ))
