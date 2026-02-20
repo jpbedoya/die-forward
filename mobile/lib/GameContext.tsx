@@ -5,12 +5,19 @@ import { generateRandomDungeon, DungeonRoom } from './content';
 import { useUnifiedWallet, type Address } from './wallet/unified';
 import { GAME_POOL_PDA, buildStakeInstruction, generateSessionId } from './solana/escrow';
 import { Transaction, LAMPORTS_PER_SOL } from '@solana/web3.js';
-import { getOrCreatePlayer, updatePlayerNickname } from './instant';
+import { getOrCreatePlayerByAuth, updatePlayerNicknameByAuth } from './instant';
+import { signInWithWallet, signInAsGuest, linkWalletToGuest, getStoredAuthState, type AuthState } from './auth';
 
 const NICKNAME_STORAGE_KEY = 'die-forward-nickname';
 const NICKNAME_PROMPTED_KEY = 'die-forward-nickname-prompted';
+const AUTH_TYPE_KEY = 'die-forward-auth-type';
 
 interface GameState {
+  // Auth
+  isAuthenticated: boolean;
+  authId: string | null;
+  authType: 'wallet' | 'guest' | null;
+  
   // Wallet
   walletConnected: boolean;
   walletAddress: string | null;
@@ -19,6 +26,7 @@ interface GameState {
   // Player
   nickname: string | null;
   showNicknameModal: boolean;
+  isNewUser: boolean;
   
   // Session
   sessionToken: string | null;
@@ -28,6 +36,7 @@ interface GameState {
   stamina: number;
   inventory: { id: string; name: string; emoji: string }[];
   dungeon: DungeonRoom[];
+  itemsFound: number;
   
   // UI state
   loading: boolean;
@@ -41,6 +50,11 @@ interface WalletConnector {
 }
 
 interface GameContextType extends GameState {
+  // Auth actions
+  signInWithWallet: () => Promise<void>;
+  signInEmptyHanded: () => Promise<void>;
+  linkWallet: () => Promise<{ merged: boolean }>;
+  
   // Wallet actions
   connect: () => Promise<void>;
   connectTo: (connectorId: string) => Promise<void>;
@@ -53,7 +67,7 @@ interface GameContextType extends GameState {
   dismissNicknameModal: () => void;
   
   // Game actions
-  startGame: (amount: number, demoMode?: boolean) => Promise<void>;
+  startGame: (amount: number, emptyHanded?: boolean) => Promise<void>;
   advance: () => Promise<boolean>;
   recordDeath: (finalMessage: string, killedBy?: string, nowPlaying?: { title: string; artist: string }) => Promise<void>;
   claimVictory: () => Promise<void>;
@@ -69,11 +83,15 @@ interface GameContextType extends GameState {
 }
 
 const initialState: GameState = {
+  isAuthenticated: false,
+  authId: null,
+  authType: null,
   walletConnected: false,
   walletAddress: null,
   balance: null,
   nickname: null,
   showNicknameModal: false,
+  isNewUser: false,
   sessionToken: null,
   stakeAmount: 0,
   currentRoom: 0,
@@ -111,11 +129,26 @@ export function GameProvider({ children }: { children: ReactNode }) {
     }
   }, [unifiedWallet.balance, updateState]);
 
-  // Sync nickname when wallet connects
+  // Restore auth state on mount
+  useEffect(() => {
+    const restoreAuth = async () => {
+      const stored = await getStoredAuthState();
+      if (stored?.isAuthenticated) {
+        updateState({
+          isAuthenticated: true,
+          authId: stored.authId,
+          authType: stored.authType,
+          walletAddress: stored.walletAddress,
+        });
+      }
+    };
+    restoreAuth();
+  }, [updateState]);
+
+  // Sync nickname when authenticated
   useEffect(() => {
     const syncNickname = async () => {
-      if (!unifiedWallet.connected || !unifiedWallet.address) {
-        updateState({ nickname: null, showNicknameModal: false });
+      if (!state.isAuthenticated || !state.authId) {
         return;
       }
 
@@ -126,40 +159,147 @@ export function GameProvider({ children }: { children: ReactNode }) {
       }
 
       // Sync with DB
-      const player = await getOrCreatePlayer(unifiedWallet.address, localNickname || undefined);
-      if (player) {
+      const result = await getOrCreatePlayerByAuth(
+        state.authId, 
+        state.authType || 'guest',
+        state.walletAddress || undefined,
+        localNickname || undefined
+      );
+      
+      if (result) {
+        const { player, isNew } = result;
         const dbNickname = player.nickname;
-        const isDefaultNickname = dbNickname === `${unifiedWallet.address.slice(0, 4)}...${unifiedWallet.address.slice(-4)}`;
+        const isDefaultNickname = dbNickname === 'Wanderer' || 
+          (state.walletAddress && dbNickname === `${state.walletAddress.slice(0, 4)}...${state.walletAddress.slice(-4)}`);
         
-        updateState({ nickname: dbNickname });
+        updateState({ nickname: dbNickname, isNewUser: isNew });
         await AsyncStorage.setItem(NICKNAME_STORAGE_KEY, dbNickname);
 
-        // Check if we should show the nickname prompt (first time only)
+        // Show nickname prompt for new users or users with default nickname
         const alreadyPrompted = await AsyncStorage.getItem(NICKNAME_PROMPTED_KEY);
-        if (!alreadyPrompted && isDefaultNickname) {
+        if (!alreadyPrompted && (isNew || isDefaultNickname)) {
           updateState({ showNicknameModal: true });
         }
       }
     };
 
     syncNickname();
-  }, [unifiedWallet.connected, unifiedWallet.address, updateState]);
+  }, [state.isAuthenticated, state.authId, state.authType, state.walletAddress, updateState]);
 
   // Nickname actions
   const setNicknameAction = useCallback(async (name: string) => {
     const trimmed = name.slice(0, 16).trim();
-    if (!trimmed || !state.walletAddress) return;
+    if (!trimmed || !state.authId) return;
 
-    updateState({ nickname: trimmed, showNicknameModal: false });
+    updateState({ nickname: trimmed, showNicknameModal: false, isNewUser: false });
     await AsyncStorage.setItem(NICKNAME_STORAGE_KEY, trimmed);
     await AsyncStorage.setItem(NICKNAME_PROMPTED_KEY, 'true');
-    await updatePlayerNickname(state.walletAddress, trimmed);
-  }, [state.walletAddress, updateState]);
+    await updatePlayerNicknameByAuth(state.authId, trimmed);
+  }, [state.authId, updateState]);
 
   const dismissNicknameModal = useCallback(async () => {
     updateState({ showNicknameModal: false });
     await AsyncStorage.setItem(NICKNAME_PROMPTED_KEY, 'true');
   }, [updateState]);
+
+  // Auth actions
+  const signInWithWalletAction = useCallback(async () => {
+    if (!unifiedWallet.connected || !unifiedWallet.address) {
+      throw new Error('Wallet not connected');
+    }
+
+    updateState({ loading: true, error: null });
+    try {
+      // Get signMessage function from wallet
+      // For now, we'll skip signature verification and just use wallet address as auth
+      // TODO: Implement proper signature flow when wallet adapter supports signMessage
+      const authState = await signInWithWallet(
+        unifiedWallet.address,
+        async (message: Uint8Array) => {
+          // This would call wallet.signMessage(message)
+          // For now, return a dummy signature (backend will need to handle this)
+          throw new Error('signMessage not implemented - using direct auth');
+        }
+      );
+
+      updateState({
+        isAuthenticated: true,
+        authId: authState.authId,
+        authType: 'wallet',
+        walletAddress: authState.walletAddress,
+        isNewUser: authState.isNewUser,
+        loading: false,
+      });
+
+      if (authState.isNewUser) {
+        updateState({ showNicknameModal: true });
+      }
+    } catch (err) {
+      // Fall back to simple auth without signature
+      console.log('[Auth] Signature flow failed, using simple auth:', err);
+      
+      updateState({
+        isAuthenticated: true,
+        authId: unifiedWallet.address,
+        authType: 'wallet',
+        walletAddress: unifiedWallet.address,
+        loading: false,
+      });
+    }
+  }, [unifiedWallet.connected, unifiedWallet.address, updateState]);
+
+  const signInEmptyHandedAction = useCallback(async () => {
+    updateState({ loading: true, error: null });
+    try {
+      const authState = await signInAsGuest();
+
+      updateState({
+        isAuthenticated: true,
+        authId: authState.authId,
+        authType: 'guest',
+        walletAddress: null,
+        isNewUser: authState.isNewUser,
+        loading: false,
+        showNicknameModal: true, // Always show for new guests
+      });
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      updateState({ loading: false, error: errMsg });
+      throw err;
+    }
+  }, [updateState]);
+
+  const linkWalletAction = useCallback(async (): Promise<{ merged: boolean }> => {
+    if (!unifiedWallet.connected || !unifiedWallet.address) {
+      throw new Error('Wallet not connected');
+    }
+    if (state.authType !== 'guest') {
+      throw new Error('Can only link wallet from guest account');
+    }
+
+    updateState({ loading: true, error: null });
+    try {
+      const result = await linkWalletToGuest(
+        unifiedWallet.address,
+        async (message: Uint8Array) => {
+          throw new Error('signMessage not implemented');
+        }
+      );
+
+      updateState({
+        authId: unifiedWallet.address,
+        authType: 'wallet',
+        walletAddress: unifiedWallet.address,
+        loading: false,
+      });
+
+      return result;
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      updateState({ loading: false, error: errMsg });
+      throw err;
+    }
+  }, [unifiedWallet.connected, unifiedWallet.address, state.authType, updateState]);
 
   // Wallet actions (delegate to unified wallet)
   const connect = useCallback(async () => {
@@ -261,13 +401,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, [unifiedWallet]);
 
   // Game actions
-  const startGame = useCallback(async (amount: number, demoMode = false) => {
+  const startGame = useCallback(async (amount: number, emptyHanded = false) => {
     updateState({ loading: true, error: null });
     try {
       let stakeTxSignature: string | undefined;
-      let walletAddress = state.walletAddress || 'demo-wallet';
+      // Use authId for player identity, fall back to wallet address or generate guest ID
+      let playerIdentifier = state.authId || state.walletAddress || `guest-${Date.now()}`;
 
-      if (!demoMode && state.walletAddress && unifiedWallet.connected) {
+      if (!emptyHanded && state.walletAddress && unifiedWallet.connected) {
         // Build escrow stake transaction
         const { hex: sessionIdHex, bytes: sessionIdBytes } = generateSessionId();
         const amountLamports = BigInt(Math.floor(amount * LAMPORTS_PER_SOL));
@@ -284,11 +425,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
         const signature = await unifiedWallet.signAndSendTransaction(transaction);
         
         stakeTxSignature = signature;
-        walletAddress = state.walletAddress;
+        playerIdentifier = state.walletAddress;
       }
 
-      // Start session with backend
-      const session = await api.startSession(walletAddress, amount, stakeTxSignature);
+      // Start session with backend (use authId as wallet address for session tracking)
+      const session = await api.startSession(playerIdentifier, amount, stakeTxSignature);
       
       // Defensive: ensure we got a session token
       if (!session || !session.sessionToken) {
@@ -300,7 +441,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       
       updateState({
         sessionToken: session.sessionToken,
-        stakeAmount: demoMode ? 0 : amount,  // Free mode stores 0 so isEmptyHanded works correctly
+        stakeAmount: emptyHanded ? 0 : amount,  // Empty handed stores 0 so isEmptyHanded works correctly
         currentRoom: 0,
         health: 100,
         stamina: 3,
@@ -436,17 +577,25 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const value: GameContextType = {
     ...state,
+    // Auth actions
+    signInWithWallet: signInWithWalletAction,
+    signInEmptyHanded: signInEmptyHandedAction,
+    linkWallet: linkWalletAction,
+    // Wallet actions
     connect,
     connectTo,
     connectors: unifiedWallet.connectors,
     disconnect,
     refreshBalance,
+    // Player actions
     setNickname: setNicknameAction,
     dismissNicknameModal,
+    // Game actions
     startGame,
     advance,
     recordDeath: recordDeathAction as (finalMessage: string, killedBy?: string, nowPlaying?: { title: string; artist: string }) => Promise<void>,
     claimVictory: claimVictoryAction,
+    // State helpers
     setHealth,
     setStamina,
     addToInventory,

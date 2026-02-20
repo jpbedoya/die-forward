@@ -43,7 +43,10 @@ export interface Corpse {
 
 export interface Player {
   id: string;
-  walletAddress: string;
+  authId: string;              // InstantDB auth.id (wallet address OR guest UUID)
+  authType: 'wallet' | 'guest' | 'email';
+  walletAddress?: string;      // Only for wallet users
+  email?: string;              // Future: for email-claimed accounts
   nickname: string;
   totalDeaths: number;
   totalClears: number;
@@ -58,6 +61,38 @@ export interface Player {
 
 // Initialize the database
 export const db = init({ appId: APP_ID });
+
+// Auth hook - get current InstantDB auth state
+export function useAuth() {
+  return db.useAuth();
+}
+
+// Get player by current auth
+export function useCurrentPlayer() {
+  const { user, isLoading: authLoading } = db.useAuth();
+  
+  const { data, isLoading: playerLoading, error } = db.useQuery(
+    user?.id
+      ? {
+          players: {
+            $: {
+              where: { authId: user.id },
+              limit: 1,
+            },
+          },
+        }
+      : null
+  );
+
+  const player = data?.players?.[0] as unknown as Player | undefined;
+
+  return {
+    user,
+    player,
+    isLoading: authLoading || playerLoading,
+    error,
+  };
+}
 
 // Record a death and create corpse
 export async function recordDeath(data: {
@@ -127,13 +162,18 @@ export async function recordTip(corpseId: string, amount: number, tipperWallet: 
   ]);
 }
 
-// Get or create player
-export async function getOrCreatePlayer(walletAddress: string, nickname?: string): Promise<Player | null> {
+// Get or create player by authId (new auth system)
+export async function getOrCreatePlayerByAuth(
+  authId: string, 
+  authType: 'wallet' | 'guest',
+  walletAddress?: string,
+  nickname?: string
+): Promise<{ player: Player; isNew: boolean } | null> {
   try {
     const result = await db.queryOnce({
       players: {
         $: {
-          where: { walletAddress },
+          where: { authId },
           limit: 1,
         },
       },
@@ -149,14 +189,23 @@ export async function getOrCreatePlayer(walletAddress: string, nickname?: string
           ...(nickname && nickname !== player.nickname ? { nickname } : {}),
         }),
       ]);
-      return { ...player, nickname: nickname || player.nickname };
+      return { 
+        player: { ...player, nickname: nickname || player.nickname },
+        isNew: false,
+      };
     }
 
     // Create new player
     const playerId = id();
+    const defaultNickname = walletAddress 
+      ? walletAddress.slice(0, 4) + '...' + walletAddress.slice(-4)
+      : 'Wanderer';
+    
     const newPlayer: Omit<Player, 'id'> = {
+      authId,
+      authType,
       walletAddress,
-      nickname: nickname || walletAddress.slice(0, 4) + '...' + walletAddress.slice(-4),
+      nickname: nickname || defaultNickname,
       totalDeaths: 0,
       totalClears: 0,
       totalEarned: 0,
@@ -172,20 +221,29 @@ export async function getOrCreatePlayer(walletAddress: string, nickname?: string
       tx.players[playerId].update(newPlayer),
     ]);
 
-    return { id: playerId, ...newPlayer };
+    return { 
+      player: { id: playerId, ...newPlayer } as Player,
+      isNew: true,
+    };
   } catch (error) {
     console.error('Failed to get/create player:', error);
     return null;
   }
 }
 
-// Update player nickname
-export async function updatePlayerNickname(walletAddress: string, nickname: string): Promise<boolean> {
+// Legacy: Get or create player by wallet address (for backwards compatibility)
+export async function getOrCreatePlayer(walletAddress: string, nickname?: string): Promise<Player | null> {
+  const result = await getOrCreatePlayerByAuth(walletAddress, 'wallet', walletAddress, nickname);
+  return result?.player || null;
+}
+
+// Update player nickname by authId
+export async function updatePlayerNicknameByAuth(authId: string, nickname: string): Promise<boolean> {
   try {
     const result = await db.queryOnce({
       players: {
         $: {
-          where: { walletAddress },
+          where: { authId },
           limit: 1,
         },
       },
@@ -205,6 +263,11 @@ export async function updatePlayerNickname(walletAddress: string, nickname: stri
     console.error('Failed to update nickname:', error);
     return false;
   }
+}
+
+// Legacy: Update player nickname by wallet address
+export async function updatePlayerNickname(walletAddress: string, nickname: string): Promise<boolean> {
+  return updatePlayerNicknameByAuth(walletAddress, nickname);
 }
 
 // Update highest room reached

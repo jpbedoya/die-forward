@@ -84,19 +84,28 @@ export default function StakeScreen() {
     }
   };
 
-  const handleStake = async (demoMode = false) => {
+  const handleStake = async (emptyHanded = false) => {
     setStaking(true);
-    setStakingMode(demoMode ? 'free' : 'stake');
-    if (!demoMode) setSealStatus('signing');
+    setStakingMode(emptyHanded ? 'free' : 'stake');
+    if (!emptyHanded) setSealStatus('signing');
     playSFX('confirm-action');
     
     try {
-      await game.startGame(selectedStake, demoMode);
-      if (!demoMode) setSealStatus('idle');
+      // Ensure user is authenticated before starting game
+      if (!game.isAuthenticated) {
+        if (emptyHanded) {
+          await game.signInEmptyHanded();
+        } else if (game.walletConnected) {
+          await game.signInWithWallet();
+        }
+      }
+      
+      await game.startGame(selectedStake, emptyHanded);
+      if (!emptyHanded) setSealStatus('idle');
       playSFX('depth-descend');
       router.push('/play');
     } catch (err) {
-      if (!demoMode) {
+      if (!emptyHanded) {
         if (err instanceof Error && err.message === 'WALLET_CANCELLED') {
           flashSealStatus('cancelled');
         } else {
