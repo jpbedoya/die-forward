@@ -103,7 +103,7 @@ function DeathFeedItem({ playerName, room, finalMessage, createdAt, onChainSigna
         <div className="flex-1 min-w-0">
           {/* Player name and location */}
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[var(--purple-bright)] font-bold text-sm">@{playerName}</span>
+            <span className="text-[var(--purple-bright)] font-bold text-sm">{playerName}</span>
             <span className="text-[var(--text-dim)] text-xs">fell at</span>
             <span className="text-[var(--red)] text-xs font-medium">{room ? `Depth ${room}` : 'the depths'}</span>
             <span className="text-[var(--text-dim)] text-[10px] ml-auto">{timeAgo(createdAt)}</span>
