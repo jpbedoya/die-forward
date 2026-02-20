@@ -162,9 +162,9 @@ export default function HomeScreen() {
                   displayedDeaths.map((death, i) => (
                     <View key={death.id || i} className="py-1">
                       <Text className="text-xs text-bone-muted font-mono text-center" numberOfLines={1}>
-                        <Text className="text-ethereal">@{death.playerName}</Text>
-                        <Text className="text-bone-dark"> fell in </Text>
-                        <Text className="text-bone-muted">{death.zone}</Text>
+                        <Text className="text-ethereal">{death.playerName}</Text>
+                        <Text className="text-bone-dark"> fell at </Text>
+                        <Text className="text-bone-muted">Depth {death.room || '?'}</Text>
                       </Text>
                     </View>
                   ))
@@ -260,12 +260,9 @@ export default function HomeScreen() {
                 recentDeaths.map((death, i) => (
                   <View key={death.id || i} className="py-2 border-b border-crypt-border">
                     <View className="flex-row justify-between mb-1">
-                      <Text className="text-ethereal text-sm font-mono">@{death.playerName}</Text>
-                      <Text className="text-bone-dark text-xs font-mono">Room {death.room}</Text>
+                      <Text className="text-ethereal text-sm font-mono">{death.playerName}</Text>
+                      <Text className="text-bone-dark text-xs font-mono">Depth {death.room || '?'}</Text>
                     </View>
-                    <Text className="text-bone-muted text-xs font-mono">
-                      fell in {death.zone}
-                    </Text>
                     {death.finalMessage && (
                       <Text className="text-bone-dark text-xs font-mono italic mt-1">
                         "{death.finalMessage}"
