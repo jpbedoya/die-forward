@@ -237,6 +237,40 @@ No bright colors, no neon, no cartoon style, no gradients. Ultra detailed. Squar
 
 ---
 
+## 5. Mobile App — Portrait Background
+
+**Usage:** Full-screen background for the mobile app (stake screen, home screen). Portrait 9:16. Must sit behind UI — keep top and bottom edges very dark (header and buttons overlay there). Amber glow at center horizon.
+
+**DALL·E size:** `1024×1792`
+
+---
+
+### Prompt
+
+```
+Fullscreen background painting for a dark roguelite mobile game.
+A vast flooded underground crypt chamber viewed in one-point perspective.
+Stone archways receding deep into darkness,
+shallow black water covering the floor reflecting distant amber torchlight.
+Fallen bones and armor fragments half-submerged.
+Volumetric fog drifting between columns.
+A single tiny silhouetted figure at the far vanishing point, alone.
+Very dark overall — most of the image is near-black with a single amber glow at center horizon.
+No text, no characters with faces.
+Vertical composition, heavy vignette around all edges.
+
+Style: hyper-detailed dark fantasy digital painting, photorealistic, cinematic.
+Pure black background.
+Single dramatic amber/gold light source (torchlight) — strong contrast, deep shadows.
+Color palette: near-black, deep charcoal, amber gold, bone white, blood-rust red accents.
+Atmospheric fog, subtle glow.
+No bright colors, no neon, no cartoon style, no gradients.
+Portrait format 9:16, heavy vignette especially top and bottom edges.
+Ultra detailed. 1024×1792.
+```
+
+---
+
 ## Usage Notes
 
 - All final assets → `art/generated/`

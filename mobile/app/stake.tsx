@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, Pressable, TextInput, ScrollView, ActivityIndicator, Modal } from 'react-native';
+import { View, Text, Pressable, TextInput, ScrollView, ActivityIndicator, Modal, ImageBackground } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
@@ -118,10 +118,15 @@ export default function StakeScreen() {
   };
 
   return (
-    <View className="flex-1 bg-crypt-bg">
-    <SafeAreaView className="flex-1 bg-crypt-bg">
+    <ImageBackground
+      source={require('../assets/bg-crypt.webp')}
+      className="flex-1"
+      style={{ backgroundColor: '#0d0d0d' }}
+      resizeMode="cover"
+    >
+    <SafeAreaView className="flex-1">
       {/* Header */}
-      <View className="flex-row items-center justify-between px-4 py-3 border-b border-crypt-border">
+      <View className="flex-row items-center justify-between px-4 py-3 border-b border-crypt-border bg-black/60">
         <Pressable onPress={() => router.replace('/')}>
           <Text className="text-bone-muted text-sm font-mono">← BACK</Text>
         </Pressable>
@@ -129,7 +134,7 @@ export default function StakeScreen() {
         <AudioToggle ambientTrack="ambient-title" inline onSettingsPress={() => setAudioSettingsOpen(true)} />
       </View>
 
-      <ScrollView className="flex-1" contentContainerClassName="p-5">
+      <ScrollView className="flex-1" contentContainerClassName="p-5" style={{ backgroundColor: 'transparent' }}>
         {/* Error display — wallet errors handled inline on button, only show game-level errors */}
         {game.error && !game.error.includes('wallet') && !game.error.includes('Wallet') && (
           <Pressable 
@@ -399,6 +404,6 @@ export default function StakeScreen() {
       <AudioSettingsModal visible={audioSettingsOpen} onClose={() => setAudioSettingsOpen(false)} />
     </SafeAreaView>
     <CRTOverlay />
-    </View>
+    </ImageBackground>
   );
 }
