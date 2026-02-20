@@ -187,6 +187,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       // Don't show error for user rejections / cancellations
       const errMsg = err instanceof Error ? err.message : String(err);
       const isCancellation =
+        errMsg === 'WALLET_CANCELLED' ||
         errMsg.includes('User rejected') ||
         errMsg.includes('cancelled') ||
         errMsg.includes('Cancelled') ||
@@ -221,6 +222,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : String(err);
       const isCancellation =
+        errMsg === 'WALLET_CANCELLED' ||
         errMsg.includes('User rejected') ||
         errMsg.includes('cancelled') ||
         errMsg.includes('Cancelled') ||

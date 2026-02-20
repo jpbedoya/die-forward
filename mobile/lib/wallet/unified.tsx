@@ -230,7 +230,15 @@ function WebWalletConsumer({ children }: { children: ReactNode }) {
       if (walletConnection.connectors.length === 1) {
         try {
           await walletConnection.connect(walletConnection.connectors[0].id);
-        } catch (e) {
+        } catch (e: any) {
+          const msg = e?.message || String(e);
+          const isCancellation =
+            msg.includes('rejected') || msg.includes('cancelled') ||
+            msg.includes('Cancelled') || msg.includes('denied') ||
+            msg.includes('CancellationException');
+          if (isCancellation) {
+            throw Object.assign(new Error('WALLET_CANCELLED'), { isCancellation: true });
+          }
           console.error('Connect failed:', e);
         }
       } else if (walletConnection.connectors.length > 1) {
@@ -245,7 +253,15 @@ function WebWalletConsumer({ children }: { children: ReactNode }) {
       try {
         await walletConnection.connect(connectorId);
         return walletAddress as Address | null;
-      } catch (e) {
+      } catch (e: any) {
+        const msg = e?.message || String(e);
+        const isCancellation =
+          msg.includes('rejected') || msg.includes('cancelled') ||
+          msg.includes('Cancelled') || msg.includes('denied') ||
+          msg.includes('CancellationException');
+        if (isCancellation) {
+          throw Object.assign(new Error('WALLET_CANCELLED'), { isCancellation: true });
+        }
         console.error('Connect failed:', e);
         throw e;
       }
