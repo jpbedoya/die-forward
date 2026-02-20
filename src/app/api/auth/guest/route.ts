@@ -6,7 +6,7 @@ let db: ReturnType<typeof init> | null = null;
 function getDb() {
   if (!db) {
     const appId = process.env.NEXT_PUBLIC_INSTANT_APP_ID;
-    const adminToken = process.env.INSTANT_APP_ADMIN_TOKEN;
+    const adminToken = process.env.INSTANT_ADMIN_KEY;
     if (!appId || !adminToken) {
       throw new Error('Missing InstantDB configuration');
     }
