@@ -311,11 +311,7 @@ export default function PlayScreen() {
             }`}>
               ◈ {depth.name}
             </Text>
-            {game.stakeAmount === 0 && (
-              <View className="bg-amber/20 border border-amber/50 px-2 py-0.5">
-                <Text className="text-amber text-[10px] font-mono">FREE</Text>
-              </View>
-            )}
+            {/* empty-handed tag removed */}
           </View>
           <View className="flex-row items-center gap-1">
             <AudioToggle ambientTrack="ambient-explore" inline onSettingsPress={() => setMenuOpen(true)} />
