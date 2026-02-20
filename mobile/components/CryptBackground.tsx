@@ -1,11 +1,9 @@
 import React from 'react';
 import { ImageBackground, View, StyleSheet, ViewStyle } from 'react-native';
-import { BG_ENABLED } from '../lib/bgConfig';
-
-const OVERLAY_OPACITY = 0.6; // Darkness of the dim overlay on non-splash screens
+import { BG_CONFIG } from '../lib/bgConfig';
 
 interface CryptBackgroundProps {
-  screen: keyof typeof BG_ENABLED;
+  screen: keyof typeof BG_CONFIG;
   children: React.ReactNode;
   style?: ViewStyle;
   /** Skip the dark overlay (e.g. splash — raw image looks better) */
@@ -13,17 +11,20 @@ interface CryptBackgroundProps {
 }
 
 export function CryptBackground({ screen, children, style, noOverlay }: CryptBackgroundProps) {
-  const enabled = BG_ENABLED[screen] ?? false;
+  const config = BG_CONFIG[screen] ?? { enabled: false, overlay: 0.6 };
 
-  if (enabled) {
+  if (config.enabled) {
     return (
       <ImageBackground
         source={require('../assets/bg-crypt.webp')}
         style={[styles.fill, { backgroundColor: '#0d0d0d' }, style]}
         resizeMode="cover"
       >
-        {!noOverlay && (
-          <View style={styles.overlay} pointerEvents="none" />
+        {!noOverlay && config.overlay > 0 && (
+          <View 
+            style={[styles.overlay, { backgroundColor: `rgba(0,0,0,${config.overlay})` }]} 
+            pointerEvents="none" 
+          />
         )}
         {children}
       </ImageBackground>
@@ -41,6 +42,5 @@ const styles = StyleSheet.create({
   fill: { flex: 1 },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: `rgba(0,0,0,${OVERLAY_OPACITY})`,
   },
 });
