@@ -95,13 +95,21 @@ export default function HomeScreen() {
     }
   }, [audioReady]);
 
-  // Splash intro animation
+  // Splash intro animation — resilient to re-mounts
+  // Use timeout-based fallback to ensure splash always transitions
   useEffect(() => {
+    let isMounted = true;
+    
+    // Phase 1: Fade in (0-600ms)
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 600,
       useNativeDriver: true,
-    }).start(() => {
+    }).start();
+    
+    // Phase 2: Scale pulse (600-1800ms)
+    const pulseTimer = setTimeout(() => {
+      if (!isMounted) return;
       Animated.sequence([
         Animated.timing(scaleAnim, {
           toValue: 1.05,
@@ -113,46 +121,61 @@ export default function HomeScreen() {
           duration: 600,
           useNativeDriver: true,
         }),
-      ]).start(() => {
-        setTimeout(() => {
-          Animated.parallel([
-            Animated.timing(scaleAnim, {
-              toValue: 2.5,
-              duration: 350,
-              useNativeDriver: true,
-            }),
-            Animated.timing(fadeAnim, {
-              toValue: 0,
-              duration: 350,
-              useNativeDriver: true,
-            }),
-          ]).start(() => setShowSplash(false));
-        }, 300);
-      });
-    });
+      ]).start();
+    }, 600);
+    
+    // Phase 3: Zoom out and fade (2100-2450ms)
+    const zoomTimer = setTimeout(() => {
+      if (!isMounted) return;
+      Animated.parallel([
+        Animated.timing(scaleAnim, {
+          toValue: 2.5,
+          duration: 350,
+          useNativeDriver: true,
+        }),
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 350,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }, 2100);
+    
+    // Phase 4: Transition to main screen (2500ms)
+    // Always fires regardless of animation state
+    const transitionTimer = setTimeout(() => {
+      if (isMounted) setShowSplash(false);
+    }, 2500);
+    
+    return () => {
+      isMounted = false;
+      clearTimeout(pulseTimer);
+      clearTimeout(zoomTimer);
+      clearTimeout(transitionTimer);
+    };
   }, []);
 
   if (showSplash) {
     return (
-      <CryptBackground screen="splash" noOverlay>
-      <Pressable 
-        className="flex-1"
-        onPress={unlockAudio}
-      >
-        <CRTOverlay />
-        <View className="flex-1 justify-center items-center">
-          <Animated.View 
-            style={{ 
-              opacity: fadeAnim,
-              transform: [{ scale: scaleAnim }],
-            }}
-          >
-            <DieForwardLogo size="large" showGlow glowColor="#f59e0b" />
-          </Animated.View>
-          <Text className="text-stone-600 text-xs font-mono mt-8">tap to enable sound</Text>
-        </View>
-      </Pressable>
-      </CryptBackground>
+      <View className="flex-1 bg-crypt-bg">
+        <Pressable 
+          className="flex-1"
+          onPress={unlockAudio}
+        >
+          <CRTOverlay />
+          <View className="flex-1 justify-center items-center">
+            <Animated.View 
+              style={{ 
+                opacity: fadeAnim,
+                transform: [{ scale: scaleAnim }],
+              }}
+            >
+              <DieForwardLogo size="large" showGlow glowColor="#f59e0b" />
+            </Animated.View>
+            <Text className="text-stone-600 text-xs font-mono mt-8">tap to enable sound</Text>
+          </View>
+        </Pressable>
+      </View>
     );
   }
 
