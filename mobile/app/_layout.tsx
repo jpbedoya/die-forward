@@ -183,8 +183,10 @@ export default function RootLayout() {
   if (showSplash) {
     return (
       <SafeAreaProvider style={{ backgroundColor: '#0d0d0d' }}>
-        <StatusBar style="light" />
-        <SplashScreen onComplete={handleSplashComplete} onTap={handleSplashTap} />
+        <WebFrame>
+          <StatusBar style="light" />
+          <SplashScreen onComplete={handleSplashComplete} onTap={handleSplashTap} />
+        </WebFrame>
       </SafeAreaProvider>
     );
   }
