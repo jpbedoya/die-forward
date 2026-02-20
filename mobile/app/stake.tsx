@@ -114,7 +114,15 @@ export default function StakeScreen() {
       router.push('/play');
     } catch (err) {
       if (!emptyHanded) {
-        if (err instanceof Error && err.message === 'WALLET_CANCELLED') {
+        const errMsg = err instanceof Error ? err.message : String(err);
+        const isCancellation =
+          errMsg === 'WALLET_CANCELLED' ||
+          errMsg.includes('User rejected') ||
+          errMsg.includes('cancelled') ||
+          errMsg.includes('Cancelled') ||
+          errMsg.includes('ACTION_CANCELLED');
+
+        if (isCancellation) {
           flashSealStatus('cancelled');
         } else {
           console.error('Failed to start game:', err);
@@ -292,7 +300,7 @@ export default function StakeScreen() {
                 onPress={() => handleStake(false)}
                 disabled={staking || sealStatus !== 'idle' || (game.balance !== null && game.balance < selectedStake)}
               >
-                {sealStatus === 'signing' || stakingMode === 'stake' ? (
+                {staking && stakingMode === 'stake' ? (
                   <ActivityIndicator color="#0d0d0d" />
                 ) : sealStatus === 'cancelled' ? (
                   <Text className="text-bone-muted font-mono font-bold tracking-wider">CANCELLED</Text>
