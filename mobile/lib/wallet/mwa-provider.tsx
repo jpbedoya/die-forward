@@ -89,8 +89,23 @@ function MobileWalletConsumer({ children }: { children: ReactNode }) {
       transaction.feePayer = wallet.account.publicKey;
     }
     
-    const minContextSlot = await wallet.connection.getSlot();
-    return await wallet.signAndSendTransaction(transaction, minContextSlot);
+    try {
+      const minContextSlot = await wallet.connection.getSlot();
+      return await wallet.signAndSendTransaction(transaction, minContextSlot);
+    } catch (e: any) {
+      const msg = e?.message || String(e);
+      const isCancellation =
+        msg.includes('CancellationException') ||
+        msg.includes('User rejected') ||
+        msg.includes('cancelled') ||
+        msg.includes('Cancelled') ||
+        msg.includes('ACTION_CANCELLED') ||
+        msg.includes('user rejected');
+      if (isCancellation) {
+        throw Object.assign(new Error('WALLET_CANCELLED'), { isCancellation: true });
+      }
+      throw e;
+    }
   }, [wallet]);
   
   const refreshBalance = useCallback(async () => {

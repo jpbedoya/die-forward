@@ -194,14 +194,20 @@ function WebWalletConsumer({ children }: { children: ReactNode }) {
     } catch (err: any) {
       // Handle user rejection and other wallet errors gracefully
       const message = err?.message || String(err);
-      if (message.includes('rejected') || message.includes('cancelled') || message.includes('denied')) {
-        throw new Error('Transaction cancelled');
+      const isCancellation =
+        message.includes('rejected') ||
+        message.includes('cancelled') ||
+        message.includes('Cancelled') ||
+        message.includes('denied') ||
+        message.includes('CancellationException') ||
+        message.includes('ACTION_CANCELLED');
+      if (isCancellation) {
+        throw Object.assign(new Error('WALLET_CANCELLED'), { isCancellation: true });
       }
       if (message.includes('transaction plan failed')) {
-        // Check for more specific cause
         const cause = err?.cause?.message || err?.transactionPlanResult?.error?.message;
         if (cause?.includes('rejected') || cause?.includes('User rejected')) {
-          throw new Error('Transaction cancelled');
+          throw Object.assign(new Error('WALLET_CANCELLED'), { isCancellation: true });
         }
         throw new Error(cause || 'Transaction failed');
       }

@@ -310,9 +310,22 @@ export function GameProvider({ children }: { children: ReactNode }) {
         loading: false,
       });
     } catch (err) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      const isCancellation =
+        errMsg === 'WALLET_CANCELLED' ||
+        errMsg.includes('CancellationException') ||
+        errMsg.includes('User rejected') ||
+        errMsg.includes('cancelled') ||
+        errMsg.includes('Cancelled') ||
+        errMsg.includes('ACTION_CANCELLED') ||
+        errMsg.includes('user rejected');
+      if (isCancellation) {
+        updateState({ loading: false });
+        throw Object.assign(new Error('WALLET_CANCELLED'), { isCancellation: true });
+      }
       updateState({
         loading: false,
-        error: err instanceof Error ? err.message : 'Failed to start game',
+        error: errMsg || 'Failed to start game',
       });
       throw err;
     }

@@ -23,6 +23,7 @@ export default function StakeScreen() {
   const [stakingMode, setStakingMode] = useState<'stake' | 'free' | null>(null);
   const [showWalletPicker, setShowWalletPicker] = useState(false);
   const [walletStatus, setWalletStatus] = useState<'idle' | 'connecting' | 'cancelled' | 'error'>('idle');
+  const [sealStatus, setSealStatus] = useState<'idle' | 'signing' | 'cancelled' | 'error'>('idle');
   const [editingNickname, setEditingNickname] = useState(false);
   const [nicknameInput, setNicknameInput] = useState('');
 
@@ -33,6 +34,11 @@ export default function StakeScreen() {
   const flashWalletStatus = (status: 'cancelled' | 'error') => {
     setWalletStatus(status);
     setTimeout(() => setWalletStatus('idle'), 2000);
+  };
+
+  const flashSealStatus = (status: 'cancelled' | 'error') => {
+    setSealStatus(status);
+    setTimeout(() => setSealStatus('idle'), 2000);
   };
 
   const handleConnect = async () => {
@@ -80,15 +86,27 @@ export default function StakeScreen() {
   const handleStake = async (demoMode = false) => {
     setStaking(true);
     setStakingMode(demoMode ? 'free' : 'stake');
+    if (!demoMode) setSealStatus('signing');
     playSFX('confirm-action');
     
     try {
       await game.startGame(selectedStake, demoMode);
+      if (!demoMode) setSealStatus('idle');
       playSFX('depth-descend');
       router.push('/play');
     } catch (err) {
-      console.error('Failed to start game:', err);
-      playSFX('error-buzz');
+      if (!demoMode) {
+        if (err instanceof Error && err.message === 'WALLET_CANCELLED') {
+          flashSealStatus('cancelled');
+        } else {
+          console.error('Failed to start game:', err);
+          flashSealStatus('error');
+          playSFX('error-buzz');
+        }
+      } else {
+        console.error('Failed to start game:', err);
+        playSFX('error-buzz');
+      }
     } finally {
       setStaking(false);
       setStakingMode(null);
@@ -236,15 +254,22 @@ export default function StakeScreen() {
             <>
               <Pressable 
                 className={`py-5 items-center ${
+                  sealStatus === 'cancelled' ? 'bg-stone-700' :
+                  sealStatus === 'error' ? 'bg-blood/60' :
+                  sealStatus === 'signing' ? 'bg-amber/70' :
                   staking || (game.balance !== null && game.balance < selectedStake)
                     ? 'bg-amber/50'
                     : 'bg-amber active:bg-amber-dark'
                 }`}
                 onPress={() => handleStake(false)}
-                disabled={staking || (game.balance !== null && game.balance < selectedStake)}
+                disabled={staking || sealStatus !== 'idle' || (game.balance !== null && game.balance < selectedStake)}
               >
-                {stakingMode === 'stake' ? (
+                {sealStatus === 'signing' || stakingMode === 'stake' ? (
                   <ActivityIndicator color="#0d0d0d" />
+                ) : sealStatus === 'cancelled' ? (
+                  <Text className="text-bone-muted font-mono font-bold tracking-wider">CANCELLED</Text>
+                ) : sealStatus === 'error' ? (
+                  <Text className="text-blood-light font-mono font-bold tracking-wider">FAILED — TAP TO RETRY</Text>
                 ) : (
                   <Text className="text-crypt-bg font-mono font-bold tracking-wider">SEAL YOUR FATE</Text>
                 )}
