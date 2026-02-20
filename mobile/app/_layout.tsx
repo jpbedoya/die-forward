@@ -7,7 +7,7 @@ import 'react-native-url-polyfill/auto';
 // NativeWind CSS
 import '../global.css';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -18,6 +18,8 @@ import { GameProvider } from '../lib/GameContext';
 import { UnifiedWalletProvider } from '../lib/wallet/unified';
 import { WebFrame } from '../components/WebFrame';
 import { AudiusProvider } from '../lib/AudiusContext';
+import { SplashScreen } from '../components/SplashScreen';
+import { getAudioManager } from '../lib/audio';
 
 const APP_VERSION_KEY = 'APP_BUILD_VERSION';
 const CURRENT_VERSION = Constants.expoConfig?.version || '1.0.0';
@@ -160,11 +162,32 @@ class ErrorBoundary extends React.Component<
 
 export default function RootLayout() {
   useWebSafeAreaCSS();
+  const [showSplash, setShowSplash] = useState(true);
 
   // Clear stale state on version change (handles APK updates without uninstall)
   useEffect(() => {
     checkVersionAndMigrate();
   }, []);
+
+  // Unlock audio on splash tap
+  const handleSplashTap = useCallback(() => {
+    getAudioManager().unlock();
+  }, []);
+
+  // Splash complete — transition to main app
+  const handleSplashComplete = useCallback(() => {
+    setShowSplash(false);
+  }, []);
+
+  // Splash renders OUTSIDE wallet provider — immune to MWA init issues
+  if (showSplash) {
+    return (
+      <SafeAreaProvider style={{ backgroundColor: '#0d0d0d' }}>
+        <StatusBar style="light" />
+        <SplashScreen onComplete={handleSplashComplete} onTap={handleSplashTap} />
+      </SafeAreaProvider>
+    );
+  }
   
   return (
     <ErrorBoundary>

@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, Pressable, Animated, Platform, ScrollView, Modal } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View, Text, Pressable, Platform, ScrollView, Modal } from 'react-native';
 import { CryptBackground } from '../components/CryptBackground';
 import { router } from 'expo-router';
 import { useAudio } from '../lib/audio';
@@ -69,20 +69,15 @@ import { AudioSettingsModal } from '../components/AudioSettingsModal';
 import { CRTOverlay } from '../components/CRTOverlay';
 
 export default function HomeScreen() {
-  const [showSplash, setShowSplash] = useState(true);
   const [activeTab, setActiveTab] = useState<'echoes' | 'victors'>('echoes');
   const [showAllSheet, setShowAllSheet] = useState(false);
   const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
-  
-  // Animations
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const scaleAnim = useRef(new Animated.Value(1)).current;
 
   // Data hooks
   const { totalDeaths, isLoading: statsLoading } = usePoolStats();
   const { deaths: recentDeaths } = useDeathFeed(20);
   const { leaderboard: rawLeaderboard } = useLeaderboard(20);
-  const { playAmbient, unlock: unlockAudio, ready: audioReady } = useAudio();
+  const { playAmbient, ready: audioReady } = useAudio();
   const { settings } = useGameSettings();
 
   // Filter out empty leaderboard entries
@@ -94,65 +89,6 @@ export default function HomeScreen() {
       playAmbient('ambient-title');
     }
   }, [audioReady]);
-
-  // Splash intro animation
-  useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 600,
-      useNativeDriver: true,
-    }).start(() => {
-      Animated.sequence([
-        Animated.timing(scaleAnim, {
-          toValue: 1.05,
-          duration: 600,
-          useNativeDriver: true,
-        }),
-        Animated.timing(scaleAnim, {
-          toValue: 1,
-          duration: 600,
-          useNativeDriver: true,
-        }),
-      ]).start(() => {
-        setTimeout(() => {
-          Animated.parallel([
-            Animated.timing(scaleAnim, {
-              toValue: 2.5,
-              duration: 350,
-              useNativeDriver: true,
-            }),
-            Animated.timing(fadeAnim, {
-              toValue: 0,
-              duration: 350,
-              useNativeDriver: true,
-            }),
-          ]).start(() => setShowSplash(false));
-        }, 300);
-      });
-    });
-  }, []);
-
-  if (showSplash) {
-    return (
-      <Pressable 
-        className="flex-1 bg-crypt-bg"
-        onPress={unlockAudio}
-      >
-        <CRTOverlay />
-        <View className="flex-1 justify-center items-center">
-          <Animated.View 
-            style={{ 
-              opacity: fadeAnim,
-              transform: [{ scale: scaleAnim }],
-            }}
-          >
-            <DieForwardLogo size="large" showGlow glowColor="#f59e0b" />
-          </Animated.View>
-          <Text className="text-stone-600 text-xs font-mono mt-8">tap to enable sound</Text>
-        </View>
-      </Pressable>
-    );
-  }
 
   const displayedDeaths = recentDeaths.slice(0, 5);
   const displayedVictors = leaderboard.slice(0, 5);
