@@ -69,7 +69,27 @@ export async function POST(request: NextRequest) {
       ? inventoryArray[Math.floor(Math.random() * inventoryArray.length)]
       : { name: 'Nothing', emoji: '💀' };
 
-    const displayName = playerName || `${session.walletAddress.slice(0, 4)}...${session.walletAddress.slice(-4)}`;
+    // Look up player's saved nickname from DB — authoritative source
+    let displayName = playerName;
+    const isDemo = session.walletAddress?.startsWith('demo-wallet') || session.walletAddress === 'demo-wallet';
+    if (isDemo) {
+      displayName = playerName && playerName !== 'Wanderer' ? playerName : 'Wanderer';
+    } else {
+      try {
+        const playerResult = await db.query({
+          players: { $: { where: { walletAddress: session.walletAddress } } },
+        });
+        const playerRecord = playerResult?.players?.[0];
+        if (playerRecord?.nickname && playerRecord.nickname !== playerRecord.walletAddress) {
+          displayName = playerRecord.nickname;
+        }
+      } catch (e) {
+        // Non-fatal — fall back to client-provided name or wallet
+      }
+      if (!displayName || displayName === session.walletAddress) {
+        displayName = `${session.walletAddress.slice(0, 4)}...${session.walletAddress.slice(-4)}`;
+      }
+    }
     const timestamp = Date.now();
 
     // Create verifiable death hash
