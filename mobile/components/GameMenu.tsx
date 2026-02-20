@@ -47,13 +47,29 @@ export function GameMenu({ isOpen, onClose }: GameMenuProps) {
         <Text className="text-bone-muted font-mono">[×]</Text>
       </Pressable>
 
-      {/* Wallet info */}
-      {game.walletConnected && (
+      {/* Player info */}
+      {(game.walletConnected || game.nickname) && (
         <View className="mb-4">
-          <Text className="text-bone-dark text-[10px] font-mono tracking-wider mb-1">CONNECTED</Text>
-          <Text className="text-bone-muted text-xs font-mono">
-            {formatAddress(game.walletAddress || '')}
-          </Text>
+          <Text className="text-bone-dark text-[10px] font-mono tracking-wider mb-1">PLAYER</Text>
+          <View className="flex-row items-center gap-2 flex-wrap">
+            {game.nickname && (
+              <Text className="text-amber text-sm font-mono">{game.nickname}</Text>
+            )}
+            {game.walletConnected && game.walletAddress && (
+              <>
+                {game.nickname && <Text className="text-bone-dark text-xs">•</Text>}
+                <Text className="text-bone-muted text-xs font-mono">
+                  {formatAddress(game.walletAddress)}
+                </Text>
+              </>
+            )}
+            {game.balance !== null && (
+              <>
+                <Text className="text-bone-dark text-xs">•</Text>
+                <Text className="text-amber-light text-xs font-mono font-bold">{game.balance.toFixed(3)} SOL</Text>
+              </>
+            )}
+          </View>
         </View>
       )}
 
