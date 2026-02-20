@@ -1,7 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { init, tx, id } from '@instantdb/admin';
-import nacl from 'tweetnacl';
+import * as nacl from 'tweetnacl';
 import bs58 from 'bs58';
+
+interface Player {
+  id: string;
+  authId?: string;
+  authType?: string;
+  walletAddress?: string;
+  nickname?: string;
+  totalDeaths?: number;
+  totalClears?: number;
+  totalEarned?: number;
+  totalLost?: number;
+  totalTipsReceived?: number;
+  totalTipsSent?: number;
+  highestRoom?: number;
+}
 
 const APP_ID = process.env.NEXT_PUBLIC_INSTANT_APP_ID!;
 const ADMIN_TOKEN = process.env.INSTANT_APP_ADMIN_TOKEN!;
@@ -72,7 +87,7 @@ export async function POST(req: NextRequest) {
     const guestResult = await db.query({
       players: { $: { where: { authId: guestAuthId }, limit: 1 } },
     });
-    const guestPlayer = guestResult.players?.[0];
+    const guestPlayer = guestResult.players?.[0] as Player | undefined;
 
     if (!guestPlayer) {
       return NextResponse.json(
@@ -85,7 +100,7 @@ export async function POST(req: NextRequest) {
     const walletResult = await db.query({
       players: { $: { where: { authId: walletAddress }, limit: 1 } },
     });
-    const existingWalletPlayer = walletResult.players?.[0];
+    const existingWalletPlayer = walletResult.players?.[0] as Player | undefined;
 
     let merged = false;
     let finalPlayerId: string;

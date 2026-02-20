@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { init } from '@instantdb/admin';
-import nacl from 'tweetnacl';
+import * as nacl from 'tweetnacl';
 import bs58 from 'bs58';
 
 const APP_ID = process.env.NEXT_PUBLIC_INSTANT_APP_ID!;
