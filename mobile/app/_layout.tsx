@@ -8,7 +8,7 @@ import 'react-native-url-polyfill/auto';
 import '../global.css';
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { Stack } from 'expo-router';
+import { Stack, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { View, Text, ScrollView, Platform } from 'react-native';
@@ -174,9 +174,11 @@ export default function RootLayout() {
     getAudioManager().unlock();
   }, []);
 
-  // Splash complete — transition to main app
+  // Splash complete — transition to main app, always start at home
   const handleSplashComplete = useCallback(() => {
     setShowSplash(false);
+    // Reset to home screen (in case router persisted a different route)
+    setTimeout(() => router.replace('/'), 0);
   }, []);
 
   // Splash renders OUTSIDE wallet provider — immune to MWA init issues
