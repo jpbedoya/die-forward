@@ -93,15 +93,21 @@ export default function StakeScreen() {
     playSFX('confirm-action');
     
     try {
-      // Ensure user is authenticated before starting game
-      if (!game.isAuthenticated) {
-        if (emptyHanded) {
+      // Ensure correct auth mode before starting game
+      if (emptyHanded) {
+        if (!game.isAuthenticated || game.authType !== 'guest') {
           await game.signInEmptyHanded();
-        } else if (game.walletConnected) {
+        }
+      } else {
+        // Staked play must use wallet auth (not guest auth)
+        if (!game.walletConnected) {
+          throw new Error('Connect wallet first');
+        }
+        if (!game.isAuthenticated || game.authType !== 'wallet') {
           await game.signInWithWallet();
         }
       }
-      
+
       await game.startGame(selectedStake, emptyHanded);
       if (!emptyHanded) setSealStatus('idle');
       playSFX('depth-descend');

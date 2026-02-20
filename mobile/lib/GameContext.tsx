@@ -257,7 +257,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
         isAuthenticated: true,
         authId: authState.authId,
         authType: 'guest',
-        walletAddress: null,
+        // Keep connected wallet visible if present; guest mode should not hide it
+        walletAddress: state.walletAddress,
         isNewUser: authState.isNewUser,
         loading: false,
         showNicknameModal: true, // Always show for new guests
@@ -267,7 +268,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       updateState({ loading: false, error: errMsg });
       throw err;
     }
-  }, [updateState]);
+  }, [updateState, state.walletAddress]);
 
   const linkWalletAction = useCallback(async (): Promise<{ merged: boolean }> => {
     if (!unifiedWallet.connected || !unifiedWallet.address) {
@@ -407,6 +408,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
       let stakeTxSignature: string | undefined;
       // Use authId for player identity, fall back to wallet address or generate guest ID
       let playerIdentifier = state.authId || state.walletAddress || `guest-${Date.now()}`;
+
+      if (!emptyHanded && (!state.walletAddress || !unifiedWallet.connected)) {
+        throw new Error('Connect wallet first');
+      }
 
       if (!emptyHanded && state.walletAddress && unifiedWallet.connected) {
         // Build escrow stake transaction
