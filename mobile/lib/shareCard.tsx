@@ -55,7 +55,7 @@ export function DeathCard({ data }: { data: DeathCardData }) {
         <Text className="text-stone-400 text-[10px] font-mono text-center mb-2">in THE SUNKEN CRYPT</Text>
         
         {/* Player name */}
-        <Text className="text-amber text-base font-mono font-bold text-center mb-3">@{data.playerName}</Text>
+        <Text className="text-amber text-base font-mono font-bold text-center mb-3">{data.playerName}</Text>
         
         {/* Stats */}
         <View className="mb-2">
@@ -123,7 +123,7 @@ export function VictoryCard({ data }: { data: VictoryCardData }) {
         <Text className="text-stone-400 text-[10px] font-mono text-center mb-3">THE SUNKEN CRYPT</Text>
         
         {/* Player name */}
-        <Text className="text-amber text-base font-mono font-bold text-center mb-4">@{data.playerName}</Text>
+        <Text className="text-amber text-base font-mono font-bold text-center mb-4">{data.playerName}</Text>
         
         {/* Stats */}
         <View className="mb-4">
