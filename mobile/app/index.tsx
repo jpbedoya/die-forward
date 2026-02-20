@@ -95,27 +95,62 @@ export default function HomeScreen() {
     }
   }, [audioReady]);
 
-  // Simple splash timeout — no animations, just transition after 2s
+  // Splash intro animation
   useEffect(() => {
-    const timer = setTimeout(() => setShowSplash(false), 2000);
-    return () => clearTimeout(timer);
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 600,
+      useNativeDriver: true,
+    }).start(() => {
+      Animated.sequence([
+        Animated.timing(scaleAnim, {
+          toValue: 1.05,
+          duration: 600,
+          useNativeDriver: true,
+        }),
+        Animated.timing(scaleAnim, {
+          toValue: 1,
+          duration: 600,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
+        setTimeout(() => {
+          Animated.parallel([
+            Animated.timing(scaleAnim, {
+              toValue: 2.5,
+              duration: 350,
+              useNativeDriver: true,
+            }),
+            Animated.timing(fadeAnim, {
+              toValue: 0,
+              duration: 350,
+              useNativeDriver: true,
+            }),
+          ]).start(() => setShowSplash(false));
+        }, 300);
+      });
+    });
   }, []);
 
   if (showSplash) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#0d0d0d' }}>
-        <Pressable 
-          style={{ flex: 1 }}
-          onPress={unlockAudio}
-        >
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Pressable 
+        className="flex-1 bg-crypt-bg"
+        onPress={unlockAudio}
+      >
+        <CRTOverlay />
+        <View className="flex-1 justify-center items-center">
+          <Animated.View 
+            style={{ 
+              opacity: fadeAnim,
+              transform: [{ scale: scaleAnim }],
+            }}
+          >
             <DieForwardLogo size="large" showGlow glowColor="#f59e0b" />
-            <Text style={{ color: '#57534e', fontSize: 12, fontFamily: 'monospace', marginTop: 32 }}>
-              tap to enable sound
-            </Text>
-          </View>
-        </Pressable>
-      </View>
+          </Animated.View>
+          <Text className="text-stone-600 text-xs font-mono mt-8">tap to enable sound</Text>
+        </View>
+      </Pressable>
     );
   }
 
