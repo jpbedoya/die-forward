@@ -8,6 +8,18 @@ const ADMIN_TOKEN = process.env.INSTANT_APP_ADMIN_TOKEN!;
 
 const db = init({ appId: APP_ID, adminToken: ADMIN_TOKEN });
 
+// CORS headers for cross-origin requests
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
+
+// Handle preflight requests
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders });
+}
+
 /**
  * Verify a Solana wallet signature
  */
@@ -40,7 +52,7 @@ export async function POST(req: NextRequest) {
     if (!walletAddress || !signature || !message) {
       return NextResponse.json(
         { error: 'Missing required fields: walletAddress, signature, message' },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -48,7 +60,7 @@ export async function POST(req: NextRequest) {
     if (!message.includes('Sign in to Die Forward')) {
       return NextResponse.json(
         { error: 'Invalid message format' },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -61,7 +73,7 @@ export async function POST(req: NextRequest) {
       if (Math.abs(now - timestamp) > fiveMinutes) {
         return NextResponse.json(
           { error: 'Signature expired, please try again' },
-          { status: 401 }
+          { status: 401, headers: corsHeaders }
         );
       }
     }
@@ -73,7 +85,7 @@ export async function POST(req: NextRequest) {
       if (!isValid) {
         return NextResponse.json(
           { error: 'Invalid signature' },
-          { status: 401 }
+          { status: 401, headers: corsHeaders }
         );
       }
     }
@@ -93,12 +105,12 @@ export async function POST(req: NextRequest) {
       token,
       walletAddress,
       isNewUser,
-    });
+    }, { headers: corsHeaders });
   } catch (error) {
     console.error('[Auth] Wallet auth error:', error);
     return NextResponse.json(
       { error: 'Authentication failed' },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }

@@ -3,6 +3,18 @@ import { init, tx, id } from '@instantdb/admin';
 import * as nacl from 'tweetnacl';
 import bs58 from 'bs58';
 
+// CORS headers for cross-origin requests
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
+
+// Handle preflight requests
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders });
+}
+
 interface Player {
   id: string;
   authId?: string;
@@ -55,7 +67,7 @@ export async function POST(req: NextRequest) {
     if (!guestAuthId || !walletAddress || !signature || !message) {
       return NextResponse.json(
         { error: 'Missing required fields' },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -63,7 +75,7 @@ export async function POST(req: NextRequest) {
     if (!guestAuthId.startsWith('guest-')) {
       return NextResponse.json(
         { error: 'Invalid guest ID' },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -71,7 +83,7 @@ export async function POST(req: NextRequest) {
     if (!message.includes('Link wallet to Die Forward')) {
       return NextResponse.json(
         { error: 'Invalid message format' },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -79,7 +91,7 @@ export async function POST(req: NextRequest) {
     if (!isValid) {
       return NextResponse.json(
         { error: 'Invalid signature' },
-        { status: 401 }
+        { status: 401, headers: corsHeaders }
       );
     }
 
@@ -92,7 +104,7 @@ export async function POST(req: NextRequest) {
     if (!guestPlayer) {
       return NextResponse.json(
         { error: 'Guest account not found' },
-        { status: 404 }
+        { status: 404, headers: corsHeaders }
       );
     }
 
@@ -151,12 +163,12 @@ export async function POST(req: NextRequest) {
       walletAddress,
       merged,
       playerId: finalPlayerId,
-    });
+    }, { headers: corsHeaders });
   } catch (error) {
     console.error('[Auth] Link wallet error:', error);
     return NextResponse.json(
       { error: 'Failed to link wallet' },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }
