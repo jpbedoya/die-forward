@@ -165,8 +165,8 @@ export async function POST(req: NextRequest) {
       finalPlayerId = guestPlayer.id;
     }
 
-    // Create new auth token for wallet
-    const token = await getDb().auth.createToken({ id: walletAddress });
+    // Create new auth token for wallet (email-based)
+    const token = await getDb().auth.createToken({ email: `${walletAddress}@wallet.dieforward.com` });
 
     return NextResponse.json({
       token,

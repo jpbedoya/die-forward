@@ -100,9 +100,10 @@ export async function POST(req: NextRequest) {
     }
     // TODO: In production, remove SKIP_VERIFICATION option
 
-    // Create InstantDB auth token with wallet address as user ID
+    // Create InstantDB auth token (email-based custom auth)
+    // Instant `id` must be UUID; use deterministic wallet email instead.
     const db = getDb();
-    const token = await db.auth.createToken({ id: walletAddress });
+    const token = await db.auth.createToken({ email: `${walletAddress}@wallet.dieforward.com` });
 
     // Check if player record exists, create if not
     const result = await getDb().query({

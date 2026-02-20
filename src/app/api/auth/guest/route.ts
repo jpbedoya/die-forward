@@ -41,8 +41,9 @@ export async function POST(req: NextRequest) {
     const guestId = `guest-${id()}`;
     console.log('[Auth] Creating guest token for:', guestId);
 
-    // Create InstantDB auth token with guest ID as user ID
-    const token = await db.auth.createToken({ id: guestId });
+    // Create InstantDB auth token (email-based custom auth)
+    // Instant expects `id` to be UUID; use deterministic guest email instead.
+    const token = await db.auth.createToken({ email: `${guestId}@guest.dieforward.com` });
     console.log('[Auth] Token created successfully');
 
     return NextResponse.json({
