@@ -151,6 +151,7 @@ const SOUND_PATHS: Record<SoundId, string> = {
 class WebAudioManager {
   private currentAmbient: HTMLAudioElement | null = null;
   private currentAmbientId: SoundId | null = null;
+  private lastRequestedAmbient: SoundId | null = null; // Track for restart after suppress
   private enabled: boolean = true;
   private sfxVolume: number = 0.7;
   private ambientVolume: number = 0.3;
@@ -237,11 +238,21 @@ class WebAudioManager {
   }
 
   setSuppressAmbient(suppress: boolean) {
+    const wasSupressed = this.suppressAmbient;
     this.suppressAmbient = suppress;
+    
+    // When un-suppressing, restart the last requested ambient
+    if (wasSupressed && !suppress && this.lastRequestedAmbient) {
+      console.log('[Audio/Web] Un-suppressing, restarting ambient:', this.lastRequestedAmbient);
+      this.playAmbient(this.lastRequestedAmbient);
+    }
   }
 
   async playAmbient(id: SoundId, crossfade: boolean = true) {
     console.log('[Audio/Web] playAmbient:', id, { enabled: this.enabled, unlocked: this.unlocked, crossfade, suppressed: this.suppressAmbient });
+    
+    // Always track what was requested, even if suppressed (for restart)
+    this.lastRequestedAmbient = id;
     
     if (!this.enabled) return;
     if (this.suppressAmbient) return;
@@ -386,6 +397,7 @@ class WebAudioManager {
 class NativeAudioManager {
   private currentAmbient: any = null; // AudioPlayer instance
   private currentAmbientId: SoundId | null = null;
+  private lastRequestedAmbient: SoundId | null = null; // Track for restart after suppress
   private enabled: boolean = true;
   private sfxVolume: number = 0.7;
   private ambientVolume: number = 0.3;
@@ -448,11 +460,21 @@ class NativeAudioManager {
   }
 
   setSuppressAmbient(suppress: boolean) {
+    const wasSupressed = this.suppressAmbient;
     this.suppressAmbient = suppress;
+    
+    // When un-suppressing, restart the last requested ambient
+    if (wasSupressed && !suppress && this.lastRequestedAmbient) {
+      console.log('[Audio/Native] Un-suppressing, restarting ambient:', this.lastRequestedAmbient);
+      this.playAmbient(this.lastRequestedAmbient);
+    }
   }
 
   async playAmbient(id: SoundId, crossfade: boolean = true) {
     console.log('[Audio/Native] playAmbient:', id, { enabled: this.enabled, hasModule: !!AudioModule?.AudioPlayer, crossfade, suppressed: this.suppressAmbient });
+    
+    // Always track what was requested, even if suppressed (for restart)
+    this.lastRequestedAmbient = id;
     
     if (!this.enabled) return;
     if (this.suppressAmbient) return;
