@@ -59,14 +59,27 @@ export default function StakeScreen() {
       await game.connect();
       setWalletStatus('idle');
     } catch (err) {
-      if (err instanceof Error && err.message === 'MULTIPLE_WALLETS') {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      const isCancellation =
+        errMsg === 'WALLET_CANCELLED' ||
+        errMsg.includes('User rejected') ||
+        errMsg.includes('cancelled') ||
+        errMsg.includes('Cancelled') ||
+        errMsg.includes('ACTION_CANCELLED');
+
+      if (errMsg === 'MULTIPLE_WALLETS') {
         setWalletStatus('idle');
         setShowWalletPicker(true);
-      } else if (err instanceof Error && err.message === 'WALLET_CANCELLED') {
+      } else if (isCancellation) {
         flashWalletStatus('cancelled');
       } else {
         flashWalletStatus('error');
       }
+    } finally {
+      // Safety: never leave spinner stuck
+      setTimeout(() => {
+        setWalletStatus((prev) => (prev === 'connecting' ? 'idle' : prev));
+      }, 50);
     }
   };
 
@@ -78,11 +91,22 @@ export default function StakeScreen() {
       await game.connectTo(connectorId);
       setWalletStatus('idle');
     } catch (err) {
-      if (err instanceof Error && err.message === 'WALLET_CANCELLED') {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      const isCancellation =
+        errMsg === 'WALLET_CANCELLED' ||
+        errMsg.includes('User rejected') ||
+        errMsg.includes('cancelled') ||
+        errMsg.includes('Cancelled') ||
+        errMsg.includes('ACTION_CANCELLED');
+      if (isCancellation) {
         flashWalletStatus('cancelled');
       } else {
         flashWalletStatus('error');
       }
+    } finally {
+      setTimeout(() => {
+        setWalletStatus((prev) => (prev === 'connecting' ? 'idle' : prev));
+      }, 50);
     }
   };
 
