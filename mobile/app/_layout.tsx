@@ -160,9 +160,12 @@ class ErrorBoundary extends React.Component<
   }
 }
 
+// Track splash shown across remounts (module-level so survives navigation)
+let splashShownThisSession = false;
+
 export default function RootLayout() {
   useWebSafeAreaCSS();
-  const [showSplash, setShowSplash] = useState(true);
+  const [showSplash, setShowSplash] = useState(!splashShownThisSession);
 
   // Clear stale state on version change (handles APK updates without uninstall)
   useEffect(() => {
@@ -176,6 +179,7 @@ export default function RootLayout() {
 
   // Splash complete — transition to main app, always start at home
   const handleSplashComplete = useCallback(() => {
+    splashShownThisSession = true;
     setShowSplash(false);
     // Reset to home screen (in case router persisted a different route)
     setTimeout(() => router.replace('/'), 0);
