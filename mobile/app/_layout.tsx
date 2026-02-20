@@ -12,10 +12,29 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { View, Text, ScrollView, Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
 import { GameProvider } from '../lib/GameContext';
 import { UnifiedWalletProvider } from '../lib/wallet/unified';
 import { WebFrame } from '../components/WebFrame';
 import { AudiusProvider } from '../lib/AudiusContext';
+
+const APP_VERSION_KEY = 'APP_BUILD_VERSION';
+const CURRENT_VERSION = Constants.expoConfig?.version || '1.0.0';
+
+// On startup: if version changed, wipe stale AsyncStorage state
+async function checkVersionAndMigrate() {
+  try {
+    const stored = await AsyncStorage.getItem(APP_VERSION_KEY);
+    if (stored && stored !== CURRENT_VERSION) {
+      console.log(`[Version] ${stored} → ${CURRENT_VERSION} — clearing stale state`);
+      await AsyncStorage.clear();
+    }
+    await AsyncStorage.setItem(APP_VERSION_KEY, CURRENT_VERSION);
+  } catch (e) {
+    console.warn('[Version] Migration check failed:', e);
+  }
+}
 
 // Inject critical CSS for web safe areas
 function useWebSafeAreaCSS() {
@@ -74,7 +93,13 @@ class ErrorBoundary extends React.Component<
     console.error('App crashed:', error, errorInfo);
   }
 
-  handleReset = () => {
+  handleReset = async () => {
+    // Nuke stale state — this is the nuclear option after a crash
+    try {
+      await AsyncStorage.clear();
+    } catch (e) {
+      console.warn('[ErrorBoundary] Failed to clear storage:', e);
+    }
     this.setState({ hasError: false, error: null });
     // Force reload to reset app state
     if (Platform.OS === 'web' && typeof window !== 'undefined') {
@@ -135,6 +160,11 @@ class ErrorBoundary extends React.Component<
 
 export default function RootLayout() {
   useWebSafeAreaCSS();
+
+  // Clear stale state on version change (handles APK updates without uninstall)
+  useEffect(() => {
+    checkVersionAndMigrate();
+  }, []);
   
   return (
     <ErrorBoundary>
