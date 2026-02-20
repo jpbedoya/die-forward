@@ -3,10 +3,19 @@ import { init } from '@instantdb/admin';
 import * as nacl from 'tweetnacl';
 import bs58 from 'bs58';
 
-const APP_ID = process.env.NEXT_PUBLIC_INSTANT_APP_ID!;
-const ADMIN_TOKEN = process.env.INSTANT_APP_ADMIN_TOKEN!;
-
-const db = init({ appId: APP_ID, adminToken: ADMIN_TOKEN });
+// Lazy init to ensure env vars are available
+let db: ReturnType<typeof init> | null = null;
+function getDb() {
+  if (!db) {
+    const appId = process.env.NEXT_PUBLIC_INSTANT_APP_ID;
+    const adminToken = process.env.INSTANT_APP_ADMIN_TOKEN;
+    if (!appId || !adminToken) {
+      throw new Error('Missing InstantDB configuration');
+    }
+    db = init({ appId, adminToken });
+  }
+  return db;
+}
 
 // CORS headers for cross-origin requests
 const corsHeaders = {
@@ -92,10 +101,11 @@ export async function POST(req: NextRequest) {
     // TODO: In production, remove SKIP_VERIFICATION option
 
     // Create InstantDB auth token with wallet address as user ID
+    const db = getDb();
     const token = await db.auth.createToken({ id: walletAddress });
 
     // Check if player record exists, create if not
-    const result = await db.query({
+    const result = await getDb().query({
       players: { $: { where: { authId: walletAddress }, limit: 1 } },
     });
 

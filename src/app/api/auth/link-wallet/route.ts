@@ -30,10 +30,20 @@ interface Player {
   highestRoom?: number;
 }
 
-const APP_ID = process.env.NEXT_PUBLIC_INSTANT_APP_ID!;
-const ADMIN_TOKEN = process.env.INSTANT_APP_ADMIN_TOKEN!;
+// Lazy init to ensure env vars are available
+let db: ReturnType<typeof init> | null = null;
+function getDb() {
+  if (!db) {
+    const appId = process.env.NEXT_PUBLIC_INSTANT_APP_ID;
+    const adminToken = process.env.INSTANT_APP_ADMIN_TOKEN;
+    if (!appId || !adminToken) {
+      throw new Error('Missing InstantDB configuration');
+    }
+    db = init({ appId, adminToken });
+  }
+  return db;
+}
 
-const db = init({ appId: APP_ID, adminToken: ADMIN_TOKEN });
 
 /**
  * Verify a Solana wallet signature
@@ -96,7 +106,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Find the guest player record
-    const guestResult = await db.query({
+    const guestResult = await getDb().query({
       players: { $: { where: { authId: guestAuthId }, limit: 1 } },
     });
     const guestPlayer = guestResult.players?.[0] as Player | undefined;
@@ -109,7 +119,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if wallet already has an account
-    const walletResult = await db.query({
+    const walletResult = await getDb().query({
       players: { $: { where: { authId: walletAddress }, limit: 1 } },
     });
     const existingWalletPlayer = walletResult.players?.[0] as Player | undefined;
@@ -133,7 +143,7 @@ export async function POST(req: NextRequest) {
       };
 
       // Update wallet player with merged stats
-      await db.transact([
+      await getDb().transact([
         tx.players[existingWalletPlayer.id].update(mergedStats),
         // Delete guest player record
         tx.players[guestPlayer.id].delete(),
@@ -143,7 +153,7 @@ export async function POST(req: NextRequest) {
       finalPlayerId = existingWalletPlayer.id;
     } else {
       // No existing wallet account — upgrade guest to wallet
-      await db.transact([
+      await getDb().transact([
         tx.players[guestPlayer.id].update({
           authId: walletAddress,
           authType: 'wallet',
@@ -156,7 +166,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Create new auth token for wallet
-    const token = await db.auth.createToken({ id: walletAddress });
+    const token = await getDb().auth.createToken({ id: walletAddress });
 
     return NextResponse.json({
       token,
