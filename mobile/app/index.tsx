@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { View, Text, Pressable, Animated, Platform, ScrollView, Modal } from 'react-native';
+import { CryptBackground } from '../components/CryptBackground';
 import { router } from 'expo-router';
 import { useAudio } from '../lib/audio';
 
@@ -133,8 +134,9 @@ export default function HomeScreen() {
 
   if (showSplash) {
     return (
+      <CryptBackground screen="splash" noOverlay>
       <Pressable 
-        className="flex-1 bg-crypt-bg"
+        className="flex-1"
         onPress={unlockAudio}
       >
         <CRTOverlay />
@@ -150,6 +152,7 @@ export default function HomeScreen() {
           <Text className="text-stone-600 text-xs font-mono mt-8">tap to enable sound</Text>
         </View>
       </Pressable>
+      </CryptBackground>
     );
   }
 
@@ -157,7 +160,8 @@ export default function HomeScreen() {
   const displayedVictors = leaderboard.slice(0, 5);
 
   return (
-    <SafeAreaView className="flex-1 bg-crypt-bg" edges={['top', 'left', 'right', 'bottom']}>
+    <CryptBackground screen="home">
+    <SafeAreaView className="flex-1" edges={['top', 'left', 'right', 'bottom']}>
       <CRTOverlay />
       
       {/* Header with audio toggle */}
@@ -363,5 +367,6 @@ export default function HomeScreen() {
         </View>
       </Modal>
     </SafeAreaView>
+    </CryptBackground>
   );
 }

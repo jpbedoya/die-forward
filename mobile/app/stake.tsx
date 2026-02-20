@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { View, Text, Pressable, TextInput, ScrollView, ActivityIndicator, Modal, ImageBackground } from 'react-native';
+import { View, Text, Pressable, TextInput, ScrollView, ActivityIndicator, Modal } from 'react-native';
+import { CryptBackground } from '../components/CryptBackground';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
@@ -118,15 +119,10 @@ export default function StakeScreen() {
   };
 
   return (
-    <ImageBackground
-      source={require('../assets/bg-crypt.webp')}
-      className="flex-1"
-      style={{ backgroundColor: '#0d0d0d' }}
-      resizeMode="cover"
-    >
+    <CryptBackground screen="stake">
     <SafeAreaView className="flex-1">
       {/* Header */}
-      <View className="flex-row items-center justify-between px-4 py-3 border-b border-crypt-border bg-black/60">
+      <View className="flex-row items-center justify-between px-4 py-3 border-b border-crypt-border">
         <Pressable onPress={() => router.replace('/')}>
           <Text className="text-bone-muted text-sm font-mono">← BACK</Text>
         </Pressable>
@@ -404,6 +400,6 @@ export default function StakeScreen() {
       <AudioSettingsModal visible={audioSettingsOpen} onClose={() => setAudioSettingsOpen(false)} />
     </SafeAreaView>
     <CRTOverlay />
-    </ImageBackground>
+    </CryptBackground>
   );
 }

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { View, Text, Pressable, TextInput, ScrollView, ActivityIndicator, Modal, Animated, Platform } from 'react-native';
+import { CryptBackground } from '../components/CryptBackground';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -172,8 +173,8 @@ export default function DeathScreen() {
   }
 
   return (
-    <View className="flex-1 bg-crypt-bg">
-    <SafeAreaView className="flex-1 bg-crypt-bg">
+    <CryptBackground screen="death">
+    <SafeAreaView className="flex-1">
       {/* Header with audio toggle */}
       <View className="flex-row items-center justify-end px-4 py-2">
         <AudioToggle ambientTrack="ambient-death" inline onSettingsPress={() => setAudioSettingsOpen(true)} />
@@ -347,6 +348,6 @@ export default function DeathScreen() {
       <AudioSettingsModal visible={audioSettingsOpen} onClose={() => setAudioSettingsOpen(false)} />
     </SafeAreaView>
     <CRTOverlay />
-    </View>
+    </CryptBackground>
   );
 }

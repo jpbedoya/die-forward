@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { View, Text, Pressable, ScrollView, ActivityIndicator, Animated, Platform } from 'react-native';
+import { CryptBackground } from '../components/CryptBackground';
 import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -346,8 +347,8 @@ export default function CombatScreen() {
     : { flex: 1 };
 
   return (
-    <View style={containerStyle} className="bg-crypt-bg">
-      <SafeAreaView style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#0c0a09' }} edges={['top', 'bottom']}>
+    <CryptBackground screen="combat" style={containerStyle}>
+      <SafeAreaView style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: 'transparent' }} edges={['top', 'bottom']}>
         <Animated.View 
           style={{ transform: [{ translateX: shakeAnim }], flex: 1, display: 'flex', flexDirection: 'column' }}
         >
@@ -561,6 +562,6 @@ export default function CombatScreen() {
         </Animated.View>
       </SafeAreaView>
       <CRTOverlay />
-    </View>
+    </CryptBackground>
   );
 }

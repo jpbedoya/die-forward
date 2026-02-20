@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { View, Text, Pressable, ScrollView, ActivityIndicator, Alert, Platform } from 'react-native';
+import { CryptBackground } from '../components/CryptBackground';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -299,8 +300,8 @@ export default function PlayScreen() {
     : { flex: 1 };
 
   return (
-    <View style={containerStyle} className="bg-crypt-bg">
-      <SafeAreaView style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#0c0a09' }} edges={['top']}>
+    <CryptBackground screen="play" style={containerStyle}>
+      <SafeAreaView style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: 'transparent' }} edges={['top']}>
         {/* Header */}
         <View className="flex-row items-center justify-between px-3 py-2 border-b border-amber/30" style={{ flexShrink: 0 }}>
           <View className="flex-row items-center gap-2">
@@ -570,6 +571,6 @@ export default function PlayScreen() {
       />
       </SafeAreaView>
       <CRTOverlay />
-    </View>
+    </CryptBackground>
   );
 }

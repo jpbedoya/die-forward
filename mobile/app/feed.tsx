@@ -1,4 +1,5 @@
 import { View, Text, ScrollView, Pressable, ActivityIndicator, RefreshControl } from 'react-native';
+import { CryptBackground } from '../components/CryptBackground';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDeathFeed, usePoolStats, Death } from '../lib/instant';
@@ -29,7 +30,7 @@ function DeathEntry({ death }: { death: Death }) {
         <View className="flex-row items-center gap-2">
           <Text className="text-2xl">💀</Text>
           <View>
-            <Text className="text-bone text-base font-mono font-bold">@{death.playerName}</Text>
+            <Text className="text-bone text-base font-mono font-bold">{death.playerName}</Text>
             <Text className="text-bone-dark text-xs font-mono">
               {death.walletAddress.slice(0, 4)}...{death.walletAddress.slice(-4)}
             </Text>
@@ -75,7 +76,8 @@ export default function FeedScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-crypt-bg">
+    <CryptBackground screen="feed">
+    <SafeAreaView className="flex-1">
       {/* Header */}
       <View className="flex-row items-center justify-between px-3 py-3 border-b border-amber/30">
         <Pressable onPress={() => router.back()}>
@@ -146,5 +148,6 @@ export default function FeedScreen() {
         </ScrollView>
       )}
     </SafeAreaView>
+    </CryptBackground>
   );
 }

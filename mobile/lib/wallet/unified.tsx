@@ -496,6 +496,46 @@ if (isNativeMobile) {
   NativeMWAProvider = require('./mwa-provider').MWAWalletProvider;
 }
 
+/**
+ * Error boundary that catches MWA native module init failures (e.g. after
+ * Android background kills) and retries after a short delay instead of
+ * crashing the whole app.
+ */
+class WalletProviderBoundary extends React.Component<
+  { children: ReactNode },
+  { crashed: boolean; retryCount: number }
+> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { crashed: false, retryCount: 0 };
+  }
+
+  static getDerivedStateFromError() {
+    return { crashed: true };
+  }
+
+  componentDidCatch(err: Error) {
+    console.warn('[WalletProvider] Init error (will retry):', err?.message);
+    // Auto-retry up to 3 times with increasing delay
+    const { retryCount } = this.state;
+    if (retryCount < 3) {
+      setTimeout(() => {
+        this.setState(s => ({ crashed: false, retryCount: s.retryCount + 1 }));
+      }, 500 * (retryCount + 1));
+    }
+  }
+
+  render() {
+    if (this.state.crashed && this.state.retryCount >= 3) {
+      // Exhausted retries — render children without wallet (graceful degradation)
+      console.warn('[WalletProvider] Exhausted retries, running walletless');
+      return <>{this.props.children}</>;
+    }
+    if (this.state.crashed) return null; // Blank while retrying
+    return this.props.children;
+  }
+}
+
 // Main provider - switches based on platform
 export function UnifiedWalletProvider({ children }: { children: ReactNode }) {
   // Desktop web: use framework-kit
@@ -512,9 +552,11 @@ export function UnifiedWalletProvider({ children }: { children: ReactNode }) {
   // Native mobile (iOS/Android app): use official @wallet-ui MWA
   if (isNativeMobile) {
     return (
-      <NativeMWAProvider>
-        {children}
-      </NativeMWAProvider>
+      <WalletProviderBoundary>
+        <NativeMWAProvider>
+          {children}
+        </NativeMWAProvider>
+      </WalletProviderBoundary>
     );
   }
   
