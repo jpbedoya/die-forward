@@ -10,6 +10,7 @@ import { AudioToggle } from '../components/AudioToggle';
 import { AudioSettingsModal } from '../components/AudioSettingsModal';
 import { CRTOverlay } from '../components/CRTOverlay';
 import { NicknameModal } from '../components/NicknameModal';
+import { LinkWalletModal } from '../components/LinkWalletModal';
 
 const STAKE_OPTIONS = [0.01, 0.05, 0.1, 0.25];
 
@@ -27,6 +28,7 @@ export default function StakeScreen() {
   const [sealStatus, setSealStatus] = useState<'idle' | 'signing' | 'cancelled' | 'error'>('idle');
   const [editingNickname, setEditingNickname] = useState(false);
   const [nicknameInput, setNicknameInput] = useState('');
+  const [showLinkWallet, setShowLinkWallet] = useState(false);
 
   useEffect(() => {
     playAmbient('ambient-title');
@@ -225,6 +227,16 @@ export default function StakeScreen() {
 
         {/* Action buttons */}
         <View className="gap-3 mb-4">
+          {/* Show "Save Progress" for authenticated guests */}
+          {game.authType === 'guest' && (
+            <Pressable
+              className="border border-amber/40 py-3 items-center active:bg-amber/10"
+              onPress={() => setShowLinkWallet(true)}
+            >
+              <Text className="text-amber text-xs font-mono">💾 SAVE PROGRESS — LINK WALLET</Text>
+            </Pressable>
+          )}
+          
           {!game.walletConnected ? (
             <>
               <Pressable
@@ -406,6 +418,13 @@ export default function StakeScreen() {
         onSubmit={(name) => game.setNickname(name)}
         onSkip={() => game.dismissNicknameModal()}
       />
+      
+      {/* Link Wallet Modal - for guests to upgrade their account */}
+      <LinkWalletModal
+        visible={showLinkWallet}
+        onClose={() => setShowLinkWallet(false)}
+      />
+      
       <AudioSettingsModal visible={audioSettingsOpen} onClose={() => setAudioSettingsOpen(false)} />
     </SafeAreaView>
     <CRTOverlay />
