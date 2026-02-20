@@ -310,7 +310,7 @@ export default function DeathScreen() {
               <ShareCardCapture viewShotRef={viewShotRef} webRef={webRef}>
                 <DeathCard 
                   data={{
-                    playerName: game.walletAddress?.slice(0, 8) || 'Anonymous',
+                    playerName: game.nickname || 'Wanderer',
                     room: roomNumber,
                     totalRooms: game.dungeon?.length || 12,
                     killedBy: params.killedBy || null,

@@ -29,15 +29,15 @@ export async function POST(request: NextRequest) {
 
     // Validate inputs
     if (!sessionToken || typeof sessionToken !== 'string') {
-      return NextResponse.json({ error: 'Invalid session token' }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid session token' }, { status: 400, headers: corsHeaders });
     }
 
     if (typeof room !== 'number' || room < 1 || room > 20) {
-      return NextResponse.json({ error: 'Invalid room number' }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid room number' }, { status: 400, headers: corsHeaders });
     }
 
     if (!finalMessage || typeof finalMessage !== 'string' || finalMessage.length > 50) {
-      return NextResponse.json({ error: 'Invalid final message' }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid final message' }, { status: 400, headers: corsHeaders });
     }
 
     // Find the session by token
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
 
     const sessions = result?.sessions || [];
     if (sessions.length === 0) {
-      return NextResponse.json({ error: 'Invalid or expired session' }, { status: 403 });
+      return NextResponse.json({ error: 'Invalid or expired session' }, { status: 403, headers: corsHeaders });
     }
 
     const session = sessions[0];
@@ -204,10 +204,10 @@ export async function POST(request: NextRequest) {
       deathId,
       corpseId,
       deathHash, // For verification
-    });
+    }, { headers: corsHeaders });
 
   } catch (error) {
     console.error('Failed to record death:', error);
-    return NextResponse.json({ error: 'Failed to record death' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to record death' }, { status: 500, headers: corsHeaders });
   }
 }

@@ -189,12 +189,25 @@ export function GameProvider({ children }: { children: ReactNode }) {
   // Nickname actions
   const setNicknameAction = useCallback(async (name: string) => {
     const trimmed = name.slice(0, 16).trim();
-    if (!trimmed || !state.authId) return;
+    console.log('[Nickname] setNickname called:', { trimmed, authId: state.authId });
+    if (!trimmed) {
+      console.log('[Nickname] Empty name, skipping');
+      return;
+    }
+    if (!state.authId) {
+      console.log('[Nickname] No authId yet, skipping DB update but saving locally');
+      updateState({ nickname: trimmed, showNicknameModal: false, isNewUser: false });
+      await AsyncStorage.setItem(NICKNAME_STORAGE_KEY, trimmed);
+      await AsyncStorage.setItem(NICKNAME_PROMPTED_KEY, 'true');
+      return;
+    }
 
     updateState({ nickname: trimmed, showNicknameModal: false, isNewUser: false });
     await AsyncStorage.setItem(NICKNAME_STORAGE_KEY, trimmed);
     await AsyncStorage.setItem(NICKNAME_PROMPTED_KEY, 'true');
+    console.log('[Nickname] Updating in DB for authId:', state.authId);
     await updatePlayerNicknameByAuth(state.authId, trimmed);
+    console.log('[Nickname] DB update complete');
   }, [state.authId, updateState]);
 
   const dismissNicknameModal = useCallback(async () => {
@@ -229,11 +242,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
         walletAddress: authState.walletAddress,
         isNewUser: authState.isNewUser,
         loading: false,
+        // Don't show nickname modal here - let syncNickname useEffect handle it
+        // after auth state is fully settled
       });
-
-      if (authState.isNewUser) {
-        updateState({ showNicknameModal: true });
-      }
     } catch (err) {
       // Fall back to simple auth without signature
       console.log('[Auth] Signature flow failed, using simple auth:', err);
@@ -261,7 +272,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
         walletAddress: state.walletAddress,
         isNewUser: authState.isNewUser,
         loading: false,
-        showNicknameModal: true, // Always show for new guests
+        // Don't show nickname modal here - let syncNickname useEffect handle it
+        // after auth state is fully settled
       });
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : String(err);

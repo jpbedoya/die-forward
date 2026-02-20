@@ -391,7 +391,7 @@ export default function VictoryScreen() {
               <ShareCardCapture viewShotRef={viewShotRef} webRef={webRef}>
                 <VictoryCard 
                   data={{
-                    playerName: game.walletAddress?.slice(0, 8) || 'Champion',
+                    playerName: game.nickname || 'Champion',
                     roomsCleared: game.dungeon?.length || 12,
                     stakeWon: totalReward,
                     enemiesDefeated: 4, // TODO: Track actual kills
