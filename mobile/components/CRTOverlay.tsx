@@ -7,9 +7,9 @@ import { View, Platform } from 'react-native';
 export function CRTOverlay() {
   return (
     <View 
-      pointerEvents="none"
       className="absolute inset-0 z-50"
       style={{
+        pointerEvents: 'none',
         // Scanlines + vignette (web only - native doesn't support CSS gradients)
         backgroundImage: Platform.OS === 'web' 
           ? `repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 2px),

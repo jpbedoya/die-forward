@@ -212,7 +212,9 @@ export default function VictoryScreen() {
             </Text>
             <Text 
               className="font-mono text-[5px] text-victory text-center leading-[6px] mb-4"
-              style={{ textShadowColor: '#22c55e', textShadowRadius: 15 }}
+              style={Platform.OS === 'web'
+                ? ({ textShadow: '0px 0px 15px #22c55e' } as const)
+                : ({ textShadowColor: '#22c55e', textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 15 } as const)}
             >
               {ESCAPED_ASCII}
             </Text>

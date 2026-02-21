@@ -22,8 +22,10 @@ export function CryptBackground({ screen, children, style, noOverlay }: CryptBac
       >
         {!noOverlay && config.overlay > 0 && (
           <View 
-            style={[styles.overlay, { backgroundColor: `rgba(0,0,0,${config.overlay})` }]} 
-            pointerEvents="none" 
+            style={[
+              styles.overlay,
+              { backgroundColor: `rgba(0,0,0,${config.overlay})`, pointerEvents: 'none' as const },
+            ]}
           />
         )}
         {children}

@@ -40,8 +40,10 @@ export function DieForwardLogo({
 }: DieForwardLogoProps) {
   const config = sizeConfig[size];
   
-  const textShadow = showGlow 
-    ? { textShadowColor: glowColor, textShadowRadius: 12 }
+  const textShadow = showGlow
+    ? Platform.OS === 'web'
+      ? ({ textShadow: `0px 0px 12px ${glowColor}` } as const)
+      : ({ textShadowColor: glowColor, textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 12 } as const)
     : {};
 
   return (

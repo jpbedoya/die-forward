@@ -154,7 +154,9 @@ export default function DeathScreen() {
           <Animated.View style={{ transform: [{ scale: textScale }] }} className="items-center">
             <Text 
               className="font-mono text-[5px] text-blood text-center leading-[6px] mb-6"
-              style={{ textShadowColor: '#991b1b', textShadowRadius: 20 }}
+              style={Platform.OS === 'web'
+                ? ({ textShadow: '0px 0px 20px #991b1b' } as const)
+                : ({ textShadowColor: '#991b1b', textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 20 } as const)}
             >
               {YOU_DIED_ASCII}
             </Text>
