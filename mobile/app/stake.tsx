@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { View, Text, Pressable, TextInput, ScrollView, ActivityIndicator, Modal, Animated } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View, Text, Pressable, TextInput, ScrollView, ActivityIndicator, Modal } from 'react-native';
 import { CryptBackground } from '../components/CryptBackground';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -11,34 +11,9 @@ import { AudioSettingsModal } from '../components/AudioSettingsModal';
 import { CRTOverlay } from '../components/CRTOverlay';
 import { NicknameModal } from '../components/NicknameModal';
 import { LinkWalletModal } from '../components/LinkWalletModal';
+import { AsciiLoader } from '../components/AsciiLoader';
 
 const STAKE_OPTIONS = [0.01, 0.05, 0.1, 0.25];
-
-// Sweeping ░▒▓ placeholder while nickname loads from DB
-function NicknameSkeleton() {
-  const [tick, setTick] = useState(0);
-  const WIDTH = 8;
-
-  useEffect(() => {
-    const id = setInterval(() => setTick(t => t + 1), 90);
-    return () => clearInterval(id);
-  }, []);
-
-  // Single ▓ peak sweeps left→right over a ░ field, fading via ▒
-  const pos = tick % (WIDTH + 2); // +2 so peak enters and exits cleanly
-  const chars = Array.from({ length: WIDTH }, (_, i) => {
-    const dist = Math.abs(i - pos);
-    if (dist === 0) return '▓';
-    if (dist === 1) return '▒';
-    return '░';
-  }).join('');
-
-  return (
-    <Text style={{ fontFamily: 'monospace', fontSize: 14, color: '#3a3530', letterSpacing: 1 }}>
-      {chars}
-    </Text>
-  );
-}
 
 export default function StakeScreen() {
   const game = useGame();
@@ -298,7 +273,7 @@ Offer it. Lose it on death. Escape and claim more.
           >
             <Text className="text-bone text-base">🪦</Text>
             {game.isAuthenticated && game.authType === 'wallet' && game.nickname === null
-              ? <NicknameSkeleton />
+              ? <AsciiLoader />
               : <Text className="text-amber text-sm font-mono font-bold">
                   {game.nickname || 'Wanderer'}
                 </Text>
