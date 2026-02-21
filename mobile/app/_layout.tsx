@@ -177,12 +177,12 @@ export default function RootLayout() {
     getAudioManager().unlock();
   }, []);
 
-  // Splash complete — transition to main app, always start at home
+  // Splash complete — transition to main app
   const handleSplashComplete = useCallback(() => {
     splashShownThisSession = true;
     setShowSplash(false);
-    // Reset to home screen (in case router persisted a different route)
-    setTimeout(() => router.replace('/'), 0);
+    // Note: no router.replace needed — Stack default route is already '/'
+    // (the replace was causing a remount flash)
   }, []);
 
   // Splash renders OUTSIDE wallet provider — immune to MWA init issues
