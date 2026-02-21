@@ -36,20 +36,30 @@ export async function OPTIONS() {
 export async function POST(req: NextRequest) {
   try {
     const db = getDb();
+    const body = await req.json().catch(() => ({}));
+    const { existingGuestId } = body;
 
-    // Generate a unique guest ID
+    // Re-authenticate an existing guest session
+    if (existingGuestId && typeof existingGuestId === 'string' && existingGuestId.startsWith('guest-')) {
+      console.log('[Auth] Re-authenticating existing guest:', existingGuestId);
+      const token = await db.auth.createToken({ email: `${existingGuestId}@guest.dieforward.com` });
+      return NextResponse.json({
+        token,
+        guestId: existingGuestId,
+        isNewUser: false,
+      }, { headers: corsHeaders });
+    }
+
+    // Create a new guest session
     const guestId = `guest-${id()}`;
-    console.log('[Auth] Creating guest token for:', guestId);
-
-    // Create InstantDB auth token (email-based custom auth)
-    // Instant expects `id` to be UUID; use deterministic guest email instead.
+    console.log('[Auth] Creating new guest session:', guestId);
     const token = await db.auth.createToken({ email: `${guestId}@guest.dieforward.com` });
-    console.log('[Auth] Token created successfully');
+    console.log('[Auth] Guest token created');
 
     return NextResponse.json({
       token,
       guestId,
-      isNewUser: true, // Guests are always "new" for nickname purposes
+      isNewUser: true,
     }, { headers: corsHeaders });
   } catch (error) {
     console.error('[Auth] Guest auth error:', error);

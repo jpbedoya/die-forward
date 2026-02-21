@@ -6,11 +6,13 @@ import { useUnifiedWallet, type Address } from './wallet/unified';
 import { GAME_POOL_PDA, buildStakeInstruction, generateSessionId } from './solana/escrow';
 import { Transaction, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { getOrCreatePlayerByAuth, updatePlayerNicknameByAuth } from './instant';
-import { signInWithWallet, signInAsGuest, linkWalletToGuest, getStoredAuthState, type AuthState } from './auth';
+import { signInWithWallet, signInAsGuest, signOut, linkWalletToGuest, getStoredAuthState, type AuthState } from './auth';
 
 const NICKNAME_STORAGE_KEY = 'die-forward-nickname';
 const NICKNAME_PROMPTED_KEY = 'die-forward-nickname-prompted';
 const GUEST_PROGRESS_KEY = 'die-forward-guest-progress';
+const AUTH_STORAGE_KEY = 'die-forward-auth';   // mirrors auth.ts
+const GUEST_ID_KEY = 'die-forward-guest-id';   // mirrors auth.ts
 
 interface GameState {
   // Auth
@@ -124,17 +126,31 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
   }, [unifiedWallet.connected, unifiedWallet.address, updateState]);
 
-  // Auto sign-in when wallet connects so DB nickname loads immediately
+  // Auto sign-in when wallet connects — gets a real InstantDB token via backend
   useEffect(() => {
-    if (unifiedWallet.connected && unifiedWallet.address && !state.isAuthenticated) {
-      setState(prev => ({
-        ...prev,
-        isAuthenticated: true,
-        authId: unifiedWallet.address!,
-        authType: 'wallet',
-        walletAddress: unifiedWallet.address,
-      }));
-    }
+    if (!unifiedWallet.connected || !unifiedWallet.address || state.isAuthenticated) return;
+
+    signInWithWallet(unifiedWallet.address)
+      .then(authState => {
+        setState(prev => ({
+          ...prev,
+          isAuthenticated: true,
+          authId: authState.authId,
+          authType: 'wallet' as const,
+          walletAddress: authState.walletAddress,
+        }));
+      })
+      .catch(err => {
+        // Network error or backend down — fall back to local auth so game still works
+        console.warn('[Auth] Backend sign-in failed, using local auth fallback:', err);
+        setState(prev => ({
+          ...prev,
+          isAuthenticated: true,
+          authId: unifiedWallet.address!,
+          authType: 'wallet' as const,
+          walletAddress: unifiedWallet.address,
+        }));
+      });
   }, [unifiedWallet.connected, unifiedWallet.address, state.isAuthenticated]);
 
   // Sync balance from unified wallet
@@ -450,15 +466,18 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const disconnect = useCallback(async () => {
     await unifiedWallet.disconnect();
-    // Full logout — clear all auth + nickname state, return to zero
+    // Sign out of InstantDB (clears server session + AUTH_STORAGE_KEY in auth.ts)
+    await signOut().catch(err => console.warn('[Auth] signOut error (ignored):', err));
+    // Full logout — clear all local auth + nickname state, return to zero
     await AsyncStorage.multiRemove([
       NICKNAME_STORAGE_KEY,
       NICKNAME_PROMPTED_KEY,
       GUEST_PROGRESS_KEY,
+      AUTH_STORAGE_KEY,
+      GUEST_ID_KEY,
     ]);
     updateState({
       ...initialState,
-      // Keep wallet hardware state cleared
       walletConnected: false,
       walletAddress: null,
       balance: null,

@@ -162,6 +162,8 @@ useEffect(() => {
 ### Phase 1: Signature Verification
 Implement real wallet signature verification on the backend so wallet ownership is cryptographically proven, not just asserted.
 
+**Blocked by:** `signMessage` is not exposed by `@wallet-ui/react-native-web3js` (the MWA adapter). The backend route already has full nacl verification code ready — it just needs `signMessage` support from the wallet adapter. Remove `SKIP_VERIFICATION` from `src/app/api/auth/wallet/route.ts` when this is available.
+
 ### Email Claiming
 Allow guest users to claim their account with an email address (magic link flow) to persist across device reinstalls.
 
@@ -179,6 +181,10 @@ Allow guest users to claim their account with an email address (magic link flow)
 - [x] Stale syncNickname cancelled on logout
 - [x] Guest session → wallet bind → DB name wins
 - [x] Deaths use nickname (not wallet address)
-- [ ] InstantDB permissions
-- [ ] Signature verification
+- [x] Wallet auth hits backend + gets real InstantDB token (auto-auth useEffect)
+- [x] Guest re-auth uses existingGuestId — returning guests keep same identity
+- [x] disconnect() calls signOut() → clears InstantDB session + all local storage
+- [x] InstantDB perms written (players self-only update, deaths immutable)
+- [ ] Signature verification (blocked: signMessage not in @wallet-ui/react-native-web3js)
+- [ ] Remove SKIP_VERIFICATION (blocked by above)
 - [ ] Email claiming
