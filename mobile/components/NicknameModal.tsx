@@ -11,7 +11,6 @@ interface NicknameModalProps {
 export function NicknameModal({ visible, onSubmit, onSkip, initialValue }: NicknameModalProps) {
   const [name, setName] = useState(initialValue || '');
 
-  // Sync initialValue when modal opens
   useEffect(() => {
     if (visible) {
       setName(initialValue || '');
@@ -35,24 +34,31 @@ export function NicknameModal({ visible, onSubmit, onSkip, initialValue }: Nickn
       onRequestClose={onSkip}
     >
       <View className="flex-1 bg-black/85 justify-center items-center p-6">
-        <View className="bg-crypt-bg border border-amber/30 w-full max-w-sm">
-          {/* Header */}
-          <View className="border-b border-amber/20 p-4">
-            <Text className="text-amber text-lg font-mono font-bold text-center tracking-widest">
-              {isEditing ? 'CHANGE YOUR NAME' : 'CHOOSE YOUR NAME'}
-            </Text>
-          </View>
+        <View className="bg-crypt-bg border border-amber/30 w-full max-w-sm p-6">
 
-          {/* Content */}
-          <View className="p-5">
-            <Text className="text-bone-muted text-sm font-mono text-center mb-6 leading-5">
-              {isEditing ? 'The crypt will remember the change.' : 'How shall the crypt remember you?'}
-            </Text>
+          {/* Header — sole intro, no title bar */}
+          <Text className="text-bone-muted text-sm font-mono text-center mb-6 leading-5">
+            {isEditing
+              ? 'The crypt will remember the change.'
+              : 'How shall the crypt remember you?'}
+          </Text>
 
+          {/* Input — wrapped for reliable cursor centering on Android */}
+          <View
+            className="bg-crypt-surface border border-crypt-border mb-2"
+            style={{ alignItems: 'stretch' }}
+          >
             <TextInput
-              className="bg-crypt-surface border border-crypt-border p-4 text-bone font-mono text-base mb-4"
-              style={{ textAlign: 'center' }}
-              placeholder="Enter name..."
+              style={{
+                fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+                fontSize: 16,
+                color: '#d4b896',
+                textAlign: 'center',
+                textAlignVertical: 'center',
+                paddingHorizontal: 16,
+                paddingVertical: 14,
+              }}
+              placeholder="Choose your name..."
               placeholderTextColor="#57534e"
               value={name}
               onChangeText={(text) => setName(text.slice(0, 16))}
@@ -60,31 +66,35 @@ export function NicknameModal({ visible, onSubmit, onSkip, initialValue }: Nickn
               autoFocus={Platform.OS !== 'web'}
               autoCapitalize="none"
               autoCorrect={false}
+              returnKeyType="done"
+              onSubmitEditing={handleSubmit}
             />
+          </View>
 
-            <Text className="text-bone-dark text-xs font-mono text-center mb-6">
-              16 characters max
+          <Text className="text-bone-dark text-xs font-mono text-center mb-6">
+            16 characters max
+          </Text>
+
+          {/* Confirm button */}
+          <Pressable
+            className={`py-4 items-center mb-3 ${name.trim() ? 'bg-amber active:bg-amber-dark' : 'bg-crypt-border'}`}
+            onPress={handleSubmit}
+            disabled={!name.trim()}
+          >
+            <Text className={`font-mono font-bold tracking-widest ${name.trim() ? 'text-crypt-bg' : 'text-bone-dark'}`}>
+              {isEditing ? 'UPDATE' : 'CONFIRM'}
             </Text>
+          </Pressable>
 
-            <Pressable
-              className={`py-4 items-center mb-3 ${name.trim() ? 'bg-amber active:bg-amber-dark' : 'bg-crypt-border'}`}
-              onPress={handleSubmit}
-              disabled={!name.trim()}
-            >
-              <Text className={`font-mono font-bold tracking-widest ${name.trim() ? 'text-crypt-bg' : 'text-bone-dark'}`}>
-                {isEditing ? 'UPDATE' : 'CONFIRM'}
+          {/* Skip / Cancel */}
+          {onSkip && (
+            <Pressable className="py-2 items-center" onPress={onSkip}>
+              <Text className="text-bone-muted font-mono text-sm">
+                {isEditing ? 'Cancel' : 'Skip for now'}
               </Text>
             </Pressable>
+          )}
 
-            {onSkip && (
-              <Pressable
-                className="py-3 items-center"
-                onPress={onSkip}
-              >
-                <Text className="text-bone-muted font-mono text-sm">Skip for now</Text>
-              </Pressable>
-            )}
-          </View>
         </View>
       </View>
     </Modal>
