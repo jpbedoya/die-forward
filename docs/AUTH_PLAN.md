@@ -4,12 +4,18 @@
 
 | Phase | Status | Notes |
 |-------|--------|-------|
-| Phase 1: Backend auth endpoints | ⚠️ Partial | Simplified — no signature verification yet |
-| Phase 2: Frontend auth flow | ✅ Implemented | Wallet + guest flows working |
-| Phase 3: Player records | ✅ Implemented | `players` table with `authId`, `authType` |
-| Phase 4: Nickname flow | ✅ Implemented | NicknameModal + DB sync |
-| Phase 5: InstantDB permissions | ❌ Not yet | Public read/write for now |
-| Phase 6: Account linking | ✅ Implemented | LinkWalletModal |
+| Phase 1: Backend auth endpoints | ✅ Done | All 3 routes live (`/auth/wallet`, `/auth/guest`, `/auth/link-wallet`) |
+| Phase 2: Frontend auth flow | ✅ Done | Wallet + guest both get real InstantDB tokens |
+| Phase 3: Player records | ✅ Done | `players` table with `authId`, `authType` |
+| Phase 4: Nickname flow | ✅ Done | DB-wins for wallet, local-first for guest, 🪦 edit UI |
+| Phase 5: InstantDB permissions | ✅ Done | Perms written + enforceable now that tokens are real |
+| Phase 6: Account linking | ✅ Done | LinkWalletModal + merge logic in backend |
+
+### One remaining item
+
+| Item | Status | Blocker |
+|------|--------|---------|
+| Wallet signature verification | ⏳ Waiting | `signMessage` not exposed by `@wallet-ui/react-native-web3js`. Backend nacl verification is already implemented and `SKIP_VERIFICATION` backdoor exists as placeholder. Remove it when MWA adapter adds `signMessage`. |
 
 ---
 
@@ -143,29 +149,21 @@ useEffect(() => {
 
 ---
 
-## Future Work
+## Remaining Work
 
-### Phase 5: InstantDB Permissions
-```json
-{
-  "players": {
-    "allow": {
-      "view": "true",
-      "create": "auth.id != null",
-      "update": "auth.id in data.ref('authId')",
-      "delete": "false"
-    }
-  }
-}
-```
+### Wallet Signature Verification
+**Status:** Waiting on external dependency
 
-### Phase 1: Signature Verification
-Implement real wallet signature verification on the backend so wallet ownership is cryptographically proven, not just asserted.
+The backend already has full nacl verification implemented in `src/app/api/auth/wallet/route.ts`. When the MWA wallet adapter exposes `signMessage`, the flow is:
 
-**Blocked by:** `signMessage` is not exposed by `@wallet-ui/react-native-web3js` (the MWA adapter). The backend route already has full nacl verification code ready — it just needs `signMessage` support from the wallet adapter. Remove `SKIP_VERIFICATION` from `src/app/api/auth/wallet/route.ts` when this is available.
+1. Remove `SKIP_VERIFICATION` check from the backend route
+2. Pass a real `signMessage` function into `signInWithWallet()` in `auth.ts`
+3. Done — no other changes needed
 
-### Email Claiming
-Allow guest users to claim their account with an email address (magic link flow) to persist across device reinstalls.
+**How to detect when unblocked:** Check `@wallet-ui/react-native-web3js` release notes for `signMessage` / `signBytes` support.
+
+### Email Claiming (Future)
+Allow guest users to claim their account with an email address (magic link flow) to persist across device reinstalls. Not planned for current release.
 
 ---
 
@@ -181,10 +179,9 @@ Allow guest users to claim their account with an email address (magic link flow)
 - [x] Stale syncNickname cancelled on logout
 - [x] Guest session → wallet bind → DB name wins
 - [x] Deaths use nickname (not wallet address)
-- [x] Wallet auth hits backend + gets real InstantDB token (auto-auth useEffect)
+- [x] Wallet auth hits backend + gets real InstantDB token
 - [x] Guest re-auth uses existingGuestId — returning guests keep same identity
 - [x] disconnect() calls signOut() → clears InstantDB session + all local storage
-- [x] InstantDB perms written (players self-only update, deaths immutable)
-- [ ] Signature verification (blocked: signMessage not in @wallet-ui/react-native-web3js)
-- [ ] Remove SKIP_VERIFICATION (blocked by above)
-- [ ] Email claiming
+- [x] InstantDB perms enforced (players self-only update, deaths immutable)
+- [ ] Wallet signature verification — waiting on MWA signMessage support
+- [ ] Email claiming — future
