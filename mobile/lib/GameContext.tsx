@@ -124,6 +124,19 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
   }, [unifiedWallet.connected, unifiedWallet.address, updateState]);
 
+  // Auto sign-in when wallet connects so DB nickname loads immediately
+  useEffect(() => {
+    if (unifiedWallet.connected && unifiedWallet.address && !state.isAuthenticated) {
+      setState(prev => ({
+        ...prev,
+        isAuthenticated: true,
+        authId: unifiedWallet.address!,
+        authType: 'wallet',
+        walletAddress: unifiedWallet.address,
+      }));
+    }
+  }, [unifiedWallet.connected, unifiedWallet.address, state.isAuthenticated]);
+
   // Sync balance from unified wallet
   useEffect(() => {
     if (unifiedWallet.balance !== null) {
@@ -155,6 +168,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   // Sync nickname when authenticated
   useEffect(() => {
+    let cancelled = false;
+
     const syncNickname = async () => {
       if (!state.isAuthenticated || !state.authId) {
         return;
@@ -169,6 +184,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
           // Never pass local nickname — DB wins unconditionally
         );
 
+        if (cancelled) return; // logout may have fired while awaiting DB
+
         if (result) {
           const { player, isNew } = result;
           const dbNickname = player.nickname;
@@ -182,15 +199,19 @@ export function GameProvider({ children }: { children: ReactNode }) {
           await AsyncStorage.setItem(NICKNAME_STORAGE_KEY, dbNickname);
 
           // Prompt only for new wallet users with no real name set
-          const alreadyPrompted = await AsyncStorage.getItem(NICKNAME_PROMPTED_KEY);
-          if (!alreadyPrompted && (isNew || isDefaultNickname)) {
-            updateState({ showNicknameModal: true });
+          if (!cancelled) {
+            const alreadyPrompted = await AsyncStorage.getItem(NICKNAME_PROMPTED_KEY);
+            if (!cancelled && !alreadyPrompted && (isNew || isDefaultNickname)) {
+              updateState({ showNicknameModal: true });
+            }
           }
         }
       } else {
         // ── Guest auth: local storage is the source of truth ──
         const localNickname = await AsyncStorage.getItem(NICKNAME_STORAGE_KEY);
         const alreadyPrompted = await AsyncStorage.getItem(NICKNAME_PROMPTED_KEY);
+
+        if (cancelled) return;
 
         if (localNickname) {
           updateState({ nickname: localNickname });
@@ -203,6 +224,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
           undefined,
           localNickname || undefined,
         );
+
+        if (cancelled) return;
 
         if (result) {
           const { isNew } = result;
@@ -217,6 +240,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     };
 
     syncNickname();
+    return () => { cancelled = true; };
   }, [state.isAuthenticated, state.authId, state.authType, state.walletAddress, updateState]);
 
   // Nickname actions
