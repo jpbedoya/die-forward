@@ -5,6 +5,12 @@ import { useEffect, useState, useCallback } from 'react';
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// Toggle noisy audio debug logs
+const AUDIO_DEBUG = false;
+const audioLog = (...args: any[]) => {
+  if (AUDIO_DEBUG) audioLog(...args);
+};
+
 // Native audio module (expo-audio) - only loaded on native platforms
 // IMPORTANT: AudioPlayer is NOT a top-level export of expo-audio.
 // It lives on the NativeAudioModule instance (requireNativeModule('ExpoAudio')).
@@ -17,14 +23,14 @@ async function loadNativeAudioModule() {
   if (AudioModule) return;
   
   try {
-    console.log('[Audio] Loading expo-audio module (native)...');
+    audioLog('[Audio] Loading expo-audio module (native)...');
     // Get NativeAudioModule instance — this has .AudioPlayer as a property
     const audioModMod = await import('expo-audio/build/AudioModule');
     AudioModule = audioModMod.default; // requireNativeModule('ExpoAudio')
     // Get setAudioModeAsync from main package
     const expoAudio = await import('expo-audio');
     setAudioModeAsync = expoAudio.setAudioModeAsync;
-    console.log('[Audio] expo-audio loaded:', !!AudioModule?.AudioPlayer);
+    audioLog('[Audio] expo-audio loaded:', !!AudioModule?.AudioPlayer);
   } catch (e) {
     console.warn('[Audio] Failed to load expo-audio:', e);
   }
@@ -171,11 +177,11 @@ class WebAudioManager {
       this.enabled = saved !== 'false';
       this.initialized = true;
       
-      console.log('[Audio/Web] Initialized, setting up unlock listeners');
+      audioLog('[Audio/Web] Initialized, setting up unlock listeners');
       
       // Listen for first user interaction to unlock audio
       const unlockAudio = () => {
-        console.log('[Audio/Web] User interaction detected - unlocking audio');
+        audioLog('[Audio/Web] User interaction detected - unlocking audio');
         this.unlocked = true;
         
         // Play a silent audio to fully unlock iOS Safari
@@ -185,7 +191,7 @@ class WebAudioManager {
         
         // Play pending ambient if any
         if (this.pendingAmbient && this.enabled) {
-          console.log('[Audio/Web] Playing pending ambient:', this.pendingAmbient);
+          audioLog('[Audio/Web] Playing pending ambient:', this.pendingAmbient);
           this.playAmbient(this.pendingAmbient);
           this.pendingAmbient = null;
         }
@@ -215,7 +221,7 @@ class WebAudioManager {
   }
 
   async playSFX(id: SoundId) {
-    console.log('[Audio/Web] playSFX:', id, { enabled: this.enabled, unlocked: this.unlocked });
+    audioLog('[Audio/Web] playSFX:', id, { enabled: this.enabled, unlocked: this.unlocked });
     
     if (!this.enabled || !this.unlocked) return;
     
@@ -243,13 +249,13 @@ class WebAudioManager {
     
     // When un-suppressing, restart the last requested ambient
     if (wasSupressed && !suppress && this.lastRequestedAmbient) {
-      console.log('[Audio/Web] Un-suppressing, restarting ambient:', this.lastRequestedAmbient);
+      audioLog('[Audio/Web] Un-suppressing, restarting ambient:', this.lastRequestedAmbient);
       this.playAmbient(this.lastRequestedAmbient);
     }
   }
 
   async playAmbient(id: SoundId, crossfade: boolean = true) {
-    console.log('[Audio/Web] playAmbient:', id, { enabled: this.enabled, unlocked: this.unlocked, crossfade, suppressed: this.suppressAmbient });
+    audioLog('[Audio/Web] playAmbient:', id, { enabled: this.enabled, unlocked: this.unlocked, crossfade, suppressed: this.suppressAmbient });
     
     // Always track what was requested, even if suppressed (for restart)
     this.lastRequestedAmbient = id;
@@ -258,13 +264,13 @@ class WebAudioManager {
     if (this.suppressAmbient) return;
     
     if (!this.unlocked) {
-      console.log('[Audio/Web] Ambient queued (waiting for unlock):', id);
+      audioLog('[Audio/Web] Ambient queued (waiting for unlock):', id);
       this.pendingAmbient = id;
       return;
     }
     
     if (this.currentAmbientId === id) {
-      console.log('[Audio/Web] Ambient already playing:', id);
+      audioLog('[Audio/Web] Ambient already playing:', id);
       return;
     }
     
@@ -328,7 +334,7 @@ class WebAudioManager {
         });
       }
       
-      console.log('[Audio/Web] Ambient started:', id);
+      audioLog('[Audio/Web] Ambient started:', id);
     } catch (e) {
       console.warn('[Audio/Web] Failed to play ambient:', id, e);
     }
@@ -378,7 +384,7 @@ class WebAudioManager {
   async unlock() {
     if (this.unlocked) return;
     this.unlocked = true;
-    console.log('[Audio/Web] Unlocked by user interaction');
+    audioLog('[Audio/Web] Unlocked by user interaction');
     
     if (this.pendingAmbient && this.enabled) {
       const pending = this.pendingAmbient;
@@ -426,14 +432,14 @@ class NativeAudioManager {
       this.enabled = saved !== 'false';
       this.initialized = true;
       
-      console.log('[Audio/Native] Initialized');
+      audioLog('[Audio/Native] Initialized');
     } catch (e) {
       console.warn('[Audio/Native] Failed to initialize:', e);
     }
   }
 
   async playSFX(id: SoundId) {
-    console.log('[Audio/Native] playSFX:', id, { enabled: this.enabled, hasModule: !!AudioModule?.AudioPlayer });
+    audioLog('[Audio/Native] playSFX:', id, { enabled: this.enabled, hasModule: !!AudioModule?.AudioPlayer });
     
     if (!this.enabled) return;
     if (!AudioModule?.AudioPlayer) return;
@@ -465,13 +471,13 @@ class NativeAudioManager {
     
     // When un-suppressing, restart the last requested ambient
     if (wasSupressed && !suppress && this.lastRequestedAmbient) {
-      console.log('[Audio/Native] Un-suppressing, restarting ambient:', this.lastRequestedAmbient);
+      audioLog('[Audio/Native] Un-suppressing, restarting ambient:', this.lastRequestedAmbient);
       this.playAmbient(this.lastRequestedAmbient);
     }
   }
 
   async playAmbient(id: SoundId, crossfade: boolean = true) {
-    console.log('[Audio/Native] playAmbient:', id, { enabled: this.enabled, hasModule: !!AudioModule?.AudioPlayer, crossfade, suppressed: this.suppressAmbient });
+    audioLog('[Audio/Native] playAmbient:', id, { enabled: this.enabled, hasModule: !!AudioModule?.AudioPlayer, crossfade, suppressed: this.suppressAmbient });
     
     // Always track what was requested, even if suppressed (for restart)
     this.lastRequestedAmbient = id;
@@ -539,7 +545,7 @@ class NativeAudioManager {
         player.play();
       }
       
-      console.log('[Audio/Native] Ambient started:', id);
+      audioLog('[Audio/Native] Ambient started:', id);
     } catch (e) {
       console.warn('[Audio/Native] Failed to play ambient:', id, e);
     }
@@ -615,10 +621,10 @@ let audioManager: IAudioManager | null = null;
 export function getAudioManager(): IAudioManager {
   if (!audioManager) {
     if (Platform.OS === 'web') {
-      console.log('[Audio] Creating WebAudioManager');
+      audioLog('[Audio] Creating WebAudioManager');
       audioManager = new WebAudioManager();
     } else {
-      console.log('[Audio] Creating NativeAudioManager');
+      audioLog('[Audio] Creating NativeAudioManager');
       audioManager = new NativeAudioManager();
     }
   }

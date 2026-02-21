@@ -189,13 +189,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
   // Nickname actions
   const setNicknameAction = useCallback(async (name: string) => {
     const trimmed = name.slice(0, 16).trim();
-    console.log('[Nickname] setNickname called:', { trimmed, authId: state.authId });
-    if (!trimmed) {
-      console.log('[Nickname] Empty name, skipping');
-      return;
-    }
+    if (!trimmed) return;
     if (!state.authId) {
-      console.log('[Nickname] No authId yet, skipping DB update but saving locally');
       updateState({ nickname: trimmed, showNicknameModal: false, isNewUser: false });
       await AsyncStorage.setItem(NICKNAME_STORAGE_KEY, trimmed);
       await AsyncStorage.setItem(NICKNAME_PROMPTED_KEY, 'true');
@@ -205,9 +200,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     updateState({ nickname: trimmed, showNicknameModal: false, isNewUser: false });
     await AsyncStorage.setItem(NICKNAME_STORAGE_KEY, trimmed);
     await AsyncStorage.setItem(NICKNAME_PROMPTED_KEY, 'true');
-    console.log('[Nickname] Updating in DB for authId:', state.authId);
     await updatePlayerNicknameByAuth(state.authId, trimmed);
-    console.log('[Nickname] DB update complete');
   }, [state.authId, updateState]);
 
   const dismissNicknameModal = useCallback(async () => {
