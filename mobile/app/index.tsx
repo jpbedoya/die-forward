@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, Pressable, Platform, ScrollView, Modal, Animated, PanResponder } from 'react-native';
+import { View, Text, Pressable, Platform, ScrollView, Modal, Animated, PanResponder, StyleSheet } from 'react-native';
 import Constants from 'expo-constants';
+import { BlurView } from 'expo-blur';
 import { CryptBackground } from '../components/CryptBackground';
 import { router } from 'expo-router';
 import { useAudio } from '../lib/audio';
@@ -127,11 +128,12 @@ function EchoSheet({
 
   return (
     <Modal visible={visible} transparent animationType="none" onRequestClose={dismiss}>
-      {/* Backdrop */}
-      <Pressable
-        style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.6)' }}
-        onPress={dismiss}
-      />
+      {/* Blurred backdrop */}
+      <Pressable style={StyleSheet.absoluteFill} onPress={dismiss}>
+        <BlurView intensity={40} tint="dark" style={StyleSheet.absoluteFill}>
+          <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' }} />
+        </BlurView>
+      </Pressable>
 
       <Animated.View
         style={{
@@ -199,27 +201,27 @@ function EchoSheet({
           {activeTab === 'echoes' ? (
             recentDeaths.length > 0 ? recentDeaths.map((death, i) => (
               <View key={death.id || i} style={{
-                paddingVertical: 12,
+                paddingVertical: 14,
                 borderBottomWidth: 1,
                 borderColor: C.border,
               }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                  <Text style={{ fontFamily: 'monospace', fontSize: 13, color: C.ethereal }} numberOfLines={1}>
-                    {'† '}
-                    <Text style={{ color: C.bone }}>{death.playerName}</Text>
-                  </Text>
-                  <Text style={{ fontFamily: 'monospace', fontSize: 12, color: C.amber, marginLeft: 8 }}>
-                    D:{death.room || '?'}
-                  </Text>
-                </View>
+                {/* † PLAYERNAME · depth 7 */}
+                <Text style={{ fontFamily: 'monospace', fontSize: 13 }} numberOfLines={1}>
+                  <Text style={{ color: C.ethereal }}>†</Text>
+                  <Text style={{ color: C.bone, fontWeight: '600' }}> {(death.playerName || 'Unknown').toUpperCase()}</Text>
+                  <Text style={{ color: C.boneDark }}> · </Text>
+                  <Text style={{ color: C.boneDark }}>depth </Text>
+                  <Text style={{ color: C.amber, fontWeight: '600' }}>{death.room || '?'}</Text>
+                </Text>
+                {/* "their dying words here..." */}
                 {death.finalMessage ? (
                   <Text style={{
                     fontFamily: 'monospace',
-                    fontSize: 11,
+                    fontSize: 12,
                     color: C.boneMuted,
                     fontStyle: 'italic',
-                    marginTop: 4,
-                    paddingLeft: 14,
+                    marginTop: 6,
+                    lineHeight: 18,
                   }} numberOfLines={2}>
                     "{death.finalMessage}"
                   </Text>

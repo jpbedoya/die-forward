@@ -179,6 +179,5 @@ Imported in `_layout.tsx` before anything else:
 - [x] Creature inspect modal (combat + play)
 - [x] Item inspect + USE from inventory
 - [x] Free mode victory (no claim reward section)
-- [ ] iOS build
-- [ ] Audius streaming on device
-- [ ] Full staked run (devnet)
+- [x] Audius streaming on device
+- [x] Full staked run (devnet)
