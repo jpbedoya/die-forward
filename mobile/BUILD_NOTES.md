@@ -1,6 +1,6 @@
 # Die Forward — Mobile Build Notes
 
-## Current Build: Feb 19, 2026
+## Current Build: Feb 21, 2026
 
 Expo mobile app running on web (React Native Web), iOS, and Android with full feature parity.
 
@@ -20,6 +20,7 @@ Expo mobile app running on web (React Native Web), iOS, and Android with full fe
 | Wallet (web) | @solana/react-hooks (framework-kit) |
 | Streaming | Audius API (mobile only) |
 | Share cards | react-native-view-shot + expo-sharing |
+| Blur effects | expo-blur (BlurView for sheet backdrop) |
 
 ---
 
@@ -168,6 +169,54 @@ Imported in `_layout.tsx` before anything else:
 
 ---
 
+## Echoes Sheet (Title Screen)
+
+The bottom sheet on the title screen shows recent deaths (Echoes) and top players (Victors).
+
+### Behaviour
+- Tapping the echoes preview area opens the sheet
+- Sheet slides up with spring animation
+- **Swipe down** on the handle bar or tab row to dismiss (PanResponder)
+- Tapping the blurred backdrop dismisses
+
+### Styling
+- **Backdrop**: `expo-blur` BlurView (intensity 80, tint dark) + `rgba(0,0,0,0.4)` overlay
+- **Sheet background**: `rgba(10, 8, 6, 0.55)` — semi-transparent so background shows through
+- **Entry format**: `† PLAYERNAME · depth 7` then `"their dying words..."` on next line
+- Text is centered; quotes use `boneDark` color (#78716c)
+
+### Component
+`EchoSheet` in `app/index.tsx` — self-contained, receives data as props.
+
+---
+
+## Auth & Identity
+
+See `docs/AUTH_PLAN.md` for full details. Summary:
+
+### Identity Row (The Toll screen)
+- Always visible **above** action buttons regardless of wallet state
+- Shows: `🪦 NICKNAME ✎` — tap opens `NicknameModal`
+- When wallet connected, also shows: `addr · X.XXX SOL · [logout]`
+- Guest shows `🪦 Wanderer ✎` (or their set name)
+
+### Nickname Rules
+| State | Nickname source |
+|-------|----------------|
+| Wallet auth | DB always wins, overwrites local cache |
+| Guest auth | AsyncStorage only |
+
+### Nickname Editing
+- `NicknameModal` handles both first-time setup and editing
+- Accepts `initialValue` prop — shows `UPDATE` instead of `CONFIRM`
+- Wallet users: writes to DB first, then local cache
+- Guest users: writes to AsyncStorage only
+
+### Disconnect
+Full logout — clears auth state, nickname cache, prompted flag, guest flag.
+
+---
+
 ## Testing Checklist
 
 - [x] TypeScript compilation
@@ -181,3 +230,9 @@ Imported in `_layout.tsx` before anything else:
 - [x] Free mode victory (no claim reward section)
 - [x] Audius streaming on device
 - [x] Full staked run (devnet)
+- [x] Wallet bind → DB nickname loads immediately (Feb 21)
+- [x] Logout clears nickname (no stale state) (Feb 21)
+- [x] Death echoes show nickname, not wallet address (Feb 21)
+- [x] 🪦 identity row visible above action buttons (Feb 21)
+- [x] Tap 🪦 → NicknameModal pre-filled, saves to DB (Feb 21)
+- [x] Echoes sheet: semi-transparent with blur backdrop (Feb 21)

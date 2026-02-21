@@ -1,221 +1,151 @@
-# Die Forward — Unified Auth Plan
+# Die Forward — Auth Plan
 
-## Overview
+## Implementation Status (Feb 2026)
 
-Replace ad-hoc wallet address tracking with proper InstantDB authentication. Single identity system for all users — wallet or empty-handed.
-
----
-
-## Current State (Problems)
-
-| Issue | Current | Impact |
-|-------|---------|--------|
-| Wallet users | `walletAddress` as ID | No real auth, anyone can claim any address |
-| Empty handed | All share `demo-wallet` | No unique identity, can't track progress |
-| Nicknames | Stored in localStorage + players table | Disconnected from auth |
-| Permissions | None | Can't protect user data |
+| Phase | Status | Notes |
+|-------|--------|-------|
+| Phase 1: Backend auth endpoints | ⚠️ Partial | Simplified — no signature verification yet |
+| Phase 2: Frontend auth flow | ✅ Implemented | Wallet + guest flows working |
+| Phase 3: Player records | ✅ Implemented | `players` table with `authId`, `authType` |
+| Phase 4: Nickname flow | ✅ Implemented | NicknameModal + DB sync |
+| Phase 5: InstantDB permissions | ❌ Not yet | Public read/write for now |
+| Phase 6: Account linking | ✅ Implemented | LinkWalletModal |
 
 ---
 
-## Target State
+## Current Auth Architecture
+
+### Identity Model
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    InstantDB Auth                           │
-│  ─────────────────────────────────────────────────────────  │
-│                                                             │
-│   WALLET USER                    EMPTY HANDED USER          │
-│   ────────────                   ─────────────────          │
-│   1. Connect wallet              1. Tap "Empty Handed"      │
-│   2. Sign message                2. InstantDB guest session │
-│   3. Backend verifies            3. Auto auth.id assigned   │
-│   4. createToken(walletAddr)     4. Nickname prompt         │
-│   5. signInWithToken             5. Player record created   │
-│   6. Nickname prompt (first)                                │
-│   7. Player record created                                  │
-│                                                             │
-│   auth.id = wallet address       auth.id = instant-gen UUID │
-│                                                             │
-│   UPGRADE PATH (future)                                     │
-│   ─────────────────────                                     │
-│   Empty handed → Connect wallet → Link accounts             │
-│   Empty handed → Enter email → Claim account                │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
+WALLET USER                          GUEST USER
+──────────────────────────────       ──────────────────────────────
+authId  = wallet address             authId  = UUID (stored locally)
+authType = 'wallet'                  authType = 'guest'
+walletAddress = address              walletAddress = undefined
+nickname ← DB is source of truth     nickname ← AsyncStorage is source of truth
+```
+
+### Source of Truth Rules (critical)
+
+| State | Nickname source | Local cache |
+|-------|----------------|-------------|
+| Wallet auth | **InstantDB DB always wins** | Write-through cache only |
+| Guest auth | AsyncStorage | IS the source |
+
+**Why DB wins for wallet users:** The wallet address is stable across devices and sessions. The DB is the canonical store. Local cache is just for fast reads — it is always populated FROM the DB, never pushed TO the DB on sync.
+
+### Disconnect = Full Logout
+
+Calling `game.disconnect()` clears:
+- All auth state (`isAuthenticated`, `authId`, `authType`)
+- Local nickname cache (`AsyncStorage`)
+- Prompted flag
+- Guest progress flag
+- Resets to `initialState`
+
+---
+
+## Auth Flows
+
+### Wallet Flow
+
+```
+1. User taps "BIND WALLET"
+   → wallet.connect() → walletAddress set
+   → useEffect auto-authenticates (sets isAuthenticated: true, authId = walletAddress)
+   → syncNickname useEffect fires
+   → getOrCreatePlayerByAuth(authId, 'wallet')
+   → DB nickname loaded, overwrites local cache
+   → If default name (new user): show NicknameModal
+
+2. User sets nickname via 🪦 NAME ✎ tap
+   → Opens NicknameModal (pre-filled)
+   → On confirm: write to DB first, then update local cache + state
+
+3. User taps [logout]
+   → Full reset: auth state + local storage cleared
+```
+
+### Guest Flow
+
+```
+1. User taps "EMPTY-HANDED"
+   → signInAsGuest() → new UUID authId
+   → syncNickname reads AsyncStorage first
+   → If no local name: show NicknameModal
+   → Guest player record created in DB
+
+2. User sets nickname
+   → Saved to AsyncStorage only (not DB-authoritative for guests)
+
+3. No explicit logout needed (ephemeral session)
+```
+
+### Wallet Bind After Guest Session
+
+```
+Guest playing → taps "BIND WALLET" in The Toll
+→ wallet.connect() runs
+→ auto-auth fires → authType switches to 'wallet'
+→ syncNickname fetches DB for this wallet address
+→ DB record wins — local guest name is NOT carried over
+→ If new wallet (no DB record): nickname prompt shown
+→ If existing wallet: their DB name restored
+```
+
+**Design decision:** DB always wins when wallet auth is present. Guest names are ephemeral.
+
+---
+
+## Key Files
+
+| File | Purpose |
+|------|---------|
+| `mobile/lib/GameContext.tsx` | Auth state machine, syncNickname, disconnect |
+| `mobile/lib/auth.ts` | signInWithWallet, signInAsGuest, linkWalletToGuest helpers |
+| `mobile/lib/instant.ts` | getOrCreatePlayerByAuth, updatePlayerNicknameByAuth |
+| `mobile/app/stake.tsx` | Wallet connect UI, identity row (🪦), NicknameModal trigger |
+| `mobile/components/NicknameModal.tsx` | Name entry modal (first-time + editing, initialValue prop) |
+| `mobile/components/LinkWalletModal.tsx` | Guest → wallet linking UI |
+
+---
+
+## Simplified Auth (Current Implementation)
+
+The planned signature verification (Phase 1) is not yet live. Current auth is:
+
+```
+Wallet: authId = walletAddress (no signature verification)
+Guest:  authId = UUID stored in AsyncStorage via signInAsGuest()
+```
+
+This is sufficient for the current stage — ownership is implied by wallet address, not cryptographically proven. Full signature verification is a post-hackathon hardening task.
+
+---
+
+## syncNickname — Stale Async Protection
+
+`syncNickname` runs in a `useEffect` and awaits DB calls. A `cancelled` flag prevents stale responses from writing state after logout:
+
+```typescript
+useEffect(() => {
+  let cancelled = false;
+  const syncNickname = async () => {
+    const result = await getOrCreatePlayerByAuth(...);
+    if (cancelled) return; // ignore if logged out while awaiting
+    updateState({ nickname: result.player.nickname });
+  };
+  syncNickname();
+  return () => { cancelled = true; };
+}, [state.isAuthenticated, state.authId, ...]);
 ```
 
 ---
 
-## Implementation Phases
+## Future Work
 
-### Phase 1: Backend Auth Endpoints
-
-**New API routes:**
-
-```
-POST /api/auth/wallet
-  - Input: { walletAddress, signature, message }
-  - Verify signature (proves wallet ownership)
-  - Call db.auth.createToken({ id: walletAddress })
-  - Return { token }
-
-POST /api/auth/guest  
-  - No input required
-  - Generate unique guest ID (or let InstantDB do it)
-  - Call db.auth.createToken({ id: guestId })
-  - Return { token, guestId }
-```
-
-**Signature verification (Solana):**
-```ts
-import nacl from 'tweetnacl';
-import bs58 from 'bs58';
-
-function verifyWalletSignature(
-  walletAddress: string,
-  signature: string,
-  message: string
-): boolean {
-  const messageBytes = new TextEncoder().encode(message);
-  const signatureBytes = bs58.decode(signature);
-  const publicKeyBytes = bs58.decode(walletAddress);
-  return nacl.sign.detached.verify(messageBytes, signatureBytes, publicKeyBytes);
-}
-```
-
-**Message format:**
-```
-Sign in to Die Forward
-Nonce: {timestamp}-{random}
-```
-
-### Phase 2: Frontend Auth Flow
-
-**Wallet connection:**
-```ts
-async function signInWithWallet() {
-  // 1. Connect wallet (existing flow)
-  const address = await wallet.connect();
-  
-  // 2. Create sign-in message with nonce
-  const nonce = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-  const message = `Sign in to Die Forward\nNonce: ${nonce}`;
-  
-  // 3. Request signature from wallet
-  const signature = await wallet.signMessage(new TextEncoder().encode(message));
-  
-  // 4. Send to backend for verification
-  const { token } = await fetch('/api/auth/wallet', {
-    method: 'POST',
-    body: JSON.stringify({ 
-      walletAddress: address, 
-      signature: bs58.encode(signature),
-      message 
-    }),
-  }).then(r => r.json());
-  
-  // 5. Sign in to InstantDB
-  await db.auth.signInWithToken(token);
-  
-  // 6. Check if first time → show nickname modal
-}
-```
-
-**Empty handed:**
-```ts
-async function signInAsGuest() {
-  // 1. Request guest token from backend
-  const { token, guestId } = await fetch('/api/auth/guest', {
-    method: 'POST',
-  }).then(r => r.json());
-  
-  // 2. Sign in to InstantDB
-  await db.auth.signInWithToken(token);
-  
-  // 3. Store guestId locally (for display/reference)
-  await AsyncStorage.setItem('guest-id', guestId);
-  
-  // 4. Show nickname modal (always for new guests)
-}
-```
-
-### Phase 3: Player Records
-
-**Schema update:**
-```ts
-// players table
-{
-  id: string,              // InstantDB entity ID
-  authId: string,          // auth.id (wallet address OR guest UUID)
-  authType: 'wallet' | 'guest' | 'email',
-  walletAddress?: string,  // Only for wallet users
-  email?: string,          // Only if claimed via email
-  nickname: string,
-  // ... stats
-}
-```
-
-**On first auth (either type):**
-```ts
-async function ensurePlayerRecord(authId: string, authType: string, walletAddress?: string) {
-  const existing = await db.query({
-    players: { $: { where: { authId } } }
-  });
-  
-  if (existing.players.length === 0) {
-    // Create new player
-    await db.transact(
-      tx.players[id()].update({
-        authId,
-        authType,
-        walletAddress,
-        nickname: 'Wanderer', // Default until set
-        totalDeaths: 0,
-        // ... other defaults
-      })
-    );
-    return { isNew: true };
-  }
-  return { isNew: false, player: existing.players[0] };
-}
-```
-
-### Phase 4: Nickname Flow
-
-**Trigger nickname modal:**
-- Wallet user: first sign-in OR nickname is default
-- Empty handed: always on first session
-
-**Nickname modal:**
-```
-┌─────────────────────────────────────┐
-│                                     │
-│     What should we call you?        │
-│                                     │
-│     ┌─────────────────────────┐     │
-│     │  [nickname input]       │     │
-│     └─────────────────────────┘     │
-│                                     │
-│     [ Skip ]        [ Confirm ]     │
-│                                     │
-│     (Skip = "Wanderer")             │
-│                                     │
-└─────────────────────────────────────┘
-```
-
-**Save nickname:**
-```ts
-async function saveNickname(nickname: string) {
-  const user = db.useAuth().user;
-  await db.transact(
-    tx.players[playerId].update({ nickname })
-  );
-  await AsyncStorage.setItem('nickname-set', 'true');
-}
-```
-
-### Phase 5: Permissions (instant.perms.ts)
-
+### Phase 5: InstantDB Permissions
 ```json
 {
   "players": {
@@ -225,158 +155,30 @@ async function saveNickname(nickname: string) {
       "update": "auth.id in data.ref('authId')",
       "delete": "false"
     }
-  },
-  "deaths": {
-    "allow": {
-      "view": "true",
-      "create": "auth.id != null",
-      "update": "false",
-      "delete": "false"
-    }
   }
 }
 ```
 
----
+### Phase 1: Signature Verification
+Implement real wallet signature verification on the backend so wallet ownership is cryptographically proven, not just asserted.
 
-## Migration
-
-**Existing players (wallet):**
-1. On next sign-in, go through new wallet auth flow
-2. Match by walletAddress, update authId = walletAddress
-
-**Existing deaths/data:**
-- Keep as-is, still queryable
-- New deaths linked to auth.id
-
----
-
-### Phase 6: Account Linking (Empty Handed → Wallet)
-
-Allow empty handed users to upgrade their account by connecting a wallet, preserving all their progress.
-
-**UI Trigger:**
-- Profile/settings area: "Connect Wallet to Save Progress"
-- Or prompt after N deaths / reaching certain depth
-
-**Flow:**
-```
-┌─────────────────────────────────────────────────────────────┐
-│  EMPTY HANDED USER CONNECTS WALLET                          │
-│  ─────────────────────────────────────────────────────────  │
-│                                                             │
-│  1. User taps "Connect Wallet" (already playing as guest)   │
-│  2. Wallet connects → get address                           │
-│  3. Sign message (same as normal wallet auth)               │
-│  4. Backend verifies signature                              │
-│  5. Check: does this wallet already have an account?        │
-│     ├─ YES → Merge accounts (see below)                     │
-│     └─ NO  → Link wallet to current guest account           │
-│  6. Update player record:                                   │
-│     - walletAddress = new address                           │
-│     - authType = 'wallet'                                   │
-│     - authId = wallet address (migrate from guest UUID)     │
-│  7. Re-auth with wallet token                               │
-│  8. All history preserved under new auth                    │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
-```
-
-**Backend endpoint:**
-```
-POST /api/auth/link-wallet
-  - Input: { guestAuthId, walletAddress, signature, message }
-  - Verify signature
-  - Check for existing wallet account
-  - If exists: merge flow (combine stats, keep higher values)
-  - If not: update guest player record with wallet
-  - Return { token, merged: boolean }
-```
-
-**Merge logic (if wallet already has account):**
-```ts
-async function mergeAccounts(guestPlayer: Player, walletPlayer: Player) {
-  // Combine stats - keep best/highest values
-  const merged = {
-    totalDeaths: guestPlayer.totalDeaths + walletPlayer.totalDeaths,
-    totalClears: guestPlayer.totalClears + walletPlayer.totalClears,
-    totalEarned: guestPlayer.totalEarned + walletPlayer.totalEarned,
-    totalLost: guestPlayer.totalLost + walletPlayer.totalLost,
-    highestRoom: Math.max(guestPlayer.highestRoom, walletPlayer.highestRoom),
-    nickname: walletPlayer.nickname || guestPlayer.nickname, // Prefer wallet's
-  };
-  
-  // Update wallet player with merged stats
-  await db.transact(tx.players[walletPlayer.id].update(merged));
-  
-  // Update all guest's deaths to point to wallet account
-  // (or keep as historical record with original authId)
-  
-  // Delete guest player record
-  await db.transact(tx.players[guestPlayer.id].delete());
-  
-  return walletPlayer.id;
-}
-```
-
-**UX considerations:**
-- Show confirmation: "Link wallet [addr] to your account?"
-- If merging: "Found existing progress on this wallet. Combine accounts?"
-- Success: "Account upgraded! Your progress is now saved to your wallet."
-
----
-
-## Future: Email Claiming
-
-**Empty handed → Email (not in initial release):**
-```ts
-async function claimWithEmail(email: string) {
-  // Send magic code
-  // On verify: update player record with email
-  // Keep same authId
-}
-```
-
----
-
-## File Changes Summary
-
-| File | Changes |
-|------|---------|
-| `src/app/api/auth/wallet/route.ts` | NEW — wallet signature verification |
-| `src/app/api/auth/guest/route.ts` | NEW — guest token generation |
-| `src/app/api/auth/link-wallet/route.ts` | NEW — link wallet to guest account |
-| `src/lib/instant.ts` | Add auth helpers, update player schema |
-| `mobile/lib/GameContext.tsx` | Integrate InstantDB auth |
-| `mobile/lib/auth.ts` | NEW — auth flow helpers |
-| `mobile/app/stake.tsx` | Update to use new auth |
-| `mobile/app/profile.tsx` | NEW or update — account linking UI |
-| `mobile/components/NicknameModal.tsx` | Ensure works for all users |
-| `instant.perms.ts` | NEW — permission rules |
+### Email Claiming
+Allow guest users to claim their account with an email address (magic link flow) to persist across device reinstalls.
 
 ---
 
 ## Testing Checklist
 
-- [ ] Wallet user can sign in (signature verified)
-- [ ] Empty handed user gets unique ID
-- [ ] Nickname prompt shows for new users (both types)
-- [ ] Nickname saves to InstantDB
-- [ ] Player record created on first auth
-- [ ] Deaths linked to auth.id
-- [ ] Leaderboard shows both user types
-- [ ] Permissions prevent unauthorized updates
-- [ ] Existing wallet users can still sign in
-- [ ] Empty handed can link wallet (no existing wallet account)
-- [ ] Empty handed can link wallet (merge with existing wallet account)
-- [ ] Stats properly combined on merge
-- [ ] Guest account deleted after successful link
-
----
-
-## Questions to Resolve
-
-1. **Nonce storage:** Where to store/validate nonces? (Redis? InstantDB? Stateless with timestamp?)
-2. **Session duration:** How long before re-auth needed?
-3. **Guest persistence:** Keep guest ID in AsyncStorage indefinitely? Clear on uninstall?
-4. **Web vs Mobile:** Same flow for both? (Yes, same backend)
+- [x] Wallet user sign-in (simplified, no signature)
+- [x] DB nickname loads on wallet connect (auto-auth useEffect)
+- [x] Empty-handed user gets unique guest ID
+- [x] Nickname prompt for new wallet users (default name check)
+- [x] Nickname prompt for new guests (no local name)
+- [x] Nickname edits write to DB (wallet) or local (guest)
+- [x] Disconnect = full logout, clears all state
+- [x] Stale syncNickname cancelled on logout
+- [x] Guest session → wallet bind → DB name wins
+- [x] Deaths use nickname (not wallet address)
+- [ ] InstantDB permissions
+- [ ] Signature verification
+- [ ] Email claiming

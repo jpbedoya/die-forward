@@ -103,6 +103,48 @@ Works with Phantom mobile browser. Deep-link flow may have issues with some wall
 
 ## Recently Resolved (Feb 2026)
 
+### Nickname Mismatch — Death Echoes vs. Toll (Feb 21)
+**Status:** ✅ Fixed
+
+Root cause: `recordDeathAction` in `GameContext.tsx` built `playerName` from the wallet address format (`Ab12...ef34`) instead of `state.nickname`.
+
+Fix:
+- `playerName = state.nickname || walletAddressFormat || 'Wanderer'`
+- Added `state.nickname` to `recordDeathAction` dependency array.
+
+### Nickname Prompt Shown Repeatedly (Empty-Handed) (Feb 21)
+**Status:** ✅ Fixed
+
+Root cause: On guest auth, `syncNickname` was passing the local nickname to `getOrCreatePlayerByAuth` which could overwrite a fresh guest DB record; combined with a logic bug, the prompt was shown even when a name was already set.
+
+Fix:
+- Separated wallet vs. guest sync paths explicitly.
+- Guest path: only prompts if no local name AND never prompted before.
+
+### Nickname Not Updating on Wallet Bind (Feb 21)
+**Status:** ✅ Fixed
+
+Root cause: `signInWithWallet()` (which triggers `syncNickname`) was only called inside `handleStake()`, not on wallet connect. DB nickname wasn't loaded until user tapped SEAL YOUR FATE.
+
+Fix:
+- Added `useEffect` in `GameContext` that auto-authenticates when `unifiedWallet.connected` becomes true. DB nickname loads immediately on wallet bind.
+
+### Nickname Surviving Logout (Feb 21)
+**Status:** ✅ Fixed
+
+Root cause: `syncNickname` awaits a DB call. If logout fires during that await, the DB result wrote back over the freshly cleared state (stale async closure).
+
+Fix:
+- Added `cancelled` cleanup flag to `syncNickname` useEffect.
+- `disconnect()` now also does a full reset: clears `AsyncStorage` keys for nickname, prompted flag, and guest progress — not just auth state.
+
+### Death Echoes Used Wallet Address as Player Name (Feb 21)
+**Status:** ✅ Fixed
+
+Root cause: `recordDeathAction` always derived `playerName` from wallet address format, ignoring the player's chosen nickname entirely.
+
+Fix: See "Nickname Mismatch" above.
+
 ### Android Stake Screen Crash (`.map` of undefined)
 **Status:** ✅ Fixed
 

@@ -22,7 +22,8 @@ die-forward/
 - **Web**: Next.js 15, React 19, Tailwind CSS
 - **Database**: InstantDB (real-time sync)
 - **Blockchain**: Solana (devnet), Anchor framework
-- **Audio**: expo-av (native), HTML5 Audio (web)
+- **Audio**: expo-audio (native), HTML5 Audio (web)
+- **Blur**: expo-blur (BlurView for sheet backdrops)
 
 ## Code Patterns
 
@@ -45,9 +46,11 @@ const fontSize = Platform.OS === 'web' ? 16 : 14;
 
 ### Audio (Platform-Split)
 
-Web and native use different audio APIs. See `lib/audio/`:
+Web and native use different audio APIs. See `lib/audio.ts`:
 - `WebAudioManager` — HTML5 Audio API
-- `NativeAudioManager` — expo-av
+- `NativeAudioManager` — expo-audio (NOT expo-av, which has been removed)
+
+See `mobile/BUILD_NOTES.md` for critical expo-audio import details.
 
 ```tsx
 const { playSFX, playAmbient } = useAudio();
