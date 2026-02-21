@@ -130,8 +130,8 @@ function EchoSheet({
     <Modal visible={visible} transparent animationType="none" onRequestClose={dismiss}>
       {/* Blurred backdrop */}
       <Pressable style={StyleSheet.absoluteFill} onPress={dismiss}>
-        <BlurView intensity={40} tint="dark" style={StyleSheet.absoluteFill}>
-          <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' }} />
+        <BlurView intensity={60} tint="dark" style={StyleSheet.absoluteFill}>
+          <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' }} />
         </BlurView>
       </Pressable>
 
@@ -142,7 +142,7 @@ function EchoSheet({
           left: 0,
           right: 0,
           maxHeight: '75%',
-          backgroundColor: 'rgba(10, 8, 6, 0.96)',
+          backgroundColor: 'rgba(10, 8, 6, 0.82)',
           borderTopWidth: 1,
           borderLeftWidth: 1,
           borderRightWidth: 1,
@@ -153,22 +153,24 @@ function EchoSheet({
           ...(Platform.OS === 'web' ? { maxWidth: 500, alignSelf: 'center', width: '100%' } : {}),
         }}
       >
-        {/* Drag handle */}
-        <View style={{ alignItems: 'center', paddingVertical: 12 }} {...panResponder.panHandlers}>
-          <View style={{ width: 36, height: 4, borderRadius: 2, backgroundColor: C.border }} />
-        </View>
+        {/* Swipeable header area (handle + tabs) */}
+        <View {...panResponder.panHandlers}>
+          {/* Drag handle */}
+          <View style={{ alignItems: 'center', paddingVertical: 12 }}>
+            <View style={{ width: 36, height: 4, borderRadius: 2, backgroundColor: C.border }} />
+          </View>
 
-        {/* Tab header */}
-        <View style={{
-          flexDirection: 'row',
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: 24,
-          paddingBottom: 12,
-          borderBottomWidth: 1,
-          borderColor: C.border,
-          paddingHorizontal: 16,
-        }}>
+          {/* Tab header */}
+          <View style={{
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: 24,
+            paddingBottom: 12,
+            borderBottomWidth: 1,
+            borderColor: C.border,
+            paddingHorizontal: 16,
+          }}>
           <Pressable onPress={() => setActiveTab('echoes')}>
             <Text style={{
               fontFamily: 'monospace',
@@ -194,6 +196,7 @@ function EchoSheet({
               </Pressable>
             </>
           )}
+          </View>
         </View>
 
         {/* List */}
@@ -204,9 +207,10 @@ function EchoSheet({
                 paddingVertical: 14,
                 borderBottomWidth: 1,
                 borderColor: C.border,
+                alignItems: 'center',
               }}>
                 {/* † PLAYERNAME · depth 7 */}
-                <Text style={{ fontFamily: 'monospace', fontSize: 13 }} numberOfLines={1}>
+                <Text style={{ fontFamily: 'monospace', fontSize: 14, textAlign: 'center' }} numberOfLines={1}>
                   <Text style={{ color: C.ethereal }}>†</Text>
                   <Text style={{ color: C.bone, fontWeight: '600' }}> {(death.playerName || 'Unknown').toUpperCase()}</Text>
                   <Text style={{ color: C.boneDark }}> · </Text>
@@ -217,11 +221,12 @@ function EchoSheet({
                 {death.finalMessage ? (
                   <Text style={{
                     fontFamily: 'monospace',
-                    fontSize: 12,
-                    color: C.boneMuted,
+                    fontSize: 13,
+                    color: C.boneDark,
                     fontStyle: 'italic',
                     marginTop: 6,
-                    lineHeight: 18,
+                    lineHeight: 19,
+                    textAlign: 'center',
                   }} numberOfLines={2}>
                     "{death.finalMessage}"
                   </Text>
