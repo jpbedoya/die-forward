@@ -89,15 +89,31 @@ const { settings } = useGameSettings();
 
 ## UI Components
 
+See [`COMPONENTS.md`](./COMPONENTS.md) for the full component reference.
+
 ### Shared Components
 
 | Component | Purpose |
 |-----------|---------|
+| `AsciiLoader` | Loading indicator — sweep or pulse variants (replaces ActivityIndicator) |
 | `CRTOverlay` | Scanline + vignette effect |
 | `AudioToggle` | 🔊/🔇 toggle with inline mode |
 | `ProgressBar` | Room progress indicator |
 | `GameMenu` | Pause menu overlay |
 | `DieForwardLogo` | ASCII art logo (multiple sizes) |
+| `NicknameModal` | Name entry + editing modal |
+
+### Loading States
+
+**Do not use `ActivityIndicator`.** Use `AsciiLoader` instead:
+
+```tsx
+// Button loading state
+{loading ? <AsciiLoader variant="pulse" color="#ffffff" /> : <Text>CONFIRM</Text>}
+
+// Full-screen loading
+<AsciiLoader width={16} color="#f59e0b" style={{ fontSize: 16 }} />
+```
 
 ### Styling
 
@@ -205,12 +221,14 @@ npm run dev                 # localhost:3000
 
 | Doc | Purpose |
 |-----|---------|
+| `COMPONENTS.md` | Shared component library (AsciiLoader, DieForwardLogo, etc.) |
 | `CONTENT_BIBLE.md` | Voice, tone, lore, writing guidelines |
 | `GAME_DESIGN.md` | Mechanics, balance, progression |
 | `FEEDBACK_PATTERNS.md` | Audio, haptics, screen shake |
 | `AUDIO.md` | Sound files and generation workflow |
 | `ADMIN_SETTINGS.md` | InstantDB admin configuration |
 | `STAKING_FLOWS.md` | Wallet and escrow flows |
+| `AUTH_PLAN.md` | Auth architecture, status, and remaining work |
 
 ## Voice & Tone
 

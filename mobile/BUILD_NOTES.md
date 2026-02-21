@@ -144,10 +144,12 @@ const contextValue = {
 | `lib/wallet/unified.tsx` | Cross-platform wallet context |
 | `lib/wallet/mwa-provider.tsx` | Android MWA provider |
 | `lib/shareCard.tsx` | Share card components + capture hook |
+| `components/AsciiLoader.tsx` | Loading indicator — sweep + pulse variants (no ActivityIndicator) |
 | `components/AudioToggle.tsx` | [SND]/[MUTE] master switch |
 | `components/AudioSettingsSection.tsx` | Shared audio settings UI |
 | `components/MiniPlayer.tsx` | Audius mini player in footers |
 | `components/CryptModal.tsx` | ItemModal + CreatureModal |
+| `components/NicknameModal.tsx` | Name entry + edit modal (initialValue prop for editing) |
 | `plugins/with-mwa-android.js` | Android manifest config plugin |
 
 ---
