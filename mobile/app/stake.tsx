@@ -26,8 +26,7 @@ export default function StakeScreen() {
   const [showWalletPicker, setShowWalletPicker] = useState(false);
   const [walletStatus, setWalletStatus] = useState<'idle' | 'connecting' | 'cancelled' | 'error'>('idle');
   const [sealStatus, setSealStatus] = useState<'idle' | 'signing' | 'cancelled' | 'error'>('idle');
-  const [editingNickname, setEditingNickname] = useState(false);
-  const [nicknameInput, setNicknameInput] = useState('');
+  const [showNicknameEdit, setShowNicknameEdit] = useState(false);
   const [showLinkWallet, setShowLinkWallet] = useState(false);
 
   useEffect(() => {
@@ -265,6 +264,35 @@ Offer it. Lose it on death. Escape and claim more.
           </View>
         </View>
 
+        {/* Identity row — always above action buttons */}
+        <View className="items-center mb-5">
+          <Pressable
+            className="flex-row items-center gap-2"
+            onPress={() => setShowNicknameEdit(true)}
+          >
+            <Text className="text-bone text-base">🪦</Text>
+            <Text className="text-amber text-sm font-mono font-bold">
+              {game.nickname || (game.walletAddress ? formatAddress(game.walletAddress) : 'Wanderer')}
+            </Text>
+            <Text className="text-bone-dark text-xs">✎</Text>
+          </Pressable>
+          {game.walletConnected && game.walletAddress && (
+            <View className="flex-row items-center gap-2 mt-1">
+              <Text className="text-bone-dark text-xs font-mono">{formatAddress(game.walletAddress)}</Text>
+              {game.balance !== null && (
+                <>
+                  <Text className="text-bone-dark text-xs">·</Text>
+                  <Text className="text-amber-light text-xs font-mono font-bold">{game.balance.toFixed(3)} SOL</Text>
+                </>
+              )}
+              <Text className="text-bone-dark text-xs">·</Text>
+              <Pressable onPress={() => game.disconnect()}>
+                <Text className="text-bone-muted text-xs font-mono">[logout]</Text>
+              </Pressable>
+            </View>
+          )}
+        </View>
+
         {/* Action buttons */}
         <View className="gap-3 mb-4">
           {!game.walletConnected ? (
@@ -289,8 +317,8 @@ Offer it. Lose it on death. Escape and claim more.
                   <Text className="text-white font-mono font-bold tracking-wider">BIND WALLET</Text>
                 )}
               </Pressable>
-              
-              <Pressable 
+
+              <Pressable
                 className="border border-crypt-border-light py-4 items-center active:border-amber"
                 onPress={() => handleStake(true)}
                 disabled={staking}
@@ -304,7 +332,7 @@ Offer it. Lose it on death. Escape and claim more.
             </>
           ) : (
             <>
-              <Pressable 
+              <Pressable
                 className={`py-5 items-center ${
                   sealStatus === 'cancelled' ? 'bg-stone-700' :
                   sealStatus === 'error' ? 'bg-blood/60' :
@@ -326,14 +354,14 @@ Offer it. Lose it on death. Escape and claim more.
                   <Text className="text-crypt-bg font-mono font-bold tracking-wider">SEAL YOUR FATE</Text>
                 )}
               </Pressable>
-              
+
               {game.balance !== null && game.balance < selectedStake && (
                 <Text className="text-blood text-xs font-mono text-center">
                   Insufficient balance ({game.balance.toFixed(3)} SOL)
                 </Text>
               )}
-              
-              <Pressable 
+
+              <Pressable
                 className="border border-crypt-border-light py-4 items-center active:border-amber"
                 onPress={() => handleStake(true)}
                 disabled={staking}
@@ -347,60 +375,6 @@ Offer it. Lose it on death. Escape and claim more.
             </>
           )}
         </View>
-
-        {/* Wallet status */}
-        {game.walletConnected && game.walletAddress && (
-          <View className="items-center gap-2">
-            {/* Combined nickname + wallet row */}
-            <View className="flex-row items-center justify-center gap-2 flex-wrap">
-              {editingNickname ? (
-                <TextInput
-                  className="bg-crypt-surface border border-amber/50 px-3 py-1 text-amber font-mono text-sm w-36 text-center"
-                  value={nicknameInput}
-                  onChangeText={(text) => setNicknameInput(text.slice(0, 16))}
-                  onBlur={() => {
-                    if (nicknameInput.trim()) {
-                      game.setNickname(nicknameInput.trim());
-                    }
-                    setEditingNickname(false);
-                  }}
-                  onSubmitEditing={() => {
-                    if (nicknameInput.trim()) {
-                      game.setNickname(nicknameInput.trim());
-                    }
-                    setEditingNickname(false);
-                  }}
-                  placeholder="Enter name..."
-                  placeholderTextColor="#57534e"
-                  maxLength={16}
-                  autoFocus
-                />
-              ) : (
-                <Pressable 
-                  className="flex-row items-center gap-1"
-                  onPress={() => {
-                    setNicknameInput(game.nickname || '');
-                    setEditingNickname(true);
-                  }}
-                >
-                  <Text className="text-amber text-sm font-mono">@{game.nickname || formatAddress(game.walletAddress)}</Text>
-                  <Text className="text-bone-dark text-xs">✎</Text>
-                </Pressable>
-              )}
-              <Text className="text-bone-dark text-xs">•</Text>
-              <Text className="text-bone-dark text-xs font-mono">{formatAddress(game.walletAddress)}</Text>
-              {game.balance !== null && (
-                <>
-                  <Text className="text-bone-dark text-xs">•</Text>
-                  <Text className="text-amber-light text-xs font-mono font-bold">{game.balance.toFixed(3)} SOL</Text>
-                </>
-              )}
-              <Pressable onPress={() => game.disconnect()}>
-                <Text className="text-bone-muted text-xs font-mono">[×]</Text>
-              </Pressable>
-            </View>
-          </View>
-        )}
       </ScrollView>
 
       {/* Wallet Picker Modal */}
@@ -442,11 +416,22 @@ Offer it. Lose it on death. Escape and claim more.
         </Pressable>
       </Modal>
 
-      {/* Nickname Modal - shows on first connect */}
+      {/* Nickname Modal - first-time setup */}
       <NicknameModal
         visible={game.showNicknameModal}
         onSubmit={(name) => game.setNickname(name)}
         onSkip={() => game.dismissNicknameModal()}
+      />
+
+      {/* Nickname Edit Modal - tap 🪦 to open */}
+      <NicknameModal
+        visible={showNicknameEdit}
+        initialValue={game.nickname || ''}
+        onSubmit={(name) => {
+          game.setNickname(name);
+          setShowNicknameEdit(false);
+        }}
+        onSkip={() => setShowNicknameEdit(false)}
       />
       
       {/* Link Wallet Modal - for guests to upgrade their account */}

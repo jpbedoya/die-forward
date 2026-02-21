@@ -1,14 +1,22 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, Pressable, TextInput, Modal, Platform } from 'react-native';
 
 interface NicknameModalProps {
   visible: boolean;
   onSubmit: (name: string) => void;
-  onSkip: () => void;
+  onSkip?: () => void;
+  initialValue?: string;
 }
 
-export function NicknameModal({ visible, onSubmit, onSkip }: NicknameModalProps) {
-  const [name, setName] = useState('');
+export function NicknameModal({ visible, onSubmit, onSkip, initialValue }: NicknameModalProps) {
+  const [name, setName] = useState(initialValue || '');
+
+  // Sync initialValue when modal opens
+  useEffect(() => {
+    if (visible) {
+      setName(initialValue || '');
+    }
+  }, [visible, initialValue]);
 
   const handleSubmit = () => {
     if (name.trim()) {
@@ -16,6 +24,8 @@ export function NicknameModal({ visible, onSubmit, onSkip }: NicknameModalProps)
       setName('');
     }
   };
+
+  const isEditing = !!initialValue;
 
   return (
     <Modal
@@ -29,14 +39,14 @@ export function NicknameModal({ visible, onSubmit, onSkip }: NicknameModalProps)
           {/* Header */}
           <View className="border-b border-amber/20 p-4">
             <Text className="text-amber text-lg font-mono font-bold text-center tracking-widest">
-              CHOOSE YOUR NAME
+              {isEditing ? 'CHANGE YOUR NAME' : 'CHOOSE YOUR NAME'}
             </Text>
           </View>
 
           {/* Content */}
           <View className="p-5">
             <Text className="text-bone-muted text-sm font-mono text-center mb-6 leading-5">
-              How shall the crypt remember you?
+              {isEditing ? 'The crypt will remember the change.' : 'How shall the crypt remember you?'}
             </Text>
 
             <TextInput
@@ -61,16 +71,18 @@ export function NicknameModal({ visible, onSubmit, onSkip }: NicknameModalProps)
               disabled={!name.trim()}
             >
               <Text className={`font-mono font-bold tracking-widest ${name.trim() ? 'text-crypt-bg' : 'text-bone-dark'}`}>
-                CONFIRM
+                {isEditing ? 'UPDATE' : 'CONFIRM'}
               </Text>
             </Pressable>
 
-            <Pressable
-              className="py-3 items-center"
-              onPress={onSkip}
-            >
-              <Text className="text-bone-muted font-mono text-sm">Skip for now</Text>
-            </Pressable>
+            {onSkip && (
+              <Pressable
+                className="py-3 items-center"
+                onPress={onSkip}
+              >
+                <Text className="text-bone-muted font-mono text-sm">Skip for now</Text>
+              </Pressable>
+            )}
           </View>
         </View>
       </View>
