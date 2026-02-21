@@ -20,13 +20,13 @@ export default function DeathScreen() {
   const { viewShotRef, webRef, captureAndShare } = useShareCard();
   const { currentTrack, musicSource } = useAudius();
   const params = useLocalSearchParams<{ killedBy?: string }>();
-  
+
   // Dramatic intro state
   const [showDramaticIntro, setShowDramaticIntro] = useState(true);
   const introFade = useRef(new Animated.Value(0)).current;
   const textScale = useRef(new Animated.Value(0.8)).current;
   const contentFade = useRef(new Animated.Value(0)).current;
-  
+
   const [finalWords, setFinalWords] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -40,7 +40,7 @@ export default function DeathScreen() {
   const depth = getDepthForRoom(roomNumber);
   const stakeAmountNum = Number(game.stakeAmount || 0);
   const isEmptyHanded = !Number.isFinite(stakeAmountNum) || stakeAmountNum <= 0;
-  
+
   const handleShare = async () => {
     setSharing(true);
     playSFX('share-click');
@@ -56,12 +56,12 @@ export default function DeathScreen() {
   useEffect(() => {
     playAmbient('ambient-death');
     playSFX('player-death');
-    
+
     // Haptic on death
     if (Platform.OS !== 'web') {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     }
-    
+
     // Fade in "YOU DIED" text
     Animated.parallel([
       Animated.timing(introFade, {
@@ -75,7 +75,7 @@ export default function DeathScreen() {
         useNativeDriver: true,
       }),
     ]).start();
-    
+
     // After 2.5 seconds, transition to main content
     const timer = setTimeout(() => {
       Animated.parallel([
@@ -93,16 +93,16 @@ export default function DeathScreen() {
         setShowDramaticIntro(false);
       });
     }, 2500);
-    
+
     return () => clearTimeout(timer);
   }, []);
 
   const handleSubmit = async () => {
     if (!finalWords.trim() || submitting) return;
-    
+
     setSubmitting(true);
     playSFX('confirm-action');
-    
+
     try {
       await game.recordDeath(
         finalWords.trim(),
@@ -131,60 +131,70 @@ export default function DeathScreen() {
   };
 
   // ASCII art skull
-  const SKULL_ASCII =
-`+###*##*##*##*#*##*#*##*##*##*#*##**##*##*##*#*##**##*##-
- *#######################################################-
- *#######################################################-
- ####*+++===============+==+==+==+==+==++======+==+==+++==+++++####+
- ####*+==++=++=+++++++++++++++=++=+++++++=++++=++=+++=++=++=+++####+
- :***+====-----======-----------------------------------====++*#+
- =####*++++=+++=-. .==++=. :=+++++++++#####
- =####*+====+==+-. .=====. :=++=+====+#####
- =####*+=+==::::. ::::::-:::. .::::-=+=++*####
- =####*+++=- -+++=: :===++#####
- =####*+===-. -++==: :===++#####
- =####*+===- .::::. .====+#####
- =####*+++=- :=++++#####
- =####*+=+=-. :===++*####
- =####*+=+=- :===++#####
- =####*++==- .=+==+#####
- =####*++==-. :===++*####
- =####*+=+=- :*#############*- -*###+. .+#############*=. :===++#####
- =####*+=+=- :*##############= -####+. .*##############=. :===++#####
- =####*++==-. :*####*****#####= -####+. .*####******####=. .=+==+#####
- =####*++==-. :*###*: +####= -####+. .*####: =####=. :===++*####
- =####*==+=- :*###*. +####= -####+. .*####: -####=. :==+++*####
- =####*+++=- :*###*-::::=++++: -####+. .*####-:::-+####=. :====+#####
- =####*+=+=-. :*#########: -####+. .*##############=. :=++++#####
- =####*+=+=- :*#########: -####+. .*##############=. :===++*####
- =####*++==- :*####==---=====: -####+. .*####=-=---=---: :===++#####
- =####*++==-. :*###*: +####= -####+. .*####: .=+==+#####
- =####*+=+=- :*###*. +####= -####+. .*####: :===++#####
- =####*+=+=- ..:::. .:::.. ...::. .:::. :===++*####
- =####*++==-. :===++*####
- =####*++==- :===++#####
- =####*+=+=- .-=========: :===++#####
- =####*+=+=-. .==========: :===++*####
- =####*++==- .-=====+++=-... .. :=+==+#####
- =####*++==- -+++===========+==+++#####
- =####*+=+=-. -+==+=++=+++=+++===++*####
- =####*+=+=-.... -=====+=========++==+#####
- =####*+==+=+==+-. :+++==++=====+++#####
- =####*+==+==++=-. :+++=+++=++=++=+#####
- =####********+-----------------------------------------=*+*******#####
- =#############################################################################
- =#############################################################################`;
+  const SKULL_ASCII = `               +*+*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*=              
+               ######################################################################*              
+               ######################################################################*              
+              .######################################################################+              
+        +#####*=++====================+===++=======+===+=+============+====++====+=+++######:       
+        +#####*+==++==+++++++++++==++=+====+++++++=++==+=+==+=+++++++=++==+===+==+===+######:       
+        +#####*+=====+===++=====+++++=++=+=++=++=++==++=++=++=++=++=++==++=++=+==+++=+######:       
+  -===--+++++++==+===:.....-=+====:............................................-+===+++++++++=-==-- 
+  ######+=+=+==+++=+=.     :=+++==.                                            :+=+++==++++=+###### 
+  ######+=+==+=+==++=.     :==+===.                                            :+=+==+====++*###### 
+  ######+==+========-.     :======.  .                                         :======++===+*###### 
+  ######++=+++:                   ===+==:                                            .===+=++###### 
+  ######+===++:                   =++==+:                                            .===+=+*###### 
+  ######+=+==+:                   =+=+++:                                            .====+++###### 
+  ######+=====:                   .:::::.                                            .======*###### 
+  ######++++++:                                                                      .=+++++*###### 
+  ######+===++:                                                                      .===+=+*###### 
+  ######+=+==+:                                                                      .=====+*###### 
+  ######+=++=+:                                                                      .==+=++*###### 
+  ######+==++=:                                                                      .====+=+###### 
+  ######+===++:                                                                      .===+=+*###### 
+  ######+=+==+:     .--=-------------=--:     .------:     .-------------=--=--:     .===+=+*###### 
+  ######+=++=+:     .*##################=     .*#####=     .*##################=     .====+++###### 
+  ######+==++=:     .*##################=     .*#####=     .*##################=     .==+==+*###### 
+  ######+===++:     .*##################=     .*#####=     .*##############%###=     .===+=+*###### 
+  ######+++==+:     .*#####=.    .*#####=     .*#####=     .*#####=     .*#####=     .===+=+*###### 
+  ######+==++=:     .*#####=     .*#####=     .*#####=     .*#####=     .*#####=     .====++*###### 
+  ######+=+++=:     .*#####=     .*#####=     .*#####=     .*#####=     .*#####=     .=++=+=*###### 
+  ######+=====:     .*#####+------======:     .*#####=     .*#####+------*#####=     .======*###### 
+  ######++++++:     .*###########*.           .*#####=     .*##################=     .=+++++*###### 
+  ######+===++:     .*###########*.           .*#####=     .*##################=     .=====++###### 
+  ######+=+==+:     .*###########*.           .*#####=     .*##################=     .===+=+*###### 
+  ######+=++=+:     .*#####=.   ..*#####=     .*#####=     .*#####=.        .        .===+=+*###### 
+  ######+==++=:     .*#####=     .*#####=     .*#####=     .*#####=                  .====+++###### 
+  ######+===++:     .*#####=     .*#####=     .*#####=     .*#####=                  .==+==+*###### 
+  ######+=+==+:     .=+++++-     .=+++++-     .=++**+-     .=+++++-                  .===+==*###### 
+  ######+=++=+:                                                                      .===+++*###### 
+  ######+==++=:                                                                      .=====+*###### 
+  ######++==++:                                                                      .==+==+*###### 
+  ######+=+==+:                                            .-============.           .===++=*###### 
+  ######+=++=+:                                            .===+===+++===.           .====+++###### 
+  ######+==++=:                                            .==++=+===+++=.           .==+==+*###### 
+  ######++==++:                                             ---====+=====:...........:===+=+*###### 
+  ######+++==+:                                                   :=++=====+==+==+=+==+==+=++###### 
+  ######+==+==:                                                   :=+=++==+==+==+==++==+==+++###### 
+  ######++=++=:                                                   :=+=++==+++===+====+==+==+*###### 
+  ######+====+======-.                                             ......=+======++==+==+===+###### 
+  ######+=+==+=+=+=+=.                                                  .===++===+=++=++=+++*###### 
+  ######+++=+==+++===.                                                   =++++=+++==+==+=+=+*###### 
+  ######++++++++++++=:...................................................=++++++++++++++++++*###### 
+  ################################################################################################# 
+  ################################################################################################# 
+  #################################################################################################`;
 
   // Dramatic intro screen
   if (showDramaticIntro) {
     return (
       <View className="flex-1 bg-black justify-center items-center">
-        <Animated.View 
+        <Animated.View
           className="items-center"
           style={{ opacity: introFade }}
         >
           <Animated.View style={{ transform: [{ scale: textScale }] }} className="items-center">
-            <Text 
+            <Text
               style={[
                 {
                   fontFamily: 'monospace',
@@ -207,7 +217,7 @@ export default function DeathScreen() {
               </Text>
             )}
             <Text className="text-bone-dark text-sm font-mono text-center">
-              {depth.name} — Room {roomNumber}
+              {depth.name} - Room {roomNumber}
             </Text>
           </Animated.View>
         </Animated.View>
@@ -324,14 +334,14 @@ export default function DeathScreen() {
               <Text className="text-white font-mono font-bold tracking-widest">SHARE DEATH CARD</Text>
             </Pressable>
           )}
-          
+
           <Pressable
             className="bg-amber py-4 items-center active:bg-amber-dark"
             onPress={handlePlayAgain}
           >
             <Text className="text-crypt-bg font-mono font-bold tracking-widest">DESCEND AGAIN</Text>
           </Pressable>
-          
+
           <Pressable
             className="border border-crypt-border-light py-4 items-center active:border-amber"
             onPress={handleHome}
@@ -346,7 +356,7 @@ export default function DeathScreen() {
         </Text>
       </ScrollView>
       </Animated.View>
-      
+
       {/* Share Card Modal */}
       <Modal
         visible={showShareModal}
@@ -357,11 +367,11 @@ export default function DeathScreen() {
         <View className="flex-1 bg-black/80 justify-center items-center p-4">
           <View className="bg-crypt-surface border border-crypt-border p-4 w-full max-w-[340px]">
             <Text className="text-amber text-lg font-mono font-bold text-center mb-4">Share Death Card</Text>
-            
+
             {/* Card Preview */}
             <View className="items-center mb-4">
               <ShareCardCapture viewShotRef={viewShotRef} webRef={webRef}>
-                <DeathCard 
+                <DeathCard
                   data={{
                     playerName: game.nickname || 'Wanderer',
                     room: roomNumber,
@@ -376,7 +386,7 @@ export default function DeathScreen() {
                 />
               </ShareCardCapture>
             </View>
-            
+
             <Pressable
               className={`py-4 items-center mb-3 ${sharing ? 'bg-ethereal/50' : 'bg-ethereal active:bg-purple-700'}`}
               onPress={handleShare}
@@ -388,7 +398,7 @@ export default function DeathScreen() {
                 <Text className="text-white font-mono font-bold">SHARE</Text>
               )}
             </Pressable>
-            
+
             <Pressable
               className="py-3 items-center"
               onPress={() => setShowShareModal(false)}
