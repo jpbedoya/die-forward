@@ -349,18 +349,11 @@ export default function HomeScreen() {
               <View className="items-center w-full" style={{ maxWidth: 280 }}>
                 {displayedDeaths.length > 0 ? (
                   displayedDeaths.map((death, i) => (
-                    <View key={death.id || i} style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      width: '100%',
-                      paddingVertical: 3,
-                    }}>
-                      <Text style={{ fontFamily: 'monospace', fontSize: 11, color: C.ethereal }} numberOfLines={1}>
-                        {'† '}
-                        <Text style={{ color: C.bone }}>{death.playerName}</Text>
-                      </Text>
-                      <Text style={{ fontFamily: 'monospace', fontSize: 11, color: C.amber }}>
-                        D:{death.room || '?'}
+                    <View key={death.id || i} className="py-1">
+                      <Text className="text-xs text-bone-muted font-mono text-center" numberOfLines={1}>
+                        <Text className="text-ethereal">{death.playerName}</Text>
+                        <Text className="text-bone-dark"> fell at </Text>
+                        <Text className="text-bone-muted">Depth {death.room || '?'}</Text>
                       </Text>
                     </View>
                   ))
@@ -374,17 +367,11 @@ export default function HomeScreen() {
               <View className="items-center w-full" style={{ maxWidth: 280 }}>
                 {displayedVictors.length > 0 ? (
                   displayedVictors.map((player, i) => (
-                    <View key={player.id || i} style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      width: '100%',
-                      paddingVertical: 3,
-                    }}>
-                      <Text style={{ fontFamily: 'monospace', fontSize: 11, color: C.victory }} numberOfLines={1}>
-                        {'★ @'}{player.nickname}
-                      </Text>
-                      <Text style={{ fontFamily: 'monospace', fontSize: 11, color: C.amber }}>
-                        D:{player.highestRoom || 0}
+                    <View key={player.id || i} className="py-1">
+                      <Text className="text-xs text-bone-muted font-mono text-center" numberOfLines={1}>
+                        <Text className="text-victory">@{player.nickname}</Text>
+                        <Text className="text-bone-dark"> escaped </Text>
+                        <Text className="text-bone-muted">Depth {player.highestRoom || 0}</Text>
                       </Text>
                     </View>
                   ))
