@@ -130,7 +130,7 @@ function EchoSheet({
     <Modal visible={visible} transparent animationType="none" onRequestClose={dismiss}>
       {/* Blurred backdrop */}
       <Pressable style={StyleSheet.absoluteFill} onPress={dismiss}>
-        <BlurView intensity={60} tint="dark" style={StyleSheet.absoluteFill}>
+        <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill}>
           <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' }} />
         </BlurView>
       </Pressable>
@@ -142,7 +142,7 @@ function EchoSheet({
           left: 0,
           right: 0,
           maxHeight: '75%',
-          backgroundColor: 'rgba(10, 8, 6, 0.82)',
+          backgroundColor: 'rgba(10, 8, 6, 0.55)',
           borderTopWidth: 1,
           borderLeftWidth: 1,
           borderRightWidth: 1,
