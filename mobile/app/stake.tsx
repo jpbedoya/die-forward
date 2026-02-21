@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, Pressable, TextInput, ScrollView, ActivityIndicator, Modal } from 'react-native';
+import { View, Text, Pressable, TextInput, ScrollView, Modal } from 'react-native';
 import { CryptBackground } from '../components/CryptBackground';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -312,7 +312,7 @@ Offer it. Lose it on death. Escape and claim more.
                 disabled={game.loading || staking || walletStatus === 'connecting'}
               >
                 {walletStatus === 'connecting' ? (
-                  <ActivityIndicator color="#ffffff" />
+                  <AsciiLoader variant="pulse" color="#ffffff" />
                 ) : walletStatus === 'cancelled' ? (
                   <Text className="text-bone-muted font-mono font-bold tracking-wider">REJECTED</Text>
                 ) : walletStatus === 'error' ? (
@@ -328,7 +328,7 @@ Offer it. Lose it on death. Escape and claim more.
                 disabled={staking}
               >
                 {staking ? (
-                  <ActivityIndicator color="#a8a29e" />
+                  <AsciiLoader variant="pulse" color="#a8a29e" />
                 ) : (
                   <Text className="text-bone-muted font-mono">EMPTY-HANDED</Text>
                 )}
@@ -349,7 +349,7 @@ Offer it. Lose it on death. Escape and claim more.
                 disabled={staking || sealStatus !== 'idle' || (game.balance !== null && game.balance < selectedStake)}
               >
                 {staking && stakingMode === 'stake' ? (
-                  <ActivityIndicator color="#0d0d0d" />
+                  <AsciiLoader variant="pulse" color="#0d0d0d" />
                 ) : sealStatus === 'cancelled' ? (
                   <Text className="text-bone-muted font-mono font-bold tracking-wider">REJECTED</Text>
                 ) : sealStatus === 'error' ? (
@@ -371,7 +371,7 @@ Offer it. Lose it on death. Escape and claim more.
                 disabled={staking}
               >
                 {stakingMode === 'free' ? (
-                  <ActivityIndicator color="#a8a29e" />
+                  <AsciiLoader variant="pulse" color="#a8a29e" />
                 ) : (
                   <Text className="text-bone-muted font-mono">EMPTY-HANDED</Text>
                 )}

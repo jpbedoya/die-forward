@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { View, Text, Pressable, ScrollView, ActivityIndicator, Animated, Platform } from 'react-native';
+import { View, Text, Pressable, ScrollView, Animated, Platform } from 'react-native';
+import { AsciiLoader } from '../components/AsciiLoader';
 import { CryptBackground } from '../components/CryptBackground';
 import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -336,7 +337,7 @@ export default function CombatScreen() {
   if (!creature) {
     return (
       <View className="flex-1 bg-crypt-bg justify-center items-center">
-        <ActivityIndicator size="large" color="#f59e0b" />
+        <AsciiLoader width={16} color="#f59e0b" style={{ fontSize: 16 }} />
       </View>
     );
   }

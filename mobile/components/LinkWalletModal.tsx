@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { View, Text, Pressable, Modal, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, Modal } from 'react-native';
+import { AsciiLoader } from './AsciiLoader';
 import { useGame } from '../lib/GameContext';
 
 interface LinkWalletModalProps {
@@ -107,7 +108,7 @@ export function LinkWalletModal({ visible, onClose }: LinkWalletModalProps) {
                     disabled={status === 'connecting'}
                   >
                     {status === 'connecting' ? (
-                      <ActivityIndicator color="#0d0d0d" />
+                      <AsciiLoader variant="pulse" color="#0d0d0d" />
                     ) : (
                       <Text className="text-crypt-bg font-mono font-bold tracking-widest">
                         CONNECT WALLET
@@ -127,7 +128,7 @@ export function LinkWalletModal({ visible, onClose }: LinkWalletModalProps) {
                       disabled={status === 'linking'}
                     >
                       {status === 'linking' ? (
-                        <ActivityIndicator color="#0d0d0d" />
+                        <AsciiLoader variant="pulse" color="#0d0d0d" />
                       ) : (
                         <Text className="text-crypt-bg font-mono font-bold tracking-widest">
                           LINK WALLET

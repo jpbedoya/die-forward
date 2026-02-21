@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { View, Text, Pressable, TextInput, ScrollView, ActivityIndicator, Modal, Animated, Platform } from 'react-native';
+import { View, Text, Pressable, TextInput, ScrollView, Modal, Animated, Platform } from 'react-native';
+import { AsciiLoader } from '../components/AsciiLoader';
 import { CryptBackground } from '../components/CryptBackground';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -239,7 +240,7 @@ export default function DeathScreen() {
               disabled={!finalWords.trim() || submitting}
             >
               {submitting ? (
-                <ActivityIndicator color="#ffffff" />
+                <AsciiLoader variant="pulse" color="#ffffff" />
               ) : (
                 <Text className={`font-mono font-bold ${finalWords.trim() ? 'text-white' : 'text-bone-dark'}`}>
                   ETCH INTO STONE
@@ -332,7 +333,7 @@ export default function DeathScreen() {
               disabled={sharing}
             >
               {sharing ? (
-                <ActivityIndicator color="#ffffff" />
+                <AsciiLoader variant="pulse" color="#ffffff" />
               ) : (
                 <Text className="text-white font-mono font-bold">SHARE</Text>
               )}

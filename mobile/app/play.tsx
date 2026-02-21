@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { View, Text, Pressable, ScrollView, ActivityIndicator, Alert, Platform } from 'react-native';
+import { View, Text, Pressable, ScrollView, Alert, Platform } from 'react-native';
+import { AsciiLoader } from '../components/AsciiLoader';
 import { CryptBackground } from '../components/CryptBackground';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
@@ -286,7 +287,7 @@ export default function PlayScreen() {
   if (!room) {
     return (
       <View className="flex-1 bg-crypt-bg justify-center items-center">
-        <ActivityIndicator size="large" color="#f59e0b" />
+        <AsciiLoader width={16} color="#f59e0b" style={{ fontSize: 16 }} />
         <Text className="text-amber text-sm font-mono mt-4">Loading dungeon...</Text>
       </View>
     );
@@ -420,7 +421,7 @@ export default function PlayScreen() {
                   disabled={tipping}
                 >
                   {tipping ? (
-                    <ActivityIndicator size="small" color="#f59e0b" />
+                    <AsciiLoader variant="pulse" color="#f59e0b" style={{ fontSize: 12 }} />
                   ) : (
                     <Text className="text-amber text-xs font-mono">💰 TIP</Text>
                   )}

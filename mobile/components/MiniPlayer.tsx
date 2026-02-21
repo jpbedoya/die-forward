@@ -2,6 +2,7 @@
 // Drop inside any footer view; renders nothing when Audius is off
 import { View, Text, Pressable } from 'react-native';
 import { useAudius } from '../lib/AudiusContext';
+import { AsciiLoader } from './AsciiLoader';
 
 export function MiniPlayer() {
   const { currentTrack, isPlaying, isLoading, togglePlayPause, playNext, musicSource } = useAudius();
@@ -13,7 +14,7 @@ export function MiniPlayer() {
       <Text className="text-amber text-xs font-mono mr-2">♪</Text>
       <View className="flex-1 mr-2">
         {isLoading && !currentTrack ? (
-          <Text className="text-stone-600 font-mono text-xs">Loading...</Text>
+          <AsciiLoader variant="pulse" color="#57534e" style={{ fontSize: 12 }} />
         ) : currentTrack ? (
           <Text className="text-bone-muted font-mono text-xs" numberOfLines={1}>
             {currentTrack.title}

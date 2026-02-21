@@ -1,20 +1,30 @@
 /**
- * AsciiLoader — sweeping ░▒▓ block animation
+ * AsciiLoader — on-brand loading indicator
  *
- * A single ▓ peak travels left→right over a ░ field with ▒ fade edges.
- * Matches the AnimatedDescendButton style from the title screen.
+ * Two variants:
+ *
+ *   "sweep"  (default) — single ▓ peak travels left→right over ░░░░░░░░
+ *                         Same style as AnimatedDescendButton on title screen.
+ *                         Good for full-width placeholders and skeleton states.
+ *
+ *   "pulse"             — single character cycles ░ → ▒ → ▓ → ▒ → ░
+ *                         Compact, fits inside buttons and tight spaces.
  *
  * Usage:
- *   <AsciiLoader />                        // defaults
- *   <AsciiLoader width={12} speed={80} />  // wider, faster
- *   <AsciiLoader color="#f59e0b" />        // amber for in-progress actions
+ *   <AsciiLoader />                              // sweep, 8 chars, grey
+ *   <AsciiLoader variant="pulse" />              // single pulsing char
+ *   <AsciiLoader variant="pulse" color="#fff" /> // white pulse for dark buttons
+ *   <AsciiLoader width={12} speed={80} />        // wider sweep, faster
+ *   <AsciiLoader color="#f59e0b" />              // amber sweep
  */
 
 import { useState, useEffect } from 'react';
 import { Text, StyleSheet, TextStyle } from 'react-native';
 
 interface AsciiLoaderProps {
-  /** Number of block characters (default 8) */
+  /** "sweep" — moving peak across chars | "pulse" — single char in place */
+  variant?: 'sweep' | 'pulse';
+  /** Number of block characters for sweep variant (default 8) */
   width?: number;
   /** Tick interval in ms — lower = faster (default 90) */
   speed?: number;
@@ -24,7 +34,10 @@ interface AsciiLoaderProps {
   style?: TextStyle;
 }
 
+const PULSE_FRAMES = ['░', '▒', '▓', '▒', '░'];
+
 export function AsciiLoader({
+  variant = 'sweep',
   width = 8,
   speed = 90,
   color = '#3a3530',
@@ -37,18 +50,24 @@ export function AsciiLoader({
     return () => clearInterval(id);
   }, [speed]);
 
-  // Peak sweeps left→right, +2 so it enters and exits cleanly
-  const pos = tick % (width + 2);
-  const chars = Array.from({ length: width }, (_, i) => {
-    const dist = Math.abs(i - pos);
-    if (dist === 0) return '▓';
-    if (dist === 1) return '▒';
-    return '░';
-  }).join('');
+  let content: string;
+
+  if (variant === 'pulse') {
+    content = PULSE_FRAMES[tick % PULSE_FRAMES.length];
+  } else {
+    // Peak sweeps left→right, +2 so it enters and exits cleanly
+    const pos = tick % (width + 2);
+    content = Array.from({ length: width }, (_, i) => {
+      const dist = Math.abs(i - pos);
+      if (dist === 0) return '▓';
+      if (dist === 1) return '▒';
+      return '░';
+    }).join('');
+  }
 
   return (
     <Text style={[styles.base, { color }, style]}>
-      {chars}
+      {content}
     </Text>
   );
 }

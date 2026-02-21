@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { View, Text, Pressable, ScrollView, ActivityIndicator, Modal, Animated, Platform } from 'react-native';
+import { View, Text, Pressable, ScrollView, Modal, Animated, Platform } from 'react-native';
+import { AsciiLoader } from '../components/AsciiLoader';
 import { CryptBackground } from '../components/CryptBackground';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -305,7 +306,7 @@ export default function VictoryScreen() {
                 disabled={claiming}
               >
                 {claiming ? (
-                  <ActivityIndicator color="#0d0d0d" />
+                  <AsciiLoader variant="pulse" color="#0d0d0d" />
                 ) : (
                   <Text className="text-crypt-bg font-mono font-bold">CLAIM REWARD</Text>
                 )}
@@ -411,7 +412,7 @@ export default function VictoryScreen() {
               disabled={sharing}
             >
               {sharing ? (
-                <ActivityIndicator color="#0d0d0d" />
+                <AsciiLoader variant="pulse" color="#0d0d0d" />
               ) : (
                 <Text className="text-crypt-bg font-mono font-bold">SHARE</Text>
               )}
