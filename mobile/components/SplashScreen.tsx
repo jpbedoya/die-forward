@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Pressable, Animated } from 'react-native';
+import { View, Text, Pressable, Animated, Platform } from 'react-native';
 import { CryptBackground } from './CryptBackground';
 import { CRTOverlay } from './CRTOverlay';
 import { DieForwardLogo } from './DieForwardLogo';
@@ -12,25 +12,26 @@ interface SplashScreenProps {
 export function SplashScreen({ onComplete, onTap }: SplashScreenProps) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
+  const useNativeDriver = Platform.OS !== 'web';
 
   useEffect(() => {
     // Phase 1: Fade in
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 600,
-      useNativeDriver: true,
+      useNativeDriver,
     }).start(() => {
       // Phase 2: Scale pulse
       Animated.sequence([
         Animated.timing(scaleAnim, {
           toValue: 1.05,
           duration: 600,
-          useNativeDriver: true,
+          useNativeDriver,
         }),
         Animated.timing(scaleAnim, {
           toValue: 1,
           duration: 600,
-          useNativeDriver: true,
+          useNativeDriver,
         }),
       ]).start(() => {
         // Phase 3: Zoom out and fade
@@ -39,12 +40,12 @@ export function SplashScreen({ onComplete, onTap }: SplashScreenProps) {
             Animated.timing(scaleAnim, {
               toValue: 2.5,
               duration: 350,
-              useNativeDriver: true,
+              useNativeDriver,
             }),
             Animated.timing(fadeAnim, {
               toValue: 0,
               duration: 350,
-              useNativeDriver: true,
+              useNativeDriver,
             }),
           ]).start(() => onComplete());
         }, 300);
