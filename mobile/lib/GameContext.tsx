@@ -10,7 +10,7 @@ import { signInWithWallet, signInAsGuest, linkWalletToGuest, getStoredAuthState,
 
 const NICKNAME_STORAGE_KEY = 'die-forward-nickname';
 const NICKNAME_PROMPTED_KEY = 'die-forward-nickname-prompted';
-const AUTH_TYPE_KEY = 'die-forward-auth-type';
+const GUEST_PROGRESS_KEY = 'die-forward-guest-progress';
 
 interface GameState {
   // Auth
@@ -27,6 +27,7 @@ interface GameState {
   nickname: string | null;
   showNicknameModal: boolean;
   isNewUser: boolean;
+  guestProgressExists: boolean;
   
   // Session
   sessionToken: string | null;
@@ -92,6 +93,7 @@ const initialState: GameState = {
   nickname: null,
   showNicknameModal: false,
   isNewUser: false,
+  guestProgressExists: false,
   sessionToken: null,
   stakeAmount: 0,
   currentRoom: 0,
@@ -132,7 +134,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
   // Restore auth state on mount
   useEffect(() => {
     const restoreAuth = async () => {
-      const stored = await getStoredAuthState();
+      const [stored, guestProgressRaw] = await Promise.all([
+        getStoredAuthState(),
+        AsyncStorage.getItem(GUEST_PROGRESS_KEY),
+      ]);
+
+      updateState({ guestProgressExists: guestProgressRaw === 'true' });
+
       if (stored?.isAuthenticated) {
         updateState({
           isAuthenticated: true,
@@ -264,10 +272,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
         // Keep connected wallet visible if present; guest mode should not hide it
         walletAddress: state.walletAddress,
         isNewUser: authState.isNewUser,
+        guestProgressExists: true,
         loading: false,
         // Don't show nickname modal here - let syncNickname useEffect handle it
         // after auth state is fully settled
       });
+      await AsyncStorage.setItem(GUEST_PROGRESS_KEY, 'true');
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : String(err);
       updateState({ loading: false, error: errMsg });
@@ -296,8 +306,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
         authId: unifiedWallet.address,
         authType: 'wallet',
         walletAddress: unifiedWallet.address,
+        guestProgressExists: false,
         loading: false,
       });
+      await AsyncStorage.removeItem(GUEST_PROGRESS_KEY);
 
       return result;
     } catch (err) {

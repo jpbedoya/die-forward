@@ -58,6 +58,9 @@ export default function StakeScreen() {
     try {
       await game.connect();
       setWalletStatus('idle');
+      if (game.guestProgressExists) {
+        setShowLinkWallet(true);
+      }
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : String(err);
       const isCancellation =
@@ -90,6 +93,9 @@ export default function StakeScreen() {
     try {
       await game.connectTo(connectorId);
       setWalletStatus('idle');
+      if (game.guestProgressExists) {
+        setShowLinkWallet(true);
+      }
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : String(err);
       const isCancellation =
@@ -261,16 +267,6 @@ Offer it. Lose it on death. Escape and claim more.
 
         {/* Action buttons */}
         <View className="gap-3 mb-4">
-          {/* Show "Save Progress" for authenticated guests */}
-          {game.authType === 'guest' && (
-            <Pressable
-              className="border border-amber/40 py-3 items-center active:bg-amber/10"
-              onPress={() => setShowLinkWallet(true)}
-            >
-              <Text className="text-amber text-xs font-mono">💾 SAVE PROGRESS — LINK WALLET</Text>
-            </Pressable>
-          )}
-          
           {!game.walletConnected ? (
             <>
               <Pressable
