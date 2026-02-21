@@ -162,30 +162,41 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
       // Check local storage first for fast load
       const localNickname = await AsyncStorage.getItem(NICKNAME_STORAGE_KEY);
+      const alreadyPrompted = await AsyncStorage.getItem(NICKNAME_PROMPTED_KEY);
+      
+      // If user has set a custom nickname locally, use it immediately
       if (localNickname) {
         updateState({ nickname: localNickname });
       }
 
-      // Sync with DB
+      // Sync with DB - pass local nickname to update DB if we have one
       const result = await getOrCreatePlayerByAuth(
         state.authId, 
         state.authType || 'guest',
         state.walletAddress || undefined,
-        localNickname || undefined
+        localNickname || undefined  // Pass local nickname to persist to DB
       );
       
       if (result) {
         const { player, isNew } = result;
-        const dbNickname = player.nickname;
-        const isDefaultNickname = dbNickname === 'Wanderer' || 
-          (state.walletAddress && dbNickname === `${state.walletAddress.slice(0, 4)}...${state.walletAddress.slice(-4)}`);
         
-        updateState({ nickname: dbNickname, isNewUser: isNew });
-        await AsyncStorage.setItem(NICKNAME_STORAGE_KEY, dbNickname);
+        // If we have a local nickname, prefer it. Otherwise use DB nickname.
+        const effectiveNickname = localNickname || player.nickname;
+        const isDefaultNickname = effectiveNickname === 'Wanderer' || 
+          (state.walletAddress && effectiveNickname === `${state.walletAddress.slice(0, 4)}...${state.walletAddress.slice(-4)}`);
+        
+        updateState({ nickname: effectiveNickname, isNewUser: isNew });
+        
+        // Only save to local storage if we don't have one (avoid overwriting custom names)
+        if (!localNickname) {
+          await AsyncStorage.setItem(NICKNAME_STORAGE_KEY, effectiveNickname);
+        }
 
-        // Show nickname prompt for new users or users with default nickname
-        const alreadyPrompted = await AsyncStorage.getItem(NICKNAME_PROMPTED_KEY);
-        if (!alreadyPrompted && (isNew || isDefaultNickname)) {
+        // Show nickname prompt ONLY if:
+        // 1. Never prompted before AND
+        // 2. (New user OR using a default nickname) AND
+        // 3. No custom local nickname already exists
+        if (!alreadyPrompted && (isNew || isDefaultNickname) && !localNickname) {
           updateState({ showNicknameModal: true });
         }
       }
@@ -529,9 +540,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
     updateState({ loading: true });
     try {
       const room = (state.currentRoom || 0) + 1; // Room is 1-indexed for display
-      const playerName = state.walletAddress 
+      // Use nickname first, fall back to formatted wallet address, then default
+      const playerName = state.nickname || (state.walletAddress 
         ? `${state.walletAddress.slice(0, 4)}...${state.walletAddress.slice(-4)}`
-        : undefined;
+        : 'Wanderer');
       
       await api.recordDeath(
         state.sessionToken, 
@@ -549,7 +561,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         error: err instanceof Error ? err.message : 'Failed to record death',
       });
     }
-  }, [state.sessionToken, state.currentRoom, state.inventory, state.walletAddress, updateState]);
+  }, [state.sessionToken, state.currentRoom, state.inventory, state.walletAddress, state.nickname, updateState]);
 
   const claimVictoryAction = useCallback(async () => {
     if (!state.sessionToken) return;
