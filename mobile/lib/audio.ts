@@ -247,10 +247,9 @@ class WebAudioManager {
     const wasSupressed = this.suppressAmbient;
     this.suppressAmbient = suppress;
 
-    if (suppress && !wasSupressed) {
-      // Actively stop current playback immediately when suppressing
-      this.stopAmbient();
-    } else if (wasSupressed && !suppress && this.lastRequestedAmbient) {
+    // Note: callers (AudiusContext) are responsible for calling stopAmbient()
+    // when suppressing — don't double-stop here.
+    if (wasSupressed && !suppress && this.lastRequestedAmbient) {
       // When un-suppressing, restart the last requested ambient
       this.playAmbient(this.lastRequestedAmbient);
     }
@@ -471,18 +470,18 @@ class NativeAudioManager {
     const wasSupressed = this.suppressAmbient;
     this.suppressAmbient = suppress;
 
-    if (suppress && !wasSupressed) {
-      // Actively stop current playback immediately when suppressing
-      this.stopAmbient();
-    } else if (wasSupressed && !suppress && this.lastRequestedAmbient) {
+    // Note: callers (AudiusContext) are responsible for calling stopAmbient()
+    // when suppressing — don't double-stop here.
+    if (wasSupressed && !suppress && this.lastRequestedAmbient) {
       // When un-suppressing, restart the last requested ambient
       this.playAmbient(this.lastRequestedAmbient);
     }
   }
 
   async playAmbient(id: SoundId, _crossfade: boolean = true) {
-    // Crossfade disabled on native — dangling oldPlayer in closure causes audio
-    // to keep playing after stopAmbient(). Always hard-stop then start new.
+    // Crossfade disabled on native — always hard-stop then start new player.
+    // (Crossfade left dangling oldPlayer in setInterval closure that kept playing
+    // even after stopAmbient() was called.)
     audioLog('[Audio/Native] playAmbient:', id, { enabled: this.enabled, hasModule: !!AudioModule?.AudioPlayer, suppressed: this.suppressAmbient });
     
     // Always track what was requested, even if suppressed (for restart)
@@ -494,17 +493,21 @@ class NativeAudioManager {
     if (!AudioModule?.AudioPlayer) return;
     
     try {
-      if (false) {
-        // Crossfade intentionally disabled on native — left for reference
-      } else {
-        // No crossfade
-        await this.stopAmbient();
-        
-        player.volume = this.ambientVolume;
-        this.currentAmbient = player;
-        this.currentAmbientId = id;
-        player.play();
-      }
+      // Hard stop existing player
+      await this.stopAmbient();
+
+      // Create new player
+      const player = new AudioModule.AudioPlayer(
+        { uri: SOUND_PATHS[id] },
+        100,
+        false
+      );
+      player.loop = true;
+      player.volume = this.ambientVolume;
+
+      this.currentAmbient = player;
+      this.currentAmbientId = id;
+      player.play();
       
       audioLog('[Audio/Native] Ambient started:', id);
     } catch (e) {
