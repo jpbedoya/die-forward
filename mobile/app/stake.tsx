@@ -171,11 +171,16 @@ export default function StakeScreen() {
     <CryptBackground screen="stake">
     <SafeAreaView className="flex-1">
       {/* Header */}
-      <View className="flex-row items-center justify-between px-4 py-3 border-b border-crypt-border">
+      <View className="relative flex-row items-center justify-between px-4 py-3 border-b border-crypt-border">
         <Pressable onPress={() => router.replace('/')}>
           <Text className="text-bone-muted text-sm font-mono">← BACK</Text>
         </Pressable>
-        <Text className="text-amber text-base font-mono font-bold tracking-widest">THE TOLL</Text>
+
+        {/* True center title across full header width */}
+        <View className="absolute inset-x-0 items-center" style={{ pointerEvents: 'none' }}>
+          <Text className="text-amber text-base font-mono font-bold tracking-widest">THE TOLL</Text>
+        </View>
+
         <AudioToggle ambientTrack="ambient-title" inline onSettingsPress={() => setAudioSettingsOpen(true)} />
       </View>
 
