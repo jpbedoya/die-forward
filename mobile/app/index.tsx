@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { View, Text, Pressable, Platform, ScrollView, Modal } from 'react-native';
+import Constants from 'expo-constants';
 import { CryptBackground } from '../components/CryptBackground';
 import { router } from 'expo-router';
 import { useAudio } from '../lib/audio';
@@ -221,6 +222,22 @@ export default function HomeScreen() {
           <Text className="text-crypt-border-light font-mono text-xs text-center mt-3">░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░</Text>
         </View>
       </View>
+
+      {/* Version badge — absolute bottom-right, unobtrusive */}
+      <Text
+        style={{
+          position: 'absolute',
+          bottom: 6,
+          right: 10,
+          fontSize: 9,
+          fontFamily: 'monospace',
+          color: '#3a3632',
+          letterSpacing: 0.5,
+        }}
+        pointerEvents="none"
+      >
+        v{Constants.expoConfig?.version}
+      </Text>
 
       {/* "See All" Bottom Sheet */}
       <Modal
