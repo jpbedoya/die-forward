@@ -50,7 +50,8 @@ export function NicknameModal({ visible, onSubmit, onSkip, initialValue }: Nickn
             </Text>
 
             <TextInput
-              className="bg-crypt-surface border border-crypt-border p-4 text-bone font-mono text-base mb-4 text-center"
+              className="bg-crypt-surface border border-crypt-border p-4 text-bone font-mono text-base mb-4"
+              style={{ textAlign: 'center' }}
               placeholder="Enter name..."
               placeholderTextColor="#57534e"
               value={name}
