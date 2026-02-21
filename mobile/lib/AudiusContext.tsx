@@ -133,6 +133,13 @@ export function AudiusProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const setMusicSource = useCallback(async (source: MusicSource) => {
+    // Immediately kill game ambient — don't wait for the React effect to fire.
+    // Without this there's a render-cycle gap where ambient keeps playing.
+    if (source !== 'game') {
+      const am = getAudioManager();
+      am.setSuppressAmbient(true);
+      am.stopAmbient();
+    }
     setMusicSourceState(source);
     await savePrefs({ musicSource: source, activePlaylistId });
   }, [activePlaylistId, savePrefs]);

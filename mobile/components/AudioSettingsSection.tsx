@@ -2,6 +2,7 @@ import { View, Text, Pressable, ScrollView } from 'react-native';
 import { useAudio } from '../lib/audio';
 import { useAudius, MusicSource } from '../lib/AudiusContext';
 import { CURATED_PLAYLISTS } from '../lib/useAudiusPlayer';
+import { AsciiLoader } from './AsciiLoader';
 
 const MUSIC_SOURCES: { value: MusicSource; label: string }[] = [
   { value: 'game', label: 'GAME' },
@@ -11,7 +12,10 @@ const MUSIC_SOURCES: { value: MusicSource; label: string }[] = [
 
 export function AudioSettingsSection({ className = '' }: { className?: string }) {
   const { enabled: sfxEnabled, toggle: toggleSFX, unlock: unlockAudio } = useAudio();
-  const { musicSource, setMusicSource, activePlaylistId, setActivePlaylist } = useAudius();
+  const { musicSource, setMusicSource, activePlaylistId, setActivePlaylist, isLoading } = useAudius();
+
+  // True while Audius is selected and still fetching/buffering the first track
+  const audiusLoading = musicSource === 'audius' && isLoading;
 
   const handleToggleSFX = () => {
     unlockAudio();
@@ -39,25 +43,38 @@ export function AudioSettingsSection({ className = '' }: { className?: string })
       <View className="flex-row items-center px-3 py-2 border-t border-crypt-border">
         <Text className="text-bone-muted text-sm font-mono mr-3">MUSIC</Text>
         <View className="flex-row flex-1 gap-1">
-          {MUSIC_SOURCES.map(({ value, label }) => (
-            <Pressable
-              key={value}
-              onPress={() => setMusicSource(value)}
-              className={`flex-1 py-1 items-center border ${
-                musicSource === value
-                  ? 'bg-amber-700 border-amber-500'
-                  : 'bg-crypt-bg border-crypt-border'
-              }`}
-            >
-              <Text
-                className={`text-xs font-mono ${
-                  musicSource === value ? 'text-black font-bold' : 'text-bone-dark'
+          {MUSIC_SOURCES.map(({ value, label }) => {
+            const isActive = musicSource === value;
+            // Disable GAME and NONE while Audius is loading to prevent overlap
+            const isDisabled = audiusLoading && value !== 'audius';
+            return (
+              <Pressable
+                key={value}
+                onPress={() => !audiusLoading && setMusicSource(value)}
+                disabled={isDisabled}
+                className={`flex-1 py-1 items-center border ${
+                  isActive
+                    ? 'bg-amber-700 border-amber-500'
+                    : isDisabled
+                    ? 'bg-crypt-bg border-crypt-border opacity-30'
+                    : 'bg-crypt-bg border-crypt-border'
                 }`}
               >
-                {label}
-              </Text>
-            </Pressable>
-          ))}
+                {isActive && audiusLoading ? (
+                  // Show sweep loader on the active AUDIUS button while it buffers
+                  <AsciiLoader variant="pulse" width={6} color="rgba(0,0,0,0.75)" />
+                ) : (
+                  <Text
+                    className={`text-xs font-mono ${
+                      isActive ? 'text-black font-bold' : 'text-bone-dark'
+                    }`}
+                  >
+                    {label}
+                  </Text>
+                )}
+              </Pressable>
+            );
+          })}
         </View>
       </View>
 
