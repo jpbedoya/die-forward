@@ -190,7 +190,7 @@ export default function StakeScreen() {
         {/* Warning */}
         <View className="bg-blood/10 border border-blood-dark p-4 mb-6">
           <Text className="text-blood-light text-sm font-mono leading-5">
-            What you offer, the depths will hold. Die, and it's theirs. Escape, and claim more than you risked.
+Offer it. Lose it on death. Escape and claim more.
           </Text>
         </View>
 
