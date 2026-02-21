@@ -8,7 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // Toggle noisy audio debug logs
 const AUDIO_DEBUG = false;
 const audioLog = (...args: any[]) => {
-  if (AUDIO_DEBUG) audioLog(...args);
+  if (AUDIO_DEBUG) console.log(...args);
 };
 
 // Native audio module (expo-audio) - only loaded on native platforms
@@ -246,10 +246,12 @@ class WebAudioManager {
   setSuppressAmbient(suppress: boolean) {
     const wasSupressed = this.suppressAmbient;
     this.suppressAmbient = suppress;
-    
-    // When un-suppressing, restart the last requested ambient
-    if (wasSupressed && !suppress && this.lastRequestedAmbient) {
-      audioLog('[Audio/Web] Un-suppressing, restarting ambient:', this.lastRequestedAmbient);
+
+    if (suppress && !wasSupressed) {
+      // Actively stop current playback immediately when suppressing
+      this.stopAmbient();
+    } else if (wasSupressed && !suppress && this.lastRequestedAmbient) {
+      // When un-suppressing, restart the last requested ambient
       this.playAmbient(this.lastRequestedAmbient);
     }
   }
@@ -468,16 +470,20 @@ class NativeAudioManager {
   setSuppressAmbient(suppress: boolean) {
     const wasSupressed = this.suppressAmbient;
     this.suppressAmbient = suppress;
-    
-    // When un-suppressing, restart the last requested ambient
-    if (wasSupressed && !suppress && this.lastRequestedAmbient) {
-      audioLog('[Audio/Native] Un-suppressing, restarting ambient:', this.lastRequestedAmbient);
+
+    if (suppress && !wasSupressed) {
+      // Actively stop current playback immediately when suppressing
+      this.stopAmbient();
+    } else if (wasSupressed && !suppress && this.lastRequestedAmbient) {
+      // When un-suppressing, restart the last requested ambient
       this.playAmbient(this.lastRequestedAmbient);
     }
   }
 
-  async playAmbient(id: SoundId, crossfade: boolean = true) {
-    audioLog('[Audio/Native] playAmbient:', id, { enabled: this.enabled, hasModule: !!AudioModule?.AudioPlayer, crossfade, suppressed: this.suppressAmbient });
+  async playAmbient(id: SoundId, _crossfade: boolean = true) {
+    // Crossfade disabled on native — dangling oldPlayer in closure causes audio
+    // to keep playing after stopAmbient(). Always hard-stop then start new.
+    audioLog('[Audio/Native] playAmbient:', id, { enabled: this.enabled, hasModule: !!AudioModule?.AudioPlayer, suppressed: this.suppressAmbient });
     
     // Always track what was requested, even if suppressed (for restart)
     this.lastRequestedAmbient = id;
@@ -488,53 +494,8 @@ class NativeAudioManager {
     if (!AudioModule?.AudioPlayer) return;
     
     try {
-      const oldPlayer = this.currentAmbient;
-      
-      // Create new player
-      const player = new AudioModule.AudioPlayer(
-        { uri: SOUND_PATHS[id] },
-        100,
-        false
-      );
-      player.loop = true;
-      
-      if (crossfade && oldPlayer) {
-        // Start at 0 volume and fade in
-        player.volume = 0;
-        this.currentAmbient = player;
-        this.currentAmbientId = id;
-        player.play();
-        
-        // Crossfade over 800ms
-        const fadeDuration = 800;
-        const fadeSteps = 20;
-        const stepDuration = fadeDuration / fadeSteps;
-        let step = 0;
-        
-        const fadeInterval = setInterval(() => {
-          step++;
-          const progress = step / fadeSteps;
-          
-          // Fade out old
-          if (oldPlayer) {
-            oldPlayer.volume = Math.max(0, this.ambientVolume * (1 - progress));
-          }
-          // Fade in new
-          player.volume = Math.min(this.ambientVolume, this.ambientVolume * progress);
-          
-          if (step >= fadeSteps) {
-            clearInterval(fadeInterval);
-            // Clean up old player
-            if (oldPlayer) {
-              try {
-                oldPlayer.pause();
-                oldPlayer.remove();
-              } catch (e) {
-                // Ignore
-              }
-            }
-          }
-        }, stepDuration);
+      if (false) {
+        // Crossfade intentionally disabled on native — left for reference
       } else {
         // No crossfade
         await this.stopAmbient();
