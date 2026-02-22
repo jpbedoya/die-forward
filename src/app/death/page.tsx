@@ -183,7 +183,7 @@ export default function DeathScreen() {
         {/* Death announcement - dramatic reveal */}
         <div className="text-center mb-6">
           {/* Tombstone ASCII art */}
-          <pre className="text-[var(--text-dim)]/50 text-[8px] sm:text-[10px] leading-[0.9] mb-4 inline-block">
+          <pre className="text-[var(--red-dim)] text-[11px] sm:text-sm leading-[1.15] mb-4 inline-block">
 {ASCII_TOMBSTONE}
           </pre>
 
