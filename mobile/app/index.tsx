@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, Pressable, Platform, ScrollView, Modal, Animated, PanResponder, StyleSheet } from 'react-native';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { View, Text, Pressable, Platform, StyleSheet } from 'react-native';
 import Constants from 'expo-constants';
 import { BlurView } from 'expo-blur';
+import BottomSheet, { BottomSheetScrollView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { CryptBackground } from '../components/CryptBackground';
 import { router } from 'expo-router';
 import { useAudio } from '../lib/audio';
@@ -58,7 +59,7 @@ const C = {
   victory:    '#86efac',   // victor name
 };
 
-// ─── Sheet bottom panel with swipe-to-dismiss ────────────────────────────────
+// ─── Sheet bottom panel with native swipe gestures ───────────────────────────
 function EchoSheet({
   visible,
   onClose,
@@ -76,199 +77,160 @@ function EchoSheet({
   leaderboard: any[];
   showVictors: boolean;
 }) {
-  const translateY = useRef(new Animated.Value(700)).current;
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const snapPoints = useMemo(() => ['50%', '75%'], []);
 
-  // Slide up on open
+  // Open/close the sheet based on visibility
   useEffect(() => {
     if (visible) {
-      translateY.setValue(700);
-      Animated.spring(translateY, {
-        toValue: 0,
-        useNativeDriver: true,
-        bounciness: 3,
-        speed: 14,
-      }).start();
+      bottomSheetRef.current?.snapToIndex(0);
+    } else {
+      bottomSheetRef.current?.close();
     }
   }, [visible]);
 
-  const dismiss = useCallback(() => {
-    Animated.timing(translateY, {
-      toValue: 700,
-      duration: 260,
-      useNativeDriver: true,
-    }).start(() => {
+  const handleSheetChanges = useCallback((index: number) => {
+    if (index === -1) {
       onClose();
-      translateY.setValue(700);
-    });
-  }, [translateY, onClose]);
+    }
+  }, [onClose]);
 
-  const panResponder = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: (_, g) =>
-        g.dy > 8 && Math.abs(g.dy) > Math.abs(g.dx),
-      onPanResponderMove: (_, g) => {
-        if (g.dy > 0) translateY.setValue(g.dy);
-      },
-      onPanResponderRelease: (_, g) => {
-        if (g.dy > 90 || g.vy > 0.6) {
-          Animated.timing(translateY, {
-            toValue: 700,
-            duration: 240,
-            useNativeDriver: true,
-          }).start(() => {
-            onClose();
-            translateY.setValue(700);
-          });
-        } else {
-          Animated.spring(translateY, { toValue: 0, useNativeDriver: true }).start();
-        }
-      },
-    })
-  ).current;
+  const renderBackdrop = useCallback(
+    (props: any) => (
+      <BottomSheetBackdrop
+        {...props}
+        disappearsOnIndex={-1}
+        appearsOnIndex={0}
+        opacity={0.6}
+        pressBehavior="close"
+      />
+    ),
+    []
+  );
 
   return (
-    <Modal visible={visible} transparent animationType="none" onRequestClose={dismiss}>
-      {/* Blurred backdrop */}
-      <Pressable style={StyleSheet.absoluteFill} onPress={dismiss}>
-        <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill}>
-          <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' }} />
-        </BlurView>
-      </Pressable>
-
-      <Animated.View
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          maxHeight: '75%',
-          backgroundColor: 'rgba(10, 8, 6, 0.55)',
-          borderTopWidth: 1,
-          borderLeftWidth: 1,
-          borderRightWidth: 1,
-          borderColor: C.border,
-          borderTopLeftRadius: 12,
-          borderTopRightRadius: 12,
-          transform: [{ translateY }],
-          ...(Platform.OS === 'web' ? { maxWidth: 500, alignSelf: 'center', width: '100%' } : {}),
-        }}
-      >
-        {/* Swipeable header area (handle + tabs) */}
-        <View {...panResponder.panHandlers}>
-          {/* Drag handle */}
-          <View style={{ alignItems: 'center', paddingVertical: 12 }}>
-            <View style={{ width: 36, height: 4, borderRadius: 2, backgroundColor: C.border }} />
-          </View>
-
-          {/* Tab header */}
-          <View style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: 24,
-            paddingBottom: 12,
-            borderBottomWidth: 1,
-            borderColor: C.border,
-            paddingHorizontal: 16,
+    <BottomSheet
+      ref={bottomSheetRef}
+      index={-1}
+      snapPoints={snapPoints}
+      onChange={handleSheetChanges}
+      enablePanDownToClose
+      backdropComponent={renderBackdrop}
+      handleIndicatorStyle={{ backgroundColor: C.border, width: 36 }}
+      backgroundStyle={{
+        backgroundColor: 'rgba(10, 8, 6, 0.95)',
+        borderTopWidth: 1,
+        borderLeftWidth: 1,
+        borderRightWidth: 1,
+        borderColor: C.border,
+      }}
+      style={Platform.OS === 'web' ? { maxWidth: 500, alignSelf: 'center', width: '100%' } : undefined}
+    >
+      {/* Tab header */}
+      <View style={{
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 24,
+        paddingBottom: 12,
+        borderBottomWidth: 1,
+        borderColor: C.border,
+        paddingHorizontal: 16,
+      }}>
+        <Pressable onPress={() => setActiveTab('echoes')}>
+          <Text style={{
+            fontFamily: 'monospace',
+            fontSize: 13,
+            letterSpacing: 2,
+            color: activeTab === 'echoes' ? C.ethereal : C.boneMuted,
           }}>
-          <Pressable onPress={() => setActiveTab('echoes')}>
-            <Text style={{
-              fontFamily: 'monospace',
-              fontSize: 13,
-              letterSpacing: 2,
-              color: activeTab === 'echoes' ? C.ethereal : C.boneMuted,
+            † ECHOES
+          </Text>
+        </Pressable>
+        {showVictors && (
+          <>
+            <Text style={{ color: C.border, fontFamily: 'monospace' }}>◆</Text>
+            <Pressable onPress={() => setActiveTab('victors')}>
+              <Text style={{
+                fontFamily: 'monospace',
+                fontSize: 13,
+                letterSpacing: 2,
+                color: activeTab === 'victors' ? C.victory : C.boneMuted,
+              }}>
+                ★ VICTORS
+              </Text>
+            </Pressable>
+          </>
+        )}
+      </View>
+
+      {/* Scrollable list — BottomSheetScrollView integrates with sheet gestures */}
+      <BottomSheetScrollView style={{ paddingHorizontal: 20 }}>
+        {activeTab === 'echoes' ? (
+          recentDeaths.length > 0 ? recentDeaths.map((death, i) => (
+            <View key={death.id || i} style={{
+              paddingVertical: 14,
+              borderBottomWidth: 1,
+              borderColor: C.border,
+              alignItems: 'center',
             }}>
-              † ECHOES
-            </Text>
-          </Pressable>
-          {showVictors && (
-            <>
-              <Text style={{ color: C.border, fontFamily: 'monospace' }}>◆</Text>
-              <Pressable onPress={() => setActiveTab('victors')}>
+              <Text style={{ fontFamily: 'monospace', fontSize: 14, textAlign: 'center' }} numberOfLines={1}>
+                <Text style={{ color: C.ethereal }}>†</Text>
+                <Text style={{ color: C.bone, fontWeight: '600' }}> {(death.playerName || 'Unknown').toUpperCase()}</Text>
+                <Text style={{ color: C.boneDark }}> · </Text>
+                <Text style={{ color: C.boneDark }}>depth </Text>
+                <Text style={{ color: C.amber, fontWeight: '600' }}>{death.room || '?'}</Text>
+              </Text>
+              {death.finalMessage ? (
                 <Text style={{
                   fontFamily: 'monospace',
                   fontSize: 13,
-                  letterSpacing: 2,
-                  color: activeTab === 'victors' ? C.victory : C.boneMuted,
-                }}>
-                  ★ VICTORS
+                  color: C.boneDark,
+                  fontStyle: 'italic',
+                  marginTop: 6,
+                  lineHeight: 19,
+                  textAlign: 'center',
+                }} numberOfLines={2}>
+                  "{death.finalMessage}"
                 </Text>
-              </Pressable>
-            </>
-          )}
-          </View>
-        </View>
-
-        {/* List */}
-        <ScrollView style={{ paddingHorizontal: 20 }}>
-          {activeTab === 'echoes' ? (
-            recentDeaths.length > 0 ? recentDeaths.map((death, i) => (
-              <View key={death.id || i} style={{
-                paddingVertical: 14,
-                borderBottomWidth: 1,
-                borderColor: C.border,
-                alignItems: 'center',
-              }}>
-                {/* † PLAYERNAME · depth 7 */}
-                <Text style={{ fontFamily: 'monospace', fontSize: 14, textAlign: 'center' }} numberOfLines={1}>
-                  <Text style={{ color: C.ethereal }}>†</Text>
-                  <Text style={{ color: C.bone, fontWeight: '600' }}> {(death.playerName || 'Unknown').toUpperCase()}</Text>
-                  <Text style={{ color: C.boneDark }}> · </Text>
-                  <Text style={{ color: C.boneDark }}>depth </Text>
-                  <Text style={{ color: C.amber, fontWeight: '600' }}>{death.room || '?'}</Text>
+              ) : null}
+            </View>
+          )) : (
+            <Text style={{ fontFamily: 'monospace', fontSize: 12, color: C.boneMuted, textAlign: 'center', paddingVertical: 32, fontStyle: 'italic' }}>
+              No echoes yet... be the first to fall.
+            </Text>
+          )
+        ) : (
+          leaderboard.length > 0 ? leaderboard.map((player, i) => (
+            <View key={player.id || i} style={{
+              paddingVertical: 12,
+              borderBottomWidth: 1,
+              borderColor: C.border,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+              <View>
+                <Text style={{ fontFamily: 'monospace', fontSize: 13, color: C.victory }}>
+                  {'★ @'}{player.nickname}
                 </Text>
-                {/* "their dying words here..." */}
-                {death.finalMessage ? (
-                  <Text style={{
-                    fontFamily: 'monospace',
-                    fontSize: 13,
-                    color: C.boneDark,
-                    fontStyle: 'italic',
-                    marginTop: 6,
-                    lineHeight: 19,
-                    textAlign: 'center',
-                  }} numberOfLines={2}>
-                    "{death.finalMessage}"
-                  </Text>
-                ) : null}
-              </View>
-            )) : (
-              <Text style={{ fontFamily: 'monospace', fontSize: 12, color: C.boneMuted, textAlign: 'center', paddingVertical: 32, fontStyle: 'italic' }}>
-                No echoes yet... be the first to fall.
-              </Text>
-            )
-          ) : (
-            leaderboard.length > 0 ? leaderboard.map((player, i) => (
-              <View key={player.id || i} style={{
-                paddingVertical: 12,
-                borderBottomWidth: 1,
-                borderColor: C.border,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}>
-                <View>
-                  <Text style={{ fontFamily: 'monospace', fontSize: 13, color: C.victory }}>
-                    {'★ @'}{player.nickname}
-                  </Text>
-                  <Text style={{ fontFamily: 'monospace', fontSize: 11, color: C.boneMuted, marginTop: 2, paddingLeft: 14 }}>
-                    {player.totalClears || 0} escape{player.totalClears !== 1 ? 's' : ''} from the depths
-                  </Text>
-                </View>
-                <Text style={{ fontFamily: 'monospace', fontSize: 14, fontWeight: 'bold', color: C.amber }}>
-                  D:{player.highestRoom || 0}
+                <Text style={{ fontFamily: 'monospace', fontSize: 11, color: C.boneMuted, marginTop: 2, paddingLeft: 14 }}>
+                  {player.totalClears || 0} escape{player.totalClears !== 1 ? 's' : ''} from the depths
                 </Text>
               </View>
-            )) : (
-              <Text style={{ fontFamily: 'monospace', fontSize: 12, color: C.boneMuted, textAlign: 'center', paddingVertical: 32, fontStyle: 'italic' }}>
-                None have escaped... yet.
+              <Text style={{ fontFamily: 'monospace', fontSize: 14, fontWeight: 'bold', color: C.amber }}>
+                D:{player.highestRoom || 0}
               </Text>
-            )
-          )}
-          <View style={{ height: 32 }} />
-        </ScrollView>
-      </Animated.View>
-    </Modal>
+            </View>
+          )) : (
+            <Text style={{ fontFamily: 'monospace', fontSize: 12, color: C.boneMuted, textAlign: 'center', paddingVertical: 32, fontStyle: 'italic' }}>
+              None have escaped... yet.
+            </Text>
+          )
+        )}
+        <View style={{ height: 32 }} />
+      </BottomSheetScrollView>
+    </BottomSheet>
   );
 }
 

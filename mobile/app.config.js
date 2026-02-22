@@ -54,6 +54,7 @@ module.exports = {
       "expo-asset",
       "expo-audio",
       "./plugins/with-mwa-android",
+      "./plugins/with-arm64-only",
     ],
     extra: {
       router: {

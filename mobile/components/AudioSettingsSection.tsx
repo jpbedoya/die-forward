@@ -2,6 +2,7 @@ import { View, Text, Pressable, ScrollView } from 'react-native';
 import { useAudio } from '../lib/audio';
 import { useAudius, MusicSource } from '../lib/AudiusContext';
 import { CURATED_PLAYLISTS } from '../lib/useAudiusPlayer';
+import { usePlaylists } from '../lib/instant';
 import { AsciiLoader } from './AsciiLoader';
 
 const MUSIC_SOURCES: { value: MusicSource; label: string }[] = [
@@ -13,6 +14,12 @@ const MUSIC_SOURCES: { value: MusicSource; label: string }[] = [
 export function AudioSettingsSection({ className = '' }: { className?: string }) {
   const { enabled: sfxEnabled, toggle: toggleSFX, unlock: unlockAudio } = useAudio();
   const { musicSource, setMusicSource, activePlaylistId, setActivePlaylist, isLoading } = useAudius();
+  const { playlists: dbPlaylists } = usePlaylists();
+
+  // Use DB playlists if available, fall back to hardcoded
+  const playlistList = dbPlaylists.length > 0
+    ? dbPlaylists.map(p => ({ id: p.audiusId, name: p.name, emoji: p.emoji, vibe: p.vibe, trackCount: p.trackCount }))
+    : CURATED_PLAYLISTS.map(p => ({ ...p }));
 
   // True while Audius is selected and still fetching/buffering the first track
   const audiusLoading = musicSource === 'audius' && isLoading;
@@ -86,7 +93,7 @@ export function AudioSettingsSection({ className = '' }: { className?: string })
           </Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <View className="flex-row gap-2">
-              {CURATED_PLAYLISTS.map((p) => (
+              {playlistList.map((p) => (
                 <Pressable
                   key={p.id}
                   onPress={() => setActivePlaylist(p.id)}

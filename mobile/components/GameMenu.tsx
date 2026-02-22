@@ -39,7 +39,7 @@ export function GameMenu({ isOpen, onClose }: GameMenuProps) {
     <CryptModal visible={isOpen} onClose={handleClose} showCloseButton={false}>
       {/* Logo */}
       <View className="items-center mb-4">
-        <DieForwardLogo size="tiny" />
+        <DieForwardLogo size="small" />
       </View>
 
       {/* Close button */}

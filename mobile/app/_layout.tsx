@@ -11,6 +11,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Stack, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { View, Text, ScrollView, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
@@ -198,25 +199,27 @@ export default function RootLayout() {
   }
   
   return (
-    <ErrorBoundary>
-      <SafeAreaProvider style={{ backgroundColor: '#0d0d0d' }}>
-        <WebFrame>
-          <UnifiedWalletProvider>
-            <GameProvider>
-              <AudiusProvider>
-                <StatusBar style="light" />
-                <Stack
-                  screenOptions={{
-                    headerShown: false,
-                    contentStyle: { backgroundColor: '#0d0d0d' },
-                    animation: 'fade',
-                  }}
-                />
-              </AudiusProvider>
-            </GameProvider>
-          </UnifiedWalletProvider>
-        </WebFrame>
-      </SafeAreaProvider>
-    </ErrorBoundary>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ErrorBoundary>
+        <SafeAreaProvider style={{ backgroundColor: '#0d0d0d' }}>
+          <WebFrame>
+            <UnifiedWalletProvider>
+              <GameProvider>
+                <AudiusProvider>
+                  <StatusBar style="light" />
+                  <Stack
+                    screenOptions={{
+                      headerShown: false,
+                      contentStyle: { backgroundColor: '#0d0d0d' },
+                      animation: 'fade',
+                    }}
+                  />
+                </AudiusProvider>
+              </GameProvider>
+            </UnifiedWalletProvider>
+          </WebFrame>
+        </SafeAreaProvider>
+      </ErrorBoundary>
+    </GestureHandlerRootView>
   );
 }

@@ -517,3 +517,29 @@ export function useDeathSoundtrack(limit = 10) {
 
   return { soundtrack, isLoading, error };
 }
+
+// ============ PLAYLISTS (from admin) ============
+
+export interface AdminPlaylist {
+  id: string;
+  audiusId: string;
+  name: string;
+  emoji: string;
+  vibe: string;
+  trackCount: number;
+  enabled: boolean;
+  order: number;
+}
+
+// Hook to get enabled playlists from admin settings
+export function usePlaylists() {
+  const { data, isLoading, error } = db.useQuery({
+    playlists: {},
+  });
+
+  const playlists = ((data?.playlists || []) as unknown as AdminPlaylist[])
+    .filter(p => p.enabled)
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+  return { playlists, isLoading, error };
+}

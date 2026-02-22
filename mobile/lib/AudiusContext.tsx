@@ -33,7 +33,7 @@ interface AudiusContextValue {
 const AudiusContext = createContext<AudiusContextValue | null>(null);
 
 const PREFS_KEY = 'audius-prefs-v1';
-const DEFAULT_PLAYLIST = CURATED_PLAYLISTS[0].id; // Dungeon Synth
+const DEFAULT_PLAYLIST = CURATED_PLAYLISTS[0].id; // Fallback default (Dungeon Synth) — overridden by saved prefs or admin playlists
 
 interface AudioPrefs {
   musicSource: MusicSource;

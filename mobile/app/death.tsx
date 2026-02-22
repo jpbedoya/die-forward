@@ -199,14 +199,14 @@ export default function DeathScreen() {
                 {
                   fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
                   fontSize: 2.5,
-                  lineHeight: 3.5,
-                  color: '#991b1b',
+                  lineHeight: 2.7,
+                  color: '#ef4444',
                   textAlign: 'left',
                   marginBottom: 16,
                 },
                 Platform.OS === 'web'
-                  ? ({ textShadow: '0px 0px 16px #991b1b' } as const)
-                  : ({ textShadowColor: '#991b1b', textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 16 } as const),
+                  ? ({ textShadow: '0px 0px 16px #ef4444' } as const)
+                  : ({ textShadowColor: '#ef4444', textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 16 } as const),
               ]}
             >
               {SKULL_ASCII}
@@ -241,8 +241,8 @@ export default function DeathScreen() {
             style={{
               fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
               fontSize: 2,
-              lineHeight: 3,
-              color: '#991b1b',
+              lineHeight: 2.2,
+              color: '#ef4444',
               textAlign: 'left',
               marginBottom: 12,
             }}
