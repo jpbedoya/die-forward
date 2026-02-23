@@ -21,7 +21,7 @@ export default function LeaderboardScreen() {
       <View className="relative px-3 py-3 border-b border-amber/30">
         {/* Back button - absolute left */}
         <Pressable onPress={() => router.back()} className="absolute left-3 top-3 z-10">
-          <Text className="text-bone-muted text-sm font-mono">[← BACK]</Text>
+          <Text className="text-bone-muted text-sm font-mono">[HOME]</Text>
         </Pressable>
         
         {/* Title - centered full width */}
