@@ -55,6 +55,7 @@ module.exports = {
       "expo-audio",
       "./plugins/with-mwa-android",
       "./plugins/with-arm64-only",
+      "./plugins/with-release-signing",
     ],
     extra: {
       router: {

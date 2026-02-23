@@ -488,16 +488,27 @@ function MusicTab() {
       <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg overflow-hidden">
         <div className="px-4 py-3 border-b border-[var(--border)] flex justify-between items-center">
           <h3 className="text-[var(--text)] text-sm">Playlists ({playlists.length})</h3>
-          <span className="text-[var(--text-dim)] text-xs">
-            {playlists.filter(p => p.enabled).length} enabled
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="text-[var(--text-dim)] text-xs">
+              {playlists.filter(p => p.enabled).length} enabled
+            </span>
+            <button
+              onClick={async () => {
+                const removed = await deduplicatePlaylists(playlists);
+                if (removed > 0) alert(`Removed ${removed} duplicate(s)`);
+              }}
+              className="px-2 py-1 border border-[var(--border)] text-[var(--text-dim)] hover:border-[var(--amber)] hover:text-[var(--amber)] text-xs"
+            >
+              🧹 Dedupe
+            </button>
+          </div>
         </div>
 
         {playlists.length === 0 ? (
           <div className="p-8 text-center text-[var(--text-dim)] text-sm">
             No playlists yet. Add one above or seed the defaults.
             <button
-              onClick={() => seedDefaultPlaylists()}
+              onClick={() => seedDefaultPlaylists(playlists)}
               className="block mx-auto mt-4 px-4 py-2 border border-[var(--amber)] text-[var(--amber)] text-sm hover:bg-[var(--amber)]/10"
             >
               Seed Default Playlists
@@ -609,8 +620,8 @@ function MusicTab() {
   );
 }
 
-// Seed default playlists into InstantDB
-async function seedDefaultPlaylists() {
+// Seed default playlists into InstantDB (skips existing)
+async function seedDefaultPlaylists(existingPlaylists: Playlist[] = []) {
   const defaults = [
     { audiusId: 'emQa2', name: 'Dungeon Synth', emoji: '🏰', vibe: 'Dark, atmospheric', trackCount: 21 },
     { audiusId: 'DN6Pp', name: 'Gaming Arena', emoji: '🎮', vibe: 'High energy', trackCount: 33 },
@@ -619,10 +630,37 @@ async function seedDefaultPlaylists() {
     { audiusId: '5ON2AWX', name: 'Gaming Mix', emoji: '🕹️', vibe: 'Variety', trackCount: 331 },
     { audiusId: 'ebd1O', name: 'Lofi Road Trip', emoji: '🚗', vibe: 'Chill vibes', trackCount: 112 },
   ];
-  const txns = defaults.map((pl, i) =>
-    tx.playlists[id()].update({ ...pl, enabled: true, order: i + 1 })
+  const existingIds = new Set(existingPlaylists.map(p => p.audiusId));
+  const toAdd = defaults.filter(d => !existingIds.has(d.audiusId));
+  if (toAdd.length === 0) {
+    alert('All default playlists already exist!');
+    return;
+  }
+  const maxOrder = existingPlaylists.reduce((max, p) => Math.max(max, p.order || 0), 0);
+  const txns = toAdd.map((pl, i) =>
+    tx.playlists[id()].update({ ...pl, enabled: true, order: maxOrder + i + 1 })
   );
   await db.transact(txns);
+}
+
+// Remove duplicate playlists (keep first by order)
+async function deduplicatePlaylists(playlists: Playlist[]) {
+  const seen = new Map<string, Playlist>();
+  const toDelete: string[] = [];
+  for (const pl of playlists) {
+    if (seen.has(pl.audiusId)) {
+      toDelete.push(pl.id);
+    } else {
+      seen.set(pl.audiusId, pl);
+    }
+  }
+  if (toDelete.length === 0) {
+    alert('No duplicates found!');
+    return 0;
+  }
+  const txns = toDelete.map(plId => tx.playlists[plId].delete());
+  await db.transact(txns);
+  return toDelete.length;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
