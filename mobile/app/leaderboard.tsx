@@ -4,6 +4,8 @@ import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLeaderboard, usePlayer, useDeathSoundtrack } from '../lib/instant';
 import { useGame } from '../lib/GameContext';
+import { AudioToggle } from '../components/AudioToggle';
+import { AudioSettingsModal } from '../components/AudioSettingsModal';
 
 export default function LeaderboardScreen() {
   const game = useGame();
@@ -11,17 +13,27 @@ export default function LeaderboardScreen() {
   const { player } = usePlayer(game.walletAddress);
   const { soundtrack, isLoading: soundtrackLoading } = useDeathSoundtrack(20);
   const [activeTab, setActiveTab] = useState<'wanderers' | 'soundtrack'>('wanderers');
+  const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
 
   return (
     <SafeAreaView className="flex-1 bg-crypt-bg">
       {/* Header */}
-      <View className="flex-row items-center justify-between px-3 py-3 border-b border-amber/30">
-        <Pressable onPress={() => router.back()}>
+      <View className="relative px-3 py-3 border-b border-amber/30">
+        {/* Back button - absolute left */}
+        <Pressable onPress={() => router.back()} className="absolute left-3 top-3 z-10">
           <Text className="text-bone-muted text-sm font-mono">[← BACK]</Text>
         </Pressable>
-        <Text className="text-amber text-xs font-mono tracking-widest">◈ LEADERBOARD</Text>
-        <View className="w-16" />
+        
+        {/* Title - centered full width */}
+        <Text className="text-amber text-xs font-mono tracking-widest text-center">◈ RANKS</Text>
+        
+        {/* Audio toggle - absolute right */}
+        <View className="absolute right-3 top-2 z-10">
+          <AudioToggle inline onSettingsPress={() => setAudioSettingsOpen(true)} />
+        </View>
       </View>
+      
+      <AudioSettingsModal visible={audioSettingsOpen} onClose={() => setAudioSettingsOpen(false)} />
 
       {/* Tabs */}
       <View className="flex-row border-b border-crypt-border">
