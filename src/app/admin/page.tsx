@@ -775,9 +775,11 @@ function SettingToggle({ label, description, value, onChange }: {
           value ? 'bg-[var(--amber)]' : 'bg-[var(--bg-surface)]'
         } border border-[var(--border)]`}
       >
-        <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-transform pointer-events-none ${
-          value ? 'translate-x-6' : 'translate-x-0.5'
-        }`} />
+        <span 
+          className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform pointer-events-none ${
+            value ? 'translate-x-5' : 'translate-x-0'
+          }`} 
+        />
       </button>
     </div>
   );
