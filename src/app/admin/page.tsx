@@ -36,7 +36,7 @@ interface GameSettings {
   tier2Multiplier: number;
   tier3Multiplier: number;
   victoryBonusPercent: number;
-  showVictorsFeed: boolean;
+  showLeaderboardLink: boolean;
 }
 
 interface Playlist {
@@ -59,7 +59,7 @@ const DEFAULT_SETTINGS: Omit<GameSettings, 'id'> = {
   tier2Multiplier: 1.5,
   tier3Multiplier: 2.0,
   victoryBonusPercent: 50,
-  showVictorsFeed: false,
+  showLeaderboardLink: false,
 };
 
 type Tab = 'dashboard' | 'settings' | 'music' | 'deaths';
@@ -237,7 +237,7 @@ function SettingsTab() {
     tier2Multiplier: settings?.tier2Multiplier ?? DEFAULT_SETTINGS.tier2Multiplier,
     tier3Multiplier: settings?.tier3Multiplier ?? DEFAULT_SETTINGS.tier3Multiplier,
     victoryBonusPercent: settings?.victoryBonusPercent ?? DEFAULT_SETTINGS.victoryBonusPercent,
-    showVictorsFeed: settings?.showVictorsFeed ?? DEFAULT_SETTINGS.showVictorsFeed,
+    showLeaderboardLink: settings?.showLeaderboardLink ?? DEFAULT_SETTINGS.showLeaderboardLink,
   } as GameSettings;
 
   return (
@@ -257,7 +257,7 @@ function SettingsTab() {
         <SettingSlider label="Victory Pool Bonus" value={cs.victoryBonusPercent} min={10} max={100} step={5} format={(v) => `${v}%`} onChange={(v) => saveSettings({ victoryBonusPercent: v })} />
       </SettingsSection>
       <SettingsSection title="UI">
-        <SettingToggle label="Show Victors Feed" description="Display the victors tab on the title screen" value={cs.showVictorsFeed} onChange={(v) => saveSettings({ showVictorsFeed: v })} />
+        <SettingToggle label="Show Leaderboard Link" description="Display leaderboard link on the title screen" value={cs.showLeaderboardLink} onChange={(v) => saveSettings({ showLeaderboardLink: v })} />
       </SettingsSection>
     </div>
   );

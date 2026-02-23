@@ -41,7 +41,7 @@ function AnimatedDescendButton() {
 }
 
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useDeathFeed, useLeaderboard, useGameSettings } from '../lib/instant';
+import { useDeathFeed, useGameSettings } from '../lib/instant';
 import { DieForwardLogo } from '../components/DieForwardLogo';
 import { AudioToggle } from '../components/AudioToggle';
 import { AudioSettingsModal } from '../components/AudioSettingsModal';
@@ -63,19 +63,11 @@ const C = {
 function EchoSheet({
   visible,
   onClose,
-  activeTab,
-  setActiveTab,
   recentDeaths,
-  leaderboard,
-  showVictors,
 }: {
   visible: boolean;
   onClose: () => void;
-  activeTab: 'echoes' | 'victors';
-  setActiveTab: (t: 'echoes' | 'victors') => void;
   recentDeaths: any[];
-  leaderboard: any[];
-  showVictors: boolean;
 }) {
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ['50%', '75%'], []);
@@ -126,107 +118,59 @@ function EchoSheet({
       }}
       style={Platform.OS === 'web' ? { maxWidth: 500, alignSelf: 'center', width: '100%' } : undefined}
     >
-      {/* Tab header */}
+      {/* Header */}
       <View style={{
-        flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        gap: 24,
         paddingBottom: 12,
         borderBottomWidth: 1,
         borderColor: C.border,
         paddingHorizontal: 16,
       }}>
-        <Pressable onPress={() => setActiveTab('echoes')}>
-          <Text style={{
-            fontFamily: 'monospace',
-            fontSize: 13,
-            letterSpacing: 2,
-            color: activeTab === 'echoes' ? C.ethereal : C.boneMuted,
-          }}>
-            † ECHOES
-          </Text>
-        </Pressable>
-        {showVictors && (
-          <>
-            <Text style={{ color: C.border, fontFamily: 'monospace' }}>◆</Text>
-            <Pressable onPress={() => setActiveTab('victors')}>
-              <Text style={{
-                fontFamily: 'monospace',
-                fontSize: 13,
-                letterSpacing: 2,
-                color: activeTab === 'victors' ? C.victory : C.boneMuted,
-              }}>
-                ★ VICTORS
-              </Text>
-            </Pressable>
-          </>
-        )}
+        <Text style={{
+          fontFamily: 'monospace',
+          fontSize: 13,
+          letterSpacing: 2,
+          color: C.ethereal,
+        }}>
+          † ECHOES OF THE FALLEN
+        </Text>
       </View>
 
       {/* Scrollable list — BottomSheetScrollView integrates with sheet gestures */}
       <BottomSheetScrollView style={{ paddingHorizontal: 20 }}>
-        {activeTab === 'echoes' ? (
-          recentDeaths.length > 0 ? recentDeaths.map((death, i) => (
-            <View key={death.id || i} style={{
-              paddingVertical: 14,
-              borderBottomWidth: 1,
-              borderColor: C.border,
-              alignItems: 'center',
-            }}>
-              <Text style={{ fontFamily: 'monospace', fontSize: 14, textAlign: 'center' }} numberOfLines={1}>
-                <Text style={{ color: C.ethereal }}>†</Text>
-                <Text style={{ color: C.bone, fontWeight: '600' }}> {(death.playerName || 'Unknown').toUpperCase()}</Text>
-                <Text style={{ color: C.boneDark }}> · </Text>
-                <Text style={{ color: C.boneDark }}>depth </Text>
-                <Text style={{ color: C.amber, fontWeight: '600' }}>{death.room || '?'}</Text>
-              </Text>
-              {death.finalMessage ? (
-                <Text style={{
-                  fontFamily: 'monospace',
-                  fontSize: 13,
-                  color: C.boneDark,
-                  fontStyle: 'italic',
-                  marginTop: 6,
-                  lineHeight: 19,
-                  textAlign: 'center',
-                }} numberOfLines={2}>
-                  "{death.finalMessage}"
-                </Text>
-              ) : null}
-            </View>
-          )) : (
-            <Text style={{ fontFamily: 'monospace', fontSize: 12, color: C.boneMuted, textAlign: 'center', paddingVertical: 32, fontStyle: 'italic' }}>
-              No echoes yet... be the first to fall.
+        {recentDeaths.length > 0 ? recentDeaths.map((death, i) => (
+          <View key={death.id || i} style={{
+            paddingVertical: 14,
+            borderBottomWidth: 1,
+            borderColor: C.border,
+            alignItems: 'center',
+          }}>
+            <Text style={{ fontFamily: 'monospace', fontSize: 14, textAlign: 'center' }} numberOfLines={1}>
+              <Text style={{ color: C.ethereal }}>†</Text>
+              <Text style={{ color: C.bone, fontWeight: '600' }}> {(death.playerName || 'Unknown').toUpperCase()}</Text>
+              <Text style={{ color: C.boneDark }}> · </Text>
+              <Text style={{ color: C.boneDark }}>depth </Text>
+              <Text style={{ color: C.amber, fontWeight: '600' }}>{death.room || '?'}</Text>
             </Text>
-          )
-        ) : (
-          leaderboard.length > 0 ? leaderboard.map((player, i) => (
-            <View key={player.id || i} style={{
-              paddingVertical: 12,
-              borderBottomWidth: 1,
-              borderColor: C.border,
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-              <View>
-                <Text style={{ fontFamily: 'monospace', fontSize: 13, color: C.victory }}>
-                  {'★ @'}{player.nickname}
-                </Text>
-                <Text style={{ fontFamily: 'monospace', fontSize: 11, color: C.boneMuted, marginTop: 2, paddingLeft: 14 }}>
-                  {player.totalClears || 0} escape{player.totalClears !== 1 ? 's' : ''} from the depths
-                </Text>
-              </View>
-              <Text style={{ fontFamily: 'monospace', fontSize: 14, fontWeight: 'bold', color: C.amber }}>
-                D:{player.highestRoom || 0}
+            {death.finalMessage ? (
+              <Text style={{
+                fontFamily: 'monospace',
+                fontSize: 13,
+                color: C.boneDark,
+                fontStyle: 'italic',
+                marginTop: 6,
+                lineHeight: 19,
+                textAlign: 'center',
+              }} numberOfLines={2}>
+                "{death.finalMessage}"
               </Text>
-            </View>
-          )) : (
-            <Text style={{ fontFamily: 'monospace', fontSize: 12, color: C.boneMuted, textAlign: 'center', paddingVertical: 32, fontStyle: 'italic' }}>
-              None have escaped... yet.
-            </Text>
-          )
+            ) : null}
+          </View>
+        )) : (
+          <Text style={{ fontFamily: 'monospace', fontSize: 12, color: C.boneMuted, textAlign: 'center', paddingVertical: 32, fontStyle: 'italic' }}>
+            No echoes yet... be the first to fall.
+          </Text>
         )}
         <View style={{ height: 32 }} />
       </BottomSheetScrollView>
@@ -236,26 +180,20 @@ function EchoSheet({
 
 // ─── Home Screen ──────────────────────────────────────────────────────────────
 export default function HomeScreen() {
-  const [activeTab, setActiveTab] = useState<'echoes' | 'victors'>('echoes');
   const [showAllSheet, setShowAllSheet] = useState(false);
   const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
 
   const { deaths: recentDeaths } = useDeathFeed(50);
-  const { leaderboard: rawLeaderboard } = useLeaderboard(20);
   const { playAmbient, ready: audioReady } = useAudio();
   const { settings } = useGameSettings();
-
-  const leaderboard = rawLeaderboard.filter(p => p.nickname && p.nickname.trim() !== '');
 
   useEffect(() => {
     if (audioReady) playAmbient('ambient-title');
   }, [audioReady]);
 
   const displayedDeaths = recentDeaths.slice(0, 5);
-  const displayedVictors = leaderboard.slice(0, 5);
 
-  const openSheet = useCallback((tab?: 'echoes' | 'victors') => {
-    if (tab) setActiveTab(tab);
+  const openSheet = useCallback(() => {
     setShowAllSheet(true);
   }, []);
 
@@ -265,7 +203,14 @@ export default function HomeScreen() {
       <CRTOverlay />
       
       {/* Header */}
-      <View className="flex-row items-center justify-end px-4 py-2">
+      <View className="flex-row items-center justify-between px-4 py-2">
+        {settings.showLeaderboardLink ? (
+          <Pressable onPress={() => router.push('/leaderboard')} className="active:opacity-70">
+            <Text className="text-amber font-mono text-xs tracking-wider">◈ RANKS</Text>
+          </Pressable>
+        ) : (
+          <View className="w-16" />
+        )}
         <AudioToggle ambientTrack="ambient-title" inline onSettingsPress={() => setAudioSettingsOpen(true)} />
       </View>
       <AudioSettingsModal visible={audioSettingsOpen} onClose={() => setAudioSettingsOpen(false)} />
@@ -286,71 +231,33 @@ export default function HomeScreen() {
         <View className="flex-[2]" />
 
         {/* Echoes Section — whole area tappable */}
-        <Pressable className="mb-4" onPress={() => openSheet()}>
-          {/* Tab row */}
+        <Pressable className="mb-4" onPress={openSheet}>
+          {/* Title */}
           <View className="items-center mb-3">
-            <View className="flex-row items-center gap-4">
-              <Pressable onPress={() => openSheet('echoes')}>
-                <Text className={`font-mono text-base tracking-widest ${
-                  activeTab === 'echoes' ? 'text-ethereal' : 'text-bone-dark'
-                }`}>
-                  ECHOES
-                </Text>
-              </Pressable>
-              {settings.showVictorsFeed && (
-                <>
-                  <Text className="text-crypt-border-light font-mono">◆</Text>
-                  <Pressable onPress={() => openSheet('victors')}>
-                    <Text className={`font-mono text-base tracking-widest ${
-                      activeTab === 'victors' ? 'text-victory' : 'text-bone-dark'
-                    }`}>
-                      VICTORS
-                    </Text>
-                  </Pressable>
-                </>
-              )}
-            </View>
+            <Text className="font-mono text-base tracking-widest text-ethereal">
+              † ECHOES
+            </Text>
           </View>
 
           {/* Preview content */}
           <View className="px-2 items-center" style={{ minHeight: 120 }}>
-            {activeTab === 'echoes' ? (
-              <View className="items-center w-full" style={{ maxWidth: 280 }}>
-                {displayedDeaths.length > 0 ? (
-                  displayedDeaths.map((death, i) => (
-                    <View key={death.id || i} className="py-1">
-                      <Text className="text-xs text-bone-muted font-mono text-center" numberOfLines={1}>
-                        <Text className="text-ethereal">{death.playerName}</Text>
-                        <Text className="text-bone-dark"> fell at </Text>
-                        <Text className="text-bone-muted">Depth {death.room || '?'}</Text>
-                      </Text>
-                    </View>
-                  ))
-                ) : (
-                  <Text className="text-xs text-bone-dark font-mono italic text-center">
-                    No echoes yet... be the first to fall.
-                  </Text>
-                )}
-              </View>
-            ) : (
-              <View className="items-center w-full" style={{ maxWidth: 280 }}>
-                {displayedVictors.length > 0 ? (
-                  displayedVictors.map((player, i) => (
-                    <View key={player.id || i} className="py-1">
-                      <Text className="text-xs text-bone-muted font-mono text-center" numberOfLines={1}>
-                        <Text className="text-victory">@{player.nickname}</Text>
-                        <Text className="text-bone-dark"> escaped </Text>
-                        <Text className="text-bone-muted">Depth {player.highestRoom || 0}</Text>
-                      </Text>
-                    </View>
-                  ))
-                ) : (
-                  <Text className="text-xs text-bone-dark font-mono italic text-center">
-                    None have escaped... yet.
-                  </Text>
-                )}
-              </View>
-            )}
+            <View className="items-center w-full" style={{ maxWidth: 280 }}>
+              {displayedDeaths.length > 0 ? (
+                displayedDeaths.map((death, i) => (
+                  <View key={death.id || i} className="py-1">
+                    <Text className="text-xs text-bone-muted font-mono text-center" numberOfLines={1}>
+                      <Text className="text-ethereal">{death.playerName}</Text>
+                      <Text className="text-bone-dark"> fell at </Text>
+                      <Text className="text-bone-muted">Depth {death.room || '?'}</Text>
+                    </Text>
+                  </View>
+                ))
+              ) : (
+                <Text className="text-xs text-bone-dark font-mono italic text-center">
+                  No echoes yet... be the first to fall.
+                </Text>
+              )}
+            </View>
           </View>
 
           {/* Tap hint + decoration */}
@@ -381,11 +288,7 @@ export default function HomeScreen() {
       <EchoSheet
         visible={showAllSheet}
         onClose={() => setShowAllSheet(false)}
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
         recentDeaths={recentDeaths}
-        leaderboard={leaderboard}
-        showVictors={settings.showVictorsFeed}
       />
     </SafeAreaView>
     </CryptBackground>
