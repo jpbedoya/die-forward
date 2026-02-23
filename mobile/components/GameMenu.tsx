@@ -36,9 +36,9 @@ export function GameMenu({ isOpen, onClose }: GameMenuProps) {
   };
 
   return (
-    <CryptModal visible={isOpen} onClose={handleClose} showCloseButton={false}>
+    <CryptModal visible={isOpen} onClose={handleClose} showCloseButton={false} maxWidth={340}>
       {/* Logo */}
-      <View className="items-center mb-4">
+      <View className="items-center mb-3">
         <DieForwardLogo size="small" />
       </View>
 
@@ -49,7 +49,7 @@ export function GameMenu({ isOpen, onClose }: GameMenuProps) {
 
       {/* Player info */}
       {(game.walletConnected || game.nickname) && (
-        <View className="mb-4">
+        <View className="mb-3">
           <Text className="text-bone-dark text-[10px] font-mono tracking-wider mb-1">PLAYER</Text>
           <View className="flex-row items-center gap-2 flex-wrap">
             {game.nickname && (
@@ -78,13 +78,13 @@ export function GameMenu({ isOpen, onClose }: GameMenuProps) {
       {/* ── Abandon Run ────────────────────────────────────────────────────── */}
       {!confirmingAbandon ? (
         <Pressable
-          className="bg-crypt-bg border border-blood/50 px-3 py-3 mb-4"
+          className="bg-crypt-bg border border-blood/50 px-3 py-3 mb-2"
           onPress={() => setConfirmingAbandon(true)}
         >
           <Text className="text-blood-light text-sm font-mono">☠ Abandon Run</Text>
         </Pressable>
       ) : (
-        <View className="border border-blood/50 bg-blood/10 p-3 mb-4">
+        <View className="border border-blood/50 bg-blood/10 p-3 mb-2">
           <Text className="text-bone-muted text-xs font-mono mb-3">
             Abandon run?{' '}
             {game.stakeAmount > 0

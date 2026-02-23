@@ -87,12 +87,12 @@ export function DeathCard({ data }: { data: DeathCardData }) {
         {/* Now Playing */}
         {data.nowPlaying && (
           <View className="border-t border-stone-800 mt-2 pt-2 mb-2 flex-row items-center justify-center gap-1">
-            <Text className="text-stone-600 text-[9px] font-mono">♪</Text>
-            <Text className="text-stone-500 text-[9px] font-mono italic" numberOfLines={1}>
+            <Text className="text-[11px]">🎧</Text>
+            <Text className="text-stone-400 text-[11px] font-mono italic" numberOfLines={1}>
               {data.nowPlaying.title}
             </Text>
-            <Text className="text-stone-600 text-[9px] font-mono">·</Text>
-            <Text className="text-stone-600 text-[9px] font-mono" numberOfLines={1}>
+            <Text className="text-stone-500 text-[11px] font-mono">·</Text>
+            <Text className="text-stone-500 text-[11px] font-mono" numberOfLines={1}>
               {data.nowPlaying.artist}
             </Text>
           </View>
@@ -154,12 +154,12 @@ export function VictoryCard({ data }: { data: VictoryCardData }) {
         {/* Now Playing */}
         {data.nowPlaying && (
           <View className="border-t border-stone-800 mt-2 pt-2 mb-2 flex-row items-center justify-center gap-1">
-            <Text className="text-stone-600 text-[9px] font-mono">♪</Text>
-            <Text className="text-stone-500 text-[9px] font-mono italic" numberOfLines={1}>
+            <Text className="text-[11px]">🎧</Text>
+            <Text className="text-stone-400 text-[11px] font-mono italic" numberOfLines={1}>
               {data.nowPlaying.title}
             </Text>
-            <Text className="text-stone-600 text-[9px] font-mono">·</Text>
-            <Text className="text-stone-600 text-[9px] font-mono" numberOfLines={1}>
+            <Text className="text-stone-500 text-[11px] font-mono">·</Text>
+            <Text className="text-stone-500 text-[11px] font-mono" numberOfLines={1}>
               {data.nowPlaying.artist}
             </Text>
           </View>

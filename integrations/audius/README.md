@@ -1,29 +1,65 @@
 # Audius Integration
 
-**Status:** 🟡 Prototype  
-**Test Page:** `/music-test`
+**Status:** ✅ Complete  
+**Test Page:** `/music-test`  
+**Admin:** `/admin` → Music tab
 
-## What is Audius?
+## Overview
 
-Decentralized music streaming platform built on the Open Audio Protocol. Think open Spotify API.
+Decentralized music streaming via Audius API. Players can choose background music while keeping game SFX separate.
 
-## Use Cases for Die Forward
+## What's Implemented
 
-### 1. Background Music Player
-Let players choose their own music while keeping game SFX:
-- Curated gaming playlists (Dungeon Synth, Lo-Fi, etc.)
-- Search any Audius playlist
-- Shuffle, skip, volume controls
-- Persists across game screens
+### Player System
+- **`useAudiusPlayer`** hook — full-featured audio player
+  - Crossfade between tracks (500ms fade in/out)
+  - Volume control with persistence
+  - Play/pause/skip/previous
+  - Auto-advance to next track
+  - Shuffle on playlist load
+  - Works on web (HTMLAudio) and native (expo-audio)
 
-### 2. Death Cards
-> "Died at depth 7 listening to 'Dark Whispers' by SynthLord"
+### Context & State
+- **`AudiusContext`** — app-wide music state
+  - Music source preference: `game` | `audius` | `none`
+  - Active playlist ID (persisted via AsyncStorage)
+  - Master mute integration (respects [SND]/[MUTE] toggle)
+  - Coordinates with game ambient audio
 
-Include currently playing track in death/victory share cards.
+### UI Components
+- **`MiniPlayer`** — inline footer player for game screens
+  - Shows current track + artist
+  - Play/pause and skip controls
+  - Only renders when Audius is active
+- **`AudioSettingsSection`** — settings panel
+  - Music source picker (GAME/AUDIUS/NONE)
+  - Horizontal scrolling playlist selector
+  - Loading states during playlist fetch
 
-### 3. Community Playlists
-- "Best playlists for Die Forward" community curation
-- Share your favorite dungeon-crawling playlist
+### Admin Panel (`/admin` → Music tab)
+- Add playlists by Audius URL or ID
+- Preview tracks with inline player
+- Reorder playlists (drag up/down)
+- Toggle enable/disable per playlist
+- Edit emoji and vibe descriptions
+- Seed default playlists button
+- Now Playing bar with full controls
+
+### Data Layer
+- Playlists stored in InstantDB (`playlists` collection)
+- Mobile reads via `usePlaylists()` hook
+- Falls back to hardcoded defaults if DB empty
+
+## Curated Playlists
+
+| Emoji | Name | Audius ID | Tracks | Vibe |
+|-------|------|-----------|--------|------|
+| 🏰 | Dungeon Synth | `emQa2` | 21 | Dark, atmospheric |
+| 🎮 | Gaming Arena | `DN6Pp` | 33 | High energy |
+| 🌙 | Lo-Fi Nights | `nqZmb` | 198 | Chill |
+| 🌑 | Dark Ambient | `3AA6Z` | 9 | Moody, intense |
+| 🕹️ | Gaming Mix | `5ON2AWX` | 331 | Variety |
+| 🚗 | Lofi Road Trip | `ebd1O` | 112 | Chill vibes |
 
 ## API Reference
 
@@ -32,6 +68,9 @@ Include currently playing track in death/victory share cards.
 ```bash
 # Search playlists
 curl "https://api.audius.co/v1/playlists/search?query=gaming"
+
+# Get playlist metadata
+curl "https://api.audius.co/v1/playlists/{id}"
 
 # Get playlist tracks
 curl "https://api.audius.co/v1/playlists/{id}/tracks"
@@ -42,58 +81,43 @@ curl "https://api.audius.co/v1/tracks/{id}/stream"
 
 No API key required for reads/streaming.
 
-## Curated Playlists
+## File Structure
 
-| Name | ID | Tracks | Vibe |
-|------|-----|--------|------|
-| Dungeon Synth | `emQa2` | 21 | Dark, atmospheric |
-| Gaming Arena | `DN6Pp` | 33 | High energy |
-| Lo-Fi Nights | `nqZmb` | 198 | Chill |
-| Gaming Mix | `5ON2AWX` | 331 | Variety |
+```
+mobile/
+├── lib/
+│   ├── useAudiusPlayer.ts    # Core player hook
+│   ├── AudiusContext.tsx     # App-wide context provider
+│   └── instant.ts            # usePlaylists() hook
+├── components/
+│   ├── MiniPlayer.tsx        # Inline footer player
+│   ├── AudioSettingsSection.tsx  # Settings panel
+│   └── AudioSettingsModal.tsx    # Modal wrapper
+└── app/
+    └── music-test.tsx        # Test page
 
-## Files
+src/app/admin/
+└── page.tsx                  # Admin panel (Music tab)
+```
 
-- `/app/music-test.tsx` — Test page with full player UI
-- `/integrations/audius/` — This folder (docs only for now)
+## Future Enhancements
 
-## Next Steps
-
-- [ ] Extract `useAudiusPlayer` hook
-- [ ] Add mini player component
-- [ ] Integrate into settings screen
-- [ ] Add "Now Playing" to share cards
-
-## Integration Plan
-
-### Core Features
-- [ ] Ambient music from Audius API
-- [ ] Player playlist selection before descent
-- [ ] Track attribution in-game ("Now Playing")
-- [ ] Log which track playing at death/victory
-
-### Leaderboards & Discovery
-- [ ] Most played tracks/playlists (Audius could sponsor prizes)
-- [ ] "Death Soundtrack" — songs playing at most deaths
-- [ ] Artist notifications at X plays
-
-### Share Cards
-- [ ] Audius logo + "🎵 Died to [Track] by [Artist]"
+### Death Card Attribution
+- [ ] Track "now playing" at moment of death
+- [ ] Include in death card: "🎵 Died to [Track] by [Artist]"
 - [ ] Link to track on Audius
-- [ ] Attribution = organic promo for artists
 
-### Tapestry Integration
-- [ ] Music taste → social profile
-- [ ] Cross-post death cards with track attribution
-- [ ] "Players who like this playlist also died to..."
+### Social Features
+- [ ] Most played tracks leaderboard
+- [ ] "Death Soundtrack" — songs playing at most deaths
+- [ ] Cross-post to Tapestry with track attribution
 
 ### Partnership Opportunities
 - Promoted playlists from Audius
-- Sponsorship for leaderboard giveaways
-- Play data = discovery proof for artists
+- Play data as discovery proof for artists
 - Attribution on shares = organic promo
 
 ## Links
 
-- Docs: https://docs.audius.co
-- SDK: `@audius/sdk`
-- Skill: `~/.openclaw/workspace/skills/audius/SKILL.md`
+- [Audius Docs](https://docs.audius.co)
+- [Audius SDK](https://www.npmjs.com/package/@audius/sdk)

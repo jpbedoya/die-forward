@@ -257,8 +257,7 @@ export default function DeathScreen() {
         </View>
 
         {/* Death Stats */}
-        <Text className="text-bone-dark text-xs font-mono tracking-widest mb-2 text-center">YOUR OFFERING</Text>
-        <View className="bg-crypt-surface border border-crypt-border p-4 mb-6">
+        <View className="bg-crypt-surface border border-crypt-border p-4 mb-4">
           <View className="flex-row justify-between mb-2">
             <Text className="text-bone-dark text-sm font-mono">Depth Reached</Text>
             <Text className="text-ethereal text-sm font-mono">{depth.name}</Text>

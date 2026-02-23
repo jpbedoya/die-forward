@@ -56,8 +56,9 @@ export function CryptModal({
 
           {/* Content */}
           <ScrollView 
-            style={{ maxHeight: Platform.OS === 'web' ? 400 : undefined }}
-            showsVerticalScrollIndicator={false}
+            style={{ maxHeight: Platform.OS === 'web' ? 500 : undefined }}
+            showsVerticalScrollIndicator={true}
+            contentContainerStyle={{ flexGrow: 0 }}
           >
             {children}
           </ScrollView>
