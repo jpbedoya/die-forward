@@ -42,7 +42,7 @@ next-env.d.ts
 .env.local
 video/node_modules/
 video/out/
-video/
+video/*.mp4
 
 # Anchor/Rust build artifacts
 anchor-program/target/

@@ -1,8 +1,14 @@
 // Learn more https://docs.expo.io/guides/customizing-metro
 const { getDefaultConfig } = require('expo/metro-config');
 const { withNativeWind } = require('nativewind/metro');
+const path = require('path');
 
 const config = getDefaultConfig(__dirname);
+
+// Block video folder from Metro bundling (Remotion is web-only)
+config.resolver.blockList = [
+  new RegExp(path.resolve(__dirname, '..', 'video') + '/.*'),
+];
 
 // Add support for additional extensions if needed
 config.resolver.sourceExts = [...config.resolver.sourceExts, 'mjs'];
