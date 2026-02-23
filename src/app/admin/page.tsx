@@ -220,18 +220,10 @@ function SettingsTab() {
   const settings = settingsData?.gameSettings?.[0] || null;
 
   const saveSettings = async (newSettings: Partial<GameSettings>) => {
-    console.log('saveSettings called:', newSettings, 'existing settings:', settings);
-    try {
-      if (!settings) {
-        console.log('Creating new settings record');
-        await db.transact([tx.gameSettings[id()].update({ ...DEFAULT_SETTINGS, ...newSettings })]);
-      } else {
-        console.log('Updating existing settings:', settings.id);
-        await db.transact([tx.gameSettings[settings.id].update(newSettings)]);
-      }
-      console.log('Save successful');
-    } catch (err) {
-      console.error('Save failed:', err);
+    if (!settings) {
+      await db.transact([tx.gameSettings[id()].update({ ...DEFAULT_SETTINGS, ...newSettings })]);
+    } else {
+      await db.transact([tx.gameSettings[settings.id].update(newSettings)]);
     }
   };
 
@@ -266,9 +258,6 @@ function SettingsTab() {
       </SettingsSection>
       <SettingsSection title="UI">
         <SettingToggle label="Show Leaderboard Link" description="Display leaderboard link on the title screen" value={cs.showLeaderboardLink} onChange={(v) => saveSettings({ showLeaderboardLink: v })} />
-        <div className="mt-2 text-xs text-[var(--text-muted)]">
-          Current value: {String(cs.showLeaderboardLink)}
-        </div>
       </SettingsSection>
     </div>
   );
@@ -759,28 +748,24 @@ function SettingSlider({ label, value, min, max, step, format = (v) => v.toStrin
 function SettingToggle({ label, description, value, onChange }: {
   label: string; description?: string; value: boolean; onChange: (v: boolean) => void;
 }) {
+  const id = `toggle-${label.replace(/\s+/g, '-').toLowerCase()}`;
   return (
     <div className="flex items-center justify-between gap-4">
       <div>
-        <label className="text-[var(--text-dim)] text-sm">{label}</label>
+        <label htmlFor={id} className="text-[var(--text-dim)] text-sm cursor-pointer">{label}</label>
         {description && <p className="text-[var(--text-muted)] text-xs mt-0.5">{description}</p>}
       </div>
-      <button
-        type="button"
-        onClick={() => {
-          console.log('Toggle clicked, current value:', value, '-> new value:', !value);
-          onChange(!value);
-        }}
-        className={`w-12 h-6 rounded-full transition-colors relative cursor-pointer ${
-          value ? 'bg-[var(--amber)]' : 'bg-[var(--bg-surface)]'
-        } border border-[var(--border)]`}
-      >
-        <span 
-          className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform pointer-events-none ${
-            value ? 'translate-x-5' : 'translate-x-0'
-          }`} 
+      <label htmlFor={id} className="relative inline-flex items-center cursor-pointer">
+        <input
+          type="checkbox"
+          id={id}
+          checked={value}
+          onChange={(e) => onChange(e.target.checked)}
+          className="sr-only peer"
         />
-      </button>
+        <div className="w-11 h-6 bg-[var(--bg-surface)] border border-[var(--border)] rounded-full peer peer-checked:bg-[var(--amber)] peer-checked:border-[var(--amber)] transition-colors" />
+        <div className="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full transition-transform peer-checked:translate-x-5" />
+      </label>
     </div>
   );
 }
