@@ -9,6 +9,7 @@ Third-party integrations for the Graveyard Hackathon and beyond.
 | [Audius](./audius/) | 🟡 Prototype | Background music streaming |
 | [Tapestry](./tapestry/) | 📋 Planned | Social graph, follows, profiles |
 | [MagicBlock](./magicblock/) | 📋 Planned | Ephemeral rollups, real-time combat |
+| [Portals](./portals/) | 📋 Planned | 3D browser game mode via Portals rooms |
 
 ## Integration Guidelines
 
