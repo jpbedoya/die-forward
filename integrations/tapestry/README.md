@@ -11,6 +11,25 @@ Solana's social graph protocol. Onchain profiles, follows, content, likes — sh
 - **SDK:** `socialfi` npm package (v0.1.14)
 - **API base URL:** `https://api.usetapestry.dev/api/v1` (baked into SDK — do not pass manually)
 
+## Feature Status
+
+### ✅ Live Now
+| Feature | Trigger | Description |
+|---------|---------|-------------|
+| Player profiles | Wallet connect | Auto-creates a Tapestry profile for every wallet user |
+| Death posts | Every death | Posts to the Tapestry social feed with room depth + final message |
+| Victory posts | Every clear | Posts to the Tapestry feed with reward amount |
+| 🕯️ Candle likes | EchoSheet feed | Wallet users can like deaths; synced to Tapestry + stored in InstantDB |
+
+### 🚧 Not Yet Implemented (Phase 3)
+| Feature | Description |
+|---------|-------------|
+| Follow players | Follow rivals from the leaderboard |
+| Social feed | See recent runs from players you follow |
+| Comments | Leave comments on death cards |
+
+---
+
 ## Implementation
 
 ### Client (`src/lib/tapestry.ts`)
@@ -79,13 +98,6 @@ TAPESTRY_NAMESPACE=dieforward  # informational only; namespace comes from API ke
 3. **Namespace** — not a body field; determined by which API key you use.
 4. **Serverless fire-and-forget** — Vercel kills the function when the response is sent. Always `await` Tapestry calls and wrap in `try/catch`.
 5. **Env var typos** — a single wrong character in `TAPESTRY_API_KEY` causes 401s with no useful error message. Verify in Vercel dashboard.
-
-## Roadmap
-
-### Phase 3: Social Features (not yet implemented)
-- [ ] Follow players from leaderboard
-- [ ] Show followed players' recent runs
-- [ ] Comments on death cards
 
 ## Links
 
