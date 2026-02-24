@@ -16,7 +16,7 @@ import {
 import { createHash } from 'crypto';
 import * as fs from 'fs';
 
-const PROGRAM_ID = new PublicKey('3KLgtdRvfJuLK1t9mKCe2soJbx4LgZfP6LQWVW9TQ7yN');
+const PROGRAM_ID = new PublicKey('34NSi8ShkixLt8Eg8XahXaRnaNuiFV63xdtC3ZfdTAt6');
 
 // Pool wallet as treasury (receives fees)
 const TREASURY = new PublicKey('D7NdNbJTL7s6Z7Wu8nGe5SBc64FiFQAH3iPvRZw15qSL');

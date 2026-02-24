@@ -1,7 +1,7 @@
 /**
  * Die Forward Escrow Program Client
  * 
- * Program ID: 3KLgtdRvfJuLK1t9mKCe2soJbx4LgZfP6LQWVW9TQ7yN
+ * Program ID: 34NSi8ShkixLt8Eg8XahXaRnaNuiFV63xdtC3ZfdTAt6
  * 
  * Instructions:
  * - initialize: Set up the game pool (admin only)
@@ -88,7 +88,7 @@ function sha256Sync(message: Uint8Array): Uint8Array {
 }
 
 // Program ID (deployed on devnet)
-export const PROGRAM_ID = new PublicKey('3KLgtdRvfJuLK1t9mKCe2soJbx4LgZfP6LQWVW9TQ7yN');
+export const PROGRAM_ID = new PublicKey('34NSi8ShkixLt8Eg8XahXaRnaNuiFV63xdtC3ZfdTAt6');
 
 // Game Pool PDA (derived from 'game_pool' seed)
 export const GAME_POOL_PDA = new PublicKey('E4LRRyeFXDbFg1WaS1pjKm5DAJzJDWbAs1v5qvqe5xYM');

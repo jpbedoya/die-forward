@@ -4,7 +4,7 @@ use ephemeral_rollups_sdk::cpi::DelegateConfig;
 use ephemeral_rollups_sdk::ephem::commit_and_undelegate_accounts;
 
 // PLACEHOLDER — replace with `solana-keygen pubkey target/deploy/run_record-keypair.json` after build
-declare_id!("RunRec1111111111111111111111111111111111111");
+declare_id!("9rGjguBZAnittA4Cbm7YNP5qomatY3c4MTV7LSqNomzS");
 
 pub const RUN_SEED: &[u8] = b"run";
 pub const MAX_EVENTS: usize = 64;
@@ -86,7 +86,7 @@ pub mod run_record {
     /// Delegate the RunRecord PDA to the Ephemeral Rollup.
     /// After this, `record_event` runs on the ER (zero-fee, instant).
     pub fn delegate_run(ctx: Context<DelegateRun>) -> Result<()> {
-        ctx.accounts.delegate_pda(
+        ctx.accounts.delegate_run_record(
             &ctx.accounts.authority,
             &[RUN_SEED, ctx.accounts.run_record.session_id.as_ref()],
             DelegateConfig {

@@ -5,8 +5,8 @@ resolution = true
 skip-lint = false
 
 [programs.devnet]
-die_forward = "3KLgtdRvfJuLK1t9mKCe2soJbx4LgZfP6LQWVW9TQ7yN"
-run_record = "RunRec1111111111111111111111111111111111111"  # placeholder — update after deploy
+die_forward = "34NSi8ShkixLt8Eg8XahXaRnaNuiFV63xdtC3ZfdTAt6"
+run_record = "9rGjguBZAnittA4Cbm7YNP5qomatY3c4MTV7LSqNomzS"
 
 [registry]
 url = "https://api.apr.dev"
