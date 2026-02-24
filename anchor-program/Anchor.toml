@@ -6,6 +6,7 @@ skip-lint = false
 
 [programs.devnet]
 die_forward = "3KLgtdRvfJuLK1t9mKCe2soJbx4LgZfP6LQWVW9TQ7yN"
+run_record = "RunRec1111111111111111111111111111111111111"  # placeholder — update after deploy
 
 [registry]
 url = "https://api.apr.dev"
