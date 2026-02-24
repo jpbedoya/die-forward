@@ -37,6 +37,7 @@ interface GameSettings {
   tier3Multiplier: number;
   victoryBonusPercent: number;
   showLeaderboardLink: boolean;
+  enableMagicBlock: boolean;
 }
 
 interface Playlist {
@@ -60,6 +61,7 @@ const DEFAULT_SETTINGS: Omit<GameSettings, 'id'> = {
   tier3Multiplier: 2.0,
   victoryBonusPercent: 50,
   showLeaderboardLink: false,
+  enableMagicBlock: false,
 };
 
 type Tab = 'dashboard' | 'settings' | 'music' | 'deaths';
@@ -238,6 +240,7 @@ function SettingsTab() {
     tier3Multiplier: settings?.tier3Multiplier ?? DEFAULT_SETTINGS.tier3Multiplier,
     victoryBonusPercent: settings?.victoryBonusPercent ?? DEFAULT_SETTINGS.victoryBonusPercent,
     showLeaderboardLink: settings?.showLeaderboardLink ?? DEFAULT_SETTINGS.showLeaderboardLink,
+    enableMagicBlock: settings?.enableMagicBlock ?? DEFAULT_SETTINGS.enableMagicBlock,
   } as GameSettings;
 
   return (
@@ -258,6 +261,7 @@ function SettingsTab() {
       </SettingsSection>
       <SettingsSection title="UI">
         <SettingToggle label="Show Leaderboard Link" description="Display leaderboard link on the title screen" value={cs.showLeaderboardLink} onChange={(v) => saveSettings({ showLeaderboardLink: v })} />
+        <SettingToggle label="MagicBlock Ephemeral Rollups" description="Record runs on-chain via ER. Settlement requires ER commit before L1 payout. Falls back to legacy if unavailable." value={cs.enableMagicBlock} onChange={(v) => saveSettings({ enableMagicBlock: v })} />
       </SettingsSection>
     </div>
   );
