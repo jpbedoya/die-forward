@@ -318,13 +318,7 @@ export function useLeaderboard(limit = 10) {
   // Sort by highest room descending, then by clears, then by fewest deaths
   const leaderboard = (data?.players || [])
     .map((p) => p as unknown as Player)
-    .filter((p) => {
-      if ((p.highestRoom || 0) === 0) return false;
-      const nick = (p.nickname || '').trim();
-      if (!nick || nick === 'Wanderer') return false;
-      if (/^[A-Za-z0-9]{4}\.\.\./.test(nick)) return false;
-      return true;
-    })
+    .filter((p) => (p.highestRoom || 0) > 0) // Only show players who have played
     .sort((a, b) => {
       const aRoom = a.highestRoom || 0;
       const bRoom = b.highestRoom || 0;
