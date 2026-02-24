@@ -94,7 +94,7 @@ export const PROGRAM_ID = new PublicKey(
 );
 
 // Game Pool PDA (derived from 'game_pool' seed)
-export const GAME_POOL_PDA = new PublicKey('E4LRRyeFXDbFg1WaS1pjKm5DAJzJDWbAs1v5qvqe5xYM');
+export const GAME_POOL_PDA = new PublicKey('ADrdr3s3FYCuAKD3Q3z2eC1ELxZFteDgwzbHDAbXax6f');
 
 // Treasury (receives fees)
 export const TREASURY = new PublicKey('D7NdNbJTL7s6Z7Wu8nGe5SBc64FiFQAH3iPvRZw15qSL');
