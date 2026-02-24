@@ -102,7 +102,7 @@ interface WalletConnector {
 }
 
 // Unified wallet context interface
-interface UnifiedWalletContextState {
+export interface UnifiedWalletContextState {
   connected: boolean;
   connecting: boolean;
   address: Address | null;

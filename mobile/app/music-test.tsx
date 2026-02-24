@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Image,
   Platform,
+  ViewStyle,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -76,11 +77,11 @@ export default function MusicTestScreen() {
 
   return (
     <View
-      style={
+      style={(
         Platform.OS === 'web'
           ? { height: '100dvh', maxHeight: '100dvh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }
           : { flex: 1 }
-      }
+      ) as ViewStyle}
       className="bg-crypt-bg"
     >
       <SafeAreaView style={{ flex: 1, flexDirection: 'column', backgroundColor: '#0c0a09' }} edges={['top']}>
