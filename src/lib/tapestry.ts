@@ -19,7 +19,6 @@ function getClient(): SocialFi<unknown> | null {
     console.warn('[Tapestry] TAPESTRY_API_KEY not set — skipping');
     return null;
   }
-  console.log('[Tapestry] API_KEY length:', API_KEY.length, 'prefix:', API_KEY.slice(0, 8));
   return new SocialFi();
 }
 
@@ -36,19 +35,15 @@ export async function upsertProfile(
   const client = getClient();
   if (!client) return;
 
-  try {
-    await client.profiles.findOrCreateCreate(
-      { apiKey: API_KEY! },
-      {
-        walletAddress,
-        username: nickname || `${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}`,
-        bio: 'Descending into the crypt.',
-        blockchain: 'SOLANA',
-      },
-    );
-  } catch (err) {
-    console.warn('[Tapestry] upsertProfile failed (non-fatal):', err);
-  }
+  await client.profiles.findOrCreateCreate(
+    { apiKey: API_KEY! },
+    {
+      walletAddress,
+      username: nickname || `${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}`,
+      bio: 'Descending into the crypt.',
+      blockchain: 'SOLANA',
+    },
+  );
 }
 
 // ── Posts ─────────────────────────────────────────────────────────────────────
