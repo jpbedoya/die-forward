@@ -119,10 +119,12 @@ export default function LeaderboardScreen() {
             <View className="bg-crypt-surface border-2 border-amber p-4 mb-4">
               <Text className="text-amber text-xs font-mono tracking-widest mb-2">YOUR STATS</Text>
               <View className="flex-row justify-between items-center mb-2">
-                <Text className="text-bone text-base font-mono font-bold">@{player.nickname}</Text>
-                <Text className="text-bone-dark text-xs font-mono">
-                  {player.walletAddress?.slice(0, 4) || '????'}...{player.walletAddress?.slice(-4) || '????'}
-                </Text>
+                <Text className="text-bone text-base font-mono font-bold">{player.nickname}</Text>
+                {player.walletAddress && (
+                  <Text className="text-bone-dark text-xs font-mono">
+                    {player.walletAddress.slice(0, 4)}...{player.walletAddress.slice(-4)}
+                  </Text>
+                )}
               </View>
               <View className="flex-row justify-between border-t border-crypt-border pt-2">
                 <View>
@@ -184,8 +186,13 @@ export default function LeaderboardScreen() {
                             isCurrentPlayer ? 'text-amber' : 'text-bone'
                           }`}
                         >
-                          @{entry.nickname}
+                          {entry.nickname}
                         </Text>
+                        {entry.walletAddress && (
+                          <Text className="text-bone-dark text-xs font-mono">
+                            {entry.walletAddress.slice(0, 4)}...{entry.walletAddress.slice(-4)}
+                          </Text>
+                        )}
                         {isCurrentPlayer && (
                           <Text className="text-amber text-[10px] font-mono">(YOU)</Text>
                         )}
