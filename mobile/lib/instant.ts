@@ -163,44 +163,72 @@ export async function recordTip(corpseId: string, amount: number, tipperWallet: 
 }
 
 // Get or create player by authId (new auth system)
+//
+// Identity rules (source of truth):
+//   wallet users → authId = walletAddress (never a guest ID)
+//   guest  users → authId = guestId UUID (persisted in AsyncStorage)
+//
+// Safeguards:
+//   1. For wallet users, ALSO check by walletAddress so we never create a
+//      duplicate when the authId lookup misses (e.g. after a data migration).
+//   2. Never let a guest ID overwrite a wallet user's authId.
 export async function getOrCreatePlayerByAuth(
-  authId: string, 
+  authId: string,
   authType: 'wallet' | 'guest',
   walletAddress?: string,
   nickname?: string
 ): Promise<{ player: Player; isNew: boolean } | null> {
   try {
-    const result = await db.queryOnce({
-      players: {
-        $: {
-          where: { authId },
-          limit: 1,
-        },
-      },
+    // ── 1. Try lookup by authId first ────────────────────────────────────────
+    const byAuthId = await db.queryOnce({
+      players: { $: { where: { authId }, limit: 1 } },
     });
+    let existing = (byAuthId.data?.players?.[0] ?? null) as unknown as Player | null;
 
-    const players = result.data?.players || [];
+    // ── 2. Wallet fallback: also check by walletAddress ──────────────────────
+    //    Prevents duplicate records when authId was somehow stored differently.
+    if (!existing && authType === 'wallet' && walletAddress) {
+      const byWallet = await db.queryOnce({
+        players: { $: { where: { walletAddress }, limit: 1 } },
+      });
+      const found = (byWallet.data?.players?.[0] ?? null) as unknown as Player | null;
 
-    if (players.length > 0) {
-      const player = players[0] as unknown as Player;
+      if (found) {
+        // Safeguard: correct the authId to walletAddress if it drifted
+        if (found.authId !== walletAddress) {
+          console.warn(`[Auth] Correcting authId drift for ${walletAddress}: ${found.authId} → ${walletAddress}`);
+          await db.transact([tx.players[found.id].update({ authId: walletAddress, authType: 'wallet' })]);
+        }
+        existing = { ...found, authId: walletAddress };
+      }
+    }
+
+    // ── 3. Update existing record ────────────────────────────────────────────
+    if (existing) {
+      // Safeguard: never overwrite a wallet authId with a guest ID
+      const safeAuthId = existing.authType === 'wallet'
+        ? (existing.walletAddress || existing.authId)
+        : existing.authId;
+
       await db.transact([
-        tx.players[player.id].update({
+        tx.players[existing.id].update({
+          authId: safeAuthId,
           lastPlayedAt: Date.now(),
-          ...(nickname && nickname !== player.nickname ? { nickname } : {}),
+          ...(nickname && nickname !== existing.nickname ? { nickname } : {}),
         }),
       ]);
-      return { 
-        player: { ...player, nickname: nickname || player.nickname },
+      return {
+        player: { ...existing, authId: safeAuthId, nickname: nickname || existing.nickname },
         isNew: false,
       };
     }
 
-    // Create new player
+    // ── 4. Create new player ─────────────────────────────────────────────────
     const playerId = id();
-    const defaultNickname = walletAddress 
+    const defaultNickname = walletAddress
       ? walletAddress.slice(0, 4) + '...' + walletAddress.slice(-4)
       : 'Wanderer';
-    
+
     const newPlayer: Omit<Player, 'id'> = {
       authId,
       authType,
@@ -217,11 +245,9 @@ export async function getOrCreatePlayerByAuth(
       lastPlayedAt: Date.now(),
     };
 
-    await db.transact([
-      tx.players[playerId].update(newPlayer),
-    ]);
+    await db.transact([tx.players[playerId].update(newPlayer)]);
 
-    return { 
+    return {
       player: { id: playerId, ...newPlayer } as Player,
       isNew: true,
     };
