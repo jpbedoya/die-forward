@@ -70,23 +70,29 @@ export async function POST(request: NextRequest) {
       : { name: 'Nothing', emoji: '💀' };
 
     // Look up player's saved nickname from DB — authoritative source
+    // Use authId first (works for both guests and wallet users), fallback to walletAddress
     let displayName = playerName;
     const isDemo = session.walletAddress?.startsWith('demo-wallet') || session.walletAddress === 'demo-wallet';
     if (isDemo) {
       displayName = playerName && playerName !== 'Wanderer' ? playerName : 'Wanderer';
     } else {
       try {
+        const lookupField = session.authId ? 'authId' : 'walletAddress';
+        const lookupValue = session.authId || session.walletAddress;
         const playerResult = await db.query({
-          players: { $: { where: { walletAddress: session.walletAddress } } },
+          players: { $: { where: { [lookupField]: lookupValue } } },
         });
         const playerRecord = playerResult?.players?.[0];
-        if (playerRecord?.nickname && playerRecord.nickname !== playerRecord.walletAddress) {
+        if (playerRecord?.nickname
+          && playerRecord.nickname !== 'Wanderer'
+          && playerRecord.nickname !== playerRecord.walletAddress) {
           displayName = playerRecord.nickname;
         }
       } catch (e) {
-        // Non-fatal — fall back to client-provided name or wallet
+        // Non-fatal — fall back to client-provided name
       }
-      if (!displayName || displayName === session.walletAddress) {
+      // Last resort: truncate the wallet address (wallet users only)
+      if ((!displayName || displayName === session.walletAddress) && session.walletAddress) {
         displayName = `${session.walletAddress.slice(0, 4)}...${session.walletAddress.slice(-4)}`;
       }
     }
