@@ -12,7 +12,7 @@ import { SocialFi } from 'socialfi';
 
 const API_KEY   = process.env.TAPESTRY_API_KEY;
 const NAMESPACE = process.env.TAPESTRY_NAMESPACE || 'dieforward';
-const API_URL   = 'https://api.usetapestry.dev/v1/';
+const API_URL   = 'https://api.usetapestry.dev/api/v1/';
 
 function getClient(): SocialFi | null {
   if (!API_KEY) {
