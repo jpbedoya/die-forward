@@ -401,16 +401,32 @@ export function useCorpsesForRoom(zone: string, room: number) {
 
 // Hook to get recent deaths feed
 export function useDeathFeed(limit = 10) {
+  // Fetch deaths + players together so we can always resolve the current nickname
   const { data, isLoading, error } = db.useQuery({
-    deaths: {
-      $: {
-        limit: 50,
-      },
-    },
+    deaths: { $: { limit: 50 } },
+    players: {},
   });
 
+  // Build lookup maps: walletAddress → nickname, authId → nickname
+  const players = (data?.players || []) as unknown as Player[];
+  const nameByWallet: Record<string, string> = {};
+  const nameByAuthId: Record<string, string> = {};
+  for (const p of players) {
+    const name = p.nickname && p.nickname !== 'Wanderer' ? p.nickname : null;
+    if (name && p.walletAddress) nameByWallet[p.walletAddress] = name;
+    if (name && p.authId) nameByAuthId[p.authId] = name;
+  }
+
   const deaths = [...(data?.deaths || [])]
-    .map((d) => d as unknown as Death)
+    .map((d) => {
+      const raw = d as unknown as Death;
+      // Resolve current name: wallet lookup → authId lookup → stored playerName
+      const currentName =
+        nameByWallet[raw.walletAddress] ||
+        nameByAuthId[raw.walletAddress] || // guests: death.walletAddress = their authId
+        raw.playerName;
+      return { ...raw, playerName: currentName };
+    })
     .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
     .slice(0, limit);
 
