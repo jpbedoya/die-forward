@@ -11,7 +11,7 @@
 
 import { SocialFi } from 'socialfi';
 
-const API_KEY   = process.env.TAPESTRY_API_KEY;
+const API_KEY   = process.env.TAPESTRY_API_KEY?.trim();
 const NAMESPACE = process.env.TAPESTRY_NAMESPACE || 'dieforward';
 
 function getClient(): SocialFi<unknown> | null {
@@ -19,6 +19,7 @@ function getClient(): SocialFi<unknown> | null {
     console.warn('[Tapestry] TAPESTRY_API_KEY not set — skipping');
     return null;
   }
+  console.log('[Tapestry] API_KEY length:', API_KEY.length, 'prefix:', API_KEY.slice(0, 8));
   return new SocialFi();
 }
 
