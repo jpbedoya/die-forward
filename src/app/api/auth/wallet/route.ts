@@ -114,13 +114,16 @@ export async function POST(req: NextRequest) {
     const isNewUser = !result.players || result.players.length === 0;
     const nickname = result.players?.[0]?.nickname as string | undefined;
 
-    // Upsert Tapestry profile — awaited so it completes before serverless fn exits
+    // Upsert Tapestry profile with timeout so it never blocks auth response
     console.log('[Tapestry] Upserting profile for', walletAddress);
     try {
-      await upsertProfile(walletAddress, nickname);
+      await Promise.race([
+        upsertProfile(walletAddress, nickname),
+        new Promise<void>((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000)),
+      ]);
       console.log('[Tapestry] Profile upserted for', walletAddress);
     } catch (err) {
-      console.warn('[Tapestry] upsertProfile failed (non-fatal):', err);
+      console.warn('[Tapestry] upsertProfile failed (non-fatal):', err instanceof Error ? err.message : err);
     }
 
     return NextResponse.json({
