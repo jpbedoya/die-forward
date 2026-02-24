@@ -17,18 +17,17 @@ import {
   Keypair,
   PublicKey,
   Transaction,
-  sendAndConfirmTransaction,
 } from '@solana/web3.js';
-import { AnchorProvider, Program, setProvider, web3 } from '@coral-xyz/anchor';
+import { AnchorProvider, Program, setProvider } from '@coral-xyz/anchor';
 import { ConnectionMagicRouter } from '@magicblock-labs/ephemeral-rollups-sdk';
 import bs58 from 'bs58';
+import RunRecordIdl from '../idl/run_record.json';
 
 // ── Config ─────────────────────────────────────────────────────────────────────
 
-// TODO: Replace with real program ID after `anchor build && anchor deploy`
 const RUN_RECORD_PROGRAM_ID = new PublicKey(
   process.env.NEXT_PUBLIC_RUN_RECORD_PROGRAM_ID ||
-  'RunRec1111111111111111111111111111111111111'
+  '9rGjguBZAnittA4Cbm7YNP5qomatY3c4MTV7LSqNomzS'
 );
 
 const RPC_URL = process.env.NEXT_PUBLIC_SOLANA_RPC || 'https://api.devnet.solana.com';
@@ -71,10 +70,8 @@ function sessionIdToBytes(sessionId: string): Uint8Array {
   return bytes;
 }
 
-// ── IDL ─────────────────────────────────────────────────────────────────────────
-// TODO: Import generated IDL after `anchor build`
-// import RunRecordIdl from '../../anchor-program/target/idl/run_record.json';
-// Using `any` as placeholder until IDL is generated
+// ── Program ─────────────────────────────────────────────────────────────────────
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type RunRecordProgram = Program<any>;
 
@@ -97,11 +94,7 @@ function getProgram(connection: Connection): RunRecordProgram {
   });
   setProvider(provider);
 
-  // TODO: Replace stub IDL with imported IDL once program is built + deployed
-  // import RunRecordIdl from '../../anchor-program/target/idl/run_record.json';
-  // return new Program(RunRecordIdl, provider);
-  const stubIdl = { address: RUN_RECORD_PROGRAM_ID.toBase58(), metadata: { address: RUN_RECORD_PROGRAM_ID.toBase58() }, instructions: [], accounts: [], types: [], errors: [], events: [], constants: [] };
-  return new Program(stubIdl as never, provider);
+  return new Program(RunRecordIdl as never, provider);
 }
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -145,26 +138,29 @@ export async function startErRun(opts: {
     console.log('[MagicBlock] Initializing RunRecord for session', sessionId);
 
     // 1. Initialize the RunRecord PDA on L1
-    // TODO: Uncomment once IDL is available
-    // await program.methods
-    //   .initializeRun(
-    //     Array.from(sessionIdBytes),
-    //     new PublicKey(playerWallet),
-    //     BigInt(Math.round(stakeAmount * 1e9))  // SOL → lamports
-    //   )
-    //   .accounts({ runRecord: runRecordPda, authority: authority.publicKey })
-    //   .signers([authority])
-    //   .rpc();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (program as any).methods
+      .initializeRun(
+        Array.from(sessionIdBytes),
+        new PublicKey(playerWallet),
+        BigInt(Math.round(stakeAmount * 1e9))  // SOL → lamports
+      )
+      .accounts({ runRecord: runRecordPda, authority: authority.publicKey })
+      .signers([authority])
+      .rpc();
+
+    console.log('[MagicBlock] RunRecord initialized:', runRecordPda.toBase58());
 
     // 2. Delegate the RunRecord to the ER
-    // TODO: Uncomment once IDL is available
-    // await program.methods
-    //   .delegateRun()
-    //   .accounts({ runRecord: runRecordPda, authority: authority.publicKey })
-    //   .signers([authority])
-    //   .rpc();
+    // Anchor auto-resolves delegation PDAs + programs from IDL
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (program as any).methods
+      .delegateRun()
+      .accounts({ runRecord: runRecordPda, authority: authority.publicKey })
+      .signers([authority])
+      .rpc();
 
-    console.log('[MagicBlock] RunRecord delegated:', runRecordPda.toBase58());
+    console.log('[MagicBlock] RunRecord delegated to ER:', runRecordPda.toBase58());
 
     // Return PDA pubkey as erRunId — store on session record
     return runRecordPda.toBase58();
@@ -188,14 +184,14 @@ export async function recordErEvent(opts: {
     const { erRunId, eventType, room } = opts;
     const authority = getAuthorityKeypair();
 
-    // Use ConnectionMagicRouter — automatically routes to the nearest ER validator
+    // ConnectionMagicRouter automatically routes to the nearest ER validator
     const erConnection = new ConnectionMagicRouter(ER_ENDPOINT);
     const program = getProgram(erConnection as unknown as Connection);
 
     const runRecordPda = new PublicKey(erRunId);
 
     // Map event type to on-chain enum index
-    const eventTypeMap = {
+    const eventTypeMap: Record<string, number> = {
       advance_room: 0,
       encounter: 1,
       item: 2,
@@ -212,12 +208,12 @@ export async function recordErEvent(opts: {
 
     console.log('[MagicBlock] Recording ER event:', eventType, 'room', room);
 
-    // TODO: Uncomment once IDL is available
-    // await program.methods
-    //   .recordEvent(eventTypeMap[eventType], room, Array.from(dataBytes))
-    //   .accounts({ runRecord: runRecordPda, authority: authority.publicKey })
-    //   .signers([authority])
-    //   .rpc();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (program as any).methods
+      .recordEvent(eventTypeMap[eventType], room, Array.from(dataBytes))
+      .accounts({ runRecord: runRecordPda, authority: authority.publicKey })
+      .signers([authority])
+      .rpc();
 
   } catch (err) {
     // Silently ignore — game events must never affect gameplay
@@ -246,22 +242,21 @@ export async function commitErRun(opts: {
 
     const runRecordPda = new PublicKey(erRunId);
 
+    // Map outcome to Rust enum variant
     const outcomeEnum = outcome === 'dead' ? { dead: {} } : { cleared: {} };
 
     console.log('[MagicBlock] Committing ER run:', erRunId, 'outcome:', outcome);
 
-    // TODO: Uncomment once IDL is available
-    // const txSig = await program.methods
-    //   .commitRun(outcomeEnum)
-    //   .accounts({ runRecord: runRecordPda, authority: authority.publicKey })
-    //   .signers([authority])
-    //   .rpc();
+    // magic_program and magic_context accounts have fixed addresses in IDL — auto-resolved
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const txSig = await (program as any).methods
+      .commitRun(outcomeEnum)
+      .accounts({ runRecord: runRecordPda, authority: authority.publicKey })
+      .signers([authority])
+      .rpc();
 
-    // return { success: true, txSignature: txSig };
-
-    // Stub return until IDL available
-    console.log('[MagicBlock] commitErRun: IDL not yet available, falling back');
-    return { success: false, fallback: true };
+    console.log('[MagicBlock] ER run committed:', txSig);
+    return { success: true, txSignature: txSig };
 
   } catch (err) {
     console.warn('[MagicBlock] commitErRun failed, falling back to legacy:', err);

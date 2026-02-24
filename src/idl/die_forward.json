@@ -1,0 +1,498 @@
+{
+  "address": "34NSi8ShkixLt8Eg8XahXaRnaNuiFV63xdtC3ZfdTAt6",
+  "metadata": {
+    "name": "die_forward",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Die Forward - On-chain escrow for social roguelite"
+  },
+  "instructions": [
+    {
+      "name": "claim_victory",
+      "docs": [
+        "Claim victory - returns stake + bonus to player"
+      ],
+      "discriminator": [
+        119,
+        177,
+        84,
+        236,
+        128,
+        134,
+        183,
+        199
+      ],
+      "accounts": [
+        {
+          "name": "game_pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  97,
+                  109,
+                  101,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "session",
+          "writable": true
+        },
+        {
+          "name": "player",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "session"
+          ]
+        },
+        {
+          "name": "authority",
+          "docs": [
+            "Authority must sign to approve victory"
+          ],
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "close_session",
+      "docs": [
+        "Close a completed session to reclaim rent"
+      ],
+      "discriminator": [
+        68,
+        114,
+        178,
+        140,
+        222,
+        38,
+        248,
+        211
+      ],
+      "accounts": [
+        {
+          "name": "session",
+          "writable": true
+        },
+        {
+          "name": "player",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "session"
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize",
+      "docs": [
+        "Initialize the game pool"
+      ],
+      "discriminator": [
+        175,
+        175,
+        109,
+        31,
+        13,
+        152,
+        155,
+        237
+      ],
+      "accounts": [
+        {
+          "name": "game_pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  97,
+                  109,
+                  101,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "treasury"
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "fee_bps",
+          "type": "u16"
+        },
+        {
+          "name": "victory_bonus_bps",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "record_death",
+      "docs": [
+        "Record player death - burns their stake to the pool"
+      ],
+      "discriminator": [
+        180,
+        69,
+        168,
+        97,
+        206,
+        42,
+        253,
+        94
+      ],
+      "accounts": [
+        {
+          "name": "game_pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  97,
+                  109,
+                  101,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "session",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "docs": [
+            "Authority must sign to record death (server-side validation)"
+          ],
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "death_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "stake",
+      "docs": [
+        "Player stakes SOL to start a game session"
+      ],
+      "discriminator": [
+        206,
+        176,
+        202,
+        18,
+        200,
+        209,
+        179,
+        108
+      ],
+      "accounts": [
+        {
+          "name": "game_pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  97,
+                  109,
+                  101,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "session",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  101,
+                  115,
+                  115,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "player"
+              },
+              {
+                "kind": "arg",
+                "path": "session_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "treasury",
+          "writable": true
+        },
+        {
+          "name": "player",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "session_id",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "GamePool",
+      "discriminator": [
+        206,
+        33,
+        215,
+        16,
+        75,
+        113,
+        78,
+        214
+      ]
+    },
+    {
+      "name": "PlayerSession",
+      "discriminator": [
+        89,
+        95,
+        51,
+        45,
+        127,
+        42,
+        173,
+        223
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "FeeTooHigh",
+      "msg": "Fee cannot exceed 10%"
+    },
+    {
+      "code": 6001,
+      "name": "BonusTooHigh",
+      "msg": "Bonus cannot exceed 100%"
+    },
+    {
+      "code": 6002,
+      "name": "StakeTooLow",
+      "msg": "Minimum stake is 0.01 SOL"
+    },
+    {
+      "code": 6003,
+      "name": "StakeTooHigh",
+      "msg": "Maximum stake is 1 SOL"
+    },
+    {
+      "code": 6004,
+      "name": "SessionNotActive",
+      "msg": "Session is not active"
+    },
+    {
+      "code": 6005,
+      "name": "SessionStillActive",
+      "msg": "Session is still active"
+    },
+    {
+      "code": 6006,
+      "name": "InsufficientPoolFunds",
+      "msg": "Insufficient funds in pool for payout"
+    }
+  ],
+  "types": [
+    {
+      "name": "GamePool",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "treasury",
+            "type": "pubkey"
+          },
+          {
+            "name": "fee_bps",
+            "type": "u16"
+          },
+          {
+            "name": "victory_bonus_bps",
+            "type": "u16"
+          },
+          {
+            "name": "total_staked",
+            "type": "u64"
+          },
+          {
+            "name": "total_deaths",
+            "type": "u64"
+          },
+          {
+            "name": "total_victories",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PlayerSession",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "player",
+            "type": "pubkey"
+          },
+          {
+            "name": "escrow_amount",
+            "type": "u64"
+          },
+          {
+            "name": "started_at",
+            "type": "i64"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "SessionStatus"
+              }
+            }
+          },
+          {
+            "name": "session_id",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "death_hash",
+            "type": {
+              "option": {
+                "array": [
+                  "u8",
+                  32
+                ]
+              }
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SessionStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Active"
+          },
+          {
+            "name": "Dead"
+          },
+          {
+            "name": "Victory"
+          }
+        ]
+      }
+    }
+  ]
+}
