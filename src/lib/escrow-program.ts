@@ -94,7 +94,11 @@ export const PROGRAM_ID = new PublicKey(
 );
 
 // Game Pool PDA (derived from 'game_pool' seed)
-export const GAME_POOL_PDA = new PublicKey('ADrdr3s3FYCuAKD3Q3z2eC1ELxZFteDgwzbHDAbXax6f');
+// Derived from PROGRAM_ID — no separate env var needed, always in sync
+export const [GAME_POOL_PDA] = PublicKey.findProgramAddressSync(
+  [Buffer.from('game_pool')],
+  PROGRAM_ID
+);
 
 // Treasury (receives fees)
 export const TREASURY = new PublicKey('D7NdNbJTL7s6Z7Wu8nGe5SBc64FiFQAH3iPvRZw15qSL');

@@ -22,8 +22,13 @@ export const PROGRAM_ID = '34NSi8ShkixLt8Eg8XahXaRnaNuiFV63xdtC3ZfdTAt6' as Addr
 const PROGRAM_ID_PUBKEY = new PublicKey(PROGRAM_ID);
 
 // Game Pool PDA (derived from 'game_pool' seed)
-export const GAME_POOL_PDA = 'ADrdr3s3FYCuAKD3Q3z2eC1ELxZFteDgwzbHDAbXax6f' as Address;
-const GAME_POOL_PDA_PUBKEY = new PublicKey(GAME_POOL_PDA);
+// Derived from PROGRAM_ID — always in sync, no hardcoded address needed
+const [_gamePoolPdaPubkey] = PublicKey.findProgramAddressSync(
+  [Buffer.from('game_pool')],
+  new PublicKey(PROGRAM_ID)
+);
+export const GAME_POOL_PDA = _gamePoolPdaPubkey.toBase58() as Address;
+const GAME_POOL_PDA_PUBKEY = _gamePoolPdaPubkey;
 
 // Treasury (receives fees) - from game pool state
 export const TREASURY = 'D7NdNbJTL7s6Z7Wu8nGe5SBc64FiFQAH3iPvRZw15qSL' as Address;
