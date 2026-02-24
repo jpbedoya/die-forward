@@ -213,19 +213,22 @@ export async function POST(request: NextRequest) {
     // Post to Tapestry social graph (wallet users only) and store contentId
     const isGuestWallet = !session.walletAddress || session.walletAddress.startsWith('guest-');
     if (!isGuestWallet) {
-      postDeath({
-        walletAddress: session.walletAddress,
-        playerName: displayName,
-        room,
-        finalMessage: finalMessage.trim(),
-        stakeAmount: session.stakeAmount || 0,
-      }).then((contentId) => {
+      try {
+        const contentId = await postDeath({
+          walletAddress: session.walletAddress,
+          playerName: displayName,
+          room,
+          finalMessage: finalMessage.trim(),
+          stakeAmount: session.stakeAmount || 0,
+        });
         if (contentId) {
-          db.transact([
+          await db.transact([
             tx.deaths[deathId].update({ tapestryContentId: contentId, likeCount: 0 }),
-          ]).catch(err => console.warn('[Tapestry] Failed to store contentId:', err));
+          ]);
         }
-      }).catch(() => {});
+      } catch (err) {
+        console.warn('[Tapestry] postDeath failed (non-fatal):', err);
+      }
     }
 
     return NextResponse.json({

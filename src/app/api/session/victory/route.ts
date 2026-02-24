@@ -234,11 +234,15 @@ export async function POST(request: NextRequest) {
       const playerName = (nameResult?.players?.[0] as Record<string, unknown>)?.nickname as string
         || `${session.walletAddress.slice(0, 4)}...${session.walletAddress.slice(-4)}`;
 
-      postVictory({
-        walletAddress: session.walletAddress,
-        playerName,
-        reward: totalReward,
-      }).catch(() => {});
+      try {
+        await postVictory({
+          walletAddress: session.walletAddress,
+          playerName,
+          reward: totalReward,
+        });
+      } catch (err) {
+        console.warn('[Tapestry] postVictory failed (non-fatal):', err);
+      }
     }
 
     return NextResponse.json({

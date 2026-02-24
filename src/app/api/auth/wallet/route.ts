@@ -114,8 +114,14 @@ export async function POST(req: NextRequest) {
     const isNewUser = !result.players || result.players.length === 0;
     const nickname = result.players?.[0]?.nickname as string | undefined;
 
-    // Create/update Tapestry profile (non-blocking)
-    upsertProfile(walletAddress, nickname).catch(() => {});
+    // Upsert Tapestry profile — awaited so it completes before serverless fn exits
+    console.log('[Tapestry] Upserting profile for', walletAddress);
+    try {
+      await upsertProfile(walletAddress, nickname);
+      console.log('[Tapestry] Profile upserted for', walletAddress);
+    } catch (err) {
+      console.warn('[Tapestry] upsertProfile failed (non-fatal):', err);
+    }
 
     return NextResponse.json({
       token,
