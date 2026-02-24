@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { init } from '@instantdb/admin';
 import * as nacl from 'tweetnacl';
 import bs58 from 'bs58';
+import { upsertProfile } from '@/lib/tapestry';
 
 // Lazy init to ensure env vars are available
 let db: ReturnType<typeof init> | null = null;
@@ -105,12 +106,16 @@ export async function POST(req: NextRequest) {
     const db = getDb();
     const token = await db.auth.createToken({ email: `${walletAddress}@wallet.dieforward.com` });
 
-    // Check if player record exists, create if not
+    // Check if player record exists
     const result = await getDb().query({
       players: { $: { where: { authId: walletAddress }, limit: 1 } },
     });
 
     const isNewUser = !result.players || result.players.length === 0;
+    const nickname = result.players?.[0]?.nickname as string | undefined;
+
+    // Create/update Tapestry profile (non-blocking)
+    upsertProfile(walletAddress, nickname).catch(() => {});
 
     return NextResponse.json({
       token,

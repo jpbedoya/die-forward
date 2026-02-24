@@ -1,107 +1,63 @@
 # Tapestry Integration
 
-**Status:** 📋 Planned  
-**Test Page:** TBD
+**Status:** ✅ Phase 1 & 2 Live  
+**Namespace:** `dieforward`  
+**Docs:** https://docs.usetapestry.dev
 
 ## What is Tapestry?
 
 Solana's social graph protocol. Onchain profiles, follows, content, likes — shared across all apps in the ecosystem.
 
-- **Docs:** https://docs.usetapestry.dev
 - **SDK:** `socialfi` (npm)
 - **API:** https://api.usetapestry.dev/v1
 
-## Use Cases for Die Forward
+## Implementation
 
-### 1. Player Profiles
-Universal Solana identity that works across apps:
-```typescript
-// Get or create profile
-const profile = await client.profiles.findOrCreate({
-  walletAddress: publicKey,
-  username: 'dungeon_crawler_69',
-  bio: 'Died 47 times. Still descending.',
-  blockchain: 'SOLANA'
-});
+### Client (`src/lib/tapestry.ts`)
+Central module with three exports:
+- `upsertProfile(walletAddress, nickname)` — find or create Tapestry profile
+- `postDeath({ walletAddress, playerName, room, finalMessage, stakeAmount })` — post death event
+- `postVictory({ walletAddress, playerName, reward })` — post victory event
+
+All calls are **fire-and-forget** — Tapestry failures never affect gameplay.
+
+### Where it's called
+| Event | Route | Action |
+|-------|-------|--------|
+| Wallet connect | `POST /api/auth/wallet` | `upsertProfile` |
+| Player death | `POST /api/session/death` | `postDeath` |
+| Player victory | `POST /api/session/victory` | `postVictory` |
+
+**Wallet users only** — guests have no wallet address for Tapestry.
+
+### Example Posts
+```
+💀 juamps fell at depth 7 (staked 0.05 SOL) in Die Forward.
+"The shadows consumed me."
+
+https://play.dieforward.com
+```
+```
+⚔️ juamps escaped the crypt and claimed 0.075 SOL! Die Forward.
+
+https://play.dieforward.com
 ```
 
-### 2. Follow Other Players
-- Follow players from leaderboard
-- See friends' recent runs in your feed
-- "X is currently at depth 5..."
-
-### 3. Social Death Feed
-When you die, post to Tapestry:
-```typescript
-await client.content.create({
-  walletAddress: publicKey,
-  contentType: 'POST',
-  properties: {
-    body: 'Killed by a Wraith at depth 7. Staked 0.1 SOL.',
-    image: deathCardUrl, // Screenshot of death card
-  }
-});
+## Env Vars
+```
+TAPESTRY_API_KEY=...    # from https://app.usetapestry.dev
+TAPESTRY_NAMESPACE=dieforward
 ```
 
-### 4. Likes on Death Cards
-- Like memorable deaths from the feed
-- Most-liked deaths get highlighted
+## Roadmap
 
-### 5. Comments
-- "Should've fled at depth 5 lol"
-- Trash talk and encouragement
-
-## API Quick Reference
-
-```typescript
-import { SocialFi } from 'socialfi';
-
-const client = new SocialFi({
-  baseURL: 'https://api.usetapestry.dev/v1/',
-  apiKey: process.env.TAPESTRY_API_KEY,
-});
-
-// Create profile
-await client.profiles.findOrCreate({ walletAddress, username, bio });
-
-// Follow someone
-await client.follows.followWithRequest({ followerWallet, followeeWallet });
-
-// Create post
-await client.content.createCreate({ walletAddress, contentType: 'POST', properties });
-
-// Like content
-await client.likes.createLikeWithRequest({ walletAddress, contentId });
-
-// Get feed
-await client.feed.getFeed({ walletAddress });
-```
-
-## Setup
-
-1. Get API key: https://app.usetapestry.dev
-2. Set namespace (e.g., `dieforward`)
-3. Install SDK: `npm install socialfi`
-
-## Implementation Plan
-
-### Phase 1: Profiles
-- [ ] Create test page `/tapestry-test`
-- [ ] Profile creation on first wallet connect
-- [ ] Display profile on leaderboard
-
-### Phase 2: Social Feed
-- [ ] Post death/victory to Tapestry
-- [ ] Show recent deaths from followed players
-- [ ] Like functionality
-
-### Phase 3: Deep Integration
-- [ ] "Challenge a friend" (follow + invite)
-- [ ] Social notifications
-- [ ] Cross-app visibility (other Tapestry apps see Die Forward activity)
+### Phase 3: Social Features (not yet implemented)
+- [ ] Follow players from leaderboard
+- [ ] Show followed players' recent runs
+- [ ] Like memorable deaths
+- [ ] Comments on death cards
 
 ## Links
-
 - Quickstart: https://docs.usetapestry.dev
 - API Reference: https://docs.usetapestry.dev/api
 - NPM: https://www.npmjs.com/package/socialfi

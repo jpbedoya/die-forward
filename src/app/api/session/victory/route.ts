@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { init, tx, id } from '@instantdb/admin';
+import { postVictory } from '@/lib/tapestry';
 import { 
   Connection, 
   Keypair, 
@@ -221,6 +222,23 @@ export async function POST(request: NextRequest) {
     } catch (statsError) {
       console.warn('Failed to update player stats:', statsError);
       // Don't fail the whole request for stats
+    }
+
+    // Post to Tapestry social graph (wallet users only, non-blocking)
+    const isGuestWallet = !session.walletAddress || session.walletAddress.startsWith('guest-');
+    if (!isGuestWallet) {
+      // Get player name for the post
+      const nameResult = await db.query({
+        players: { $: { where: { [session.authId ? 'authId' : 'walletAddress']: session.authId || session.walletAddress }, limit: 1 } },
+      }).catch(() => null);
+      const playerName = (nameResult?.players?.[0] as Record<string, unknown>)?.nickname as string
+        || `${session.walletAddress.slice(0, 4)}...${session.walletAddress.slice(-4)}`;
+
+      postVictory({
+        walletAddress: session.walletAddress,
+        playerName,
+        reward: totalReward,
+      }).catch(() => {});
     }
 
     return NextResponse.json({

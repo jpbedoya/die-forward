@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { init, tx, id } from '@instantdb/admin';
 import { hashDeathData, recordDeathOnChain, recordDeathInEscrow } from '@/lib/onchain';
+import { postDeath } from '@/lib/tapestry';
 
 // Initialize InstantDB Admin client
 const db = init({
@@ -207,6 +208,18 @@ export async function POST(request: NextRequest) {
     } catch (statsError) {
       console.warn('Failed to update player stats:', statsError);
       // Don't fail the whole request for stats
+    }
+
+    // Post to Tapestry social graph (wallet users only, non-blocking)
+    const isGuestWallet = !session.walletAddress || session.walletAddress.startsWith('guest-');
+    if (!isGuestWallet) {
+      postDeath({
+        walletAddress: session.walletAddress,
+        playerName: displayName,
+        room,
+        finalMessage: finalMessage.trim(),
+        stakeAmount: session.stakeAmount || 0,
+      }).catch(() => {});
     }
 
     return NextResponse.json({
