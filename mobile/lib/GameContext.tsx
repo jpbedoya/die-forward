@@ -526,8 +526,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
         playerIdentifier = state.walletAddress;
       }
 
-      // Start session with backend (use authId as wallet address for session tracking)
-      const session = await api.startSession(playerIdentifier, amount, stakeTxSignature);
+      // Start session with backend
+      // Pass authId separately for proper player tracking (guests + wallet users)
+      const session = await api.startSession(
+        state.walletAddress || playerIdentifier, // walletAddress for on-chain stuff
+        amount, 
+        stakeTxSignature,
+        state.authId || playerIdentifier, // authId for player record lookup
+      );
       
       // Defensive: ensure we got a session token
       if (!session || !session.sessionToken) {

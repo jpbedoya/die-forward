@@ -24,7 +24,7 @@ export async function OPTIONS() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { walletAddress, stakeAmount, txSignature, demoMode, escrowSessionId, useEscrow } = body;
+    const { walletAddress, stakeAmount, txSignature, demoMode, escrowSessionId, useEscrow, authId } = body;
 
     // Validate inputs
     if (!walletAddress || typeof walletAddress !== 'string') {
@@ -47,6 +47,7 @@ export async function POST(request: NextRequest) {
       tx.sessions[sessionId].update({
         token: sessionToken,
         walletAddress,
+        authId: authId || walletAddress, // Unique player ID for stats tracking
         stakeAmount,
         txSignature: txSignature || null,
         zone: 'THE SUNKEN CRYPT',

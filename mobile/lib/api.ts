@@ -71,7 +71,8 @@ export interface VictoryResponse {
 export async function startSession(
   walletAddress: string,
   stakeAmount: number,
-  stakeTxSignature?: string
+  stakeTxSignature?: string,
+  authId?: string,
 ): Promise<StartSessionResponse> {
   const response = await fetch(`${API_BASE}/api/session/start`, {
     method: 'POST',
@@ -80,6 +81,7 @@ export async function startSession(
       walletAddress,
       stakeAmount,
       stakeTxSignature,
+      authId, // Unique player identifier (InstantDB auth ID)
       // Demo mode if no signature
       demoMode: !stakeTxSignature,
     }),

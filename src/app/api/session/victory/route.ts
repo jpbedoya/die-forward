@@ -191,11 +191,15 @@ export async function POST(request: NextRequest) {
     ]);
 
     // Update player stats (increment clears, track earned)
+    // Use authId for lookup (supports guests + wallet users), fallback to walletAddress for legacy
     try {
+      const lookupKey = session.authId || session.walletAddress;
+      const lookupField = session.authId ? 'authId' : 'walletAddress';
+      
       const { players } = await db.query({
         players: {
           $: {
-            where: { walletAddress: session.walletAddress },
+            where: { [lookupField]: lookupKey },
             limit: 1,
           },
         },
