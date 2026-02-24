@@ -21,6 +21,8 @@ export interface Death {
   onChainSignature?: string;
   nowPlayingTitle?: string;
   nowPlayingArtist?: string;
+  tapestryContentId?: string;
+  likeCount?: number;
   createdAt: number;
 }
 
@@ -54,6 +56,7 @@ export interface Player {
   totalLost: number;
   totalTipsReceived: number;
   totalTipsSent: number;
+  totalLikesReceived: number;
   highestRoom: number;
   createdAt: number;
   lastPlayedAt: number;
@@ -240,6 +243,7 @@ export async function getOrCreatePlayerByAuth(
       totalLost: 0,
       totalTipsReceived: 0,
       totalTipsSent: 0,
+      totalLikesReceived: 0,
       highestRoom: 0,
       createdAt: Date.now(),
       lastPlayedAt: Date.now(),

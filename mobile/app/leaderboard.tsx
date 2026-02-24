@@ -139,6 +139,10 @@ export default function LeaderboardScreen() {
                   <Text className="text-bone-dark text-xs font-mono">Deaths</Text>
                   <Text className="text-blood text-lg font-mono font-bold">{player.totalDeaths}</Text>
                 </View>
+                <View>
+                  <Text className="text-bone-dark text-xs font-mono">Candles</Text>
+                  <Text className="text-amber text-lg font-mono font-bold">🕯️ {player.totalLikesReceived || 0}</Text>
+                </View>
               </View>
             </View>
           )}

@@ -42,10 +42,12 @@ function AnimatedDescendButton() {
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDeathFeed, useGameSettings } from '../lib/instant';
+import { useGame } from '../lib/GameContext';
 import { DieForwardLogo } from '../components/DieForwardLogo';
 import { AudioToggle } from '../components/AudioToggle';
 import { AudioSettingsModal } from '../components/AudioSettingsModal';
 import { CRTOverlay } from '../components/CRTOverlay';
+import * as api from '../lib/api';
 
 // ─── Colors (raw values for inline styles in sheet) ──────────────────────────
 const C = {
@@ -64,13 +66,32 @@ function EchoSheet({
   visible,
   onClose,
   recentDeaths,
+  walletAddress,
 }: {
   visible: boolean;
   onClose: () => void;
   recentDeaths: any[];
+  walletAddress?: string | null;
 }) {
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ['50%', '75%'], []);
+  // Track liked deaths (optimistic, per-session)
+  const [liked, setLiked] = useState<Set<string>>(new Set());
+  const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
+
+  const handleLike = async (death: any) => {
+    if (!walletAddress || liked.has(death.id)) return;
+    // Optimistic update
+    setLiked(prev => new Set(prev).add(death.id));
+    setLikeCounts(prev => ({ ...prev, [death.id]: (prev[death.id] ?? death.likeCount ?? 0) + 1 }));
+    try {
+      await api.likeDeath(death.id, walletAddress);
+    } catch {
+      // Revert on failure
+      setLiked(prev => { const s = new Set(prev); s.delete(death.id); return s; });
+      setLikeCounts(prev => ({ ...prev, [death.id]: Math.max(0, (prev[death.id] ?? 1) - 1) }));
+    }
+  };
 
   // Open/close the sheet based on visibility
   useEffect(() => {
@@ -139,7 +160,11 @@ function EchoSheet({
 
       {/* Scrollable list — BottomSheetScrollView integrates with sheet gestures */}
       <BottomSheetScrollView style={{ paddingHorizontal: 20 }}>
-        {recentDeaths.length > 0 ? recentDeaths.map((death, i) => (
+        {recentDeaths.length > 0 ? recentDeaths.map((death, i) => {
+          const count = likeCounts[death.id] ?? death.likeCount ?? 0;
+          const hasLiked = liked.has(death.id);
+          const canLike = !!walletAddress && !hasLiked;
+          return (
           <View key={death.id || i} style={{
             paddingVertical: 14,
             borderBottomWidth: 1,
@@ -166,8 +191,22 @@ function EchoSheet({
                 "{death.finalMessage}"
               </Text>
             ) : null}
+            {/* 🕯️ Light a candle */}
+            <Pressable
+              onPress={() => handleLike(death)}
+              disabled={!canLike}
+              style={{ marginTop: 8, flexDirection: 'row', alignItems: 'center', gap: 4, opacity: !walletAddress ? 0.3 : 1 }}
+            >
+              <Text style={{ fontSize: 13 }}>{hasLiked ? '🕯️' : '🕯'}</Text>
+              {count > 0 && (
+                <Text style={{ fontFamily: 'monospace', fontSize: 11, color: hasLiked ? C.amber : C.boneMuted }}>
+                  {count}
+                </Text>
+              )}
+            </Pressable>
           </View>
-        )) : (
+          );
+        }) : (
           <Text style={{ fontFamily: 'monospace', fontSize: 12, color: C.boneMuted, textAlign: 'center', paddingVertical: 32, fontStyle: 'italic' }}>
             No echoes yet... be the first to fall.
           </Text>
@@ -183,6 +222,7 @@ export default function HomeScreen() {
   const [showAllSheet, setShowAllSheet] = useState(false);
   const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
 
+  const game = useGame();
   const { deaths: recentDeaths } = useDeathFeed(50);
   const { playAmbient, ready: audioReady } = useAudio();
   const { settings } = useGameSettings();
@@ -289,6 +329,7 @@ export default function HomeScreen() {
         visible={showAllSheet}
         onClose={() => setShowAllSheet(false)}
         recentDeaths={recentDeaths}
+        walletAddress={game.walletAddress}
       />
     </SafeAreaView>
     </CryptBackground>

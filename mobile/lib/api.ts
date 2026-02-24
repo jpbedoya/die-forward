@@ -177,3 +177,22 @@ export async function getLeaderboard(): Promise<{
 
   return response.json();
 }
+
+// Like a death entry (🕯️)
+export async function likeDeath(
+  deathId: string,
+  walletAddress: string,
+): Promise<{ likeCount: number }> {
+  const response = await fetch(`${API_BASE}/api/tapestry/like`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ deathId, walletAddress }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to like');
+  }
+
+  return response.json();
+}

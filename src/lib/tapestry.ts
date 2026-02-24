@@ -56,7 +56,7 @@ export async function upsertProfile(
 
 /**
  * Post a death event to Tapestry.
- * Other apps in the Tapestry ecosystem can see this.
+ * Returns the Tapestry contentId so we can store it for likes.
  */
 export async function postDeath(opts: {
   walletAddress: string;
@@ -64,16 +64,16 @@ export async function postDeath(opts: {
   room: number;
   finalMessage: string;
   stakeAmount: number;
-}): Promise<void> {
+}): Promise<string | null> {
   const client = getClient();
-  if (!client) return;
+  if (!client) return null;
 
   const { walletAddress, playerName, room, finalMessage, stakeAmount } = opts;
   const stakeStr = stakeAmount > 0 ? ` (staked ${stakeAmount} SOL)` : '';
   const body = `💀 ${playerName} fell at depth ${room}${stakeStr} in Die Forward.\n"${finalMessage}"\n\nhttps://play.dieforward.com`;
 
   try {
-    await client.content.createCreate(
+    const result = await client.content.createCreate(
       { apiKey: API_KEY! },
       {
         walletAddress,
@@ -82,8 +82,34 @@ export async function postDeath(opts: {
         properties: { body },
       },
     );
+    return (result as Record<string, unknown>)?.id as string ?? null;
   } catch (err) {
     console.warn('[Tapestry] postDeath failed (non-fatal):', err);
+    return null;
+  }
+}
+
+/**
+ * Like a death post on Tapestry.
+ */
+export async function likeDeath(opts: {
+  walletAddress: string;  // the liker
+  contentId: string;      // Tapestry content ID of the death post
+}): Promise<void> {
+  const client = getClient();
+  if (!client) return;
+
+  try {
+    await client.likes.createLikeWithRequest(
+      { apiKey: API_KEY! },
+      {
+        walletAddress: opts.walletAddress,
+        contentId: opts.contentId,
+        namespace: NAMESPACE,
+      },
+    );
+  } catch (err) {
+    console.warn('[Tapestry] likeDeath failed (non-fatal):', err);
   }
 }
 
