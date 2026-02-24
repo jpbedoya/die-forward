@@ -67,6 +67,14 @@ Flee has 3 outcomes:
 |---------|---------|-------------|
 | `victoryBonusPercent` | 50 | Bonus percentage added to stake on victory |
 
+### UI Settings
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `showLeaderboardLink` | false | Show "◈ RANKS" link in top-left of title screen |
+
+The leaderboard link navigates to the RANKS screen. Toggle it on/off from the admin panel under **Settings → UI**.
+
 Example: 0.05 SOL stake with 50% bonus = 0.075 SOL reward on escape.
 
 ## Example: Updating Settings

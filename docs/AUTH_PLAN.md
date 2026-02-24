@@ -149,6 +149,28 @@ useEffect(() => {
 
 ---
 
+## Player Stats & Leaderboard
+
+### Stats Tracking
+Deaths and victories update player stats server-side via `authId` lookup (not `walletAddress`). This supports both wallet and guest players correctly.
+
+- **Death** → increments `totalDeaths`, updates `highestRoom`, `totalLost`
+- **Victory** (session `status: 'completed'`) → increments `totalClears`, updates `totalEarned`, `highestRoom`
+- Session stores `authId` at creation time so server routes can always find the right player record
+
+### Leaderboard Rules
+Players appear in RANKS if:
+- `highestRoom > 0` (has played)
+- Nickname is not `"Wanderer"` (default guest name)
+- Nickname doesn't match wallet-address format (`AB12...XY78`)
+
+### getOrCreatePlayerByAuth Safeguards (added Feb 2026)
+1. **Wallet fallback:** If authId lookup returns no result, falls back to lookup by `walletAddress` — prevents duplicate records when authId was stored differently
+2. **AuthId drift correction:** If a wallet user's record has a non-wallet authId (e.g. a guest ID from a bad migration), it is auto-corrected to the wallet address on next login
+3. **Guest ID protection:** A guest ID can never overwrite a wallet user's `authId`
+
+---
+
 ## Remaining Work
 
 ### Wallet Signature Verification
