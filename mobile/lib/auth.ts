@@ -144,21 +144,28 @@ export async function signInAsGuest(): Promise<AuthState> {
  */
 export async function linkWalletToGuest(
   walletAddress: string,
-  signMessage: (message: Uint8Array) => Promise<Uint8Array>
+  signMessage?: (message: Uint8Array) => Promise<Uint8Array>
 ): Promise<{ merged: boolean }> {
   const guestId = await AsyncStorage.getItem(GUEST_ID_KEY);
   if (!guestId) {
     throw new Error('No guest account to link');
   }
 
-  // Create link message with nonce
-  const nonce = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-  const message = `Link wallet to Die Forward\nNonce: ${nonce}`;
-  const messageBytes = new TextEncoder().encode(message);
+  let signature: string;
+  let message: string;
 
-  // Request signature from wallet
-  const signatureBytes = await signMessage(messageBytes);
-  const signature = bs58.encode(signatureBytes);
+  if (signMessage) {
+    // Full signature verification flow
+    const nonce = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    message = `Link wallet to Die Forward\nNonce: ${nonce}`;
+    const messageBytes = new TextEncoder().encode(message);
+    const signatureBytes = await signMessage(messageBytes);
+    signature = bs58.encode(signatureBytes);
+  } else {
+    // SKIP_VERIFICATION fallback (until signMessage is implemented)
+    message = `Link wallet to Die Forward\nNonce: ${Date.now()}-skip`;
+    signature = 'SKIP_VERIFICATION';
+  }
 
   // Send to backend
   const response = await fetch(`${API_BASE}/api/auth/link-wallet`, {

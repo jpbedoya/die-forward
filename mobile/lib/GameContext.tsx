@@ -293,14 +293,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
       // Get signMessage function from wallet
       // For now, we'll skip signature verification and just use wallet address as auth
       // TODO: Implement proper signature flow when wallet adapter supports signMessage
-      const authState = await signInWithWallet(
-        unifiedWallet.address,
-        async (message: Uint8Array) => {
-          // This would call wallet.signMessage(message)
-          // For now, return a dummy signature (backend will need to handle this)
-          throw new Error('signMessage not implemented - using direct auth');
-        }
-      );
+      // No signMessage implementation yet — use SKIP_VERIFICATION path
+      // which still hits the server (creates InstantDB token + Tapestry profile)
+      const authState = await signInWithWallet(unifiedWallet.address);
 
       updateState({
         isAuthenticated: true,
@@ -361,12 +356,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
     updateState({ loading: true, error: null });
     try {
-      const result = await linkWalletToGuest(
-        unifiedWallet.address,
-        async (message: Uint8Array) => {
-          throw new Error('signMessage not implemented');
-        }
-      );
+      const result = await linkWalletToGuest(unifiedWallet.address);
 
       updateState({
         authId: unifiedWallet.address,
