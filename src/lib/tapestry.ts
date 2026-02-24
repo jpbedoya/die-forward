@@ -14,7 +14,7 @@ const API_KEY   = process.env.TAPESTRY_API_KEY;
 const NAMESPACE = process.env.TAPESTRY_NAMESPACE || 'dieforward';
 const API_URL   = 'https://api.usetapestry.dev/api/v1/';
 
-function getClient(): SocialFi | null {
+function getClient(): SocialFi<unknown> | null {
   if (!API_KEY) {
     console.warn('[Tapestry] TAPESTRY_API_KEY not set — skipping');
     return null;
