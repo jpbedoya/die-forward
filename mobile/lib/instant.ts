@@ -330,7 +330,15 @@ export function useLeaderboard(limit = 10) {
 
   const leaderboard = (data?.players || [])
     .map((p) => p as unknown as Player)
-    .filter((p) => (p.highestRoom || 0) > 0)
+    .filter((p) => {
+      if ((p.highestRoom || 0) === 0) return false;
+      // Exclude default/unnamed players
+      const nick = (p.nickname || '').trim();
+      if (!nick || nick === 'Wanderer') return false;
+      // Exclude wallet-address-style nicknames like "AB12...XY78"
+      if (/^[A-Za-z0-9]{4}\.\.\./.test(nick)) return false;
+      return true;
+    })
     .sort((a, b) => {
       const aRoom = a.highestRoom || 0;
       const bRoom = b.highestRoom || 0;
