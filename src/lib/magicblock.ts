@@ -298,8 +298,10 @@ export async function commitErRun(opts: {
         params: [[runRecordPda.toBase58(), authority.publicKey.toBase58()]],
       }),
     });
-    const blockhashData = await blockhashRes.json() as { result?: { blockhash?: string } };
-    const erBlockhash = blockhashData?.result?.blockhash;
+    const blockhashData = await blockhashRes.json() as {
+      result?: { value?: { blockhash?: string; lastValidBlockHeight?: number } }
+    };
+    const erBlockhash = blockhashData?.result?.value?.blockhash;
 
     if (!erBlockhash) {
       throw new Error(`ER returned no blockhash for ${runRecordPda.toBase58()} — account may not be delegated`);
