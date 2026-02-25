@@ -9,7 +9,8 @@ const db = init({
 });
 
 // Valid stake amounts (0 = free play)
-const VALID_STAKES = [0, 0.01, 0.05, 0.1, 0.25];
+const MIN_STAKE = 0;
+const MAX_STAKE = 1; // 1 SOL max
 
 // CORS headers for unified codebase (web + mobile)
 const corsHeaders = {
@@ -32,7 +33,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid wallet address' }, { status: 400 });
     }
 
-    if (!VALID_STAKES.includes(stakeAmount)) {
+    if (typeof stakeAmount !== 'number' || stakeAmount < MIN_STAKE || stakeAmount > MAX_STAKE) {
       return NextResponse.json({ error: 'Invalid stake amount' }, { status: 400 });
     }
 
