@@ -88,14 +88,13 @@ export async function POST(request: NextRequest) {
     console.log('[advance] SUCCESS: Advanced to room', nextRoom);
 
     // ── MagicBlock: record room advance on the ER ──
-    // Awaited after DB write but before response — ER is sub-second, 3s timeout cap.
-    // Must complete before response (Vercel kills fire-and-forget promises).
+    // Fire-and-forget — ER events are non-critical observability data.
+    // Do NOT await: the 3s timeout was blocking the advance response,
+    // causing room mismatch when the client timed out.
+    // Vercel may kill this promise after the response is sent, which is fine.
     const erRunId = (session as Record<string, unknown>).erRunId as string | undefined;
     if (erRunId) {
-      await Promise.race([
-        recordErEvent({ erRunId, eventType: 'advance_room', room: nextRoom }),
-        new Promise(r => setTimeout(r, 3000)),
-      ]).catch(() => {});
+      recordErEvent({ erRunId, eventType: 'advance_room', room: nextRoom }).catch(() => {});
     }
 
     return NextResponse.json({
