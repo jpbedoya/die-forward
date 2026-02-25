@@ -49,9 +49,10 @@ export async function upsertProfile(
         blockchain: 'SOLANA',
       },
     );
-    console.log('[Tapestry] upsertProfile ok:', walletAddress);
-    // Return walletAddress — Tapestry accepts it as profileId in content creation
-    return walletAddress;
+    // Tapestry profile ID = username (not wallet address).
+    // The dashboard shows id === username (e.g. "GdQJirts", "juamps").
+    console.log('[Tapestry] upsertProfile ok: username=%s wallet=%s', username, walletAddress);
+    return username;
   } catch (err) {
     console.warn('[Tapestry] upsertProfile failed (non-fatal):', err);
     return null;
