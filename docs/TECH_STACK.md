@@ -43,6 +43,12 @@
 | **Vercel** | Hosting, deploys | ✅ |
 | **InstantDB** | Real-time database | ✅ |
 | **Solana Devnet** | Payments (testing) | ✅ |
+| **MagicBlock ER** | On-chain run recording | ✅ |
+| **Tapestry** | Social graph (deaths/victories) | ✅ |
+
+See also:
+- [MAGICBLOCK.md](./MAGICBLOCK.md) — Ephemeral Rollups integration
+- [TAPESTRY.md](./TAPESTRY.md) — Social graph integration
 
 ## Database Schema (InstantDB)
 
