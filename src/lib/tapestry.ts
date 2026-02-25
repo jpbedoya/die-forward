@@ -35,24 +35,25 @@ export async function upsertProfile(
   const client = getClient();
   if (!client) return null;
 
-  // Tapestry profile IDs are namespaced: "<namespace>:<username>"
-  // We use the wallet address (truncated) as the username for uniqueness.
-  const username = nickname || `${walletAddress.slice(0, 4)}${walletAddress.slice(-4)}`;
+  // id = walletAddress → profileId is always the wallet pubkey, consistent across all calls.
+  // username = player's chosen in-game nickname; fallback to truncated wallet if not yet set.
+  const username = nickname || `${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}`;
 
   try {
     await client.profiles.findOrCreateCreate(
       { apiKey: API_KEY! },
       {
+        id: walletAddress,
         walletAddress,
         username,
         bio: 'Descending into the crypt.',
         blockchain: 'SOLANA',
-      },
+        execution: 'FAST_UNCONFIRMED',
+      } as Parameters<typeof client.profiles.findOrCreateCreate>[1],
     );
-    // Tapestry profile ID = username (not wallet address).
-    // The dashboard shows id === username (e.g. "GdQJirts", "juamps").
-    console.log('[Tapestry] upsertProfile ok: username=%s wallet=%s', username, walletAddress);
-    return username;
+    console.log('[Tapestry] upsertProfile ok: id=%s username=%s', walletAddress, username);
+    // Return walletAddress as profileId — id was set to walletAddress above.
+    return walletAddress;
   } catch (err) {
     console.warn('[Tapestry] upsertProfile failed (non-fatal):', err);
     return null;
