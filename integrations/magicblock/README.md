@@ -1,8 +1,14 @@
 # MagicBlock Integration
 
-**Status:** 🏗️ In Design  
+**Status:** 🚧 Phase 2 Complete — Testing on devnet  
 **Approach:** Option B — ER as settlement authority, parallel to InstantDB  
 **Toggle:** `enableMagicBlock` admin setting (on/off without code changes)
+
+**Deployed Programs (devnet):**
+| Program | Address |
+|---------|---------|
+| `die_forward` (escrow) | `34NSi8ShkixLt8Eg8XahXaRnaNuiFV63xdtC3ZfdTAt6` |
+| `run_record` (ER) | `9rGjguBZAnittA4Cbm7YNP5qomatY3c4MTV7LSqNomzS` |
 
 - **Docs:** https://docs.magicblock.gg
 - **SDK:** `@magicblock-labs/ephemeral-rollups-sdk`
@@ -64,22 +70,33 @@ The full ER transaction history = a cryptographic replay of the entire run.
 
 ### Run Account (on-chain)
 ```rust
+// anchor-program/programs/run-record/src/lib.rs
+#[account]
 pub struct RunRecord {
-    pub player: Pubkey,
-    pub stake_amount: u64,
+    pub player: Pubkey,           // Player wallet
+    pub authority: Pubkey,        // Server authority (signs record_event)
+    pub session_id: [u8; 32],     // Links to InstantDB session
     pub started_at: i64,
     pub current_room: u8,
-    pub status: RunStatus,   // Active | Dead | Cleared
+    pub status: RunStatus,        // Active | Dead | Cleared
     pub event_count: u16,
-    pub vrf_seed: [u8; 32],
+    pub stake_amount: u64,
+    pub bump: u8,
 }
 
-pub enum RunStatus {
-    Active,
-    Dead,
-    Cleared,
-}
+pub enum RunStatus { Active, Dead, Cleared }
+
+// PDA seeds: ["run", session_id_bytes]
+// IDL: src/idl/run_record.json
 ```
+
+### Instructions
+| Instruction | Where called | Description |
+|-------------|-------------|-------------|
+| `initialize_run` | `POST /api/session/start` | Creates RunRecord PDA on L1 |
+| `delegate_run` | `POST /api/session/start` | Delegates account to ER |
+| `record_event` | (future) game events | Zero-fee ER event log |
+| `commit_run` | `POST /api/session/death|victory` | Settles ER state back to L1 |
 
 ### Flow Diagram
 ```
@@ -149,22 +166,42 @@ This lets us test in production with a subset of players (e.g., enable for speci
 
 ## Implementation Plan
 
-### Phase 1: Toggle + Scaffold
-- [ ] Add `enableMagicBlock` to admin settings (InstantDB + admin UI)
-- [ ] Install `@magicblock-labs/ephemeral-rollups-sdk`
-- [ ] Create `src/lib/magicblock.ts` with stubbed functions
-- [ ] Wire toggle check into death/victory routes (no-op when disabled)
+### Phase 1: Toggle + Scaffold ✅ Complete
+- [x] Add `enableMagicBlock` to admin settings (InstantDB + admin UI)
+- [x] Install `@magicblock-labs/ephemeral-rollups-sdk`
+- [x] Create `src/lib/magicblock.ts` with stubbed functions
+- [x] Wire toggle check into death/victory routes (no-op when disabled)
 
-### Phase 2: Run Recording (devnet)
-- [ ] Write/extend on-chain program with `start_run`, `record_event`, `commit_run`
-- [ ] Session key management (player signs once; session key handles ER txs)
-- [ ] ER delegation on session start (`POST /api/session/start`)
-- [ ] Fire-and-forget ER events from game client
+### Phase 2: Run Recording (devnet) ✅ Complete
+- [x] Write `run_record` Anchor program (`initialize_run`, `delegate_run`, `record_event`, `commit_run`)
+- [x] Upgrade both programs to `anchor-lang 0.32.1` (unified workspace)
+- [x] Build + deploy both programs to devnet
+  - `die_forward`: `34NSi8ShkixLt8Eg8XahXaRnaNuiFV63xdtC3ZfdTAt6`
+  - `run_record`:  `9rGjguBZAnittA4Cbm7YNP5qomatY3c4MTV7LSqNomzS`
+- [x] Program keypairs backed up to `~/.openclaw/workspace/credentials/solana/`
+- [x] Generate + commit IDLs to `src/idl/`
+- [x] Replace stub IDL in `magicblock.ts` with real IDL + live program calls
+- [x] Wire `startErRun` into `POST /api/session/start` (gated by toggle + wallet + stake > 0)
+- [x] Store `erRunId` (RunRecord PDA) on InstantDB session record
+- [x] Wire `commitErRun` into `POST /api/session/death` and `POST /api/session/victory`
+- [x] Fix `u64` type: `BigInt` → `BN` (Anchor 0.32.1 maps u64 → BN)
+- [x] Env vars: `NEXT_PUBLIC_RUN_RECORD_PROGRAM_ID`, `MAGICBLOCK_ER_ENDPOINT`, `SOLANA_AUTHORITY_SECRET_KEY`
 
-### Phase 3: Settlement Gate (devnet)
-- [ ] ER commit required before L1 settlement
-- [ ] Fallback to legacy if ER unavailable
-- [ ] ER commit hash stored on death/session record
+### Phase 2.5: Observability ✅ Complete
+- [x] `/onchain-runs` page — live server-rendered view of every RunRecord on-chain
+  - Fetches all accounts via `program.account.runRecord.all()`
+  - Shows: status, player wallet, session ID, stake, room progress, event count, started at
+  - PDA and player wallet linked to Solana Explorer (devnet)
+  - Empty state with instructions when no runs recorded yet
+  - URL: `die-forward.vercel.app/onchain-runs`
+
+### Phase 3: Settlement Gate — Testing 🚧 Next
+- [ ] Enable `enableMagicBlock` toggle in admin, run a staked session end-to-end
+- [ ] Verify RunRecord PDA appears on Solana Explorer after session start
+- [ ] Verify `erRunId` stored on InstantDB session record
+- [ ] Verify ER commit tx on death/victory
+- [ ] Verify `/onchain-runs` page shows completed run with correct data
+- [ ] ER commit hash stored on death/session record in InstantDB
 
 ### Phase 4: VRF
 - [ ] Replace `Math.random()` with VRF requests
@@ -172,7 +209,7 @@ This lets us test in production with a subset of players (e.g., enable for speci
 - [ ] Verifiable encounter/damage/loot replay
 
 ### Phase 5: Mainnet
-- [ ] Audit + test on devnet
+- [ ] Full devnet audit + end-to-end test
 - [ ] Switch to mainnet ER validators
 - [ ] Enable `enableMagicBlock` in production
 
