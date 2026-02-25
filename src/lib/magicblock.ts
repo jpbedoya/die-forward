@@ -17,9 +17,13 @@ import {
   Keypair,
   PublicKey,
   Transaction,
+  sendAndConfirmTransaction,
 } from '@solana/web3.js';
 import { AnchorProvider, BN, Program, setProvider } from '@coral-xyz/anchor';
-import { ConnectionMagicRouter } from '@magicblock-labs/ephemeral-rollups-sdk';
+import {
+  ConnectionMagicRouter,
+  createCommitAndUndelegateInstruction,
+} from '@magicblock-labs/ephemeral-rollups-sdk';
 import bs58 from 'bs58';
 import RunRecordIdl from '../idl/run_record.json';
 
@@ -208,12 +212,15 @@ export async function recordErEvent(opts: {
 
     console.log('[MagicBlock] Recording ER event:', eventType, 'room', room);
 
+    // skipPreflight: ER transactions must bypass L1 simulation — the delegated
+    // account is owned by the delegation program on L1, so L1 preflight fails.
+    // The ER validator runs its own execution against the ER shadow copy.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (program as any).methods
       .recordEvent(eventTypeMap[eventType], room, Array.from(dataBytes))
       .accounts({ runRecord: runRecordPda, authority: authority.publicKey })
       .signers([authority])
-      .rpc();
+      .rpc({ skipPreflight: true });
 
   } catch (err) {
     // Silently ignore — game events must never affect gameplay
@@ -224,42 +231,69 @@ export async function recordErEvent(opts: {
 /**
  * Commit the ER run to L1 and undelegate the RunRecord.
  * This is the settlement gate — called before L1 death/victory settlement.
- * Falls back gracefully on failure.
+ *
+ * Strategy:
+ *  1. Send commit_run via Anchor with skipPreflight:true (L1 preflight fails
+ *     because delegated account is owned by delegation program, not ours;
+ *     the ER validator runs its own execution against the ER shadow copy).
+ *  2. If that fails, fall back to SDK createCommitAndUndelegateInstruction
+ *     directly (bypasses Anchor entirely).
+ *  3. If both fail, return fallback:true — legacy L1 settlement proceeds.
  */
 export async function commitErRun(opts: {
   erRunId: string;
   outcome: 'dead' | 'cleared';
   finalRoom: number;
 }): Promise<ErCommitResult> {
+  const { erRunId, outcome, finalRoom: _finalRoom } = opts;
+  const authority = getAuthorityKeypair();
+  const erConnection = new ConnectionMagicRouter(ER_ENDPOINT);
+  const runRecordPda = new PublicKey(erRunId);
+
+  console.log('[MagicBlock] Committing ER run:', erRunId, 'outcome:', outcome);
+
+  // ── Attempt 1: Anchor commit_run with skipPreflight ────────────────────────
   try {
-    const { erRunId, outcome } = opts;
-    const authority = getAuthorityKeypair();
-
-    // Commit via ER connection — commit_and_undelegate runs on the ER
-    // and finalizes the RunRecord state on L1
-    const erConnection = new ConnectionMagicRouter(ER_ENDPOINT);
     const program = getProgram(erConnection as unknown as Connection);
-
-    const runRecordPda = new PublicKey(erRunId);
-
-    // Map outcome to Rust enum variant
     const outcomeEnum = outcome === 'dead' ? { dead: {} } : { cleared: {} };
 
-    console.log('[MagicBlock] Committing ER run:', erRunId, 'outcome:', outcome);
-
-    // magic_program and magic_context accounts have fixed addresses in IDL — auto-resolved
+    // skipPreflight: delegates on L1 are owned by delegation program,
+    // so L1 simulation rejects writable access. ER validator handles it correctly.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const txSig = await (program as any).methods
       .commitRun(outcomeEnum)
       .accounts({ runRecord: runRecordPda, authority: authority.publicKey })
       .signers([authority])
-      .rpc();
+      .rpc({ skipPreflight: true });
 
-    console.log('[MagicBlock] ER run committed:', txSig);
+    console.log('[MagicBlock] ER run committed (Anchor):', txSig);
     return { success: true, txSignature: txSig };
 
-  } catch (err) {
-    console.warn('[MagicBlock] commitErRun failed, falling back to legacy:', err);
+  } catch (anchorErr) {
+    console.warn('[MagicBlock] Anchor commitRun failed, trying SDK direct:', anchorErr);
+  }
+
+  // ── Attempt 2: SDK createCommitAndUndelegateInstruction ───────────────────
+  try {
+    const commitIx = createCommitAndUndelegateInstruction(
+      authority.publicKey,
+      [runRecordPda],
+    );
+
+    const tx = new Transaction().add(commitIx);
+    // ConnectionMagicRouter.sendTransaction fetches ER-specific blockhash
+    const txSig = await sendAndConfirmTransaction(
+      erConnection as unknown as Connection,
+      tx,
+      [authority],
+      { skipPreflight: true },
+    );
+
+    console.log('[MagicBlock] ER run committed (SDK direct):', txSig);
+    return { success: true, txSignature: txSig };
+
+  } catch (sdkErr) {
+    console.warn('[MagicBlock] SDK commitErRun also failed, falling back to legacy:', sdkErr);
     return { success: false, fallback: true };
   }
 }
