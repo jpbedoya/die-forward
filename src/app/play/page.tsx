@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js';
@@ -259,6 +259,7 @@ export default function GameScreen() {
   const [loaded, setLoaded] = useState(false);
   const [sessionToken, setSessionToken] = useState<string | null>(null);
   const [advancing, setAdvancing] = useState(false);
+  const advancingRef = useRef(false); // ref-based guard — React state is async, ref is synchronous
   const [rooms, setRooms] = useState<Room[]>([]);
   const [tipping, setTipping] = useState(false);
   const [tipped, setTipped] = useState(false);
@@ -349,7 +350,11 @@ export default function GameScreen() {
       console.warn('Demo mode or no session token, skipping server advance');
       return true; // Allow offline/test play
     }
-    
+
+    // Ref-based re-entry guard — prevents double-clicks firing two requests
+    // with the same currentRoom before React re-renders with advancing=true
+    if (advancingRef.current) return false;
+    advancingRef.current = true;
     setAdvancing(true);
     try {
       const response = await fetch('/api/session/advance', {
@@ -377,6 +382,7 @@ export default function GameScreen() {
       setMessage('Connection error. Please try again.');
       return false;
     } finally {
+      advancingRef.current = false;
       setAdvancing(false);
     }
   };
@@ -762,11 +768,12 @@ export default function GameScreen() {
           {!showCorpse && room.options.map((option, i) => (
             <button
               key={option.id}
+              disabled={advancing}
               onClick={() => {
                 setSelectedOption(option.id);
                 handleAction(option.action);
               }}
-              className={`w-full text-left px-3 py-3 text-sm transition-all active:scale-[0.98] ${
+              className={`w-full text-left px-3 py-3 text-sm transition-all active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none ${
                 selectedOption === option.id
                   ? 'bg-[var(--amber-dim)]/30 text-[var(--amber-bright)] border-l-2 border-[var(--amber)]'
                   : 'bg-[var(--bg-surface)] text-[var(--text-secondary)] border-l-2 border-[var(--border-dim)] active:bg-[var(--bg-elevated)]'
@@ -780,8 +787,9 @@ export default function GameScreen() {
           {/* Continue after looting */}
           {showCorpse && (
             <button
+              disabled={advancing}
               onClick={() => handleAction('next')}
-              className="w-full text-left px-3 py-3 text-sm bg-[var(--bg-surface)] text-[var(--text-secondary)] border-l-2 border-[var(--border-dim)]"
+              className="w-full text-left px-3 py-3 text-sm bg-[var(--bg-surface)] text-[var(--text-secondary)] border-l-2 border-[var(--border-dim)] disabled:opacity-50 disabled:pointer-events-none"
             >
               <span className="text-[var(--text-muted)] mr-2">→</span>
               Continue onward
