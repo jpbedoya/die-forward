@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { init, tx } from '@instantdb/admin';
+import { recordErEvent } from '@/lib/magicblock';
 
 // Initialize InstantDB Admin client
 const db = init({
@@ -85,6 +86,18 @@ export async function POST(request: NextRequest) {
     ]);
 
     console.log('[advance] SUCCESS: Advanced to room', nextRoom);
+
+    // ── MagicBlock: record room advance on the ER ──
+    // Awaited after DB write but before response — ER is sub-second, 3s timeout cap.
+    // Must complete before response (Vercel kills fire-and-forget promises).
+    const erRunId = (session as Record<string, unknown>).erRunId as string | undefined;
+    if (erRunId) {
+      await Promise.race([
+        recordErEvent({ erRunId, eventType: 'advance_room', room: nextRoom }),
+        new Promise(r => setTimeout(r, 3000)),
+      ]).catch(() => {});
+    }
+
     return NextResponse.json({
       success: true,
       currentRoom: nextRoom,
