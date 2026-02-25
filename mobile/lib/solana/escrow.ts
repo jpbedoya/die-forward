@@ -23,8 +23,9 @@ const PROGRAM_ID_PUBKEY = new PublicKey(PROGRAM_ID);
 
 // Game Pool PDA (derived from 'game_pool' seed)
 // Derived from PROGRAM_ID — always in sync, no hardcoded address needed
+// Use TextEncoder instead of Buffer.from (Buffer not available in React Native)
 const [_gamePoolPdaPubkey] = PublicKey.findProgramAddressSync(
-  [Buffer.from('game_pool')],
+  [new TextEncoder().encode('game_pool')],
   new PublicKey(PROGRAM_ID)
 );
 export const GAME_POOL_PDA = _gamePoolPdaPubkey.toBase58() as Address;
