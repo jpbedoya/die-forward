@@ -364,11 +364,18 @@ export default function TitleScreen() {
     localStorage.setItem(NICKNAME_KEY, trimmed);
     setEditingNickname(false);
     
-    // Save to DB
+    // Save to InstantDB
     if (walletAddress) {
       setSavingNickname(true);
       await updatePlayerNickname(walletAddress, trimmed);
       setSavingNickname(false);
+
+      // Sync nickname to Tapestry profile (fire-and-forget, non-blocking)
+      fetch('/api/player/sync-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ walletAddress, nickname: trimmed }),
+      }).catch(() => { /* non-fatal */ });
     }
   };
   

@@ -25,8 +25,14 @@ function getClient(): SocialFi<unknown> | null {
 
 /**
  * Find or create a Tapestry profile for a wallet user.
- * Returns the profile ID (namespaced username) used for content creation.
- * Called on first wallet connect / auth.
+ *
+ * Profile shape:
+ *   id          = walletAddress  (stable unique key used as profileId everywhere)
+ *   username    = player's chosen nickname (fallback: first4...last4 of wallet)
+ *   walletAddress, bio, blockchain, execution
+ *
+ * NOTE: findOrCreate does NOT update an existing profile's username.
+ * Use updateProfileUsername() to patch the username after the player sets their name.
  */
 export async function upsertProfile(
   walletAddress: string,
@@ -35,9 +41,7 @@ export async function upsertProfile(
   const client = getClient();
   if (!client) return null;
 
-  // id = walletAddress → profileId is always the wallet pubkey, consistent across all calls.
-  // username = player's chosen in-game nickname; fallback to truncated wallet if not yet set.
-  const username = nickname || `${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}`;
+  const username = nickname?.trim() || `${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}`;
 
   try {
     await client.profiles.findOrCreateCreate(
@@ -52,7 +56,6 @@ export async function upsertProfile(
       } as Parameters<typeof client.profiles.findOrCreateCreate>[1],
     );
     console.log('[Tapestry] upsertProfile ok: id=%s username=%s', walletAddress, username);
-    // Return walletAddress as profileId — id was set to walletAddress above.
     return walletAddress;
   } catch (err) {
     console.warn('[Tapestry] upsertProfile failed (non-fatal):', err);
@@ -60,14 +63,49 @@ export async function upsertProfile(
   }
 }
 
-// ── Internal: ensure profile exists before posting content ────────────────────
+/**
+ * Update the username on an existing Tapestry profile.
+ *
+ * Call this whenever the player sets or changes their in-game name:
+ *  - After saveNickname in game UI (via /api/player/sync-profile)
+ *  - Before postDeath / postVictory (fresh name from InstantDB is available there)
+ *
+ * Safe to call even if profile doesn't exist yet — fails silently.
+ */
+export async function updateProfileUsername(
+  walletAddress: string,
+  username: string,
+): Promise<void> {
+  const client = getClient();
+  if (!client || !username?.trim()) return;
+
+  try {
+    await client.profiles.profilesUpdate(
+      { id: walletAddress, apiKey: API_KEY! },
+      { username: username.trim() } as Parameters<typeof client.profiles.profilesUpdate>[1],
+    );
+    console.log('[Tapestry] updateProfileUsername ok: %s → "%s"', walletAddress, username);
+  } catch (err) {
+    console.warn('[Tapestry] updateProfileUsername failed (non-fatal):', err);
+  }
+}
+
+// ── Internal: ensure profile exists and username is up to date ────────────────
 
 /**
- * Ensure a profile exists and return its Tapestry profile ID.
- * Used as a pre-flight before creating content.
+ * Ensure a profile exists with the correct username, then return profileId.
+ * Pass username when you have the fresh player name (postDeath, postVictory).
  */
-async function ensureProfile(walletAddress: string): Promise<string | null> {
-  return upsertProfile(walletAddress);
+async function ensureProfile(walletAddress: string, username?: string): Promise<string | null> {
+  const profileId = await upsertProfile(walletAddress, username);
+  if (!profileId) return null;
+
+  // If we have a real name (not a fallback), patch it — findOrCreate won't update existing profiles
+  if (username?.trim()) {
+    await updateProfileUsername(walletAddress, username.trim());
+  }
+
+  return profileId;
 }
 
 // ── Posts ─────────────────────────────────────────────────────────────────────
@@ -88,14 +126,13 @@ export async function postDeath(opts: {
 
   const { walletAddress, playerName, room, finalMessage, stakeAmount } = opts;
 
-  // Ensure profile exists first — content creation 404s without it
-  const profileId = await ensureProfile(walletAddress);
+  // Ensure profile exists and has the fresh player name
+  const profileId = await ensureProfile(walletAddress, playerName);
   if (!profileId) return null;
 
   const stakeStr = stakeAmount > 0 ? ` (staked ${stakeAmount} SOL)` : '';
   const body = `💀 ${playerName} fell at depth ${room}${stakeStr} in Die Forward.\n"${finalMessage}"\n\nhttps://play.dieforward.com`;
 
-  // Generate a stable unique ID for this content node
   const contentId = `${NAMESPACE}-death-${walletAddress.slice(0, 8)}-${Date.now()}`;
 
   try {
@@ -119,13 +156,12 @@ export async function postDeath(opts: {
  * Like a death post on Tapestry.
  */
 export async function likeDeath(opts: {
-  walletAddress: string;  // the liker's wallet address
-  contentId: string;      // Tapestry content ID of the death post
+  walletAddress: string;
+  contentId: string;
 }): Promise<void> {
   const client = getClient();
   if (!client) return;
 
-  // Ensure liker's profile exists
   const profileId = await ensureProfile(opts.walletAddress);
   if (!profileId) return;
 
@@ -153,8 +189,8 @@ export async function postVictory(opts: {
 
   const { walletAddress, playerName, reward } = opts;
 
-  // Ensure profile exists first
-  const profileId = await ensureProfile(walletAddress);
+  // Ensure profile exists and has the fresh player name
+  const profileId = await ensureProfile(walletAddress, playerName);
   if (!profileId) return;
 
   const rewardStr = reward > 0 ? ` and claimed ${reward.toFixed(3)} SOL` : '';
