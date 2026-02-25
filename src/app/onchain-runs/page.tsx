@@ -81,7 +81,7 @@ async function fetchRuns() {
     const coder = new BorshAccountsCoder(RunRecordIdl as never);
     const delegatedAccounts = delegatedRaw.map((raw) => {
       try {
-        const decoded = coder.decode('runRecord', raw.account.data);
+        const decoded = coder.decode('RunRecord', raw.account.data);
         return { publicKey: raw.pubkey, account: decoded };
       } catch {
         return null;
@@ -95,17 +95,24 @@ async function fetchRuns() {
       ...delegatedAccounts.filter(a => !settledPdas.has(a.publicKey.toBase58())),
     ];
 
+    // Field accessor — BorshAccountsCoder.decode() returns snake_case,
+    // program.account.runRecord.all() returns camelCase. Handle both.
+    const f = (acct: Record<string, unknown>, ...keys: string[]) => {
+      for (const k of keys) if (acct[k] !== undefined) return acct[k];
+      return undefined;
+    };
+
     return allAccounts.map((a: { publicKey: PublicKey; account: Record<string, unknown> }) => ({
       pda:          a.publicKey.toBase58(),
-      player:       (a.account.player as PublicKey).toBase58(),
-      authority:    (a.account.authority as PublicKey).toBase58(),
-      sessionId:    Buffer.from(a.account.sessionId as Uint8Array).toString('utf8').replace(/\0/g, ''),
-      startedAt:    Number(a.account.startedAt),
-      currentRoom:  Number(a.account.currentRoom),
-      status:       getStatusKey(a.account.status),
-      eventCount:   Number(a.account.eventCount),
-      stakeAmount:  Number(a.account.stakeAmount),
-      bump:         Number(a.account.bump),
+      player:       (f(a.account, 'player') as PublicKey).toBase58(),
+      authority:    (f(a.account, 'authority') as PublicKey).toBase58(),
+      sessionId:    Buffer.from(f(a.account, 'sessionId', 'session_id') as Uint8Array).toString('utf8').replace(/\0/g, ''),
+      startedAt:    Number(f(a.account, 'startedAt', 'started_at')),
+      currentRoom:  Number(f(a.account, 'currentRoom', 'current_room')),
+      status:       getStatusKey(f(a.account, 'status')),
+      eventCount:   Number(f(a.account, 'eventCount', 'event_count')),
+      stakeAmount:  Number(f(a.account, 'stakeAmount', 'stake_amount')),
+      bump:         Number(f(a.account, 'bump')),
       delegated:    !settledPdas.has(a.publicKey.toBase58()), // true = still delegated/pending settlement
     }));
   } catch (err) {
