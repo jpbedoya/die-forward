@@ -193,13 +193,14 @@ export async function recordErEvent(opts: {
 
     const runRecordPda = new PublicKey(erRunId);
 
-    // Map event type to on-chain enum index
-    const eventTypeMap: Record<string, number> = {
-      advance_room: 0,
-      encounter: 1,
-      item: 2,
-      death: 4,
-      victory: 5,
+    // Anchor expects enum variants as objects, not raw indices
+    // Rust: AdvanceRoom, Encounter, ItemPickup, ItemDrop, Death, Victory
+    const eventTypeMap: Record<string, Record<string, Record<string, never>>> = {
+      advance_room: { advanceRoom: {} },
+      encounter:    { encounter: {} },
+      item:         { itemPickup: {} },
+      death:        { death: {} },
+      victory:      { victory: {} },
     };
 
     // Hash event data to 32 bytes for on-chain storage
