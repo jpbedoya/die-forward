@@ -2,8 +2,7 @@
  * Tapestry integration for Die Forward
  *
  * Handles social graph actions: profile creation, death posts, victory posts.
- * All calls are fire-and-forget (non-blocking) — Tapestry failures never
- * affect core gameplay.
+ * All calls are non-fatal — Tapestry failures never affect core gameplay.
  *
  * Docs: https://docs.usetapestry.dev
  * SDK base URL: https://api.usetapestry.dev/api/v1 (baked into socialfi package)
@@ -26,31 +25,54 @@ function getClient(): SocialFi<unknown> | null {
 
 /**
  * Find or create a Tapestry profile for a wallet user.
+ * Returns the profile ID (namespaced username) used for content creation.
  * Called on first wallet connect / auth.
  */
 export async function upsertProfile(
   walletAddress: string,
   nickname?: string,
-): Promise<void> {
+): Promise<string | null> {
   const client = getClient();
-  if (!client) return;
+  if (!client) return null;
 
-  await client.profiles.findOrCreateCreate(
-    { apiKey: API_KEY! },
-    {
-      walletAddress,
-      username: nickname || `${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}`,
-      bio: 'Descending into the crypt.',
-      blockchain: 'SOLANA',
-    },
-  );
+  // Tapestry profile IDs are namespaced: "<namespace>:<username>"
+  // We use the wallet address (truncated) as the username for uniqueness.
+  const username = nickname || `${walletAddress.slice(0, 4)}${walletAddress.slice(-4)}`;
+
+  try {
+    await client.profiles.findOrCreateCreate(
+      { apiKey: API_KEY! },
+      {
+        walletAddress,
+        username,
+        bio: 'Descending into the crypt.',
+        blockchain: 'SOLANA',
+      },
+    );
+    console.log('[Tapestry] upsertProfile ok:', walletAddress);
+    // Return walletAddress — Tapestry accepts it as profileId in content creation
+    return walletAddress;
+  } catch (err) {
+    console.warn('[Tapestry] upsertProfile failed (non-fatal):', err);
+    return null;
+  }
+}
+
+// ── Internal: ensure profile exists before posting content ────────────────────
+
+/**
+ * Ensure a profile exists and return its Tapestry profile ID.
+ * Used as a pre-flight before creating content.
+ */
+async function ensureProfile(walletAddress: string): Promise<string | null> {
+  return upsertProfile(walletAddress);
 }
 
 // ── Posts ─────────────────────────────────────────────────────────────────────
 
 /**
  * Post a death event to Tapestry.
- * Returns the Tapestry contentId (= generated ID) so we can store it for likes.
+ * Returns the Tapestry contentId so it can be stored for likes.
  */
 export async function postDeath(opts: {
   walletAddress: string;
@@ -63,6 +85,11 @@ export async function postDeath(opts: {
   if (!client) return null;
 
   const { walletAddress, playerName, room, finalMessage, stakeAmount } = opts;
+
+  // Ensure profile exists first — content creation 404s without it
+  const profileId = await ensureProfile(walletAddress);
+  if (!profileId) return null;
+
   const stakeStr = stakeAmount > 0 ? ` (staked ${stakeAmount} SOL)` : '';
   const body = `💀 ${playerName} fell at depth ${room}${stakeStr} in Die Forward.\n"${finalMessage}"\n\nhttps://play.dieforward.com`;
 
@@ -74,10 +101,11 @@ export async function postDeath(opts: {
       { apiKey: API_KEY! },
       {
         id: contentId,
-        profileId: walletAddress,
+        profileId,
         properties: [{ key: 'body', value: body }],
       },
     );
+    console.log('[Tapestry] postDeath ok:', contentId);
     return contentId;
   } catch (err) {
     console.warn('[Tapestry] postDeath failed (non-fatal):', err);
@@ -89,17 +117,22 @@ export async function postDeath(opts: {
  * Like a death post on Tapestry.
  */
 export async function likeDeath(opts: {
-  walletAddress: string;  // the liker's profile ID
+  walletAddress: string;  // the liker's wallet address
   contentId: string;      // Tapestry content ID of the death post
 }): Promise<void> {
   const client = getClient();
   if (!client) return;
 
+  // Ensure liker's profile exists
+  const profileId = await ensureProfile(opts.walletAddress);
+  if (!profileId) return;
+
   try {
     await client.likes.likesCreate(
       { apiKey: API_KEY!, nodeId: opts.contentId },
-      { startId: opts.walletAddress },
+      { startId: profileId },
     );
+    console.log('[Tapestry] likeDeath ok:', opts.contentId);
   } catch (err) {
     console.warn('[Tapestry] likeDeath failed (non-fatal):', err);
   }
@@ -117,6 +150,11 @@ export async function postVictory(opts: {
   if (!client) return;
 
   const { walletAddress, playerName, reward } = opts;
+
+  // Ensure profile exists first
+  const profileId = await ensureProfile(walletAddress);
+  if (!profileId) return;
+
   const rewardStr = reward > 0 ? ` and claimed ${reward.toFixed(3)} SOL` : '';
   const body = `⚔️ ${playerName} escaped the crypt${rewardStr}! Die Forward.\n\nhttps://play.dieforward.com`;
 
@@ -127,10 +165,11 @@ export async function postVictory(opts: {
       { apiKey: API_KEY! },
       {
         id: contentId,
-        profileId: walletAddress,
+        profileId,
         properties: [{ key: 'body', value: body }],
       },
     );
+    console.log('[Tapestry] postVictory ok:', contentId);
   } catch (err) {
     console.warn('[Tapestry] postVictory failed (non-fatal):', err);
   }
