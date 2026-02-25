@@ -245,12 +245,27 @@ export async function commitErRun(opts: {
   outcome: 'dead' | 'cleared';
   finalRoom: number;
 }): Promise<ErCommitResult> {
-  const { erRunId, outcome, finalRoom: _finalRoom } = opts;
+  const { erRunId, outcome, finalRoom } = opts;
   const authority = getAuthorityKeypair();
   const erConnection = new ConnectionMagicRouter(ER_ENDPOINT);
   const runRecordPda = new PublicKey(erRunId);
 
   console.log('[MagicBlock] Committing ER run:', erRunId, 'outcome:', outcome);
+
+  // ── Pre-commit: record final event on ER so room/eventCount are correct ────
+  // The SDK direct commit (Attempt 2) just flushes state to L1 without
+  // modifying data. Without this, all committed runs show room 0 / 0 events.
+  try {
+    await recordErEvent({
+      erRunId,
+      eventType: outcome === 'dead' ? 'death' : 'victory',
+      room: finalRoom,
+    });
+    console.log('[MagicBlock] Pre-commit event recorded: room', finalRoom, outcome);
+  } catch {
+    // Non-fatal — commit can proceed with stale data
+    console.warn('[MagicBlock] Pre-commit event failed (continuing)');
+  }
 
   // ── Attempt 1: Anchor commit_run with skipPreflight ────────────────────────
   try {
