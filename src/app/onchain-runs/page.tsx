@@ -7,7 +7,14 @@
 
 import { Connection, Keypair, PublicKey, Transaction } from '@solana/web3.js';
 import { AnchorProvider, Program, BorshAccountsCoder } from '@coral-xyz/anchor';
+import { init } from '@instantdb/admin';
 import RunRecordIdl from '@/idl/run_record.json';
+
+// InstantDB for enriching on-chain data with session details
+const db = init({
+  appId: process.env.NEXT_PUBLIC_INSTANT_APP_ID!,
+  adminToken: process.env.INSTANT_ADMIN_KEY!,
+});
 
 const RPC_URL = process.env.NEXT_PUBLIC_SOLANA_RPC || 'https://api.devnet.solana.com';
 const RUN_RECORD_PROGRAM_ID = new PublicKey(
@@ -102,19 +109,54 @@ async function fetchRuns() {
       return undefined;
     };
 
-    return allAccounts.map((a: { publicKey: PublicKey; account: Record<string, unknown> }) => ({
-      pda:          a.publicKey.toBase58(),
-      player:       (f(a.account, 'player') as PublicKey).toBase58(),
-      authority:    (f(a.account, 'authority') as PublicKey).toBase58(),
-      sessionId:    Buffer.from(f(a.account, 'sessionId', 'session_id') as Uint8Array).toString('utf8').replace(/\0/g, ''),
-      startedAt:    Number(f(a.account, 'startedAt', 'started_at')),
-      currentRoom:  Number(f(a.account, 'currentRoom', 'current_room')),
-      status:       getStatusKey(f(a.account, 'status')),
-      eventCount:   Number(f(a.account, 'eventCount', 'event_count')),
-      stakeAmount:  Number(f(a.account, 'stakeAmount', 'stake_amount')),
-      bump:         Number(f(a.account, 'bump')),
-      delegated:    !settledPdas.has(a.publicKey.toBase58()), // true = still delegated/pending settlement
-    }));
+    // Extract session IDs to fetch InstantDB data
+    const runs = allAccounts.map((a: { publicKey: PublicKey; account: Record<string, unknown> }) => {
+      const sessionId = Buffer.from(f(a.account, 'sessionId', 'session_id') as Uint8Array).toString('utf8').replace(/\0/g, '');
+      return {
+        pda:          a.publicKey.toBase58(),
+        player:       (f(a.account, 'player') as PublicKey).toBase58(),
+        authority:    (f(a.account, 'authority') as PublicKey).toBase58(),
+        sessionId,
+        startedAt:    Number(f(a.account, 'startedAt', 'started_at')),
+        currentRoom:  Number(f(a.account, 'currentRoom', 'current_room')),
+        status:       getStatusKey(f(a.account, 'status')),
+        eventCount:   Number(f(a.account, 'eventCount', 'event_count')),
+        stakeAmount:  Number(f(a.account, 'stakeAmount', 'stake_amount')),
+        bump:         Number(f(a.account, 'bump')),
+        delegated:    !settledPdas.has(a.publicKey.toBase58()),
+        // Will be enriched below
+        dbRoom:       undefined as number | undefined,
+        dbStatus:     undefined as string | undefined,
+        nickname:     undefined as string | undefined,
+        erCommitTx:   undefined as string | undefined,
+      };
+    });
+
+    // Enrich with InstantDB session data (room, status, nickname)
+    // ER write issue means on-chain data is stale — InstantDB has the real values
+    try {
+      const sessionIds = runs.map(r => r.sessionId).filter(Boolean);
+      if (sessionIds.length > 0) {
+        const dbResult = await db.query({ sessions: {} });
+        const sessions = (dbResult?.sessions || []) as Record<string, unknown>[];
+        const sessionMap = new Map<string, Record<string, unknown>>();
+        for (const s of sessions) {
+          if (s.id && typeof s.id === 'string') sessionMap.set(s.id, s);
+        }
+        for (const run of runs) {
+          const session = sessionMap.get(run.sessionId);
+          if (session) {
+            run.dbRoom = session.currentRoom as number | undefined;
+            run.dbStatus = session.status as string | undefined;
+            run.erCommitTx = session.erCommitTx as string | undefined;
+          }
+        }
+      }
+    } catch {
+      // Non-fatal — on-chain data still shows
+    }
+
+    return runs;
   } catch (err) {
     console.error('[onchain-runs] Failed to fetch:', err);
     return [];
@@ -159,8 +201,8 @@ export default async function OnchainRunsPage() {
             <div className="grid grid-cols-3 gap-4 mb-6">
               {[
                 { label: 'Total Runs',  value: runs.length },
-                { label: 'Active',      value: runs.filter((r: { status: number }) => r.status === 0).length },
-                { label: 'Completed',   value: runs.filter((r: { status: number }) => r.status > 0).length },
+                { label: 'Active',      value: runs.filter((r: { dbStatus?: string; status: number }) => r.dbStatus ? r.dbStatus === 'active' : r.status === 0).length },
+                { label: 'Completed',   value: runs.filter((r: { dbStatus?: string; status: number }) => r.dbStatus ? r.dbStatus !== 'active' : r.status > 0).length },
               ].map(({ label, value }) => (
                 <div key={label} className="border border-amber/20 rounded p-4 text-center">
                   <div className="text-amber text-2xl">{value}</div>
@@ -191,8 +233,13 @@ export default async function OnchainRunsPage() {
                       pda: string; player: string; sessionId: string;
                       status: number; stakeAmount: number; currentRoom: number;
                       eventCount: number; startedAt: number; delegated: boolean;
+                      dbRoom?: number; dbStatus?: string; nickname?: string; erCommitTx?: string;
                     }) => {
-                      const { label, color } = STATUS_LABEL[run.status] ?? STATUS_LABEL[0];
+                      // Prefer InstantDB status/room (accurate) over on-chain (stale due to ER write issue)
+                      const displayRoom = run.dbRoom ?? run.currentRoom;
+                      const dbStatusKey = run.dbStatus === 'dead' ? 1 : run.dbStatus === 'cleared' ? 2 : undefined;
+                      const statusKey = dbStatusKey ?? run.status;
+                      const { label, color } = STATUS_LABEL[statusKey] ?? STATUS_LABEL[0];
                       return (
                         <tr key={run.pda} className="border-b border-amber/10 hover:bg-amber/5 transition-colors">
                           <td className={`p-3 font-bold ${color}`}>
@@ -210,7 +257,7 @@ export default async function OnchainRunsPage() {
                           </td>
                           <td className="p-3 text-bone-muted">{truncate(run.sessionId, 8, 4)}</td>
                           <td className="p-3 text-right">{formatSol(run.stakeAmount)}</td>
-                          <td className="p-3 text-right">{run.currentRoom}/7</td>
+                          <td className="p-3 text-right">{displayRoom}/7</td>
                           <td className="p-3 text-right">{run.eventCount}</td>
                           <td className="p-3 text-bone-muted">{formatDate(run.startedAt)}</td>
                           <td className="p-3">
