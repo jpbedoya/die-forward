@@ -5,6 +5,20 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: __dirname,
   },
+  async headers() {
+    return [
+      {
+        // Apply CORS headers to every API route — global, no per-route patching needed.
+        // Covers all responses including error paths (4xx/5xx) that previously lacked them.
+        source: '/api/:path*',
+        headers: [
+          { key: 'Access-Control-Allow-Origin',  value: '*' },
+          { key: 'Access-Control-Allow-Methods', value: 'GET, POST, PUT, DELETE, OPTIONS' },
+          { key: 'Access-Control-Allow-Headers', value: 'Content-Type, Authorization' },
+        ],
+      },
+    ];
+  },
   async redirects() {
     return [
       {
