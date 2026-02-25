@@ -95,8 +95,9 @@ export const PROGRAM_ID = new PublicKey(
 
 // Game Pool PDA (derived from 'game_pool' seed)
 // Derived from PROGRAM_ID — no separate env var needed, always in sync
+// Use TextEncoder instead of Buffer.from (Buffer not always available client-side)
 export const [GAME_POOL_PDA] = PublicKey.findProgramAddressSync(
-  [Buffer.from('game_pool')],
+  [new TextEncoder().encode('game_pool')],
   PROGRAM_ID
 );
 
@@ -198,7 +199,7 @@ export function buildStakeInstruction(
       { pubkey: player, isSigner: true, isWritable: true },
       { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
     ],
-    data: Buffer.from(data),
+    data: data as Buffer,
   });
 }
 
@@ -225,7 +226,7 @@ export function buildRecordDeathInstruction(
       { pubkey: session, isSigner: false, isWritable: true },
       { pubkey: authority, isSigner: true, isWritable: false },
     ],
-    data: Buffer.from(data),
+    data: data as Buffer,
   });
 }
 
@@ -249,7 +250,7 @@ export function buildClaimVictoryInstruction(
       { pubkey: player, isSigner: false, isWritable: true }, // player receives SOL (mut)
       { pubkey: authority, isSigner: true, isWritable: false },
     ],
-    data: Buffer.from(discriminator),
+    data: discriminator as Buffer,
   });
 }
 
@@ -270,7 +271,7 @@ export function buildCloseSessionInstruction(
       { pubkey: session, isSigner: false, isWritable: true },
       { pubkey: player, isSigner: true, isWritable: true },
     ],
-    data: Buffer.from(discriminator),
+    data: discriminator as Buffer,
   });
 }
 

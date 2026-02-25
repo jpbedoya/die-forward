@@ -238,14 +238,18 @@ export default function StakeScreen() {
         }
         
         log('Waiting for confirmation...');
-        
-        // 3. Wait for confirmation
-        await connection.confirmTransaction({
-          signature,
-          blockhash,
-          lastValidBlockHeight,
-        }, 'confirmed');
-        
+
+        // 3. Wait for confirmation — 30s timeout to avoid indefinite hang
+        const confirmResult = await Promise.race([
+          connection.confirmTransaction({ signature, blockhash, lastValidBlockHeight }, 'confirmed'),
+          new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error('Transaction confirmation timed out after 30s')), 30000)
+          ),
+        ]);
+        if (confirmResult.value.err) {
+          throw new Error(`Transaction failed on-chain: ${JSON.stringify(confirmResult.value.err)}`);
+        }
+
         log('✓ Confirmed!');
       }
 
