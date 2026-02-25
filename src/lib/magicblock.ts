@@ -186,15 +186,13 @@ export async function recordErEvent(opts: {
   try {
     const { erRunId, eventType, room } = opts;
     const authority = getAuthorityKeypair();
-
-    // ConnectionMagicRouter automatically routes to the nearest ER validator
     const erConnection = new ConnectionMagicRouter(ER_ENDPOINT);
-    const program = getProgram(erConnection as unknown as Connection);
-
     const runRecordPda = new PublicKey(erRunId);
 
+    // Build instruction via Anchor on L1 connection (avoids router issues)
+    const program = getProgram(new Connection(RPC_URL, 'confirmed'));
+
     // Anchor expects enum variants as objects, not raw indices
-    // Rust: AdvanceRoom, Encounter, ItemPickup, ItemDrop, Death, Victory
     const eventTypeMap: Record<string, Record<string, Record<string, never>>> = {
       advance_room: { advanceRoom: {} },
       encounter:    { encounter: {} },
@@ -203,7 +201,6 @@ export async function recordErEvent(opts: {
       victory:      { victory: {} },
     };
 
-    // Hash event data to 32 bytes for on-chain storage
     const dataBytes = new Uint8Array(32);
     if (opts.data) {
       const encoded = new TextEncoder().encode(JSON.stringify(opts.data).slice(0, 32));
@@ -212,15 +209,32 @@ export async function recordErEvent(opts: {
 
     console.log('[MagicBlock] Recording ER event:', eventType, 'room', room);
 
-    // skipPreflight: ER transactions must bypass L1 simulation — the delegated
-    // account is owned by the delegation program on L1, so L1 preflight fails.
-    // The ER validator runs its own execution against the ER shadow copy.
+    // Build instruction only — don't send through Anchor's .rpc()
+    // ConnectionMagicRouter's sendAndConfirm throws InvalidWritableAccount
+    // for delegated accounts. Raw sendRawTransaction works.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (program as any).methods
+    const ix = await (program as any).methods
       .recordEvent(eventTypeMap[eventType], room, Array.from(dataBytes))
       .accounts({ runRecord: runRecordPda, authority: authority.publicKey })
-      .signers([authority])
-      .rpc({ skipPreflight: true });
+      .instruction();
+
+    // Fetch ER blockhash manually
+    const bhRes = await fetch(ER_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        jsonrpc: '2.0', id: 1,
+        method: 'getBlockhashForAccounts',
+        params: [[runRecordPda.toBase58()]],
+      }),
+    });
+    const bhData = await bhRes.json() as { result?: { value?: { blockhash?: string } } };
+    const erBlockhash = bhData?.result?.value?.blockhash;
+    if (!erBlockhash) throw new Error('No ER blockhash for recordEvent');
+
+    const tx = new Transaction({ recentBlockhash: erBlockhash, feePayer: authority.publicKey }).add(ix);
+    tx.sign(authority);
+    await erConnection.sendRawTransaction(tx.serialize(), { skipPreflight: true });
 
   } catch (err) {
     // Silently ignore — game events must never affect gameplay
@@ -253,18 +267,42 @@ export async function commitErRun(opts: {
   console.log('[MagicBlock] Committing ER run:', erRunId, 'outcome:', outcome);
 
   // ── Pre-commit: finalize the run on the ER (set status + final room) ────────
-  // The SDK direct commit (Attempt 2) just flushes state to L1 — doesn't modify
-  // data. Without finalizing first, all committed runs would show Active / room 0.
+  // The SDK direct commit just flushes state to L1 — doesn't modify data.
+  // Without finalizing first, all committed runs show Active / room 0.
+  //
+  // Must send as raw transaction — ConnectionMagicRouter's sendAndConfirm
+  // (used by Anchor .rpc()) throws InvalidWritableAccount for delegated accounts.
+  // Raw sendRawTransaction works fine.
   try {
-    const program = getProgram(erConnection as unknown as Connection);
+    const program = getProgram(new Connection(RPC_URL, 'confirmed'));
     const outcomeEnum = outcome === 'dead' ? { dead: {} } : { cleared: {} };
 
+    // Build instruction via Anchor but don't send through router
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (program as any).methods
+    const ix = await (program as any).methods
       .finalizeRun(outcomeEnum, finalRoom)
       .accounts({ runRecord: runRecordPda, authority: authority.publicKey })
-      .signers([authority])
-      .rpc({ skipPreflight: true });
+      .instruction();
+
+    // Fetch ER blockhash manually (same as commit flow)
+    const bhRes = await fetch(ER_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        jsonrpc: '2.0', id: 1,
+        method: 'getBlockhashForAccounts',
+        params: [[runRecordPda.toBase58()]],
+      }),
+    });
+    const bhData = await bhRes.json() as {
+      result?: { value?: { blockhash?: string } }
+    };
+    const erBlockhash = bhData?.result?.value?.blockhash;
+    if (!erBlockhash) throw new Error('No ER blockhash for finalizeRun');
+
+    const tx = new Transaction({ recentBlockhash: erBlockhash, feePayer: authority.publicKey }).add(ix);
+    tx.sign(authority);
+    await erConnection.sendRawTransaction(tx.serialize(), { skipPreflight: true });
 
     console.log('[MagicBlock] Run finalized on ER: room', finalRoom, outcome);
   } catch (finErr) {
