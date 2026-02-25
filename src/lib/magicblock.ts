@@ -18,7 +18,7 @@ import {
   PublicKey,
   Transaction,
 } from '@solana/web3.js';
-import { AnchorProvider, Program, setProvider } from '@coral-xyz/anchor';
+import { AnchorProvider, BN, Program, setProvider } from '@coral-xyz/anchor';
 import { ConnectionMagicRouter } from '@magicblock-labs/ephemeral-rollups-sdk';
 import bs58 from 'bs58';
 import RunRecordIdl from '../idl/run_record.json';
@@ -143,7 +143,7 @@ export async function startErRun(opts: {
       .initializeRun(
         Array.from(sessionIdBytes),
         new PublicKey(playerWallet),
-        BigInt(Math.round(stakeAmount * 1e9))  // SOL → lamports
+        new BN(Math.round(stakeAmount * 1e9))  // SOL → lamports
       )
       .accounts({ runRecord: runRecordPda, authority: authority.publicKey })
       .signers([authority])
