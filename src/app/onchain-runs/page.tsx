@@ -6,13 +6,17 @@
  */
 
 import { Connection, Keypair, PublicKey, Transaction } from '@solana/web3.js';
-import { AnchorProvider, Program } from '@coral-xyz/anchor';
+import { AnchorProvider, Program, BorshAccountsCoder } from '@coral-xyz/anchor';
 import RunRecordIdl from '@/idl/run_record.json';
 
 const RPC_URL = process.env.NEXT_PUBLIC_SOLANA_RPC || 'https://api.devnet.solana.com';
 const RUN_RECORD_PROGRAM_ID = new PublicKey(
   process.env.NEXT_PUBLIC_RUN_RECORD_PROGRAM_ID || '9rGjguBZAnittA4Cbm7YNP5qomatY3c4MTV7LSqNomzS'
 );
+// Delegation program — accounts delegated to the ER are owned by this program
+const DELEGATION_PROGRAM_ID = new PublicKey('DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh');
+// RunRecord discriminator (first 8 bytes) — used to filter delegated accounts
+const RUN_RECORD_DISCRIMINATOR = Buffer.from([150, 11, 254, 208, 250, 147, 105, 152]);
 
 // Status enum mapping (matches Rust: Active=0, Dead=1, Cleared=2)
 const STATUS_LABEL: Record<number, { label: string; color: string }> = {
@@ -61,9 +65,37 @@ async function fetchRuns() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const program = new Program(RunRecordIdl as never, provider) as any;
 
-    const accounts = await program.account.runRecord.all();
+    // 1. Fetch settled accounts (owned by our program)
+    const settledAccounts = await program.account.runRecord.all();
 
-    return accounts.map((a: { publicKey: PublicKey; account: Record<string, unknown> }) => ({
+    // 2. Fetch delegated accounts (owned by delegation program, with RunRecord discriminator)
+    //    These are active or recently committed accounts that haven't settled to L1 yet.
+    const delegatedRaw = await connection.getProgramAccounts(DELEGATION_PROGRAM_ID, {
+      filters: [
+        { dataSize: 125 }, // RunRecord size: 8 (disc) + 32 + 32 + 32 + 8 + 1 + 1 + 2 + 8 + 1
+        { memcmp: { offset: 0, bytes: RUN_RECORD_DISCRIMINATOR.toString('base64'), encoding: 'base64' } },
+      ],
+    });
+
+    // Decode delegated accounts using Anchor's coder
+    const coder = new BorshAccountsCoder(RunRecordIdl as never);
+    const delegatedAccounts = delegatedRaw.map((raw) => {
+      try {
+        const decoded = coder.decode('runRecord', raw.account.data);
+        return { publicKey: raw.pubkey, account: decoded };
+      } catch {
+        return null;
+      }
+    }).filter(Boolean) as { publicKey: PublicKey; account: Record<string, unknown> }[];
+
+    // Merge, deduplicating by PDA (settled takes priority)
+    const settledPdas = new Set(settledAccounts.map((a: { publicKey: PublicKey }) => a.publicKey.toBase58()));
+    const allAccounts = [
+      ...settledAccounts,
+      ...delegatedAccounts.filter(a => !settledPdas.has(a.publicKey.toBase58())),
+    ];
+
+    return allAccounts.map((a: { publicKey: PublicKey; account: Record<string, unknown> }) => ({
       pda:          a.publicKey.toBase58(),
       player:       (a.account.player as PublicKey).toBase58(),
       authority:    (a.account.authority as PublicKey).toBase58(),
@@ -74,6 +106,7 @@ async function fetchRuns() {
       eventCount:   Number(a.account.eventCount),
       stakeAmount:  Number(a.account.stakeAmount),
       bump:         Number(a.account.bump),
+      delegated:    !settledPdas.has(a.publicKey.toBase58()), // true = still delegated/pending settlement
     }));
   } catch (err) {
     console.error('[onchain-runs] Failed to fetch:', err);
@@ -150,12 +183,15 @@ export default async function OnchainRunsPage() {
                     .map((run: {
                       pda: string; player: string; sessionId: string;
                       status: number; stakeAmount: number; currentRoom: number;
-                      eventCount: number; startedAt: number;
+                      eventCount: number; startedAt: number; delegated: boolean;
                     }) => {
                       const { label, color } = STATUS_LABEL[run.status] ?? STATUS_LABEL[0];
                       return (
                         <tr key={run.pda} className="border-b border-amber/10 hover:bg-amber/5 transition-colors">
-                          <td className={`p-3 font-bold ${color}`}>{label}</td>
+                          <td className={`p-3 font-bold ${color}`}>
+                            {label}
+                            {run.delegated && <span className="text-amber/50 text-[10px] ml-1" title="Pending L1 settlement">⚡ER</span>}
+                          </td>
                           <td className="p-3">
                             <a
                               href={`https://explorer.solana.com/address/${run.player}?cluster=devnet`}
