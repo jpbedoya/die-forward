@@ -1,0 +1,556 @@
+{
+  "address": "9rGjguBZAnittA4Cbm7YNP5qomatY3c4MTV7LSqNomzS",
+  "metadata": {
+    "name": "run_record",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Die Forward — Run Record with MagicBlock Ephemeral Rollup delegation"
+  },
+  "instructions": [
+    {
+      "name": "commit_run",
+      "docs": [
+        "Commit the ER run back to L1 and undelegate.",
+        "Called at death or victory — this is the settlement gate."
+      ],
+      "discriminator": [
+        56,
+        156,
+        109,
+        85,
+        156,
+        162,
+        63,
+        150
+      ],
+      "accounts": [
+        {
+          "name": "run_record",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  117,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "run_record.session_id",
+                "account": "RunRecord"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "signer": true
+        },
+        {
+          "name": "magic_program",
+          "address": "Magic11111111111111111111111111111111111111"
+        },
+        {
+          "name": "magic_context",
+          "writable": true,
+          "address": "MagicContext1111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "outcome",
+          "type": {
+            "defined": {
+              "name": "RunStatus"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "delegate_run",
+      "docs": [
+        "Delegate the RunRecord PDA to the Ephemeral Rollup.",
+        "After this, `record_event` runs on the ER (zero-fee, instant)."
+      ],
+      "discriminator": [
+        20,
+        67,
+        38,
+        40,
+        32,
+        211,
+        235,
+        131
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "signer": true
+        },
+        {
+          "name": "buffer_run_record",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  117,
+                  102,
+                  102,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "run_record"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                131,
+                124,
+                191,
+                112,
+                54,
+                78,
+                137,
+                173,
+                89,
+                61,
+                125,
+                56,
+                178,
+                116,
+                173,
+                248,
+                100,
+                247,
+                212,
+                255,
+                206,
+                156,
+                133,
+                65,
+                249,
+                71,
+                197,
+                232,
+                201,
+                77,
+                220,
+                115
+              ]
+            }
+          }
+        },
+        {
+          "name": "delegation_record_run_record",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  108,
+                  101,
+                  103,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "run_record"
+              }
+            ],
+            "program": {
+              "kind": "account",
+              "path": "delegation_program"
+            }
+          }
+        },
+        {
+          "name": "delegation_metadata_run_record",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  108,
+                  101,
+                  103,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110,
+                  45,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "run_record"
+              }
+            ],
+            "program": {
+              "kind": "account",
+              "path": "delegation_program"
+            }
+          }
+        },
+        {
+          "name": "run_record",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  117,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "run_record.session_id",
+                "account": "RunRecord"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner_program",
+          "address": "9rGjguBZAnittA4Cbm7YNP5qomatY3c4MTV7LSqNomzS"
+        },
+        {
+          "name": "delegation_program",
+          "address": "DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize_run",
+      "docs": [
+        "Initialize a new run record on Solana L1.",
+        "Called by server authority at session start, before delegation."
+      ],
+      "discriminator": [
+        41,
+        107,
+        106,
+        65,
+        174,
+        229,
+        220,
+        97
+      ],
+      "accounts": [
+        {
+          "name": "run_record",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  117,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "session_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "session_id",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "player",
+          "type": "pubkey"
+        },
+        {
+          "name": "stake_amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "process_undelegation",
+      "discriminator": [
+        196,
+        28,
+        41,
+        206,
+        48,
+        37,
+        51,
+        167
+      ],
+      "accounts": [
+        {
+          "name": "base_account",
+          "writable": true
+        },
+        {
+          "name": "buffer"
+        },
+        {
+          "name": "payer",
+          "writable": true
+        },
+        {
+          "name": "system_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "account_seeds",
+          "type": {
+            "vec": "bytes"
+          }
+        }
+      ]
+    },
+    {
+      "name": "record_event",
+      "docs": [
+        "Record a game event. Runs on the ER (zero-fee).",
+        "Signed by server authority — player never needs to sign during gameplay."
+      ],
+      "discriminator": [
+        32,
+        2,
+        109,
+        205,
+        6,
+        116,
+        72,
+        229
+      ],
+      "accounts": [
+        {
+          "name": "run_record",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  117,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "run_record.session_id",
+                "account": "RunRecord"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "docs": [
+            "Server authority — signs all in-run events (player doesn't need to sign)"
+          ],
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "event_type",
+          "type": {
+            "defined": {
+              "name": "EventType"
+            }
+          }
+        },
+        {
+          "name": "room",
+          "type": "u8"
+        },
+        {
+          "name": "data",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "RunRecord",
+      "discriminator": [
+        150,
+        11,
+        254,
+        208,
+        250,
+        147,
+        105,
+        152
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "RunNotActive",
+      "msg": "Run is not active"
+    }
+  ],
+  "types": [
+    {
+      "name": "EventType",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "AdvanceRoom"
+          },
+          {
+            "name": "Encounter"
+          },
+          {
+            "name": "ItemPickup"
+          },
+          {
+            "name": "ItemDrop"
+          },
+          {
+            "name": "Death"
+          },
+          {
+            "name": "Victory"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RunRecord",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "player",
+            "type": "pubkey"
+          },
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "session_id",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "started_at",
+            "type": "i64"
+          },
+          {
+            "name": "current_room",
+            "type": "u8"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "RunStatus"
+              }
+            }
+          },
+          {
+            "name": "event_count",
+            "type": "u16"
+          },
+          {
+            "name": "stake_amount",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RunStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Active"
+          },
+          {
+            "name": "Dead"
+          },
+          {
+            "name": "Cleared"
+          }
+        ]
+      }
+    }
+  ]
+}

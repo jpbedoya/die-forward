@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { View, Text, Pressable, TextInput, ScrollView, Modal, Animated, Platform } from 'react-native';
+import { View, Text, Pressable, TextInput, ScrollView, Modal, Animated, Platform, TextStyle } from 'react-native';
 import { AsciiLoader } from '../components/AsciiLoader';
 import { CryptBackground } from '../components/CryptBackground';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -204,9 +204,9 @@ export default function DeathScreen() {
                   textAlign: 'left',
                   marginBottom: 16,
                 },
-                Platform.OS === 'web'
-                  ? ({ textShadow: '0px 0px 16px #ef4444' } as const)
-                  : ({ textShadowColor: '#ef4444', textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 16 } as const),
+                (Platform.OS === 'web'
+                  ? { textShadow: '0px 0px 16px #ef4444' }
+                  : { textShadowColor: '#ef4444', textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 16 }) as TextStyle,
               ]}
             >
               {SKULL_ASCII}

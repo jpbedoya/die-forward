@@ -4,7 +4,7 @@
  * Boundary adapter using @solana/web3-compat for Anchor program interaction.
  * Kit types (Address) at the edges, web3.js internally for instruction building.
  * 
- * Program ID: 3KLgtdRvfJuLK1t9mKCe2soJbx4LgZfP6LQWVW9TQ7yN
+ * Program ID: 34NSi8ShkixLt8Eg8XahXaRnaNuiFV63xdtC3ZfdTAt6
  */
 
 import type { Address } from '@solana/kit';
@@ -18,12 +18,17 @@ import {
 } from '@solana/web3.js';
 
 // Program ID (deployed on devnet)
-export const PROGRAM_ID = '3KLgtdRvfJuLK1t9mKCe2soJbx4LgZfP6LQWVW9TQ7yN' as Address;
+export const PROGRAM_ID = '34NSi8ShkixLt8Eg8XahXaRnaNuiFV63xdtC3ZfdTAt6' as Address;
 const PROGRAM_ID_PUBKEY = new PublicKey(PROGRAM_ID);
 
 // Game Pool PDA (derived from 'game_pool' seed)
-export const GAME_POOL_PDA = 'E4LRRyeFXDbFg1WaS1pjKm5DAJzJDWbAs1v5qvqe5xYM' as Address;
-const GAME_POOL_PDA_PUBKEY = new PublicKey(GAME_POOL_PDA);
+// Derived from PROGRAM_ID — always in sync, no hardcoded address needed
+const [_gamePoolPdaPubkey] = PublicKey.findProgramAddressSync(
+  [Buffer.from('game_pool')],
+  new PublicKey(PROGRAM_ID)
+);
+export const GAME_POOL_PDA = _gamePoolPdaPubkey.toBase58() as Address;
+const GAME_POOL_PDA_PUBKEY = _gamePoolPdaPubkey;
 
 // Treasury (receives fees) - from game pool state
 export const TREASURY = 'D7NdNbJTL7s6Z7Wu8nGe5SBc64FiFQAH3iPvRZw15qSL' as Address;

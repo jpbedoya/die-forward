@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { init, tx, id } from '@instantdb/admin';
 import { hashDeathData, recordDeathOnChain, recordDeathInEscrow } from '@/lib/onchain';
 import { postDeath } from '@/lib/tapestry';
+import { commitErRun } from '@/lib/magicblock';
 
 // Initialize InstantDB Admin client
 const db = init({
@@ -108,6 +109,28 @@ export async function POST(request: NextRequest) {
       stakeAmount: session.stakeAmount,
       timestamp,
     });
+
+    // ── MagicBlock settlement gate ────────────────────────────────────────────
+    // If enableMagicBlock is on and session has an erRunId, commit the ER run
+    // before settling on L1. Falls back to legacy settlement on failure.
+    const settingsResult = await db.query({ gameSettings: {} }).catch(() => null);
+    const mbEnabled = (settingsResult?.gameSettings?.[0] as Record<string, unknown>)?.enableMagicBlock === true;
+    const erRunId = (session as Record<string, unknown>).erRunId as string | undefined;
+
+    if (mbEnabled && erRunId) {
+      console.log('[MagicBlock] Committing ER run', erRunId);
+      try {
+        const erResult = await commitErRun({ erRunId, outcome: 'dead', finalRoom: room });
+        if (erResult.fallback) {
+          console.warn('[MagicBlock] ER commit fell back to legacy settlement');
+        } else {
+          console.log('[MagicBlock] ER committed:', erResult.txSignature ?? 'no sig');
+        }
+      } catch (err) {
+        console.warn('[MagicBlock] ER commit threw, falling back:', err);
+      }
+    }
+    // ─────────────────────────────────────────────────────────────────────────
 
     // Record death hash on-chain (non-blocking, skip in demo mode)
     let onChainSignature: string | null = null;

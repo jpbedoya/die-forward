@@ -8,7 +8,7 @@ import { MobileWalletProvider as WalletUIProvider, useMobileWallet } from '@wall
 import type { Address } from '@solana/kit';
 import { LAMPORTS_PER_SOL, Transaction, SystemProgram, PublicKey } from '@solana/web3.js';
 // Import the shared context from unified — NOT a local duplicate
-import { UnifiedWalletContext } from './unified';
+import { UnifiedWalletContext, UnifiedWalletContextState } from './unified';
 
 const RPC_ENDPOINT = process.env.EXPO_PUBLIC_SOLANA_RPC || 'https://api.devnet.solana.com';
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { init, tx, id } from '@instantdb/admin';
+import { startErRun } from '@/lib/magicblock';
 
 // Initialize InstantDB Admin client
 const db = init({
@@ -42,6 +43,25 @@ export async function POST(request: NextRequest) {
     const sessionToken = id();
     const sessionId = id();
 
+    // ── MagicBlock: initialize + delegate RunRecord to ER ──────────────────
+    const settingsResult = await db.query({ gameSettings: {} }).catch(() => null);
+    const mbEnabled = (settingsResult?.gameSettings?.[0] as Record<string, unknown>)?.enableMagicBlock === true;
+    const isGuestOrDemo = !walletAddress || walletAddress.startsWith('guest-') || walletAddress.startsWith('demo-');
+
+    let erRunId: string | null = null;
+    if (mbEnabled && !isGuestOrDemo && stakeAmount > 0) {
+      try {
+        erRunId = await Promise.race([
+          startErRun({ playerWallet: walletAddress, stakeAmount, sessionId }),
+          new Promise<null>((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000)),
+        ]);
+        console.log('[MagicBlock] ER run started:', erRunId);
+      } catch (err) {
+        console.warn('[MagicBlock] startErRun failed (non-fatal):', err instanceof Error ? err.message : err);
+      }
+    }
+    // ──────────────────────────────────────────────────────────────────────
+
     // Store session in database with server-tracked room progress
     await db.transact([
       tx.sessions[sessionId].update({
@@ -58,6 +78,7 @@ export async function POST(request: NextRequest) {
         demoMode: demoMode || false, // Demo mode flag for testing
         escrowSessionId: escrowSessionId || null, // On-chain session ID (hex string)
         useEscrow: useEscrow || false, // Whether using on-chain escrow
+        ...(erRunId ? { erRunId } : {}), // ER run account pubkey (MagicBlock)
       }),
     ]);
 

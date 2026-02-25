@@ -217,7 +217,7 @@ export function useShareCard() {
         console.log('[ShareCard] Created file blob:', blob.size, 'bytes');
 
         // Try Web Share API first (mobile browsers)
-        const canShare = navigator.share && navigator.canShare?.({ files: [file] });
+        const canShare = typeof navigator.share === 'function' && navigator.canShare?.({ files: [file] });
         console.log('[ShareCard] Can use Web Share API:', canShare);
         
         if (canShare) {

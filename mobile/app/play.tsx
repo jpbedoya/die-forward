@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, Pressable, ScrollView, Alert, Platform } from 'react-native';
+import { View, Text, Pressable, ScrollView, Alert, Platform, ViewStyle } from 'react-native';
 import { AsciiLoader } from '../components/AsciiLoader';
 import { CryptBackground } from '../components/CryptBackground';
 import * as Haptics from 'expo-haptics';
@@ -296,9 +296,9 @@ export default function PlayScreen() {
   const options = getOptions();
 
   // Use dvh for mobile web, fallback to 100% for native
-  const containerStyle = Platform.OS === 'web' 
+  const containerStyle = (Platform.OS === 'web'
     ? { height: '100dvh', maxHeight: '100dvh', display: 'flex', flexDirection: 'column' as const, overflow: 'hidden' as const }
-    : { flex: 1 };
+    : { flex: 1 }) as ViewStyle;
 
   return (
     <CryptBackground screen="play" style={containerStyle}>

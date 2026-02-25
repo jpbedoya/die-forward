@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { View, Text, Pressable, ScrollView, Modal, Animated, Platform } from 'react-native';
+import { View, Text, Pressable, ScrollView, Modal, Animated, Platform, TextStyle } from 'react-native';
 import { AsciiLoader } from '../components/AsciiLoader';
 import { CryptBackground } from '../components/CryptBackground';
 import { router } from 'expo-router';
@@ -213,9 +213,9 @@ export default function VictoryScreen() {
             </Text>
             <Text 
               className="font-mono text-[5px] text-victory text-center leading-[6px] mb-4"
-              style={Platform.OS === 'web'
-                ? ({ textShadow: '0px 0px 15px #22c55e' } as const)
-                : ({ textShadowColor: '#22c55e', textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 15 } as const)}
+              style={(Platform.OS === 'web'
+                ? { textShadow: '0px 0px 15px #22c55e' }
+                : { textShadowColor: '#22c55e', textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 15 }) as TextStyle}
             >
               {ESCAPED_ASCII}
             </Text>

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { init, tx, id } from '@instantdb/admin';
 import { postVictory } from '@/lib/tapestry';
+import { commitErRun } from '@/lib/magicblock';
 import { 
   Connection, 
   Keypair, 
@@ -87,6 +88,26 @@ export async function POST(request: NextRequest) {
     const stakeAmount = session.stakeAmount || 0;
     const bonus = stakeAmount * 0.5; // 50% bonus for clearing
     const totalReward = stakeAmount + bonus;
+
+    // ── MagicBlock settlement gate ────────────────────────────────────────────
+    const settingsResult = await db.query({ gameSettings: {} }).catch(() => null);
+    const mbEnabled = (settingsResult?.gameSettings?.[0] as Record<string, unknown>)?.enableMagicBlock === true;
+    const erRunId = (session as Record<string, unknown>).erRunId as string | undefined;
+
+    if (mbEnabled && erRunId) {
+      console.log('[MagicBlock] Committing ER run', erRunId);
+      try {
+        const erResult = await commitErRun({ erRunId, outcome: 'cleared', finalRoom: session.currentRoom || 0 });
+        if (erResult.fallback) {
+          console.warn('[MagicBlock] ER commit fell back to legacy settlement');
+        } else {
+          console.log('[MagicBlock] ER committed:', erResult.txSignature ?? 'no sig');
+        }
+      } catch (err) {
+        console.warn('[MagicBlock] ER commit threw, falling back:', err);
+      }
+    }
+    // ─────────────────────────────────────────────────────────────────────────
 
     // DEMO MODE or FREE AGENT MODE: Skip actual payout
     const isFreeMode = session.demoMode || (session.isAgent && session.stakeMode === 'free') || stakeAmount === 0;
