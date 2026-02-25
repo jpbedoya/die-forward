@@ -272,27 +272,49 @@ export async function commitErRun(opts: {
     console.warn('[MagicBlock] Anchor commitRun failed, trying SDK direct:', anchorErr);
   }
 
-  // ── Attempt 2: SDK createCommitAndUndelegateInstruction ───────────────────
+  // ── Attempt 2: SDK createCommitAndUndelegateInstruction (manual ER blockhash) ──
+  //
+  // Why manual: createCommitAndUndelegateInstruction passes runRecordPda as
+  // isWritable:false. ConnectionMagicRouter.getWritableAccounts() only collects
+  // writable keys, so runRecordPda is excluded from the getBlockhashForAccounts
+  // call → ER returns null → "Transaction recentBlockhash required".
+  //
+  // Fix: fetch the ER blockhash explicitly with runRecordPda included, then
+  // build + send raw — bypassing the router's writable-account inference entirely.
   try {
     const commitIx = createCommitAndUndelegateInstruction(
       authority.publicKey,
       [runRecordPda],
     );
 
-    const tx = new Transaction().add(commitIx);
-    tx.feePayer = authority.publicKey;
+    // 1. Fetch ER-specific blockhash, explicitly including the delegated RunRecord
+    const blockhashRes = await fetch(ER_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'getBlockhashForAccounts',
+        params: [[runRecordPda.toBase58(), authority.publicKey.toBase58()]],
+      }),
+    });
+    const blockhashData = await blockhashRes.json() as { result?: { blockhash?: string } };
+    const erBlockhash = blockhashData?.result?.blockhash;
 
-    // Use erConnection.sendAndConfirmTransaction — NOT the standalone web3.js import.
-    // The standalone version fetches a blockhash from L1 before sending, which fails
-    // because the ER needs its own blockhash via getBlockhashForAccounts.
-    // ConnectionMagicRouter overrides sendAndConfirmTransaction to call sendTransaction
-    // internally, which fetches the correct ER blockhash first.
-    const txSig = await erConnection.sendAndConfirmTransaction(
-      tx,
-      [authority],
-      { skipPreflight: true },
-    );
+    if (!erBlockhash) {
+      throw new Error(`ER returned no blockhash for ${runRecordPda.toBase58()} — account may not be delegated`);
+    }
 
+    // 2. Build, sign, and send raw
+    const tx = new Transaction({
+      recentBlockhash: erBlockhash,
+      feePayer: authority.publicKey,
+    }).add(commitIx);
+
+    tx.sign(authority);
+    const rawTx = tx.serialize();
+
+    const txSig = await erConnection.sendRawTransaction(rawTx, { skipPreflight: true });
     console.log('[MagicBlock] ER run committed (SDK direct):', txSig);
     return { success: true, txSignature: txSig };
 
