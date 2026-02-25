@@ -90,22 +90,15 @@ export async function updateProfileUsername(
   }
 }
 
-// ── Internal: ensure profile exists and username is up to date ────────────────
+// ── Internal: ensure profile exists before posting content ───────────────────
 
 /**
- * Ensure a profile exists with the correct username, then return profileId.
- * Pass username when you have the fresh player name (postDeath, postVictory).
+ * Ensure a profile exists and return its profileId (walletAddress).
+ * Only creates — does NOT update username. Profile sync is handled separately
+ * via upsertProfile() at auth time and /api/player/sync-profile on nickname save.
  */
-async function ensureProfile(walletAddress: string, username?: string): Promise<string | null> {
-  const profileId = await upsertProfile(walletAddress, username);
-  if (!profileId) return null;
-
-  // If we have a real name (not a fallback), patch it — findOrCreate won't update existing profiles
-  if (username?.trim()) {
-    await updateProfileUsername(walletAddress, username.trim());
-  }
-
-  return profileId;
+async function ensureProfile(walletAddress: string): Promise<string | null> {
+  return upsertProfile(walletAddress);
 }
 
 // ── Posts ─────────────────────────────────────────────────────────────────────
@@ -126,8 +119,8 @@ export async function postDeath(opts: {
 
   const { walletAddress, playerName, room, finalMessage, stakeAmount } = opts;
 
-  // Ensure profile exists and has the fresh player name
-  const profileId = await ensureProfile(walletAddress, playerName);
+  // Ensure profile exists — username sync is handled separately (auth / saveNickname)
+  const profileId = await ensureProfile(walletAddress);
   if (!profileId) return null;
 
   const stakeStr = stakeAmount > 0 ? ` (staked ${stakeAmount} SOL)` : '';
@@ -189,8 +182,8 @@ export async function postVictory(opts: {
 
   const { walletAddress, playerName, reward } = opts;
 
-  // Ensure profile exists and has the fresh player name
-  const profileId = await ensureProfile(walletAddress, playerName);
+  // Ensure profile exists — username sync is handled separately (auth / saveNickname)
+  const profileId = await ensureProfile(walletAddress);
   if (!profileId) return;
 
   const rewardStr = reward > 0 ? ` and claimed ${reward.toFixed(3)} SOL` : '';
