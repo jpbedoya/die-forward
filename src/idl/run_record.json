@@ -259,6 +259,65 @@
       "args": []
     },
     {
+      "name": "finalize_run",
+      "docs": [
+        "Set the run's final status on the ER (without committing).",
+        "Called just before the SDK direct commit+undelegate, since that",
+        "instruction only flushes state — it doesn't modify data."
+      ],
+      "discriminator": [
+        79,
+        6,
+        112,
+        246,
+        170,
+        39,
+        103,
+        158
+      ],
+      "accounts": [
+        {
+          "name": "run_record",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  117,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "run_record.session_id",
+                "account": "RunRecord"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "outcome",
+          "type": {
+            "defined": {
+              "name": "RunStatus"
+            }
+          }
+        },
+        {
+          "name": "final_room",
+          "type": "u8"
+        }
+      ]
+    },
+    {
       "name": "initialize_run",
       "docs": [
         "Initialize a new run record on Solana L1.",

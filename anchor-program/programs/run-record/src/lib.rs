@@ -121,6 +121,24 @@ pub mod run_record {
         Ok(())
     }
 
+    /// Set the run's final status on the ER (without committing).
+    /// Called just before the SDK direct commit+undelegate, since that
+    /// instruction only flushes state — it doesn't modify data.
+    pub fn finalize_run(
+        ctx: Context<FinalizeRun>,
+        outcome: RunStatus,
+        final_room: u8,
+    ) -> Result<()> {
+        let run = &mut ctx.accounts.run_record;
+        require!(run.status == RunStatus::Active, ErrorCode::RunNotActive);
+
+        run.status = outcome;
+        run.current_room = final_room;
+
+        msg!("Run finalized: status {:?}, room {}", outcome as u8, final_room);
+        Ok(())
+    }
+
     /// Commit the ER run back to L1 and undelegate.
     /// Called at death or victory — this is the settlement gate.
     pub fn commit_run(
@@ -193,6 +211,19 @@ pub struct RecordEvent<'info> {
     pub run_record: Account<'info, RunRecord>,
 
     /// Server authority — signs all in-run events (player doesn't need to sign)
+    #[account(address = run_record.authority)]
+    pub authority: Signer<'info>,
+}
+
+#[derive(Accounts)]
+pub struct FinalizeRun<'info> {
+    #[account(
+        mut,
+        seeds = [RUN_SEED, run_record.session_id.as_ref()],
+        bump = run_record.bump
+    )]
+    pub run_record: Account<'info, RunRecord>,
+
     #[account(address = run_record.authority)]
     pub authority: Signer<'info>,
 }

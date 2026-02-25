@@ -252,19 +252,24 @@ export async function commitErRun(opts: {
 
   console.log('[MagicBlock] Committing ER run:', erRunId, 'outcome:', outcome);
 
-  // ── Pre-commit: record final event on ER so room/eventCount are correct ────
-  // The SDK direct commit (Attempt 2) just flushes state to L1 without
-  // modifying data. Without this, all committed runs show room 0 / 0 events.
+  // ── Pre-commit: finalize the run on the ER (set status + final room) ────────
+  // The SDK direct commit (Attempt 2) just flushes state to L1 — doesn't modify
+  // data. Without finalizing first, all committed runs would show Active / room 0.
   try {
-    await recordErEvent({
-      erRunId,
-      eventType: outcome === 'dead' ? 'death' : 'victory',
-      room: finalRoom,
-    });
-    console.log('[MagicBlock] Pre-commit event recorded: room', finalRoom, outcome);
-  } catch {
+    const program = getProgram(erConnection as unknown as Connection);
+    const outcomeEnum = outcome === 'dead' ? { dead: {} } : { cleared: {} };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (program as any).methods
+      .finalizeRun(outcomeEnum, finalRoom)
+      .accounts({ runRecord: runRecordPda, authority: authority.publicKey })
+      .signers([authority])
+      .rpc({ skipPreflight: true });
+
+    console.log('[MagicBlock] Run finalized on ER: room', finalRoom, outcome);
+  } catch (finErr) {
     // Non-fatal — commit can proceed with stale data
-    console.warn('[MagicBlock] Pre-commit event failed (continuing)');
+    console.warn('[MagicBlock] finalizeRun failed (continuing):', finErr);
   }
 
   // ── Attempt 1: Anchor commit_run with skipPreflight ────────────────────────
