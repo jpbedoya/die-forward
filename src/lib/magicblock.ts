@@ -17,7 +17,6 @@ import {
   Keypair,
   PublicKey,
   Transaction,
-  sendAndConfirmTransaction,
 } from '@solana/web3.js';
 import { AnchorProvider, BN, Program, setProvider } from '@coral-xyz/anchor';
 import {
@@ -281,9 +280,14 @@ export async function commitErRun(opts: {
     );
 
     const tx = new Transaction().add(commitIx);
-    // ConnectionMagicRouter.sendTransaction fetches ER-specific blockhash
-    const txSig = await sendAndConfirmTransaction(
-      erConnection as unknown as Connection,
+    tx.feePayer = authority.publicKey;
+
+    // Use erConnection.sendAndConfirmTransaction — NOT the standalone web3.js import.
+    // The standalone version fetches a blockhash from L1 before sending, which fails
+    // because the ER needs its own blockhash via getBlockhashForAccounts.
+    // ConnectionMagicRouter overrides sendAndConfirmTransaction to call sendTransaction
+    // internally, which fetches the correct ER blockhash first.
+    const txSig = await erConnection.sendAndConfirmTransaction(
       tx,
       [authority],
       { skipPreflight: true },
