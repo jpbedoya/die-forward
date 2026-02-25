@@ -237,6 +237,94 @@ No bright colors, no neon, no cartoon style, no gradients. Ultra detailed. Squar
 
 ---
 
+### Icon 6 — SOUNDTRACK YOUR DEATH
+
+**Usage:** Features slide in pitch deck. Represents Audius integration (death music tracking). 512×512.
+
+```
+Dark gothic circular game icon.
+A vintage gramophone horn emerging from perfectly still black water,
+the brass bell pointing upward and catching amber torchlight.
+Faint ethereal sound waves emanate from the horn's opening, glowing amber-gold.
+The horn is weathered bronze with art nouveau engravings on the rim.
+Water reflects the amber glow in concentric ripples.
+Amber gold is the dominant accent color.
+Pure black background, centered composition, bold silhouette readable at 64x64px. No text.
+
+Style: hyper-detailed dark fantasy digital painting, photorealistic, cinematic.
+Single dramatic amber/gold light source — strong contrast, deep shadows.
+Color palette: near-black, deep charcoal, amber gold dominant, burnished bronze, bone white.
+No bright colors, no neon, no cartoon style, no gradients. Ultra detailed. Square format 1024x1024.
+```
+
+---
+
+### Icon 7 — PLAY FOR FUN
+
+**Usage:** Problem slide — "Play because it's fun, not to farm rewards". 512×512.
+
+```
+Dark gothic circular game icon.
+An ancient ornate game controller half-submerged in perfectly still black water,
+crafted from weathered bronze and bone, with skull motifs on the buttons.
+The d-pad and buttons are inlaid with amber gems that glow faintly.
+Art nouveau engravings curl along the edges of the controller body.
+Water reflects the amber glow from the buttons.
+Amber gold and burnished bronze are the dominant accent colors.
+Pure black background, centered composition, bold silhouette readable at 64x64px. No text.
+
+Style: hyper-detailed dark fantasy digital painting, photorealistic, cinematic.
+Single dramatic amber/gold light source — strong contrast, deep shadows.
+Color palette: near-black, deep charcoal, amber gold, burnished bronze, bone white.
+No bright colors, no neon, no cartoon style, no gradients. Ultra detailed. Square format 1024x1024.
+```
+
+---
+
+### Icon 8 — STAKES ADD TENSION
+
+**Usage:** Problem slide — "Stakes add tension, not yield mechanics". 512×512.
+
+```
+Dark gothic circular game icon.
+A human skull viewed from the front, with a single ancient coin balanced on edge
+atop the skull's crown, glinting amber-gold in torchlight.
+The skull is bone-white with deep shadowed eye sockets.
+The coin teeters as if about to fall either direction — frozen moment of tension.
+Faint amber reflection on the skull's forehead from the coin.
+Amber gold and bone white are the dominant colors.
+Pure black background, centered composition, bold silhouette readable at 64x64px. No text.
+
+Style: hyper-detailed dark fantasy digital painting, photorealistic, cinematic.
+Single dramatic amber/gold light source from above — strong contrast, deep shadows.
+Color palette: near-black, deep charcoal, amber gold, bone white dominant.
+No bright colors, no neon, no cartoon style, no gradients. Ultra detailed. Square format 1024x1024.
+```
+
+---
+
+### Icon 9 — DEATHS ARE PERMANENT
+
+**Usage:** Problem slide — "Deaths are permanent, on-chain, discoverable". 512×512.
+
+```
+Dark gothic circular game icon.
+A heavy ancient iron chain emerging from perfectly still black water,
+the links rusted and corroded with age, rising vertically toward the surface.
+The chain is taut, as if anchored to something immovable in the depths below.
+Cold blue-grey iron with hints of rust-red corrosion on the links.
+Water drips from the chain, creating small ripples on the surface.
+Cold iron grey and rust-red are the dominant accent colors.
+Pure black background, centered composition, bold silhouette readable at 64x64px. No text.
+
+Style: hyper-detailed dark fantasy digital painting, photorealistic, cinematic.
+Single dramatic cold light source with amber undertones — strong contrast, deep shadows.
+Color palette: near-black, deep charcoal, cold iron grey, rust-red, bone white.
+No bright colors, no neon, no cartoon style, no gradients. Ultra detailed. Square format 1024x1024.
+```
+
+---
+
 ## 5. Mobile App — Portrait Background
 
 **Usage:** Full-screen background for the mobile app (stake screen, home screen). Portrait 9:16. Must sit behind UI — keep top and bottom edges very dark (header and buttons overlay there). Amber glow at center horizon.

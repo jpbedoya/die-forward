@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, #0a0a12 0%, #120a18 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', monospace;
+      color: #e5e5e5;
+      padding: clamp(20px, 4vw, 60px);
+      gap: clamp(30px, 5vw, 80px);
+    }
+    .left {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 0;
+    }
+    .right {
+      flex: 1.1;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(12px, 2vh, 25px);
+      min-width: 0;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(168, 85, 247, 0.15);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      color: #a855f7;
+      padding: clamp(4px, 0.5vw, 8px) clamp(8px, 1vw, 16px);
+      border-radius: 20px;
+      font-size: clamp(10px, 1vw, 16px);
+      letter-spacing: 2px;
+      margin-bottom: clamp(10px, 2vh, 20px);
+      width: fit-content;
+    }
+    .title {
+      font-size: clamp(28px, 3.5vw, 56px);
+      color: #a855f7;
+      margin-bottom: clamp(15px, 3vh, 30px);
+      text-shadow: 0 0 40px rgba(168, 85, 247, 0.4);
+    }
+    .logo {
+      height: clamp(42px, 5.2vw, 69px);
+      margin-bottom: clamp(15px, 3vh, 30px);
+      filter: invert(1);
+    }
+    .subtitle {
+      font-size: clamp(14px, 1.6vw, 26px);
+      color: #a1a1aa;
+      line-height: 1.8;
+    }
+    .feature-box {
+      background: #0d0d0d;
+      border: 1px solid #2a1a3a;
+      border-radius: 12px;
+      padding: clamp(12px, 1.5vw, 25px) clamp(15px, 2vw, 30px);
+    }
+    .feature-header {
+      display: flex;
+      align-items: center;
+      gap: clamp(6px, 0.8vw, 12px);
+      margin-bottom: clamp(8px, 1vh, 15px);
+    }
+    .feature-icon {
+      font-size: clamp(16px, 1.8vw, 28px);
+    }
+    .feature-title {
+      font-size: clamp(12px, 1.3vw, 22px);
+      color: #a855f7;
+    }
+    .feature-desc {
+      font-size: clamp(10px, 1.1vw, 18px);
+      color: #9ca3af;
+      line-height: 1.6;
+    }
+    .death-post {
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: clamp(10px, 1.2vw, 20px);
+      margin-top: clamp(6px, 1vh, 10px);
+    }
+    .death-text {
+      font-size: clamp(10px, 1.2vw, 20px);
+      color: #e5e5e5;
+      line-height: 1.5;
+    }
+    .death-quote {
+      color: #71717a;
+      font-style: italic;
+    }
+    @media (max-width: 900px) {
+      body { flex-direction: column; }
+      .left, .right { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="left">
+    <img src="logo-tapestry.svg" alt="Tapestry" class="logo">
+    <div class="subtitle">
+      Social graph layer<br>
+      for on-chain gaming.<br><br>
+      Every death becomes<br>
+      discoverable content.
+    </div>
+  </div>
+  <div class="right">
+    <div class="feature-box">
+      <div class="feature-header">
+        <div class="feature-icon">👤</div>
+        <div class="feature-title">Profile on Connect</div>
+      </div>
+      <div class="feature-desc">
+        Wallet auth creates Tapestry profile.<br>
+        Username synced from in-game nickname.
+      </div>
+    </div>
+    <div class="feature-box">
+      <div class="feature-header">
+        <div class="feature-icon">💀</div>
+        <div class="feature-title">Death Posts</div>
+      </div>
+      <div class="feature-desc">
+        Every death publishes to the social graph:
+      </div>
+      <div class="death-post">
+        <div class="death-text">
+          💀 Alice fell at depth 4 (staked 0.01 SOL)<br>
+          <span class="death-quote">"I should have turned back..."</span>
+        </div>
+      </div>
+    </div>
+    <div class="feature-box">
+      <div class="feature-header">
+        <div class="feature-icon">❤️</div>
+        <div class="feature-title">Social Interactions</div>
+      </div>
+      <div class="feature-desc">
+        Players can discover, like, and pay respects<br>
+        to the deaths of others.
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, #0a0a12 0%, #1a0a1a 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', monospace;
+      color: #e5e5e5;
+      padding: clamp(20px, 4vw, 60px);
+      gap: clamp(30px, 5vw, 80px);
+    }
+    .left {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 0;
+    }
+    .right {
+      flex: 1.1;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(12px, 2vh, 20px);
+      min-width: 0;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(204, 51, 255, 0.15);
+      border: 1px solid rgba(204, 51, 255, 0.3);
+      color: #cc33ff;
+      padding: clamp(4px, 0.5vw, 8px) clamp(8px, 1vw, 16px);
+      border-radius: 20px;
+      font-size: clamp(10px, 1vw, 16px);
+      letter-spacing: 2px;
+      margin-bottom: clamp(10px, 2vh, 20px);
+      width: fit-content;
+    }
+    .title {
+      font-size: clamp(28px, 3.5vw, 56px);
+      color: #cc33ff;
+      margin-bottom: clamp(15px, 3vh, 30px);
+      text-shadow: 0 0 40px rgba(204, 51, 255, 0.4);
+    }
+    .logo {
+      height: clamp(32px, 4vw, 52px);
+      margin-bottom: clamp(15px, 3vh, 30px);
+      filter: invert(1);
+    }
+    .subtitle {
+      font-size: clamp(14px, 1.6vw, 26px);
+      color: #a1a1aa;
+      line-height: 1.8;
+    }
+    .feature-box {
+      background: #0d0d0d;
+      border: 1px solid #2a1a2a;
+      border-radius: 12px;
+      padding: clamp(12px, 1.5vw, 22px) clamp(15px, 2vw, 28px);
+    }
+    .feature-header {
+      display: flex;
+      align-items: center;
+      gap: clamp(6px, 0.8vw, 12px);
+      margin-bottom: clamp(6px, 1vh, 12px);
+    }
+    .feature-icon {
+      font-size: clamp(18px, 2vw, 28px);
+    }
+    .feature-title {
+      font-size: clamp(12px, 1.3vw, 20px);
+      color: #cc33ff;
+    }
+    .feature-desc {
+      font-size: clamp(10px, 1.1vw, 16px);
+      color: #9ca3af;
+      line-height: 1.5;
+    }
+    .highlight {
+      color: #f59e0b;
+    }
+    @media (max-width: 900px) {
+      body { flex-direction: column; }
+      .left, .right { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="left">
+    <img src="logo-audius.svg" alt="Audius" class="logo">
+    <div class="subtitle">
+      Decentralized music<br>
+      as your death soundtrack.<br><br>
+      Play with music.<br>
+      Die with attribution.
+    </div>
+  </div>
+  <div class="right">
+    <div class="feature-box">
+      <div class="feature-header">
+        <div class="feature-icon">🎧</div>
+        <div class="feature-title">Curated Playlists</div>
+      </div>
+      <div class="feature-desc">
+        Dark ambient soundtracks from Audius.<br>
+        Persistent player with <span class="highlight">auto-crossfade</span>.
+      </div>
+    </div>
+    <div class="feature-box">
+      <div class="feature-header">
+        <div class="feature-icon">💀</div>
+        <div class="feature-title">Death Soundtrack</div>
+      </div>
+      <div class="feature-desc">
+        Track playing when you die is <span class="highlight">recorded</span>.<br>
+        Share cards show: ♪ Track · Artist
+      </div>
+    </div>
+    <div class="feature-box">
+      <div class="feature-header">
+        <div class="feature-icon">🏆</div>
+        <div class="feature-title">Soundtrack Leaderboard</div>
+      </div>
+      <div class="feature-desc">
+        Ranks tab shows <span class="highlight">most-played death tracks</span>.<br>
+        The crypt echoes with their music.
+      </div>
+    </div>
+    <div class="feature-box">
+      <div class="feature-header">
+        <div class="feature-icon">🎤</div>
+        <div class="feature-title">Artist Attribution</div>
+      </div>
+      <div class="feature-desc">
+        Every death credits the artist.<br>
+        <span class="highlight">Decentralized music meets permadeath.</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

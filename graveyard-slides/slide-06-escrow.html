@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a0f0a 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', monospace;
+      color: #e5e5e5;
+      padding: clamp(20px, 4vw, 60px);
+      gap: clamp(30px, 5vw, 80px);
+    }
+    .left {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 0;
+    }
+    .right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(15px, 3vh, 30px);
+      min-width: 0;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: #f59e0b;
+      padding: clamp(4px, 0.5vw, 8px) clamp(8px, 1vw, 16px);
+      border-radius: 20px;
+      font-size: clamp(10px, 1vw, 16px);
+      letter-spacing: 2px;
+      margin-bottom: clamp(10px, 2vh, 20px);
+      width: fit-content;
+    }
+    .title {
+      font-size: clamp(28px, 3.5vw, 56px);
+      color: #f59e0b;
+      margin-bottom: clamp(15px, 3vh, 30px);
+      text-shadow: 0 0 40px rgba(245, 158, 11, 0.4);
+    }
+    .logo {
+      height: clamp(28px, 3.5vw, 48px);
+      margin-bottom: clamp(15px, 3vh, 30px);
+    }
+    .subtitle {
+      font-size: clamp(14px, 1.6vw, 26px);
+      color: #a1a1aa;
+      line-height: 1.8;
+    }
+    .program {
+      font-size: clamp(10px, 1vw, 18px);
+      color: #6b7280;
+      margin-top: clamp(15px, 3vh, 30px);
+      font-family: monospace;
+      word-break: break-all;
+    }
+    .outcome-box {
+      background: #0d0d0d;
+      border: 1px solid #2a2a1a;
+      border-radius: 12px;
+      padding: clamp(15px, 2vw, 30px);
+      display: flex;
+      align-items: center;
+      gap: clamp(12px, 2vw, 25px);
+    }
+    .outcome-icon {
+      font-size: clamp(32px, 4vw, 56px);
+    }
+    .outcome-content { flex: 1; min-width: 0; }
+    .outcome-title {
+      font-size: clamp(16px, 1.8vw, 28px);
+      color: #e5e5e5;
+      margin-bottom: clamp(5px, 1vh, 10px);
+    }
+    .outcome-desc {
+      font-size: clamp(12px, 1.2vw, 20px);
+      color: #9ca3af;
+    }
+    .outcome-victory { border-color: #166534; }
+    .outcome-victory .outcome-title { color: #22c55e; }
+    .outcome-death { border-color: #7f1d1d; }
+    .outcome-death .outcome-title { color: #ef4444; }
+    .highlight { color: #f59e0b; }
+    @media (max-width: 900px) {
+      body { flex-direction: column; }
+      .left, .right { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="left">
+    <img src="logo-solana.svg" alt="Solana" class="logo">
+    <div class="title">Escrow</div>
+    <div class="subtitle">
+      Custom Solana program<br>
+      for trustless staking.<br><br>
+      All stakes locked in<br>
+      program-owned pool.
+    </div>
+    <div class="program">Program: 34NSi8ShkixLt8Eg8XahXaRnaNuiFV63xdtC3ZfdTAt6</div>
+  </div>
+  <div class="right">
+    <div class="outcome-box outcome-victory">
+      <div class="outcome-icon">⚔️</div>
+      <div class="outcome-content">
+        <div class="outcome-title">Victory</div>
+        <div class="outcome-desc">
+          Escape the crypt →<br>
+          Stake returned + <span class="highlight">50% bonus</span>
+        </div>
+      </div>
+    </div>
+    <div class="outcome-box outcome-death">
+      <div class="outcome-icon">💀</div>
+      <div class="outcome-content">
+        <div class="outcome-title">Death</div>
+        <div class="outcome-desc">
+          Fall in the depths →<br>
+          Stake <span class="highlight">feeds the pool</span> for future victors
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

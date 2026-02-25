@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, #0a0a0a 0%, #0a0a12 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', monospace;
+      color: #e5e5e5;
+      position: relative;
+      overflow: hidden;
+      padding: 3vw;
+    }
+    .bg-texture {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('bg-crypt.webp') center/cover;
+      opacity: 0.15;
+      z-index: 0;
+    }
+    .content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      max-width: 95%;
+    }
+    .header {
+      font-size: clamp(16px, 1.6vw, 28px);
+      color: #71717a;
+      letter-spacing: 4px;
+      margin-bottom: clamp(20px, 4vh, 40px);
+    }
+    .flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(15px, 2vw, 40px);
+      margin-bottom: clamp(30px, 6vh, 60px);
+      flex-wrap: wrap;
+    }
+    .step {
+      background: rgba(13, 13, 13, 0.9);
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: clamp(15px, 2vw, 30px) clamp(20px, 2.5vw, 40px);
+      text-align: center;
+    }
+    .step-icon {
+      width: clamp(48px, 6vw, 80px);
+      height: clamp(48px, 6vw, 80px);
+      margin-bottom: clamp(8px, 1vh, 15px);
+      object-fit: contain;
+    }
+    .step-text {
+      font-size: clamp(14px, 1.4vw, 24px);
+      color: #d1d5db;
+    }
+    .arrow {
+      font-size: clamp(20px, 2vw, 36px);
+      color: #f59e0b;
+    }
+    .highlight-box {
+      display: flex;
+      gap: clamp(30px, 4vw, 60px);
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .highlight-item {
+      text-align: center;
+    }
+    .highlight-text {
+      font-size: clamp(16px, 1.8vw, 32px);
+      color: #f59e0b;
+      margin-bottom: clamp(5px, 1vh, 10px);
+    }
+    .highlight-sub {
+      font-size: clamp(12px, 1.1vw, 20px);
+      color: #71717a;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-texture"></div>
+  <div class="content">
+    <div class="header">THE GAME</div>
+    <div class="flow">
+      <div class="step">
+        <img src="icon-stake-256.webp" alt="Stake" class="step-icon">
+        <div class="step-text">Stake SOL</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <img src="icon-fight-256.webp" alt="Fight" class="step-icon">
+        <div class="step-text">Fight 7 Rooms</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <img src="icon-die-256.webp" alt="Die" class="step-icon">
+        <div class="step-text">Die or Escape</div>
+      </div>
+    </div>
+    <div class="highlight-box">
+      <div class="highlight-item">
+        <div class="highlight-text">Every run creates an on-chain record</div>
+        <div class="highlight-sub">MagicBlock Ephemeral Rollups</div>
+      </div>
+      <div class="highlight-item">
+        <div class="highlight-text">Every death becomes social content</div>
+        <div class="highlight-sub">Tapestry Social Graph</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

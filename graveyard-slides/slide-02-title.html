@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(ellipse at center, #1a0a0a 0%, #0a0a0a 70%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', monospace;
+      color: #e5e5e5;
+      position: relative;
+      overflow: hidden;
+    }
+    .bg-texture {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('bg-crypt.webp') center/cover;
+      opacity: 0.1;
+      z-index: 0;
+    }
+    .glow {
+      position: absolute;
+      width: 50vw;
+      height: 50vw;
+      max-width: 600px;
+      max-height: 600px;
+      background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+    .app-icon {
+      width: clamp(60px, 9vw, 120px);
+      height: clamp(60px, 9vw, 120px);
+      margin-bottom: clamp(20px, 4vh, 40px);
+      filter: drop-shadow(0 0 40px rgba(245, 158, 11, 0.5));
+      border-radius: 22%;
+    }
+    .ascii-logo {
+      font-family: 'Courier New', Consolas, monospace;
+      font-size: clamp(6px, 0.9vw, 14px);
+      line-height: 1.1;
+      color: #f59e0b;
+      white-space: pre;
+      text-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
+      margin-bottom: clamp(20px, 4vh, 40px);
+      letter-spacing: 0;
+    }
+    .tagline {
+      font-size: clamp(18px, 2.2vw, 36px);
+      color: #a1a1aa;
+      letter-spacing: clamp(2px, 0.3vw, 4px);
+      margin-bottom: clamp(25px, 5vh, 50px);
+    }
+    .subtitle {
+      font-size: clamp(14px, 1.6vw, 28px);
+      color: #71717a;
+      letter-spacing: clamp(3px, 0.4vw, 6px);
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-texture"></div>
+  <div class="glow"></div>
+  <div class="content">
+    <img src="app-icon.png" alt="Die Forward" class="app-icon">
+    <pre class="ascii-logo">██████  ██ ███████
+██   ██ ██ ██     
+██   ██ ██ █████  
+██   ██ ██ ██     
+██████  ██ ███████
+
+███████  ██████  ██████  ██     ██  █████  ██████  ██████ 
+██      ██    ██ ██   ██ ██     ██ ██   ██ ██   ██ ██   ██
+█████   ██    ██ ██████  ██  █  ██ ███████ ██████  ██   ██
+██      ██    ██ ██   ██ ██ ███ ██ ██   ██ ██   ██ ██   ██
+██       ██████  ██   ██  ███ ███  ██   ██ ██   ██ ██████ </pre>
+    <div class="tagline">Your death feeds the depths</div>
+    <div class="subtitle">A SOCIAL ROGUELITE ON SOLANA</div>
+  </div>
+</body>
+</html>
