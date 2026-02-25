@@ -90,18 +90,9 @@ export async function updateProfileUsername(
   }
 }
 
-// ── Internal: ensure profile exists before posting content ───────────────────
-
-/**
- * Ensure a profile exists and return its profileId (walletAddress).
- * Only creates — does NOT update username. Profile sync is handled separately
- * via upsertProfile() at auth time and /api/player/sync-profile on nickname save.
- */
-async function ensureProfile(walletAddress: string): Promise<string | null> {
-  return upsertProfile(walletAddress);
-}
-
 // ── Posts ─────────────────────────────────────────────────────────────────────
+// Profile is created at auth time (upsertProfile in /api/auth/wallet).
+// Posts use walletAddress directly as profileId — no redundant ensureProfile call.
 
 /**
  * Post a death event to Tapestry.
@@ -119,9 +110,8 @@ export async function postDeath(opts: {
 
   const { walletAddress, playerName, room, finalMessage, stakeAmount } = opts;
 
-  // Ensure profile exists — username sync is handled separately (auth / saveNickname)
-  const profileId = await ensureProfile(walletAddress);
-  if (!profileId) return null;
+  // Profile created at auth time — use walletAddress directly as profileId
+  const profileId = walletAddress;
 
   const stakeStr = stakeAmount > 0 ? ` (staked ${stakeAmount} SOL)` : '';
   const body = `💀 ${playerName} fell at depth ${room}${stakeStr} in Die Forward.\n"${finalMessage}"\n\nhttps://play.dieforward.com`;
@@ -155,8 +145,8 @@ export async function likeDeath(opts: {
   const client = getClient();
   if (!client) return;
 
-  const profileId = await ensureProfile(opts.walletAddress);
-  if (!profileId) return;
+  // Profile created at auth time — use walletAddress directly as profileId
+  const profileId = opts.walletAddress;
 
   try {
     await client.likes.likesCreate(
@@ -182,9 +172,8 @@ export async function postVictory(opts: {
 
   const { walletAddress, playerName, reward } = opts;
 
-  // Ensure profile exists — username sync is handled separately (auth / saveNickname)
-  const profileId = await ensureProfile(walletAddress);
-  if (!profileId) return;
+  // Profile created at auth time — use walletAddress directly as profileId
+  const profileId = walletAddress;
 
   const rewardStr = reward > 0 ? ` and claimed ${reward.toFixed(3)} SOL` : '';
   const body = `⚔️ ${playerName} escaped the crypt${rewardStr}! Die Forward.\n\nhttps://play.dieforward.com`;
