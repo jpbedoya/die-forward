@@ -257,12 +257,12 @@ export default function HomeScreen() {
             onPress={() => setAudioSettingsOpen(true)} 
             className="mt-1 active:opacity-70"
           >
-            <View className="flex-row items-center px-2 py-1 rounded-full gap-1" style={{ backgroundColor: 'rgba(168, 85, 247, 0.15)', borderWidth: 1, borderColor: 'rgba(168, 85, 247, 0.3)' }}>
+            <View className="flex-row items-center px-2 py-1 rounded-full" style={{ backgroundColor: 'rgba(168, 85, 247, 0.15)', borderWidth: 1, borderColor: 'rgba(168, 85, 247, 0.3)' }}>
               <Image 
                 source={require('../assets/logo-audius.png')} 
-                style={{ width: 12, height: 12, borderRadius: 2 }} 
+                style={{ width: 50, height: 10, tintColor: '#a855f7' }} 
+                resizeMode="contain"
               />
-              <Text className="font-mono text-[9px] tracking-wide" style={{ color: '#a855f7' }}>SOUNDTRACK</Text>
             </View>
           </Pressable>
         </View>
