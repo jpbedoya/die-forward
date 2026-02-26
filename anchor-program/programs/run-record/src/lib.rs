@@ -164,6 +164,38 @@ pub mod run_record {
         msg!("Run committed to L1 with status {:?}", outcome as u8);
         Ok(())
     }
+
+    /// Atomically finalize run data and commit+undelegate in one instruction.
+    /// This avoids stale-state commits when finalize and commit are split.
+    pub fn finalize_and_commit(
+        ctx: Context<CommitRun>,
+        outcome: RunStatus,
+        final_room: u8,
+    ) -> Result<()> {
+        let run = &mut ctx.accounts.run_record;
+        require!(run.status == RunStatus::Active, ErrorCode::RunNotActive);
+
+        run.status = outcome;
+        run.current_room = final_room;
+
+        // Serialize latest state before commit
+        run.exit(&crate::ID)?;
+
+        // Commit state to L1 and undelegate the account atomically
+        commit_and_undelegate_accounts(
+            &ctx.accounts.authority,
+            vec![&ctx.accounts.run_record.to_account_info()],
+            &ctx.accounts.magic_context,
+            &ctx.accounts.magic_program,
+        )?;
+
+        msg!(
+            "Run finalized+committed to L1: status {:?}, room {}",
+            outcome as u8,
+            final_room
+        );
+        Ok(())
+    }
 }
 
 // ── Accounts ──────────────────────────────────────────────────────────────────

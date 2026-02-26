@@ -35,7 +35,7 @@ const RUN_RECORD_PROGRAM_ID = new PublicKey(
 
 const RPC_URL = process.env.NEXT_PUBLIC_SOLANA_RPC || 'https://api.devnet.solana.com';
 
-// ER validator endpoint (devnet — US node)
+// ER endpoint (devnet US by default). Override via MAGICBLOCK_ER_ENDPOINT.
 const ER_ENDPOINT = process.env.MAGICBLOCK_ER_ENDPOINT || 'https://devnet-us.magicblock.app';
 
 // ER validator pubkey — MUST match the endpoint region
@@ -206,8 +206,8 @@ export async function recordErEvent(opts: {
     const erConnection = new ConnectionMagicRouter(ER_ENDPOINT);
     const runRecordPda = new PublicKey(erRunId);
 
-    // Build instruction via Anchor on L1 connection (avoids router issues)
-    const program = getProgram(new Connection(RPC_URL, 'confirmed'));
+    // Use router-backed Anchor provider for delegated writes
+    const program = getProgram(erConnection as unknown as Connection);
 
     // Anchor expects enum variants as objects, not raw indices
     const eventTypeMap: Record<string, Record<string, Record<string, never>>> = {
@@ -224,34 +224,15 @@ export async function recordErEvent(opts: {
       dataBytes.set(encoded);
     }
 
-    console.log('[MagicBlock] Recording ER event:', eventType, 'room', room);
+    console.log('[MagicBlock] Recording ER event:', eventType, 'room', room, 'via router');
 
-    // Build instruction only — don't send through Anchor's .rpc()
-    // ConnectionMagicRouter's sendAndConfirm throws InvalidWritableAccount
-    // for delegated accounts. Raw sendRawTransaction works.
+    // Router path first (preferred)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const ix = await (program as any).methods
+    await (program as any).methods
       .recordEvent(eventTypeMap[eventType], room, Array.from(dataBytes))
       .accounts({ runRecord: runRecordPda, authority: authority.publicKey })
-      .instruction();
-
-    // Fetch ER blockhash manually
-    const bhRes = await fetch(ER_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        jsonrpc: '2.0', id: 1,
-        method: 'getBlockhashForAccounts',
-        params: [[runRecordPda.toBase58()]],
-      }),
-    });
-    const bhData = await bhRes.json() as { result?: { value?: { blockhash?: string } } };
-    const erBlockhash = bhData?.result?.value?.blockhash;
-    if (!erBlockhash) throw new Error('No ER blockhash for recordEvent');
-
-    const tx = new Transaction({ recentBlockhash: erBlockhash, feePayer: authority.publicKey }).add(ix);
-    tx.sign(authority);
-    await erConnection.sendRawTransaction(tx.serialize(), { skipPreflight: true });
+      .signers([authority])
+      .rpc({ skipPreflight: true });
 
   } catch (err) {
     // Silently ignore — game events must never affect gameplay
@@ -261,15 +242,7 @@ export async function recordErEvent(opts: {
 
 /**
  * Commit the ER run to L1 and undelegate the RunRecord.
- * This is the settlement gate — called before L1 death/victory settlement.
- *
- * Strategy:
- *  1. Send commit_run via Anchor with skipPreflight:true (L1 preflight fails
- *     because delegated account is owned by delegation program, not ours;
- *     the ER validator runs its own execution against the ER shadow copy).
- *  2. If that fails, fall back to SDK createCommitAndUndelegateInstruction
- *     directly (bypasses Anchor entirely).
- *  3. If both fail, return fallback:true — legacy L1 settlement proceeds.
+ * Preferred path is atomic finalize+commit in one instruction.
  */
 export async function commitErRun(opts: {
   erRunId: string;
@@ -280,60 +253,40 @@ export async function commitErRun(opts: {
   const authority = getAuthorityKeypair();
   const erConnection = new ConnectionMagicRouter(ER_ENDPOINT);
   const runRecordPda = new PublicKey(erRunId);
+  const outcomeEnum = outcome === 'dead' ? { dead: {} } : { cleared: {} };
 
-  console.log('[MagicBlock] Committing ER run:', erRunId, 'outcome:', outcome);
+  console.log('[MagicBlock] Committing ER run:', erRunId, 'outcome:', outcome, 'finalRoom:', finalRoom);
+  console.log('[MagicBlock] Commit endpoint:', ER_ENDPOINT);
 
-  // ── Pre-commit: finalize the run on the ER (set status + final room) ────────
-  // The SDK direct commit just flushes state to L1 — doesn't modify data.
-  // Without finalizing first, all committed runs show Active / room 0.
-  //
-  // Must send as raw transaction — ConnectionMagicRouter's sendAndConfirm
-  // (used by Anchor .rpc()) throws InvalidWritableAccount for delegated accounts.
-  // Raw sendRawTransaction works fine.
-  try {
-    const program = getProgram(new Connection(RPC_URL, 'confirmed'));
-    const outcomeEnum = outcome === 'dead' ? { dead: {} } : { cleared: {} };
-
-    // Build instruction via Anchor but don't send through router
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const ix = await (program as any).methods
-      .finalizeRun(outcomeEnum, finalRoom)
-      .accounts({ runRecord: runRecordPda, authority: authority.publicKey })
-      .instruction();
-
-    // Fetch ER blockhash manually (same as commit flow)
-    const bhRes = await fetch(ER_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        jsonrpc: '2.0', id: 1,
-        method: 'getBlockhashForAccounts',
-        params: [[runRecordPda.toBase58()]],
-      }),
-    });
-    const bhData = await bhRes.json() as {
-      result?: { value?: { blockhash?: string } }
-    };
-    const erBlockhash = bhData?.result?.value?.blockhash;
-    if (!erBlockhash) throw new Error('No ER blockhash for finalizeRun');
-
-    const tx = new Transaction({ recentBlockhash: erBlockhash, feePayer: authority.publicKey }).add(ix);
-    tx.sign(authority);
-    await erConnection.sendRawTransaction(tx.serialize(), { skipPreflight: true });
-
-    console.log('[MagicBlock] Run finalized on ER: room', finalRoom, outcome);
-  } catch (finErr) {
-    // Non-fatal — commit can proceed with stale data
-    console.warn('[MagicBlock] finalizeRun failed (continuing):', finErr);
-  }
-
-  // ── Attempt 1: Anchor commit_run with skipPreflight ────────────────────────
+  // ── Attempt 1 (preferred): atomic finalize+commit in one instruction ───────
+  // Requires updated on-chain program with finalize_and_commit instruction.
   try {
     const program = getProgram(erConnection as unknown as Connection);
-    const outcomeEnum = outcome === 'dead' ? { dead: {} } : { cleared: {} };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const txSig = await (program as any).methods
+      .finalizeAndCommit(outcomeEnum, finalRoom)
+      .accounts({ runRecord: runRecordPda, authority: authority.publicKey })
+      .signers([authority])
+      .rpc({ skipPreflight: true });
 
-    // skipPreflight: delegates on L1 are owned by delegation program,
-    // so L1 simulation rejects writable access. ER validator handles it correctly.
+    console.log('[MagicBlock] ER run committed (finalizeAndCommit):', txSig);
+    return { success: true, txSignature: txSig };
+  } catch (atomicErr) {
+    console.warn('[MagicBlock] finalizeAndCommit unavailable/failed, falling back:', atomicErr);
+  }
+
+  // ── Attempt 2 (legacy fallback): finalize_run then commit_run ───────────────
+  // Kept for backward compatibility until program upgrade is deployed.
+  try {
+    const program = getProgram(erConnection as unknown as Connection);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (program as any).methods
+      .finalizeRun(outcomeEnum, finalRoom)
+      .accounts({ runRecord: runRecordPda, authority: authority.publicKey })
+      .signers([authority])
+      .rpc({ skipPreflight: true });
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const txSig = await (program as any).methods
       .commitRun(outcomeEnum)
@@ -341,29 +294,16 @@ export async function commitErRun(opts: {
       .signers([authority])
       .rpc({ skipPreflight: true });
 
-    console.log('[MagicBlock] ER run committed (Anchor):', txSig);
-    return { success: true, txSignature: txSig };
-
-  } catch (anchorErr) {
-    console.warn('[MagicBlock] Anchor commitRun failed, trying SDK direct:', anchorErr);
+    console.log('[MagicBlock] ER run committed (legacy finalize+commit):', txSig);
+    return { success: true, txSignature: txSig, fallback: true };
+  } catch (legacyErr) {
+    console.warn('[MagicBlock] Legacy finalize+commit failed:', legacyErr);
   }
 
-  // ── Attempt 2: SDK createCommitAndUndelegateInstruction (manual ER blockhash) ──
-  //
-  // Why manual: createCommitAndUndelegateInstruction passes runRecordPda as
-  // isWritable:false. ConnectionMagicRouter.getWritableAccounts() only collects
-  // writable keys, so runRecordPda is excluded from the getBlockhashForAccounts
-  // call → ER returns null → "Transaction recentBlockhash required".
-  //
-  // Fix: fetch the ER blockhash explicitly with runRecordPda included, then
-  // build + send raw — bypassing the router's writable-account inference entirely.
+  // ── Attempt 3 (last resort): schedule commit+undelegate via SDK ────────────
   try {
-    const commitIx = createCommitAndUndelegateInstruction(
-      authority.publicKey,
-      [runRecordPda],
-    );
+    const commitIx = createCommitAndUndelegateInstruction(authority.publicKey, [runRecordPda]);
 
-    // 1. Fetch ER-specific blockhash, explicitly including the delegated RunRecord
     const blockhashRes = await fetch(ER_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -375,29 +315,19 @@ export async function commitErRun(opts: {
       }),
     });
     const blockhashData = await blockhashRes.json() as {
-      result?: { value?: { blockhash?: string; lastValidBlockHeight?: number } }
+      result?: { value?: { blockhash?: string } }
     };
     const erBlockhash = blockhashData?.result?.value?.blockhash;
+    if (!erBlockhash) throw new Error('No ER blockhash for SDK commit');
 
-    if (!erBlockhash) {
-      throw new Error(`ER returned no blockhash for ${runRecordPda.toBase58()} — account may not be delegated`);
-    }
-
-    // 2. Build, sign, and send raw
-    const tx = new Transaction({
-      recentBlockhash: erBlockhash,
-      feePayer: authority.publicKey,
-    }).add(commitIx);
-
+    const tx = new Transaction({ recentBlockhash: erBlockhash, feePayer: authority.publicKey }).add(commitIx);
     tx.sign(authority);
-    const rawTx = tx.serialize();
+    const txSig = await erConnection.sendRawTransaction(tx.serialize(), { skipPreflight: true });
 
-    const txSig = await erConnection.sendRawTransaction(rawTx, { skipPreflight: true });
-    console.log('[MagicBlock] ER run committed (SDK direct):', txSig);
-    return { success: true, txSignature: txSig };
-
+    console.log('[MagicBlock] ER run committed (SDK direct fallback):', txSig);
+    return { success: true, txSignature: txSig, fallback: true };
   } catch (sdkErr) {
-    console.warn('[MagicBlock] SDK commitErRun also failed, falling back to legacy:', sdkErr);
+    console.warn('[MagicBlock] SDK commit fallback failed:', sdkErr);
     return { success: false, fallback: true };
   }
 }
