@@ -6,6 +6,14 @@
  */
 
 import { Connection, Keypair, PublicKey, Transaction } from '@solana/web3.js';
+
+const ASCII_LOGO = `
+ ██████╗ ██╗███████╗    ███████╗ ██████╗ ██████╗ ██╗    ██╗ █████╗ ██████╗ ██████╗ 
+ ██╔══██╗██║██╔════╝    ██╔════╝██╔═══██╗██╔══██╗██║    ██║██╔══██╗██╔══██╗██╔══██╗
+ ██║  ██║██║█████╗      █████╗  ██║   ██║██████╔╝██║ █╗ ██║███████║██████╔╝██║  ██║
+ ██║  ██║██║██╔══╝      ██╔══╝  ██║   ██║██╔══██╗██║███╗██║██╔══██║██╔══██╗██║  ██║
+ ██████╔╝██║███████╗    ██║     ╚██████╔╝██║  ██║╚███╔███╔╝██║  ██║██║  ██║██████╔╝
+ ╚═════╝ ╚═╝╚══════╝    ╚═╝      ╚═════╝ ╚═╝  ╚═╝ ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ `;
 import { AnchorProvider, Program, BorshAccountsCoder } from '@coral-xyz/anchor';
 import { init } from '@instantdb/admin';
 import RunRecordIdl from '@/idl/run_record.json';
@@ -172,8 +180,11 @@ export default async function OnchainRunsPage() {
 
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-amber text-2xl tracking-widest mb-1">◈ ON-CHAIN RUNS</h1>
-          <p className="text-bone-muted text-xs">
+          <pre className="text-amber text-[4px] sm:text-[5px] md:text-[6px] leading-none mb-4 text-center overflow-x-auto">
+{ASCII_LOGO}
+          </pre>
+          <h1 className="text-amber text-2xl tracking-widest mb-1 text-center">◈ ON-CHAIN RUNS</h1>
+          <p className="text-bone-muted text-xs text-center">
             Every run recorded via MagicBlock Ephemeral Rollups →{' '}
             <a
               href={`https://explorer.solana.com/address/${RUN_RECORD_PROGRAM_ID.toBase58()}?cluster=devnet`}
