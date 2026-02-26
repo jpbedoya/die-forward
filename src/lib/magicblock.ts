@@ -38,6 +38,13 @@ const RPC_URL = process.env.NEXT_PUBLIC_SOLANA_RPC || 'https://api.devnet.solana
 // ER validator endpoint (devnet — US node)
 const ER_ENDPOINT = process.env.MAGICBLOCK_ER_ENDPOINT || 'https://devnet-us.magicblock.app';
 
+// ER validator pubkey — MUST match the endpoint region
+// See: https://docs.magicblock.gg/pages/private-ephemeral-rollups-pers/how-to-guide/quickstart
+// US devnet: MUS3hc9TCw4cGC12vHNoYcCGzJG1txjgQLZWVoeNHNd
+const ER_VALIDATOR = new PublicKey(
+  process.env.MAGICBLOCK_ER_VALIDATOR || 'MUS3hc9TCw4cGC12vHNoYcCGzJG1txjgQLZWVoeNHNd'
+);
+
 // PDA seed — must match Rust program: b"run"
 const RUN_SEED = Buffer.from('run');
 
@@ -138,7 +145,12 @@ export async function startErRun(opts: {
     const sessionIdBytes = sessionIdToBytes(sessionId);
     const runRecordPda = deriveRunRecordPda(sessionIdBytes);
 
-    console.log('[MagicBlock] Initializing RunRecord for session', sessionId);
+    console.log('[MagicBlock] === Starting ER Run ===');
+    console.log('[MagicBlock] Session:', sessionId);
+    console.log('[MagicBlock] PDA:', runRecordPda.toBase58());
+    console.log('[MagicBlock] ER Endpoint:', ER_ENDPOINT);
+    console.log('[MagicBlock] ER Validator:', ER_VALIDATOR.toBase58());
+    console.log('[MagicBlock] Initializing RunRecord...');
 
     // 1. Initialize the RunRecord PDA on L1
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -155,15 +167,20 @@ export async function startErRun(opts: {
     console.log('[MagicBlock] RunRecord initialized:', runRecordPda.toBase58());
 
     // 2. Delegate the RunRecord to the ER
+    // Must pass the validator pubkey via remainingAccounts — Rust program reads it from there
     // Anchor auto-resolves delegation PDAs + programs from IDL
+    console.log('[MagicBlock] Delegating to validator:', ER_VALIDATOR.toBase58());
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (program as any).methods
       .delegateRun()
       .accounts({ runRecord: runRecordPda, authority: authority.publicKey })
+      .remainingAccounts([
+        { pubkey: ER_VALIDATOR, isSigner: false, isWritable: false }
+      ])
       .signers([authority])
       .rpc();
 
-    console.log('[MagicBlock] RunRecord delegated to ER:', runRecordPda.toBase58());
+    console.log('[MagicBlock] RunRecord delegated to ER:', runRecordPda.toBase58(), 'validator:', ER_VALIDATOR.toBase58());
 
     // Return PDA pubkey as erRunId — store on session record
     return runRecordPda.toBase58();
