@@ -186,3 +186,70 @@ If RunRecord struct changes, update the `dataSize` filter in `onchain-runs/page.
 ```typescript
 { dataSize: 125 }, // Update if struct changes
 ```
+
+## Testing & Recovery Scripts
+
+These scripts are kept in `scripts/` for repeatable ER debugging.
+
+### 1) End-to-end MagicBlock flow test
+
+```bash
+npx tsx scripts/test-magicblock-lib.ts
+```
+
+What it does:
+- starts an ER run (`startErRun`)
+- records several room events (`recordErEvent`)
+- commits via current `commitErRun` flow
+- prints final L1 owner + decoded RunRecord fields
+
+Use this first when validating deployment changes.
+
+### 2) Deep ER state diagnostic
+
+```bash
+npx tsx scripts/diagnose-er-state.ts
+```
+
+What it does:
+- creates a run directly with Anchor calls
+- reads state from ER before commit
+- commits and compares ER vs L1
+
+Use this when you suspect merge/settlement issues.
+
+### 3) Force-commit stuck delegated runs
+
+```bash
+# requires env vars loaded (including SOLANA_AUTHORITY_SECRET_KEY)
+npx tsx scripts/fix-stuck-er-runs.ts
+```
+
+What it does:
+- scans delegated RunRecord PDAs
+- sends commit+undelegate instruction for each
+- useful for recovering hanging runs
+
+### 4) Verify one run on L1 + page visibility
+
+```bash
+npx tsx scripts/verify-onchain-run.ts --pda <RUN_PDA>
+# optional explicit session id check
+npx tsx scripts/verify-onchain-run.ts --pda <RUN_PDA> --session <SESSION_ID>
+```
+
+What it does:
+- decodes RunRecord directly from L1
+- checks if run appears on `https://dieforward.com/onchain-runs`
+- helps separate on-chain truth vs page/indexing lag
+
+### Notes
+
+- Load envs before running scripts:
+```bash
+export $(grep -v '^#' .env.local | xargs)
+```
+- For local shell builds/deploys, ensure Solana tools are on PATH:
+```bash
+export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+```
