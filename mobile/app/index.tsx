@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { View, Text, Pressable, Platform, StyleSheet } from 'react-native';
+import { View, Text, Pressable, Platform, StyleSheet, Image } from 'react-native';
 import Constants from 'expo-constants';
 import { BlurView } from 'expo-blur';
 import BottomSheet, { BottomSheetScrollView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
@@ -257,8 +257,12 @@ export default function HomeScreen() {
             onPress={() => setAudioSettingsOpen(true)} 
             className="mt-1 active:opacity-70"
           >
-            <View className="flex-row items-center px-2 py-1 rounded-full" style={{ backgroundColor: 'rgba(168, 85, 247, 0.15)', borderWidth: 1, borderColor: 'rgba(168, 85, 247, 0.3)' }}>
-              <Text className="font-mono text-[9px] tracking-wide" style={{ color: '#a855f7' }}>♫ SET SOUNDTRACK</Text>
+            <View className="flex-row items-center px-2 py-1 rounded-full gap-1" style={{ backgroundColor: 'rgba(168, 85, 247, 0.15)', borderWidth: 1, borderColor: 'rgba(168, 85, 247, 0.3)' }}>
+              <Image 
+                source={require('../assets/logo-audius.png')} 
+                style={{ width: 12, height: 12, borderRadius: 2 }} 
+              />
+              <Text className="font-mono text-[9px] tracking-wide" style={{ color: '#a855f7' }}>SOUNDTRACK</Text>
             </View>
           </Pressable>
         </View>
