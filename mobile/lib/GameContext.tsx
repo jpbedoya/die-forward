@@ -268,14 +268,22 @@ export function GameProvider({ children }: { children: ReactNode }) {
       // Wallet user: write to DB first, then cache locally
       await updatePlayerNicknameByAuth(state.authId, trimmed);
       await AsyncStorage.setItem(NICKNAME_STORAGE_KEY, trimmed);
+      
+      // Sync to Tapestry (creates profile if needed, updates username)
+      // This is non-blocking — fire and forget
+      if (state.walletAddress) {
+        api.syncProfileToTapestry(state.walletAddress, trimmed).catch(err => {
+          console.warn('[Tapestry] Profile sync failed (non-fatal):', err);
+        });
+      }
     } else {
-      // Guest: local only
+      // Guest: local only (no Tapestry profile for guests)
       await AsyncStorage.setItem(NICKNAME_STORAGE_KEY, trimmed);
     }
 
     await AsyncStorage.setItem(NICKNAME_PROMPTED_KEY, 'true');
     updateState({ nickname: trimmed, showNicknameModal: false, isNewUser: false });
-  }, [state.authId, state.authType, updateState]);
+  }, [state.authId, state.authType, state.walletAddress, updateState]);
 
   const dismissNicknameModal = useCallback(async () => {
     updateState({ showNicknameModal: false });

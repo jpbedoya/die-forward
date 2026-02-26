@@ -178,6 +178,31 @@ export async function getLeaderboard(): Promise<{
   return response.json();
 }
 
+// Sync player profile to Tapestry (call after nickname change)
+export async function syncProfileToTapestry(
+  walletAddress: string,
+  nickname: string,
+): Promise<{ ok: boolean }> {
+  try {
+    const response = await fetch(`${API_BASE}/api/player/sync-profile`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ walletAddress, nickname }),
+    });
+
+    if (!response.ok) {
+      console.warn('[Tapestry] sync-profile failed:', response.status);
+      return { ok: false };
+    }
+
+    return response.json();
+  } catch (err) {
+    // Non-fatal — Tapestry sync should never break the game
+    console.warn('[Tapestry] sync-profile error:', err);
+    return { ok: false };
+  }
+}
+
 // Like a death entry (🕯️)
 export async function likeDeath(
   deathId: string,

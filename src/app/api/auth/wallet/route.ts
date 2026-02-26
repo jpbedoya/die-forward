@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { init } from '@instantdb/admin';
 import * as nacl from 'tweetnacl';
 import bs58 from 'bs58';
-import { upsertProfile } from '@/lib/tapestry';
+// Tapestry profile sync moved to /api/player/sync-profile (called when nickname is set)
 
 // Lazy init to ensure env vars are available
 let db: ReturnType<typeof init> | null = null;
@@ -112,19 +112,10 @@ export async function POST(req: NextRequest) {
     });
 
     const isNewUser = !result.players || result.players.length === 0;
-    const nickname = result.players?.[0]?.nickname as string | undefined;
 
-    // Upsert Tapestry profile with timeout so it never blocks auth response
-    console.log('[Tapestry] Upserting profile for', walletAddress);
-    try {
-      await Promise.race([
-        upsertProfile(walletAddress, nickname),
-        new Promise<void>((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000)),
-      ]);
-      console.log('[Tapestry] Profile upserted for', walletAddress);
-    } catch (err) {
-      console.warn('[Tapestry] upsertProfile failed (non-fatal):', err instanceof Error ? err.message : err);
-    }
+    // NOTE: Tapestry profile is NOT created here.
+    // Profile is created/updated via /api/player/sync-profile when user sets their nickname.
+    // This ensures Tapestry always has the real nickname, not a wallet fallback.
 
     return NextResponse.json({
       token,
