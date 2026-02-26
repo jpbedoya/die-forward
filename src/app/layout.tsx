@@ -12,7 +12,8 @@ export const metadata: Metadata = {
   title: "Die Forward — Your Death Feeds the Depths",
   description: "A text-based roguelite on Solana where every death matters. Stake SOL, descend into darkness, and leave your final words for the next adventurer to find.",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/app-icon.png",
+    apple: "/app-icon.png",
   },
   metadataBase: new URL("https://dieforward.com"),
   openGraph: {
