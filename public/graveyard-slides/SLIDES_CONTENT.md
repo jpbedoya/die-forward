@@ -56,13 +56,13 @@
 ## Slide 4: THE GAME (25-35s)
 **Visual:** Game icons (Stake → Fight → Die), crypt background
 **Text:**
-> Stake SOL → Fight through 7 rooms → Die or escape
+> Stake SOL → Descend room by room → Die or escape
 > 
 > Every run creates an on-chain record.
 > Every death becomes social content.
 
 **Script:**
-"Stake SOL and fight through 7 rooms. Every run creates an on-chain record. Every death becomes social content."
+"Stake SOL and descend room by room. Every run creates an on-chain record. Every death becomes social content."
 
 ---
 
@@ -113,12 +113,12 @@
 ## Slide 8: TAPESTRY (62-72s)
 **Visual:** Tapestry logo, purple accent
 **Text:**
-> 👤 Profile on Connect — Wallet auth creates profile
+> 👤 Profile synced on name set/change
 > 💀 Death Posts — Every death publishes to social graph
-> ❤️ Social Interactions — Discover, like, pay respects
+> 🕯️ Social Interactions — Discover, like, light candles
 
 **Script:**
-"Tapestry for the social layer. Every wallet user gets a profile. Every death posts to the social graph — your final message, how deep you got, how much you staked. Players can discover and like deaths."
+"Tapestry is the social layer. Profile identity syncs when the player sets or changes their name. Every death posts to the social graph — final words, depth, and stake. Players can discover deaths, like them, and light candles."
 
 ---
 
@@ -131,10 +131,10 @@
 > 1. Initialize RunRecord on L1
 > 2. Delegate to Ephemeral Rollup
 > 3. Update room progress in real-time
-> 4. Commit final state to L1
+> 4. Finalize + commit atomically to L1
 
 **Script:**
-"MagicBlock Ephemeral Rollups for real-time on-chain state. When you start a run, we create a RunRecord on Solana, delegate it to the Ephemeral Rollup for fast writes, then commit the final state back to L1 when you die or escape."
+"MagicBlock Ephemeral Rollups gives us real-time on-chain state. We initialize a RunRecord on Solana, delegate it to the Ephemeral Rollup for fast writes, then finalize and commit the run atomically back to L1 at death or escape."
 
 ---
 

@@ -33,7 +33,7 @@
 
 | Time | Slide | App Action | Script |
 |------|-------|------------|--------|
-| 0:25 | Game | **Tap "Stake SOL"** | "Stake SOL and fight through 7 rooms." |
+| 0:25 | Game | **Tap "Stake SOL"** | "Stake SOL and descend room by room." |
 | 0:30 | Game | **Enter stake amount, confirm** | "Every run creates an on-chain record..." |
 | 0:35 | Features | Run starts, Room 1 appears | "The integrations power unique gameplay." |
 | 0:40 | Features | — | "Music playing when you die is recorded via Audius. Deaths post to Tapestry. Every run tracked on-chain via MagicBlock." |
@@ -46,8 +46,8 @@
 |------|-------|------------|--------|
 | 0:50 | Agents | Progress to Room 2-3 | "Agents can play too. Published skill file, AgentWallet integration. Agents and humans share the same crypt." |
 | 1:00 | Audius | **Point to music indicator** | "Audius integration. Curated dark ambient. When you die, the track is recorded forever. Soundtrack leaderboard credits artists." |
-| 1:10 | Tapestry | Progress to Room 4-5 | "Tapestry for the social layer. Profile created on connect. Every death posts to the graph. Players light candles to pay respects." |
-| 1:20 | MagicBlock | **Show on-chain indicator** | "MagicBlock Ephemeral Rollups. This run is live on Solana right now. Fast writes, full L1 settlement." |
+| 1:10 | Tapestry | Progress to Room 4-5 | "Tapestry for the social layer. Profile syncs when players set or change their name. Every death posts to the graph. Players light candles to pay respects." |
+| 1:20 | MagicBlock | **Show on-chain indicator** | "MagicBlock Ephemeral Rollups. This run is live on Solana right now with fast writes, then finalized and committed atomically to L1." |
 
 ---
 
@@ -122,7 +122,7 @@ For async submission (if not live):
 | 7. Audius | 10s | Room 3-4, music visible |
 | 8. Tapestry | 10s | Room 4-5 |
 | 9. MagicBlock | 10s | Room 5-6, on-chain indicator |
-| 10. Escrow | 15s | Room 6-7 → DEATH |
+| 10. Escrow | 15s | Deep run → DEATH |
 | 11. Business | 10s | Death screen → final words |
 | 12. Build | 10s | Echoes feed |
 | 13. Close | 5s | Home screen |
