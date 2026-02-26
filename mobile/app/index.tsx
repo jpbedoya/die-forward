@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { View, Text, Pressable, Platform, StyleSheet, Image } from 'react-native';
+import { View, Text, Pressable, Platform, StyleSheet } from 'react-native';
 import Constants from 'expo-constants';
 import { BlurView } from 'expo-blur';
 import BottomSheet, { BottomSheetScrollView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
@@ -258,11 +258,7 @@ export default function HomeScreen() {
             className="mt-1 active:opacity-70"
           >
             <View className="flex-row items-center px-2 py-1 rounded-full" style={{ backgroundColor: 'rgba(168, 85, 247, 0.15)', borderWidth: 1, borderColor: 'rgba(168, 85, 247, 0.3)' }}>
-              <Image 
-                source={require('../assets/logo-audius.png')} 
-                style={{ width: 50, height: 10, tintColor: '#a855f7' }} 
-                resizeMode="contain"
-              />
+              <Text style={{ fontFamily: 'monospace', fontSize: 10, fontWeight: '700', color: '#a855f7', letterSpacing: 1 }}>AUDIUS</Text>
             </View>
           </Pressable>
         </View>
