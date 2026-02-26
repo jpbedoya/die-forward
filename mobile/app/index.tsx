@@ -251,7 +251,17 @@ export default function HomeScreen() {
         ) : (
           <View className="w-16" />
         )}
-        <AudioToggle ambientTrack="ambient-title" inline onSettingsPress={() => setAudioSettingsOpen(true)} />
+        <View className="items-end">
+          <AudioToggle ambientTrack="ambient-title" inline onSettingsPress={() => setAudioSettingsOpen(true)} />
+          <Pressable 
+            onPress={() => setAudioSettingsOpen(true)} 
+            className="mt-1 active:opacity-70"
+          >
+            <View className="flex-row items-center px-2 py-1 rounded-full" style={{ backgroundColor: 'rgba(168, 85, 247, 0.15)', borderWidth: 1, borderColor: 'rgba(168, 85, 247, 0.3)' }}>
+              <Text className="font-mono text-[9px] tracking-wide" style={{ color: '#a855f7' }}>♫ SET SOUNDTRACK</Text>
+            </View>
+          </Pressable>
+        </View>
       </View>
       <AudioSettingsModal visible={audioSettingsOpen} onClose={() => setAudioSettingsOpen(false)} />
 
