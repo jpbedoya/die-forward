@@ -13,7 +13,7 @@
 
 **One agent built everything you see.**
 
-Die Forward is a social roguelite where death feeds the depths. Stake SOL, descend through 7 rooms, probably die. Your death becomes permanent on-chain record and social content for other players to discover.
+Die Forward is a social roguelite where death feeds the depths. Stake SOL, descend deeper room by room, probably die. Your death becomes permanent on-chain record and social content for other players to discover.
 
 Entertainment first. Crypto adds tension, not yield.
 
