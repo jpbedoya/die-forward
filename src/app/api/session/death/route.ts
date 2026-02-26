@@ -125,6 +125,10 @@ export async function POST(request: NextRequest) {
           console.warn('[MagicBlock] ER commit fell back to legacy settlement');
         } else {
           console.log('[MagicBlock] ER committed:', erResult.txSignature ?? 'no sig');
+          // Store commit tx signature for verification/display
+          if (erResult.txSignature) {
+            await db.transact(tx.sessions[sessionId].update({ erCommitTx: erResult.txSignature }));
+          }
         }
       } catch (err) {
         console.warn('[MagicBlock] ER commit threw, falling back:', err);
