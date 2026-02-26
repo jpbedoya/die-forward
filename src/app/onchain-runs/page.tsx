@@ -5,6 +5,9 @@
  * No auth required: all data is public on-chain.
  */
 
+// Disable caching — always fetch fresh data
+export const dynamic = 'force-dynamic';
+
 import { Connection, Keypair, PublicKey, Transaction } from '@solana/web3.js';
 
 const ASCII_LOGO = `
