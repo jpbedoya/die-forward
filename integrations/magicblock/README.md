@@ -201,7 +201,7 @@ This lets us test in production with a subset of players (e.g., enable for speci
 - [x] Verify `erRunId` stored on InstantDB session record
 - [x] Verify ER commit tx on death/victory
 - [x] Verify `/onchain-runs` page shows completed run with correct data
-- [ ] ER commit hash stored on death/session record in InstantDB (not yet implemented)
+- [x] ER commit hash stored on death/session record in InstantDB
 
 ### Phase 4: VRF
 - [ ] Replace `Math.random()` with VRF requests
