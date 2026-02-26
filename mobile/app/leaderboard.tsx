@@ -20,7 +20,7 @@ export default function LeaderboardScreen() {
       {/* Header */}
       <View className="relative px-3 py-3 border-b border-amber/30">
         {/* Back button - absolute left */}
-        <Pressable onPress={() => router.replace('/')} className="absolute left-3 top-3 z-10">
+        <Pressable onPress={() => router.replace('/')} className="absolute left-1 top-1 z-10 py-2 px-3">
           <Text className="text-bone-muted text-sm font-mono">[HOME]</Text>
         </Pressable>
         

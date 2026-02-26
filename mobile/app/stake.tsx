@@ -178,7 +178,7 @@ export default function StakeScreen() {
     <SafeAreaView className="flex-1">
       {/* Header */}
       <View className="relative flex-row items-center justify-between px-4 py-3 border-b border-crypt-border">
-        <Pressable onPress={() => router.replace('/')}>
+        <Pressable onPress={() => router.replace('/')} className="py-2 px-3 -ml-3">
           <Text className="text-bone-muted text-sm font-mono">[HOME]</Text>
         </Pressable>
 

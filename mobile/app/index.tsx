@@ -246,7 +246,7 @@ export default function HomeScreen() {
       {/* Header */}
       <View className="flex-row items-center justify-between px-4 py-2">
         {settings.showLeaderboardLink ? (
-          <Pressable onPress={() => router.push('/leaderboard')} className="active:opacity-70">
+          <Pressable onPress={() => router.push('/leaderboard')} className="py-2 px-3 -ml-3 active:opacity-70">
             <Text className="text-amber font-mono text-xs tracking-wider">◈ RANKS</Text>
           </Pressable>
         ) : (
