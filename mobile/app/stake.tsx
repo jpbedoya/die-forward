@@ -179,7 +179,7 @@ export default function StakeScreen() {
       {/* Header */}
       <View className="relative flex-row items-center justify-between px-4 py-3 border-b border-crypt-border">
         <Pressable onPress={() => router.replace('/')}>
-          <Text className="text-bone-muted text-sm font-mono">← BACK</Text>
+          <Text className="text-bone-muted text-sm font-mono">[HOME]</Text>
         </Pressable>
 
         {/* True center title across full header width */}
