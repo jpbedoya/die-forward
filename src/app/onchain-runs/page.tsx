@@ -268,7 +268,7 @@ export default async function OnchainRunsPage() {
                           </td>
                           <td className="p-3 text-bone-muted">{truncate(run.sessionId, 8, 4)}</td>
                           <td className="p-3 text-right">{formatSol(run.stakeAmount)}</td>
-                          <td className="p-3 text-right">Room {displayRoom}</td>
+                          <td className="p-3 text-right">{displayRoom}</td>
                           <td className="p-3 text-right">{run.eventCount}</td>
                           <td className="p-3 text-bone-muted">{formatDate(run.startedAt)}</td>
                           <td className="p-3">
