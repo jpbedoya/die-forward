@@ -1,6 +1,6 @@
 # MagicBlock Integration
 
-**Status:** 🚧 Phase 2 Complete — Testing on devnet  
+**Status:** ✅ Phase 3 Verified — Live on devnet  
 **Approach:** Option B — ER as settlement authority, parallel to InstantDB  
 **Toggle:** `enableMagicBlock` admin setting (on/off without code changes)
 
@@ -195,13 +195,13 @@ This lets us test in production with a subset of players (e.g., enable for speci
   - Empty state with instructions when no runs recorded yet
   - URL: `die-forward.vercel.app/onchain-runs`
 
-### Phase 3: Settlement Gate — Testing 🚧 Next
-- [ ] Enable `enableMagicBlock` toggle in admin, run a staked session end-to-end
-- [ ] Verify RunRecord PDA appears on Solana Explorer after session start
-- [ ] Verify `erRunId` stored on InstantDB session record
-- [ ] Verify ER commit tx on death/victory
-- [ ] Verify `/onchain-runs` page shows completed run with correct data
-- [ ] ER commit hash stored on death/session record in InstantDB
+### Phase 3: Settlement Gate — ✅ Verified (2026-02-26)
+- [x] Enable `enableMagicBlock` toggle in admin, run a staked session end-to-end
+- [x] Verify RunRecord PDA appears on Solana Explorer after session start
+- [x] Verify `erRunId` stored on InstantDB session record
+- [x] Verify ER commit tx on death/victory
+- [x] Verify `/onchain-runs` page shows completed run with correct data
+- [ ] ER commit hash stored on death/session record in InstantDB (not yet implemented)
 
 ### Phase 4: VRF
 - [ ] Replace `Math.random()` with VRF requests

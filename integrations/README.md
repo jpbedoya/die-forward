@@ -8,7 +8,7 @@ Third-party integrations for the Graveyard Hackathon and beyond.
 |-------------|--------|---------|
 | [Audius](./audius/) | ✅ Complete | Background music streaming |
 | [Tapestry](./tapestry/) | ✅ Live | Social profiles, death/victory posts, 🕯️ candle likes |
-| [MagicBlock](./magicblock/) | 🏗️ In Design | ER as settlement authority, full run recording, VRF randomness |
+| [MagicBlock](./magicblock/) | ✅ Phase 2 Live | ER run recording, on-chain settlement (devnet) |
 | [Portals](./portals/) | 📋 Planned | 3D browser game mode via Portals rooms |
 
 ## Integration Guidelines
