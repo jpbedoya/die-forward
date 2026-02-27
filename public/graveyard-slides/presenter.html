@@ -69,10 +69,10 @@
       background: #1a1a1a;
       border: 1px solid #333;
       color: #999;
-      padding: 8px 16px;
+      padding: 8px 14px;
       cursor: pointer;
       font-family: inherit;
-      font-size: 14px;
+      font-size: 18px;
       border-radius: 4px;
       transition: all 0.2s;
     }
@@ -98,19 +98,6 @@
       flex: 1;
       width: 100%;
       border: none;
-    }
-    
-    /* Keyboard hint */
-    .keyboard-hint {
-      color: #444;
-      font-size: 11px;
-      margin-left: 20px;
-    }
-    .keyboard-hint kbd {
-      background: #222;
-      padding: 2px 6px;
-      border-radius: 3px;
-      border: 1px solid #333;
     }
     
     /* CRT Overlay */
@@ -179,9 +166,8 @@
     <div class="slides-panel">
       <div class="crt-overlay"></div>
       <div class="slides-nav">
-        <button class="nav-btn" id="prevBtn" onclick="prevSlide()">← Prev</button>
-        <button class="nav-btn" id="nextBtn" onclick="nextSlide()">Next →</button>
-        <span class="keyboard-hint"><kbd>←</kbd> <kbd>→</kbd> or <kbd>Space</kbd></span>
+        <button class="nav-btn" id="prevBtn" onclick="prevSlide()">←</button>
+        <button class="nav-btn" id="nextBtn" onclick="nextSlide()">→</button>
         <span class="slide-indicator">
           Slide <span class="current" id="currentSlide">1</span> / <span id="totalSlides">13</span>
         </span>
@@ -236,8 +222,8 @@
       }
     }
     
-    // Keyboard navigation
-    document.addEventListener('keydown', (e) => {
+    // Keyboard navigation - use capture phase and window level
+    window.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowRight' || e.key === ' ') {
         e.preventDefault();
         nextSlide();
@@ -245,7 +231,19 @@
         e.preventDefault();
         prevSlide();
       }
+    }, true);
+    
+    // Refocus parent when clicking on slides area
+    document.querySelector('.slides-panel').addEventListener('click', () => {
+      window.focus();
     });
+    
+    // Periodically refocus to ensure keyboard works
+    setInterval(() => {
+      if (document.activeElement?.tagName === 'IFRAME') {
+        window.focus();
+      }
+    }, 500);
     
     // Initialize
     updateSlide();
