@@ -71,7 +71,7 @@ export function AudioSettingsSection({ className = '' }: { className?: string })
           <Pressable onPress={() => changeVolume(volumeLevel + 1)} className="px-2 py-1 border border-crypt-border">
             <Text className="text-bone-dark font-mono text-xs">+</Text>
           </Pressable>
-          <Text className="text-bone-dark text-xs font-mono w-8 text-right">{volumeLevel}/10</Text>
+          <Text className="text-bone-dark text-xs font-mono w-12 text-right shrink-0 whitespace-nowrap">{volumeLevel}/10</Text>
         </View>
       </View>
 
