@@ -17,7 +17,7 @@ interface AudiusContextValue {
 
   // Master switch integration ([SND]/[MUTE])
   masterEnabled: boolean;
-  setMasterEnabled: (enabled: boolean) => void;
+  setMasterEnabled: (enabled: boolean) => Promise<void>;
 
   // Player state
   currentTrack: AudiusTrack | null;
@@ -115,29 +115,33 @@ export function AudiusProvider({ children }: { children: React.ReactNode }) {
   const musicSourceRef = useRef(musicSource);
   useEffect(() => { musicSourceRef.current = musicSource; }, [musicSource]);
 
-  const setMasterEnabled = useCallback((enabled: boolean) => {
+  const setMasterEnabled = useCallback(async (enabled: boolean) => {
     setMasterEnabledState(enabled);
     const audioManager = getAudioManager();
-    // Keep audio manager master state aligned (single source of truth)
-    audioManager.setMasterEnabled(enabled);
+    await audioManager.setMasterEnabled(enabled);
 
     if (!enabled) {
       stopRef.current();
       audioManager.setSuppressAmbient(true);
-      audioManager.stopAmbient();
+      await audioManager.stopAmbient();
     } else if (musicSourceRef.current === 'game') {
       audioManager.setSuppressAmbient(false);
     }
   }, []);
 
   const setMusicSource = useCallback(async (source: MusicSource) => {
-    // Immediately kill game ambient — don't wait for the React effect to fire.
-    // Without this there's a render-cycle gap where ambient keeps playing.
-    if (source !== 'game') {
-      const am = getAudioManager();
+    const am = getAudioManager();
+
+    // Immediate handoff to avoid overlap in the render-cycle gap.
+    // Always stop Audius first, then suppress/unsuppress game ambient by target source.
+    stopRef.current();
+    if (source === 'game') {
+      am.setSuppressAmbient(false);
+    } else {
       am.setSuppressAmbient(true);
-      am.stopAmbient();
+      await am.stopAmbient();
     }
+
     setMusicSourceState(source);
     await savePrefs({ musicSource: source, activePlaylistId });
   }, [activePlaylistId, savePrefs]);

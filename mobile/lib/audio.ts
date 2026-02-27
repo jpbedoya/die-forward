@@ -168,6 +168,7 @@ class WebAudioManager {
   private sfxEnabled: boolean = true;     // SFX on/off (independent)
   private sfxVolume: number = 0.7;
   private ambientVolume: number = 0.3;    // 0.0–1.0 (persisted)
+  private preMuteAmbientVolume: number = 0.3;
   private initialized: boolean = false;
   private unlocked: boolean = false;
   private pendingAmbient: SoundId | null = null;
@@ -188,6 +189,7 @@ class WebAudioManager {
       this.masterEnabled = master !== 'false';
       this.sfxEnabled = sfx !== 'false';
       if (vol !== null) this.ambientVolume = parseFloat(vol);
+      this.preMuteAmbientVolume = this.ambientVolume > 0 ? this.ambientVolume : 0.3;
       this.initialized = true;
       
       audioLog('[Audio/Web] Initialized, setting up unlock listeners');
@@ -372,10 +374,9 @@ class WebAudioManager {
 
   // ── Master (all audio) ───────────────────────────────────────────────────
   async toggleMaster(): Promise<boolean> {
-    this.masterEnabled = !this.masterEnabled;
-    await AsyncStorage.setItem('audio-master-enabled', String(this.masterEnabled));
-    if (!this.masterEnabled) await this.stopAmbient();
-    return this.masterEnabled;
+    const next = !this.masterEnabled;
+    await this.setMasterEnabled(next);
+    return next;
   }
 
   isMasterEnabled(): boolean { return this.masterEnabled; }
@@ -383,7 +384,17 @@ class WebAudioManager {
   async setMasterEnabled(enabled: boolean) {
     this.masterEnabled = enabled;
     await AsyncStorage.setItem('audio-master-enabled', String(enabled));
-    if (!enabled) await this.stopAmbient();
+
+    if (!enabled) {
+      if (this.ambientVolume > 0) this.preMuteAmbientVolume = this.ambientVolume;
+      await this.setAmbientVolume(0);
+      await this.stopAmbient();
+      return;
+    }
+
+    if (this.ambientVolume === 0) {
+      await this.setAmbientVolume(this.preMuteAmbientVolume > 0 ? this.preMuteAmbientVolume : 0.3);
+    }
   }
 
   // ── SFX (independent) ───────────────────────────────────────────────────
@@ -436,6 +447,7 @@ class NativeAudioManager {
   private sfxEnabled: boolean = true;
   private sfxVolume: number = 0.7;
   private ambientVolume: number = 0.3;
+  private preMuteAmbientVolume: number = 0.3;
   private initialized: boolean = false;
   private unlocked: boolean = true;
   private suppressAmbient: boolean = false;
@@ -462,6 +474,7 @@ class NativeAudioManager {
       this.masterEnabled = master !== 'false';
       this.sfxEnabled = sfx !== 'false';
       if (vol !== null) this.ambientVolume = parseFloat(vol);
+      this.preMuteAmbientVolume = this.ambientVolume > 0 ? this.ambientVolume : 0.3;
       this.initialized = true;
       
       audioLog('[Audio/Native] Initialized');
@@ -559,10 +572,9 @@ class NativeAudioManager {
 
   // ── Master ───────────────────────────────────────────────────────────────
   async toggleMaster(): Promise<boolean> {
-    this.masterEnabled = !this.masterEnabled;
-    await AsyncStorage.setItem('audio-master-enabled', String(this.masterEnabled));
-    if (!this.masterEnabled) await this.stopAmbient();
-    return this.masterEnabled;
+    const next = !this.masterEnabled;
+    await this.setMasterEnabled(next);
+    return next;
   }
 
   isMasterEnabled(): boolean { return this.masterEnabled; }
@@ -570,7 +582,17 @@ class NativeAudioManager {
   async setMasterEnabled(enabled: boolean) {
     this.masterEnabled = enabled;
     await AsyncStorage.setItem('audio-master-enabled', String(enabled));
-    if (!enabled) await this.stopAmbient();
+
+    if (!enabled) {
+      if (this.ambientVolume > 0) this.preMuteAmbientVolume = this.ambientVolume;
+      await this.setAmbientVolume(0);
+      await this.stopAmbient();
+      return;
+    }
+
+    if (this.ambientVolume === 0) {
+      await this.setAmbientVolume(this.preMuteAmbientVolume > 0 ? this.preMuteAmbientVolume : 0.3);
+    }
   }
 
   // ── SFX ──────────────────────────────────────────────────────────────────
