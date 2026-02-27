@@ -100,22 +100,17 @@
 ## Slide 7: AUDIUS (52-62s)
 **Visual:** Audius logo, purple accent
 **Text:**
-> 🎧 Curated Playlists — Dark ambient from Audius, auto-crossfade
-> 💀 Death Soundtrack — Track playing when you die is recorded
-> 🏆 Soundtrack Leaderboard — Most-played death tracks
-> 🎤 Artist Attribution — Every death credits the artist
+> Decentralized music as your death soundtrack. Play with music. Die with attribution.
 
 **Script:**
-"Audius integration. Curated dark ambient playlists. When you die, the track playing is recorded forever. We have a soundtrack leaderboard. Every death credits the artist. Decentralized music meets permadeath."
+"Audius integration. Decentralized music as your death soundtrack. Play with music. Die with attribution."
 
 ---
 
 ## Slide 8: TAPESTRY (62-72s)
 **Visual:** Tapestry logo, purple accent
 **Text:**
-> 👤 Profile synced on name set/change
-> 💀 Death Posts — Every death publishes to social graph
-> 🕯️ Social Interactions — Discover, like, light candles
+> 👤 Profile synced on name set/change 💀 Death Posts — Every death publishes to social graph 🕯️ Social Interactions — Discover, like, light candles
 
 **Script:**
 "Tapestry is the social layer. Profile identity syncs when the player sets or changes their name. Every death posts to the social graph — final words, depth, and stake. Players can discover deaths, like them, and light candles."
@@ -125,8 +120,7 @@
 ## Slide 9: MAGICBLOCK (72-82s)
 **Visual:** MagicBlock logo, green accent, flow diagram
 **Text:**
-> Ephemeral Rollups for real-time on-chain game state.
-> ~50ms write latency. Full L1 settlement.
+> Ephemeral Rollups for real-time on-chain game state. ~50ms write latency. Full L1 settlement.
 > 
 > 1. Initialize RunRecord on L1
 > 2. Delegate to Ephemeral Rollup
@@ -141,8 +135,7 @@
 ## Slide 10: SOLANA ESCROW (82-90s)
 **Visual:** Solana logo, amber accent
 **Text:**
-> Custom Solana program for trustless staking.
-> All stakes locked in program-owned pool.
+> Custom Solana program for trustless staking. All stakes locked in program-owned pool.
 > 
 > ⚔️ Victory — Stake returned + 50% bonus
 > 💀 Death — Stake feeds the pool for future victors
@@ -158,10 +151,10 @@
 > 📊 5% Stake Fee — Every run. Revenue without tokens.
 > 🏆 50% Victory Bonus — Rewards skill, not grinding.
 > 🆓 Free Play — Zero friction onboarding.
-> 🏅 Ranks & Echoes — Leaderboards and death feed already live.
+> 🏅 Ranks & Echoes — Leaderboards and Death feed with candle Lighting
 
 **Script:**
-"Business model is simple: 5% fee on every stake. Victory bonus paid from the pool — rewards skill, not grinding. Free play for onboarding. Leaderboards and social features already live."
+"Business model is simple: 5% fee on every stake. Victory bonus paid from the pool — rewards skill, not grinding. Free play for onboarding. Leaderboards and death feed with candle lighting."
 
 ---
 
