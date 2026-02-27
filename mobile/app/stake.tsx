@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, Pressable, TextInput, ScrollView, Modal } from 'react-native';
+import { View, Text, Pressable, ScrollView, Modal } from 'react-native';
 import { CryptBackground } from '../components/CryptBackground';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -21,7 +21,7 @@ export default function StakeScreen() {
   const { settings } = useGameSettings();
   const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
   const [selectedStake, setSelectedStake] = useState(0.05);
-  const [customStake, setCustomStake] = useState('');
+  
   const [staking, setStaking] = useState(false);
   const [stakingMode, setStakingMode] = useState<'stake' | 'free' | null>(null);
   const [showWalletPicker, setShowWalletPicker] = useState(false);
@@ -208,18 +208,17 @@ Offer it. Lose it on death. Escape and claim more.
               <Pressable
                 key={amount}
                 className={`flex-1 py-3 items-center border ${
-                  selectedStake === amount && !customStake
+                  selectedStake === amount
                     ? 'border-amber bg-amber/10' 
                     : 'border-crypt-border-light bg-crypt-surface'
                 }`}
                 onPress={() => {
                   playSFX('ui-click');
                   setSelectedStake(amount);
-                  setCustomStake('');
                 }}
               >
                 <Text className={`font-mono text-base ${
-                  selectedStake === amount && !customStake ? 'text-amber-light' : 'text-bone-muted'
+                  selectedStake === amount ? 'text-amber-light' : 'text-bone-muted'
                 }`}>
                   {amount}
                 </Text>
@@ -227,27 +226,7 @@ Offer it. Lose it on death. Escape and claim more.
             ))}
           </View>
 
-          {/* Custom input */}
-          <View className="mt-4">
-            <Text className="text-stone-600 text-xs font-mono mb-2 italic">...or name your price</Text>
-            <View className="flex-row items-center border border-crypt-border-light bg-crypt-surface px-3">
-              <TextInput
-                className="flex-1 text-bone text-lg font-mono py-3"
-                value={customStake}
-                onChangeText={(text) => {
-                  setCustomStake(text);
-                  const num = parseFloat(text);
-                  if (!isNaN(num) && num > 0) {
-                    setSelectedStake(num);
-                  }
-                }}
-                placeholder="0.00"
-                placeholderTextColor="#57534e"
-                keyboardType="decimal-pad"
-              />
-            </View>
-          </View>
-        </View>
+                  </View>
 
         {/* Summary */}
         <View className="bg-crypt-surface border border-crypt-border p-4 mb-6">
