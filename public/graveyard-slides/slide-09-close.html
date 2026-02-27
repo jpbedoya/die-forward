@@ -68,7 +68,21 @@
       font-size: clamp(18px, 2.2vw, 36px);
       color: #f59e0b;
       letter-spacing: clamp(2px, 0.3vw, 4px);
-      margin-bottom: clamp(30px, 6vh, 60px);
+      margin-bottom: clamp(16px, 3vh, 28px);
+    }
+    .store-badges {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: clamp(8px, 1.5vw, 18px);
+      margin-bottom: clamp(22px, 4vh, 38px);
+      flex-wrap: wrap;
+    }
+    .store-badge {
+      height: clamp(26px, 3.4vh, 40px);
+      width: auto;
+      opacity: 0.9;
+      filter: drop-shadow(0 0 10px rgba(0,0,0,0.35));
     }
     .hackathon {
       font-size: clamp(12px, 1.4vw, 24px);
@@ -89,6 +103,11 @@
 ██   ██ ██ ██         ██      ██    ██ ██   ██ ██ ███ ██ ██   ██ ██   ██ ██   ██
 ██████  ██ ███████    ██       ██████  ██   ██  ███ ███  ██   ██ ██   ██ ██████ </pre>
     <div class="url">dieforward.com</div>
+    <div class="store-badges">
+      <img src="/badges/app-store.svg" alt="Download on the App Store" class="store-badge">
+      <img src="/badges/google-play.svg" alt="Get it on Google Play" class="store-badge">
+      <img src="/badges/solana-dapp-store.svg" alt="Available on Solana dApp Store" class="store-badge">
+    </div>
     <div class="hackathon">SOLANA GRAVEYARD HACKATHON 2026</div>
   </div>
 </body>
