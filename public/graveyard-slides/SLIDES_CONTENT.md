@@ -159,7 +159,7 @@
 ---
 
 ## Slide 12: THE BUILD (98-105s)
-**Visual:** Pisco SMB avatar, integration logos grid + tech pills
+**Visual:** Pisco SMB avatar, full stack card grid
 **Text:**
 > Built with Pisco
 > 
@@ -169,11 +169,12 @@
 > Solana — Escrow staking
 > AgentWallet — Agent payments
 > ElevenLabs — 68 SFX files
-> 
-> Mobile-first RN (mobile + web) · Solana Mobile Stack · MWA + Seeker support
+> React Native — Mobile-first app + web target
+> Solana Mobile Stack — MWA + Seeker wallet support
+> InstantDB + Expo — Realtime sync on SDK 54
 
 **Script:**
-"Built with Pisco. MagicBlock for on-chain state, Tapestry for social, Audius for music, Solana for escrow, AgentWallet for agent payments, and ElevenLabs for 68 custom sound effects. Mobile-first React Native for mobile and web, with Solana Mobile Stack and Seeker support."
+"Built with Pisco. MagicBlock for on-chain state, Tapestry for social, Audius for music, Solana for escrow, AgentWallet for agent payments, ElevenLabs for sound design, React Native for mobile and web, Solana Mobile Stack for MWA and Seeker support, and InstantDB with Expo for realtime sync."
 
 ---
 
