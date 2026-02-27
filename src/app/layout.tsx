@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     siteName: "Die Forward",
     images: [
       {
-        url: "/api/og",
+        url: "/og-marketing.png",
         width: 1200,
         height: 630,
         alt: "Die Forward - Your Death Feeds the Depths",
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Die Forward — Your Death Feeds the Depths",
     description: "A text-based roguelite on Solana. Stake SOL, die, become content for others.",
-    images: ["/api/og"],
+    images: ["/og-marketing.png"],
     creator: "@dieforward",
   },
 };
