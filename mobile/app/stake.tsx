@@ -281,7 +281,7 @@ Offer it. Lose it on death. Escape and claim more.
           {!game.walletConnected ? (
             <>
               <Pressable
-                className={`py-5 items-center ${
+                className={`py-4 items-center ${
                   walletStatus === 'cancelled' ? 'bg-stone-700' :
                   walletStatus === 'error' ? 'bg-blood/60' :
                   walletStatus === 'connecting' ? 'bg-purple-900' :
@@ -299,7 +299,7 @@ Offer it. Lose it on death. Escape and claim more.
                 ) : (
                   <View className="items-center">
                     <Text className="text-white font-mono font-bold tracking-wider">BIND WALLET</Text>
-                    <Text className="text-white/80 text-[10px] font-mono -mt-0.5">[DEVNET]</Text>
+                    <Text className="text-white/80 text-[10px] font-mono mt-1">[DEVNET]</Text>
                   </View>
                 )}
               </Pressable>
@@ -319,7 +319,7 @@ Offer it. Lose it on death. Escape and claim more.
           ) : (
             <>
               <Pressable
-                className={`py-5 items-center ${
+                className={`py-4 items-center ${
                   sealStatus === 'cancelled' ? 'bg-stone-700' :
                   sealStatus === 'error' ? 'bg-blood/60' :
                   sealStatus === 'signing' ? 'bg-amber/70' :
@@ -339,7 +339,7 @@ Offer it. Lose it on death. Escape and claim more.
                 ) : (
                   <View className="items-center">
                     <Text className="text-crypt-bg font-mono font-bold tracking-wider">SEAL YOUR FATE</Text>
-                    <Text className="text-crypt-bg/70 text-[10px] font-mono -mt-0.5">[DEVNET]</Text>
+                    <Text className="text-crypt-bg/70 text-[10px] font-mono mt-1">[DEVNET]</Text>
                   </View>
                 )}
               </Pressable>
