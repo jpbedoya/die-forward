@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(ellipse at center, #0c1018 0%, #0a0a0a 70%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', monospace;
+      color: #e5e5e5;
+      padding: clamp(24px, 4vw, 54px);
+    }
+    .content {
+      width: 100%;
+      max-width: 1200px;
+      text-align: center;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: #f59e0b;
+      padding: clamp(5px, 0.6vw, 10px) clamp(12px, 1.4vw, 20px);
+      border-radius: 999px;
+      letter-spacing: 2px;
+      font-size: clamp(10px, 1vw, 15px);
+      margin-bottom: clamp(14px, 2.2vh, 28px);
+    }
+    .title {
+      font-size: clamp(30px, 3.7vw, 58px);
+      color: #d1d5db;
+      margin-bottom: clamp(10px, 1.8vh, 18px);
+      text-shadow: 0 0 28px rgba(245, 158, 11, 0.2);
+    }
+    .subtitle {
+      font-size: clamp(14px, 1.5vw, 24px);
+      color: #9ca3af;
+      margin-bottom: clamp(24px, 4vh, 44px);
+      letter-spacing: 0.5px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: clamp(14px, 1.8vw, 24px);
+      text-align: left;
+      margin-bottom: clamp(20px, 3vh, 34px);
+    }
+    .card {
+      background: rgba(13, 13, 13, 0.9);
+      border: 1px solid #252a33;
+      border-radius: 12px;
+      padding: clamp(14px, 1.6vw, 22px);
+    }
+    .card-title {
+      color: #f59e0b;
+      font-size: clamp(14px, 1.5vw, 24px);
+      margin-bottom: clamp(8px, 1vh, 12px);
+    }
+    .card-copy {
+      color: #9ca3af;
+      font-size: clamp(11px, 1.05vw, 16px);
+      line-height: 1.55;
+    }
+    .footer {
+      color: #6b7280;
+      font-size: clamp(12px, 1.2vw, 18px);
+      letter-spacing: 0.5px;
+    }
+    .footer strong { color: #d1d5db; }
+    @media (max-width: 800px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="content">
+    <div class="badge">WHAT'S NEXT</div>
+    <div class="title">What We Built Is the Foundation</div>
+    <div class="subtitle">A composable on-chain game stack we can keep expanding.</div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="card-title">More Zones & Bosses</div>
+        <div class="card-copy">New dungeons, enemy sets, and loot economies on top of the same run architecture.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Creator Economy Layer</div>
+        <div class="card-copy">Revenue share for featured soundtrack creators, curated dungeon packs, and branded dungeon takeovers.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Agent Tournaments</div>
+        <div class="card-copy">Structured agent-vs-agent ladders on verifiable on-chain run records.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Seasonal Live Ops</div>
+        <div class="card-copy">Time-limited events, new rewards, and social challenges without rebuilding core systems.</div>
+      </div>
+    </div>
+
+    <div class="footer"><strong>We didn’t just ship a game</strong> — we shipped the foundation for social on-chain roguelites.</div>
+  </div>
+</body>
+</html>

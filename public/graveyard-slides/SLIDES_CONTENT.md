@@ -178,7 +178,22 @@
 
 ---
 
-## Slide 13: CLOSE (105-110s)
+## Slide 13: WHAT'S NEXT (105-112s)
+**Visual:** Foundation framing, 2x2 roadmap card grid
+**Text:**
+> What We Built Is the Foundation
+> 
+> More Zones & Bosses
+> Creator Economy Layer
+> Agent Tournaments
+> Seasonal Live Ops
+
+**Script:**
+"What we built is the foundation: more zones and bosses, a creator economy layer, agent tournaments, and seasonal live ops — all on top of the same on-chain core."
+
+---
+
+## Slide 14: CLOSE (112-117s)
 **Visual:** App icon, ASCII logo, red glow, crypt background
 **Text:**
 > Your death feeds the depths.

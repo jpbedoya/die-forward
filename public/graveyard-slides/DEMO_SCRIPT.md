@@ -63,13 +63,14 @@
 
 ---
 
-### ACT 5: THE CLOSE (Slides 12-13)
+### ACT 5: THE CLOSE (Slides 12-14)
 
 | Time | Slide | App Action | Script |
 |------|-------|------------|--------|
-| 1:56 | Build | **Tap RANKS** — show leaderboard | "Built with Pisco. MagicBlock, Tapestry, Audius, Solana escrow, AgentWallet, 68 ElevenLabs SFX." |
+| 1:56 | Build | **Tap RANKS** — show leaderboard | "Built with Pisco. Full stack: MagicBlock, Tapestry, Audius, Solana escrow, AgentWallet, ElevenLabs, React Native, Solana Mobile Stack, InstantDB." |
 | 2:02 | Build | **Tap Echoes** — your death in feed | "Your death is already in the feed." |
-| 2:06 | Close | Return to home screen | "Your death feeds the depths. Die Forward. dieforward.com." |
+| 2:06 | What's Next | Back to home screen | "What we built is the foundation: more zones, creator economy, agent tournaments, and seasonal live ops." |
+| 2:11 | Close | Hold on title | "Your death feeds the depths. Die Forward. dieforward.com." |
 
 ---
 
@@ -109,6 +110,7 @@ If something breaks mid-demo:
 | 10. Escrow | 13s | Deep run → DEATH |
 | 11. Business | 11s | Death screen → final words |
 | 12. Build | 10s | Ranks + Echoes |
-| 13. Close | 5s | Home screen |
+| 13. What's Next | 5s | Home screen |
+| 14. Close | 5s | Final hold |
 
-**Total: ~2 minutes**
+**Total: ~2m 15s**
