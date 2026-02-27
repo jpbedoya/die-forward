@@ -64,13 +64,13 @@ export function useAudiusPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [loadedPlaylistId, setLoadedPlaylistId] = useState<string | null>(null);
-  const [volume, setVolumeState] = useState(0.7);
+  const [volume, setVolumeState] = useState(0.3);
   const [error, setError] = useState<string | null>(null);
 
   const soundRef = useRef<Player | null>(null);
   const tracksRef = useRef<AudiusTrack[]>([]);
   const indexRef = useRef(0);
-  const volumeRef = useRef(0.7);
+  const volumeRef = useRef(0.3);
   const currentTrackRef = useRef<AudiusTrack | null>(null);
   const actionLockRef = useRef(false);
   const loadRequestIdRef = useRef(0);

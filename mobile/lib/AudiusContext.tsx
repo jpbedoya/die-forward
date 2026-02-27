@@ -24,6 +24,10 @@ interface AudiusContextValue {
   isPlaying: boolean;
   isLoading: boolean;
 
+  // Shared music volume (applies to Audius and game ambient)
+  musicVolume: number;
+  setMusicVolume: (vol: number) => Promise<void>;
+
   // Controls
   togglePlayPause: () => void;
   playNext: () => void;
@@ -46,6 +50,7 @@ export function AudiusProvider({ children }: { children: React.ReactNode }) {
   const [musicSource, setMusicSourceState] = useState<MusicSource>('game');
   const [activePlaylistId, setActivePlaylistIdState] = useState<string>(DEFAULT_PLAYLIST);
   const [masterEnabled, setMasterEnabledState] = useState(true);
+  const [musicVolume, setMusicVolumeState] = useState(0.3);
   const [prefsLoaded, setPrefsLoaded] = useState(false);
 
   // Keep stable refs to player actions so effects always call the live version
@@ -59,7 +64,8 @@ export function AudiusProvider({ children }: { children: React.ReactNode }) {
     Promise.all([
       AsyncStorage.getItem(PREFS_KEY),
       AsyncStorage.getItem('audio-master-enabled'),
-    ]).then(([prefsRaw, masterRaw]) => {
+      AsyncStorage.getItem('audio-ambient-volume'),
+    ]).then(([prefsRaw, masterRaw, volRaw]) => {
       if (prefsRaw) {
         try {
           const prefs: AudioPrefs = JSON.parse(prefsRaw);
@@ -72,9 +78,17 @@ export function AudiusProvider({ children }: { children: React.ReactNode }) {
 
       // Keep master state aligned with existing audio manager preference
       setMasterEnabledState(masterRaw !== 'false');
+      const vol = volRaw !== null ? Number(volRaw) : 0.3;
+      setMusicVolumeState(Number.isFinite(vol) ? Math.max(0, Math.min(1, vol)) : 0.3);
       setPrefsLoaded(true);
     });
   }, []);
+
+  // Keep Audius player volume in sync with shared music volume + master mute
+  useEffect(() => {
+    const vol = masterEnabled ? musicVolume : 0;
+    player.setVolume(vol).catch(() => {});
+  }, [player, musicVolume, masterEnabled]);
 
   // ── React to source/master changes ─────────────────────────────────────────
   useEffect(() => {
@@ -156,6 +170,12 @@ export function AudiusProvider({ children }: { children: React.ReactNode }) {
     }
   }, [musicSource, masterEnabled, savePrefs]);
 
+  const setMusicVolume = useCallback(async (vol: number) => {
+    const clamped = Math.max(0, Math.min(1, vol));
+    setMusicVolumeState(clamped);
+    await player.setVolume(clamped);
+  }, [player]);
+
   return (
     <AudiusContext.Provider value={{
       musicSource,
@@ -167,6 +187,8 @@ export function AudiusProvider({ children }: { children: React.ReactNode }) {
       currentTrack: player.currentTrack,
       isPlaying: player.isPlaying,
       isLoading: player.isLoading,
+      musicVolume,
+      setMusicVolume,
       togglePlayPause: player.togglePlayPause,
       playNext: player.playNext,
       playPrev: player.playPrev,

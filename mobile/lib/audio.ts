@@ -701,8 +701,10 @@ export function useAudio() {
 
   // Master toggle ([SND]/[MUTE])
   const toggle = useCallback(async () => {
-    const newState = await getAudioManager().toggleMaster();
+    const manager = getAudioManager();
+    const newState = await manager.toggleMaster();
     setMasterEnabledState(newState);
+    setAmbientVolumeState(manager.getAmbientVolume());
     return newState;
   }, []);
 

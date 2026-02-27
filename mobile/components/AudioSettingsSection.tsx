@@ -19,7 +19,7 @@ export function AudioSettingsSection({ className = '' }: { className?: string })
     setAmbientVolume,
     unlock: unlockAudio,
   } = useAudio();
-  const { musicSource, setMusicSource, activePlaylistId, setActivePlaylist, isLoading } = useAudius();
+  const { musicSource, setMusicSource, activePlaylistId, setActivePlaylist, setMusicVolume, isLoading } = useAudius();
   const { playlists: dbPlaylists } = usePlaylists();
 
   // Use DB playlists if available, fall back to hardcoded
@@ -40,7 +40,9 @@ export function AudioSettingsSection({ className = '' }: { className?: string })
 
   const changeVolume = (next: number) => {
     const clamped = Math.max(0, Math.min(10, next));
-    setAmbientVolume(clamped / 10);
+    const vol = clamped / 10;
+    setAmbientVolume(vol);
+    setMusicVolume(vol);
   };
 
   return (
