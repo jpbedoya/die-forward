@@ -281,7 +281,7 @@ Offer it. Lose it on death. Escape and claim more.
           {!game.walletConnected ? (
             <>
               <Pressable
-                className={`py-4 items-center ${
+                className={`py-2.5 items-center ${
                   walletStatus === 'cancelled' ? 'bg-stone-700' :
                   walletStatus === 'error' ? 'bg-blood/60' :
                   walletStatus === 'connecting' ? 'bg-purple-900' :
@@ -298,8 +298,8 @@ Offer it. Lose it on death. Escape and claim more.
                   <Text className="text-blood-light font-mono font-bold tracking-wider">FAILED — TAP TO RETRY</Text>
                 ) : (
                   <View className="items-center">
-                    <Text className="text-white font-mono font-bold tracking-wider">BIND WALLET</Text>
-                    <Text className="text-white/80 text-[10px] font-mono mt-1">[DEVNET]</Text>
+                    <Text className="text-white font-mono font-bold tracking-wider leading-tight">BIND WALLET</Text>
+                    <Text className="text-white/80 text-[9px] font-mono mt-0.5 leading-none">[DEVNET]</Text>
                   </View>
                 )}
               </Pressable>
@@ -319,7 +319,7 @@ Offer it. Lose it on death. Escape and claim more.
           ) : (
             <>
               <Pressable
-                className={`py-4 items-center ${
+                className={`py-2.5 items-center ${
                   sealStatus === 'cancelled' ? 'bg-stone-700' :
                   sealStatus === 'error' ? 'bg-blood/60' :
                   sealStatus === 'signing' ? 'bg-amber/70' :
@@ -338,8 +338,8 @@ Offer it. Lose it on death. Escape and claim more.
                   <Text className="text-blood-light font-mono font-bold tracking-wider">FAILED — TAP TO RETRY</Text>
                 ) : (
                   <View className="items-center">
-                    <Text className="text-crypt-bg font-mono font-bold tracking-wider">SEAL YOUR FATE</Text>
-                    <Text className="text-crypt-bg/70 text-[10px] font-mono mt-1">[DEVNET]</Text>
+                    <Text className="text-crypt-bg font-mono font-bold tracking-wider leading-tight">SEAL YOUR FATE</Text>
+                    <Text className="text-crypt-bg/70 text-[9px] font-mono mt-0.5 leading-none">[DEVNET]</Text>
                   </View>
                 )}
               </Pressable>
