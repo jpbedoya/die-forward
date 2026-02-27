@@ -159,19 +159,21 @@
 ---
 
 ## Slide 12: THE BUILD (98-105s)
-**Visual:** Pisco SMB avatar, integration logos grid
+**Visual:** Pisco SMB avatar, integration logos grid + tech pills
 **Text:**
-> Built with Pisco 🐵
+> Built with Pisco
 > 
-> ⚡ MagicBlock ER — On-chain game state
-> 🕸️ Tapestry — Social death feed
-> 🎵 Audius — Death soundtrack
-> ◎ Solana — Escrow staking
-> 💳 AgentWallet — Agent payments
-> 🔊 ElevenLabs — 68 SFX files
+> MagicBlock ER — On-chain game state
+> Tapestry — Social death feed
+> Audius — Death soundtrack
+> Solana — Escrow staking
+> AgentWallet — Agent payments
+> ElevenLabs — 68 SFX files
+> 
+> Mobile-first RN (mobile + web) · Solana Mobile Stack · MWA + Seeker support
 
 **Script:**
-"Built with Pisco. MagicBlock for on-chain state, Tapestry for social, Audius for music, Solana for escrow, AgentWallet for agent payments, and ElevenLabs for 68 custom sound effects."
+"Built with Pisco. MagicBlock for on-chain state, Tapestry for social, Audius for music, Solana for escrow, AgentWallet for agent payments, and ElevenLabs for 68 custom sound effects. Mobile-first React Native for mobile and web, with Solana Mobile Stack and Seeker support."
 
 ---
 
