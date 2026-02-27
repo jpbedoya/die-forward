@@ -26,6 +26,11 @@ const nextConfig: NextConfig = {
         destination: '/slides/index.html',
         permanent: false,
       },
+      {
+        source: '/graveyard-slides',
+        destination: '/graveyard-slides/index.html',
+        permanent: false,
+      },
     ];
   },
 };
