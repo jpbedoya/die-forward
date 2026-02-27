@@ -1,5 +1,11 @@
 // Audio manager for Die Forward (React Native / Expo)
 // Uses expo-audio for native, Web Audio API for browser
+//
+// Audio architecture:
+//   masterEnabled  — top-level on/off (AudioToggle [SND]/[MUTE])
+//   sfxEnabled     — SFX on/off (separate setting in AudioSettingsSection)
+//   ambientVolume  — 0.0–1.0 (maps to 1–10 slider in AudioSettingsSection)
+//   suppressAmbient — set by AudiusContext when Audius or 'none' is active
 
 import { useEffect, useState, useCallback } from 'react';
 import { Platform } from 'react-native';
@@ -157,10 +163,11 @@ const SOUND_PATHS: Record<SoundId, string> = {
 class WebAudioManager {
   private currentAmbient: HTMLAudioElement | null = null;
   private currentAmbientId: SoundId | null = null;
-  private lastRequestedAmbient: SoundId | null = null; // Track for restart after suppress
-  private enabled: boolean = true;
+  private lastRequestedAmbient: SoundId | null = null;
+  private masterEnabled: boolean = true;  // [SND]/[MUTE] master switch
+  private sfxEnabled: boolean = true;     // SFX on/off (independent)
   private sfxVolume: number = 0.7;
-  private ambientVolume: number = 0.3;
+  private ambientVolume: number = 0.3;    // 0.0–1.0 (persisted)
   private initialized: boolean = false;
   private unlocked: boolean = false;
   private pendingAmbient: SoundId | null = null;
@@ -172,9 +179,15 @@ class WebAudioManager {
     if (this.initialized) return;
     
     try {
-      // Load saved preference
-      const saved = await AsyncStorage.getItem('audio-enabled');
-      this.enabled = saved !== 'false';
+      // Load saved preferences
+      const [master, sfx, vol] = await Promise.all([
+        AsyncStorage.getItem('audio-master-enabled'),
+        AsyncStorage.getItem('audio-sfx-enabled'),
+        AsyncStorage.getItem('audio-ambient-volume'),
+      ]);
+      this.masterEnabled = master !== 'false';
+      this.sfxEnabled = sfx !== 'false';
+      if (vol !== null) this.ambientVolume = parseFloat(vol);
       this.initialized = true;
       
       audioLog('[Audio/Web] Initialized, setting up unlock listeners');
@@ -190,7 +203,7 @@ class WebAudioManager {
         silentAudio.play().catch(() => {});
         
         // Play pending ambient if any
-        if (this.pendingAmbient && this.enabled) {
+        if (this.pendingAmbient && this.masterEnabled) {
           audioLog('[Audio/Web] Playing pending ambient:', this.pendingAmbient);
           this.playAmbient(this.pendingAmbient);
           this.pendingAmbient = null;
@@ -221,9 +234,9 @@ class WebAudioManager {
   }
 
   async playSFX(id: SoundId) {
-    audioLog('[Audio/Web] playSFX:', id, { enabled: this.enabled, unlocked: this.unlocked });
+    audioLog('[Audio/Web] playSFX:', id, { masterEnabled: this.masterEnabled, sfxEnabled: this.sfxEnabled, unlocked: this.unlocked });
     
-    if (!this.enabled || !this.unlocked) return;
+    if (!this.masterEnabled || !this.sfxEnabled || !this.unlocked) return;
     
     try {
       // Create a new Audio element for SFX (allows overlapping sounds)
@@ -247,21 +260,24 @@ class WebAudioManager {
     const wasSupressed = this.suppressAmbient;
     this.suppressAmbient = suppress;
 
-    // Note: callers (AudiusContext) are responsible for calling stopAmbient()
-    // when suppressing — don't double-stop here.
-    if (wasSupressed && !suppress && this.lastRequestedAmbient) {
-      // When un-suppressing, restart the last requested ambient
+    if (suppress) {
+      this.stopAmbient();
+      this.pendingAmbient = null;
+      return;
+    }
+
+    if (wasSupressed && this.lastRequestedAmbient) {
       this.playAmbient(this.lastRequestedAmbient);
     }
   }
 
   async playAmbient(id: SoundId, crossfade: boolean = true) {
-    audioLog('[Audio/Web] playAmbient:', id, { enabled: this.enabled, unlocked: this.unlocked, crossfade, suppressed: this.suppressAmbient });
+    audioLog('[Audio/Web] playAmbient:', id, { masterEnabled: this.masterEnabled, unlocked: this.unlocked, crossfade, suppressed: this.suppressAmbient });
     
     // Always track what was requested, even if suppressed (for restart)
     this.lastRequestedAmbient = id;
     
-    if (!this.enabled) return;
+    if (!this.masterEnabled) return;
     if (this.suppressAmbient) return;
     
     if (!this.unlocked) {
@@ -354,45 +370,56 @@ class WebAudioManager {
     }
   }
 
-  async toggle(): Promise<boolean> {
-    this.enabled = !this.enabled;
-    await AsyncStorage.setItem('audio-enabled', String(this.enabled));
-    
-    if (!this.enabled) {
-      await this.stopAmbient();
-    }
-    
-    return this.enabled;
+  // ── Master (all audio) ───────────────────────────────────────────────────
+  async toggleMaster(): Promise<boolean> {
+    this.masterEnabled = !this.masterEnabled;
+    await AsyncStorage.setItem('audio-master-enabled', String(this.masterEnabled));
+    if (!this.masterEnabled) await this.stopAmbient();
+    return this.masterEnabled;
   }
 
-  isEnabled(): boolean {
-    return this.enabled;
+  isMasterEnabled(): boolean { return this.masterEnabled; }
+
+  async setMasterEnabled(enabled: boolean) {
+    this.masterEnabled = enabled;
+    await AsyncStorage.setItem('audio-master-enabled', String(enabled));
+    if (!enabled) await this.stopAmbient();
   }
 
-  async setEnabled(enabled: boolean) {
-    this.enabled = enabled;
-    await AsyncStorage.setItem('audio-enabled', String(this.enabled));
-    
-    if (!enabled) {
-      await this.stopAmbient();
-    }
+  // ── SFX (independent) ───────────────────────────────────────────────────
+  async toggleSFX(): Promise<boolean> {
+    this.sfxEnabled = !this.sfxEnabled;
+    await AsyncStorage.setItem('audio-sfx-enabled', String(this.sfxEnabled));
+    return this.sfxEnabled;
   }
 
-  isUnlocked(): boolean {
-    return this.unlocked;
+  isSFXEnabled(): boolean { return this.sfxEnabled; }
+
+  // ── Volume ──────────────────────────────────────────────────────────────
+  getAmbientVolume(): number { return this.ambientVolume; }
+
+  async setAmbientVolume(vol: number) {
+    this.ambientVolume = Math.max(0, Math.min(1, vol));
+    await AsyncStorage.setItem('audio-ambient-volume', String(this.ambientVolume));
+    // Apply immediately to playing ambient
+    if (this.currentAmbient) this.currentAmbient.volume = this.ambientVolume;
   }
+
+  // ── Legacy shims (keep callers working) ─────────────────────────────────
+  async toggle(): Promise<boolean> { return this.toggleMaster(); }
+  isEnabled(): boolean { return this.masterEnabled; }
+  async setEnabled(enabled: boolean) { return this.setMasterEnabled(enabled); }
+
+  isUnlocked(): boolean { return this.unlocked; }
 
   async unlock() {
     if (this.unlocked) return;
     this.unlocked = true;
     audioLog('[Audio/Web] Unlocked by user interaction');
-    
-    if (this.pendingAmbient && this.enabled) {
+    if (this.pendingAmbient && this.masterEnabled) {
       const pending = this.pendingAmbient;
       this.pendingAmbient = null;
-      setTimeout(() => {
-        this.playAmbient(pending);
-      }, 50);
+      setTimeout(() => { this.playAmbient(pending); }, 50);
     }
   }
 }
@@ -402,24 +429,23 @@ class WebAudioManager {
 // =============================================================================
 
 class NativeAudioManager {
-  private currentAmbient: any = null; // AudioPlayer instance
+  private currentAmbient: any = null;
   private currentAmbientId: SoundId | null = null;
-  private lastRequestedAmbient: SoundId | null = null; // Track for restart after suppress
-  private enabled: boolean = true;
+  private lastRequestedAmbient: SoundId | null = null;
+  private masterEnabled: boolean = true;
+  private sfxEnabled: boolean = true;
   private sfxVolume: number = 0.7;
   private ambientVolume: number = 0.3;
   private initialized: boolean = false;
-  private unlocked: boolean = true; // Native doesn't need unlock
+  private unlocked: boolean = true;
   private suppressAmbient: boolean = false;
 
   async init() {
     if (this.initialized) return;
     
     try {
-      // Load audio module
       await loadNativeAudioModule();
       
-      // Configure audio mode (expo-audio options, NOT expo-av)
       if (setAudioModeAsync) {
         await setAudioModeAsync({
           playsInSilentMode: true,
@@ -428,9 +454,14 @@ class NativeAudioManager {
         });
       }
       
-      // Load saved preference
-      const saved = await AsyncStorage.getItem('audio-enabled');
-      this.enabled = saved !== 'false';
+      const [master, sfx, vol] = await Promise.all([
+        AsyncStorage.getItem('audio-master-enabled'),
+        AsyncStorage.getItem('audio-sfx-enabled'),
+        AsyncStorage.getItem('audio-ambient-volume'),
+      ]);
+      this.masterEnabled = master !== 'false';
+      this.sfxEnabled = sfx !== 'false';
+      if (vol !== null) this.ambientVolume = parseFloat(vol);
       this.initialized = true;
       
       audioLog('[Audio/Native] Initialized');
@@ -440,9 +471,9 @@ class NativeAudioManager {
   }
 
   async playSFX(id: SoundId) {
-    audioLog('[Audio/Native] playSFX:', id, { enabled: this.enabled, hasModule: !!AudioModule?.AudioPlayer });
+    audioLog('[Audio/Native] playSFX:', id, { masterEnabled: this.masterEnabled, sfxEnabled: this.sfxEnabled });
     
-    if (!this.enabled) return;
+    if (!this.masterEnabled || !this.sfxEnabled) return;
     if (!AudioModule?.AudioPlayer) return;
     
     try {
@@ -470,24 +501,22 @@ class NativeAudioManager {
     const wasSupressed = this.suppressAmbient;
     this.suppressAmbient = suppress;
 
-    // Note: callers (AudiusContext) are responsible for calling stopAmbient()
-    // when suppressing — don't double-stop here.
-    if (wasSupressed && !suppress && this.lastRequestedAmbient) {
-      // When un-suppressing, restart the last requested ambient
+    if (suppress) {
+      this.stopAmbient();
+      return;
+    }
+
+    if (wasSupressed && this.lastRequestedAmbient) {
       this.playAmbient(this.lastRequestedAmbient);
     }
   }
 
   async playAmbient(id: SoundId, _crossfade: boolean = true) {
-    // Crossfade disabled on native — always hard-stop then start new player.
-    // (Crossfade left dangling oldPlayer in setInterval closure that kept playing
-    // even after stopAmbient() was called.)
-    audioLog('[Audio/Native] playAmbient:', id, { enabled: this.enabled, hasModule: !!AudioModule?.AudioPlayer, suppressed: this.suppressAmbient });
+    audioLog('[Audio/Native] playAmbient:', id, { masterEnabled: this.masterEnabled, hasModule: !!AudioModule?.AudioPlayer, suppressed: this.suppressAmbient });
     
-    // Always track what was requested, even if suppressed (for restart)
     this.lastRequestedAmbient = id;
     
-    if (!this.enabled) return;
+    if (!this.masterEnabled) return;
     if (this.suppressAmbient) return;
     if (this.currentAmbientId === id) return;
     if (!AudioModule?.AudioPlayer) return;
@@ -528,38 +557,49 @@ class NativeAudioManager {
     }
   }
 
-  async toggle(): Promise<boolean> {
-    this.enabled = !this.enabled;
-    await AsyncStorage.setItem('audio-enabled', String(this.enabled));
-    
-    if (!this.enabled) {
-      await this.stopAmbient();
+  // ── Master ───────────────────────────────────────────────────────────────
+  async toggleMaster(): Promise<boolean> {
+    this.masterEnabled = !this.masterEnabled;
+    await AsyncStorage.setItem('audio-master-enabled', String(this.masterEnabled));
+    if (!this.masterEnabled) await this.stopAmbient();
+    return this.masterEnabled;
+  }
+
+  isMasterEnabled(): boolean { return this.masterEnabled; }
+
+  async setMasterEnabled(enabled: boolean) {
+    this.masterEnabled = enabled;
+    await AsyncStorage.setItem('audio-master-enabled', String(enabled));
+    if (!enabled) await this.stopAmbient();
+  }
+
+  // ── SFX ──────────────────────────────────────────────────────────────────
+  async toggleSFX(): Promise<boolean> {
+    this.sfxEnabled = !this.sfxEnabled;
+    await AsyncStorage.setItem('audio-sfx-enabled', String(this.sfxEnabled));
+    return this.sfxEnabled;
+  }
+
+  isSFXEnabled(): boolean { return this.sfxEnabled; }
+
+  // ── Volume ───────────────────────────────────────────────────────────────
+  getAmbientVolume(): number { return this.ambientVolume; }
+
+  async setAmbientVolume(vol: number) {
+    this.ambientVolume = Math.max(0, Math.min(1, vol));
+    await AsyncStorage.setItem('audio-ambient-volume', String(this.ambientVolume));
+    if (this.currentAmbient) {
+      try { this.currentAmbient.volume = this.ambientVolume; } catch {}
     }
-    
-    return this.enabled;
   }
 
-  isEnabled(): boolean {
-    return this.enabled;
-  }
+  // ── Legacy shims ─────────────────────────────────────────────────────────
+  async toggle(): Promise<boolean> { return this.toggleMaster(); }
+  isEnabled(): boolean { return this.masterEnabled; }
+  async setEnabled(enabled: boolean) { return this.setMasterEnabled(enabled); }
 
-  async setEnabled(enabled: boolean) {
-    this.enabled = enabled;
-    await AsyncStorage.setItem('audio-enabled', String(this.enabled));
-    
-    if (!enabled) {
-      await this.stopAmbient();
-    }
-  }
-
-  isUnlocked(): boolean {
-    return this.unlocked;
-  }
-
-  async unlock() {
-    // No-op for native
-    this.unlocked = true;
-  }
+  isUnlocked(): boolean { return this.unlocked; }
+  async unlock() { this.unlocked = true; }
 }
 
 // =============================================================================
@@ -571,6 +611,17 @@ interface IAudioManager {
   playSFX(id: SoundId): Promise<void>;
   playAmbient(id: SoundId, crossfade?: boolean): Promise<void>;
   stopAmbient(): Promise<void>;
+  // Master
+  toggleMaster(): Promise<boolean>;
+  isMasterEnabled(): boolean;
+  setMasterEnabled(enabled: boolean): Promise<void>;
+  // SFX
+  toggleSFX(): Promise<boolean>;
+  isSFXEnabled(): boolean;
+  // Volume
+  getAmbientVolume(): number;
+  setAmbientVolume(vol: number): Promise<void>;
+  // Legacy shims
   toggle(): Promise<boolean>;
   isEnabled(): boolean;
   setEnabled(enabled: boolean): Promise<void>;
@@ -597,14 +648,18 @@ export function getAudioManager(): IAudioManager {
 
 // React hook for audio
 export function useAudio() {
-  const [enabled, setEnabled] = useState(true);
+  const [masterEnabled, setMasterEnabledState] = useState(true);
+  const [sfxEnabled, setSFXEnabledState] = useState(true);
+  const [ambientVolume, setAmbientVolumeState] = useState(0.3);
   const [ready, setReady] = useState(false);
   const [unlocked, setUnlocked] = useState(false);
   
   useEffect(() => {
     const manager = getAudioManager();
     manager.init().then(() => {
-      setEnabled(manager.isEnabled());
+      setMasterEnabledState(manager.isMasterEnabled());
+      setSFXEnabledState(manager.isSFXEnabled());
+      setAmbientVolumeState(manager.getAmbientVolume());
       setUnlocked(manager.isUnlocked());
       setReady(true);
     });
@@ -622,27 +677,46 @@ export function useAudio() {
     getAudioManager().stopAmbient();
   }, []);
 
+  // Master toggle ([SND]/[MUTE])
   const toggle = useCallback(async () => {
-    const manager = getAudioManager();
-    const newState = await manager.toggle();
-    setEnabled(newState);
+    const newState = await getAudioManager().toggleMaster();
+    setMasterEnabledState(newState);
     return newState;
   }, []);
 
+  // SFX toggle (independent)
+  const toggleSFX = useCallback(async () => {
+    const newState = await getAudioManager().toggleSFX();
+    setSFXEnabledState(newState);
+    return newState;
+  }, []);
+
+  // Volume (0.0–1.0)
+  const setAmbientVolume = useCallback(async (vol: number) => {
+    await getAudioManager().setAmbientVolume(vol);
+    setAmbientVolumeState(Math.max(0, Math.min(1, vol)));
+  }, []);
+
   const unlock = useCallback(() => {
-    const manager = getAudioManager();
-    manager.unlock();
+    getAudioManager().unlock();
     setUnlocked(true);
   }, []);
 
   return {
-    enabled,
+    // Master
+    enabled: masterEnabled,   // legacy alias
+    masterEnabled,
+    sfxEnabled,
+    ambientVolume,
     ready,
     unlocked,
+    // Actions
     playSFX,
     playAmbient,
     stopAmbient,
     toggle,
+    toggleSFX,
+    setAmbientVolume,
     unlock,
   };
 }

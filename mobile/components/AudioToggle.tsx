@@ -20,7 +20,7 @@ interface AudioToggleProps {
  * - Pass onSettingsPress to show a ⚙ icon that opens audio settings
  */
 export function AudioToggle({ ambientTrack, className = '', inline = false, onSettingsPress }: AudioToggleProps) {
-  const { enabled, toggle, unlock, playAmbient } = useAudio();
+  const { masterEnabled, toggle, unlock, playAmbient } = useAudio();
   const { setMasterEnabled } = useAudius();
 
   const wrapperClass = inline
@@ -43,8 +43,8 @@ export function AudioToggle({ ambientTrack, className = '', inline = false, onSe
   return (
     <View className={`${wrapperClass} ${className}`}>
       <Pressable onPress={handleToggle} className="py-2 pl-2 pr-1" hitSlop={8}>
-        <Text className={`text-xs font-mono text-center w-14 ${enabled ? 'text-amber' : 'text-bone-dark'}`}>
-          {enabled ? '[SND]' : '[MUTE]'}
+        <Text className={`text-xs font-mono text-center w-14 ${masterEnabled ? 'text-amber' : 'text-bone-dark'}`}>
+          {masterEnabled ? '[SND]' : '[MUTE]'}
         </Text>
       </Pressable>
 

@@ -12,7 +12,13 @@ const MUSIC_SOURCES: { value: MusicSource; label: string }[] = [
 ];
 
 export function AudioSettingsSection({ className = '' }: { className?: string }) {
-  const { enabled: sfxEnabled, toggle: toggleSFX, unlock: unlockAudio } = useAudio();
+  const {
+    sfxEnabled,
+    toggleSFX,
+    ambientVolume,
+    setAmbientVolume,
+    unlock: unlockAudio,
+  } = useAudio();
   const { musicSource, setMusicSource, activePlaylistId, setActivePlaylist, isLoading } = useAudius();
   const { playlists: dbPlaylists } = usePlaylists();
 
@@ -27,6 +33,14 @@ export function AudioSettingsSection({ className = '' }: { className?: string })
   const handleToggleSFX = () => {
     unlockAudio();
     toggleSFX();
+  };
+
+  const volumeLevel = Math.max(1, Math.min(10, Math.round(ambientVolume * 10)));
+  const volumeBar = `${'■'.repeat(volumeLevel)}${'·'.repeat(10 - volumeLevel)}`;
+
+  const changeVolume = (next: number) => {
+    const clamped = Math.max(1, Math.min(10, next));
+    setAmbientVolume(clamped / 10);
   };
 
   return (
@@ -45,6 +59,21 @@ export function AudioSettingsSection({ className = '' }: { className?: string })
           {sfxEnabled ? '♪ ON' : '× OFF'}
         </Text>
       </Pressable>
+
+      {/* Game ambient volume (ASCII style) */}
+      <View className="flex-row items-center justify-between px-3 py-2 border-t border-crypt-border">
+        <Text className="text-bone-muted text-sm font-mono">VOL</Text>
+        <View className="flex-row items-center gap-2">
+          <Pressable onPress={() => changeVolume(volumeLevel - 1)} className="px-2 py-1 border border-crypt-border">
+            <Text className="text-bone-dark font-mono text-xs">-</Text>
+          </Pressable>
+          <Text className="text-amber-light text-xs font-mono w-24 text-center">{volumeBar}</Text>
+          <Pressable onPress={() => changeVolume(volumeLevel + 1)} className="px-2 py-1 border border-crypt-border">
+            <Text className="text-bone-dark font-mono text-xs">+</Text>
+          </Pressable>
+          <Text className="text-bone-dark text-xs font-mono w-8 text-right">{volumeLevel}/10</Text>
+        </View>
+      </View>
 
       {/* Music source picker */}
       <View className="flex-row items-center px-3 py-2 border-t border-crypt-border">
