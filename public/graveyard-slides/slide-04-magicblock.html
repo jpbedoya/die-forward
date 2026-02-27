@@ -14,6 +14,7 @@
       color: #e5e5e5;
       padding: clamp(20px, 4vw, 60px);
       gap: clamp(30px, 5vw, 80px);
+      cursor: pointer;
     }
     .left {
       flex: 1;
@@ -129,6 +130,7 @@
       overflow: hidden;
       position: relative;
       box-shadow: 0 25px 80px rgba(0,0,0,0.6);
+      cursor: default;
     }
     .modal-close {
       position: absolute;
@@ -211,10 +213,17 @@
     const modal = document.getElementById('onchainModal');
     const closeBtn = document.getElementById('closeModal');
 
-    function openModal() { modal.classList.add('open'); }
-    function closeModal() { modal.classList.remove('open'); }
+    function openModal() {
+      modal.classList.add('open');
+      document.body.style.cursor = 'default';
+      closeBtn.focus();
+    }
+    function closeModal() {
+      modal.classList.remove('open');
+      document.body.style.cursor = 'pointer';
+    }
 
-    document.body.addEventListener('click', (e) => {
+    document.body.addEventListener('click', () => {
       if (!modal.classList.contains('open')) openModal();
     });
 
@@ -225,9 +234,14 @@
 
     modal.addEventListener('click', closeModal);
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeModal();
-    });
+    const escHandler = (e) => {
+      if (e.key === 'Escape' || e.key === 'Esc') {
+        e.preventDefault();
+        closeModal();
+      }
+    };
+    document.addEventListener('keydown', escHandler, true);
+    window.addEventListener('keydown', escHandler, true);
   </script>
 </body>
 </html>
