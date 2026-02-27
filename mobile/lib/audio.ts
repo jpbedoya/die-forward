@@ -166,7 +166,7 @@ class WebAudioManager {
   private lastRequestedAmbient: SoundId | null = null;
   private masterEnabled: boolean = true;  // [SND]/[MUTE] master switch
   private sfxEnabled: boolean = true;     // SFX on/off (independent)
-  private sfxVolume: number = 0.7;
+  private sfxVolume: number = 0.3;
   private ambientVolume: number = 0.3;    // 0.0–1.0 (persisted)
   private preMuteAmbientVolume: number = 0.3;
   private initialized: boolean = false;
@@ -189,6 +189,7 @@ class WebAudioManager {
       this.masterEnabled = master !== 'false';
       this.sfxEnabled = sfx !== 'false';
       if (vol !== null) this.ambientVolume = parseFloat(vol);
+      this.sfxVolume = this.ambientVolume;
       this.preMuteAmbientVolume = this.ambientVolume > 0 ? this.ambientVolume : 0.3;
       this.initialized = true;
       
@@ -411,6 +412,7 @@ class WebAudioManager {
 
   async setAmbientVolume(vol: number) {
     this.ambientVolume = Math.max(0, Math.min(1, vol));
+    this.sfxVolume = this.ambientVolume;
     await AsyncStorage.setItem('audio-ambient-volume', String(this.ambientVolume));
     // Apply immediately to playing ambient
     if (this.currentAmbient) this.currentAmbient.volume = this.ambientVolume;
@@ -445,7 +447,7 @@ class NativeAudioManager {
   private lastRequestedAmbient: SoundId | null = null;
   private masterEnabled: boolean = true;
   private sfxEnabled: boolean = true;
-  private sfxVolume: number = 0.7;
+  private sfxVolume: number = 0.3;
   private ambientVolume: number = 0.3;
   private preMuteAmbientVolume: number = 0.3;
   private initialized: boolean = false;
@@ -474,6 +476,7 @@ class NativeAudioManager {
       this.masterEnabled = master !== 'false';
       this.sfxEnabled = sfx !== 'false';
       if (vol !== null) this.ambientVolume = parseFloat(vol);
+      this.sfxVolume = this.ambientVolume;
       this.preMuteAmbientVolume = this.ambientVolume > 0 ? this.ambientVolume : 0.3;
       this.initialized = true;
       
@@ -609,6 +612,7 @@ class NativeAudioManager {
 
   async setAmbientVolume(vol: number) {
     this.ambientVolume = Math.max(0, Math.min(1, vol));
+    this.sfxVolume = this.ambientVolume;
     await AsyncStorage.setItem('audio-ambient-volume', String(this.ambientVolume));
     if (this.currentAmbient) {
       try { this.currentAmbient.volume = this.ambientVolume; } catch {}
