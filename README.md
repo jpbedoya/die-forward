@@ -29,7 +29,7 @@
   <a href="https://dieforward.com/graveyard-slides">📊 Pitch Deck</a> •
   <a href="#how-it-works">How It Works</a> •
   <a href="#integrations">Integrations</a> •
-  <a href="#agent-api">Agent API</a> •
+  <a href="#roadmap">Roadmap</a> •
   <a href="#tech-stack">Tech Stack</a>
 </p>
 
@@ -216,6 +216,51 @@ Die Forward is a **mobile-first** experience:
 
 ---
 
+## 🗺️ Roadmap
+
+### Completed ✅
+
+**Core Game**
+- Roguelite dungeon crawler (3 depths, 12 rooms, boss fight)
+- Intent-based combat system with 7 enemy intents
+- Procedural room generation with narrative content
+- Death persistence — corpses, final words, memorials
+
+**On-Chain Infrastructure**
+- SOL staking with on-chain escrow program (Anchor)
+- MagicBlock ephemeral rollups for real-time game logic
+- Run records written on-chain with automatic settlement
+- Victory payouts (stake + 50% bonus from pool)
+
+**Integrations**
+- Audius decentralized soundtrack with death leaderboard
+- Tapestry social profiles and achievement tracking
+- Mobile Wallet Adapter for Phantom/Solflare
+
+**Platform**
+- Mobile-first Expo app (iOS, Android, Web)
+- Agent API for AI players
+- Android APK builds via GitHub releases
+
+### Coming Soon 🚧
+
+| Phase | Features |
+|-------|----------|
+| **Mainnet Launch** | Deploy to Solana mainnet, real stakes |
+| **App Distribution** | Solana dApp Store, Google Play, iOS App Store |
+| **Expanded Content** | New zones, enemies, items, boss variants |
+| **Business Model** | Premium runs, cosmetics, seasonal content |
+
+### Future 🔮
+
+- **$DIE Token** — Earn tokens for notable deaths, spend on cosmetics
+- **Guilds & Clans** — Team leaderboards, shared pools
+- **Spectator Mode** — Watch runs in real-time
+- **Run Replays** — Share your best (and worst) moments
+- **PvP Zones** — Invade other players' runs
+
+---
+
 ## 🚀 Setup
 
 ### Prerequisites
@@ -291,31 +336,6 @@ die-forward/
 | [Staking Flows](docs/STAKING_FLOWS.md) | On-chain escrow vs pool wallet flows |
 | [Mobile Wallet](docs/MOBILE_WALLET.md) | MWA integration details |
 | [Agent Skill](/public/skill.md) | API docs for agent players |
-
----
-
-## 🗺️ Roadmap
-
-### Completed ✅
-- Core game loop (3 depths, 12 rooms, boss fight)
-- Intent-based combat system
-- Real SOL staking + payouts (devnet)
-- On-chain escrow program (Anchor)
-- **MagicBlock integration** — Ephemeral rollups for game logic
-- **Audius integration** — Decentralized soundtrack + death leaderboard
-- **Tapestry integration** — Social profiles
-- Agent API for AI players
-- Mobile app (Expo - iOS, Android, Web)
-- Mobile Wallet Adapter support
-
-### Coming Soon 🚧
-| Phase | Features |
-|-------|----------|
-| **Mainnet** | Launch on Solana mainnet |
-| **App Stores** | iOS App Store, Google Play, Solana dApp Store |
-| **More Zones** | New depths with unique enemies |
-| **Token Economy** | $DIE token for notable deaths |
-| **Social Features** | Guilds, spectating, run replays |
 
 ---
 
