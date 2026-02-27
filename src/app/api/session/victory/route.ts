@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
           console.log('[MagicBlock] ER committed:', erResult.txSignature ?? 'no sig');
           // Store commit tx signature for verification/display
           if (erResult.txSignature) {
-            await db.transact(tx.sessions[sessionId].update({ erCommitTx: erResult.txSignature }));
+            await db.transact(tx.sessions[session.id].update({ erCommitTx: erResult.txSignature }));
           }
         }
       } catch (err) {
