@@ -61,22 +61,27 @@
       border: 1px solid #2a2a2a;
       border-radius: 12px;
       padding: clamp(18px, 2vw, 30px);
-    }
-    .feature-header {
       display: flex;
-      align-items: center;
-      gap: clamp(10px, 1vw, 15px);
-      margin-bottom: clamp(10px, 1.5vh, 18px);
+      gap: clamp(15px, 2vw, 25px);
+      align-items: flex-start;
     }
     .feature-icon-img {
-      width: clamp(40px, 4vw, 56px);
-      height: clamp(40px, 4vw, 56px);
+      width: clamp(80px, 8vw, 112px);
+      height: clamp(80px, 8vw, 112px);
       object-fit: contain;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+    .feature-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
     }
     .feature-title {
       font-size: clamp(16px, 1.8vw, 26px);
       color: #e5e5e5;
       font-weight: bold;
+      margin-bottom: clamp(6px, 1vh, 12px);
     }
     .feature-desc {
       font-size: clamp(12px, 1.2vw, 18px);
@@ -88,6 +93,7 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
+      margin-left: auto;
     }
     .feature-tag img {
       height: clamp(18px, 2vw, 28px);
@@ -111,48 +117,48 @@
     <div class="title">Gameplay powered by the stack</div>
     <div class="features-grid">
       <div class="feature">
-        <div class="feature-header">
-          <img src="icon-soundtrack-256.webp" class="feature-icon-img" alt="">
+        <img src="icon-soundtrack-256.webp" class="feature-icon-img" alt="">
+        <div class="feature-content">
           <div class="feature-title">Soundtrack Your Death</div>
+          <div class="feature-desc">
+            Music playing when you die is recorded forever. 
+            Leaderboard tracks the most-played death songs.
+          </div>
+          <span class="feature-tag tag-audius"><img src="logo-audius.svg" alt="Audius"></span>
         </div>
-        <div class="feature-desc">
-          Music playing when you die is recorded forever. 
-          Leaderboard tracks the most-played death songs.
-        </div>
-        <span class="feature-tag tag-audius"><img src="logo-audius.svg" alt="Audius"></span>
       </div>
       <div class="feature">
-        <div class="feature-header">
-          <img src="icon-die-256.webp" class="feature-icon-img" alt="">
+        <img src="icon-die-256.webp" class="feature-icon-img" alt="">
+        <div class="feature-content">
           <div class="feature-title">Deaths Become Content</div>
+          <div class="feature-desc">
+            Your death posts to the social graph. Final message, depth reached, stake lost. 
+            Others discover and light candles.
+          </div>
+          <span class="feature-tag tag-tapestry"><img src="logo-tapestry.svg" alt="Tapestry"></span>
         </div>
-        <div class="feature-desc">
-          Your death posts to the social graph. Final message, depth reached, stake lost. 
-          Others discover and light candles.
-        </div>
-        <span class="feature-tag tag-tapestry"><img src="logo-tapestry.svg" alt="Tapestry"></span>
       </div>
       <div class="feature">
-        <div class="feature-header">
-          <img src="icon-fight-256.webp" class="feature-icon-img" alt="">
+        <img src="icon-fight-256.webp" class="feature-icon-img" alt="">
+        <div class="feature-content">
           <div class="feature-title">Every Run is On-Chain</div>
+          <div class="feature-desc">
+            Your run progress is tracked in real-time on Solana. 
+            Not a database — actual blockchain state.
+          </div>
+          <span class="feature-tag tag-magicblock"><img src="logo-magicblock.svg" alt="MagicBlock"></span>
         </div>
-        <div class="feature-desc">
-          Your run progress is tracked in real-time on Solana. 
-          Not a database — actual blockchain state.
-        </div>
-        <span class="feature-tag tag-magicblock"><img src="logo-magicblock.svg" alt="MagicBlock"></span>
       </div>
       <div class="feature">
-        <div class="feature-header">
-          <img src="icon-stake-256.webp" class="feature-icon-img" alt="">
+        <img src="icon-stake-256.webp" class="feature-icon-img" alt="">
+        <div class="feature-content">
           <div class="feature-title">Trustless Stakes</div>
+          <div class="feature-desc">
+            SOL locked in program escrow. Victory pays out automatically. 
+            No custody, no trust required.
+          </div>
+          <span class="feature-tag tag-solana"><img src="logo-solana.svg" alt="Solana"></span>
         </div>
-        <div class="feature-desc">
-          SOL locked in program escrow. Victory pays out automatically. 
-          No custody, no trust required.
-        </div>
-        <span class="feature-tag tag-solana"><img src="logo-solana.svg" alt="Solana"></span>
       </div>
     </div>
   </div>
