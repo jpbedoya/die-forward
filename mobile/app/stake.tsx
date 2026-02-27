@@ -203,12 +203,12 @@ Offer it. Lose it on death. Escape and claim more.
         {/* Stake options */}
         <View className="mb-6">
           <Text className="text-bone-dark text-xs font-mono tracking-widest mb-3">CHOOSE YOUR OFFERING</Text>
-          <View className="flex-row flex-wrap gap-2">
+          <View className="flex-row gap-2">
             {STAKE_OPTIONS.map((amount) => (
               <Pressable
                 key={amount}
-                className={`py-3 px-5 border ${
-                  selectedStake === amount 
+                className={`flex-1 py-3 items-center border ${
+                  selectedStake === amount && !customStake
                     ? 'border-amber bg-amber/10' 
                     : 'border-crypt-border-light bg-crypt-surface'
                 }`}
@@ -219,7 +219,7 @@ Offer it. Lose it on death. Escape and claim more.
                 }}
               >
                 <Text className={`font-mono text-base ${
-                  selectedStake === amount ? 'text-amber-light' : 'text-bone-muted'
+                  selectedStake === amount && !customStake ? 'text-amber-light' : 'text-bone-muted'
                 }`}>
                   {amount}
                 </Text>
