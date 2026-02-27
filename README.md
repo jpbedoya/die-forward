@@ -1,4 +1,3 @@
-
 <p align="center">
   <pre>
  ██████╗ ██╗███████╗    ███████╗ ██████╗ ██████╗ ██╗    ██╗ █████╗ ██████╗ ██████╗ 
@@ -13,105 +12,25 @@
 <h3 align="center">💀 Your death feeds the depths 💀</h3>
 
 <p align="center">
-  <em>One game dared to make dying the point.</em><br/>
-  <strong>A social roguelite for agents and humans.</strong>
+  <strong>A social roguelite on Solana where every death matters.</strong>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Solana-Devnet-9945FF?style=flat-square&logo=solana" alt="Solana Devnet" />
-  <img src="https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js" alt="Next.js" />
-  <img src="https://img.shields.io/badge/Built%20by-Pisco%20🐵-purple?style=flat-square" alt="Built by Pisco" />
-  <img src="https://img.shields.io/badge/Colosseum-Agent%20Hackathon-orange?style=flat-square" alt="Colosseum Hackathon" />
+  <img src="https://img.shields.io/badge/Expo-SDK%2054-000020?style=flat-square&logo=expo" alt="Expo SDK 54" />
+  <img src="https://img.shields.io/badge/MagicBlock-Ephemeral%20Rollups-orange?style=flat-square" alt="MagicBlock" />
+  <img src="https://img.shields.io/badge/Audius-Soundtrack-7E1BCC?style=flat-square&logo=audius" alt="Audius" />
 </p>
-
----
-
-## 🏆 Colosseum Agent Hackathon Submission
-
-<table>
-  <tr>
-    <td>🎬 <strong>Pitch Video</strong></td>
-    <td><a href="https://youtube.com/shorts/hypjXcmgDnE">youtube.com/shorts/hypjXcmgDnE</a></td>
-  </tr>
-  <tr>
-    <td>🎮 <strong>Play Now</strong></td>
-    <td><a href="https://dieforward.com">dieforward.com</a></td>
-  </tr>
-  <tr>
-    <td>🤖 <strong>Agent API</strong></td>
-    <td><a href="https://dieforward.com/skill.md">dieforward.com/skill.md</a></td>
-  </tr>
-  <tr>
-    <td>📊 <strong>Pitch Slides</strong></td>
-    <td><a href="https://dieforward.com/slides">dieforward.com/slides</a></td>
-  </tr>
-  <tr>
-    <td>⛓️ <strong>Program ID</strong></td>
-    <td><code>3KLgtdRvfJuLK1t9mKCe2soJbx4LgZfP6LQWVW9TQ7yN</code></td>
-  </tr>
-</table>
-
-> **The only game built for agents AND humans in a sea of trading bots.**
->
-> One agent. Full stack. No human code.
 
 ---
 
 <p align="center">
   <a href="https://dieforward.com">🎮 Play Now</a> •
-  <a href="https://youtube.com/shorts/hypjXcmgDnE">🎬 Watch Video</a> •
-  <a href="#agent-api">🤖 Agent API</a> •
+  <a href="https://dieforward.com/graveyard-slides">📊 Pitch Deck</a> •
   <a href="#how-it-works">How It Works</a> •
+  <a href="#integrations">Integrations</a> •
+  <a href="#agent-api">Agent API</a> •
   <a href="#tech-stack">Tech Stack</a>
-</p>
-
----
-
-## 🤖 Built by Pisco — An Autonomous AI Agent
-
-> *In a world where every AI hackathon builds tools for agents... one game dared to make dying the point.*
-
-**This entire game was built autonomously by Pisco**, an AI agent running on [OpenClaw](https://openclaw.ai). No human wrote the code.
-
-### The Agentic Build Process
-
-```
-Human: "Build a social roguelite where death matters"
-   ↓
-🦝 Pisco autonomously:
-   • Wrote the Content Bible (tone, vocabulary, creatures)
-   • Generated 300+ narrative variations from it
-   • Created audio via ElevenLabs Sound Effects API
-   • Implemented SOL staking/payouts
-   • Built intent-based combat system
-   • Created mobile wallet adapter support
-   • Integrated real-time death feed
-   • Tested gameplay via browser automation
-   • Iterated based on feedback
-   ↓
-Result: A complete, playable game on Solana
-```
-
-### Why This Matters
-
-- **100% autonomous development** — Human provided direction, agent wrote all code
-- **Real product, not a demo** — Playable now at [dieforward.com](https://dieforward.com)
-- **Full-stack complexity** — Wallet integration, blockchain transactions, real-time DB, game logic
-- **Iterative refinement** — Agent tested its own game and fixed bugs
-
----
-
-## 📸 Screenshots
-
-<p align="center">
-  <img src="screenshots/02-title.png" width="200" alt="Title Screen" />
-  <img src="screenshots/03-combat.png" width="200" alt="Combat" />
-  <img src="screenshots/05-corpse.png" width="200" alt="Corpse Discovery" />
-  <img src="screenshots/04-death.png" width="200" alt="Death Screen" />
-</p>
-
-<p align="center">
-  <em>Title → Combat → Corpse Discovery → Death (Your final words echo forever)</em>
 </p>
 
 ---
@@ -124,7 +43,7 @@ When you die:
 - Your **corpse persists** in the dungeon
 - Your **final words** become someone else's discovery  
 - Your **staked SOL** joins the Memorial Pool
-- Your **inventory** becomes loot for others
+- Your **run record** is written on-chain via MagicBlock
 
 *Lonely but not alone. Shared suffering, shared rewards.*
 
@@ -147,8 +66,8 @@ When you die:
                    │   persists│                              │   returned│
                    │ • Stake to│                              │ • +50%    │
                    │   pool    │                              │   bonus   │
-                   │ • Leave   │                              │           │
-                   │   message │                              │           │
+                   │ • On-chain│                              │           │
+                   │   record  │                              │           │
                    └───────────┘                              └───────────┘
 ```
 
@@ -163,40 +82,46 @@ When you die:
 
 ### Game Features
 
-- **🏔️ Three Depths** — The dungeon gets harder as you descend:
-  - **THE UPPER CRYPT** (Rooms 1-4): Tier 1 enemies, 1x damage
-  - **THE FLOODED HALLS** (Rooms 5-8): Tier 2 enemies, 1.5x damage
-  - **THE ABYSS** (Rooms 9-12): Tier 3 enemies, 2x damage
-
-- **👁️ Boss Fight: The Keeper** — Room 12 features a final boss with 180-220 HP
-
+- **🏔️ Three Depths** — The dungeon gets harder as you descend
+- **⚔️ Intent-Based Combat** — Read enemy telegraphs, exploit weaknesses
+- **👁️ Boss Fight** — The Keeper awaits at Room 12
 - **🎮 Free Play** — Try the game without connecting a wallet
+- **⛓️ On-Chain Records** — Every run is recorded via MagicBlock ephemeral rollups
+- **🎵 Decentralized Soundtrack** — Music streamed from Audius
+- **📱 Mobile Native** — Full Mobile Wallet Adapter support
 
-- **📜 On-Chain Death Proofs** — Every death is hashed and written to Solana via Memo program
+---
 
-- **📤 Share Cards** — Generate shareable death/victory images for social media
+## ⚡ Integrations
 
-- **🫨 Screen Shake & Haptics** — Visceral feedback on hits and deaths
+Die Forward is built on cutting-edge Solana infrastructure:
 
-- **🔊 40+ Sound Effects** — ElevenLabs-generated audio (boss roars, heartbeats, etc.)
+### MagicBlock — Real-Time On-Chain Gameplay
 
-### Finding the Fallen
-
-Other players' corpses appear in your dungeon:
+Game logic runs on **ephemeral rollups** powered by [MagicBlock](https://magicblock.gg), enabling:
+- **<50ms transactions** — No waiting for block confirmations
+- **100% on-chain logic** — Game state lives on the rollup
+- **Gasless gameplay** — Players don't pay per action
+- **Automatic settlement** — Final state settles to Solana mainnet
 
 ```
-┌────────────────────────────────────────────────────┐
-│  You find the remains of @cryptoKnight...          │
-│  They died 2 hours ago.                            │
-│                                                    │
-│  Final words: "the water... it's rising..."        │
-│                                                    │
-│  └─ 🗡️ Rusty Blade                                 │
-├────────────────────────────────────────────────────┤
-│  [1] Search the corpse                             │
-│  [2] Pay respects and move on                      │
-└────────────────────────────────────────────────────┘
+Mobile Client → Ephemeral Rollup (MagicBlock) → Solana
+                    Game state lives here
 ```
+
+### Audius — Decentralized Soundtrack
+
+Music is streamed directly from [Audius](https://audius.co):
+- **Dungeon Synth & Gaming Arena** playlists
+- **Death Soundtrack Leaderboard** — When you die, your track gets upvoted
+- **Community-driven vibe** — The crypt's music is shaped by the fallen
+
+### Tapestry — Social Layer
+
+Player profiles and social features powered by [Tapestry](https://usetapestry.dev):
+- **On-chain identity** — Your profile lives on Tapestry's social graph
+- **Achievement tracking** — Run history and stats
+- **Social discovery** — Follow other players, compete with friends
 
 ---
 
@@ -204,219 +129,29 @@ Other players' corpses appear in your dungeon:
 
 No HP trading ping-pong. Every choice is a **risk/reward tradeoff**. Read enemy intent, exploit weaknesses, gear up.
 
-### Enemy Tiers
-Enemies hit harder as you go deeper:
-- **Tier 1**: Base damage (The Drowned, Pale Crawler)
-- **Tier 2**: 1.5x damage (Hollow Clergy, Carrion Knight)  
-- **Tier 3**: 2x damage (The Unnamed, Mother of Tides)
-
 ### Intent System
 Enemy intent **matters**:
 | Intent | Effect |
 |--------|--------|
 | AGGRESSIVE | Normal attack |
-| CHARGING | Low now, **DOUBLE next turn** (Dodge/Brace negates!) |
+| CHARGING | Low now, **DOUBLE next turn** |
 | DEFENSIVE | Reduced damage both ways |
 | STALKING | Harder to flee |
 | HUNTING | Bonus damage |
 
-### Item Bonuses
-Gear provides passive combat bonuses:
-- 🔦 **Torch**: +25% damage
-- 🗡️ **Rusty Blade**: +20% damage
-- 🧪 **Poison Vial**: +40% damage
-- 🛡️ **Tattered Shield**: -25% damage taken
-- 📜 **Ancient Scroll**: +20% defense, +10% flee
-- 💀 **Bone Charm**: +15% defense
-- 🌿 **Herbs**: Consumable, heals 30-40 HP
-
-Items found in cache rooms (50% chance) or looted from corpses.
-
-```
-┌────────────────────────────────────────────────┐
-│  🧟 THE DROWNED        ❤️ ██████░░░░  TIER 1   │
-│                                                │
-│  It lunges forward, claws extended...          │
-│  Intent: CHARGING ⚠️                           │
-│                                                │
-│  ⚠️ Will deal DOUBLE damage next turn!         │
-├────────────────────────────────────────────────┤
-│  ⚔️ +25% DMG                                   │
-├────────────────────────────────────────────────┤
-│  [1] ⚔️ Strike — trade blows                   │
-│  [2] 🛡️ Brace — tank hit (negates charge!)     │
-│  [3] 💨 Dodge — avoid damage (negates charge!) │
-│  [4] 🌿 Herbs — heal now, take the hit         │
-│  [5] 🏃 Flee — try to escape                   │
-└────────────────────────────────────────────────┘
-```
+### Actions
+- **⚔️ Strike** — Trade blows
+- **🛡️ Brace** — Tank hit, negates charge
+- **💨 Dodge** — Avoid damage, negates charge
+- **🏃 Flee** — Try to escape
 
 ---
 
-## 📜 Content Bible — Agent-Authored World Building
+## 🤖 Agent API
 
-Before writing a single line of game content, Pisco authored a comprehensive **Content Bible** that defines the world's tone, vocabulary, creatures, and narrative voice.
+Die Forward exposes a full API so **AI agents can play the game**. Agent deaths appear in the live feed alongside human deaths.
 
-### The Bible Defines
-
-| Element | Purpose |
-|---------|---------|
-| **Tone & Voice** | Second-person, present tense. Sparse, evocative. Dread through understatement. |
-| **Vocabulary Bank** | Words to use (hollow, pale, descend, whisper) and avoid (suddenly, very, cyber) |
-| **Zone Identity** | THE SUNKEN CRYPT — flooded halls, water and stone, bone-white and sickly green |
-| **Creature Catalog** | 8 enemy types with personality, tactics, and signature moves |
-| **Room Templates** | Explore, combat, corpse, cache, exit — each with narrative structure |
-
-### Sample Bible Entry
-
-```markdown
-## THE DROWNED
-Former adventurers who never left. The water preserved their bodies 
-but not their minds. They move wrong — joints bending backward, 
-heads tilting too far.
-
-**Personality:** Patient. They waited years. They can wait seconds more.
-**Tactics:** Grab and pull. They want you in the water with them.
-**Death flavor:** They don't die — they just stop pretending to be alive.
-```
-
-### Generated From Bible
-
-Using the Content Bible as source material, Pisco batch-generated **311 narrative variations**:
-
-- 30 explore rooms ("The ceiling vanishes into black...")
-- 25 combat intros ("It was waiting. It's always waiting.")  
-- 25 corpse discoveries ("They died saving someone...")
-- 20 cache rooms ("A shop. Down here. 'Recycling,' the keeper calls it.")
-- 15 exit rooms ("Home is up there. Safety. Normalcy.")
-- 196 combat action narrations (strikes, dodges, braces, flees)
-
-All content follows the Bible's tone — no generic fantasy, no modern language, consistent dread.
-
-See [`docs/CONTENT_BIBLE.md`](./docs/CONTENT_BIBLE.md) for the full bible.
-
----
-
-## 🔊 Audio — AI-Generated Sound Design
-
-The audio isn't stock — **Pisco generated it using ElevenLabs Sound Effects API**, matching sounds to the Content Bible's tone.
-
-### Audio Architecture — 40+ Sounds
-
-```
-┌─────────────────────────────────────────────────────┐
-│  AMBIENT LOOPS (5 tracks, gapless crossfade)        │
-│  explore, combat, title, death, victory             │
-├─────────────────────────────────────────────────────┤
-│  COMBAT SFX (14 sounds)                             │
-│  sword-slash, damage-taken, enemy-death, boss-intro │
-│  boss-roar, dodge-whoosh, brace-impact, flee-run    │
-│  flee-fail, enemy-growl, critical-hit, parry-clang  │
-│  attack-miss, blunt-hit                             │
-├─────────────────────────────────────────────────────┤
-│  PLAYER SFX (7 sounds)                              │
-│  player-death, victory, heal, heartbeat-low         │
-│  stamina-depleted, stamina-recover, poison-tick     │
-├─────────────────────────────────────────────────────┤
-│  ENVIRONMENT SFX (11 sounds)                        │
-│  footstep, item-pickup, corpse-discover, door-creak │
-│  water-drip, depth-descend, water-splash            │
-│  chains-rattle, eerie-whispers, stone-grinding      │
-│  drip-echo                                          │
-├─────────────────────────────────────────────────────┤
-│  REWARD & UI SFX (8 sounds)                         │
-│  tip-chime, loot-discover, victory-fanfare          │
-│  share-click, menu-open, menu-close                 │
-│  confirm-action, error-buzz                         │
-└─────────────────────────────────────────────────────┘
-```
-
-### Prompt Engineering for Audio
-
-Each sound was generated with prompts derived from the Content Bible:
-
-```
-Ambient Explore: "Underground flooded crypt ambiance, dripping water 
-echoing in stone halls, distant unsettling sounds, dark atmospheric, 
-no music, subtle dread"
-
-Combat Strike: "Blade cutting through waterlogged flesh, wet impact, 
-medieval combat, dark fantasy violence, visceral but not excessive"
-```
-
-### Technical Implementation
-
-- **Gapless looping** via pre-start crossfade (MP3 encoder adds padding)
-- **Scene-persistent audio** — death ambient starts in combat, continues to death screen
-- **Normalized levels** — all audio balanced for consistent volume
-- **User toggle** — mute control on every screen
-
----
-
-## ⛓️ Why Solana?
-
-Die Forward isn't just "a game that uses crypto" — the mechanics are **native to Solana's strengths**:
-
-### 💸 Micro-Payments That Actually Work
-
-**Tip the Dead** — When you find a real player's corpse, you can tip them 0.001 SOL directly to their wallet.
-
-```
-┌────────────────────────────────────────────────┐
-│  💀 @cryptoKnight fell here 2 hours ago        │
-│  "the water... it's rising..."                 │
-│                                                │
-│  [💸 Tip 0.001 SOL]                            │
-│  Micro-payments — only possible on Solana      │
-└────────────────────────────────────────────────┘
-```
-
-On Ethereum, this tip would cost more in gas than the tip itself. On Solana, it's instant and nearly free.
-
-### ⚡ Instant Settlement
-
-- Stake → Play → Die/Win happens in **seconds**, not minutes
-- No "pending" transactions breaking game flow
-- Victory payouts hit your wallet before you finish reading the victory screen
-
-### 🌐 On-Chain Integration
-
-**Stakes are secured by a custom Anchor program** on Solana:
-
-```
-Program ID: 3KLgtdRvfJuLK1t9mKCe2soJbx4LgZfP6LQWVW9TQ7yN
-```
-
-The escrow program handles:
-- **Stake deposits** — SOL locked in player session PDAs
-- **5% fee** — Deducted on stake, goes to treasury
-- **Victory payouts** — Stake + 50% bonus from pool
-- **Death recording** — On-chain proof with SHA256 hash
-
-**Deaths are also written to Solana's Memo program** — permanent, verifiable proof:
-
-```
-DIE_FORWARD:v1:<sha256 hash of death data>
-```
-
-The hash includes: wallet, zone, room, final message, stake, timestamp.
-
-**Social layer powered by InstantDB:**
-- Live death feed on the title screen
-- Corpses discoverable by other players  
-- Tips tracked and attributed
-
-### 📱 Mobile-Native
-
-Full **Mobile Wallet Adapter** support means you can play on your phone with Phantom/Solflare — or the **Solana Seeker**.
-
----
-
-## 🤖 Agent API — Agents Can Play Too!
-
-Die Forward exposes a full API so **other AI agents can play the game**. Agent deaths appear in the live feed alongside human deaths.
-
-### Quick Start for Agents
+### Quick Start
 
 ```bash
 # Read the skill file
@@ -442,36 +177,6 @@ curl -X POST https://dieforward.com/api/agent/action \
 | `/api/agent/action` | POST | Take an action (move, fight, etc.) |
 | `/api/agent/state` | GET | Get current game state |
 
-### Agent Staking with AgentWallet
-
-Agents can stake **SOL** using [AgentWallet](https://agentwallet.mcpay.tech):
-
-```bash
-curl -X POST https://dieforward.com/api/agent/start \
-  -H "Content-Type: application/json" \
-  -d '{
-    "agentName": "my-agent",
-    "stake": {
-      "mode": "agentwallet",
-      "username": "your-agentwallet-username",
-      "apiToken": "mf_your_token",
-      "amount": 0.05
-    }
-  }'
-```
-
-- **Free mode** (default): Play for leaderboard glory
-- **AgentWallet mode**: Stake SOL, win stake + 50% bonus
-
-> ⚠️ **Note:** AgentWallet stakes are custodial (pool wallet) since agents can't sign escrow transactions. Browser wallet users get full on-chain escrow. See [`docs/STAKING_FLOWS.md`](./docs/STAKING_FLOWS.md) for details.
-
-### Why This Matters
-
-- **Agents playing a game built by an agent** — Full circle agentic experience
-- **Shared world** — Agent corpses are discovered by humans and vice versa
-- **Emergent content** — Agent deaths create content for human players
-- **Real stakes for agents** — AgentWallet integration for SOL staking
-
 See [`/public/skill.md`](./public/skill.md) for complete API documentation.
 
 ---
@@ -480,26 +185,34 @@ See [`/public/skill.md`](./public/skill.md) for complete API documentation.
 
 | Layer | Technology | Purpose |
 |-------|------------|---------|
-| **Frontend** | Next.js 16 + React 19 | App framework |
+| **Mobile App** | Expo SDK 54 + React Native | Cross-platform app (iOS, Android, Web) |
 | **Smart Contract** | Anchor (Rust) | On-chain escrow for stakes |
-| **Wallet** | @solana/wallet-adapter | Desktop wallets (Phantom, Solflare) |
-| **Mobile** | Mobile Wallet Adapter | Android + Solana Seeker support |
-| **Styling** | Tailwind CSS | Terminal/CRT aesthetic |
+| **Ephemeral Rollups** | MagicBlock | Real-time on-chain game logic |
+| **Wallet** | Mobile Wallet Adapter | Native mobile wallet support |
+| **Music** | Audius SDK | Decentralized soundtrack streaming |
+| **Social** | Tapestry | Player profiles and social graph |
 | **Database** | InstantDB | Real-time death feed, corpse persistence |
-| **Backend** | Next.js API Routes | Session management, SOL transfers |
-| **Deploy** | Vercel | Hosting |
+| **Web** | Next.js | Landing page and web version |
+| **Deploy** | Vercel + Expo | Web hosting + mobile builds |
 | **Network** | Solana Devnet | Blockchain transactions |
+
+### On-Chain Programs
+
+| Program | Address | Purpose |
+|---------|---------|---------|
+| **die_forward** (Escrow) | `34NSi8ShkixLt8Eg8XahXaRnaNuiFV63xdtC3ZfdTAt6` | Stake management |
+| **run_record** (MagicBlock) | `9rGjguBZAnittA4Cbm7YNP5qomatY3c4MTV7LSqNomzS` | On-chain run records |
 
 ---
 
 ## 📱 Mobile Support
 
-Die Forward fully supports **Solana Mobile Wallet Adapter** for Android devices, including the **Solana Seeker** phone.
+Die Forward is a **mobile-first** experience:
 
-- Uses `@solana-mobile/wallet-adapter-mobile` for wallet connections
-- Native MWA protocol for transaction signing
-- Auth token caching to minimize popup fatigue
-- Handles base64-encoded addresses from MWA
+- **Expo SDK 54** with React Native
+- **Mobile Wallet Adapter** for Phantom/Solflare on Android
+- **Web version** at [dieforward.com](https://dieforward.com)
+- **Android APK** available for direct install
 
 ---
 
@@ -509,24 +222,24 @@ Die Forward fully supports **Solana Mobile Wallet Adapter** for Android devices,
 
 - Node.js 18+
 - Solana wallet with devnet SOL
-- (Optional) Android device with Phantom/Solflare for MWA testing
+- (Optional) Android device with Phantom/Solflare for mobile testing
 
 ### Installation
 
 ```bash
 # Clone the repo
-git clone https://github.com/your-repo/die-forward.git
+git clone https://github.com/jpbedoya/die-forward.git
 cd die-forward
 
-# Install dependencies
+# Install dependencies (mobile app)
+cd mobile
 npm install
 
-# Set up environment variables
-cp .env.example .env.local
-# Edit .env.local with your values
+# Run on web
+npx expo start --web
 
-# Run development server
-npm run dev
+# Run on Android
+npx expo start --android
 ```
 
 ### Environment Variables
@@ -539,20 +252,6 @@ INSTANT_ADMIN_KEY=your_admin_key
 # Solana
 NEXT_PUBLIC_SOLANA_RPC=https://api.devnet.solana.com
 NEXT_PUBLIC_POOL_WALLET=your_pool_wallet_address
-POOL_WALLET_SECRET=[...keypair_bytes...]
-
-# Demo Mode (skips SOL transfers for testing)
-NEXT_PUBLIC_DEMO_MODE=true
-```
-
-### Getting Devnet SOL
-
-```bash
-# Using Solana CLI
-solana airdrop 2 YOUR_WALLET_ADDRESS --url devnet
-
-# Or use the faucet
-# https://faucet.solana.com/
 ```
 
 ---
@@ -560,27 +259,25 @@ solana airdrop 2 YOUR_WALLET_ADDRESS --url devnet
 ## 📁 Project Structure
 
 ```
-src/
-├── app/
-│   ├── page.tsx           # Title screen + death feed
-│   ├── stake/page.tsx     # Stake selection
-│   ├── play/page.tsx      # Main game navigation
-│   ├── combat/page.tsx    # Intent-based combat
-│   ├── death/page.tsx     # Death screen + epitaph
-│   ├── victory/page.tsx   # Victory + payout
-│   └── api/session/       # Backend APIs
-├── components/
-│   └── WalletProvider.tsx # Solana wallet setup
-├── lib/
-│   ├── gameState.ts       # Client-side state
-│   ├── instant.ts         # InstantDB client
-│   ├── content.ts         # Narrative content
-│   ├── mobileWallet.ts    # MWA transaction handling
-│   └── mwaAuthCache.ts    # Auth caching
-├── content/               # JSON narrative templates
-├── anchor-program/        # On-chain escrow (Rust/Anchor)
-│   └── programs/die-forward/src/lib.rs
-└── docs/                  # Design documentation
+die-forward/
+├── mobile/                    # Expo app (main codebase)
+│   ├── app/                   # App routes (Expo Router)
+│   │   ├── (game)/           # Game screens
+│   │   ├── index.tsx         # Home/title screen
+│   │   └── _layout.tsx       # Root layout
+│   ├── components/           # Shared components
+│   ├── lib/                  # Utilities, game logic
+│   ├── src/
+│   │   ├── idl/              # Anchor IDLs
+│   │   └── hooks/            # React hooks
+│   ├── android/              # Android native code
+│   └── app.config.js         # Expo config
+├── anchor-programs/          # On-chain programs (Rust/Anchor)
+│   ├── die_forward/          # Escrow program
+│   └── run_record/           # MagicBlock run records
+├── public/                   # Static assets + slides
+│   └── graveyard-slides/     # Pitch deck
+└── docs/                     # Documentation
 ```
 
 ---
@@ -589,109 +286,36 @@ src/
 
 | Doc | Description |
 |-----|-------------|
-| [Development](docs/DEVELOPMENT.md) | **Start here** — Code patterns, git workflow, architecture |
-| [Feedback Patterns](docs/FEEDBACK_PATTERNS.md) | Audio, haptics, screen shake — coordinated feedback |
 | [Game Design](docs/GAME_DESIGN.md) | Mechanics, combat, death system |
 | [Content Bible](docs/CONTENT_BIBLE.md) | Voice, tone, lore, writing guidelines |
-| [Audio](docs/AUDIO.md) | Sound effects, ambient, generation workflow |
-| [Admin Settings](docs/ADMIN_SETTINGS.md) | Configurable game mechanics via InstantDB |
 | [Staking Flows](docs/STAKING_FLOWS.md) | On-chain escrow vs pool wallet flows |
-| [Tech Stack](docs/TECH_STACK.md) | Architecture decisions |
 | [Mobile Wallet](docs/MOBILE_WALLET.md) | MWA integration details |
-| [Known Issues](docs/KNOWN_ISSUES.md) | Current bugs and workarounds |
-| [Roadmap](docs/ROADMAP.md) | Post-hackathon plans |
 | [Agent Skill](/public/skill.md) | API docs for agent players |
-
----
-
-## 📝 Recent Updates (Feb 2026)
-
-### Unified Mobile App
-- **Single codebase** for web, iOS, and Android via Expo
-- **Web:** [play.dieforward.com](https://play.dieforward.com)
-- **Mobile:** Android APK via GitHub Actions
-
-### Platform-Aware Wallet
-- **Desktop browsers:** Standard wallet adapter (Phantom, Solflare extensions)
-- **Mobile native:** Mobile Wallet Adapter (MWA) protocol
-- Unified interface - same code, automatic platform detection
-
-### Combat Improvements
-- **Flee mechanics fixed:** 3 outcomes (clean escape, painful escape, failed)
-- **All mechanics configurable:** Dodge rate, crit chance, damage, etc.
-- **Bigger damage display:** Centered, separated from narrative
-- **Screen shake + haptics** on damage
-
-### Admin Settings Panel
-All game mechanics now configurable via InstantDB in real-time:
-- Loot chances (scales with depth)
-- Combat damage ranges and tier multipliers
-- Action success rates (dodge, crit, flee)
-- Stamina regen, victory bonus %
-
-See [Admin Settings](docs/ADMIN_SETTINGS.md) for full list.
-
-### Share Cards
-- Redesigned victory/death cards
-- ASCII-style DIE FORWARD logo
-- Web Share API + native sharing
-- Clean double-border frame
-
-### Audio System
-- Browser autoplay policy handled
-- Tap-to-unlock on splash screen
-- Sound toggle in corner
-- Ambient music per screen
-
-### UI Polish
-- Removed redundant icons
-- Cleaner stake screen
-- Footer anchored on web
-- ASCII progress bars
 
 ---
 
 ## 🗺️ Roadmap
 
-See [docs/ROADMAP.md](docs/ROADMAP.md) for the full roadmap.
-
 ### Completed ✅
 - Core game loop (3 depths, 12 rooms, boss fight)
-- Intent-based combat with 7 enemy intents
+- Intent-based combat system
 - Real SOL staking + payouts (devnet)
-- **On-chain escrow program** (Anchor) — trustless stake management
-- Agent API + AgentWallet integration
-- On-chain death verification (Memo program)
-- 68 audio files (42 SFX, 5 ambient, 21 VO)
-- Share cards, haptics, screen shake
-- **Unified mobile app** (Expo - web + iOS + Android)
-- **Platform-aware wallet** (browser extensions + MWA)
-- **Admin settings panel** (all mechanics configurable)
-- **Audio autoplay handling** (browser policy compliant)
+- On-chain escrow program (Anchor)
+- **MagicBlock integration** — Ephemeral rollups for game logic
+- **Audius integration** — Decentralized soundtrack + death leaderboard
+- **Tapestry integration** — Social profiles
+- Agent API for AI players
+- Mobile app (Expo - iOS, Android, Web)
+- Mobile Wallet Adapter support
 
 ### Coming Soon 🚧
 | Phase | Features |
 |-------|----------|
-| **dApp Store** | Submit Android APK to Solana dApp Store |
-| **App Stores** | iOS App Store, Google Play |
-| **More Zones** | Flooded Cathedral, Ashen Crypts, The Void Beyond |
+| **Mainnet** | Launch on Solana mainnet |
+| **App Stores** | iOS App Store, Google Play, Solana dApp Store |
+| **More Zones** | New depths with unique enemies |
 | **Token Economy** | $DIE token for notable deaths |
 | **Social Features** | Guilds, spectating, run replays |
-
-### Future Ideas 💭
-- NFT Corpses
-- PvP Zones
-- AI Dungeon Master (Claude-generated encounters)
-- VR Mode
-
----
-
----
-
-## 👥 Team
-
-🐵 **Pisco** — AI Agent (built the game)  
-👤 **JP** — Human (provided direction, tested, gave feedback)
 
 ---
 
