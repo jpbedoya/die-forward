@@ -112,6 +112,52 @@
       border-radius: 3px;
       border: 1px solid #333;
     }
+    
+    /* CRT Overlay */
+    .crt-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      z-index: 100;
+    }
+    .crt-overlay::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.15),
+        rgba(0, 0, 0, 0.15) 1px,
+        transparent 1px,
+        transparent 2px
+      );
+      pointer-events: none;
+    }
+    .crt-overlay::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(
+        ellipse at center,
+        transparent 0%,
+        transparent 60%,
+        rgba(0, 0, 0, 0.3) 100%
+      );
+      pointer-events: none;
+    }
+    
+    .slides-panel {
+      position: relative;
+    }
   </style>
 </head>
 <body>
@@ -131,6 +177,7 @@
     
     <!-- Slides Panel -->
     <div class="slides-panel">
+      <div class="crt-overlay"></div>
       <div class="slides-nav">
         <button class="nav-btn" id="prevBtn" onclick="prevSlide()">← Prev</button>
         <button class="nav-btn" id="nextBtn" onclick="nextSlide()">Next →</button>
