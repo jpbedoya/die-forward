@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { View, Pressable, Text } from 'react-native';
 import { useAudio, SoundId } from '../lib/audio';
 import { useAudius } from '../lib/AudiusContext';
@@ -20,8 +21,9 @@ interface AudioToggleProps {
  * - Pass onSettingsPress to show a ⚙ icon that opens audio settings
  */
 export function AudioToggle({ ambientTrack, className = '', inline = false, onSettingsPress }: AudioToggleProps) {
-  const { masterEnabled, toggle, unlock, playAmbient } = useAudio();
+  const { masterEnabled, ambientVolume, setAmbientVolume, toggle, unlock, playAmbient } = useAudio();
   const { setMasterEnabled } = useAudius();
+  const preMuteVolumeRef = useRef(ambientVolume > 0 ? ambientVolume : 0.3);
 
   const wrapperClass = inline
     ? 'flex-row items-center gap-1'
@@ -29,14 +31,20 @@ export function AudioToggle({ ambientTrack, className = '', inline = false, onSe
 
   const handleToggle = async () => {
     unlock();
-    const nowEnabled = await toggle(); // existing SFX/audio manager switch
 
-    // Keep Audius layer in sync with the master switch
+    // Mute should force game ambient volume to 0; unmute restores previous level.
+    if (masterEnabled) {
+      if (ambientVolume > 0) preMuteVolumeRef.current = ambientVolume;
+      await setAmbientVolume(0);
+    }
+
+    const nowEnabled = await toggle();
     setMasterEnabled(nowEnabled);
 
-    // If re-enabled and this screen has game ambient, kick it back on
-    if (nowEnabled && ambientTrack) {
-      playAmbient(ambientTrack);
+    if (nowEnabled) {
+      const restore = preMuteVolumeRef.current > 0 ? preMuteVolumeRef.current : 0.3;
+      await setAmbientVolume(restore);
+      if (ambientTrack) playAmbient(ambientTrack);
     }
   };
 

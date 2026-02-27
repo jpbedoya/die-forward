@@ -35,11 +35,11 @@ export function AudioSettingsSection({ className = '' }: { className?: string })
     toggleSFX();
   };
 
-  const volumeLevel = Math.max(1, Math.min(10, Math.round(ambientVolume * 10)));
+  const volumeLevel = Math.max(0, Math.min(10, Math.round(ambientVolume * 10)));
   const volumeBar = `${'■'.repeat(volumeLevel)}${'·'.repeat(10 - volumeLevel)}`;
 
   const changeVolume = (next: number) => {
-    const clamped = Math.max(1, Math.min(10, next));
+    const clamped = Math.max(0, Math.min(10, next));
     setAmbientVolume(clamped / 10);
   };
 
