@@ -45,7 +45,8 @@ export function AudioSettingsSection({ className = '' }: { className?: string })
 
   return (
     <View className={`bg-crypt-bg border border-crypt-border ${className}`}>
-      <Text className="text-bone-dark text-[10px] font-mono tracking-wider px-3 pt-3 pb-2">
+
+      <Text selectable={false} className="text-bone-dark text-[10px] font-mono tracking-wider px-3 pt-3 pb-2">
         AUDIO
       </Text>
 
@@ -54,30 +55,30 @@ export function AudioSettingsSection({ className = '' }: { className?: string })
         className="flex-row items-center justify-between px-3 py-2 border-t border-crypt-border"
         onPress={handleToggleSFX}
       >
-        <Text className="text-bone-muted text-sm font-mono">SFX</Text>
-        <Text className={`text-sm font-mono ${sfxEnabled ? 'text-victory' : 'text-blood'}`}>
+        <Text selectable={false} className="text-bone-muted text-sm font-mono">SFX</Text>
+        <Text selectable={false} className={`text-sm font-mono ${sfxEnabled ? 'text-victory' : 'text-blood'}`}>
           {sfxEnabled ? '♪ ON' : '× OFF'}
         </Text>
       </Pressable>
 
       {/* Game ambient volume (ASCII style) */}
       <View className="flex-row items-center justify-between px-3 py-2 border-t border-crypt-border">
-        <Text className="text-bone-muted text-sm font-mono">VOL</Text>
+        <Text selectable={false} className="text-bone-muted text-sm font-mono">VOL</Text>
         <View className="flex-row items-center gap-2">
           <Pressable onPress={() => changeVolume(volumeLevel - 1)} className="px-2 py-1 border border-crypt-border">
-            <Text className="text-bone-dark font-mono text-xs">-</Text>
+            <Text selectable={false} className="text-bone-dark font-mono text-xs">-</Text>
           </Pressable>
-          <Text className="text-amber-light text-xs font-mono w-24 text-center">{volumeBar}</Text>
+          <Text selectable={false} className="text-amber-light text-xs font-mono w-24 text-center">{volumeBar}</Text>
           <Pressable onPress={() => changeVolume(volumeLevel + 1)} className="px-2 py-1 border border-crypt-border">
-            <Text className="text-bone-dark font-mono text-xs">+</Text>
+            <Text selectable={false} className="text-bone-dark font-mono text-xs">+</Text>
           </Pressable>
-          <Text className="text-bone-dark text-xs font-mono w-12 text-right shrink-0 whitespace-nowrap">{volumeLevel}/10</Text>
+          <Text selectable={false} className="text-bone-dark text-xs font-mono w-12 text-right shrink-0 whitespace-nowrap">{volumeLevel}/10</Text>
         </View>
       </View>
 
       {/* Music source picker */}
       <View className="flex-row items-center px-3 py-2 border-t border-crypt-border">
-        <Text className="text-bone-muted text-sm font-mono mr-3">MUSIC</Text>
+        <Text selectable={false} className="text-bone-muted text-sm font-mono mr-3">MUSIC</Text>
         <View className="flex-row flex-1 gap-1">
           {MUSIC_SOURCES.map(({ value, label }) => {
             const isActive = musicSource === value;
@@ -100,7 +101,7 @@ export function AudioSettingsSection({ className = '' }: { className?: string })
                   // Show sweep loader on the active AUDIUS button while it buffers
                   <AsciiLoader variant="pulse" width={6} color="rgba(0,0,0,0.75)" />
                 ) : (
-                  <Text
+                  <Text selectable={false}
                     className={`text-xs font-mono ${
                       isActive ? 'text-black font-bold' : 'text-bone-dark'
                     }`}
@@ -117,7 +118,7 @@ export function AudioSettingsSection({ className = '' }: { className?: string })
       {/* Playlist picker — only when Audius selected */}
       {musicSource === 'audius' && (
         <View className="border-t border-crypt-border px-3 py-2">
-          <Text className="text-bone-dark text-[10px] font-mono tracking-wider mb-2">
+          <Text selectable={false} className="text-bone-dark text-[10px] font-mono tracking-wider mb-2">
             PLAYLIST
           </Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -132,14 +133,14 @@ export function AudioSettingsSection({ className = '' }: { className?: string })
                       : 'bg-crypt-bg border-crypt-border'
                   }`}
                 >
-                  <Text
+                  <Text selectable={false}
                     className={`font-mono text-xs ${
                       activePlaylistId === p.id ? 'text-black font-bold' : 'text-bone-muted'
                     }`}
                   >
                     {p.emoji} {p.name}
                   </Text>
-                  <Text className={`font-mono text-[10px] ${
+                  <Text selectable={false} className={`font-mono text-[10px] ${
                     activePlaylistId === p.id ? 'text-black/70' : 'text-stone-600'
                   }`}>
                     {p.trackCount} tracks

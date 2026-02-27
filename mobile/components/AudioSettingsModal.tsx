@@ -13,9 +13,9 @@ export function AudioSettingsModal({ visible, onClose }: AudioSettingsModalProps
     <CryptModal visible={visible} onClose={onClose} showCloseButton={false} maxWidth={360}>
       {/* Header */}
       <View className="flex-row items-center justify-between mb-4">
-        <Text className="text-bone-muted font-mono text-sm tracking-widest flex-1 mr-2" numberOfLines={1}>AUDIO</Text>
+        <Text selectable={false} className="text-bone-muted font-mono text-sm tracking-widest flex-1 mr-2" numberOfLines={1}>AUDIO</Text>
         <Pressable onPress={onClose} className="p-1">
-          <Text className="text-bone-muted font-mono">[×]</Text>
+          <Text selectable={false} className="text-bone-muted font-mono">[×]</Text>
         </Pressable>
       </View>
 
