@@ -297,7 +297,10 @@ Offer it. Lose it on death. Escape and claim more.
                 ) : walletStatus === 'error' ? (
                   <Text className="text-blood-light font-mono font-bold tracking-wider">FAILED — TAP TO RETRY</Text>
                 ) : (
-                  <Text className="text-white font-mono font-bold tracking-wider">BIND WALLET</Text>
+                  <View className="items-center">
+                    <Text className="text-white font-mono font-bold tracking-wider">BIND WALLET</Text>
+                    <Text className="text-white/80 text-[10px] font-mono -mt-0.5">[DEVNET]</Text>
+                  </View>
                 )}
               </Pressable>
 
@@ -334,7 +337,10 @@ Offer it. Lose it on death. Escape and claim more.
                 ) : sealStatus === 'error' ? (
                   <Text className="text-blood-light font-mono font-bold tracking-wider">FAILED — TAP TO RETRY</Text>
                 ) : (
-                  <Text className="text-crypt-bg font-mono font-bold tracking-wider">SEAL YOUR FATE</Text>
+                  <View className="items-center">
+                    <Text className="text-crypt-bg font-mono font-bold tracking-wider">SEAL YOUR FATE</Text>
+                    <Text className="text-crypt-bg/70 text-[10px] font-mono -mt-0.5">[DEVNET]</Text>
+                  </View>
                 )}
               </Pressable>
 
