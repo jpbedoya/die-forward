@@ -41,28 +41,15 @@ export interface VictoryCardData {
 }
 
 // Logo component for share cards
-// Use image + text for stable rendering across Android capture pipelines.
-function ShareCardLogo({ color = '#f59e0b' }: { color?: string }) {
+// Use a high-res transparent PNG and scale down for crisp rendering.
+function ShareCardLogo() {
   return (
     <View className="items-center">
       <Image
-        source={require('../assets/icon.png')}
-        style={{ width: 30, height: 30, borderRadius: 6, marginBottom: 6 }}
-        resizeMode="cover"
+        source={require('../assets/logo-die-forward-transparent.png')}
+        style={{ width: 220, height: 40 }}
+        resizeMode="contain"
       />
-      <Text
-        style={{
-          fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-          fontSize: 16,
-          lineHeight: 18,
-          fontWeight: '700',
-          letterSpacing: 1,
-          color,
-          textAlign: 'center',
-        }}
-      >
-        DIE FORWARD
-      </Text>
     </View>
   );
 }
@@ -75,7 +62,7 @@ export function DeathCard({ data }: { data: DeathCardData }) {
       <View className="m-1 border border-blood/30 p-3">
         {/* Logo */}
         <View className="mb-3">
-          <ShareCardLogo color="#f59e0b" />
+          <ShareCardLogo />
         </View>
         
         {/* Title */}
@@ -143,7 +130,7 @@ export function VictoryCard({ data }: { data: VictoryCardData }) {
       <View className="m-1 border border-amber/30 p-3">
         {/* Logo */}
         <View className="mb-3">
-          <ShareCardLogo color="#f59e0b" />
+          <ShareCardLogo />
         </View>
         
         {/* Title */}
