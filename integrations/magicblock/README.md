@@ -20,8 +20,16 @@ Die Forward uses [MagicBlock Ephemeral Rollups](https://docs.magicblock.gg/) for
 
 InstantDB drives the game experience (speed, real-time UX). The Ephemeral Rollup runs in parallel as the **source of truth for what actually happened**. Death/victory don't settle on L1 until the ER commits the run.
 
-### Flow
+### Two Modes (controlled by admin toggle)
 
+**`enableMagicBlock = false`**
+```
+Player stakes → Solana L1
+Game runs     → InstantDB (UX)
+Death/Victory → settle directly on L1
+```
+
+**`enableMagicBlock = true`**
 ```
 Player stakes       → Solana L1
 Delegate run        → Ephemeral Rollup
@@ -160,6 +168,15 @@ SOLANA_AUTHORITY_SECRET_KEY=[...bytes...]
 - US: `us.magicblock.app`
 - EU: `eu.magicblock.app`
 - Asia: `as.magicblock.app`
+
+---
+
+## Key Decisions
+
+- **InstantDB is never replaced** — it stays as the real-time game state layer. ER is purely additive.
+- **Non-blocking during gameplay** — ER events are fire-and-forget mid-run. The only blocking call is the settlement commit.
+- **Graceful fallback** — if MagicBlock is unavailable, settlement falls back to legacy flow. The game never gets stuck.
+- **Toggle-first** — everything is gated by `enableMagicBlock`. Can enable/disable without code changes.
 
 ---
 
