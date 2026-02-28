@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect, useMemo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as api from './api';
 import { generateRandomDungeon, DungeonRoom } from './content';
@@ -7,6 +7,7 @@ import { GAME_POOL_PDA, buildStakeInstruction, generateSessionId } from './solan
 import { Transaction, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { getOrCreatePlayerByAuth, updatePlayerNicknameByAuth } from './instant';
 import { signInWithWallet, signInAsGuest, signOut, linkWalletToGuest, getStoredAuthState, type AuthState } from './auth';
+import { createRunRng, generateRandomSeed, type SeededRng } from './seeded-random';
 
 const NICKNAME_STORAGE_KEY = 'die-forward-nickname';
 const NICKNAME_PROMPTED_KEY = 'die-forward-nickname-prompted';
@@ -40,6 +41,7 @@ interface GameState {
   inventory: { id: string; name: string; emoji: string }[];
   dungeon: DungeonRoom[];
   itemsFound: number;
+  seed: string | null;  // RNG seed for verifiable randomness
   
   // UI state
   loading: boolean;
@@ -83,6 +85,9 @@ interface GameContextType extends GameState {
   itemsFound: number;
   incrementItemsFound: () => void;
   clearError: () => void;
+  
+  // RNG for verifiable randomness
+  rng: SeededRng | null;
 }
 
 const initialState: GameState = {
@@ -104,6 +109,7 @@ const initialState: GameState = {
   inventory: [],
   itemsFound: 0,
   dungeon: [],
+  seed: null,
   loading: false,
   error: null,
 };
@@ -538,6 +544,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
         throw new Error('Invalid session response from server');
       }
       
+      // Generate seed for verifiable randomness
+      // TODO: For staked runs, get VRF seed from backend instead
+      const seed = generateRandomSeed();
+      console.log('[GameContext] Generated run seed:', seed.slice(0, 16) + '...');
+      
       // Generate dungeon client-side with full content system
       const dungeon = generateRandomDungeon();
       
@@ -550,6 +561,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         inventory: [],
         itemsFound: 0,
         dungeon,
+        seed,
         loading: false,
       });
     } catch (err) {
@@ -678,6 +690,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
     updateState({ error: null });
   }, [updateState]);
 
+  // Create RNG from seed (memoized to avoid recreating on every render)
+  const rng = useMemo(() => {
+    return state.seed ? createRunRng(state.seed) : null;
+  }, [state.seed]);
+
   const value: GameContextType = {
     ...state,
     // Auth actions
@@ -706,6 +723,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     itemsFound: state.itemsFound || 0,
     incrementItemsFound,
     clearError,
+    rng,
   };
 
   return (
