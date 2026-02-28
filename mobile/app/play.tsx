@@ -133,7 +133,7 @@ export default function PlayScreen() {
 
         case 'flee': {
           playSFX('flee-run');
-          const fleeDamage = Math.floor(Math.random() * 15) + 5;
+          const fleeDamage = game.rng ? game.rng.range(5, 19) : Math.floor(Math.random() * 15) + 5;
           const newHealth = game.health - fleeDamage;
           
           if (newHealth <= 0) {
@@ -164,7 +164,7 @@ export default function PlayScreen() {
               ? settings.lootChanceDepth5 
               : settings.lootChanceBase;
           
-          const foundLoot = Math.random() < lootChance;
+          const foundLoot = game.rng ? game.rng.chance(lootChance) : Math.random() < lootChance;
           
           if (realCorpse) {
             setLootedCorpse(realCorpse);
@@ -194,7 +194,7 @@ export default function PlayScreen() {
                 { name: 'Bone Charm', emoji: '💀' },
                 { name: 'Rusty Blade', emoji: '🗡️' },
               ];
-              const loot = lootItems[Math.floor(Math.random() * lootItems.length)];
+              const loot = game.rng ? game.rng.pick(lootItems) : lootItems[Math.floor(Math.random() * lootItems.length)];
               
               if (!game.inventory.some(i => i.name === loot.name)) {
                 playSFX('loot-discover');
@@ -543,7 +543,7 @@ export default function PlayScreen() {
           if (!selectedItem) return;
           const name = selectedItem.name;
           if (name === 'Herbs') {
-            const heal = Math.floor(Math.random() * 15) + 25;
+            const heal = game.rng ? game.rng.range(25, 40) : Math.floor(Math.random() * 15) + 25;
             game.setHealth(Math.min(100, game.health + heal));
             setMessage(`You apply the herbs. +${heal} HP.`);
             playSFX('heal');

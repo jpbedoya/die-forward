@@ -153,10 +153,14 @@ export default function CombatScreen() {
     }
   };
   
-  // Get base damage range from settings
+  // Get base damage range from settings (uses seeded RNG for verifiable randomness)
   const getBaseDamage = () => {
     const min = settings.baseDamageMin;
     const max = settings.baseDamageMax;
+    // Use seeded RNG if available, fallback to Math.random for edge cases
+    if (game.rng) {
+      return game.rng.range(min, max);
+    }
     return min + Math.floor(Math.random() * (max - min + 1));
   };
 
@@ -190,7 +194,7 @@ export default function CombatScreen() {
         enemyDmg = calculateDamage(basePlayerHit, true);
         
         // Critical hit chance from settings
-        const isCritical = Math.random() < settings.criticalChance;
+        const isCritical = game.rng ? game.rng.chance(settings.criticalChance) : Math.random() < settings.criticalChance;
         if (isCritical) {
           enemyDmg = Math.round(enemyDmg * settings.criticalMultiplier);
           actionNarrative = getStrikeNarration('success');
@@ -203,19 +207,20 @@ export default function CombatScreen() {
       }
       case 'dodge': {
         playSFX('dodge-whoosh');
-        const success = Math.random() < settings.dodgeSuccessRate;
+        const success = game.rng ? game.rng.chance(settings.dodgeSuccessRate) : Math.random() < settings.dodgeSuccessRate;
         if (success) {
           playerDmg = 0;
           actionNarrative = getDodgeNarration('success');
         } else {
-          playerDmg = calculateDamage(5 + Math.floor(Math.random() * 5), false);
+          const dodgeDmgBase = game.rng ? game.rng.range(5, 9) : 5 + Math.floor(Math.random() * 5);
+          playerDmg = calculateDamage(dodgeDmgBase, false);
           actionNarrative = getDodgeNarration('close');
         }
         break;
       }
       case 'brace': {
         playSFX('brace-impact');
-        const baseDmg = 3 + Math.floor(Math.random() * 5);
+        const baseDmg = game.rng ? game.rng.range(3, 7) : 3 + Math.floor(Math.random() * 5);
         playerDmg = Math.round(calculateDamage(baseDmg, false) * (1 - settings.braceReduction));
         actionNarrative = getBraceNarration('success');
         break;
@@ -225,7 +230,7 @@ export default function CombatScreen() {
         const itemEffects = getItemEffects(game.inventory);
         const fleeChance = Math.min(0.9, Math.max(0.1, settings.fleeChanceBase + intentEffects.fleeMod + itemEffects.fleeBonus));
         const cleanRatio = settings.fleeCleanRatio;
-        const roll = Math.random();
+        const roll = game.rng ? game.rng.random() : Math.random();
         
         if (roll < fleeChance * cleanRatio) {
           // Clean escape
@@ -234,7 +239,8 @@ export default function CombatScreen() {
         } else if (roll < fleeChance) {
           // Escaped but took damage
           fleeSuccess = true;
-          playerDmg = calculateDamage(5 + Math.floor(Math.random() * 8), false);
+          const fleeDmgBase = game.rng ? game.rng.range(5, 12) : 5 + Math.floor(Math.random() * 8);
+          playerDmg = calculateDamage(fleeDmgBase, false);
           actionNarrative = getFleeNarration('hurt');
           triggerShake('light');
           // Light haptic for getting clipped while fleeing
@@ -244,7 +250,8 @@ export default function CombatScreen() {
         } else {
           // Failed to escape
           fleeSuccess = false;
-          playerDmg = calculateDamage(8 + Math.floor(Math.random() * 12), false);
+          const failDmgBase = game.rng ? game.rng.range(8, 19) : 8 + Math.floor(Math.random() * 12);
+          playerDmg = calculateDamage(failDmgBase, false);
           actionNarrative = getFleeNarration('fail');
           playSFX('flee-fail');
           triggerShake('medium');
@@ -545,7 +552,7 @@ export default function CombatScreen() {
               if (!selectedItem) return;
               const name = selectedItem.name;
               if (name === 'Herbs') {
-                const heal = Math.floor(Math.random() * 15) + 25; // 25-40 HP
+                const heal = game.rng ? game.rng.range(25, 40) : Math.floor(Math.random() * 15) + 25; // 25-40 HP
                 game.setHealth(Math.min(100, game.health + heal));
                 setNarrative(`You quickly apply the herbs. Wounds close. +${heal} HP.`);
                 playSFX('heal');
