@@ -1,8 +1,25 @@
 # MagicBlock Integration
 
-## Overview
+Die Forward uses [MagicBlock Ephemeral Rollups](https://docs.magicblock.gg/) for fast, verifiable on-chain game runs.
 
-Die Forward uses [MagicBlock Ephemeral Rollups](https://docs.magicblock.gg/) (ER) to record game runs on-chain with low latency. Every staked run creates an on-chain `RunRecord` that tracks the player's progress through the crypt.
+## How We Use It
+
+When a player stakes SOL and starts a run, we:
+1. Create a `RunRecord` on Solana devnet
+2. Delegate it to an Ephemeral Rollup for fast updates (~50ms vs ~400ms)
+3. Track room progress on the ER as they play
+4. Commit the final state back to L1 when they die or clear
+
+This gives us the speed of an L2 with the finality of Solana mainnet.
+
+## Deployed Programs
+
+| Program | Address | Purpose |
+|---------|---------|---------|
+| `run_record` | `9rGjguBZAnittA4Cbm7YNP5qomatY3c4MTV7LSqNomzS` | Tracks game runs (room, status, stake) |
+| `die_forward` | `34NSi8ShkixLt8Eg8XahXaRnaNuiFV63xdtC3ZfdTAt6` | Escrow for staked SOL |
+
+**Deploy authority:** `7rn4KRHNQwSJDa1uq1ENMzyDqW95QAr3bZUepkLh58ed`
 
 ## Architecture
 
@@ -20,17 +37,7 @@ Die Forward uses [MagicBlock Ephemeral Rollups](https://docs.magicblock.gg/) (ER
                                                 └─────────────────┘
 ```
 
-### Flow
-
-1. **Run Start** → Initialize `RunRecord` PDA on L1, then delegate to ER
-2. **During Run** → Update room/events on ER (fast, ~50ms)
-3. **Run End** → Commit final state from ER back to L1
-
-## On-Chain Program
-
-**Program ID:** `9rGjguBZAnittA4Cbm7YNP5qomatY3c4MTV7LSqNomzS`
-
-### RunRecord Account
+## RunRecord Account
 
 ```rust
 #[account]
