@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { View, Text, Pressable, TextInput, ScrollView, Modal, Animated, Platform, TextStyle } from 'react-native';
+import { View, Text, Pressable, TextInput, ScrollView, Modal, Animated, Platform, TextStyle, Alert } from 'react-native';
 import { AsciiLoader } from '../components/AsciiLoader';
 import { CryptBackground } from '../components/CryptBackground';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -50,6 +50,9 @@ export default function DeathScreen() {
     // Only close modal on success
     if (success) {
       setShowShareModal(false);
+      if (Platform.OS !== 'web') {
+        Alert.alert('Caption copied', 'Your share text was copied. If Telegram/Slack does not include text automatically, just paste it.');
+      }
     }
   };
 

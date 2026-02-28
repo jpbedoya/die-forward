@@ -6,6 +6,7 @@ import React, { useRef, useCallback } from 'react';
 import { View, Text, Platform, Image } from 'react-native';
 import ViewShot from 'react-native-view-shot';
 import Share from 'react-native-share';
+import * as Clipboard from 'expo-clipboard';
 
 // Web-only import
 let html2canvas: ((element: HTMLElement, options?: object) => Promise<HTMLCanvasElement>) | null = null;
@@ -290,12 +291,15 @@ export function useShareCard() {
         return false;
       }
 
-      // Use react-native-share which supports both text and image
+      // IMPORTANT: Telegram/Slack can fail to send when caption+image are passed together.
+      // Share image only for max compatibility, and copy caption to clipboard for easy paste.
+      await Clipboard.setStringAsync(message);
+
       await Share.open({
         title,
-        message,
-        url: uri,
+        urls: [uri],
         type: 'image/png',
+        filename: 'die-forward-card',
         failOnCancel: false,
       });
 
