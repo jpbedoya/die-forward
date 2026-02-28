@@ -3,7 +3,7 @@
 // Uses react-native-share for native to support text + image
 
 import React, { useRef, useCallback } from 'react';
-import { View, Text, Platform } from 'react-native';
+import { View, Text, Platform, Image } from 'react-native';
 import ViewShot from 'react-native-view-shot';
 import Share from 'react-native-share';
 
@@ -40,35 +40,27 @@ export interface VictoryCardData {
 }
 
 // Logo component for share cards
-// NOTE: Avoid dense block ASCII here — Android ViewShot rasterizes tiny glyphs poorly.
+// Use image + text for stable rendering across Android capture pipelines.
 function ShareCardLogo({ color = '#f59e0b' }: { color?: string }) {
   return (
     <View className="items-center">
+      <Image
+        source={require('../assets/icon.png')}
+        style={{ width: 30, height: 30, borderRadius: 6, marginBottom: 6 }}
+        resizeMode="cover"
+      />
       <Text
         style={{
           fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-          fontSize: 22,
-          lineHeight: 22,
+          fontSize: 16,
+          lineHeight: 18,
           fontWeight: '700',
           letterSpacing: 1,
           color,
           textAlign: 'center',
         }}
       >
-        DIE
-      </Text>
-      <Text
-        style={{
-          fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-          fontSize: 22,
-          lineHeight: 22,
-          fontWeight: '700',
-          letterSpacing: 1,
-          color,
-          textAlign: 'center',
-        }}
-      >
-        FORWARD
+        DIE FORWARD
       </Text>
     </View>
   );
