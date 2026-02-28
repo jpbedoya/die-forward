@@ -39,45 +39,36 @@ export interface VictoryCardData {
   nowPlaying?: NowPlaying;
 }
 
-// Simple block-style ASCII logo for share cards
-const LOGO_DIE = `██████  ██ ███████
-██   ██ ██ ██
-██   ██ ██ █████
-██   ██ ██ ██
-██████  ██ ███████`;
-
-const LOGO_FORWARD = `███████  ██████  ██████  ██   ██  █████  ██████  ██████
-██      ██    ██ ██   ██ ██   ██ ██   ██ ██   ██ ██   ██
-█████   ██    ██ ██████  ██ █ ██ ███████ ██████  ██   ██
-██      ██    ██ ██   ██ ██ ███ ██   ██ ██   ██ ██   ██
-██       ██████  ██   ██  ██ ██  ██   ██ ██   ██ ██████`;
-
 // Logo component for share cards
+// NOTE: Avoid dense block ASCII here — Android ViewShot rasterizes tiny glyphs poorly.
 function ShareCardLogo({ color = '#f59e0b' }: { color?: string }) {
   return (
     <View className="items-center">
-      <Text 
-        style={{ 
+      <Text
+        style={{
           fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-          fontSize: 4,
-          lineHeight: 4.8,
+          fontSize: 22,
+          lineHeight: 22,
+          fontWeight: '700',
+          letterSpacing: 1,
           color,
           textAlign: 'center',
         }}
       >
-        {LOGO_DIE}
+        DIE
       </Text>
-      <View style={{ height: 1 }} />
-      <Text 
-        style={{ 
+      <Text
+        style={{
           fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-          fontSize: 3,
-          lineHeight: 3.6,
+          fontSize: 22,
+          lineHeight: 22,
+          fontWeight: '700',
+          letterSpacing: 1,
           color,
           textAlign: 'center',
         }}
       >
-        {LOGO_FORWARD}
+        FORWARD
       </Text>
     </View>
   );
