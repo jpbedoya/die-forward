@@ -42,13 +42,36 @@ export interface VictoryCardData {
 
 // Logo component for share cards
 // Use a high-res transparent PNG and scale down for crisp rendering.
+// Fallback to text if image fails to load.
 function ShareCardLogo() {
+  const [imageError, setImageError] = React.useState(false);
+  
+  if (imageError) {
+    // Text fallback
+    return (
+      <View className="items-center">
+        <Text
+          style={{
+            fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+            fontSize: 18,
+            fontWeight: '700',
+            color: '#f59e0b',
+            textAlign: 'center',
+          }}
+        >
+          DIE FORWARD
+        </Text>
+      </View>
+    );
+  }
+
   return (
     <View className="items-center">
       <Image
         source={require('../assets/logo-die-forward-transparent.png')}
         style={{ width: 220, height: 40 }}
         resizeMode="contain"
+        onError={() => setImageError(true)}
       />
     </View>
   );
