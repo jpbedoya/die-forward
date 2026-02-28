@@ -5,9 +5,15 @@
 import React, { useRef, useCallback } from 'react';
 import { View, Text, Platform } from 'react-native';
 import ViewShot from 'react-native-view-shot';
-import Share from 'react-native-share';
 import * as Clipboard from 'expo-clipboard';
 import { DieForwardLogo } from '../components/DieForwardLogo';
+
+// react-native-share has native code that crashes on web
+// Only import on native platforms
+let Share: typeof import('react-native-share').default | null = null;
+if (Platform.OS !== 'web') {
+  Share = require('react-native-share').default;
+}
 
 // Web-only import
 let html2canvas: ((element: HTMLElement, options?: object) => Promise<HTMLCanvasElement>) | null = null;
@@ -278,6 +284,11 @@ export function useShareCard() {
       // IMPORTANT: Telegram/Slack can fail to send when caption+image are passed together.
       // Share image only for max compatibility, and copy caption to clipboard for easy paste.
       await Clipboard.setStringAsync(message);
+
+      if (!Share) {
+        console.error('[ShareCard] react-native-share not available on web');
+        return false;
+      }
 
       await Share.open({
         title,
