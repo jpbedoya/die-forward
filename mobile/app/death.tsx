@@ -44,7 +44,8 @@ export default function DeathScreen() {
   const handleShare = async () => {
     setSharing(true);
     playSFX('share-click');
-    const success = await captureAndShare('Die Forward', `I died at room ${roomNumber} in @dieforward\n\n${finalWords}`);
+    const shareText = `I died at room ${roomNumber} in @dieforward dieforward.com\n\n"${finalWords}"`;
+    const success = await captureAndShare('Die Forward', shareText);
     setSharing(false);
     // Only close modal on success
     if (success) {

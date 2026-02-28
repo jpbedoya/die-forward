@@ -1,11 +1,11 @@
 // Share card generation for React Native
 // Uses html2canvas on web, react-native-view-shot on native
+// Uses react-native-share for native to support text + image
 
 import React, { useRef, useCallback } from 'react';
 import { View, Text, Platform } from 'react-native';
 import ViewShot from 'react-native-view-shot';
-import * as Sharing from 'expo-sharing';
-import { DieForwardLogoInline } from '../components/DieForwardLogo';
+import Share from 'react-native-share';
 
 // Web-only import
 let html2canvas: ((element: HTMLElement, options?: object) => Promise<HTMLCanvasElement>) | null = null;
@@ -39,6 +39,50 @@ export interface VictoryCardData {
   nowPlaying?: NowPlaying;
 }
 
+// Simple block-style ASCII logo for share cards
+const LOGO_DIE = `██████  ██ ███████
+██   ██ ██ ██
+██   ██ ██ █████
+██   ██ ██ ██
+██████  ██ ███████`;
+
+const LOGO_FORWARD = `███████  ██████  ██████  ██   ██  █████  ██████  ██████
+██      ██    ██ ██   ██ ██   ██ ██   ██ ██   ██ ██   ██
+█████   ██    ██ ██████  ██ █ ██ ███████ ██████  ██   ██
+██      ██    ██ ██   ██ ██ ███ ██   ██ ██   ██ ██   ██
+██       ██████  ██   ██  ██ ██  ██   ██ ██   ██ ██████`;
+
+// Logo component for share cards
+function ShareCardLogo({ color = '#f59e0b' }: { color?: string }) {
+  return (
+    <View className="items-center">
+      <Text 
+        style={{ 
+          fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+          fontSize: 4,
+          lineHeight: 4.8,
+          color,
+          textAlign: 'center',
+        }}
+      >
+        {LOGO_DIE}
+      </Text>
+      <View style={{ height: 1 }} />
+      <Text 
+        style={{ 
+          fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+          fontSize: 3,
+          lineHeight: 3.6,
+          color,
+          textAlign: 'center',
+        }}
+      >
+        {LOGO_FORWARD}
+      </Text>
+    </View>
+  );
+}
+
 // Death Card Component
 export function DeathCard({ data }: { data: DeathCardData }) {
   return (
@@ -47,7 +91,7 @@ export function DeathCard({ data }: { data: DeathCardData }) {
       <View className="m-1 border border-blood/30 p-3">
         {/* Logo */}
         <View className="mb-3">
-          <DieForwardLogoInline color="#f59e0b" />
+          <ShareCardLogo color="#f59e0b" />
         </View>
         
         {/* Title */}
@@ -115,7 +159,7 @@ export function VictoryCard({ data }: { data: VictoryCardData }) {
       <View className="m-1 border border-amber/30 p-3">
         {/* Logo */}
         <View className="mb-3">
-          <DieForwardLogoInline color="#f59e0b" />
+          <ShareCardLogo color="#f59e0b" />
         </View>
         
         {/* Title */}
@@ -247,14 +291,14 @@ export function useShareCard() {
       }
     }
 
-    // Native: Use react-native-view-shot
+    // Native: Use react-native-view-shot + react-native-share
     if (!viewShotRef.current) {
       console.error('[ShareCard] No viewShotRef');
       return false;
     }
 
     try {
-      console.log('[ShareCard] Native platform - using view-shot');
+      console.log('[ShareCard] Native platform - using view-shot + react-native-share');
       const uri = await viewShotRef.current.capture?.();
       console.log('[ShareCard] Capture result:', uri ? 'success' : 'null');
       
@@ -263,21 +307,22 @@ export function useShareCard() {
         return false;
       }
 
-      // Native: Use expo-sharing
-      const isAvailable = await Sharing.isAvailableAsync();
-      if (!isAvailable) {
-        console.log('Sharing not available on this device');
-        return false;
-      }
-
-      await Sharing.shareAsync(uri, {
-        mimeType: 'image/png',
-        dialogTitle: title,
-        UTI: 'public.png',
+      // Use react-native-share which supports both text and image
+      await Share.open({
+        title,
+        message,
+        url: uri,
+        type: 'image/png',
+        failOnCancel: false,
       });
 
       return true;
     } catch (error) {
+      // react-native-share throws on cancel, check if it's actually an error
+      if ((error as Error)?.message?.includes('User did not share')) {
+        console.log('[ShareCard] User cancelled share');
+        return false;
+      }
       console.error('Failed to share card:', error);
       return false;
     }
