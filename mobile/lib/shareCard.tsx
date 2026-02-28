@@ -3,10 +3,11 @@
 // Uses react-native-share for native to support text + image
 
 import React, { useRef, useCallback } from 'react';
-import { View, Text, Platform, Image } from 'react-native';
+import { View, Text, Platform } from 'react-native';
 import ViewShot from 'react-native-view-shot';
 import Share from 'react-native-share';
 import * as Clipboard from 'expo-clipboard';
+import { DieForwardLogo } from '../components/DieForwardLogo';
 
 // Web-only import
 let html2canvas: ((element: HTMLElement, options?: object) => Promise<HTMLCanvasElement>) | null = null;
@@ -41,38 +42,11 @@ export interface VictoryCardData {
 }
 
 // Logo component for share cards
-// Use a high-res transparent PNG and scale down for crisp rendering.
-// Fallback to text if image fails to load.
+// Use the same in-app ASCII logo component (no external image assets).
 function ShareCardLogo() {
-  const [imageError, setImageError] = React.useState(false);
-  
-  if (imageError) {
-    // Text fallback
-    return (
-      <View className="items-center">
-        <Text
-          style={{
-            fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-            fontSize: 18,
-            fontWeight: '700',
-            color: '#f59e0b',
-            textAlign: 'center',
-          }}
-        >
-          DIE FORWARD
-        </Text>
-      </View>
-    );
-  }
-
   return (
     <View className="items-center">
-      <Image
-        source={require('../assets/logo-die-forward-transparent.png')}
-        style={{ width: 220, height: 40 }}
-        resizeMode="contain"
-        onError={() => setImageError(true)}
-      />
+      <DieForwardLogo size="small" color="#f59e0b" showGlow={false} />
     </View>
   );
 }
