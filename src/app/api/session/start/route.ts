@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { init, tx, id } from '@instantdb/admin';
 import { startErRun } from '@/lib/magicblock';
+import crypto from 'crypto';
 
 // Initialize InstantDB Admin client
 const db = init({
@@ -43,6 +44,10 @@ export async function POST(request: NextRequest) {
     // Generate session token
     const sessionToken = id();
     const sessionId = id();
+    
+    // Generate seed for verifiable randomness
+    // TODO: Replace with VRF seed from MagicBlock for staked runs
+    const seed = crypto.randomBytes(32).toString('hex');
 
     // ── MagicBlock: initialize + delegate RunRecord to ER ──────────────────
     const settingsResult = await db.query({ gameSettings: {} }).catch(() => null);
@@ -79,6 +84,7 @@ export async function POST(request: NextRequest) {
         demoMode: demoMode || false, // Demo mode flag for testing
         escrowSessionId: escrowSessionId || null, // On-chain session ID (hex string)
         useEscrow: useEscrow || false, // Whether using on-chain escrow
+        seed, // RNG seed for verifiable randomness
         ...(erRunId ? { erRunId } : {}), // ER run account pubkey (MagicBlock)
       }),
     ]);
@@ -87,6 +93,7 @@ export async function POST(request: NextRequest) {
       success: true,
       sessionToken,
       zone: 'THE SUNKEN CRYPT',
+      seed, // Client uses this for deterministic randomness
     }, { headers: corsHeaders });
 
   } catch (error) {

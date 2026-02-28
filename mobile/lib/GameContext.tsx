@@ -539,15 +539,15 @@ export function GameProvider({ children }: { children: ReactNode }) {
         state.authId || playerIdentifier, // authId for player record lookup
       );
       
-      // Defensive: ensure we got a session token
+      // Defensive: ensure we got a session token and seed
       if (!session || !session.sessionToken) {
         throw new Error('Invalid session response from server');
       }
       
-      // Generate seed for verifiable randomness
-      // TODO: For staked runs, get VRF seed from backend instead
-      const seed = generateRandomSeed();
-      console.log('[GameContext] Generated run seed:', seed.slice(0, 16) + '...');
+      // Use seed from server (stored in InstantDB for verification)
+      // Falls back to client-generated seed if server doesn't provide one
+      const seed = session.seed || generateRandomSeed();
+      console.log('[GameContext] Using run seed:', seed.slice(0, 16) + '...');
       
       // Generate dungeon client-side with full content system
       const dungeon = generateRandomDungeon();

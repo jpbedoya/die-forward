@@ -45,6 +45,7 @@ export interface StartSessionResponse {
   success: boolean;
   sessionToken: string;
   zone: string;
+  seed: string;  // RNG seed for verifiable randomness
   message?: string;
 }
 
