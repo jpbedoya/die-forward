@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAudio } from '../lib/audio';
 import { useEffect, useRef } from 'react';
-import { DieForwardLogo } from '../components/DieForwardLogo';
+import { DieForwardLogoImage } from '../components/DieForwardLogoImage';
 
 export default function NotFoundScreen() {
   const { playAmbient } = useAudio();
@@ -57,7 +57,7 @@ export default function NotFoundScreen() {
             marginBottom: 24,
           }}
         >
-          <DieForwardLogo size="large" showGlow glowColor="#ef4444" />
+          <DieForwardLogoImage variant="vertical" size="large" showGlow glowColor="#ef4444" />
         </Animated.View>
         
         {/* Message */}

@@ -6,7 +6,7 @@ import React, { useRef, useCallback } from 'react';
 import { View, Text, Platform } from 'react-native';
 import ViewShot from 'react-native-view-shot';
 import * as Clipboard from 'expo-clipboard';
-import { DieForwardLogo } from '../components/DieForwardLogo';
+import { DieForwardLogoImage } from '../components/DieForwardLogoImage';
 
 // react-native-share has native code that crashes on web
 // Only import on native platforms
@@ -47,12 +47,11 @@ export interface VictoryCardData {
   nowPlaying?: NowPlaying;
 }
 
-// Logo component for share cards
-// Use the same in-app ASCII logo component (no external image assets).
+// Logo component for share cards - uses horizontal PNG logo
 function ShareCardLogo() {
   return (
     <View className="items-center">
-      <DieForwardLogo size="small" color="#f59e0b" showGlow={false} />
+      <DieForwardLogoImage variant="horizontal" size="small" />
     </View>
   );
 }

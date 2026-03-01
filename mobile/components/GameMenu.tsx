@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { router } from 'expo-router';
 import { useGame } from '../lib/GameContext';
-import { DieForwardLogo } from './DieForwardLogo';
+import { DieForwardLogoImage } from './DieForwardLogoImage';
 import { CryptModal } from './CryptModal';
 import { AudioSettingsSection } from './AudioSettingsSection';
 
@@ -39,7 +39,7 @@ export function GameMenu({ isOpen, onClose }: GameMenuProps) {
     <CryptModal visible={isOpen} onClose={handleClose} showCloseButton={false} maxWidth={340}>
       {/* Logo */}
       <View className="items-center mb-3">
-        <DieForwardLogo size="small" />
+        <DieForwardLogoImage variant="horizontal" size="medium" />
       </View>
 
       {/* Close button */}

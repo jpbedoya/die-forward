@@ -43,7 +43,7 @@ function AnimatedDescendButton() {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDeathFeed, useGameSettings } from '../lib/instant';
 import { useGame } from '../lib/GameContext';
-import { DieForwardLogo } from '../components/DieForwardLogo';
+import { DieForwardLogoImage } from '../components/DieForwardLogoImage';
 import { AudioToggle } from '../components/AudioToggle';
 import { AudioSettingsModal } from '../components/AudioSettingsModal';
 import { AudiusLogo } from '../components/AudiusLogo';
@@ -273,7 +273,7 @@ export default function HomeScreen() {
 
         {/* Logo + Tagline + CTA */}
         <View className="items-center">
-          <DieForwardLogo size="large" showGlow glowColor="#f59e0b" />
+          <DieForwardLogoImage variant="vertical" size="large" showGlow glowColor="#f59e0b" />
           <Text className="text-bone font-mono text-center italic mt-6 mb-12">
             Your death feeds the depths
           </Text>
