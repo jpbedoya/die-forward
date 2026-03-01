@@ -45,7 +45,16 @@ export async function POST(_request: NextRequest) {
     });
 
     const sessions = result?.sessions || [];
-    const staleSessions = sessions.filter((s: any) => s.startedAt < threshold);
+    const toMs = (v: unknown): number => {
+      const n = Number(v || 0);
+      if (!Number.isFinite(n) || n <= 0) return 0;
+      // Some records may store seconds, others milliseconds.
+      return n < 1_000_000_000_000 ? n * 1000 : n;
+    };
+    const staleSessions = sessions.filter((s: any) => {
+      const startedAtMs = toMs(s.startedAt);
+      return startedAtMs > 0 && startedAtMs < threshold;
+    });
 
     if (staleSessions.length === 0) {
       return NextResponse.json({
