@@ -53,13 +53,14 @@ When you die:
 
 <table>
   <tr>
-    <td><img src="docs/images/readme/01-home.png" alt="Home screen" width="220" /></td>
-    <td><img src="docs/images/readme/02-toll.png" alt="Toll gate stake screen" width="220" /></td>
-    <td><img src="docs/images/readme/03-combat.png" alt="Combat screen" width="220" /></td>
-    <td><img src="docs/images/readme/04-death.png" alt="Death screen" width="220" /></td>
-    <td><img src="docs/images/readme/05-soundtrack.png" alt="Soundtrack screen" width="220" /></td>
-    <td><img src="docs/images/readme/06-ranks.png" alt="Ranks screen" width="220" /></td>
-    <td><img src="docs/images/readme/07-death-card.png" alt="Death card share modal" width="220" /></td>
+    <td><img src="docs/images/readme/01-home.png" alt="Home screen" width="300" /></td>
+    <td><img src="docs/images/readme/02-toll.png" alt="Toll gate stake screen" width="300" /></td>
+    <td><img src="docs/images/readme/03-combat.png" alt="Combat screen" width="300" /></td>
+  </tr>
+  <tr>
+    <td><img src="docs/images/readme/04-death.png" alt="Death screen" width="300" /></td>
+    <td><img src="docs/images/readme/05-soundtrack.png" alt="Soundtrack screen" width="300" /></td>
+    <td><img src="docs/images/readme/06-ranks.png" alt="Ranks screen" width="300" /></td>
   </tr>
 </table>
 
