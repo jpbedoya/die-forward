@@ -534,7 +534,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       // Pass authId separately for proper player tracking (guests + wallet users)
       const session = await api.startSession(
         state.walletAddress || playerIdentifier, // walletAddress for on-chain stuff
-        amount, 
+        emptyHanded ? 0 : amount,  // Empty handed runs have 0 stake
         stakeTxSignature,
         state.authId || playerIdentifier, // authId for player record lookup
       );
