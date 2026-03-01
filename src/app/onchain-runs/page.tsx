@@ -150,12 +150,16 @@ async function fetchRuns() {
       if (sessionIds.length > 0) {
         const dbResult = await db.query({ sessions: {} });
         const sessions = (dbResult?.sessions || []) as Record<string, unknown>[];
-        const sessionMap = new Map<string, Record<string, unknown>>();
+        const sessionById = new Map<string, Record<string, unknown>>();
+        const sessionByErRunId = new Map<string, Record<string, unknown>>();
         for (const s of sessions) {
-          if (s.id && typeof s.id === 'string') sessionMap.set(s.id, s);
+          if (s.id && typeof s.id === 'string') sessionById.set(s.id, s);
+          if (s.erRunId && typeof s.erRunId === 'string') sessionByErRunId.set(s.erRunId, s);
         }
         for (const run of runs) {
-          const session = sessionMap.get(run.sessionId);
+          // Prefer exact match by ER run PDA (most reliable).
+          // Fallback to sessionId from RunRecord for backwards compatibility.
+          const session = sessionByErRunId.get(run.pda) ?? sessionById.get(run.sessionId);
           if (session) {
             run.dbRoom = session.currentRoom as number | undefined;
             run.dbStatus = session.status as string | undefined;
