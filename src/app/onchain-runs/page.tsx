@@ -251,7 +251,10 @@ export default async function OnchainRunsPage() {
                     }) => {
                       // Prefer InstantDB status/room (accurate) over on-chain (stale due to ER write issue)
                       const displayRoom = run.dbRoom ?? run.currentRoom;
-                      const dbStatusKey = run.dbStatus === 'dead' ? 1 : run.dbStatus === 'cleared' ? 2 : undefined;
+                      const dbStatusKey =
+                        run.dbStatus === 'dead' ? 1 :
+                        (run.dbStatus === 'cleared' || run.dbStatus === 'completed') ? 2 :
+                        undefined;
                       const statusKey = dbStatusKey ?? run.status;
                       const { label, color } = STATUS_LABEL[statusKey] ?? STATUS_LABEL[0];
                       return (
