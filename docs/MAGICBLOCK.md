@@ -12,6 +12,34 @@ When a player stakes SOL and starts a run, we:
 
 This gives us the speed of an L2 with the finality of Solana mainnet.
 
+## Run Eligibility
+
+**Not all runs get recorded on-chain.** ER runs are only created when ALL conditions are met:
+
+| Condition | Rationale |
+|-----------|-----------|
+| `stakeAmount > 0` | Empty-handed (free) runs have no stake to track |
+| Real wallet connected | Guest wallets (`guest-*`) can't sign transactions |
+| Not demo mode | Demo sessions are for testing only |
+
+### What gets recorded where
+
+| Run Type | InstantDB | On-Chain (ER) | Tapestry |
+|----------|-----------|---------------|----------|
+| **Staked (wallet)** | ✅ Deaths, corpses, player stats | ✅ Full ER lifecycle | ✅ Social posts |
+| **Empty-handed (wallet)** | ✅ Deaths, corpses, player stats | ❌ Skipped | ✅ Social posts |
+| **Guest (no wallet)** | ✅ Deaths, corpses, player stats | ❌ Skipped | ❌ Skipped |
+
+The eligibility check lives in `/api/session/start`:
+
+```typescript
+const isGuestOrDemo = !walletAddress || walletAddress.startsWith('guest-') || walletAddress.startsWith('demo-');
+
+if (mbEnabled && !isGuestOrDemo && stakeAmount > 0) {
+  erRunId = await initializeAndDelegateRun({ ... });
+}
+```
+
 ## Deployed Programs
 
 | Program | Address | Purpose |
