@@ -52,17 +52,17 @@ When you die:
 ## 📸 Screenshots
 
 <p align="center">
-  <img src="docs/images/readme/01-home.jpg" alt="Home screen" width="220" />
-  <img src="docs/images/readme/02-toll.jpg" alt="Toll gate stake screen" width="220" />
-  <img src="docs/images/readme/03-combat.jpg" alt="Combat screen" width="220" />
+  <img src="docs/images/readme/01-home.png" alt="Home screen" width="220" />
+  <img src="docs/images/readme/02-toll.png" alt="Toll gate stake screen" width="220" />
+  <img src="docs/images/readme/03-combat.png" alt="Combat screen" width="220" />
 </p>
 <p align="center">
-  <img src="docs/images/readme/04-death.jpg" alt="Death screen" width="220" />
-  <img src="docs/images/readme/05-death-card.jpg" alt="Death card share modal" width="220" />
-  <img src="docs/images/readme/06-ranks.jpg" alt="Ranks screen" width="220" />
+  <img src="docs/images/readme/04-death.png" alt="Death screen" width="220" />
+  <img src="docs/images/readme/05-soundtrack.png" alt="Soundtrack screen" width="220" />
+  <img src="docs/images/readme/06-ranks.png" alt="Ranks screen" width="220" />
 </p>
 <p align="center">
-  <img src="docs/images/readme/07-soundtrack.jpg" alt="Soundtrack screen" width="220" />
+  <img src="docs/images/readme/07-death-card.png" alt="Death card share modal" width="220" />
 </p>
 
 ---

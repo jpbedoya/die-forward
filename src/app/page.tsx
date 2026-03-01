@@ -12,11 +12,13 @@ const ASCII_LOGO = `
  ╚═════╝ ╚═╝╚══════╝    ╚═╝      ╚═════╝ ╚═╝  ╚═╝ ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ `;
 
 const SCREENSHOTS = [
-  { src: '/screenshots/01-splash.png', alt: 'Splash Screen' },
-  { src: '/screenshots/02-title.png', alt: 'Title Screen' },
-  { src: '/screenshots/03-combat.png', alt: 'Combat' },
+  { src: '/screenshots/01-home.png', alt: 'Home Screen' },
+  { src: '/screenshots/02-toll.png', alt: 'Toll Gate Stake Screen' },
+  { src: '/screenshots/03-combat.png', alt: 'Combat Screen' },
   { src: '/screenshots/04-death.png', alt: 'Death Screen' },
-  { src: '/screenshots/05-corpse.png', alt: 'Corpse Discovery' },
+  { src: '/screenshots/05-soundtrack.png', alt: 'Soundtrack Screen' },
+  { src: '/screenshots/06-ranks.png', alt: 'Ranks Screen' },
+  { src: '/screenshots/07-death-card.png', alt: 'Death Card Share Modal' },
 ];
 
 export default function LandingPage() {
