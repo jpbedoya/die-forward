@@ -64,7 +64,7 @@ const DEFAULT_SETTINGS: Omit<GameSettings, 'id'> = {
   enableMagicBlock: false,
 };
 
-type Tab = 'dashboard' | 'settings' | 'music' | 'deaths';
+type Tab = 'dashboard' | 'settings' | 'music' | 'deaths' | 'corpses';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // MAIN ADMIN PAGE
@@ -120,6 +120,7 @@ export default function AdminPage() {
     { id: 'settings', label: 'Settings', icon: '⚙️' },
     { id: 'music', label: 'Music', icon: '🎵' },
     { id: 'deaths', label: 'Deaths', icon: '💀' },
+    { id: 'corpses', label: 'Corpses', icon: '⚰️' },
   ];
 
   return (
@@ -161,6 +162,7 @@ export default function AdminPage() {
         {activeTab === 'settings' && <SettingsTab />}
         {activeTab === 'music' && <MusicTab />}
         {activeTab === 'deaths' && <DeathsTab />}
+        {activeTab === 'corpses' && <CorpsesTab />}
       </div>
     </div>
   );
@@ -704,6 +706,122 @@ function DeathsTab() {
         {deaths.length === 0 && (
           <p className="text-[var(--text-dim)]">No deaths recorded yet.</p>
         )}
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ⚰️ CORPSES TAB
+// ═══════════════════════════════════════════════════════════════════════════════
+function CorpsesTab() {
+  const { data: corpsesData } = db.useQuery({ corpses: {} });
+  const corpses = corpsesData?.corpses || [];
+  const sorted = [...corpses].sort((a: any, b: any) => (b.createdAt || 0) - (a.createdAt || 0));
+
+  const undiscovered = sorted.filter((c: any) => !c.discovered);
+  const discovered = sorted.filter((c: any) => c.discovered && !c.tipped);
+  const tipped = sorted.filter((c: any) => c.tipped);
+
+  const getZoneColor = (zone: string) => {
+    if (zone?.includes('Upper')) return 'var(--amber)';
+    if (zone?.includes('Flooded')) return '#60a5fa';
+    if (zone?.includes('Abyss')) return 'var(--purple)';
+    return 'var(--text-dim)';
+  };
+
+  const renderCorpse = (corpse: any) => (
+    <div
+      key={corpse.id}
+      className={`border p-4 rounded-lg mb-3 ${
+        !corpse.discovered
+          ? 'border-[var(--green)] bg-[var(--green)]/5'
+          : corpse.tipped
+          ? 'border-[var(--amber)] bg-[var(--amber)]/5'
+          : 'border-[var(--border)] bg-[var(--bg-surface)]'
+      }`}
+    >
+      <div className="flex justify-between items-start mb-2">
+        <div className="flex items-center gap-2">
+          <span className="text-xl">💀</span>
+          <span className="text-[var(--purple)] font-bold">@{corpse.playerName}</span>
+        </div>
+        <div className="flex gap-2">
+          {!corpse.discovered && (
+            <span className="text-[10px] px-2 py-0.5 bg-[var(--green)]/20 text-[var(--green)] rounded">ACTIVE</span>
+          )}
+          {corpse.discovered && !corpse.tipped && (
+            <span className="text-[10px] px-2 py-0.5 bg-[var(--border)] text-[var(--text-dim)] rounded">LOOTED</span>
+          )}
+          {corpse.tipped && (
+            <span className="text-[10px] px-2 py-0.5 bg-[var(--amber)]/20 text-[var(--amber)] rounded">TIPPED</span>
+          )}
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2 text-sm mb-2">
+        <span style={{ color: getZoneColor(corpse.zone) }}>{corpse.zone}</span>
+        <span className="text-[var(--text-dim)]">•</span>
+        <span className="text-[var(--text-muted)]">Room {corpse.room}</span>
+      </div>
+
+      <div className="bg-black/20 p-2 rounded mb-2">
+        <p className="text-[var(--text)] text-sm italic">"{corpse.finalMessage}"</p>
+      </div>
+
+      <div className="flex justify-between items-center text-xs">
+        <span className="text-[var(--amber)]">{corpse.lootEmoji} {corpse.loot}</span>
+        <span className="text-[var(--text-dim)]">
+          {corpse.createdAt ? new Date(corpse.createdAt).toLocaleString('en-US', {
+            month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false,
+          }) : 'Unknown'}
+        </span>
+      </div>
+
+      <div className="text-[10px] text-[var(--text-muted)] mt-1">
+        {corpse.walletAddress?.slice(0, 8)}...{corpse.walletAddress?.slice(-4)}
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="space-y-6">
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-4">
+        <div className="bg-[var(--bg-surface)] border border-[var(--green)] p-4 rounded-lg text-center">
+          <div className="text-2xl text-[var(--green)] font-bold">{undiscovered.length}</div>
+          <div className="text-[var(--text-dim)] text-sm">Active (Undiscovered)</div>
+        </div>
+        <div className="bg-[var(--bg-surface)] border border-[var(--border)] p-4 rounded-lg text-center">
+          <div className="text-2xl text-[var(--text)] font-bold">{discovered.length}</div>
+          <div className="text-[var(--text-dim)] text-sm">Looted</div>
+        </div>
+        <div className="bg-[var(--bg-surface)] border border-[var(--amber)] p-4 rounded-lg text-center">
+          <div className="text-2xl text-[var(--amber)] font-bold">{tipped.length}</div>
+          <div className="text-[var(--text-dim)] text-sm">Tipped</div>
+        </div>
+      </div>
+
+      {/* Active Corpses */}
+      {undiscovered.length > 0 && (
+        <div className="bg-[var(--bg-surface)] border border-[var(--border)] p-6 rounded-lg">
+          <h2 className="text-lg text-[var(--green)] mb-4">🟢 Active Corpses ({undiscovered.length})</h2>
+          <div className="max-h-[400px] overflow-y-auto">
+            {undiscovered.map(renderCorpse)}
+          </div>
+        </div>
+      )}
+
+      {/* All Corpses */}
+      <div className="bg-[var(--bg-surface)] border border-[var(--border)] p-6 rounded-lg">
+        <h2 className="text-lg text-[var(--amber)] mb-4">⚰️ All Corpses ({sorted.length})</h2>
+        <div className="max-h-[600px] overflow-y-auto">
+          {sorted.length === 0 ? (
+            <p className="text-[var(--text-dim)]">No corpses found.</p>
+          ) : (
+            sorted.map(renderCorpse)
+          )}
+        </div>
       </div>
     </div>
   );
