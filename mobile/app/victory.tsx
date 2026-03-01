@@ -76,6 +76,7 @@ export default function VictoryScreen() {
   
   const [claiming, setClaiming] = useState(false);
   const [claimed, setClaimed] = useState(false);
+  const [victoryFinalized, setVictoryFinalized] = useState(false);
   const [signature, setSignature] = useState<string | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
   const [sharing, setSharing] = useState(false);
@@ -158,31 +159,48 @@ export default function VictoryScreen() {
     return () => clearTimeout(timer);
   }, [audioReady]);
 
-  const handleClaim = async () => {
-    if (claiming || claimed) return;
-    
+  const finalizeVictoryIfNeeded = async () => {
+    if (victoryFinalized || claiming || claimed || !game.sessionToken) return;
+
     setClaiming(true);
-    playSFX('confirm-action');
-    
     try {
       await game.claimVictory();
       setClaimed(true);
+      setVictoryFinalized(true);
       playSFX('tip-chime');
-      // TODO: Get actual signature from claimVictory response
     } catch (e) {
-      console.error('Failed to claim victory:', e);
+      console.error('Failed to finalize victory:', e);
+      // Avoid retry loops from auto-finalizer
+      setVictoryFinalized(true);
     } finally {
       setClaiming(false);
     }
   };
 
-  const handlePlayAgain = () => {
+  const handleClaim = async () => {
+    if (claiming || claimed) return;
+    playSFX('confirm-action');
+    await finalizeVictoryIfNeeded();
+  };
+
+  // Auto-finalize victory if player stays on this screen without claiming
+  useEffect(() => {
+    if (victoryFinalized || claimed) return;
+    const timer = setTimeout(() => {
+      finalizeVictoryIfNeeded().catch((e) => console.error('[Victory] Auto-finalize failed:', e));
+    }, 30000);
+    return () => clearTimeout(timer);
+  }, [victoryFinalized, claimed, game.sessionToken]);
+
+  const handlePlayAgain = async () => {
     playSFX('ui-click');
+    await finalizeVictoryIfNeeded();
     router.replace('/stake');
   };
 
-  const handleHome = () => {
+  const handleHome = async () => {
     playSFX('ui-click');
+    await finalizeVictoryIfNeeded();
     router.replace('/');
   };
 

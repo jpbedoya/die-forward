@@ -23,11 +23,12 @@ export async function OPTIONS() {
 
 /**
  * Cleanup stale active sessions
- * 
- * Sessions that have been 'active' for more than 1 hour are likely abandoned.
- * This endpoint marks them as 'dead' with a default epitaph.
+ *
+ * Sessions active > 1h are likely abandoned.
+ * - Victory candidates (currentRoom >= maxRooms): mark completed, pending payout claim
+ * - Others: mark dead with default epitaph
  */
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     const now = Date.now();
     const threshold = now - STALE_THRESHOLD_MS;
@@ -47,31 +48,64 @@ export async function POST(request: NextRequest) {
     const staleSessions = sessions.filter((s: any) => s.startedAt < threshold);
 
     if (staleSessions.length === 0) {
-      return NextResponse.json({ 
-        success: true, 
+      return NextResponse.json({
+        success: true,
         message: 'No stale sessions found',
         cleaned: 0,
+        deadMarked: 0,
+        victoriesMarked: 0,
       }, { headers: corsHeaders });
     }
 
-    // Mark stale sessions as dead
-    const updates = staleSessions.map((session: any) => 
-      tx.sessions[session.id].update({
-        status: 'dead',
-        endedAt: now,
-        finalMessage: '...',  // Default epitaph for abandoned sessions
-        room: session.currentRoom || 1,
-      })
-    );
+    const victoryCandidates = staleSessions.filter((s: any) => {
+      const currentRoom = s.currentRoom || 1;
+      const maxRooms = s.maxRooms || 7;
+      return currentRoom >= maxRooms;
+    });
 
-    await db.transact(updates);
+    const deathCandidates = staleSessions.filter((s: any) => {
+      const currentRoom = s.currentRoom || 1;
+      const maxRooms = s.maxRooms || 7;
+      return currentRoom < maxRooms;
+    });
 
-    console.log(`[Cleanup] Marked ${staleSessions.length} stale sessions as dead`);
+    const updates = [
+      ...deathCandidates.map((session: any) =>
+        tx.sessions[session.id].update({
+          status: 'dead',
+          endedAt: now,
+          finalMessage: '...', // Default epitaph for abandoned sessions
+          finalRoom: session.currentRoom || 1,
+        })
+      ),
+      ...victoryCandidates.map((session: any) => {
+        const stakeAmount = session.stakeAmount || 0;
+        const bonus = stakeAmount * 0.5;
+        const reward = stakeAmount + bonus;
+        const freeMode = session.demoMode || stakeAmount === 0;
+
+        return tx.sessions[session.id].update({
+          status: 'completed',
+          endedAt: now,
+          reward: freeMode ? 0 : reward,
+          payoutStatus: freeMode ? 'free_mode' : 'abandoned_pending_claim',
+          finalRoom: session.currentRoom || session.maxRooms || 7,
+        });
+      }),
+    ];
+
+    if (updates.length > 0) {
+      await db.transact(updates);
+    }
+
+    console.log(`[Cleanup] Marked dead=${deathCandidates.length}, completed=${victoryCandidates.length}`);
 
     return NextResponse.json({
       success: true,
-      message: `Cleaned up ${staleSessions.length} stale sessions`,
+      message: `Cleaned stale sessions: dead=${deathCandidates.length}, completed=${victoryCandidates.length}`,
       cleaned: staleSessions.length,
+      deadMarked: deathCandidates.length,
+      victoriesMarked: victoryCandidates.length,
       sessionIds: staleSessions.map((s: any) => s.id),
     }, { headers: corsHeaders });
 
