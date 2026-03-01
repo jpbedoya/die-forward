@@ -92,6 +92,62 @@ When you die:
 
 ---
 
+## 🔄 How Runs Are Tracked
+
+Every run generates data at multiple layers. Here's what happens:
+
+### Run Lifecycle
+
+```
+START                    PLAY                      END
+┌──────────────┐    ┌──────────────┐    ┌─────────────────────────┐
+│ • Session    │    │ • Room state │    │ DEATH:                  │
+│   created    │ →  │   updated    │ →  │ • Death record saved    │
+│ • Player     │    │ • Events     │    │ • Corpse spawned        │
+│   record     │    │   logged     │    │ • Player stats updated  │
+│ • ER run*    │    │ • ER room*   │    │ • ER committed*         │
+└──────────────┘    └──────────────┘    │                         │
+                                        │ VICTORY:                │
+                                        │ • Payout processed      │
+                                        │ • Player stats updated  │
+                                        │ • ER committed*         │
+                                        └─────────────────────────┘
+                                        
+* Only for staked runs with wallet connected
+```
+
+### Data Storage
+
+| Data | Location | Retention |
+|------|----------|-----------|
+| **Sessions** | InstantDB | All runs |
+| **Deaths & Corpses** | InstantDB | All runs |
+| **Player Stats** | InstantDB | All players (guest + wallet) |
+| **Run Records** | Solana (via MagicBlock) | Staked wallet runs only |
+| **Social Posts** | Tapestry | Wallet users only |
+
+### Run Types
+
+| Type | Stake | On-Chain | Use Case |
+|------|-------|----------|----------|
+| **Staked Run** | 0.01-0.25 SOL | ✅ Full ER lifecycle | Core gameplay, leaderboards |
+| **Empty-Handed** | 0 | ❌ InstantDB only | Practice, wallet users trying it out |
+| **Guest Run** | 0 | ❌ InstantDB only | Onboarding, no wallet needed |
+
+All run types:
+- Create corpses for other players to discover
+- Appear in the death feed
+- Track player stats (deaths, highest room)
+
+Staked runs additionally:
+- Record on-chain via MagicBlock ephemeral rollups
+- Contribute to/draw from the Memorial Pool
+- Eligible for victory payouts (+50% bonus)
+
+See [MAGICBLOCK.md](docs/MAGICBLOCK.md) for technical details on ephemeral rollups.
+
+---
+
 ## ⚡ Integrations
 
 Die Forward is built on cutting-edge Solana infrastructure:
