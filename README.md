@@ -51,19 +51,15 @@ When you die:
 
 ## 📸 Screenshots
 
-<p align="center">
+<div style="display:flex; gap:12px; overflow-x:auto; padding:8px 0; white-space:nowrap;">
   <img src="docs/images/readme/01-home.png" alt="Home screen" width="220" />
   <img src="docs/images/readme/02-toll.png" alt="Toll gate stake screen" width="220" />
   <img src="docs/images/readme/03-combat.png" alt="Combat screen" width="220" />
-</p>
-<p align="center">
   <img src="docs/images/readme/04-death.png" alt="Death screen" width="220" />
   <img src="docs/images/readme/05-soundtrack.png" alt="Soundtrack screen" width="220" />
   <img src="docs/images/readme/06-ranks.png" alt="Ranks screen" width="220" />
-</p>
-<p align="center">
   <img src="docs/images/readme/07-death-card.png" alt="Death card share modal" width="220" />
-</p>
+</div>
 
 ---
 
