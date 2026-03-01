@@ -107,6 +107,14 @@ export function GameMenu({ isOpen, onClose }: GameMenuProps) {
           </View>
         </View>
       )}
+
+      {/* Admin link */}
+      <Pressable
+        className="py-2 items-center"
+        onPress={() => { onClose(); router.push('/admin'); }}
+      >
+        <Text className="text-bone-dark text-[10px] font-mono">⚙ Admin</Text>
+      </Pressable>
     </CryptModal>
   );
 }
