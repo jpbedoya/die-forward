@@ -51,18 +51,17 @@ When you die:
 
 ## 📸 Screenshots
 
-<table>
-  <tr>
-    <td><img src="docs/images/readme/01-home.png" alt="Home screen" width="300" /></td>
-    <td><img src="docs/images/readme/02-toll.png" alt="Toll gate stake screen" width="300" /></td>
-    <td><img src="docs/images/readme/03-combat.png" alt="Combat screen" width="300" /></td>
-  </tr>
-  <tr>
-    <td><img src="docs/images/readme/04-death.png" alt="Death screen" width="300" /></td>
-    <td><img src="docs/images/readme/05-soundtrack.png" alt="Soundtrack screen" width="300" /></td>
-    <td><img src="docs/images/readme/06-ranks.png" alt="Ranks screen" width="300" /></td>
-  </tr>
-</table>
+<p align="center">
+  <img src="docs/images/readme/01-home.png" alt="Home screen" width="24%" />
+  <img src="docs/images/readme/02-toll.png" alt="Stake screen" width="24%" />
+  <img src="docs/images/readme/03-combat.png" alt="Combat" width="24%" />
+  <img src="docs/images/readme/04-death.png" alt="Death screen" width="24%" />
+</p>
+<p align="center">
+  <img src="docs/images/readme/05-soundtrack.png" alt="Soundtrack" width="24%" />
+  <img src="docs/images/readme/06-ranks.png" alt="Leaderboard" width="24%" />
+  <img src="docs/images/readme/07-death-card.png" alt="Death card share" width="24%" />
+</p>
 
 ---
 
@@ -99,13 +98,20 @@ When you die:
 
 ### Game Features
 
-- **🏔️ Three Depths** — The dungeon gets harder as you descend
-- **⚔️ Intent-Based Combat** — Read enemy telegraphs, exploit weaknesses
-- **👁️ Boss Fight** — The Keeper awaits at Room 12
-- **🎮 Free Play** — Try the game without connecting a wallet
-- **⛓️ On-Chain Records** — Every run is recorded via MagicBlock ephemeral rollups
-- **🎵 Decentralized Soundtrack** — Music streamed from Audius
-- **📱 Mobile Native** — Full Mobile Wallet Adapter support
+| Feature | Description |
+|---------|-------------|
+| **🏔️ Three Depths** | The dungeon gets harder as you descend through Shallow Graves → Bone Warren → The Abyss |
+| **⚔️ Intent-Based Combat** | Read enemy telegraphs, exploit weaknesses — no HP trading ping-pong |
+| **👁️ Boss Fight** | The Keeper awaits at Room 12 |
+| **💀 Persistent Deaths** | Your corpse, final words, and loot persist for other players to discover |
+| **🎴 Death Cards** | Share your death as a stylized card on social media |
+| **💸 Corpse Tipping** | Tip SOL to fallen players whose corpses you find |
+| **🏆 Leaderboards** | Compete on depth reached, total deaths, and earnings |
+| **🎮 Free Play** | Try empty-handed without staking — deaths still count |
+| **⛓️ On-Chain Records** | Staked runs recorded via MagicBlock ephemeral rollups |
+| **🎵 Decentralized Soundtrack** | Music streamed from Audius — your death track goes on the leaderboard |
+| **🤖 Agent API** | AI agents can play via REST API — their deaths appear in the feed |
+| **📱 Mobile Native** | Full Mobile Wallet Adapter support (Phantom, Solflare) |
 
 ---
 
