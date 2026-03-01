@@ -101,6 +101,41 @@ export default function DeathScreen() {
     return () => clearTimeout(timer);
   }, []);
 
+  // Track if death has been recorded
+  const [deathRecorded, setDeathRecorded] = useState(false);
+  
+  // Helper to record death with current or default message
+  const recordDeathIfNeeded = async () => {
+    if (deathRecorded || !game.sessionToken) return;
+    
+    const message = finalWords.trim() || '...';  // Default if no custom message
+    
+    try {
+      console.log('[Death] Recording death:', message.slice(0, 20));
+      await game.recordDeath(
+        message,
+        params.killedBy,
+        musicSource === 'audius' && currentTrack
+          ? { title: currentTrack.title, artist: currentTrack.user.name }
+          : undefined,
+      );
+      setDeathRecorded(true);
+    } catch (e) {
+      console.error('[Death] Record failed:', e);
+      // Mark as recorded anyway to prevent repeated failures
+      setDeathRecorded(true);
+    }
+  };
+
+  // Auto-finalize after 30s if player doesn't submit (ensures run is finished)
+  useEffect(() => {
+    if (deathRecorded) return;
+    const timer = setTimeout(() => {
+      recordDeathIfNeeded().catch((e) => console.error('[Death] Auto-finalize failed:', e));
+    }, 30000);
+    return () => clearTimeout(timer);
+  }, [deathRecorded, finalWords, game.sessionToken]);
+
   const handleSubmit = async () => {
     if (!finalWords.trim() || submitting) return;
 
@@ -115,6 +150,7 @@ export default function DeathScreen() {
           ? { title: currentTrack.title, artist: currentTrack.user.name }
           : undefined,
       );
+      setDeathRecorded(true);
       setSubmitted(true);
     } catch (e) {
       console.error('Failed to record death:', e);
@@ -124,13 +160,15 @@ export default function DeathScreen() {
     }
   };
 
-  const handlePlayAgain = () => {
+  const handlePlayAgain = async () => {
     playSFX('ui-click');
+    await recordDeathIfNeeded();  // Ensure death is recorded before leaving
     router.replace('/stake');
   };
 
-  const handleHome = () => {
+  const handleHome = async () => {
     playSFX('ui-click');
+    await recordDeathIfNeeded();  // Ensure death is recorded before leaving
     router.replace('/');
   };
 
