@@ -1,15 +1,14 @@
 // Share card generation for React Native
 // Uses html2canvas on web, react-native-view-shot on native
-// Uses react-native-share for native to support text + image
+// Uses react-native-share with proper file caching for better compatibility
 
 import React, { useRef, useCallback } from 'react';
 import { View, Text, Platform } from 'react-native';
 import ViewShot from 'react-native-view-shot';
-import * as Clipboard from 'expo-clipboard';
+import { Paths, File as ExpoFile } from 'expo-file-system';
 import { DieForwardLogoImage } from '../components/DieForwardLogoImage';
 
 // react-native-share has native code that crashes on web
-// Only import on native platforms
 let Share: typeof import('react-native-share').default | null = null;
 if (Platform.OS !== 'web') {
   Share = require('react-native-share').default;
@@ -265,6 +264,7 @@ export function useShareCard() {
     }
 
     // Native: Use react-native-view-shot + react-native-share
+    // Copy to cache with proper .png extension for better app compatibility (especially Telegram)
     if (!viewShotRef.current) {
       console.error('[ShareCard] No viewShotRef');
       return false;
@@ -280,27 +280,36 @@ export function useShareCard() {
         return false;
       }
 
-      // IMPORTANT: Telegram/Slack can fail to send when caption+image are passed together.
-      // Share image only for max compatibility, and copy caption to clipboard for easy paste.
-      await Clipboard.setStringAsync(message);
+      // Copy the image to a proper cache location with .png extension
+      // This helps with Telegram and other apps that are picky about file formats
+      const filename = `die-forward-card-${Date.now()}.png`;
+      const cacheFile = new ExpoFile(Paths.cache, filename);
+      const sourceFile = new ExpoFile(uri);
+      await sourceFile.copy(cacheFile);
+      const cacheUri = cacheFile.uri;
+      console.log('[ShareCard] Copied to cache:', cacheUri);
 
       if (!Share) {
-        console.error('[ShareCard] react-native-share not available on web');
+        console.error('[ShareCard] react-native-share not available');
         return false;
       }
 
+      // Share with both image and message (for X/Twitter compatibility)
+      // Using 'url' (singular) instead of 'urls' for better compatibility
       await Share.open({
         title,
-        urls: [uri],
+        message,
+        url: cacheUri,
         type: 'image/png',
-        filename: 'die-forward-card',
         failOnCancel: false,
       });
 
+      console.log('[ShareCard] Share completed');
       return true;
     } catch (error) {
-      // react-native-share throws on cancel, check if it's actually an error
-      if ((error as Error)?.message?.includes('User did not share')) {
+      // react-native-share throws on cancel
+      if ((error as Error)?.message?.includes('User did not share') ||
+          (error as Error)?.message?.includes('cancel')) {
         console.log('[ShareCard] User cancelled share');
         return false;
       }
