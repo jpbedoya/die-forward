@@ -50,9 +50,6 @@ export default function DeathScreen() {
     // Only close modal on success
     if (success) {
       setShowShareModal(false);
-      if (Platform.OS !== 'web') {
-        Alert.alert('Caption copied', 'Your share text was copied. If Telegram/Slack does not include text automatically, just paste it.');
-      }
     }
   };
 

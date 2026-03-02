@@ -1,18 +1,13 @@
 // Share card generation for React Native
 // Uses html2canvas on web, react-native-view-shot on native
-// Uses react-native-share with proper file caching for better compatibility
+// Uses expo-sharing for native (simpler, better app compatibility)
 
 import React, { useRef, useCallback } from 'react';
 import { View, Text, Platform } from 'react-native';
 import ViewShot from 'react-native-view-shot';
+import * as Sharing from 'expo-sharing';
 import { Paths, File as ExpoFile } from 'expo-file-system';
 import { DieForwardLogoImage } from '../components/DieForwardLogoImage';
-
-// react-native-share has native code that crashes on web
-let Share: typeof import('react-native-share').default | null = null;
-if (Platform.OS !== 'web') {
-  Share = require('react-native-share').default;
-}
 
 // Web-only import
 let html2canvas: ((element: HTMLElement, options?: object) => Promise<HTMLCanvasElement>) | null = null;
@@ -263,15 +258,15 @@ export function useShareCard() {
       }
     }
 
-    // Native: Use react-native-view-shot + react-native-share
-    // Copy to cache with proper .png extension for better app compatibility (especially Telegram)
+    // Native: Use react-native-view-shot + expo-sharing
+    // expo-sharing is simpler and has better compatibility with apps like Telegram
     if (!viewShotRef.current) {
       console.error('[ShareCard] No viewShotRef');
       return false;
     }
 
     try {
-      console.log('[ShareCard] Native platform - using view-shot + react-native-share');
+      console.log('[ShareCard] Native platform - using view-shot + expo-sharing');
       const uri = await viewShotRef.current.capture?.();
       console.log('[ShareCard] Capture result:', uri ? 'success' : 'null');
       
@@ -280,8 +275,15 @@ export function useShareCard() {
         return false;
       }
 
+      // Check if sharing is available
+      const isAvailable = await Sharing.isAvailableAsync();
+      if (!isAvailable) {
+        console.error('[ShareCard] Sharing not available on this device');
+        return false;
+      }
+
       // Copy the image to a proper cache location with .png extension
-      // This helps with Telegram and other apps that are picky about file formats
+      // This helps with apps that are picky about file formats
       const filename = `die-forward-card-${Date.now()}.png`;
       const cacheFile = new ExpoFile(Paths.cache, filename);
       const sourceFile = new ExpoFile(uri);
@@ -289,27 +291,20 @@ export function useShareCard() {
       const cacheUri = cacheFile.uri;
       console.log('[ShareCard] Copied to cache:', cacheUri);
 
-      if (!Share) {
-        console.error('[ShareCard] react-native-share not available');
-        return false;
-      }
-
-      // Share with both image and message (for X/Twitter compatibility)
-      // Using 'url' (singular) instead of 'urls' for better compatibility
-      await Share.open({
-        title,
-        message,
-        url: cacheUri,
-        type: 'image/png',
-        failOnCancel: false,
+      // Use expo-sharing - simpler API, better compatibility
+      // Note: expo-sharing doesn't support passing text with the image
+      // Users can add their own caption in the target app
+      await Sharing.shareAsync(cacheUri, {
+        mimeType: 'image/png',
+        dialogTitle: title,
       });
 
       console.log('[ShareCard] Share completed');
       return true;
     } catch (error) {
-      // react-native-share throws on cancel
-      if ((error as Error)?.message?.includes('User did not share') ||
-          (error as Error)?.message?.includes('cancel')) {
+      // User cancellation is not an error
+      const errorMsg = (error as Error)?.message || '';
+      if (errorMsg.includes('cancel') || errorMsg.includes('dismissed') || errorMsg.includes('CANCELED')) {
         console.log('[ShareCard] User cancelled share');
         return false;
       }
