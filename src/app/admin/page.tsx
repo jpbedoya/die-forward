@@ -129,8 +129,9 @@ export default function AdminPage() {
       <div className="border-b border-[var(--border)] bg-[var(--bg-surface)]">
         <div className="max-w-6xl mx-auto px-4 md:px-8">
           <div className="flex items-center justify-between py-4">
-            <div>
-              <h1 className="text-xl text-[var(--amber-bright)]">🎛️ Die Forward Admin</h1>
+            <div className="flex items-center gap-3">
+              <img src="/logo-horizontal.png" alt="Die Forward" className="h-6" />
+              <span className="text-[var(--text-dim)] text-sm">Admin</span>
             </div>
             <a href="/" className="text-[var(--amber-dim)] hover:text-[var(--amber)] text-sm">
               ← Back to Game
