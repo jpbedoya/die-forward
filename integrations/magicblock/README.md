@@ -155,10 +155,11 @@ SOLANA_AUTHORITY_SECRET_KEY=[...bytes...]
 - ✅ Fallback to legacy flow if ER unavailable
 
 ### Next
-- [ ] VRF oracle callbacks in `run_record` program
+- [x] VRF instruction scaffolding in `run_record` program (`request_vrf_seed`, `callback_vrf_seed`)
 - [x] Admin toggle for VRF (`enableVRF`, gated by `enableMagicBlock`)
 - [x] Session metadata fields (`enableVrf`, `seedSource`) for rollout visibility
-- [ ] Persist VRF seed to InstantDB (`session.vrfSeed`) and use in client RNG
+- [ ] Deploy upgraded `run_record` program + regenerate IDL
+- [ ] Persist VRF seed to InstantDB (`session.vrfSeed`) and use in client RNG end-to-end
 - [ ] Mainnet deployment
 
 ---

@@ -2,6 +2,9 @@ use anchor_lang::prelude::*;
 use ephemeral_rollups_sdk::anchor::{commit, delegate, ephemeral};
 use ephemeral_rollups_sdk::cpi::DelegateConfig;
 use ephemeral_rollups_sdk::ephem::commit_and_undelegate_accounts;
+use ephemeral_vrf_sdk::anchor::vrf;
+use ephemeral_vrf_sdk::instructions::{create_request_randomness_ix, RequestRandomnessParams};
+use ephemeral_vrf_sdk::types::SerializableAccountMeta;
 
 // PLACEHOLDER — replace with `solana-keygen pubkey target/deploy/run_record-keypair.json` after build
 declare_id!("9rGjguBZAnittA4Cbm7YNP5qomatY3c4MTV7LSqNomzS");
@@ -43,6 +46,8 @@ pub struct RunRecord {
     pub status: RunStatus,
     pub event_count: u16,
     pub stake_amount: u64,
+    pub vrf_seed: [u8; 32],       // Verifiable randomness seed (when VRF enabled)
+    pub vrf_ready: bool,
     pub bump: u8,
 }
 
@@ -77,6 +82,8 @@ pub mod run_record {
         run.status = RunStatus::Active;
         run.event_count = 0;
         run.stake_amount = stake_amount;
+        run.vrf_seed = [0u8; 32];
+        run.vrf_ready = false;
         run.bump = ctx.bumps.run_record;
 
         msg!("Run initialized for player {}", player);
@@ -95,6 +102,48 @@ pub mod run_record {
             },
         )?;
         msg!("RunRecord delegated to ER");
+        Ok(())
+    }
+
+    /// Request a VRF seed for this run.
+    /// Callback will write into run_record.vrf_seed.
+    pub fn request_vrf_seed(
+        ctx: Context<RequestVrfSeed>,
+        client_seed: [u8; 32],
+    ) -> Result<()> {
+        let run = &mut ctx.accounts.run_record;
+
+        let ix = create_request_randomness_ix(RequestRandomnessParams {
+            payer: ctx.accounts.authority.key(),
+            oracle_queue: ctx.accounts.oracle_queue.key(),
+            callback_program_id: ID,
+            callback_discriminator: instruction::CallbackVrfSeed::DISCRIMINATOR.to_vec(),
+            caller_seed: client_seed,
+            accounts_metas: Some(vec![SerializableAccountMeta {
+                pubkey: run.key(),
+                is_signer: false,
+                is_writable: true,
+            }]),
+            ..Default::default()
+        });
+
+        ctx.accounts
+            .invoke_signed_vrf(&ctx.accounts.authority.to_account_info(), &ix)?;
+
+        msg!("VRF requested for run {}", run.key());
+        Ok(())
+    }
+
+    /// Callback from VRF oracle CPI.
+    pub fn callback_vrf_seed(
+        ctx: Context<CallbackVrfSeed>,
+        randomness: [u8; 32],
+    ) -> Result<()> {
+        let run = &mut ctx.accounts.run_record;
+        run.vrf_seed = randomness;
+        run.vrf_ready = true;
+
+        msg!("VRF seed set for run {}", run.key());
         Ok(())
     }
 
@@ -227,6 +276,38 @@ pub struct DelegateRun<'info> {
     #[account(
         mut,
         del,
+        seeds = [RUN_SEED, run_record.session_id.as_ref()],
+        bump = run_record.bump
+    )]
+    pub run_record: Account<'info, RunRecord>,
+}
+
+#[vrf]
+#[derive(Accounts)]
+pub struct RequestVrfSeed<'info> {
+    #[account(
+        mut,
+        seeds = [RUN_SEED, run_record.session_id.as_ref()],
+        bump = run_record.bump
+    )]
+    pub run_record: Account<'info, RunRecord>,
+
+    #[account(address = run_record.authority)]
+    pub authority: Signer<'info>,
+
+    /// CHECK: The oracle queue
+    #[account(mut, address = ephemeral_vrf_sdk::consts::DEFAULT_QUEUE)]
+    pub oracle_queue: AccountInfo<'info>,
+}
+
+#[derive(Accounts)]
+pub struct CallbackVrfSeed<'info> {
+    /// CHECK: Ensures callback is signed by VRF program identity PDA
+    #[account(address = ephemeral_vrf_sdk::consts::VRF_PROGRAM_IDENTITY)]
+    pub vrf_program_identity: Signer<'info>,
+
+    #[account(
+        mut,
         seeds = [RUN_SEED, run_record.session_id.as_ref()],
         bump = run_record.bump
     )]
