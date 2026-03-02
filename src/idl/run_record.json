@@ -8,6 +8,61 @@
   },
   "instructions": [
     {
+      "name": "callback_vrf_seed",
+      "docs": [
+        "Callback from VRF oracle CPI."
+      ],
+      "discriminator": [
+        171,
+        92,
+        107,
+        197,
+        162,
+        56,
+        42,
+        125
+      ],
+      "accounts": [
+        {
+          "name": "vrf_program_identity",
+          "signer": true,
+          "address": "9irBy75QS2BN81FUgXuHcjqceJJRuc9oDkAe8TKVvvAw"
+        },
+        {
+          "name": "run_record",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  117,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "run_record.session_id",
+                "account": "RunRecord"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "randomness",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
       "name": "commit_run",
       "docs": [
         "Commit the ER run back to L1 and undelegate.",
@@ -259,69 +314,10 @@
       "args": []
     },
     {
-      "name": "finalize_run",
-      "docs": [
-        "Set the run's final status on the ER (without committing).",
-        "Called just before the SDK direct commit+undelegate, since that",
-        "instruction only flushes state — it doesn't modify data."
-      ],
-      "discriminator": [
-        79,
-        6,
-        112,
-        246,
-        170,
-        39,
-        103,
-        158
-      ],
-      "accounts": [
-        {
-          "name": "run_record",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  114,
-                  117,
-                  110
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "run_record.session_id",
-                "account": "RunRecord"
-              }
-            ]
-          }
-        },
-        {
-          "name": "authority",
-          "signer": true
-        }
-      ],
-      "args": [
-        {
-          "name": "outcome",
-          "type": {
-            "defined": {
-              "name": "RunStatus"
-            }
-          }
-        },
-        {
-          "name": "final_room",
-          "type": "u8"
-        }
-      ]
-    },
-    {
       "name": "finalize_and_commit",
       "docs": [
-        "Atomically finalize run data and commit+undelegate.",
-        "Prevents stale-state commits when finalize and commit are split."
+        "Atomically finalize run data and commit+undelegate in one instruction.",
+        "This avoids stale-state commits when finalize and commit are split."
       ],
       "discriminator": [
         212,
@@ -367,6 +363,65 @@
           "name": "magic_context",
           "writable": true,
           "address": "MagicContext1111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "outcome",
+          "type": {
+            "defined": {
+              "name": "RunStatus"
+            }
+          }
+        },
+        {
+          "name": "final_room",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "finalize_run",
+      "docs": [
+        "Set the run's final status on the ER (without committing).",
+        "Called just before the SDK direct commit+undelegate, since that",
+        "instruction only flushes state — it doesn't modify data."
+      ],
+      "discriminator": [
+        79,
+        6,
+        112,
+        246,
+        170,
+        39,
+        103,
+        158
+      ],
+      "accounts": [
+        {
+          "name": "run_record",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  117,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "run_record.session_id",
+                "account": "RunRecord"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "signer": true
         }
       ],
       "args": [
@@ -557,6 +612,98 @@
           }
         }
       ]
+    },
+    {
+      "name": "request_vrf_seed",
+      "docs": [
+        "Request a VRF seed for this run.",
+        "Callback will write into run_record.vrf_seed."
+      ],
+      "discriminator": [
+        178,
+        233,
+        240,
+        191,
+        147,
+        137,
+        216,
+        130
+      ],
+      "accounts": [
+        {
+          "name": "run_record",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  117,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "run_record.session_id",
+                "account": "RunRecord"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "signer": true
+        },
+        {
+          "name": "oracle_queue",
+          "writable": true,
+          "address": "Cuj97ggrhhidhbu39TijNVqE74xvKJ69gDervRUXAxGh"
+        },
+        {
+          "name": "program_identity",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  105,
+                  100,
+                  101,
+                  110,
+                  116,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "vrf_program",
+          "address": "Vrf1RNUjXmQGjmQrQLvJHs9SNkvDJEsRVFPkfSQUwGz"
+        },
+        {
+          "name": "slot_hashes",
+          "address": "SysvarS1otHashes111111111111111111111111111"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "client_seed",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
     }
   ],
   "accounts": [
@@ -653,6 +800,19 @@
           {
             "name": "stake_amount",
             "type": "u64"
+          },
+          {
+            "name": "vrf_seed",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "vrf_ready",
+            "type": "bool"
           },
           {
             "name": "bump",

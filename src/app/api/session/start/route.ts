@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { init, tx, id } from '@instantdb/admin';
-import { startErRun } from '@/lib/magicblock';
+import { startErRun, requestErVrfSeed, getErVrfSeed } from '@/lib/magicblock';
 import crypto from 'crypto';
 
 // Initialize InstantDB Admin client
@@ -45,9 +45,9 @@ export async function POST(request: NextRequest) {
     const sessionToken = id();
     const sessionId = id();
     
-    // Generate seed for verifiable randomness
-    // TODO: Replace with VRF seed from MagicBlock for staked runs
-    const seed = crypto.randomBytes(32).toString('hex');
+    // Generate legacy/fallback seed (may be replaced by VRF)
+    let seed = crypto.randomBytes(32).toString('hex');
+    let seedSource: 'legacy' | 'vrf' | 'vrf-pending' = 'legacy';
 
     // ── MagicBlock: initialize + delegate RunRecord to ER ──────────────────
     const settingsResult = await db.query({ gameSettings: {} }).catch(() => null);
@@ -64,6 +64,25 @@ export async function POST(request: NextRequest) {
           new Promise<null>((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000)),
         ]);
         console.log('[MagicBlock] ER run started:', erRunId);
+
+        // Optional VRF path (only when nested toggle is on)
+        if (erRunId && vrfEnabled) {
+          const requested = await requestErVrfSeed({ erRunId, clientSeed: seed });
+          if (requested) {
+            // Poll briefly for callback completion. If it doesn't arrive in time,
+            // keep legacy seed so gameplay never blocks.
+            for (let i = 0; i < 8; i++) {
+              await new Promise((resolve) => setTimeout(resolve, 800));
+              const vrf = await getErVrfSeed(erRunId);
+              if (vrf.ready && vrf.seedHex) {
+                seed = vrf.seedHex;
+                seedSource = 'vrf';
+                console.log('[MagicBlock] VRF seed ready for session:', sessionId);
+                break;
+              }
+            }
+          }
+        }
       } catch (err) {
         console.warn('[MagicBlock] startErRun failed (non-fatal):', err instanceof Error ? err.message : err);
       }
@@ -86,9 +105,9 @@ export async function POST(request: NextRequest) {
         demoMode: demoMode || false, // Demo mode flag for testing
         escrowSessionId: escrowSessionId || null, // On-chain session ID (hex string)
         useEscrow: useEscrow || false, // Whether using on-chain escrow
-        seed, // RNG seed (legacy / fallback)
-        seedSource: vrfEnabled && erRunId ? 'vrf-pending' : 'legacy',
-        enableVrf: vrfEnabled,
+        seed, // RNG seed (legacy or VRF)
+        seedSource,
+        enableVrf: vrfEnabled && !!erRunId,
         ...(erRunId ? { erRunId } : {}), // ER run account pubkey (MagicBlock)
       }),
     ]);
@@ -98,7 +117,7 @@ export async function POST(request: NextRequest) {
       sessionToken,
       zone: 'THE SUNKEN CRYPT',
       seed, // Client uses this for deterministic randomness
-      seedSource: vrfEnabled && !!erRunId ? 'vrf-pending' : 'legacy',
+      seedSource,
       enableVrf: vrfEnabled && !!erRunId,
     }, { headers: corsHeaders });
 

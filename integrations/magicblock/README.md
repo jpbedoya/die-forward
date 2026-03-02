@@ -2,7 +2,7 @@
 
 Die Forward uses [MagicBlock Ephemeral Rollups](https://docs.magicblock.gg/) for fast, verifiable on-chain game runs. Every staked run creates a `RunRecord` that tracks the player's progress through the crypt.
 
-**Status:** ✅ ER live on devnet · 🚧 VRF wiring in progress  
+**Status:** ✅ ER live on devnet · ✅ VRF integrated (with safe fallback)  
 **Toggles:** `enableMagicBlock` (master) + `enableVRF` (only active when ER is enabled)
 
 ## Deployed Programs
@@ -155,11 +155,11 @@ SOLANA_AUTHORITY_SECRET_KEY=[...bytes...]
 - ✅ Fallback to legacy flow if ER unavailable
 
 ### Next
-- [x] VRF instruction scaffolding in `run_record` program (`request_vrf_seed`, `callback_vrf_seed`)
+- [x] VRF request/callback instructions in `run_record` program (`request_vrf_seed`, `callback_vrf_seed`)
 - [x] Admin toggle for VRF (`enableVRF`, gated by `enableMagicBlock`)
-- [x] Session metadata fields (`enableVrf`, `seedSource`) for rollout visibility
-- [ ] Deploy upgraded `run_record` program + regenerate IDL
-- [ ] Persist VRF seed to InstantDB (`session.vrfSeed`) and use in client RNG end-to-end
+- [x] Deployed upgraded `run_record` program + upgraded IDL on devnet
+- [x] Session/API/client VRF seed path with fallback to legacy seed when callback is slow
+- [ ] Optional: async post-start VRF seed sync to InstantDB when callback lands after timeout window
 - [ ] Mainnet deployment
 
 ---

@@ -111,7 +111,7 @@ pub mod run_record {
         ctx: Context<RequestVrfSeed>,
         client_seed: [u8; 32],
     ) -> Result<()> {
-        let run = &mut ctx.accounts.run_record;
+        let run_key = ctx.accounts.run_record.key();
 
         let ix = create_request_randomness_ix(RequestRandomnessParams {
             payer: ctx.accounts.authority.key(),
@@ -120,7 +120,7 @@ pub mod run_record {
             callback_discriminator: instruction::CallbackVrfSeed::DISCRIMINATOR.to_vec(),
             caller_seed: client_seed,
             accounts_metas: Some(vec![SerializableAccountMeta {
-                pubkey: run.key(),
+                pubkey: run_key,
                 is_signer: false,
                 is_writable: true,
             }]),
@@ -130,7 +130,7 @@ pub mod run_record {
         ctx.accounts
             .invoke_signed_vrf(&ctx.accounts.authority.to_account_info(), &ix)?;
 
-        msg!("VRF requested for run {}", run.key());
+        msg!("VRF requested for run {}", run_key);
         Ok(())
     }
 

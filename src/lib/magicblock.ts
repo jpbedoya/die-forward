@@ -123,6 +123,11 @@ export interface ErCommitResult {
   fallback?: boolean;
 }
 
+export interface ErVrfResult {
+  ready: boolean;
+  seedHex?: string;
+}
+
 // ── Public API ────────────────────────────────────────────────────────────────
 
 /**
@@ -194,6 +199,54 @@ export async function startErRun(opts: {
  * Record a game event in the Ephemeral Rollup (fire-and-forget, zero-fee).
  * The ER connection routes this transaction to the ER validator instead of L1.
  */
+export async function requestErVrfSeed(opts: {
+  erRunId: string;
+  clientSeed?: string;
+}): Promise<boolean> {
+  try {
+    const authority = getAuthorityKeypair();
+    const l1Connection = new Connection(RPC_URL, 'confirmed');
+    const program = getProgram(l1Connection);
+    const runRecordPda = new PublicKey(opts.erRunId);
+
+    const seedBytes = new Uint8Array(32);
+    const fallback = new TextEncoder().encode((opts.clientSeed || Date.now().toString()).slice(0, 32));
+    seedBytes.set(fallback);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (program as any).methods
+      .requestVrfSeed(Array.from(seedBytes))
+      .accounts({ runRecord: runRecordPda, authority: authority.publicKey })
+      .signers([authority])
+      .rpc();
+
+    console.log('[MagicBlock] VRF requested for run:', opts.erRunId);
+    return true;
+  } catch (err) {
+    console.warn('[MagicBlock] requestErVrfSeed failed:', err);
+    return false;
+  }
+}
+
+export async function getErVrfSeed(erRunId: string): Promise<ErVrfResult> {
+  try {
+    const l1Connection = new Connection(RPC_URL, 'confirmed');
+    const program = getProgram(l1Connection);
+    const runRecordPda = new PublicKey(erRunId);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const run = await (program as any).account.runRecord.fetch(runRecordPda);
+    const ready = !!run?.vrfReady;
+    if (!ready || !run?.vrfSeed) return { ready: false };
+
+    const seedHex = Buffer.from(run.vrfSeed as number[]).toString('hex');
+    return { ready: true, seedHex };
+  } catch (err) {
+    console.warn('[MagicBlock] getErVrfSeed failed:', err);
+    return { ready: false };
+  }
+}
+
 export async function recordErEvent(opts: {
   erRunId: string;
   eventType: 'advance_room' | 'encounter' | 'item' | 'death' | 'victory';
