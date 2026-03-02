@@ -98,6 +98,7 @@ export async function POST(request: NextRequest) {
       sessionToken,
       zone: 'THE SUNKEN CRYPT',
       seed, // Client uses this for deterministic randomness
+      seedSource: vrfEnabled && !!erRunId ? 'vrf-pending' : 'legacy',
       enableVrf: vrfEnabled && !!erRunId,
     }, { headers: corsHeaders });
 

@@ -45,7 +45,10 @@ export interface StartSessionResponse {
   success: boolean;
   sessionToken: string;
   zone: string;
-  seed: string;  // RNG seed for verifiable randomness
+  seed: string;  // Legacy/fallback RNG seed
+  vrfSeed?: string; // Optional VRF seed when ER+VRF path is ready
+  enableVrf?: boolean;
+  seedSource?: 'legacy' | 'vrf' | 'vrf-pending';
   message?: string;
 }
 

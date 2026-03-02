@@ -544,9 +544,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
         throw new Error('Invalid session response from server');
       }
       
-      // Use seed from server (stored in InstantDB for verification)
+      // Prefer VRF seed when available, otherwise use legacy/fallback seed
       // Falls back to client-generated seed if server doesn't provide one
-      const seed = session.seed || generateRandomSeed();
+      const seed = session.vrfSeed || session.seed || generateRandomSeed();
       console.log('[GameContext] Using run seed:', seed.slice(0, 16) + '...');
       
       // Generate dungeon client-side with full content system
