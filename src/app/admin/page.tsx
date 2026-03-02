@@ -138,13 +138,13 @@ export default function AdminPage() {
             </a>
           </div>
 
-          {/* Tabs */}
-          <div className="flex gap-1 -mb-px">
+          {/* Tabs - horizontally scrollable on mobile */}
+          <div className="flex gap-1 -mb-px overflow-x-auto scrollbar-hide">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-4 py-3 text-sm border-b-2 transition-colors ${
+                className={`px-4 py-3 text-sm border-b-2 transition-colors whitespace-nowrap flex-shrink-0 ${
                   activeTab === tab.id
                     ? 'border-[var(--amber)] text-[var(--amber-bright)]'
                     : 'border-transparent text-[var(--text-dim)] hover:text-[var(--text)] hover:border-[var(--border)]'
