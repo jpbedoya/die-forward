@@ -2,8 +2,8 @@
 
 Die Forward uses [MagicBlock Ephemeral Rollups](https://docs.magicblock.gg/) for fast, verifiable on-chain game runs. Every staked run creates a `RunRecord` that tracks the player's progress through the crypt.
 
-**Status:** ✅ Live on devnet  
-**Toggle:** `enableMagicBlock` admin setting
+**Status:** ✅ ER live on devnet · 🚧 VRF wiring in progress  
+**Toggles:** `enableMagicBlock` (master) + `enableVRF` (only active when ER is enabled)
 
 ## Deployed Programs
 
@@ -20,7 +20,10 @@ Die Forward uses [MagicBlock Ephemeral Rollups](https://docs.magicblock.gg/) for
 
 InstantDB drives the game experience (speed, real-time UX). The Ephemeral Rollup runs in parallel as the **source of truth for what actually happened**. Death/victory don't settle on L1 until the ER commits the run.
 
-### Two Modes (controlled by admin toggle)
+### Modes (controlled by admin toggles)
+
+- `enableMagicBlock` is the master switch.
+- `enableVRF` is nested and only applies when `enableMagicBlock = true`.
 
 **`enableMagicBlock = false`**
 ```
@@ -152,7 +155,10 @@ SOLANA_AUTHORITY_SECRET_KEY=[...bytes...]
 - ✅ Fallback to legacy flow if ER unavailable
 
 ### Next
-- [ ] VRF integration (replace `Math.random()` with on-chain randomness)
+- [ ] VRF oracle callbacks in `run_record` program
+- [x] Admin toggle for VRF (`enableVRF`, gated by `enableMagicBlock`)
+- [x] Session metadata fields (`enableVrf`, `seedSource`) for rollout visibility
+- [ ] Persist VRF seed to InstantDB (`session.vrfSeed`) and use in client RNG
 - [ ] Mainnet deployment
 
 ---

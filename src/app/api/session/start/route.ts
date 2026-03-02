@@ -51,7 +51,9 @@ export async function POST(request: NextRequest) {
 
     // ── MagicBlock: initialize + delegate RunRecord to ER ──────────────────
     const settingsResult = await db.query({ gameSettings: {} }).catch(() => null);
-    const mbEnabled = (settingsResult?.gameSettings?.[0] as Record<string, unknown>)?.enableMagicBlock === true;
+    const settings = (settingsResult?.gameSettings?.[0] as Record<string, unknown>) || {};
+    const mbEnabled = settings.enableMagicBlock === true;
+    const vrfEnabled = mbEnabled && settings.enableVRF === true;
     const isGuestOrDemo = !walletAddress || walletAddress.startsWith('guest-') || walletAddress.startsWith('demo-');
 
     let erRunId: string | null = null;
@@ -84,7 +86,9 @@ export async function POST(request: NextRequest) {
         demoMode: demoMode || false, // Demo mode flag for testing
         escrowSessionId: escrowSessionId || null, // On-chain session ID (hex string)
         useEscrow: useEscrow || false, // Whether using on-chain escrow
-        seed, // RNG seed for verifiable randomness
+        seed, // RNG seed (legacy / fallback)
+        seedSource: vrfEnabled && erRunId ? 'vrf-pending' : 'legacy',
+        enableVrf: vrfEnabled,
         ...(erRunId ? { erRunId } : {}), // ER run account pubkey (MagicBlock)
       }),
     ]);
@@ -94,6 +98,7 @@ export async function POST(request: NextRequest) {
       sessionToken,
       zone: 'THE SUNKEN CRYPT',
       seed, // Client uses this for deterministic randomness
+      enableVrf: vrfEnabled && !!erRunId,
     }, { headers: corsHeaders });
 
   } catch (error) {

@@ -38,6 +38,7 @@ interface GameSettings {
   victoryBonusPercent: number;
   showLeaderboardLink: boolean;
   enableMagicBlock: boolean;
+  enableVRF: boolean;
 }
 
 interface Playlist {
@@ -62,6 +63,7 @@ const DEFAULT_SETTINGS: Omit<GameSettings, 'id'> = {
   victoryBonusPercent: 50,
   showLeaderboardLink: false,
   enableMagicBlock: false,
+  enableVRF: false,
 };
 
 type Tab = 'dashboard' | 'settings' | 'music' | 'deaths' | 'corpses';
@@ -244,6 +246,7 @@ function SettingsTab() {
     victoryBonusPercent: settings?.victoryBonusPercent ?? DEFAULT_SETTINGS.victoryBonusPercent,
     showLeaderboardLink: settings?.showLeaderboardLink ?? DEFAULT_SETTINGS.showLeaderboardLink,
     enableMagicBlock: settings?.enableMagicBlock ?? DEFAULT_SETTINGS.enableMagicBlock,
+    enableVRF: settings?.enableVRF ?? DEFAULT_SETTINGS.enableVRF,
   } as GameSettings;
 
   return (
@@ -264,7 +267,19 @@ function SettingsTab() {
       </SettingsSection>
       <SettingsSection title="UI">
         <SettingToggle label="Show Leaderboard Link" description="Display leaderboard link on the title screen" value={cs.showLeaderboardLink} onChange={(v) => saveSettings({ showLeaderboardLink: v })} />
-        <SettingToggle label="MagicBlock Ephemeral Rollups" description="Record runs on-chain via ER. Settlement requires ER commit before L1 payout. Falls back to legacy if unavailable." value={cs.enableMagicBlock} onChange={(v) => saveSettings({ enableMagicBlock: v })} />
+        <SettingToggle
+          label="MagicBlock Ephemeral Rollups"
+          description="Record runs on-chain via ER. Settlement requires ER commit before L1 payout. Falls back to legacy if unavailable."
+          value={cs.enableMagicBlock}
+          onChange={(v) => saveSettings(v ? { enableMagicBlock: true } : { enableMagicBlock: false, enableVRF: false })}
+        />
+        <SettingToggle
+          label="Use VRF Randomness (requires ER)"
+          description="Use MagicBlock VRF oracle for verifiable run seeds. Free on ER."
+          value={cs.enableVRF && cs.enableMagicBlock}
+          disabled={!cs.enableMagicBlock}
+          onChange={(v) => saveSettings({ enableVRF: v })}
+        />
       </SettingsSection>
     </div>
   );
@@ -868,25 +883,26 @@ function SettingSlider({ label, value, min, max, step, format = (v) => v.toStrin
   );
 }
 
-function SettingToggle({ label, description, value, onChange }: {
-  label: string; description?: string; value: boolean; onChange: (v: boolean) => void;
+function SettingToggle({ label, description, value, onChange, disabled = false }: {
+  label: string; description?: string; value: boolean; onChange: (v: boolean) => void; disabled?: boolean;
 }) {
   const id = `toggle-${label.replace(/\s+/g, '-').toLowerCase()}`;
   return (
-    <div className="flex items-center justify-between gap-4">
+    <div className={`flex items-center justify-between gap-4 ${disabled ? 'opacity-60' : ''}`}>
       <div>
-        <label htmlFor={id} className="text-[var(--text-dim)] text-sm cursor-pointer">{label}</label>
+        <label htmlFor={id} className={`text-[var(--text-dim)] text-sm ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>{label}</label>
         {description && <p className="text-[var(--text-muted)] text-xs mt-0.5">{description}</p>}
       </div>
-      <label htmlFor={id} className="relative inline-flex items-center cursor-pointer">
+      <label htmlFor={id} className={`relative inline-flex items-center ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
         <input
           type="checkbox"
           id={id}
           checked={value}
+          disabled={disabled}
           onChange={(e) => onChange(e.target.checked)}
           className="sr-only peer"
         />
-        <div className="w-11 h-6 bg-[var(--bg-surface)] border border-[var(--border)] rounded-full peer peer-checked:bg-[var(--amber)] peer-checked:border-[var(--amber)] transition-colors" />
+        <div className="w-11 h-6 bg-[var(--bg-surface)] border border-[var(--border)] rounded-full peer peer-checked:bg-[var(--amber)] peer-checked:border-[var(--amber)] transition-colors disabled:opacity-50" />
         <div className="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full transition-transform peer-checked:translate-x-5" />
       </label>
     </div>
