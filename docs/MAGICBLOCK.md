@@ -78,13 +78,17 @@ pub struct RunRecord {
     pub status: RunStatus,     // Active(0), Dead(1), Cleared(2)
     pub event_count: u16,      // Number of game events
     pub stake_amount: u64,     // Lamports staked
+    pub vrf_seed: [u8; 32],    // Verifiable randomness seed
+    pub vrf_ready: bool,       // True when VRF callback received
     pub bump: u8,              // PDA bump
 }
 ```
 
-**Size:** 125 bytes (8 discriminator + 32 + 32 + 32 + 8 + 1 + 1 + 2 + 8 + 1)
+**Size:** 158 bytes (8 discriminator + 32 + 32 + 32 + 8 + 1 + 1 + 2 + 8 + 32 + 1 + 1)
 
-> **Note:** The IDL includes VRF fields (`vrf_seed`, `vrf_ready`) but the currently deployed program doesn't have them yet. See [VRF Integration](#vrf-integration) below.
+> Legacy runs (pre-VRF) are 125 bytes. The `/onchain-runs` page supports both sizes.
+
+> **Note:** Runs created before March 2, 2026 are 125 bytes (no VRF). New runs are 158 bytes with VRF fields. See [VRF Integration](#vrf-integration) below.
 
 ### PDA Derivation
 
@@ -206,17 +210,19 @@ When disabled, runs are recorded only in InstantDB (no on-chain state).
 
 MagicBlock provides a VRF (Verifiable Random Function) oracle that runs free on the Ephemeral Rollup. This gives us provably fair randomness for game seeds.
 
-### Status: 🚧 In Progress
+### Status: ✅ Deployed
 
-The VRF integration is **partially implemented**:
+The VRF integration is **fully deployed** on devnet:
 
 | Component | Status | Notes |
 |-----------|--------|-------|
-| Anchor program (`run_record`) | ✅ Code ready | Has `vrf_seed`, `vrf_ready` fields + `request_vrf` instruction |
+| Anchor program (`run_record`) | ✅ Deployed | Has `vrf_seed`, `vrf_ready` fields + `request_vrf` instruction |
 | IDL | ✅ Updated | Includes VRF types and instructions |
 | Frontend toggle | ✅ Working | Admin panel has `enableVRF` nested under `enableMagicBlock` |
 | API integration | ✅ Working | `/api/session/start` requests VRF seed when enabled |
-| **On-chain deployment** | ❌ Not deployed | Current program is 125 bytes (no VRF fields) |
+| **On-chain deployment** | ✅ Live | Deployed March 2, 2026 |
+
+> **Note:** Existing runs created before the VRF deploy are 125 bytes (no VRF fields). New runs will be 158 bytes with VRF support.
 
 ### How It Will Work
 

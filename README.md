@@ -190,12 +190,13 @@ Mobile Client → Ephemeral Rollup (MagicBlock) → Solana
               VRF Oracle (free on ER)
 ```
 
-#### VRF Integration (🚧 In Progress)
+#### VRF Integration (✅ Deployed)
 
 MagicBlock's VRF oracle provides **verifiable randomness** for game seeds:
 - Runs free on the ephemeral rollup
 - Seeds are committed to L1 with the run record
 - Anyone can verify the randomness was fair
+- Enable via admin panel: `enableMagicBlock` + `enableVRF`
 
 See [`docs/MAGICBLOCK.md`](docs/MAGICBLOCK.md#vrf-integration) for implementation details.
 

@@ -55,9 +55,11 @@ const STATUS_LABEL: Record<number, { label: string; color: string }> = {
 };
 
 /**
- * Manual decode for 125-byte RunRecord accounts.
- * The on-chain program doesn't have VRF fields yet, so Anchor's BorshAccountsCoder fails.
- * Layout: 8 disc + 32 player + 32 authority + 32 session_id + 8 started_at + 1 room + 1 status + 2 events + 8 stake + 1 bump = 125
+ * Manual decode for RunRecord accounts.
+ * Supports both legacy (125-byte, no VRF) and current (158-byte, with VRF) layouts.
+ * 
+ * Legacy:  8 disc + 32 player + 32 authority + 32 session_id + 8 started_at + 1 room + 1 status + 2 events + 8 stake + 1 bump = 125
+ * Current: + 32 vrf_seed + 1 vrf_ready = 158
  */
 function decodeRunRecord(data: Buffer): {
   player: PublicKey;
@@ -68,6 +70,8 @@ function decodeRunRecord(data: Buffer): {
   status: number;
   eventCount: number;
   stakeAmount: number;
+  vrfSeed: string | null;
+  vrfReady: boolean;
   bump: number;
 } {
   let offset = 8; // skip discriminator
@@ -79,9 +83,18 @@ function decodeRunRecord(data: Buffer): {
   const status = data[offset++];
   const eventCount = data.readUInt16LE(offset); offset += 2;
   const stakeAmount = Number(data.readBigUInt64LE(offset)); offset += 8;
+
+  // VRF fields only present in 158-byte accounts
+  let vrfSeed: string | null = null;
+  let vrfReady = false;
+  if (data.length >= 158) {
+    vrfSeed = Buffer.from(data.slice(offset, offset + 32)).toString('hex'); offset += 32;
+    vrfReady = data[offset++] === 1;
+  }
+
   const bump = data[offset++];
 
-  return { player, authority, sessionId, startedAt, currentRoom, status, eventCount, stakeAmount, bump };
+  return { player, authority, sessionId, startedAt, currentRoom, status, eventCount, stakeAmount, vrfSeed, vrfReady, bump };
 }
 
 function truncate(str: string, head = 4, tail = 4) {
@@ -104,50 +117,45 @@ async function fetchRuns() {
   try {
     const connection = new Connection(RPC_URL, 'confirmed');
 
+    // Helper to fetch RunRecord accounts of a specific size from a program
+    async function fetchRunRecords(programId: PublicKey, dataSize: number) {
+      try {
+        const rawAccounts = await connection.getProgramAccounts(programId, {
+          filters: [
+            { dataSize },
+            { memcmp: { offset: 0, bytes: RUN_RECORD_DISCRIMINATOR.toString('base64'), encoding: 'base64' } },
+          ],
+        });
+        return rawAccounts.map((raw) => {
+          try {
+            const decoded = decodeRunRecord(Buffer.from(raw.account.data));
+            return { publicKey: raw.pubkey, account: decoded };
+          } catch {
+            return null;
+          }
+        }).filter(Boolean) as { publicKey: PublicKey; account: ReturnType<typeof decodeRunRecord> }[];
+      } catch {
+        return [];
+      }
+    }
+
     // 1. Fetch settled accounts across current + legacy run_record programs
-    //    Use getProgramAccounts with manual decoding (Anchor fails due to IDL/program version mismatch)
+    //    Fetch both 125-byte (legacy) and 158-byte (with VRF) accounts
     const settledAccountsNested = await Promise.all(
-      RUN_RECORD_PROGRAM_IDS.map(async (programId) => {
-        try {
-          const rawAccounts = await connection.getProgramAccounts(programId, {
-            filters: [
-              { dataSize: 125 }, // RunRecord size without VRF fields
-              { memcmp: { offset: 0, bytes: RUN_RECORD_DISCRIMINATOR.toString('base64'), encoding: 'base64' } },
-            ],
-          });
-          return rawAccounts.map((raw) => {
-            try {
-              const decoded = decodeRunRecord(Buffer.from(raw.account.data));
-              return { publicKey: raw.pubkey, account: decoded };
-            } catch {
-              return null;
-            }
-          }).filter(Boolean);
-        } catch {
-          return [];
-        }
-      })
+      RUN_RECORD_PROGRAM_IDS.flatMap((programId) => [
+        fetchRunRecords(programId, 125), // Legacy (no VRF)
+        fetchRunRecords(programId, 158), // Current (with VRF)
+      ])
     );
-    const settledAccounts = settledAccountsNested.flat() as { publicKey: PublicKey; account: ReturnType<typeof decodeRunRecord> }[];
+    const settledAccounts = settledAccountsNested.flat();
 
     // 2. Fetch delegated accounts (owned by delegation program, with RunRecord discriminator)
     //    These are active or recently committed accounts that haven't settled to L1 yet.
-    const delegatedRaw = await connection.getProgramAccounts(DELEGATION_PROGRAM_ID, {
-      filters: [
-        { dataSize: 125 },
-        { memcmp: { offset: 0, bytes: RUN_RECORD_DISCRIMINATOR.toString('base64'), encoding: 'base64' } },
-      ],
-    });
-
-    // Decode delegated accounts with manual decoder
-    const delegatedAccounts = delegatedRaw.map((raw) => {
-      try {
-        const decoded = decodeRunRecord(Buffer.from(raw.account.data));
-        return { publicKey: raw.pubkey, account: decoded };
-      } catch {
-        return null;
-      }
-    }).filter(Boolean) as { publicKey: PublicKey; account: ReturnType<typeof decodeRunRecord> }[];
+    const [delegatedLegacy, delegatedVrf] = await Promise.all([
+      fetchRunRecords(DELEGATION_PROGRAM_ID, 125),
+      fetchRunRecords(DELEGATION_PROGRAM_ID, 158),
+    ]);
+    const delegatedAccounts = [...delegatedLegacy, ...delegatedVrf];
 
     // Merge, deduplicating by PDA (settled takes priority)
     const settledPdas = new Set(settledAccounts.map((a) => a.publicKey.toBase58()));
@@ -167,6 +175,7 @@ async function fetchRuns() {
       status:       a.account.status,
       eventCount:   a.account.eventCount,
       stakeAmount:  a.account.stakeAmount,
+      vrfReady:     a.account.vrfReady,
       bump:         a.account.bump,
       delegated:    !settledPdas.has(a.publicKey.toBase58()),
       // Will be enriched below
