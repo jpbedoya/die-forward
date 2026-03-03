@@ -98,8 +98,11 @@ async function fetchRuns() {
     const settledAccountsNested = await Promise.all(
       RUN_RECORD_PROGRAM_IDS.map(async (programId) => {
         try {
+          // Anchor 0.32.x: Program(idl, provider) — programId comes from idl.address
+          // Clone IDL with the target programId to query legacy deployments
+          const idlWithAddress = { ...RunRecordIdl, address: programId.toBase58() };
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const program = new Program(RunRecordIdl as never, programId, provider) as any;
+          const program = new Program(idlWithAddress as never, provider) as any;
           return await program.account.runRecord.all();
         } catch {
           return [];
