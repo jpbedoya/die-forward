@@ -84,6 +84,8 @@ pub struct RunRecord {
 
 **Size:** 125 bytes (8 discriminator + 32 + 32 + 32 + 8 + 1 + 1 + 2 + 8 + 1)
 
+> **Note:** The IDL includes VRF fields (`vrf_seed`, `vrf_ready`) but the currently deployed program doesn't have them yet. See [VRF Integration](#vrf-integration) below.
+
 ### PDA Derivation
 
 ```typescript
@@ -196,8 +198,92 @@ MagicBlock integration is controlled via the admin panel:
 | Setting | Description |
 |---------|-------------|
 | `enableMagicBlock` | Master toggle for ER integration |
+| `enableVRF` | Use VRF oracle for verifiable randomness (requires ER) |
 
 When disabled, runs are recorded only in InstantDB (no on-chain state).
+
+## VRF Integration
+
+MagicBlock provides a VRF (Verifiable Random Function) oracle that runs free on the Ephemeral Rollup. This gives us provably fair randomness for game seeds.
+
+### Status: 🚧 In Progress
+
+The VRF integration is **partially implemented**:
+
+| Component | Status | Notes |
+|-----------|--------|-------|
+| Anchor program (`run_record`) | ✅ Code ready | Has `vrf_seed`, `vrf_ready` fields + `request_vrf` instruction |
+| IDL | ✅ Updated | Includes VRF types and instructions |
+| Frontend toggle | ✅ Working | Admin panel has `enableVRF` nested under `enableMagicBlock` |
+| API integration | ✅ Working | `/api/session/start` requests VRF seed when enabled |
+| **On-chain deployment** | ❌ Not deployed | Current program is 125 bytes (no VRF fields) |
+
+### How It Will Work
+
+1. **Run starts** → Create RunRecord on L1, delegate to ER
+2. **Request VRF** → Call `request_vrf` instruction on ER
+3. **Oracle callback** → VRF oracle writes `vrf_seed` to RunRecord
+4. **Use seed** → Game uses VRF seed for deterministic room generation
+5. **Commit** → Final state (including VRF seed) committed to L1
+
+### RunRecord with VRF (Future)
+
+```rust
+#[account]
+pub struct RunRecord {
+    // ... existing fields ...
+    pub vrf_seed: [u8; 32],   // Verifiable randomness seed
+    pub vrf_ready: bool,      // True when VRF callback received
+    pub bump: u8,
+}
+```
+
+**Size with VRF:** 158 bytes (125 + 32 vrf_seed + 1 vrf_ready)
+
+### Code Locations
+
+| File | Purpose |
+|------|---------|
+| `anchor-program/programs/run-record/src/lib.rs` | `request_vrf` instruction + callback |
+| `src/lib/magicblock.ts` | `requestErVrf()`, `getErVrfSeed()` functions |
+| `src/app/api/session/start/route.ts` | VRF seed retrieval on session start |
+| `src/app/admin/page.tsx` | `enableVRF` toggle |
+
+### Deployment Steps
+
+To enable VRF:
+
+1. Build updated program with VRF fields:
+   ```bash
+   cd anchor-program
+   anchor build
+   ```
+
+2. Deploy to devnet:
+   ```bash
+   anchor deploy --provider.cluster devnet
+   ```
+
+3. Update `/onchain-runs` page to handle 158-byte accounts (or support both sizes)
+
+4. Enable in admin panel: `enableMagicBlock` + `enableVRF`
+
+### SDK Reference
+
+Uses `ephemeral-vrf-sdk`:
+
+```rust
+use ephemeral_vrf_sdk::anchor::vrf;
+use ephemeral_vrf_sdk::instructions::{create_request_randomness_ix, RequestRandomnessParams};
+
+// Request randomness
+let ix = create_request_randomness_ix(RequestRandomnessParams {
+    payer: ctx.accounts.payer.key(),
+    oracle: ctx.accounts.vrf_oracle.key(),
+    callback_program: crate::ID,
+    // ...
+});
+```
 
 ## Troubleshooting
 
