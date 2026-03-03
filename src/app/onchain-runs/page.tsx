@@ -8,7 +8,7 @@
 // Disable caching — always fetch fresh data
 export const dynamic = 'force-dynamic';
 
-import { Connection, Keypair, PublicKey, Transaction } from '@solana/web3.js';
+import { Connection, PublicKey } from '@solana/web3.js';
 
 const ASCII_LOGO = `
  ██████╗ ██╗███████╗    ███████╗ ██████╗ ██████╗ ██╗    ██╗ █████╗ ██████╗ ██████╗ 
@@ -17,9 +17,7 @@ const ASCII_LOGO = `
  ██║  ██║██║██╔══╝      ██╔══╝  ██║   ██║██╔══██╗██║███╗██║██╔══██║██╔══██╗██║  ██║
  ██████╔╝██║███████╗    ██║     ╚██████╔╝██║  ██║╚███╔███╔╝██║  ██║██║  ██║██████╔╝
  ╚═════╝ ╚═╝╚══════╝    ╚═╝      ╚═════╝ ╚═╝  ╚═╝ ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ `;
-import { AnchorProvider, Program, BorshAccountsCoder } from '@coral-xyz/anchor';
 import { init } from '@instantdb/admin';
-import RunRecordIdl from '@/idl/run_record.json';
 
 // InstantDB for enriching on-chain data with session details
 const db = init({
@@ -56,6 +54,36 @@ const STATUS_LABEL: Record<number, { label: string; color: string }> = {
   2: { label: 'CLEARED',  color: 'text-green-400' },
 };
 
+/**
+ * Manual decode for 125-byte RunRecord accounts.
+ * The on-chain program doesn't have VRF fields yet, so Anchor's BorshAccountsCoder fails.
+ * Layout: 8 disc + 32 player + 32 authority + 32 session_id + 8 started_at + 1 room + 1 status + 2 events + 8 stake + 1 bump = 125
+ */
+function decodeRunRecord(data: Buffer): {
+  player: PublicKey;
+  authority: PublicKey;
+  sessionId: string;
+  startedAt: number;
+  currentRoom: number;
+  status: number;
+  eventCount: number;
+  stakeAmount: number;
+  bump: number;
+} {
+  let offset = 8; // skip discriminator
+  const player = new PublicKey(data.slice(offset, offset + 32)); offset += 32;
+  const authority = new PublicKey(data.slice(offset, offset + 32)); offset += 32;
+  const sessionId = Buffer.from(data.slice(offset, offset + 32)).toString('utf8').replace(/\0/g, ''); offset += 32;
+  const startedAt = Number(data.readBigInt64LE(offset)); offset += 8;
+  const currentRoom = data[offset++];
+  const status = data[offset++];
+  const eventCount = data.readUInt16LE(offset); offset += 2;
+  const stakeAmount = Number(data.readBigUInt64LE(offset)); offset += 8;
+  const bump = data[offset++];
+
+  return { player, authority, sessionId, startedAt, currentRoom, status, eventCount, stakeAmount, bump };
+}
+
 function truncate(str: string, head = 4, tail = 4) {
   if (str.length <= head + tail + 3) return str;
   return `${str.slice(0, head)}…${str.slice(-tail)}`;
@@ -72,101 +100,81 @@ function formatDate(ts: number) {
   });
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function getStatusKey(status: any): number {
-  if (typeof status === 'number') return status;
-  if (status?.active !== undefined) return 0;
-  if (status?.dead !== undefined)   return 1;
-  if (status?.cleared !== undefined) return 2;
-  return 0;
-}
-
 async function fetchRuns() {
   try {
     const connection = new Connection(RPC_URL, 'confirmed');
 
-    // Read-only provider — no signing needed for fetching accounts
-    const dummyKeypair = Keypair.generate();
-    const wallet = {
-      publicKey: dummyKeypair.publicKey,
-      signTransaction: async <T extends Transaction>(tx: T) => tx,
-      signAllTransactions: async <T extends Transaction>(txs: T[]) => txs,
-    };
-    const provider = new AnchorProvider(connection, wallet as never, { commitment: 'confirmed' });
-
     // 1. Fetch settled accounts across current + legacy run_record programs
+    //    Use getProgramAccounts with manual decoding (Anchor fails due to IDL/program version mismatch)
     const settledAccountsNested = await Promise.all(
       RUN_RECORD_PROGRAM_IDS.map(async (programId) => {
         try {
-          // Anchor 0.32.x: Program(idl, provider) — programId comes from idl.address
-          // Clone IDL with the target programId to query legacy deployments
-          const idlWithAddress = { ...RunRecordIdl, address: programId.toBase58() };
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const program = new Program(idlWithAddress as never, provider) as any;
-          return await program.account.runRecord.all();
+          const rawAccounts = await connection.getProgramAccounts(programId, {
+            filters: [
+              { dataSize: 125 }, // RunRecord size without VRF fields
+              { memcmp: { offset: 0, bytes: RUN_RECORD_DISCRIMINATOR.toString('base64'), encoding: 'base64' } },
+            ],
+          });
+          return rawAccounts.map((raw) => {
+            try {
+              const decoded = decodeRunRecord(Buffer.from(raw.account.data));
+              return { publicKey: raw.pubkey, account: decoded };
+            } catch {
+              return null;
+            }
+          }).filter(Boolean);
         } catch {
           return [];
         }
       })
     );
-    const settledAccounts = settledAccountsNested.flat();
+    const settledAccounts = settledAccountsNested.flat() as { publicKey: PublicKey; account: ReturnType<typeof decodeRunRecord> }[];
 
     // 2. Fetch delegated accounts (owned by delegation program, with RunRecord discriminator)
     //    These are active or recently committed accounts that haven't settled to L1 yet.
     const delegatedRaw = await connection.getProgramAccounts(DELEGATION_PROGRAM_ID, {
       filters: [
-        { dataSize: 125 }, // RunRecord size: 8 (disc) + 32 + 32 + 32 + 8 + 1 + 1 + 2 + 8 + 1
+        { dataSize: 125 },
         { memcmp: { offset: 0, bytes: RUN_RECORD_DISCRIMINATOR.toString('base64'), encoding: 'base64' } },
       ],
     });
 
-    // Decode delegated accounts using Anchor's coder
-    const coder = new BorshAccountsCoder(RunRecordIdl as never);
+    // Decode delegated accounts with manual decoder
     const delegatedAccounts = delegatedRaw.map((raw) => {
       try {
-        const decoded = coder.decode('RunRecord', raw.account.data);
+        const decoded = decodeRunRecord(Buffer.from(raw.account.data));
         return { publicKey: raw.pubkey, account: decoded };
       } catch {
         return null;
       }
-    }).filter(Boolean) as { publicKey: PublicKey; account: Record<string, unknown> }[];
+    }).filter(Boolean) as { publicKey: PublicKey; account: ReturnType<typeof decodeRunRecord> }[];
 
     // Merge, deduplicating by PDA (settled takes priority)
-    const settledPdas = new Set(settledAccounts.map((a: { publicKey: PublicKey }) => a.publicKey.toBase58()));
+    const settledPdas = new Set(settledAccounts.map((a) => a.publicKey.toBase58()));
     const allAccounts = [
       ...settledAccounts,
       ...delegatedAccounts.filter(a => !settledPdas.has(a.publicKey.toBase58())),
     ];
 
-    // Field accessor — BorshAccountsCoder.decode() returns snake_case,
-    // program.account.runRecord.all() returns camelCase. Handle both.
-    const f = (acct: Record<string, unknown>, ...keys: string[]) => {
-      for (const k of keys) if (acct[k] !== undefined) return acct[k];
-      return undefined;
-    };
-
-    // Extract session IDs to fetch InstantDB data
-    const runs = allAccounts.map((a: { publicKey: PublicKey; account: Record<string, unknown> }) => {
-      const sessionId = Buffer.from(f(a.account, 'sessionId', 'session_id') as Uint8Array).toString('utf8').replace(/\0/g, '');
-      return {
-        pda:          a.publicKey.toBase58(),
-        player:       (f(a.account, 'player') as PublicKey).toBase58(),
-        authority:    (f(a.account, 'authority') as PublicKey).toBase58(),
-        sessionId,
-        startedAt:    Number(f(a.account, 'startedAt', 'started_at')),
-        currentRoom:  Number(f(a.account, 'currentRoom', 'current_room')),
-        status:       getStatusKey(f(a.account, 'status')),
-        eventCount:   Number(f(a.account, 'eventCount', 'event_count')),
-        stakeAmount:  Number(f(a.account, 'stakeAmount', 'stake_amount')),
-        bump:         Number(f(a.account, 'bump')),
-        delegated:    !settledPdas.has(a.publicKey.toBase58()),
-        // Will be enriched below
-        dbRoom:       undefined as number | undefined,
-        dbStatus:     undefined as string | undefined,
-        nickname:     undefined as string | undefined,
-        erCommitTx:   undefined as string | undefined,
-      };
-    });
+    // Map to display format
+    const runs = allAccounts.map((a) => ({
+      pda:          a.publicKey.toBase58(),
+      player:       a.account.player.toBase58(),
+      authority:    a.account.authority.toBase58(),
+      sessionId:    a.account.sessionId,
+      startedAt:    a.account.startedAt,
+      currentRoom:  a.account.currentRoom,
+      status:       a.account.status,
+      eventCount:   a.account.eventCount,
+      stakeAmount:  a.account.stakeAmount,
+      bump:         a.account.bump,
+      delegated:    !settledPdas.has(a.publicKey.toBase58()),
+      // Will be enriched below
+      dbRoom:       undefined as number | undefined,
+      dbStatus:     undefined as string | undefined,
+      nickname:     undefined as string | undefined,
+      erCommitTx:   undefined as string | undefined,
+    }));
 
     // Enrich with InstantDB session data (room, status, nickname)
     // ER write issue means on-chain data is stale — InstantDB has the real values
