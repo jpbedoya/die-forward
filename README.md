@@ -182,11 +182,22 @@ Game logic runs on **ephemeral rollups** powered by [MagicBlock](https://magicbl
 - **100% on-chain logic** — Game state lives on the rollup
 - **Gasless gameplay** — Players don't pay per action
 - **Automatic settlement** — Final state settles to Solana mainnet
+- **VRF randomness** — Provably fair game seeds via on-chain oracle (coming soon)
 
 ```
 Mobile Client → Ephemeral Rollup (MagicBlock) → Solana
-                    Game state lives here
+                    ↓
+              VRF Oracle (free on ER)
 ```
+
+#### VRF Integration (🚧 In Progress)
+
+MagicBlock's VRF oracle provides **verifiable randomness** for game seeds:
+- Runs free on the ephemeral rollup
+- Seeds are committed to L1 with the run record
+- Anyone can verify the randomness was fair
+
+See [`docs/MAGICBLOCK.md`](docs/MAGICBLOCK.md#vrf-integration) for implementation details.
 
 ### Audius — Decentralized Soundtrack
 
@@ -266,7 +277,7 @@ See [`/public/skill.md`](./public/skill.md) for complete API documentation.
 |-------|------------|---------|
 | **Mobile App** | Expo SDK 54 + React Native | Cross-platform app (iOS, Android, Web) |
 | **Smart Contract** | Anchor (Rust) | On-chain escrow for stakes |
-| **Ephemeral Rollups** | MagicBlock | Real-time on-chain game logic |
+| **Ephemeral Rollups** | MagicBlock | Real-time on-chain game logic + VRF |
 | **Wallet** | Mobile Wallet Adapter | Native mobile wallet support |
 | **Music** | Audius SDK | Decentralized soundtrack streaming |
 | **Social** | Tapestry | Player profiles and social graph |
