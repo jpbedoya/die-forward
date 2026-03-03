@@ -28,9 +28,22 @@ const db = init({
 });
 
 const RPC_URL = process.env.NEXT_PUBLIC_SOLANA_RPC || 'https://api.devnet.solana.com';
-const RUN_RECORD_PROGRAM_ID = new PublicKey(
-  process.env.NEXT_PUBLIC_RUN_RECORD_PROGRAM_ID || '9rGjguBZAnittA4Cbm7YNP5qomatY3c4MTV7LSqNomzS'
-);
+
+// Support fetching historic runs across multiple run_record program deployments.
+// - NEXT_PUBLIC_RUN_RECORD_PROGRAM_IDS: comma-separated list (preferred)
+// - NEXT_PUBLIC_RUN_RECORD_PROGRAM_ID: current program (legacy single-value env)
+// Defaults include the current deployment + previous deployment for backfill visibility.
+const RUN_RECORD_PROGRAM_IDS = Array.from(new Set(
+  (
+    process.env.NEXT_PUBLIC_RUN_RECORD_PROGRAM_IDS
+      ?.split(',')
+      .map((s) => s.trim())
+      .filter(Boolean) ?? []
+  ).concat([
+    process.env.NEXT_PUBLIC_RUN_RECORD_PROGRAM_ID || '9rGjguBZAnittA4Cbm7YNP5qomatY3c4MTV7LSqNomzS',
+    '3KLgtdRvfJuLK1t9mKCe2soJbx4LgZfP6LQWVW9TQ7yN', // previous run_record deployment
+  ])
+)).map((id) => new PublicKey(id));
 // Delegation program — accounts delegated to the ER are owned by this program
 const DELEGATION_PROGRAM_ID = new PublicKey('DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh');
 // RunRecord discriminator (first 8 bytes) — used to filter delegated accounts
@@ -80,11 +93,20 @@ async function fetchRuns() {
       signAllTransactions: async <T extends Transaction>(txs: T[]) => txs,
     };
     const provider = new AnchorProvider(connection, wallet as never, { commitment: 'confirmed' });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const program = new Program(RunRecordIdl as never, provider) as any;
 
-    // 1. Fetch settled accounts (owned by our program)
-    const settledAccounts = await program.account.runRecord.all();
+    // 1. Fetch settled accounts across current + legacy run_record programs
+    const settledAccountsNested = await Promise.all(
+      RUN_RECORD_PROGRAM_IDS.map(async (programId) => {
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const program = new Program(RunRecordIdl as never, programId, provider) as any;
+          return await program.account.runRecord.all();
+        } catch {
+          return [];
+        }
+      })
+    );
+    const settledAccounts = settledAccountsNested.flat();
 
     // 2. Fetch delegated accounts (owned by delegation program, with RunRecord discriminator)
     //    These are active or recently committed accounts that haven't settled to L1 yet.
@@ -194,13 +216,14 @@ export default async function OnchainRunsPage() {
           <p className="text-bone-muted text-xs text-center">
             Every run recorded via MagicBlock Ephemeral Rollups →{' '}
             <a
-              href={`https://explorer.solana.com/address/${RUN_RECORD_PROGRAM_ID.toBase58()}?cluster=devnet`}
+              href={`https://explorer.solana.com/address/${RUN_RECORD_PROGRAM_IDS[0].toBase58()}?cluster=devnet`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-amber underline hover:text-amber/80"
             >
-              {truncate(RUN_RECORD_PROGRAM_ID.toBase58())}
+              {truncate(RUN_RECORD_PROGRAM_IDS[0].toBase58())}
             </a>
+            {RUN_RECORD_PROGRAM_IDS.length > 1 ? ` +${RUN_RECORD_PROGRAM_IDS.length - 1} legacy` : ''}
             {' '}· devnet
           </p>
         </div>
