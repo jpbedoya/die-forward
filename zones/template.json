@@ -1,0 +1,201 @@
+{
+  "// ZONE TEMPLATE": "Copy this file to zones/<your-zone-id>.json and fill in all fields.",
+  "// REQUIRED FIELDS": "id, version, meta, lore, rooms, bestiary, depths, dungeonLayout, boss, audio",
+
+  "id": "your-zone-id",
+  "version": "1.0.0",
+  "meta": {
+    "// name": "Display name shown in UI (ALL CAPS recommended)",
+    "name": "YOUR ZONE NAME",
+
+    "// tagline": "Short evocative description shown on zone selection screen",
+    "tagline": "A short tagline for your zone.",
+
+    "// element": "Thematic element: water | fire | shadow | earth | void | etc.",
+    "element": "element",
+
+    "// difficulty": "1 = beginner, 2 = intermediate, 3 = expert",
+    "difficulty": 1,
+
+    "// colors": "Primary UI color palette for this zone",
+    "colors": {
+      "primary": "#000000",
+      "accent": "#ffffff",
+      "text": "#cccccc"
+    },
+
+    "// mechanic": "Optional unique mechanic label shown in UI (null if none)",
+    "mechanic": null,
+
+    "// unlockRequirement": "Condition to unlock (null = always available). Future use.",
+    "unlockRequirement": null,
+
+    "// emoji": "Zone emoji displayed in lists and titles",
+    "emoji": "🏚️"
+  },
+
+  "// lore": "Extended lore blurb shown on zone detail / loading screen",
+  "lore": "Write your zone's lore here. Describe its history, atmosphere, and what awaits within.",
+
+  "rooms": {
+    "// explore": "Exploration room templates. Each template has a name and an array of variations.",
+    "// A variation needs: id (string), narrative (string), options (string[] for explore rooms).",
+    "explore": [
+      {
+        "template": "your-template-name",
+        "variations": [
+          {
+            "id": "your-template-name_1",
+            "narrative": "Narrative text describing what the player sees and experiences.",
+            "options": ["Option A", "Option B"]
+          }
+        ]
+      }
+    ],
+
+    "// combat": "Combat room templates. Variation needs: id, narrative, enemy (creature name string).",
+    "combat": [
+      {
+        "template": "your-combat-template",
+        "variations": [
+          {
+            "id": "your-combat-template_1",
+            "narrative": "Combat encounter intro narrative.",
+            "enemy": "Creature Name"
+          }
+        ]
+      }
+    ],
+
+    "// corpse": "Corpse discovery templates. Variation needs: id, narrative, player_name ('{PLAYER}'), final_message ('{MESSAGE}').",
+    "corpse": [
+      {
+        "template": "your-corpse-template",
+        "variations": [
+          {
+            "id": "your-corpse-template_1",
+            "narrative": "Narrative describing the discovered corpse and how their message is presented:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          }
+        ]
+      }
+    ],
+
+    "// cache": "Cache/loot room templates. Variation needs: id, narrative (no enemy/options required).",
+    "cache": [
+      {
+        "template": "your-cache-template",
+        "variations": [
+          {
+            "id": "your-cache-template_1",
+            "narrative": "Narrative describing the cache room and its contents."
+          }
+        ]
+      }
+    ],
+
+    "// exit": "Exit room templates. Variation needs: id, narrative.",
+    "exit": [
+      {
+        "template": "your-exit-template",
+        "variations": [
+          {
+            "id": "your-exit-template_1",
+            "narrative": "Narrative for reaching the exit of the zone."
+          }
+        ]
+      }
+    ]
+  },
+
+  "bestiary": {
+    "// shared": "List creature names from the global BESTIARY to include in this zone (e.g. cross-zone creatures).",
+    "shared": [],
+
+    "// local": "Zone-specific creatures defined here. Each needs: name, tier (1|2|3), health {min,max}, behaviors (IntentType[]), description, emoji.",
+    "// IntentType values: AGGRESSIVE | DEFENSIVE | CHARGING | ERRATIC | HUNTING | STALKING | RETREATING",
+    "local": [
+      {
+        "name": "Your Creature Name",
+        "tier": 1,
+        "health": { "min": 40, "max": 60 },
+        "behaviors": ["AGGRESSIVE", "STALKING"],
+        "description": "A brief description of the creature and how it behaves.",
+        "emoji": "👾"
+      },
+      {
+        "// BOSS NOTE": "Include your boss creature here with tier 3 and high health values.",
+        "name": "Your Boss Name",
+        "tier": 3,
+        "health": { "min": 180, "max": 220 },
+        "behaviors": ["CHARGING", "AGGRESSIVE", "DEFENSIVE"],
+        "description": "The final guardian of this zone. None have passed.",
+        "emoji": "💀"
+      }
+    ]
+  },
+
+  "// depths": "Depth layers of the dungeon. Each depth covers a range of rooms and has a difficulty tier.",
+  "depths": [
+    {
+      "name": "DEPTH LAYER ONE",
+      "tier": 1,
+      "roomRange": [1, 4],
+      "description": "The first section. Describe its atmosphere."
+    },
+    {
+      "name": "DEPTH LAYER TWO",
+      "tier": 2,
+      "roomRange": [5, 8],
+      "description": "The middle section. Harder. Describe what changes."
+    },
+    {
+      "name": "DEPTH LAYER THREE",
+      "tier": 3,
+      "roomRange": [9, 12],
+      "description": "The deepest layer. Describe the final challenge."
+    }
+  ],
+
+  "// dungeonLayout": "Defines the sequence of room types the player encounters. totalRooms should match the structure array length + 1 (exit is appended automatically).",
+  "dungeonLayout": {
+    "totalRooms": 12,
+    "// structure": "Ordered list of room slots. type: explore|combat|corpse|cache|exit. template: must match a template name in the rooms section above. boss: true only for the final combat room.",
+    "structure": [
+      { "type": "explore", "template": "your-template-name" },
+      { "type": "combat", "template": "your-combat-template" },
+      { "type": "corpse", "template": "your-corpse-template" },
+      { "type": "combat", "template": "your-combat-template" },
+      { "type": "explore", "template": "your-template-name" },
+      { "type": "combat", "template": "your-combat-template" },
+      { "type": "cache", "template": "your-cache-template" },
+      { "type": "combat", "template": "your-combat-template" },
+      { "type": "explore", "template": "your-template-name" },
+      { "type": "corpse", "template": "your-corpse-template" },
+      { "type": "combat", "template": "your-combat-template" },
+      { "type": "combat", "template": "your-combat-template", "boss": true }
+    ]
+  },
+
+  "// boss": "Name of the boss creature (must match a name in bestiary.local or bestiary.shared).",
+  "boss": "Your Boss Name",
+
+  "// audio": "Audio paths for this zone. ambient.explore and ambient.combat are the looping background tracks. sfx paths are relative to /public/.",
+  "audio": {
+    "ambient": {
+      "explore": "/audio/ambient-explore.mp3",
+      "combat": "/audio/ambient-combat.mp3"
+    },
+    "sfx": {
+      "footstep": "/audio/footstep.mp3",
+      "descend": "/audio/depth-descend.mp3",
+      "environment": ["/audio/water-drip.mp3", "/audio/drip-echo.mp3"],
+      "atmosphere": ["/audio/eerie-whispers.mp3", "/audio/stone-grinding.mp3"],
+      "boss": {
+        "intro": "/audio/boss-intro.mp3",
+        "roar": "/audio/boss-roar.mp3"
+      }
+    }
+  }
+}

@@ -1,4 +1,5 @@
-// Content loader - pulls from pre-generated JSON content
+// Content loader - zone-aware. Pulls from zone packages in /zones/.
+// Falls back to sunken-crypt if no zone is set.
 
 import exploreRooms from '../../content/explore-rooms.json';
 import combatRooms from '../../content/combat-rooms.json';
@@ -8,7 +9,212 @@ import exitRooms from '../../content/exit-rooms.json';
 import combatActions from '../../content/combat-actions.json';
 import deathEpitaphs from '../../content/death-epitaphs.json';
 
-// Types
+// ====== ZONE PACKAGE TYPES ======
+
+export interface ZoneColors {
+  primary: string;
+  accent: string;
+  text: string;
+}
+
+export interface ZoneMeta {
+  name: string;
+  tagline: string;
+  element: string;
+  difficulty: number;
+  colors: ZoneColors;
+  mechanic: string | null;
+  unlockRequirement: string | null;
+  emoji: string;
+}
+
+export interface ZoneCreature {
+  name: string;
+  tier: 1 | 2 | 3;
+  health: { min: number; max: number };
+  behaviors: IntentType[];
+  description: string;
+  emoji: string;
+}
+
+export interface ZoneBestiary {
+  shared: string[];
+  local: ZoneCreature[];
+}
+
+export interface ZoneDepth {
+  name: string;
+  tier: 1 | 2 | 3;
+  roomRange: [number, number];
+  description: string;
+}
+
+export interface ZoneDungeonSlot {
+  type: 'explore' | 'combat' | 'corpse' | 'cache' | 'exit';
+  template: string;
+  boss?: boolean;
+}
+
+export interface ZoneDungeonLayout {
+  totalRooms: number;
+  structure: ZoneDungeonSlot[];
+}
+
+export interface ZoneAudioConfig {
+  ambient: {
+    explore: string;
+    combat: string;
+  };
+  sfx: {
+    footstep: string;
+    descend: string;
+    environment: string[];
+    atmosphere: string[];
+    boss: { intro: string; roar: string };
+  };
+}
+
+export interface ZonePackage {
+  id: string;
+  version: string;
+  meta: ZoneMeta;
+  lore: string;
+  rooms: {
+    explore: RoomTemplate[];
+    combat: RoomTemplate[];
+    corpse: RoomTemplate[];
+    cache: RoomTemplate[];
+    exit: RoomTemplate[];
+  };
+  bestiary: ZoneBestiary;
+  depths: ZoneDepth[];
+  dungeonLayout: ZoneDungeonLayout;
+  boss: string;
+  audio: ZoneAudioConfig;
+}
+
+// ====== ZONE REGISTRY ======
+
+// Dynamically load zone packages at runtime.
+// We use a static map so Next.js can bundle the JSON files at build time.
+const ZONE_LOADERS: Record<string, () => Promise<ZonePackage>> = {
+  'sunken-crypt': () =>
+    import('../../zones/sunken-crypt.json').then(m => m.default as unknown as ZonePackage),
+};
+
+// Cache of loaded zones (in-memory for the process lifetime)
+const ZONE_CACHE: Record<string, ZonePackage> = {};
+
+// Active zone for the current session (module-level singleton on the server)
+let _activeZone: ZonePackage | null = null;
+
+/**
+ * Load a zone package by id. Caches after first load.
+ */
+export async function loadZone(zoneId: string): Promise<ZonePackage> {
+  if (ZONE_CACHE[zoneId]) return ZONE_CACHE[zoneId];
+  const loader = ZONE_LOADERS[zoneId];
+  if (!loader) throw new Error(`Unknown zone: ${zoneId}`);
+  const zone = await loader();
+  ZONE_CACHE[zoneId] = zone;
+  return zone;
+}
+
+/**
+ * Set the active zone for this session (synchronous, zone must already be cached).
+ * Call loadZone first to ensure it's cached.
+ */
+export function setActiveZone(zoneId: string): void {
+  const cached = ZONE_CACHE[zoneId];
+  if (!cached) {
+    console.warn(`[content] setActiveZone: zone "${zoneId}" not cached yet. Call loadZone() first.`);
+    return;
+  }
+  _activeZone = cached;
+}
+
+/**
+ * Get the active zone. Falls back to sunken-crypt data if not loaded.
+ */
+export function getActiveZone(): ZonePackage {
+  if (_activeZone) return _activeZone;
+  // Return a fallback built from the legacy flat JSON files (backward compat)
+  return buildFallbackZone();
+}
+
+// ====== LEGACY FALLBACK ======
+// Builds a ZonePackage-compatible object from the flat JSON content files
+// for backward compatibility when no zone is explicitly set.
+function buildFallbackZone(): ZonePackage {
+  return {
+    id: 'sunken-crypt',
+    version: '1.0.0',
+    meta: {
+      name: 'THE SUNKEN CRYPT',
+      tagline: 'The first descent. Nothing here is alive.',
+      element: 'water',
+      difficulty: 1,
+      colors: { primary: '#1e3a5f', accent: '#4a9eff', text: '#a8d4ff' },
+      mechanic: null,
+      unlockRequirement: null,
+      emoji: '🌊',
+    },
+    lore: 'Ancient stairs carved by forgotten hands lead down into flooded halls where the boundary between life and death grows thin.',
+    rooms: {
+      explore: exploreRooms.rooms as RoomTemplate[],
+      combat: combatRooms.rooms as RoomTemplate[],
+      corpse: corpseRooms.rooms as RoomTemplate[],
+      cache: cacheRooms.rooms as RoomTemplate[],
+      exit: exitRooms.rooms as RoomTemplate[],
+    },
+    bestiary: {
+      shared: [],
+      local: Object.values(BESTIARY).map(c => ({
+        name: c.name,
+        tier: c.tier,
+        health: c.health,
+        behaviors: c.behaviors,
+        description: c.description,
+        emoji: c.emoji,
+      })),
+    },
+    depths: DEPTHS,
+    dungeonLayout: {
+      totalRooms: 12,
+      structure: [
+        { type: 'explore', template: 'descent' },
+        { type: 'combat', template: 'ambush' },
+        { type: 'corpse', template: 'fresh' },
+        { type: 'combat', template: 'confrontation' },
+        { type: 'explore', template: 'flooded' },
+        { type: 'combat', template: 'guardian' },
+        { type: 'cache', template: 'alcove' },
+        { type: 'combat', template: 'territorial' },
+        { type: 'explore', template: 'chamber' },
+        { type: 'corpse', template: 'heroic' },
+        { type: 'combat', template: 'pursuit' },
+        { type: 'combat', template: 'arena', boss: true },
+      ],
+    },
+    boss: 'The Keeper',
+    audio: {
+      ambient: {
+        explore: '/audio/ambient-explore.mp3',
+        combat: '/audio/ambient-combat.mp3',
+      },
+      sfx: {
+        footstep: '/audio/footstep.mp3',
+        descend: '/audio/depth-descend.mp3',
+        environment: ['/audio/water-drip.mp3', '/audio/drip-echo.mp3', '/audio/water-splash.mp3'],
+        atmosphere: ['/audio/eerie-whispers.mp3', '/audio/stone-grinding.mp3', '/audio/door-creak.mp3'],
+        boss: { intro: '/audio/boss-intro.mp3', roar: '/audio/boss-roar.mp3' },
+      },
+    },
+  };
+}
+
+// ====== ROOM TYPES ======
+
 export interface RoomVariation {
   id: string;
   narrative: string;
@@ -28,60 +234,39 @@ function pick<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-// Get random explore room by template type
-export function getExploreRoom(template?: string): RoomVariation {
-  const rooms = exploreRooms.rooms as RoomTemplate[];
+// Helper to pick room variation from zone room pool
+function pickRoom(rooms: RoomTemplate[], template?: string): RoomVariation {
   if (template) {
     const found = rooms.find(r => r.template === template);
     if (found) return pick(found.variations);
   }
-  // Random template if not specified
   const randomTemplate = pick(rooms);
   return pick(randomTemplate.variations);
+}
+
+// Get random explore room by template type
+export function getExploreRoom(template?: string): RoomVariation {
+  return pickRoom(getActiveZone().rooms.explore, template);
 }
 
 // Get random combat room by template type
 export function getCombatRoom(template?: string): RoomVariation {
-  const rooms = combatRooms.rooms as RoomTemplate[];
-  if (template) {
-    const found = rooms.find(r => r.template === template);
-    if (found) return pick(found.variations);
-  }
-  const randomTemplate = pick(rooms);
-  return pick(randomTemplate.variations);
+  return pickRoom(getActiveZone().rooms.combat, template);
 }
 
 // Get random corpse discovery by template type
 export function getCorpseRoom(template?: string): RoomVariation {
-  const rooms = corpseRooms.rooms as RoomTemplate[];
-  if (template) {
-    const found = rooms.find(r => r.template === template);
-    if (found) return pick(found.variations);
-  }
-  const randomTemplate = pick(rooms);
-  return pick(randomTemplate.variations);
+  return pickRoom(getActiveZone().rooms.corpse, template);
 }
 
 // Get random cache room by template type
 export function getCacheRoom(template?: string): RoomVariation {
-  const rooms = cacheRooms.rooms as RoomTemplate[];
-  if (template) {
-    const found = rooms.find(r => r.template === template);
-    if (found) return pick(found.variations);
-  }
-  const randomTemplate = pick(rooms);
-  return pick(randomTemplate.variations);
+  return pickRoom(getActiveZone().rooms.cache, template);
 }
 
 // Get random exit room by template type
 export function getExitRoom(template?: string): RoomVariation {
-  const rooms = exitRooms.rooms as RoomTemplate[];
-  if (template) {
-    const found = rooms.find(r => r.template === template);
-    if (found) return pick(found.variations);
-  }
-  const randomTemplate = pick(rooms);
-  return pick(randomTemplate.variations);
+  return pickRoom(getActiveZone().rooms.exit, template);
 }
 
 // Combat actions
@@ -154,22 +339,35 @@ export interface DungeonRoom {
   boss?: boolean; // True for boss room (room 12)
 }
 
-export function generateDungeon(): DungeonRoom[] {
-  // 9-room structure for "Threshold of the Unnamed"
-  return [
-    { type: 'explore', template: 'descent', content: getExploreRoom('descent') },
-    { type: 'explore', template: 'flooded', content: getExploreRoom('flooded') },
-    { type: 'combat', template: 'ambush', content: getCombatRoom('ambush') },
-    { type: 'corpse', template: 'fresh', content: getCorpseRoom('fresh') },
-    { type: 'cache', template: 'alcove', content: getCacheRoom('alcove') },
-    { type: 'combat', template: 'guardian', content: getCombatRoom('guardian') },
-    { type: 'explore', template: 'threshold', content: getExploreRoom('threshold') },
-    { type: 'combat', template: 'arena', content: getCombatRoom('arena') },
-    { type: 'exit', template: 'earned', content: getExitRoom('earned') },
-  ];
+export function generateDungeon(zoneId?: string): DungeonRoom[] {
+  // If a different zoneId is specified and cached, use it; otherwise use active zone
+  const zone = zoneId && ZONE_CACHE[zoneId] ? ZONE_CACHE[zoneId] : getActiveZone();
+
+  return zone.dungeonLayout.structure.map(slot => {
+    let content: RoomVariation;
+    switch (slot.type) {
+      case 'explore': content = pickRoom(zone.rooms.explore, slot.template); break;
+      case 'combat': content = pickRoom(zone.rooms.combat, slot.template); break;
+      case 'corpse': content = pickRoom(zone.rooms.corpse, slot.template); break;
+      case 'cache': content = pickRoom(zone.rooms.cache, slot.template); break;
+      case 'exit': content = pickRoom(zone.rooms.exit, slot.template); break;
+      default: content = pickRoom(zone.rooms.explore, slot.template);
+    }
+    return {
+      type: slot.type,
+      template: slot.template,
+      content,
+      boss: slot.boss || false,
+    };
+  });
 }
 
-// Creature bestiary with stats and info
+// Legacy alias for backward compat
+export const generateRandomDungeon = generateDungeon;
+
+// ====== BESTIARY ======
+// Shared fallback bestiary (used when zone bestiary.shared references these by name)
+
 export interface CreatureInfo {
   name: string;
   tier: 1 | 2 | 3;
@@ -179,7 +377,7 @@ export interface CreatureInfo {
   emoji: string;
 }
 
-const BESTIARY: Record<string, CreatureInfo> = {
+export const BESTIARY: Record<string, CreatureInfo> = {
   // Tier 1 - Common Horrors
   'The Drowned': {
     name: 'The Drowned',
@@ -357,14 +555,40 @@ const BESTIARY: Record<string, CreatureInfo> = {
   },
 };
 
-// Get creature info by name
+// Build a merged bestiary record from the active zone (local + shared fallback)
+function getZoneBestiaryRecord(): Record<string, CreatureInfo> {
+  const zone = getActiveZone();
+  const result: Record<string, CreatureInfo> = {};
+
+  // Start with shared (fallback BESTIARY) entries referenced by name
+  for (const name of zone.bestiary.shared) {
+    if (BESTIARY[name]) result[name] = BESTIARY[name];
+  }
+
+  // Add local zone creatures (override any shared with same name)
+  for (const creature of zone.bestiary.local) {
+    result[creature.name] = {
+      name: creature.name,
+      tier: creature.tier,
+      health: creature.health,
+      behaviors: creature.behaviors,
+      description: creature.description,
+      emoji: creature.emoji,
+    };
+  }
+
+  return result;
+}
+
+// Get creature info by name (zone-aware)
 export function getCreatureInfo(name: string): CreatureInfo | null {
-  return BESTIARY[name] || null;
+  const zoneBestiary = getZoneBestiaryRecord();
+  return zoneBestiary[name] || BESTIARY[name] || null;
 }
 
 // Get creature tier (1, 2, or 3)
 export function getCreatureTier(name: string): number {
-  const info = BESTIARY[name];
+  const info = getCreatureInfo(name);
   return info?.tier || 1;
 }
 
@@ -380,7 +604,7 @@ export function getTierDamageMultiplier(name: string): number {
 }
 
 // ====== DEPTHS SYSTEM ======
-// Progression through different "depths" of the crypt
+// Pulled from the active zone (falls back to static constants for backward compat)
 
 export interface DepthInfo {
   name: string;
@@ -410,15 +634,23 @@ export const DEPTHS: DepthInfo[] = [
   },
 ];
 
+// Get depths from active zone (falls back to static DEPTHS)
+export function getActiveDepths(): DepthInfo[] {
+  const zone = _activeZone;
+  if (!zone) return DEPTHS;
+  return zone.depths as DepthInfo[];
+}
+
 // Get depth info for a room number
 export function getDepthForRoom(roomNumber: number): DepthInfo {
-  for (const depth of DEPTHS) {
+  const depths = getActiveDepths();
+  for (const depth of depths) {
     if (roomNumber >= depth.roomRange[0] && roomNumber <= depth.roomRange[1]) {
       return depth;
     }
   }
-  // Beyond defined depths = Abyss tier
-  return DEPTHS[DEPTHS.length - 1];
+  // Beyond defined depths = last depth tier
+  return depths[depths.length - 1];
 }
 
 // Get tier based on room number
@@ -440,25 +672,30 @@ export function getRoomDamageMultiplier(roomNumber: number): number {
 // Get random creature appropriate for a depth/tier
 export function getCreatureForRoom(roomNumber: number): CreatureInfo {
   const tier = getTierForRoom(roomNumber);
-  const creaturesOfTier = Object.values(BESTIARY).filter(c => c.tier === tier);
-  return pick(creaturesOfTier);
+  const zoneBestiary = getZoneBestiaryRecord();
+  const creaturesOfTier = Object.values(zoneBestiary).filter(c => c.tier === tier);
+  if (creaturesOfTier.length > 0) return pick(creaturesOfTier);
+  // Fallback to shared BESTIARY
+  const fallback = Object.values(BESTIARY).filter(c => c.tier === tier);
+  return pick(fallback);
 }
 
 // Get all creatures of a specific tier
 export function getCreaturesByTier(tier: 1 | 2 | 3): CreatureInfo[] {
-  return Object.values(BESTIARY).filter(c => c.tier === tier);
+  const zoneBestiary = getZoneBestiaryRecord();
+  return Object.values(zoneBestiary).filter(c => c.tier === tier);
 }
 
 // Get random creature health based on their tier
 export function getCreatureHealth(name: string): number {
-  const info = BESTIARY[name];
+  const info = getCreatureInfo(name);
   if (!info) return 65; // Default fallback
   return info.health.min + Math.floor(Math.random() * (info.health.max - info.health.min));
 }
 
 // Get creature's preferred intent types
 export function getCreatureIntent(name: string): { type: IntentType; description: string } {
-  const info = BESTIARY[name];
+  const info = getCreatureInfo(name);
   if (!info) return getEnemyIntent();
   
   // Pick from creature's preferred behaviors
@@ -517,7 +754,7 @@ export function getIntentEffects(intentType: IntentType): IntentEffects {
         isCharging: false,
         description: 'Hunting — deals bonus damage',
       };
-    case 'ERRATIC':
+    case 'ERRATIC': {
       const erraticMod = 0.5 + Math.random() * 1.5; // 0.5x to 2x
       return {
         damageDealtMod: erraticMod,
@@ -526,6 +763,7 @@ export function getIntentEffects(intentType: IntentType): IntentEffects {
         isCharging: false,
         description: 'Unpredictable — damage varies wildly',
       };
+    }
     case 'RETREATING':
       return {
         damageDealtMod: 0.5,
@@ -590,37 +828,9 @@ export function getItemEffects(inventory: {name: string}[]): ItemEffects {
   return effects;
 }
 
-// Generate randomized dungeon (12 rooms with boss at the end)
-export function generateRandomDungeon(): DungeonRoom[] {
-  const exploreTemplates = ['descent', 'corridor', 'flooded', 'chamber', 'shrine', 'crossroads'];
-  const combatTemplates = ['ambush', 'confrontation', 'territorial', 'pursuit', 'guardian'];
-  const corpseTemplates = ['fresh', 'old', 'heroic', 'disturbing', 'peaceful'];
-  const cacheTemplates = ['alcove', 'survivor_stash', 'spring', 'offering_site'];
-  const exitTemplates = ['threshold', 'earned', 'release', 'changed'];
-  
-  return [
-    // Depth 1: Upper Crypt (Rooms 1-4)
-    { type: 'explore', template: pick(exploreTemplates), content: getExploreRoom(pick(exploreTemplates)) },
-    { type: 'combat', template: pick(combatTemplates), content: getCombatRoom(pick(combatTemplates)) },
-    { type: 'corpse', template: pick(corpseTemplates), content: getCorpseRoom(pick(corpseTemplates)) },
-    { type: 'combat', template: pick(combatTemplates), content: getCombatRoom(pick(combatTemplates)) },
-    
-    // Depth 2: Flooded Halls (Rooms 5-8)
-    { type: 'explore', template: 'flooded', content: getExploreRoom('flooded') },
-    { type: 'combat', template: pick(combatTemplates), content: getCombatRoom(pick(combatTemplates)) },
-    { type: 'cache', template: pick(cacheTemplates), content: getCacheRoom(pick(cacheTemplates)) },
-    { type: 'combat', template: pick(combatTemplates), content: getCombatRoom(pick(combatTemplates)) },
-    
-    // Depth 3: The Abyss (Rooms 9-12)
-    { type: 'explore', template: pick(exploreTemplates), content: getExploreRoom(pick(exploreTemplates)) },
-    { type: 'corpse', template: pick(corpseTemplates), content: getCorpseRoom(pick(corpseTemplates)) },
-    { type: 'combat', template: pick(combatTemplates), content: getCombatRoom(pick(combatTemplates)) },
-    { type: 'combat', template: 'arena', content: getCombatRoom('arena'), boss: true }, // Room 12: BOSS
-    { type: 'exit', template: pick(exitTemplates), content: getExitRoom(pick(exitTemplates)) },
-  ];
-}
-
-// Get boss creature for room 12
+// Get boss creature for the active zone's boss room
 export function getBossCreature(): CreatureInfo {
-  return BESTIARY['The Keeper'];
+  const zone = getActiveZone();
+  const boss = getCreatureInfo(zone.boss);
+  return boss || BESTIARY['The Keeper'];
 }

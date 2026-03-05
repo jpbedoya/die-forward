@@ -1,0 +1,24 @@
+{
+  "version": "1.0.0",
+  "zones": [
+    {
+      "id": "sunken-crypt",
+      "file": "zones/sunken-crypt.json",
+      "meta": {
+        "name": "THE SUNKEN CRYPT",
+        "tagline": "The first descent. Nothing here is alive.",
+        "element": "water",
+        "difficulty": 1,
+        "mechanic": null,
+        "emoji": "🌊",
+        "colors": {
+          "primary": "#1e3a5f",
+          "accent": "#4a9eff",
+          "text": "#a8d4ff"
+        },
+        "unlockRequirement": null
+      },
+      "enabled": true
+    }
+  ]
+}

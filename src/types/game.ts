@@ -40,6 +40,7 @@ export interface PlayerState {
 
 export interface RoomState {
   zone: string;
+  zoneId?: string;
   roomNumber: number;
   totalRooms: number;
   narrative: string;
@@ -74,4 +75,5 @@ export interface GameState {
   room: RoomState | null;
   runId: string | null;
   deathCount: number; // zone death count
+  zoneId?: string;
 }

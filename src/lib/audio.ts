@@ -1,6 +1,49 @@
 // Audio manager for Die Forward
 // Handles SFX and ambient loops with volume control
 
+// ====== ZONE AUDIO INTERFACE ======
+
+export interface ZoneAudio {
+  ambient: {
+    explore: string;
+    combat: string;
+  };
+  sfx: {
+    footstep: string;
+    descend: string;
+    environment: string[];
+    atmosphere: string[];
+    boss: { intro: string; roar: string };
+  };
+}
+
+// Module-level zone audio override (set at session start)
+let _activeZoneAudio: ZoneAudio | null = null;
+
+/**
+ * Set the zone audio config for the current session.
+ * When set, playAmbient and boss SFX will route through zone-specific paths.
+ */
+export function setActiveZoneAudio(audio: ZoneAudio): void {
+  _activeZoneAudio = audio;
+}
+
+/**
+ * Get the current zone audio config (null if not set).
+ */
+export function getActiveZoneAudio(): ZoneAudio | null {
+  return _activeZoneAudio;
+}
+
+/**
+ * Clear the active zone audio (call on session end).
+ */
+export function clearActiveZoneAudio(): void {
+  _activeZoneAudio = null;
+}
+
+// ====== SOUND TYPES ======
+
 type SoundId = 
   // Ambient loops
   | 'ambient-explore'
@@ -156,11 +199,33 @@ class AudioManager {
   playSFX(id: SoundId) {
     if (!this.enabled || typeof window === 'undefined') return;
     
-    const audio = new Audio(SOUND_PATHS[id]);
+    const audio = new Audio(this.resolveSFXPath(id));
     audio.volume = this.sfxVolume;
     audio.play().catch(() => {
       // SFX blocked by autoplay policy - silent fail
     });
+  }
+
+  // Resolve ambient path — uses zone audio override when available
+  private resolveAmbientPath(id: SoundId): string {
+    const zoneAudio = _activeZoneAudio;
+    if (zoneAudio) {
+      if (id === 'ambient-explore') return zoneAudio.ambient.explore;
+      if (id === 'ambient-combat') return zoneAudio.ambient.combat;
+    }
+    return SOUND_PATHS[id];
+  }
+
+  // Resolve SFX path — uses zone audio for boss SFX when available
+  private resolveSFXPath(id: SoundId): string {
+    const zoneAudio = _activeZoneAudio;
+    if (zoneAudio) {
+      if (id === 'boss-intro') return zoneAudio.sfx.boss.intro;
+      if (id === 'boss-roar') return zoneAudio.sfx.boss.roar;
+      if (id === 'footstep') return zoneAudio.sfx.footstep;
+      if (id === 'depth-descend') return zoneAudio.sfx.descend;
+    }
+    return SOUND_PATHS[id];
   }
 
   // Play ambient loop (crossfade from current, gapless looping)
@@ -192,8 +257,8 @@ class AudioManager {
       }, 50);
     }
 
-    // Start new ambient with native looping
-    const audio = new Audio(SOUND_PATHS[id]);
+    // Start new ambient with native looping (zone audio path override if available)
+    const audio = new Audio(this.resolveAmbientPath(id));
     audio.loop = true; // Simple native looping
     audio.volume = 0;
     this.currentAmbient = audio;

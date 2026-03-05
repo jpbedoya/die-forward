@@ -27,7 +27,11 @@ export async function OPTIONS() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { walletAddress, stakeAmount, txSignature, demoMode, escrowSessionId, useEscrow, authId } = body;
+    const { walletAddress, stakeAmount, txSignature, demoMode, escrowSessionId, useEscrow, authId, zoneId: rawZoneId } = body;
+
+    // Validate zoneId — whitelist of known zones
+    const VALID_ZONE_IDS = ['sunken-crypt'];
+    const zoneId: string = VALID_ZONE_IDS.includes(rawZoneId) ? rawZoneId : 'sunken-crypt';
 
     // Validate inputs
     if (!walletAddress || typeof walletAddress !== 'string') {
@@ -97,7 +101,8 @@ export async function POST(request: NextRequest) {
         authId: authId || walletAddress, // Unique player ID for stats tracking
         stakeAmount,
         txSignature: txSignature || null,
-        zone: 'THE SUNKEN CRYPT',
+        zone: zoneId === 'sunken-crypt' ? 'THE SUNKEN CRYPT' : zoneId,
+        zoneId,
         startedAt: Date.now(),
         status: 'active', // active, completed, dead
         currentRoom: 1, // Server-tracked room (1-indexed)
@@ -115,7 +120,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       sessionToken,
-      zone: 'THE SUNKEN CRYPT',
+      zone: zoneId === 'sunken-crypt' ? 'THE SUNKEN CRYPT' : zoneId,
+      zoneId,
       seed, // Client uses this for deterministic randomness
       seedSource,
       enableVrf: vrfEnabled && !!erRunId,
