@@ -334,10 +334,9 @@ export default function ZoneSelectScreen() {
   const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
   const [selectedZoneId, setSelectedZoneId] = useState('sunken-crypt');
   const { width: screenWidth } = useWindowDimensions();
-  // Start with only Sunken Crypt unlocked to prevent flash of wrong state
-  // DEV MODE: all zones unlocked for testing — TODO: restore API fetch before launch
-  const ALL_ZONE_IDS = ZONES.map(z => z.id);
-  const [unlockedZones, setUnlockedZones] = useState<string[]>(ALL_ZONE_IDS);
+  // enabledZones = admin-controlled zone availability (from gameSettings)
+  // unlockedZones = player progression unlock (post-auth, future)
+  const [enabledZones, setEnabledZones] = useState<string[]>(['sunken-crypt']);
 
   // Cap at 480 so the 2x2 grid works on Expo web (wide browser windows)
   const effectiveWidth = Math.min(screenWidth, 480);
@@ -347,7 +346,21 @@ export default function ZoneSelectScreen() {
     playAmbient('ambient-title');
   }, []);
 
-  // TODO: fetch unlock status post-auth (wallet is bound after zone select, so no identifier here yet)
+  // Fetch admin-controlled zone availability on load
+  useEffect(() => {
+    fetch(`${API_BASE}/api/game/settings`)
+      .then(r => r.json())
+      .then(data => {
+        if (Array.isArray(data.enabledZones) && data.enabledZones.length > 0) {
+          setEnabledZones(data.enabledZones);
+        }
+      })
+      .catch(() => {
+        // fallback: only sunken-crypt (already the default state)
+      });
+  }, []);
+
+  // TODO: fetch player progression unlock status post-auth (wallet bound after zone select)
   // useEffect(() => { ... fetch /api/player/unlock-status ... }, [game.walletAddress]);
 
   const selectedZone = ZONES.find((z) => z.id === selectedZoneId) ?? ZONES[0];
@@ -365,8 +378,8 @@ export default function ZoneSelectScreen() {
   const gridZones = ZONES.slice(0, 4);
   const voidZone = ZONES[4];
 
-  // Derive enabled state from unlock status (overrides hardcoded `enabled` in ZONES)
-  const isZoneEnabled = (zoneId: string) => unlockedZones.includes(zoneId);
+  // A zone is selectable if admin has enabled it
+  const isZoneEnabled = (zoneId: string) => enabledZones.includes(zoneId);
 
   return (
     <CryptBackground screen="stake">

@@ -66,7 +66,7 @@ const DEFAULT_SETTINGS: Omit<GameSettings, 'id'> = {
   enableVRF: false,
 };
 
-type Tab = 'dashboard' | 'settings' | 'music' | 'deaths' | 'corpses';
+type Tab = 'dashboard' | 'settings' | 'zones' | 'music' | 'deaths' | 'corpses';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // MAIN ADMIN PAGE
@@ -120,6 +120,7 @@ export default function AdminPage() {
   const tabs: { id: Tab; label: string; icon: string }[] = [
     { id: 'dashboard', label: 'Dashboard', icon: '📊' },
     { id: 'settings', label: 'Settings', icon: '⚙️' },
+    { id: 'zones', label: 'Zones', icon: '🗺️' },
     { id: 'music', label: 'Music', icon: '🎵' },
     { id: 'deaths', label: 'Deaths', icon: '💀' },
     { id: 'corpses', label: 'Corpses', icon: '⚰️' },
@@ -163,6 +164,7 @@ export default function AdminPage() {
       <div className="max-w-6xl mx-auto px-4 md:px-8 py-6">
         {activeTab === 'dashboard' && <DashboardTab />}
         {activeTab === 'settings' && <SettingsTab />}
+        {activeTab === 'zones' && <ZonesTab />}
         {activeTab === 'music' && <MusicTab />}
         {activeTab === 'deaths' && <DeathsTab />}
         {activeTab === 'corpses' && <CorpsesTab />}
@@ -281,6 +283,217 @@ function SettingsTab() {
           onChange={(v) => saveSettings({ enableVRF: v })}
         />
       </SettingsSection>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// 🗺️ ZONES TAB
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const ZONE_META = [
+  {
+    id: 'sunken-crypt',
+    name: 'The Sunken Crypt',
+    theme: 'Drowned ruins, echoing halls',
+    mechanic: 'Core zone — full variation pool',
+    boss: 'The Drowned Warden',
+    emoji: '🏚️',
+    creatures: 21,
+    fragmented: false,
+  },
+  {
+    id: 'ashen-crypts',
+    name: 'The Ashen Crypts',
+    theme: 'Scorched bone and ember',
+    mechanic: 'BURN — damage over time stacks',
+    boss: 'Pyre Keeper',
+    emoji: '🔥',
+    creatures: 8,
+    fragmented: true,
+  },
+  {
+    id: 'frozen-gallery',
+    name: 'The Frozen Gallery',
+    theme: 'Glacial silence, preserved dead',
+    mechanic: 'CHILL/FREEZE — slows and locks actions',
+    boss: 'Glacial Sovereign',
+    emoji: '❄️',
+    creatures: 5,
+    fragmented: true,
+  },
+  {
+    id: 'living-tomb',
+    name: 'The Living Tomb',
+    theme: 'Flesh and root, writhing walls',
+    mechanic: 'INFECTION — spreads debuffs between enemies',
+    boss: 'The Root',
+    emoji: '🌿',
+    creatures: 5,
+    fragmented: true,
+  },
+  {
+    id: 'void-beyond',
+    name: 'The Void Beyond',
+    theme: 'Sanity breaks, reality warps',
+    mechanic: 'FLUX/CLARITY — reverse card effects',
+    boss: 'The Unwritten',
+    emoji: '🌀',
+    creatures: 5,
+    fragmented: true,
+  },
+];
+
+function ZonesTab() {
+  const { data: settingsData } = db.useQuery({ gameSettings: {} });
+  const settings = settingsData?.gameSettings?.[0] as any;
+
+  // enabledZones is stored as a comma-separated string in gameSettings
+  const rawEnabled: string = settings?.enabledZones ?? 'sunken-crypt';
+  const enabledZones: string[] = rawEnabled.split(',').map((s: string) => s.trim()).filter(Boolean);
+
+  const [editingTrack, setEditingTrack] = useState<string | null>(null);
+  const [trackValue, setTrackValue] = useState('');
+
+  const toggleZone = async (zoneId: string) => {
+    const next = enabledZones.includes(zoneId)
+      ? enabledZones.filter(z => z !== zoneId)
+      : [...enabledZones, zoneId];
+    // Always keep sunken-crypt enabled
+    if (!next.includes('sunken-crypt')) next.unshift('sunken-crypt');
+    const value = next.join(',');
+    if (!settings) {
+      await db.transact([tx.gameSettings[id()].update({ ...DEFAULT_SETTINGS, enabledZones: value })]);
+    } else {
+      await db.transact([tx.gameSettings[settings.id].update({ enabledZones: value })]);
+    }
+  };
+
+  const saveAmbientTrack = async (zoneId: string, trackUrl: string) => {
+    const key = `ambientTrack_${zoneId.replace(/-/g, '_')}`;
+    if (!settings) {
+      await db.transact([tx.gameSettings[id()].update({ ...DEFAULT_SETTINGS, [key]: trackUrl })]);
+    } else {
+      await db.transact([tx.gameSettings[settings.id].update({ [key]: trackUrl })]);
+    }
+    setEditingTrack(null);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="text-[var(--text-dim)] text-sm mb-2">
+        Enable/disable zones live. Sunken Crypt is always on. Ambient tracks can be overridden here — leave blank to use the zone JSON default.
+      </div>
+
+      {ZONE_META.map(zone => {
+        const isEnabled = enabledZones.includes(zone.id);
+        const isCore = zone.id === 'sunken-crypt';
+        const trackKey = `ambientTrack_${zone.id.replace(/-/g, '_')}`;
+        const trackOverride = settings?.[trackKey] || '';
+
+        return (
+          <div
+            key={zone.id}
+            className={`bg-[var(--bg-surface)] border rounded-lg p-5 transition-opacity ${
+              isEnabled ? 'border-[var(--amber-dim)]' : 'border-[var(--border)] opacity-60'
+            }`}
+          >
+            {/* Header row */}
+            <div className="flex items-start justify-between gap-4 mb-3">
+              <div className="flex items-center gap-3">
+                <span className="text-3xl">{zone.emoji}</span>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[var(--amber-bright)] font-bold">{zone.name}</span>
+                    {isCore && (
+                      <span className="text-[10px] px-2 py-0.5 bg-[var(--amber)]/20 text-[var(--amber)] rounded">CORE</span>
+                    )}
+                    {!isEnabled && (
+                      <span className="text-[10px] px-2 py-0.5 bg-[var(--border)] text-[var(--text-dim)] rounded">DISABLED</span>
+                    )}
+                  </div>
+                  <div className="text-[var(--text-dim)] text-sm mt-0.5">{zone.theme}</div>
+                </div>
+              </div>
+              <button
+                onClick={() => toggleZone(zone.id)}
+                disabled={isCore}
+                className={`px-3 py-1.5 border text-sm flex-shrink-0 transition-colors ${
+                  isCore
+                    ? 'border-[var(--border)] text-[var(--text-muted)] cursor-not-allowed opacity-40'
+                    : isEnabled
+                    ? 'border-green-600 text-green-500 hover:bg-red-900/20 hover:border-red-600 hover:text-red-400'
+                    : 'border-[var(--border)] text-[var(--text-dim)] hover:border-green-600 hover:text-green-500'
+                }`}
+              >
+                {isEnabled ? '● LIVE' : '○ OFF'}
+              </button>
+            </div>
+
+            {/* Details row */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs mb-3">
+              <div className="bg-[var(--bg-dark)] p-2 rounded">
+                <div className="text-[var(--text-muted)] mb-0.5">MECHANIC</div>
+                <div className="text-[var(--text)]">{zone.mechanic}</div>
+              </div>
+              <div className="bg-[var(--bg-dark)] p-2 rounded">
+                <div className="text-[var(--text-muted)] mb-0.5">BOSS</div>
+                <div className="text-[var(--text)]">{zone.boss}</div>
+              </div>
+              <div className="bg-[var(--bg-dark)] p-2 rounded">
+                <div className="text-[var(--text-muted)] mb-0.5">BESTIARY</div>
+                <div className={zone.creatures >= 8 ? 'text-green-400' : 'text-[var(--amber)]'}>
+                  {zone.creatures} creatures {zone.creatures < 8 ? '⚠' : '✓'}
+                </div>
+              </div>
+              <div className="bg-[var(--bg-dark)] p-2 rounded">
+                <div className="text-[var(--text-muted)] mb-0.5">CONTENT</div>
+                <div className={zone.fragmented ? 'text-[var(--amber)]' : 'text-green-400'}>
+                  {zone.fragmented ? 'Fragment-based' : 'Full variations ✓'}
+                </div>
+              </div>
+            </div>
+
+            {/* Ambient track override */}
+            <div className="flex items-center gap-2">
+              <span className="text-[var(--text-muted)] text-xs flex-shrink-0">🔊 Ambient:</span>
+              {editingTrack === zone.id ? (
+                <>
+                  <input
+                    autoFocus
+                    value={trackValue}
+                    onChange={e => setTrackValue(e.target.value)}
+                    placeholder="https://... or /audio/zones/..."
+                    className="flex-1 bg-[var(--bg-dark)] border border-[var(--amber)] text-[var(--text)] px-2 py-1 text-xs focus:outline-none"
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') saveAmbientTrack(zone.id, trackValue);
+                      if (e.key === 'Escape') setEditingTrack(null);
+                    }}
+                  />
+                  <button onClick={() => saveAmbientTrack(zone.id, trackValue)} className="px-2 py-1 border border-[var(--amber)] text-[var(--amber)] text-xs">Save</button>
+                  <button onClick={() => setEditingTrack(null)} className="px-2 py-1 border border-[var(--border)] text-[var(--text-dim)] text-xs">Cancel</button>
+                </>
+              ) : (
+                <>
+                  <span className="text-[var(--text-dim)] text-xs flex-1 truncate">
+                    {trackOverride || <span className="italic text-[var(--text-muted)]">using zone default</span>}
+                  </span>
+                  <button
+                    onClick={() => { setEditingTrack(zone.id); setTrackValue(trackOverride); }}
+                    className="px-2 py-1 border border-[var(--border)] text-[var(--text-dim)] hover:border-[var(--amber)] hover:text-[var(--amber)] text-xs flex-shrink-0"
+                  >
+                    ✎ Edit
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        );
+      })}
+
+      <div className="text-[var(--text-muted)] text-xs pt-2">
+        ⚠ Zone mechanics (BURN, CHILL, INFECTION, FLUX) are content-wired but not yet implemented in combat. Enabling these zones will serve correct lore/creatures but mechanics are pending.
+      </div>
     </div>
   );
 }
