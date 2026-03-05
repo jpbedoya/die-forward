@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, rename, access } from 'fs/promises';
+import { writeFile, rename, access, mkdir } from 'fs/promises';
 import path from 'path';
 
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
@@ -38,14 +38,22 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { prompt, filename, duration = 2 } = body;
+    const { prompt, filename, duration = 2, subdir } = body;
 
     if (!prompt || !filename) {
       return NextResponse.json({ error: 'Missing prompt or filename' }, { status: 400 });
     }
 
+    // Determine target directory
+    const baseAudioDir = path.join(process.cwd(), 'public', 'audio');
+    const audioDir = subdir
+      ? path.join(baseAudioDir, subdir)
+      : baseAudioDir;
+
+    // Create directory if it doesn't exist (handles subdir case)
+    await mkdir(audioDir, { recursive: true });
+
     // Backup existing file if present
-    const audioDir = path.join(process.cwd(), 'public', 'audio');
     const backedUpAs = await backupExistingFile(audioDir, filename);
 
     // Generate sound effect
@@ -70,14 +78,19 @@ export async function POST(request: NextRequest) {
     // Get audio buffer
     const audioBuffer = await response.arrayBuffer();
     
-    // Save to public/audio/
-    const audioPath = path.join(process.cwd(), 'public', 'audio', `${filename}.mp3`);
+    // Save to target directory
+    const audioPath = path.join(audioDir, `${filename}.mp3`);
     await writeFile(audioPath, Buffer.from(audioBuffer));
+
+    // Build public path
+    const publicPath = subdir
+      ? `/audio/${subdir}/${filename}.mp3`
+      : `/audio/${filename}.mp3`;
 
     return NextResponse.json({
       success: true,
       filename: `${filename}.mp3`,
-      path: `/audio/${filename}.mp3`,
+      path: publicPath,
       size: audioBuffer.byteLength,
       backedUpAs,
     });

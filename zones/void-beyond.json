@@ -1,0 +1,324 @@
+{
+  "id": "void-beyond",
+  "version": "1.0.0",
+  "meta": {
+    "name": "THE VOID BEYOND",
+    "tagline": "Where the underworld forgot to finish building.",
+    "element": "void",
+    "difficulty": 3,
+    "colors": {
+      "primary": "#0d0010",
+      "accent": "#9b59b6",
+      "text": "#d7aef5"
+    },
+    "mechanic": "FLUX",
+    "mechanicDescription": "Enemy intents can shift. Clarity degrades — at 0, fake options appear. Echo rooms loop.",
+    "unlockRequirement": "Clear 3 different zones",
+    "emoji": "🌑"
+  },
+  "lore": "Past the last passage the underworld bothered to finish, something waits that was assembled from everything you chose not to be. The static here is shaped — almost a pattern. Nothing confirms what it is trying to say.",
+  "fragments": {
+    "explore": {
+      "opening": [
+        "The static begins before the space does. A low, shaped interference at the edge of hearing — almost a pattern. The floor is probably solid. The walls are probably walls.",
+        "Ozone. Sharp and electrical, filling a space with no visible source for it. The air here converts something. You do not know what into what.",
+        "Purple — a depth of purple that belongs to neither dark nor light, that has been here long enough to develop its own understanding of what color means.",
+        "Your footsteps sound wrong. Not louder or softer — wrong in kind, as if the floor is disagreeing with your estimate of the distance you have traveled.",
+        "Something flickers at the edge of your vision. A color that should not be here, suggesting an adjacent space bleeding through the seam. You turn to look. It isn't there. It was only ever peripheral.",
+        "The temperature shifts. Not gradually — between one step and the next, cold becomes something that does not resolve into either cold or warm. Your body reports conflicting data.",
+        "Silence that is not silent. A silence with texture and weight, as if something is present and has decided to stop making sound rather than being absent.",
+        "The geometry is approximately correct. Approximately. The angles at the corners suggest something slightly other than ninety degrees — not wrong enough to identify, wrong enough to register.",
+        "Somewhere behind you, a door closes. You did not come through a door.",
+        "The void is purple where it has settled into itself. Here it has settled. The static is low. The wrongness is baseline. This is what calm looks like here.",
+        "A smell of something burnt and sweet, lasting precisely long enough to notice and not long enough to place. Then ozone. Then nothing. The sequence may repeat. You are not certain it has not already.",
+        "Space here. More of it than the entry suggested. The walls are further than the walls should be, given where you entered, given what you remember of the shape of the passage."
+      ],
+      "middle": [
+        "A doorway in the center of the floor, opening downward into purple dark. The door itself is horizontal — hinged correctly for a wall, installed here. Someone put it there. It is latched.",
+        "Marks on the wall at eye level, then again at floor level, then again at the ceiling. The same marks. Three times. One set scratched from each direction, as if three people stood in three orientations and each saw the same thing.",
+        "A chair in the middle of an empty space, facing a wall that has nothing on it. Someone sat here for long enough that the stone beneath the chair has worn slightly. You feel the impression of a purpose you cannot identify.",
+        "Scratch marks counting something. Twenty-three, then the count starts again. Twenty-three again. A third group of twenty-three. The person stopped after three repetitions. You do not know what they were counting.",
+        "The passage continues in both directions from here. You came from one direction. You do not remember which. Both directions look equally like the direction you came from.",
+        "An item on the floor that you recognize. You did not put it there. You may have had it, once. You are not certain whether you left it here or whether it arrived without your involvement.",
+        "The wall on your left is missing a section. Not broken — absent. The space where it should be is just space. Nothing is in the space. Nothing has always been in that space. The wall on your right is exactly where it should be.",
+        "Your voice, from a direction you are not facing, says one word. The word is your name, or something close enough that you are not sure whether the void is mispronouncing it or whether you are misremembering.",
+        "A corridor branches here into three passages. You walked through this exact junction in a previous run — the same irregularity in the left wall, the same wrong smell from the center. Or you walked through something like it. Or you are about to.",
+        "Evidence of construction: marks on the floor suggesting intent, tools arranged in a pattern, a portion of wall that has been started and not finished. The construction is recent. The constructor is not here.",
+        "The floor slopes upward ahead and downward behind you, but from your position the floor appears level. Gradient cannot be trusted. Your memory of gradient cannot be trusted.",
+        "Something was here. The space has the quality of recent occupation — a warmth that doesn't belong, an arrangement of nothing that suggests something was recently present and is now absent. The absence is fresh."
+      ],
+      "closing": [
+        "The space does not resolve into certainty. You proceed into it anyway. Certainty is a resource you did not pack.",
+        "Nothing has confirmed itself as threat. Nothing has confirmed itself as safe. You have the impression of being observed by something that has not decided what to make of you yet.",
+        "The static is the same volume it has been. You are aware that you have begun interpreting the static as feedback — the void's attention, registering you. This interpretation may be correct.",
+        "You move forward. The space behind you remains as it was. Or changes. Or never was what you thought. You are not able to look at it and move forward simultaneously.",
+        "There is no reason not to continue. This is the closest thing to safety that exists here. You continue.",
+        "The void does not watch with hostility. It watches with the attention of something that has rarely encountered something as coherent as you. You are, in this place, unusual.",
+        "What you have seen does not add up to a conclusion. You note this and move on. The void has many rooms that do not add up to conclusions.",
+        "The way forward holds the same quality of potential threat as the way behind. You choose forward. Choice is the only tool you have that functions consistently.",
+        "You check the passage behind you. It is there. You proceed. These are the facts available to you.",
+        "The static settles into the frequency you have begun to associate with the void paying attention. You proceed. What else would you do.",
+        "Somewhere in this space, something persists that you cannot see. This is not new information. This is the condition. You have been operating in this condition since you entered.",
+        "The next passage is ahead. Ahead is a direction that has, so far, remained consistent. You take it as given and move."
+      ]
+    },
+    "combat": {
+      "opening": [
+        "The space is larger than the entry suggested. Wide and purple-dark, with multiple directions from which something might emerge. The static is slightly louder here. Slightly.",
+        "Nothing is wrong. The temperature is wrong. The smell is wrong. These are different things. The space itself is unremarkable. You note that unremarkable spaces in the void have a specific quality.",
+        "A room without obvious threat. The static is higher here — the kind of higher that has become associated in your experience with things resolving from potential into specific. You wait. Or you do not wait.",
+        "The floor is marked. Scored with lines that might be claw marks or might be architecture — the geometry consistent with intent, but whose intent is unclear. The air is still. The stillness is deliberate.",
+        "You have been in this room before, or in something enough like it that the difference is not useful. The last time — if there was a last time — something was here. The static suggests the category has not changed.",
+        "The space resolves slowly. What you see at first is an empty chamber. The resolving takes a moment. You have learned to be attentive during the moment before a space finishes resolving.",
+        "Two things flicker at the edge of vision. Not one — two, overlapping in the same approximate location, superimposed, sharing a space that can only contain one of them once the observation settles.",
+        "Warm. Patches of warmth without source, which in the void has become shorthand for something present that has not yet committed to being visible. The patches move, slightly, as you enter.",
+        "The static shifts pitch. A change too small to be certain about, too consistent to be noise. It shifted when you crossed the threshold. It has not shifted back.",
+        "The room appears empty. The void has taught you the distinction between appears empty and is empty. This room has the quality of the former. You treat it accordingly.",
+        "Something in the peripheral — not quite a shape, not quite a shadow. The kind of presence the void produces when it is assembling a specific threat from available probability-matter.",
+        "The exit is visible from here. This is suspicious. In the void, visible exits have a relationship to actual exits that is unreliable. The space between you and the exit will require negotiation."
+      ],
+      "middle": [
+        "It resolves. The two overlapping shapes collapse into one: tall, fast, watching you with the attention of something that has just become real and is still processing what being real means. A Probability Shade. You engaged. It became.",
+        "It looks like you. Your posture, your weight distribution, the way you hold yourself when you're in a space you're not sure about. An Echo Double, built from your run's data, wearing your recent choices as a skin. It looks at you the way you look at hard decisions.",
+        "The wall moves. Not breaks — moves, deliberately, one hand pressing against it from the inside. Then the whole shape emerges: large, slow, intentional, placing itself between you and the exit. A Void Architect. It begins to restructure the room without acknowledging you.",
+        "Multiple — the word wrong in context, but available. Forms that do not hold consistent shape, each one different each time you attend to them. The Unanchored. They have been here in some form the entire time. The forms are becoming more specific.",
+        "It advances from the far wall. Straight. In a zone where nothing moves in straight lines, this is its own kind of threat. The Hollow, at home here, moving with the certainty of something that has lost too much to be disoriented by losing more.",
+        "Your voice comes from behind you. You turn. An Echo Husk, mouth open, repeating something that hasn't happened yet. Or that happened to someone else. Or that it assembled from the traces of prior runs. It is reaching toward you, still speaking.",
+        "They flicker — three of them, or one of them three times, the distinction functionally irrelevant. Flickering Shades, moving across the room in distances the room should not accommodate, already at different points of the same space simultaneously.",
+        "A second Probability Shade resolves differently: low, defensive, patterned. The first resolved aggressive. Neither resolution was predictable. You note this for future calibration and attend to the immediate problem.",
+        "It looks at you with something that might be recognition. The Echo Double holds your equipment, which means it holds the items you chose, which means it reflects the run you are having. It knows what you've done. It was built from it.",
+        "The Void Architect pauses its construction to look at you. Brief assessment. Then it returns to the wall, which means you have until it finishes to engage something slow and deliberate that is building toward a room geometry that will favor nothing human.",
+        "They are not hostile in the way things are typically hostile. The Unanchored move toward you because proximity is their nature — they drift toward the most coherent object in a space, and you are, here, the most coherent object. This ends in the same place hostility ends.",
+        "The void shows you two intents simultaneously for a moment. Then one. The one it showed you may or may not be the one it resolves toward. This is a Probability Shade being honest about its own uncertainty."
+      ],
+      "closing": [
+        "What it showed you and what it did were not the same thing. You have processed this and adjusted. The adjustment is the only tool that functions here.",
+        "The intent declared. You read it. Reading it may have been accurate. May have. The void does not certify your reads.",
+        "You are fighting something that does not know what it will do next. This makes strategy approximate. Approximate is what you have.",
+        "It has not moved yet. It showed an intent. The intent was specific. Specific intents in this zone have a probability of resolving into what they show. Not a certainty.",
+        "The room has shifted since you entered — not dramatically, just in the specific way that suggests a Void Architect's attention, or the echo of one. The exit is still roughly where it was.",
+        "Two of the Unanchored move toward you. The third holds back, or changes, or becomes something that reads as holding back. Attack order: unclear. Sequence: to be discovered.",
+        "Your Echo Double chose Brace. You considered Strike. It anticipated the anticipation of your choice and countered. You adjust. It will adjust to your adjustment. Find the divergence.",
+        "The static is loud during combat here — a correlate of probability-matter in active flux. It tells you nothing except that things are actively uncertain. You already knew that.",
+        "It showed CHARGING. The void has reasons to believe it may resolve as CHARGING. It may also resolve as something adjacent. Brace, and know that Brace functions against most adjacencies.",
+        "The fight is not over. You are alive. The space is still wrong. These are the available facts."
+      ]
+    },
+    "corpse": {
+      "framing": [
+        "The body is here, and also here — a slight doubling, two positions occupying the same space, as if death caught them mid-step between two moments. The void has not decided where they finally were.",
+        "They have not decayed. This is not preservation — the void has simply not processed them yet. They are waiting for the zone to decide what to do with a body, and the zone has not decided.",
+        "The body is fresh, or appears fresh, which here may mean the same thing or may mean only the appearance. The void recycles badly. Things that should have aged have not. Things that should have stayed have drifted.",
+        "Their outline flickers. Not the body — the outline, the edge where they end and the void begins. The boundary is still negotiating. They are mostly gone. Mostly.",
+        "Two bodies. Same person. The void made a copy at the moment of death, or caught the death twice, or runs that look like one run are sometimes two. Both versions of the message are in the same handwriting.",
+        "The body is positioned as if mid-motion — frozen between a step and a decision, arrested at the moment of a choice. The void stopped time here, or they stopped in the only way available.",
+        "Clarity left them before the end. You can see it in the quality of the marks they made. The letters grew uncertain toward the finish — not afraid. Uncertain. The distinction is specific and relevant here.",
+        "They were trying to leave when it happened. Their body faces the direction of the exit — or what was the direction of the exit when they were moving toward it. The exit may have moved.",
+        "The space around them is stable. More stable than the surrounding room. As if their presence left behind a pocket of coherence that the void hasn't overwritten yet. It will.",
+        "They are exactly where they fell. The void did not move them. This is unusual. The void moves things. This body, in this location, has remained. There is no available explanation for the exception."
+      ],
+      "discoveryBeats": [
+        "A shape that should not be horizontal.",
+        "The static drops in one specific direction — toward the far wall, a localized absence of interference suggesting something settled has displaced the probability-matter.",
+        "Your face. The body has your face, or close enough that the difference requires attention to establish. An Echo Double death — built from you, dead in a fight that may have been with you, or with the version of you from an earlier run.",
+        "The marks on the floor: not claw marks, not intentional architecture. A pattern made by something moving in tight circles — patient, repeated — before stopping.",
+        "Their hands are still raised. Whatever they were holding, they were holding when it ended. The position is maintained, locked. The void preserved the posture.",
+        "A smell distinct from the zone's baseline: something that belongs to the world above — soil, or the specific cold of weather rather than the void's contextless cold. Whoever they were, they carried that smell in.",
+        "Two sets of footprints leading to one position. No footprints leading out. The path converges here. The convergence is the whole story.",
+        "The echo of their last word is still cycling — barely audible, degrading, looping through the static. Not the words that follow, just the one. You cannot make out the word. Only that there was one.",
+        "The items they carried are still here. Some you recognize — not from their specific run, but from their type. You can read the run they were having from what they left behind.",
+        "A stillness localized to one part of the room — a space where probability has stopped moving. The void usually moves. Here, in this spot, it has stopped. The body is at the center of the stillness."
+      ]
+    },
+    "cache": {
+      "locationLines": [
+        "A pocket of the void where the stability is inexplicable and does not require explanation. The walls are where walls are. The floor is a floor. The static is below the threshold of the audible.",
+        "A room that has decided to be a room. Not transitional, not uncertain — the kind of space the void produces rarely and briefly, where the geometry holds and the air is what air is.",
+        "Clarity returns here. Not restored — here, you understand things clearly. The walls do not suggest adjacent spaces. The floor does not hesitate. Something in this location resists the void's uncertainty. For now.",
+        "The Cartographer's Ghost has been here. Maps cover three surfaces — corrections over corrections, routes in pencil over routes in ink. The station is functional and recently occupied and will tell you more than you expected.",
+        "A space between the zone's major states — neither deep void nor edge. The static has been displaced, pushed out of this pocket by something that prefers stillness. Supplies in the corner. Someone knew where the pocket was.",
+        "The purple here has deepened into something more blue — a different quality of dark, one that has settled rather than churned. The temperature is consistent. The air has a specific quality: non-threatening.",
+        "An anchor point — one of the void's rare stable nodes, a location where the zone's instability has not reached or has receded from. You feel it in your clarity, which sharpens. The objects here are where they are.",
+        "Structural stability without structural reason. The room should be as uncertain as the rooms around it. It is not. The exception is not explained. It holds for now, and now is what you have."
+      ],
+      "toneClosers": [
+        "The stability is real. While it is real, it is real. The void's instability is just outside this pocket, and the pocket is not permanent, but the moment is genuine and you should use it.",
+        "Rest. Take what is here. The static will return — it is not absent, only below hearing — but for this stretch of the run, the space is what it presents itself as.",
+        "The clarity you have here will not persist into the next room. Carry what you can of it. The void begins again at the threshold.",
+        "Something keeps this room stable. You do not know what. The not-knowing is manageable here, where the something is working. It will be less manageable when you leave.",
+        "A brief consistency. The underworld produces these, and they are brief and should not be trusted to last and are, regardless, worth using while present.",
+        "The Cartographer's Ghost works in the corner, updating maps that will be outdated before the ink dries. The futility is visible and does not seem to trouble the Ghost. You find this grounding.",
+        "Take a moment. The void will still be the void when you leave — in the same proportion, with the same unreliability. Take the moment anyway.",
+        "The safety here is conditional. The condition is: while you are here. You are, for now, here."
+      ]
+    },
+    "exit": {
+      "opening": [
+        "A passage where the static drops. Not gradually — a threshold, a specific point at which the interference reduces to something distinguishable from silence. This quality has not characterized any other passage in the zone.",
+        "The air here tastes like the world beyond the void — not the zone's ozone and burnt-sugar wrongness, but something that belongs to the consistent underworld, to zones with temperature that follows rules.",
+        "This exit presents as an exit. Other passages have presented as exits in this zone and not been exits. This one has a quality the others did not: the geometry holds steady. The edges do not blur.",
+        "You have been in echo rooms — spaces that looped, that returned you to prior states. This passage does not have that quality. It has the quality of leading somewhere specific, and that somewhere appears to be out.",
+        "The static is directional here. Not uniform — it diminishes in the direction of the passage ahead, as if the void is thinning in that direction, as if there is less of it between you and wherever this goes.",
+        "Cold from the passage — not the void's contextless variable temperature, but a specific cold that belongs to stone and depth, the underworld's reliable cold. The passage leads back toward the reliable.",
+        "The void's peripheral flickers are absent at this threshold. The adjacent-reality bleed that has been present since you entered — the colors that shouldn't be here, the almost-visible other spaces — stops here.",
+        "The floor in the passage ahead is marked differently from the void's floor — not void geometry, not architect-work, just stone worn by repeated passage. Feet have come this way and continued in one direction."
+      ],
+      "middle": [
+        "The purple fades as you walk. Not toward dark — toward a different dark, one that belongs to stone and not to absence. The static drops to nothing. The air converts back into something your body recognizes.",
+        "Something releases. Not as a physical sensation but as an absence of a pressure you had been carrying, a tension that turns out to have been accumulating since you crossed into the void. It is done with you, or you are done with it.",
+        "The void's specific quality — the sense of being the most solid thing in a space not quite decided about its own existence — fades. The space becomes more solid than you. You become ordinary. This is a relief.",
+        "Your footsteps change. In the void, footsteps landed with a slight uncertainty — you could hear the floor evaluating each contact. Here, the floor simply is, and your footsteps sound like footsteps.",
+        "The flickers stop. The voices that were sometimes your voice stop. The echo of things that hadn't happened yet stops. The static, persistent since entry, falls below the threshold of the audible and then disappears.",
+        "A threshold that does not announce itself — you simply realize, after a few steps, that the void's quality is behind you. The transition happened without ceremony. You were in it, and now you are past it.",
+        "The Probability Shades cannot reach here. The Void Architects cannot build here. The Echo Doubles were made from the void's material and cannot follow past the seam. You have crossed a line they cannot cross.",
+        "You check the passage behind you. The void is there. It is exactly where it was. It has not followed. It does not follow — it only holds what enters. You entered. You left. It lets these facts coexist without comment."
+      ],
+      "closing": [
+        "You check your hands. They are yours. The run is yours. You made it out of a zone that does not confirm anything. This is, under the circumstances, significant.",
+        "The void is behind you. Everything you carry out of it is real. The clarity you found and lost and found. The choices you made. The run you had. Real. Yours.",
+        "You are, on the other side, the person who entered. Mostly. The void takes something — not dramatically, not in a way you can inventory — but you are mostly the same person. That is, here, sufficient.",
+        "The weight of the run follows you out. What you chose. What you didn't choose. The Echo Doubles built from your unchosen paths. They are behind you. You are ahead of them. For now.",
+        "You check your hands to confirm they are yours. They are. You check your memory of the run to confirm it happened. It did. The void makes these checks necessary. You have made them. You are done.",
+        "Out. The word means something here that it stopped meaning in the void. Out as opposed to in. A reliable binary. You are in the out. It holds.",
+        "The zone does not release you with ceremony. You simply cease to be inside it. The exit was real. You are through. These facts are confirmed and do not require further verification. Probably.",
+        "You will return. You know this in the same way you knew, crossing into the void, that something was watching. Not knowledge, exactly. The sense of a thing that is true."
+      ]
+    },
+    "options": {
+      "cautious": [
+        "Step where the floor holds",
+        "Move along the stable edge",
+        "Advance one space at a time",
+        "Follow where the static is quieter",
+        "Move carefully through the uncertain"
+      ],
+      "aggressive": [
+        "Commit and move",
+        "Cross before it shifts",
+        "Decide and go",
+        "Act before the intent changes",
+        "Push through the uncertainty"
+      ],
+      "investigative": [
+        "Test the wall",
+        "Probe the space",
+        "Attend to the details",
+        "Study what does not add up",
+        "Press against the wrongness"
+      ],
+      "retreat": [
+        "Step back from the edge",
+        "Return to known space",
+        "Withdraw from what you saw",
+        "Back away from the shape",
+        "Decline the invitation"
+      ]
+    }
+  },
+  "bestiary": {
+    "shared": ["The Hollow", "Flickering Shades", "Echo Husks", "Pale Oracle"],
+    "local": [
+      {
+        "name": "Probability Shade",
+        "tier": 1,
+        "health": { "min": 30, "max": 60 },
+        "behaviors": ["AGGRESSIVE", "DEFENSIVE", "CHARGING", "ERRATIC"],
+        "description": "Exists in superposition until engagement collapses it into specifics. High variance. Every encounter reveals something different.",
+        "emoji": "🌫️"
+      },
+      {
+        "name": "Echo Double",
+        "tier": 2,
+        "health": { "min": 70, "max": 95 },
+        "behaviors": ["STALKING", "AGGRESSIVE", "DEFENSIVE", "RETREATING"],
+        "description": "A copy of you shaped from probability-matter. Has your current stats and recent moves. Fights the way you fight. Looks at you with your face.",
+        "emoji": "🪞"
+      },
+      {
+        "name": "Void Architect",
+        "tier": 2,
+        "health": { "min": 80, "max": 110 },
+        "behaviors": ["DEFENSIVE", "CHARGING", "STALKING", "AGGRESSIVE"],
+        "description": "Reshapes rooms mid-encounter. Slow, deliberate, immovable in purpose. Walls shift when its hands touch them. Must be killed before the room's geometry becomes unnavigable.",
+        "emoji": "🏗️"
+      },
+      {
+        "name": "The Unanchored",
+        "tier": 1,
+        "health": { "min": 35, "max": 55 },
+        "behaviors": ["ERRATIC", "CHARGING", "AGGRESSIVE"],
+        "description": "Cannot maintain consistent form for more than a few seconds. Damage type changes each turn. Not deliberately chaotic — simply unable to hold a consistent state. This is what existence is for them.",
+        "emoji": "〰️"
+      },
+      {
+        "name": "The Unwritten",
+        "tier": 3,
+        "health": { "min": 180, "max": 220 },
+        "behaviors": ["CHARGING", "AGGRESSIVE", "DEFENSIVE", "ERRATIC", "STALKING"],
+        "description": "Built from every choice you didn't make this run. Knows the shape of your run because it is the negative space of your run. Inhabits the option you didn't select. It knows what you were going to do.",
+        "emoji": "🕳️"
+      }
+    ]
+  },
+  "depths": [
+    {
+      "name": "THE EDGE",
+      "tier": 1,
+      "roomRange": [1, 4],
+      "description": "Where the underworld ends and the void begins. Reality still mostly holds."
+    },
+    {
+      "name": "THE UNFINISHED",
+      "tier": 2,
+      "roomRange": [5, 8],
+      "description": "Half-built rooms. Walls that go nowhere. Doors that open onto more doors."
+    },
+    {
+      "name": "THE NOTHING",
+      "tier": 3,
+      "roomRange": [9, 12],
+      "description": "Pure void. You are not sure you are here."
+    }
+  ],
+  "dungeonLayout": {
+    "totalRooms": 12,
+    "structure": [
+      { "type": "explore", "template": "edge" },
+      { "type": "explore", "template": "edge-wrong" },
+      { "type": "combat", "template": "probability-shade" },
+      { "type": "corpse", "template": "clarity-loss" },
+      { "type": "explore", "template": "unfinished" },
+      { "type": "combat", "template": "void-architect" },
+      { "type": "cache", "template": "stable-pocket" },
+      { "type": "explore", "template": "echo-room" },
+      { "type": "explore", "template": "deep-void" },
+      { "type": "corpse", "template": "echo-loop" },
+      { "type": "combat", "template": "echo-double" },
+      { "type": "combat", "template": "unwritten", "boss": true }
+    ]
+  },
+  "boss": "The Unwritten",
+  "audio": {
+    "ambient": {
+      "explore": "/audio/zones/void-beyond/ambient-explore.mp3",
+      "combat": "/audio/zones/void-beyond/ambient-combat.mp3"
+    },
+    "sfx": {
+      "footstep": "/audio/zones/void-beyond/footstep.mp3",
+      "descend": "/audio/zones/void-beyond/depth-descend.mp3",
+      "environment": [
+        "/audio/zones/void-beyond/static-burst.mp3",
+        "/audio/zones/void-beyond/reality-glitch.mp3",
+        "/audio/zones/void-beyond/wrong-echo.mp3"
+      ],
+      "atmosphere": [
+        "/audio/zones/void-beyond/distant-voice.mp3",
+        "/audio/zones/void-beyond/silence-wrong.mp3"
+      ],
+      "boss": {
+        "intro": "/audio/zones/void-beyond/boss-intro.mp3",
+        "roar": "/audio/zones/void-beyond/boss-roar.mp3"
+      }
+    }
+  }
+}

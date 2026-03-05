@@ -37,9 +37,18 @@
   "// lore": "Extended lore blurb shown on zone detail / loading screen",
   "lore": "Write your zone's lore here. Describe its history, atmosphere, and what awaits within.",
 
+  "// ────────────────────────────────────────────": "NARRATIVE SYSTEM — CHOOSE ONE (or both)",
+  "// You have two ways to write room narratives. They can coexist in one zone file.": "",
+  "// ─────────────────────────────────────────────": "",
+
+  "// OPTION A: Full room variations (maximum control)": "",
+  "// Hand-craft every room narrative from start to finish.": "",
+  "// Best when you want tight authorial control over pacing and prose.": "",
+  "// Sunken Crypt uses this approach. Higher writing investment, highest consistency.": "",
+  "// If using OPTION B (fragments) exclusively, you can omit or leave rooms empty.": "",
   "rooms": {
     "// explore": "Exploration room templates. Each template has a name and an array of variations.",
-    "// A variation needs: id (string), narrative (string), options (string[] for explore rooms).",
+    "// A variation needs: id (string), narrative (string), options (string[] for explore rooms).": "",
     "explore": [
       {
         "template": "your-template-name",
@@ -109,12 +118,160 @@
     ]
   },
 
+  "// OPTION B: Modular fragments (maximum variety from less writing)": "",
+  "// Fragments are short, composable pieces assembled at runtime into full room narratives.": "",
+  "// Math: 10 openings × 10 middles × 10 closings = 1,000 unique room combinations from 30 fragments.": "",
+  "// Best for new zones — you get huge variety without writing hundreds of complete room strings.": "",
+  "// Recommended approach. If using OPTION A (rooms) exclusively, you can omit fragments.": "",
+  "fragments": {
+    "// explore — fragments for exploration rooms": "",
+    "explore": {
+      "// opening": "Zone-specific first line. Pure sensory immersion. No plot, no enemy — just atmosphere.",
+      "opening": [
+        "// Lead with what you feel/hear/smell before what you see. Ground the player in the body first.",
+        "// 1-2 sentences max. This sets the entire room's tone.",
+        "// 10 variations recommended for good variety across a run.",
+        "Sensory opening line one.",
+        "Sensory opening line two."
+      ],
+      "// middle": "The discovery, event, or tension beat. Something is wrong here — reveal it.",
+      "middle": [
+        "// What you notice. Something that shouldn't be. A detail that makes the player uneasy.",
+        "// This is where the zone's specific dread lives. Make it concrete, not vague.",
+        "// 10 variations recommended.",
+        "Middle tension beat one.",
+        "Middle tension beat two."
+      ],
+      "// closing": "Final line. The dread lands here. Short. Often a sentence fragment.",
+      "closing": [
+        "// End on implication, not explanation. Let the player's imagination finish it.",
+        "// 10 variations recommended.",
+        "Closing unease beat one.",
+        "Closing unease beat two."
+      ]
+    },
+    "// combat — fragments for combat rooms": "",
+    "combat": {
+      "// opening": "How the room presents itself before the enemy is visible. The moment before.",
+      "opening": [
+        "// Build dread before the reveal. What does the space feel like when something is hunting?",
+        "// 10 variations recommended.",
+        "Combat room opening line one.",
+        "Combat room opening line two."
+      ],
+      "// middle": "The enemy reveal or the moment tension breaks into action.",
+      "middle": [
+        "// This is the turn — from tension to threat. Make the reveal land with weight.",
+        "// 10 variations recommended.",
+        "Enemy reveal line one.",
+        "Enemy reveal line two."
+      ],
+      "// closing": "The last beat before the player must choose. Stakes are clear.",
+      "closing": [
+        "// End just before the action. Player should feel urgency, not confusion.",
+        "// 10 variations recommended.",
+        "Pre-choice closing line one.",
+        "Pre-choice closing line two."
+      ]
+    },
+    "// corpse — fragments for corpse discovery rooms": "",
+    "corpse": {
+      "// framing": "Zone-flavored wrapper around the corpse. What does death look like in this specific place?",
+      "framing": [
+        "// Death should feel native to the zone — not generic. A crypt corpse ≠ a jungle corpse.",
+        "// 10 variations recommended.",
+        "Death framing line one.",
+        "Death framing line two."
+      ],
+      "// discoveryBeats": "What you notice before you see the body. The environmental tell.",
+      "discoveryBeats": [
+        "// The tell that something is wrong — before the player sees the corpse directly.",
+        "// A smell, a shadow, a sound, an absence. Zone-specific.",
+        "// 10 variations recommended.",
+        "Discovery beat one.",
+        "Discovery beat two."
+      ]
+    },
+    "// cache — fragments for loot/rest rooms": "",
+    "cache": {
+      "// locationLines": "Where the cache is. What the space looks like. Zone-specific detail.",
+      "locationLines": [
+        "// The safe(ish) space. Describe it in a way unique to your zone's world.",
+        "// 8 variations recommended.",
+        "Cache location line one.",
+        "Cache location line two."
+      ],
+      "// toneClosers": "How safety feels in this zone. It should never feel fully safe.",
+      "toneClosers": [
+        "// The quiet is wrong. The rest is uneasy. That tension is the zone's personality.",
+        "// 8 variations recommended.",
+        "Cache tone closer one.",
+        "Cache tone closer two."
+      ]
+    },
+    "// exit — fragments for the escape room": "",
+    "exit": {
+      "// opening": "The first sign of escape. What does 'out' look like in this zone?",
+      "opening": [
+        "// Not relief — recognition. The exit has its own character. Make it feel earned.",
+        "// 8 variations recommended.",
+        "Exit opening line one.",
+        "Exit opening line two."
+      ],
+      "// middle": "The transition moment. What you leave behind.",
+      "middle": [
+        "// The zone releases you — or lets you go. There's a difference.",
+        "// 8 variations recommended.",
+        "Exit middle line one.",
+        "Exit middle line two."
+      ],
+      "// closing": "The last line before escape. Bittersweet. The hint you'll return.",
+      "closing": [
+        "// The player should feel both relief and dread. They made it — but so did something else.",
+        "// 8 variations recommended.",
+        "Exit closing line one.",
+        "Exit closing line two."
+      ]
+    },
+    "// options — player action labels, zone-flavored where possible": "",
+    "options": {
+      "// cautious": "Careful movement options. Flavor these to your zone's personality if you can.",
+      "cautious": [
+        "// Zone-flavored if possible — 'wade carefully' fits water zones better than 'move carefully'.",
+        "Move carefully",
+        "Advance slowly",
+        "Proceed with caution"
+      ],
+      "// aggressive": "Bold movement options. Urgency over caution.",
+      "aggressive": [
+        "// High confidence, high risk. Match to the zone's combat tone.",
+        "Push through",
+        "Rush forward",
+        "Move fast"
+      ],
+      "// investigative": "Examination options. The player slows down to look closer.",
+      "investigative": [
+        "// These feed into lore discovery and corpse rooms.",
+        "Examine the area",
+        "Search for clues",
+        "Look closer"
+      ],
+      "// retreat": "Hesitation options. The player second-guesses themselves.",
+      "retreat": [
+        "// These can lead to alternate outcomes or just delay the inevitable.",
+        "Step back",
+        "Wait",
+        "Consider your options"
+      ]
+    }
+  },
+
   "bestiary": {
     "// shared": "List creature names from the global BESTIARY to include in this zone (e.g. cross-zone creatures).",
     "shared": [],
 
     "// local": "Zone-specific creatures defined here. Each needs: name, tier (1|2|3), health {min,max}, behaviors (IntentType[]), description, emoji.",
-    "// IntentType values: AGGRESSIVE | DEFENSIVE | CHARGING | ERRATIC | HUNTING | STALKING | RETREATING",
+    "// IntentType values: AGGRESSIVE | DEFENSIVE | CHARGING | ERRATIC | HUNTING | STALKING | RETREATING": "",
     "local": [
       {
         "name": "Your Creature Name",

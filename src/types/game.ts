@@ -36,6 +36,13 @@ export interface PlayerState {
   maxStamina: number;
   inventory: Item[];
   stakeAmount: number;
+  burnStacks?: number;
+  chillStacks?: number;
+  enemyFrozen?: boolean;
+  infectionStacks?: number;
+  infectionDebuff?: boolean;
+  clarity?: number;
+  fluxActive?: boolean;
 }
 
 export interface RoomState {
@@ -51,6 +58,7 @@ export interface RoomState {
     loot?: Item[];
   };
   options: GameOption[];
+  isEchoRoom?: boolean;
 }
 
 export interface GameOption {

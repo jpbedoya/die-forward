@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     const { walletAddress, stakeAmount, txSignature, demoMode, escrowSessionId, useEscrow, authId, zoneId: rawZoneId } = body;
 
     // Validate zoneId — whitelist of known zones
-    const VALID_ZONE_IDS = ['sunken-crypt'];
+    const VALID_ZONE_IDS = ['sunken-crypt', 'living-tomb', 'void-beyond'];
     const zoneId: string = VALID_ZONE_IDS.includes(rawZoneId) ? rawZoneId : 'sunken-crypt';
 
     // Validate inputs
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
         authId: authId || walletAddress, // Unique player ID for stats tracking
         stakeAmount,
         txSignature: txSignature || null,
-        zone: zoneId === 'sunken-crypt' ? 'THE SUNKEN CRYPT' : zoneId,
+        zone: zoneId === 'sunken-crypt' ? 'THE SUNKEN CRYPT' : zoneId === 'living-tomb' ? 'THE LIVING TOMB' : zoneId,
         zoneId,
         startedAt: Date.now(),
         status: 'active', // active, completed, dead
@@ -114,6 +114,14 @@ export async function POST(request: NextRequest) {
         seedSource,
         enableVrf: vrfEnabled && !!erRunId,
         ...(erRunId ? { erRunId } : {}), // ER run account pubkey (MagicBlock)
+        burnStacks: 0,
+        chillStacks: 0,
+        enemyFrozen: false,
+        infectionStacks: 0,
+        infectionDebuff: false,
+        clarity: 3,
+        visitedRooms: '[]',
+        fluxActive: false,
       }),
     ]);
 

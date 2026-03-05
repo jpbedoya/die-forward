@@ -19,6 +19,82 @@
         "unlockRequirement": null
       },
       "enabled": true
+    },
+    {
+      "id": "ashen-crypts",
+      "file": "zones/ashen-crypts.json",
+      "meta": {
+        "name": "THE ASHEN CRYPTS",
+        "tagline": "A civilization that chose fire over surrender.",
+        "element": "fire",
+        "difficulty": 2,
+        "mechanic": "BURN",
+        "emoji": "🔥",
+        "colors": {
+          "primary": "#3d1a00",
+          "accent": "#ff6b2b",
+          "text": "#ffb380"
+        },
+        "unlockRequirement": "Complete one run"
+      },
+      "enabled": false
+    },
+    {
+      "id": "frozen-gallery",
+      "file": "zones/frozen-gallery.json",
+      "meta": {
+        "name": "THE FROZEN GALLERY",
+        "tagline": "Time stopped here. The dead are preserved perfectly.",
+        "element": "ice",
+        "difficulty": 2,
+        "mechanic": "CHILL",
+        "emoji": "❄️",
+        "colors": {
+          "primary": "#0d1f2d",
+          "accent": "#7eceff",
+          "text": "#c8ecff"
+        },
+        "unlockRequirement": "Complete one run"
+      },
+      "enabled": false
+    },
+    {
+      "id": "living-tomb",
+      "file": "zones/living-tomb.json",
+      "meta": {
+        "name": "THE LIVING TOMB",
+        "tagline": "Something grew in the dark. Now everything is part of it.",
+        "element": "organic",
+        "difficulty": 2,
+        "mechanic": "INFECTION",
+        "emoji": "🩸",
+        "colors": {
+          "primary": "#1a0a0a",
+          "accent": "#c0392b",
+          "text": "#e8a0a0"
+        },
+        "unlockRequirement": "Complete one run"
+      },
+      "enabled": false
+    },
+    {
+      "id": "void-beyond",
+      "file": "zones/void-beyond.json",
+      "meta": {
+        "name": "THE VOID BEYOND",
+        "tagline": "Where the underworld forgot to finish building.",
+        "element": "void",
+        "difficulty": 3,
+        "mechanic": "FLUX",
+        "emoji": "🌑",
+        "colors": {
+          "primary": "#0d0010",
+          "accent": "#9b59b6",
+          "text": "#d7aef5"
+        },
+        "unlockRequirement": "Clear 3 different zones"
+      },
+      "enabled": false
     }
   ]
 }

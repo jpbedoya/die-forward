@@ -14,6 +14,22 @@ interface SoundPreset {
   category: string;
 }
 
+interface ZoneSoundPreset {
+  id: string;
+  name: string;
+  prompt: string;
+  duration: number;
+}
+
+interface ZoneData {
+  id: string;
+  name: string;
+  emoji: string;
+  accentColor: string;
+  textColor: string;
+  sounds: ZoneSoundPreset[];
+}
+
 const presets: SoundPreset[] = [
   // Ambient (loops)
   { id: 'ambient-explore', name: 'Exploration Loop', prompt: 'dark cave ambient atmosphere water dripping echoes distant rumble underground dungeon mysterious low drone', duration: 15, category: 'Ambient' },
@@ -83,6 +99,310 @@ const presets: SoundPreset[] = [
   { id: 'error-buzz', name: 'Error Buzz', prompt: 'Error buzz sound, action denied, negative feedback', duration: 0.5, category: 'UI' },
 ];
 
+// Zone audio presets
+const zoneData: ZoneData[] = [
+  {
+    id: 'ashen-crypts',
+    name: 'ASHEN CRYPTS',
+    emoji: '🔥',
+    accentColor: '#ff6b2b',
+    textColor: '#ffb380',
+    sounds: [
+      {
+        id: 'ambient-explore',
+        name: 'Exploration Ambient',
+        prompt: 'slow-burning dark ambient soundscape, crackling embers in the distance, fine ash drifting down onto hot stone, ancient subterranean city engulfed in eternal ritual flame, deep low drone and heat shimmer, no music',
+        duration: 15,
+      },
+      {
+        id: 'ambient-combat',
+        name: 'Combat Ambient',
+        prompt: 'intense heat pulse rising in a burning underground city, fire roar building, char and smoke tension escalating, rhythmic fire surge, ash storm, no music just environmental sound',
+        duration: 15,
+      },
+      {
+        id: 'footstep',
+        name: 'Footstep on Ash',
+        prompt: 'single footstep on thick dry ash and cinders, dry crunch, hot stone surface beneath, brief echo in ancient burned stone chamber',
+        duration: 1,
+      },
+      {
+        id: 'depth-descend',
+        name: 'Depth Descend',
+        prompt: 'descending deeper into heat underground, air thickening with smoke and ash, fire roaring louder below, ominous atmospheric shift as temperature rises',
+        duration: 2.5,
+      },
+      {
+        id: 'fire-crackle',
+        name: 'Fire Crackle',
+        prompt: 'slow ember crackle, ancient fire that has never gone out for centuries, steady slow rhythm, old stone and char, quiet persistent burn',
+        duration: 3,
+      },
+      {
+        id: 'ember-pop',
+        name: 'Ember Pop',
+        prompt: 'hot coal popping, heat release from ancient firepit, single ember burst, thermal crack, small explosion of compressed heat',
+        duration: 1,
+      },
+      {
+        id: 'ash-fall',
+        name: 'Ash Fall',
+        prompt: 'fine ash drifting down slowly, near-silent, soft dry settling on stone surface, barely audible whisper of particles, ancient ash shower',
+        duration: 3,
+      },
+      {
+        id: 'distant-roar',
+        name: 'Distant Fire Roar',
+        prompt: 'distant fire roar echoing through burnt stone passages underground, wind through scorched tunnels, far-off inferno breathing',
+        duration: 3,
+      },
+      {
+        id: 'stone-crack',
+        name: 'Stone Crack',
+        prompt: 'thermal expansion crack in hot stone, stone splitting under heat stress, sudden sharp fracture, deep resonant echo in stone chamber',
+        duration: 1.5,
+      },
+      {
+        id: 'boss-intro',
+        name: 'Pyre Keeper Intro',
+        prompt: 'ancient fire awakening in vast underground chamber, deep resonant flame roar building slowly, centuries of accumulated heat releasing, low subterranean rumble and ignition surge',
+        duration: 4,
+      },
+      {
+        id: 'boss-roar',
+        name: 'Pyre Keeper Roar',
+        prompt: 'pyre keeper attack, massive wave of flame released, enormous air displacement, fire shockwave blasting outward, intense heat blast with roar',
+        duration: 2.5,
+      },
+    ],
+  },
+  {
+    id: 'frozen-gallery',
+    name: 'FROZEN GALLERY',
+    emoji: '❄️',
+    accentColor: '#7eceff',
+    textColor: '#c8ecff',
+    sounds: [
+      {
+        id: 'ambient-explore',
+        name: 'Exploration Ambient',
+        prompt: 'near-total silence in a vast frozen underground gallery, very subtle ice crystal resonance hum, oppressive cold emptiness, occasional crystalline shimmer, no music',
+        duration: 15,
+      },
+      {
+        id: 'ambient-combat',
+        name: 'Combat Ambient',
+        prompt: 'cracking ice tension rising in frozen underground hall, cold wind building, glacial stress sounds, ice fracturing under pressure, no music just environmental sound',
+        duration: 15,
+      },
+      {
+        id: 'footstep',
+        name: 'Footstep on Ice',
+        prompt: 'careful footstep on frozen ice surface, crisp hollow crunch, echo ringing through frozen hall, sound decaying slowly in cold still air',
+        duration: 1,
+      },
+      {
+        id: 'depth-descend',
+        name: 'Depth Descend',
+        prompt: 'descending deeper into cold underground frozen gallery, ice groaning under immense pressure, temperature dropping, cold air rushing through passage',
+        duration: 2.5,
+      },
+      {
+        id: 'ice-crack',
+        name: 'Ice Crack',
+        prompt: 'sharp ice crack, stress fracture in thick ice wall, sudden split, high resonant snap echoing through frozen space',
+        duration: 1,
+      },
+      {
+        id: 'wind-tunnel',
+        name: 'Wind Tunnel',
+        prompt: 'wind blowing through ice corridor, haunting hollow note, cold air whistling through frozen passage, eerie resonance and breath of cold',
+        duration: 3,
+      },
+      {
+        id: 'glacier-groan',
+        name: 'Glacier Groan',
+        prompt: 'massive glacier settling, deep low groan, ancient ice under immense geological pressure, slow structural sound, vast frozen mass shifting',
+        duration: 3,
+      },
+      {
+        id: 'deep-silence',
+        name: 'Deep Silence',
+        prompt: 'near-silence in frozen underground, barely audible subtle ice hum, oppressive stillness, vast cold emptiness pressing in, silence with texture',
+        duration: 4,
+      },
+      {
+        id: 'distant-crack',
+        name: 'Distant Crack',
+        prompt: 'distant ice fracture echoing through frozen gallery, sound traveling through ice and stone walls, far-off sharp snap with long echo trail',
+        duration: 2,
+      },
+      {
+        id: 'boss-intro',
+        name: 'Glacial Sovereign Intro',
+        prompt: 'glacial sovereign awakening, deep low rumble through ancient ice, temperature drop, ice cracking and splitting, vast frozen presence stirring for first time in centuries',
+        duration: 4,
+      },
+      {
+        id: 'boss-roar',
+        name: 'Glacial Sovereign Roar',
+        prompt: 'massive ice strike attack, cold shockwave radiating outward, shattering resonance, frozen air blast, glacial impact with cold air displacement',
+        duration: 2.5,
+      },
+    ],
+  },
+  {
+    id: 'living-tomb',
+    name: 'LIVING TOMB',
+    emoji: '🩸',
+    accentColor: '#c0392b',
+    textColor: '#e8a0a0',
+    sounds: [
+      {
+        id: 'ambient-explore',
+        name: 'Exploration Ambient',
+        prompt: 'slow heartbeat pulsing in organic walls, wet organic ambience in living underground tomb, surfaces breathing slowly, warm bioluminescent darkness, iron smell translated to sound, no music',
+        duration: 15,
+      },
+      {
+        id: 'ambient-combat',
+        name: 'Combat Ambient',
+        prompt: 'rapid organic pulse in living tomb walls intensifying, wet organic sounds rising, tension of living space reacting to intruder, heartbeat accelerating, no music just environmental sound',
+        duration: 15,
+      },
+      {
+        id: 'footstep',
+        name: 'Footstep on Organic',
+        prompt: 'footstep on organic floor material, soft wet surface give underfoot, warm muffled step, slight suction sound as foot lifts',
+        duration: 1,
+      },
+      {
+        id: 'depth-descend',
+        name: 'Depth Descend',
+        prompt: 'descending into living organic tissue underground, heartbeat pulse getting louder and closer, warmth increasing, wet organic sounds intensifying',
+        duration: 2.5,
+      },
+      {
+        id: 'heartbeat',
+        name: 'Wall Heartbeat',
+        prompt: 'slow steady heartbeat pulse in organic wall, living underground pulse, thick wet rhythm, ancient organic heart beating in stone',
+        duration: 3,
+      },
+      {
+        id: 'wet-drip',
+        name: 'Wet Drip',
+        prompt: 'organic fluid drip, not water but something thicker and warm, slow viscous drops, biological fluid sound with low wet impact',
+        duration: 2,
+      },
+      {
+        id: 'membrane-breathe',
+        name: 'Membrane Breathe',
+        prompt: 'slow breathing membrane surface, organic expansion and contraction, living wall slowly breathing, low wet expansion sound',
+        duration: 4,
+      },
+      {
+        id: 'distant-pulse',
+        name: 'Distant Pulse',
+        prompt: 'distant heartbeat echo from deep below, something vast pulsing far underground, far-off organic rhythm slow and massive',
+        duration: 3,
+      },
+      {
+        id: 'growth-creak',
+        name: 'Growth Creak',
+        prompt: 'organic growth creaking sound, living material slowly expanding, biological structure under pressure, wet organic creak',
+        duration: 2,
+      },
+      {
+        id: 'boss-intro',
+        name: 'The Root Intro',
+        prompt: 'the root awakening in vast underground chamber, massive organic movement, room itself stirring and shifting, walls moving with wet sounds, deep organic rumble',
+        duration: 4,
+      },
+      {
+        id: 'boss-roar',
+        name: 'The Root Roar',
+        prompt: 'total organic assault, living room attacking, wet overwhelming biological sound, organic tendrils lashing, biological explosion of growth',
+        duration: 2.5,
+      },
+    ],
+  },
+  {
+    id: 'void-beyond',
+    name: 'VOID BEYOND',
+    emoji: '🌑',
+    accentColor: '#9b59b6',
+    textColor: '#d7aef5',
+    sounds: [
+      {
+        id: 'ambient-explore',
+        name: 'Exploration Ambient',
+        prompt: 'reality static texture barely audible, distant echoes arriving from wrong directions, near-silence with wrong texture and weight, audio that should not exist here, spatial unreality, no music',
+        duration: 15,
+      },
+      {
+        id: 'ambient-combat',
+        name: 'Combat Ambient',
+        prompt: 'reality destabilizing audio rising, static bursts, sounds from other places bleeding in and layering, spatial confusion, multiple realities overlapping, no music just sound',
+        duration: 15,
+      },
+      {
+        id: 'footstep',
+        name: 'Wrong Footstep',
+        prompt: 'footstep that echoes impossibly wrong, delayed echo arriving too late, doubled sound, uncertain surface underfoot, spatial audio glitch',
+        duration: 1,
+      },
+      {
+        id: 'depth-descend',
+        name: 'Depth Descend',
+        prompt: 'descending into the void, reality thinning, static increasing, space becoming uncertain, audio texture degrading as coherence fails',
+        duration: 2.5,
+      },
+      {
+        id: 'static-burst',
+        name: 'Static Burst',
+        prompt: 'sharp reality static burst, audio interference explosion, brief white noise, reality disruption, electromagnetic impossibility',
+        duration: 1,
+      },
+      {
+        id: 'reality-glitch',
+        name: 'Reality Glitch',
+        prompt: 'audio glitch effect, brief loop stutter, reality hiccup sound, digital corruption in analog space, brief audio malfunction',
+        duration: 1.5,
+      },
+      {
+        id: 'wrong-echo',
+        name: 'Wrong Echo',
+        prompt: 'echo that does not match its source sound, delayed impossibly long, arriving from wrong direction, spatial audio impossibility',
+        duration: 2,
+      },
+      {
+        id: 'distant-voice',
+        name: 'Distant Voice',
+        prompt: 'voice from elsewhere bleeding through reality, unclear words, not in this space, distant indistinct speaking from impossible location',
+        duration: 2.5,
+      },
+      {
+        id: 'silence-wrong',
+        name: 'Wrong Silence',
+        prompt: 'silence that has texture and weight, not empty but full of something present, pressurized quiet, silence with wrongness and subtle interference',
+        duration: 3,
+      },
+      {
+        id: 'boss-intro',
+        name: 'The Unwritten Intro',
+        prompt: 'the unwritten manifesting, discordant layers of sound from multiple realities colliding, impossible audio, choices unmade becoming sonic, rising chaos of overlapping sounds',
+        duration: 4,
+      },
+      {
+        id: 'boss-roar',
+        name: 'The Unwritten Roar',
+        prompt: 'choices unmade colliding in massive audio assault, multiple simultaneous sounds from different realities, overwhelming uncertainty made sonic, void shockwave',
+        duration: 2.5,
+      },
+    ],
+  },
+];
+
 interface GeneratedSound {
   id: string;
   name: string;
@@ -90,7 +410,14 @@ interface GeneratedSound {
   size: number;
 }
 
+// Build a unique id for zone sounds so they don't collide with library preset ids
+function zoneCompositeId(zoneId: string, soundId: string): string {
+  return `zones/${zoneId}/${soundId}`;
+}
+
 export default function AudioTestPage() {
+  const [viewMode, setViewMode] = useState<'library' | 'zones'>('library');
+  const [activeZoneId, setActiveZoneId] = useState<string>('ashen-crypts');
   const [generating, setGenerating] = useState<string | null>(null);
   const [generated, setGenerated] = useState<GeneratedSound[]>([]);
   const [playing, setPlaying] = useState<string | null>(null);
@@ -103,7 +430,8 @@ export default function AudioTestPage() {
   // Check for existing audio files on mount (parallel for speed)
   React.useEffect(() => {
     const checkExisting = async () => {
-      const checks = presets.map(async (preset) => {
+      // Check library presets
+      const libraryChecks = presets.map(async (preset) => {
         try {
           const res = await fetch(`/audio/${preset.id}.mp3`, { method: 'HEAD' });
           if (res.ok) {
@@ -120,8 +448,30 @@ export default function AudioTestPage() {
         }
         return null;
       });
-      
-      const results = await Promise.all(checks);
+
+      // Check zone audio files
+      const zoneChecks = zoneData.flatMap((zone) =>
+        zone.sounds.map(async (sound) => {
+          const filePath = `/audio/zones/${zone.id}/${sound.id}.mp3`;
+          try {
+            const res = await fetch(filePath, { method: 'HEAD' });
+            if (res.ok) {
+              const size = parseInt(res.headers.get('content-length') || '0');
+              return {
+                id: zoneCompositeId(zone.id, sound.id),
+                name: `${zone.name} — ${sound.name}`,
+                path: filePath,
+                size,
+              };
+            }
+          } catch {
+            // File doesn't exist
+          }
+          return null;
+        })
+      );
+
+      const results = await Promise.all([...libraryChecks, ...zoneChecks]);
       const existing = results.filter((r): r is GeneratedSound => r !== null);
       if (existing.length > 0) {
         setGenerated(existing);
@@ -130,11 +480,17 @@ export default function AudioTestPage() {
     checkExisting();
   }, []);
 
-  // Check if a sound already exists (generated this session)
+  // Check if a sound already exists (generated this session or found on disk)
   const isGenerated = (id: string) => generated.some(s => s.id === id);
+  const getGenerated = (id: string) => generated.find(s => s.id === id);
 
-  const generateSound = async (preset: SoundPreset) => {
-    setGenerating(preset.id);
+  // Generate a sound — accepts optional subdir for zone sounds
+  const generateSound = async (
+    preset: { id: string; name: string; prompt: string; duration: number },
+    subdir?: string
+  ) => {
+    const uniqueId = subdir ? zoneCompositeId(subdir.replace('zones/', ''), preset.id) : preset.id;
+    setGenerating(uniqueId);
     setError(null);
 
     try {
@@ -145,6 +501,7 @@ export default function AudioTestPage() {
           prompt: preset.prompt,
           filename: preset.id,
           duration: preset.duration,
+          ...(subdir && { subdir }),
         }),
       });
 
@@ -154,13 +511,15 @@ export default function AudioTestPage() {
         throw new Error(data.error || 'Failed to generate');
       }
 
-      setGenerated(prev => [...prev.filter(s => s.id !== preset.id), {
-        id: preset.id,
-        name: preset.name,
-        path: data.path,
-        size: data.size,
-      }]);
-
+      setGenerated(prev => [
+        ...prev.filter(s => s.id !== uniqueId),
+        {
+          id: uniqueId,
+          name: preset.name,
+          path: data.path,
+          size: data.size,
+        },
+      ]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Generation failed');
     } finally {
@@ -177,7 +536,6 @@ export default function AudioTestPage() {
       name: customName,
       prompt: customPrompt,
       duration: customDuration,
-      category: 'Custom',
     });
     setCustomPrompt('');
     setCustomName('');
@@ -208,6 +566,9 @@ export default function AudioTestPage() {
   // Group presets by category
   const categories = [...new Set(presets.map(p => p.category))];
 
+  // Active zone data
+  const activeZone = zoneData.find(z => z.id === activeZoneId) ?? zoneData[0];
+
   return (
     <div className="min-h-screen bg-[var(--bg-base)] font-mono p-4">
       
@@ -230,6 +591,30 @@ export default function AudioTestPage() {
         </div>
       </header>
 
+      {/* View Mode Tabs */}
+      <div className="flex gap-0 mb-6 border border-[var(--border-dim)]">
+        <button
+          onClick={() => setViewMode('library')}
+          className={`px-5 py-2 text-xs uppercase tracking-wider transition-colors ${
+            viewMode === 'library'
+              ? 'bg-[var(--amber-dim)]/30 text-[var(--amber-bright)] border-r border-[var(--border-dim)]'
+              : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)] border-r border-[var(--border-dim)]'
+          }`}
+        >
+          📦 Library
+        </button>
+        <button
+          onClick={() => setViewMode('zones')}
+          className={`px-5 py-2 text-xs uppercase tracking-wider transition-colors ${
+            viewMode === 'zones'
+              ? 'bg-[var(--amber-dim)]/30 text-[var(--amber-bright)]'
+              : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
+          }`}
+        >
+          🗺 Zones
+        </button>
+      </div>
+
       {/* Error */}
       {error && (
         <div className="bg-[var(--red-dim)]/20 border border-[var(--red-dim)] p-3 mb-4 text-[var(--red-bright)] text-sm">
@@ -237,58 +622,246 @@ export default function AudioTestPage() {
         </div>
       )}
 
-      {/* Preset Sounds */}
-      {categories.map(category => (
-        <div key={category} className="mb-6">
-          <h2 className="text-[var(--text-secondary)] text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
-            <span className="text-[var(--amber-dim)]">▸</span>
-            {category}
-          </h2>
-          <div className="grid gap-2">
-            {presets.filter(p => p.category === category).map(preset => {
-              const sound = generated.find(s => s.id === preset.id);
-              const isPlaying = playing === preset.id;
-              const isGenerating = generating === preset.id;
-              
+      {/* ─── LIBRARY VIEW ─── */}
+      {viewMode === 'library' && (
+        <>
+          {/* Preset Sounds */}
+          {categories.map(category => (
+            <div key={category} className="mb-6">
+              <h2 className="text-[var(--text-secondary)] text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
+                <span className="text-[var(--amber-dim)]">▸</span>
+                {category}
+              </h2>
+              <div className="grid gap-2">
+                {presets.filter(p => p.category === category).map(preset => {
+                  const sound = getGenerated(preset.id);
+                  const isPlaying = playing === preset.id;
+                  const isGenerating = generating === preset.id;
+                  
+                  return (
+                    <div 
+                      key={preset.id}
+                      className="bg-[var(--bg-surface)] border border-[var(--border-dim)] p-3 flex items-start justify-between gap-3"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[var(--text-primary)] text-sm flex items-center gap-2">
+                          {preset.name}
+                          <span className="text-[var(--text-dim)] text-[10px]">{preset.duration}s</span>
+                          {sound && <span className="text-[var(--green)] text-[10px]">{Math.round(sound.size / 1024)}KB</span>}
+                        </div>
+                        <div className="text-[var(--text-dim)] text-[10px] mt-0.5 break-words">
+                          {preset.prompt}
+                        </div>
+                      </div>
+                      
+                      <div className="flex flex-col gap-1 shrink-0">
+                        {/* Generate/Regenerate button (hidden in prod) */}
+                        {!REGEN_DISABLED && (
+                          <button
+                            onClick={() => generateSound(preset)}
+                            disabled={isGenerating}
+                            className="px-3 py-1.5 text-xs bg-[var(--amber-dim)]/30 border border-[var(--amber)] text-[var(--amber-bright)] disabled:opacity-50 whitespace-nowrap"
+                          >
+                            {isGenerating ? '◈ ...' : sound ? '⚡ Regen' : '⚡ Gen'}
+                          </button>
+                        )}
+                        
+                        {/* Play/Stop if file exists */}
+                        {sound && (
+                          <button
+                            onClick={() => isPlaying ? stopSound() : playSound(sound.path, sound.id, preset.category === 'Ambient')}
+                            className={`px-3 py-1.5 text-xs border whitespace-nowrap ${
+                              isPlaying 
+                                ? 'bg-[var(--red-dim)]/30 border-[var(--red)] text-[var(--red-bright)]' 
+                                : 'bg-[var(--green-dim)]/30 border-[var(--green)] text-[var(--green-bright)]'
+                            }`}
+                          >
+                            {isPlaying ? '■ Stop' : preset.category === 'Ambient' ? '🔁 Loop' : '▶ Play'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+
+          {/* Custom Generation (hidden in prod) */}
+          {!REGEN_DISABLED && (
+            <div className="border border-[var(--border-dim)] bg-[var(--bg-surface)] p-4 mt-8">
+              <h2 className="text-[var(--text-secondary)] text-sm uppercase tracking-wider mb-3">
+                ✨ Custom Sound
+              </h2>
+              <div className="space-y-3">
+                <input
+                  type="text"
+                  placeholder="Sound name (e.g., 'Boss Roar')"
+                  value={customName}
+                  onChange={(e) => setCustomName(e.target.value)}
+                  className="w-full bg-[var(--bg-base)] border border-[var(--border-dim)] px-3 py-2 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-dim)]"
+                />
+                <textarea
+                  placeholder="Describe the sound... (e.g., 'massive creature roar echoing through cavern deep bass rumble')"
+                  value={customPrompt}
+                  onChange={(e) => setCustomPrompt(e.target.value)}
+                  className="w-full bg-[var(--bg-base)] border border-[var(--border-dim)] px-3 py-2 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-dim)] h-20 resize-none"
+                />
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[var(--text-muted)] text-xs">Duration:</span>
+                    <input
+                      type="number"
+                      min={0.5}
+                      max={5}
+                      step={0.5}
+                      value={customDuration}
+                      onChange={(e) => setCustomDuration(Number(e.target.value))}
+                      className="w-16 bg-[var(--bg-base)] border border-[var(--border-dim)] px-2 py-1 text-sm text-[var(--text-primary)] text-center"
+                    />
+                    <span className="text-[var(--text-muted)] text-xs">sec</span>
+                  </div>
+                  <button
+                    onClick={generateCustom}
+                    disabled={!customPrompt.trim() || !customName.trim() || generating !== null}
+                    className="px-4 py-2 text-xs bg-[var(--amber-dim)]/30 border border-[var(--amber)] text-[var(--amber-bright)] disabled:opacity-50"
+                  >
+                    ⚡ Generate Custom
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* ─── ZONES VIEW ─── */}
+      {viewMode === 'zones' && (
+        <>
+          {/* Zone Sub-Tabs */}
+          <div className="flex gap-0 mb-6 border border-[var(--border-dim)] overflow-x-auto">
+            {zoneData.map((zone) => {
+              const isActive = zone.id === activeZoneId;
+              const zoneGeneratedCount = zone.sounds.filter(s =>
+                isGenerated(zoneCompositeId(zone.id, s.id))
+              ).length;
               return (
-                <div 
-                  key={preset.id}
-                  className="bg-[var(--bg-surface)] border border-[var(--border-dim)] p-3 flex items-start justify-between gap-3"
+                <button
+                  key={zone.id}
+                  onClick={() => setActiveZoneId(zone.id)}
+                  style={isActive ? { borderBottomColor: zone.accentColor, color: zone.textColor } : {}}
+                  className={`px-4 py-2.5 text-xs uppercase tracking-wider transition-colors whitespace-nowrap border-b-2 ${
+                    isActive
+                      ? 'border-b-2'
+                      : 'border-b-2 border-transparent text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
+                  }`}
+                >
+                  <span className="mr-1">{zone.emoji}</span>
+                  {zone.name}
+                  {zoneGeneratedCount > 0 && (
+                    <span className="ml-2 text-[10px] opacity-60">({zoneGeneratedCount}/{zone.sounds.length})</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Zone Header */}
+          <div
+            className="mb-4 p-3 border"
+            style={{ borderColor: activeZone.accentColor + '44', background: activeZone.accentColor + '11' }}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-sm font-bold" style={{ color: activeZone.textColor }}>
+                  {activeZone.emoji} {activeZone.name}
+                </div>
+                <div className="text-[10px] mt-0.5" style={{ color: activeZone.accentColor }}>
+                  subdir: zones/{activeZone.id} → public/audio/zones/{activeZone.id}/
+                </div>
+              </div>
+              {!REGEN_DISABLED && (
+                <button
+                  onClick={async () => {
+                    for (const sound of activeZone.sounds) {
+                      const uid = zoneCompositeId(activeZone.id, sound.id);
+                      if (generating === uid) continue;
+                      await generateSound(sound, `zones/${activeZone.id}`);
+                    }
+                  }}
+                  disabled={generating !== null}
+                  className="px-3 py-1.5 text-xs border disabled:opacity-50 whitespace-nowrap"
+                  style={{ borderColor: activeZone.accentColor, color: activeZone.textColor }}
+                >
+                  ⚡ Gen All
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Zone Sound Presets */}
+          <div className="grid gap-2">
+            {activeZone.sounds.map((sound) => {
+              const uid = zoneCompositeId(activeZone.id, sound.id);
+              const generatedSound = getGenerated(uid);
+              const isPlaying = playing === uid;
+              const isGenerating = generating === uid;
+              const isAmbient = sound.id.startsWith('ambient-');
+
+              return (
+                <div
+                  key={sound.id}
+                  className="bg-[var(--bg-surface)] p-3 flex items-start justify-between gap-3"
+                  style={{ border: `1px solid ${activeZone.accentColor}22` }}
                 >
                   <div className="flex-1 min-w-0">
-                    <div className="text-[var(--text-primary)] text-sm flex items-center gap-2">
-                      {preset.name}
-                      <span className="text-[var(--text-dim)] text-[10px]">{preset.duration}s</span>
-                      {sound && <span className="text-[var(--green)] text-[10px]">{Math.round(sound.size / 1024)}KB</span>}
+                    <div className="text-sm flex items-center gap-2" style={{ color: activeZone.textColor }}>
+                      {sound.name}
+                      <span className="text-[var(--text-dim)] text-[10px]">{sound.duration}s</span>
+                      <span className="text-[var(--text-dim)] text-[10px] font-mono">{sound.id}</span>
+                      {generatedSound && (
+                        <span className="text-[10px]" style={{ color: activeZone.accentColor }}>
+                          {Math.round(generatedSound.size / 1024)}KB ✓
+                        </span>
+                      )}
                     </div>
-                    <div className="text-[var(--text-dim)] text-[10px] mt-0.5 break-words">
-                      {preset.prompt}
+                    <div className="text-[var(--text-dim)] text-[10px] mt-0.5 break-words leading-relaxed">
+                      {sound.prompt}
                     </div>
                   </div>
-                  
+
                   <div className="flex flex-col gap-1 shrink-0">
-                    {/* Generate/Regenerate button (hidden in prod) */}
+                    {/* Generate/Regenerate (hidden in prod) */}
                     {!REGEN_DISABLED && (
                       <button
-                        onClick={() => generateSound(preset)}
-                        disabled={isGenerating}
-                        className="px-3 py-1.5 text-xs bg-[var(--amber-dim)]/30 border border-[var(--amber)] text-[var(--amber-bright)] disabled:opacity-50 whitespace-nowrap"
+                        onClick={() => generateSound(sound, `zones/${activeZone.id}`)}
+                        disabled={isGenerating || generating !== null}
+                        className="px-3 py-1.5 text-xs disabled:opacity-40 whitespace-nowrap"
+                        style={{
+                          border: `1px solid ${activeZone.accentColor}`,
+                          color: activeZone.textColor,
+                          background: activeZone.accentColor + '22',
+                        }}
                       >
-                        {isGenerating ? '◈ ...' : sound ? '⚡ Regen' : '⚡ Gen'}
+                        {isGenerating ? '◈ ...' : generatedSound ? '⚡ Regen' : '⚡ Gen'}
                       </button>
                     )}
-                    
+
                     {/* Play/Stop if file exists */}
-                    {sound && (
+                    {generatedSound && (
                       <button
-                        onClick={() => isPlaying ? stopSound() : playSound(sound.path, sound.id, preset.category === 'Ambient')}
+                        onClick={() =>
+                          isPlaying
+                            ? stopSound()
+                            : playSound(generatedSound.path, uid, isAmbient)
+                        }
                         className={`px-3 py-1.5 text-xs border whitespace-nowrap ${
-                          isPlaying 
-                            ? 'bg-[var(--red-dim)]/30 border-[var(--red)] text-[var(--red-bright)]' 
+                          isPlaying
+                            ? 'bg-[var(--red-dim)]/30 border-[var(--red)] text-[var(--red-bright)]'
                             : 'bg-[var(--green-dim)]/30 border-[var(--green)] text-[var(--green-bright)]'
                         }`}
                       >
-                        {isPlaying ? '■ Stop' : preset.category === 'Ambient' ? '🔁 Loop' : '▶ Play'}
+                        {isPlaying ? '■ Stop' : isAmbient ? '🔁 Loop' : '▶ Play'}
                       </button>
                     )}
                   </div>
@@ -296,53 +869,7 @@ export default function AudioTestPage() {
               );
             })}
           </div>
-        </div>
-      ))}
-
-      {/* Custom Generation (hidden in prod) */}
-      {!REGEN_DISABLED && (
-        <div className="border border-[var(--border-dim)] bg-[var(--bg-surface)] p-4 mt-8">
-          <h2 className="text-[var(--text-secondary)] text-sm uppercase tracking-wider mb-3">
-            ✨ Custom Sound
-          </h2>
-          <div className="space-y-3">
-            <input
-              type="text"
-              placeholder="Sound name (e.g., 'Boss Roar')"
-              value={customName}
-              onChange={(e) => setCustomName(e.target.value)}
-              className="w-full bg-[var(--bg-base)] border border-[var(--border-dim)] px-3 py-2 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-dim)]"
-            />
-            <textarea
-              placeholder="Describe the sound... (e.g., 'massive creature roar echoing through cavern deep bass rumble')"
-              value={customPrompt}
-              onChange={(e) => setCustomPrompt(e.target.value)}
-              className="w-full bg-[var(--bg-base)] border border-[var(--border-dim)] px-3 py-2 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-dim)] h-20 resize-none"
-            />
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <span className="text-[var(--text-muted)] text-xs">Duration:</span>
-                <input
-                  type="number"
-                  min={0.5}
-                  max={5}
-                  step={0.5}
-                  value={customDuration}
-                  onChange={(e) => setCustomDuration(Number(e.target.value))}
-                  className="w-16 bg-[var(--bg-base)] border border-[var(--border-dim)] px-2 py-1 text-sm text-[var(--text-primary)] text-center"
-                />
-                <span className="text-[var(--text-muted)] text-xs">sec</span>
-              </div>
-              <button
-                onClick={generateCustom}
-                disabled={!customPrompt.trim() || !customName.trim() || generating !== null}
-                className="px-4 py-2 text-xs bg-[var(--amber-dim)]/30 border border-[var(--amber)] text-[var(--amber-bright)] disabled:opacity-50"
-              >
-                ⚡ Generate Custom
-              </button>
-            </div>
-          </div>
-        </div>
+        </>
       )}
 
       {/* Generated List */}

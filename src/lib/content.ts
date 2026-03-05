@@ -74,18 +74,49 @@ export interface ZoneAudioConfig {
   };
 }
 
+// ====== FRAGMENT SYSTEM TYPES ======
+
+export interface RoomFragments {
+  opening: string[];   // Scene-setting, sensory first line
+  middle: string[];    // The event, discovery, or tension beat
+  closing: string[];   // Final line — tension, choice implication, dread
+}
+
+export interface OptionPool {
+  cautious: string[];
+  aggressive: string[];
+  investigative: string[];
+  retreat: string[];
+}
+
+export interface ZoneFragments {
+  explore?: RoomFragments;
+  combat?: RoomFragments;
+  corpse?: {
+    framing: string[];        // Zone-flavored wrapper around the corpse discovery
+    discoveryBeats: string[]; // What you notice before you see the body
+  };
+  cache?: {
+    locationLines: string[];  // Where the cache is / what the space looks like
+    toneClosers: string[];    // How safety feels here (uneasy, almost warm, etc.)
+  };
+  exit?: RoomFragments;
+  options?: OptionPool;
+}
+
 export interface ZonePackage {
   id: string;
   version: string;
   meta: ZoneMeta;
   lore: string;
-  rooms: {
+  rooms?: {
     explore: RoomTemplate[];
     combat: RoomTemplate[];
     corpse: RoomTemplate[];
     cache: RoomTemplate[];
     exit: RoomTemplate[];
   };
+  fragments?: ZoneFragments;
   bestiary: ZoneBestiary;
   depths: ZoneDepth[];
   dungeonLayout: ZoneDungeonLayout;
@@ -246,27 +277,115 @@ function pickRoom(rooms: RoomTemplate[], template?: string): RoomVariation {
 
 // Get random explore room by template type
 export function getExploreRoom(template?: string): RoomVariation {
-  return pickRoom(getActiveZone().rooms.explore, template);
+  const rooms = getActiveZone().rooms;
+  if (!rooms) throw new Error('Active zone has no rooms (use fragment assembly)');
+  return pickRoom(rooms.explore, template);
 }
 
 // Get random combat room by template type
 export function getCombatRoom(template?: string): RoomVariation {
-  return pickRoom(getActiveZone().rooms.combat, template);
+  const rooms = getActiveZone().rooms;
+  if (!rooms) throw new Error('Active zone has no rooms (use fragment assembly)');
+  return pickRoom(rooms.combat, template);
 }
 
 // Get random corpse discovery by template type
 export function getCorpseRoom(template?: string): RoomVariation {
-  return pickRoom(getActiveZone().rooms.corpse, template);
+  const rooms = getActiveZone().rooms;
+  if (!rooms) throw new Error('Active zone has no rooms (use fragment assembly)');
+  return pickRoom(rooms.corpse, template);
 }
 
 // Get random cache room by template type
 export function getCacheRoom(template?: string): RoomVariation {
-  return pickRoom(getActiveZone().rooms.cache, template);
+  const rooms = getActiveZone().rooms;
+  if (!rooms) throw new Error('Active zone has no rooms (use fragment assembly)');
+  return pickRoom(rooms.cache, template);
 }
 
 // Get random exit room by template type
 export function getExitRoom(template?: string): RoomVariation {
-  return pickRoom(getActiveZone().rooms.exit, template);
+  const rooms = getActiveZone().rooms;
+  if (!rooms) throw new Error('Active zone has no rooms (use fragment assembly)');
+  return pickRoom(rooms.exit, template);
+}
+
+// ====== FRAGMENT ASSEMBLY FUNCTIONS ======
+
+export function assembleExploreRoom(fragments: ZoneFragments, templateHint?: string): RoomVariation {
+  const f = fragments.explore;
+  if (!f) throw new Error('Zone has no explore fragments');
+
+  const opening = pick(f.opening);
+  const middle = pick(f.middle);
+  const closing = pick(f.closing);
+  const narrative = `${opening} ${middle} ${closing}`;
+
+  // Pick 2 options from different pools
+  const pools = fragments.options;
+  const options = pools
+    ? [pick(pools.cautious), pick(pools.investigative)]
+    : ['Continue', 'Examine the area'];
+
+  // templateHint is accepted for future use (e.g. zone-specific filtering)
+  void templateHint;
+
+  return {
+    id: `explore_assembled_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+    narrative,
+    options,
+  };
+}
+
+export function assembleCombatRoom(fragments: ZoneFragments): RoomVariation {
+  const f = fragments.combat;
+  if (!f) throw new Error('Zone has no combat fragments');
+
+  const opening = pick(f.opening);
+  const middle = pick(f.middle);
+  const closing = pick(f.closing);
+
+  return {
+    id: `combat_assembled_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+    narrative: `${opening} ${middle} ${closing}`,
+  };
+}
+
+export function assembleCorpseRoom(fragments: ZoneFragments): RoomVariation {
+  const f = fragments.corpse;
+  if (!f) throw new Error('Zone has no corpse fragments');
+
+  const beat = pick(f.discoveryBeats);
+  const framing = pick(f.framing);
+
+  return {
+    id: `corpse_assembled_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+    narrative: `${beat} ${framing}`,
+  };
+}
+
+export function assembleCacheRoom(fragments: ZoneFragments): RoomVariation {
+  const f = fragments.cache;
+  if (!f) throw new Error('Zone has no cache fragments');
+
+  return {
+    id: `cache_assembled_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+    narrative: `${pick(f.locationLines)} ${pick(f.toneClosers)}`,
+  };
+}
+
+export function assembleExitRoom(fragments: ZoneFragments): RoomVariation {
+  const f = fragments.exit;
+  if (!f) throw new Error('Zone has no exit fragments');
+
+  const opening = pick(f.opening);
+  const middle = pick(f.middle);
+  const closing = pick(f.closing);
+
+  return {
+    id: `exit_assembled_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+    narrative: `${opening} ${middle} ${closing}`,
+  };
 }
 
 // Combat actions
@@ -342,24 +461,50 @@ export interface DungeonRoom {
 export function generateDungeon(zoneId?: string): DungeonRoom[] {
   // If a different zoneId is specified and cached, use it; otherwise use active zone
   const zone = zoneId && ZONE_CACHE[zoneId] ? ZONE_CACHE[zoneId] : getActiveZone();
+  const rooms = zone.rooms;
+  const frags = zone.fragments;
 
-  return zone.dungeonLayout.structure.map(slot => {
-    let content: RoomVariation;
+  // Helper: pick content for a slot, preferring rooms over fragments when both exist
+  function resolveSlot(slot: ZoneDungeonSlot): RoomVariation {
     switch (slot.type) {
-      case 'explore': content = pickRoom(zone.rooms.explore, slot.template); break;
-      case 'combat': content = pickRoom(zone.rooms.combat, slot.template); break;
-      case 'corpse': content = pickRoom(zone.rooms.corpse, slot.template); break;
-      case 'cache': content = pickRoom(zone.rooms.cache, slot.template); break;
-      case 'exit': content = pickRoom(zone.rooms.exit, slot.template); break;
-      default: content = pickRoom(zone.rooms.explore, slot.template);
+      case 'explore':
+        if (rooms?.explore?.length) return pickRoom(rooms.explore, slot.template);
+        if (frags) return assembleExploreRoom(frags, slot.template);
+        throw new Error(`Zone "${zone.id}" has no explore rooms or fragments`);
+
+      case 'combat':
+        if (rooms?.combat?.length) return pickRoom(rooms.combat, slot.template);
+        if (frags) return assembleCombatRoom(frags);
+        throw new Error(`Zone "${zone.id}" has no combat rooms or fragments`);
+
+      case 'corpse':
+        if (rooms?.corpse?.length) return pickRoom(rooms.corpse, slot.template);
+        if (frags) return assembleCorpseRoom(frags);
+        throw new Error(`Zone "${zone.id}" has no corpse rooms or fragments`);
+
+      case 'cache':
+        if (rooms?.cache?.length) return pickRoom(rooms.cache, slot.template);
+        if (frags) return assembleCacheRoom(frags);
+        throw new Error(`Zone "${zone.id}" has no cache rooms or fragments`);
+
+      case 'exit':
+        if (rooms?.exit?.length) return pickRoom(rooms.exit, slot.template);
+        if (frags) return assembleExitRoom(frags);
+        throw new Error(`Zone "${zone.id}" has no exit rooms or fragments`);
+
+      default:
+        if (rooms?.explore?.length) return pickRoom(rooms.explore, slot.template);
+        if (frags) return assembleExploreRoom(frags, slot.template);
+        throw new Error(`Zone "${zone.id}" has no explore rooms or fragments`);
     }
-    return {
-      type: slot.type,
-      template: slot.template,
-      content,
-      boss: slot.boss || false,
-    };
-  });
+  }
+
+  return zone.dungeonLayout.structure.map(slot => ({
+    type: slot.type,
+    template: slot.template,
+    content: resolveSlot(slot),
+    boss: slot.boss || false,
+  }));
 }
 
 // Legacy alias for backward compat
