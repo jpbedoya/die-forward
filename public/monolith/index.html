@@ -121,6 +121,8 @@
     function next() { show(current + 1); }
     
     document.addEventListener('keydown', (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement?.isContentEditable) return;
       if (e.key === 'ArrowLeft') prev();
       if (e.key === 'ArrowRight') next();
     });
