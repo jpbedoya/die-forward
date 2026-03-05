@@ -75,14 +75,18 @@ export async function GET(request: NextRequest) {
       zonesCleared = [];
     }
 
-    // Compute unlocked zones
-    const unlockedZones: string[] = ['sunken-crypt'];
-    if (totalRuns >= 1) {
-      unlockedZones.push('ashen-crypts', 'frozen-gallery', 'living-tomb');
-    }
-    if (new Set(zonesCleared).size >= 3) {
-      unlockedZones.push('void-beyond');
-    }
+    // DEV MODE: all zones unlocked for testing
+    const ALL_ZONES = ['sunken-crypt', 'ashen-crypts', 'frozen-gallery', 'living-tomb', 'void-beyond'];
+    const unlockedZones: string[] = ALL_ZONES;
+
+    // TODO: re-enable unlock gates before launch
+    // const unlockedZones: string[] = ['sunken-crypt'];
+    // if (totalRuns >= 1) {
+    //   unlockedZones.push('ashen-crypts', 'frozen-gallery', 'living-tomb');
+    // }
+    // if (new Set(zonesCleared).size >= 3) {
+    //   unlockedZones.push('void-beyond');
+    // }
 
     return NextResponse.json(
       { unlockedZones, totalRuns, zonesCleared },

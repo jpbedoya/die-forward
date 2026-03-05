@@ -92,13 +92,11 @@ function DifficultyDots({ difficulty, accentColor }: { difficulty: number; accen
 function GridZoneCard({
   zone,
   isSelected,
-  cardWidth,
   onPress,
   enabled: enabledProp,
 }: {
   zone: Zone;
   isSelected: boolean;
-  cardWidth: number;
   onPress: () => void;
   enabled?: boolean;
 }) {
@@ -110,8 +108,7 @@ function GridZoneCard({
     return (
       <View
         style={{
-          width: cardWidth,
-          marginBottom: 12,
+          flex: 1,
           opacity: 0.45,
         }}
       >
@@ -179,7 +176,7 @@ function GridZoneCard({
 
   return (
     <Pressable
-      style={{ width: cardWidth, marginBottom: 12 }}
+      style={{ flex: 1 }}
       onPress={onPress}
     >
       <View
@@ -406,17 +403,20 @@ export default function ZoneSelectScreen() {
           contentContainerStyle={{ padding: GRID_PADDING, paddingBottom: 24, maxWidth: 480, alignSelf: 'center', width: '100%' }}
           style={{ backgroundColor: 'transparent' }}
         >
-          {/* 2x2 Grid */}
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: GRID_PADDING, marginBottom: 0 }}>
-            {gridZones.map((zone) => (
-              <GridZoneCard
-                key={zone.id}
-                zone={zone}
-                isSelected={selectedZoneId === zone.id}
-                cardWidth={cardWidth}
-                onPress={() => handleSelect(zone.id)}
-                enabled={isZoneEnabled(zone.id)}
-              />
+          {/* 2x2 Grid — explicit rows for Expo web compatibility */}
+          <View style={{ marginBottom: 0 }}>
+            {[gridZones.slice(0, 2), gridZones.slice(2, 4)].map((row, rowIdx) => (
+              <View key={rowIdx} style={{ flexDirection: 'row', gap: GRID_PADDING, marginBottom: GRID_PADDING }}>
+                {row.map((zone) => (
+                  <GridZoneCard
+                    key={zone.id}
+                    zone={zone}
+                    isSelected={selectedZoneId === zone.id}
+                    onPress={() => handleSelect(zone.id)}
+                    enabled={isZoneEnabled(zone.id)}
+                  />
+                ))}
+              </View>
             ))}
           </View>
 
