@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     const { walletAddress, stakeAmount, txSignature, demoMode, escrowSessionId, useEscrow, authId, zoneId: rawZoneId } = body;
 
     // Validate zoneId — whitelist of known zones
-    const VALID_ZONE_IDS = ['sunken-crypt', 'living-tomb', 'void-beyond'];
+    const VALID_ZONE_IDS = ['sunken-crypt', 'ashen-crypts', 'frozen-gallery', 'living-tomb', 'void-beyond'];
     const zoneId: string = VALID_ZONE_IDS.includes(rawZoneId) ? rawZoneId : 'sunken-crypt';
 
     // Validate inputs

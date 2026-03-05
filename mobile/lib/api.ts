@@ -22,7 +22,7 @@ function getApiBase(): string {
   return 'https://www.dieforward.com';
 }
 
-const API_BASE = getApiBase();
+export const API_BASE = getApiBase();
 
 export interface GameSession {
   sessionToken: string;

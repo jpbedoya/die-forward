@@ -229,6 +229,7 @@ export async function POST(request: NextRequest) {
             totalLost: ((player as Record<string, unknown>).totalLost as number || 0) + session.stakeAmount,
             highestRoom: Math.max(currentHighest, room), // Track deepest room reached
             lastPlayedAt: Date.now(),
+            totalRuns: ((player as Record<string, unknown>).totalRuns as number || 0) + 1,
           }),
         ]);
       }

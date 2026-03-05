@@ -235,12 +235,27 @@ export async function POST(request: NextRequest) {
         const player = players[0];
         const currentHighest = (player as Record<string, unknown>).highestRoom as number || 0;
         const clearedRoom = 12; // Full dungeon clear = room 12
+
+        // Parse existing zonesCleared (stored as JSON string)
+        const zonesClearedRaw = (player as Record<string, unknown>).zonesCleared as string || '[]';
+        let existingZonesCleared: string[] = [];
+        try {
+          existingZonesCleared = JSON.parse(zonesClearedRaw);
+          if (!Array.isArray(existingZonesCleared)) existingZonesCleared = [];
+        } catch { existingZonesCleared = []; }
+        const zoneId = (session as Record<string, unknown>).zoneId as string || 'sunken-crypt';
+        const newZonesCleared = existingZonesCleared.includes(zoneId)
+          ? existingZonesCleared
+          : [...existingZonesCleared, zoneId];
+
         await db.transact([
           tx.players[player.id].update({
             totalClears: ((player as Record<string, unknown>).totalClears as number || 0) + 1,
             totalEarned: ((player as Record<string, unknown>).totalEarned as number || 0) + totalReward,
             highestRoom: Math.max(currentHighest, clearedRoom), // Track deepest room reached
             lastPlayedAt: Date.now(),
+            totalRuns: ((player as Record<string, unknown>).totalRuns as number || 0) + 1,
+            zonesCleared: JSON.stringify(newZonesCleared),
           }),
         ]);
       }

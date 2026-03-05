@@ -7,6 +7,8 @@ import { useAudio } from '../lib/audio';
 import { AudioToggle } from '../components/AudioToggle';
 import { AudioSettingsModal } from '../components/AudioSettingsModal';
 import { CRTOverlay } from '../components/CRTOverlay';
+import { useGame } from '../lib/GameContext';
+import { API_BASE } from '../lib/api';
 
 const ZONES = [
   {
@@ -92,16 +94,19 @@ function GridZoneCard({
   isSelected,
   cardWidth,
   onPress,
+  enabled: enabledProp,
 }: {
   zone: Zone;
   isSelected: boolean;
   cardWidth: number;
   onPress: () => void;
+  enabled?: boolean;
 }) {
+  const enabled = enabledProp ?? zone.enabled;
   const borderColor = isSelected ? zone.accentColor : '#2a2a2a';
   const bgColor = isSelected ? zone.bgColor + '40' : zone.bgColor + '1a';
 
-  if (!zone.enabled) {
+  if (!enabled) {
     return (
       <View
         style={{
@@ -232,11 +237,14 @@ function VoidBeyondCard({
   zone,
   isSelected,
   onPress,
+  enabled: enabledProp,
 }: {
   zone: Zone;
   isSelected: boolean;
   onPress: () => void;
+  enabled?: boolean;
 }) {
+  const enabled = enabledProp ?? zone.enabled;
   const borderColor = isSelected ? zone.accentColor : '#2a2a2a';
   const bgColor = isSelected ? zone.bgColor + '40' : zone.bgColor + '1a';
 
@@ -249,7 +257,7 @@ function VoidBeyondCard({
         borderLeftColor: zone.accentColor,
         backgroundColor: bgColor,
         padding: 16,
-        opacity: zone.enabled ? 1 : 0.45,
+        opacity: enabled ? 1 : 0.45,
       }}
     >
       <Text
@@ -312,7 +320,7 @@ function VoidBeyondCard({
     </View>
   );
 
-  if (!zone.enabled) {
+  if (!enabled) {
     return <View style={{ marginBottom: 12 }}>{inner}</View>;
   }
 
@@ -325,15 +333,36 @@ function VoidBeyondCard({
 
 export default function ZoneSelectScreen() {
   const { playSFX, playAmbient } = useAudio();
+  const game = useGame();
   const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
   const [selectedZoneId, setSelectedZoneId] = useState('sunken-crypt');
   const { width: screenWidth } = useWindowDimensions();
+  // Start with only Sunken Crypt unlocked to prevent flash of wrong state
+  const [unlockedZones, setUnlockedZones] = useState<string[]>(['sunken-crypt']);
 
-  const cardWidth = (screenWidth - GRID_PADDING * 3) / 2;
+  // Cap at 480 so the 2x2 grid works on Expo web (wide browser windows)
+  const effectiveWidth = Math.min(screenWidth, 480);
+  const cardWidth = (effectiveWidth - GRID_PADDING * 3) / 2;
 
   useEffect(() => {
     playAmbient('ambient-title');
   }, []);
+
+  // Fetch unlock status once we have an identifier
+  useEffect(() => {
+    if (!game.isAuthenticated && !game.walletAddress) return;
+    const identifier = game.walletAddress || game.authId;
+    if (!identifier) return;
+
+    fetch(`${API_BASE}/api/player/unlock-status?walletAddress=${encodeURIComponent(identifier)}`)
+      .then((r) => r.json())
+      .then((data) => {
+        setUnlockedZones(data.unlockedZones || ['sunken-crypt']);
+      })
+      .catch(() => {
+        setUnlockedZones(['sunken-crypt']); // fallback on error
+      });
+  }, [game.walletAddress, game.isAuthenticated, game.authId]);
 
   const selectedZone = ZONES.find((z) => z.id === selectedZoneId) ?? ZONES[0];
 
@@ -349,6 +378,9 @@ export default function ZoneSelectScreen() {
 
   const gridZones = ZONES.slice(0, 4);
   const voidZone = ZONES[4];
+
+  // Derive enabled state from unlock status (overrides hardcoded `enabled` in ZONES)
+  const isZoneEnabled = (zoneId: string) => unlockedZones.includes(zoneId);
 
   return (
     <CryptBackground screen="stake">
@@ -371,7 +403,7 @@ export default function ZoneSelectScreen() {
 
         <ScrollView
           className="flex-1"
-          contentContainerStyle={{ padding: GRID_PADDING, paddingBottom: 24 }}
+          contentContainerStyle={{ padding: GRID_PADDING, paddingBottom: 24, maxWidth: 480, alignSelf: 'center', width: '100%' }}
           style={{ backgroundColor: 'transparent' }}
         >
           {/* 2x2 Grid */}
@@ -383,6 +415,7 @@ export default function ZoneSelectScreen() {
                 isSelected={selectedZoneId === zone.id}
                 cardWidth={cardWidth}
                 onPress={() => handleSelect(zone.id)}
+                enabled={isZoneEnabled(zone.id)}
               />
             ))}
           </View>
@@ -392,6 +425,7 @@ export default function ZoneSelectScreen() {
             zone={voidZone}
             isSelected={selectedZoneId === voidZone.id}
             onPress={() => handleSelect(voidZone.id)}
+            enabled={isZoneEnabled(voidZone.id)}
           />
 
           <View style={{ height: 16 }} />

@@ -460,25 +460,14 @@ GET /api/leaderboard`}
       <footer className="py-12 px-4 border-t border-[var(--border-dim)]">
         <div className="max-w-4xl mx-auto text-center">
           <div className="text-[var(--amber)] text-2xl mb-4">◈</div>
-          <p className="text-[var(--text-muted)] text-sm mb-4">
-            Built for the Colosseum Agent Hackathon 2026
-          </p>
           <div className="flex justify-center gap-6 text-sm">
             <a 
-              href="https://twitter.com/dieforward"
+              href="https://x.com/dieforward"
               target="_blank"
               rel="noopener noreferrer"
               className="text-[var(--text-muted)] hover:text-[var(--amber)]"
             >
-              Twitter
-            </a>
-            <a 
-              href="https://github.com/jpbedoya/die-forward"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[var(--text-muted)] hover:text-[var(--amber)]"
-            >
-              GitHub
+              X
             </a>
             <a 
               href="https://play.dieforward.com"
