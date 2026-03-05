@@ -412,7 +412,7 @@ GET /api/leaderboard`}
             </pre>
             <div className="mt-4 text-sm">
               <a 
-                href="https://github.com/jpbedoya/die-forward/blob/main/docs/agent-api.md"
+                href="/skill.md"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[var(--purple)] hover:text-[var(--purple-bright)]"
