@@ -131,6 +131,14 @@ export interface ZonePackage {
 const ZONE_LOADERS: Record<string, () => Promise<ZonePackage>> = {
   'sunken-crypt': () =>
     import('../../zones/sunken-crypt.json').then(m => m.default as unknown as ZonePackage),
+  'ashen-crypts': () =>
+    import('../../zones/ashen-crypts.json').then(m => m.default as unknown as ZonePackage),
+  'frozen-gallery': () =>
+    import('../../zones/frozen-gallery.json').then(m => m.default as unknown as ZonePackage),
+  'living-tomb': () =>
+    import('../../zones/living-tomb.json').then(m => m.default as unknown as ZonePackage),
+  'void-beyond': () =>
+    import('../../zones/void-beyond.json').then(m => m.default as unknown as ZonePackage),
 };
 
 // Cache of loaded zones (in-memory for the process lifetime)
