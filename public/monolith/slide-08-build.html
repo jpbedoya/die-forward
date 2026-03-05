@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(ellipse at center, #1a0a1a 0%, #0a0a0a 70%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', monospace;
+      color: #e5e5e5;
+      position: relative;
+      overflow: hidden;
+      padding: clamp(20px, 4vw, 40px);
+    }
+    .glow {
+      position: absolute;
+      width: clamp(300px, 50vw, 800px);
+      height: clamp(300px, 50vw, 800px);
+      background: radial-gradient(circle, rgba(168, 85, 247, 0.1) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      width: 100%;
+      max-width: 1200px;
+    }
+    .avatar {
+      width: clamp(60px, 8vw, 100px);
+      height: clamp(60px, 8vw, 100px);
+      margin-bottom: clamp(10px, 2vh, 20px);
+      filter: drop-shadow(0 0 30px rgba(168, 85, 247, 0.5));
+      border-radius: 12px;
+    }
+    .built-by {
+      font-size: clamp(12px, 1.4vw, 24px);
+      color: #71717a;
+      letter-spacing: 4px;
+      margin-bottom: clamp(5px, 1vh, 10px);
+    }
+    .name {
+      font-size: clamp(32px, 4vw, 64px);
+      color: #a855f7;
+      font-weight: bold;
+      text-shadow: 0 0 40px rgba(168, 85, 247, 0.5);
+      margin-bottom: clamp(25px, 5vh, 50px);
+    }
+    .integrations {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(10px, 1.5vw, 25px);
+      width: 100%;
+    }
+    .integration {
+      background: rgba(15, 15, 15, 0.8);
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: clamp(10px, 1.5vw, 20px) clamp(15px, 2vw, 30px);
+      text-align: left;
+    }
+    .int-name {
+      font-size: clamp(12px, 1.2vw, 20px);
+      color: #f59e0b;
+      margin-bottom: clamp(4px, 0.5vh, 8px);
+    }
+    .int-desc {
+      font-size: clamp(10px, 1vw, 16px);
+      color: #9ca3af;
+    }
+    @media (max-width: 900px) {
+      .integrations { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="glow"></div>
+  <div class="content">
+    <img src="pisco-avatar.png" alt="Pisco" class="avatar">
+    <div class="built-by">BUILT WITH</div>
+    <div class="name">Pisco</div>
+    <div class="integrations">
+      <div class="integration">
+        <div class="int-name">MagicBlock ER</div>
+        <div class="int-desc">On-chain game state</div>
+      </div>
+      <div class="integration">
+        <div class="int-name">Tapestry</div>
+        <div class="int-desc">Social death feed</div>
+      </div>
+      <div class="integration">
+        <div class="int-name">Audius</div>
+        <div class="int-desc">Death soundtrack</div>
+      </div>
+      <div class="integration">
+        <div class="int-name">Solana</div>
+        <div class="int-desc">Escrow staking</div>
+      </div>
+      <div class="integration">
+        <div class="int-name">AgentWallet</div>
+        <div class="int-desc">Agent payments</div>
+      </div>
+      <div class="integration">
+        <div class="int-name">ElevenLabs</div>
+        <div class="int-desc">68 SFX files</div>
+      </div>
+      <div class="integration">
+        <div class="int-name">React Native</div>
+        <div class="int-desc">Mobile-first app + web target</div>
+      </div>
+      <div class="integration">
+        <div class="int-name">Solana Mobile Stack</div>
+        <div class="int-desc">MWA + Seeker wallet support</div>
+      </div>
+      <div class="integration">
+        <div class="int-name">InstantDB + Expo</div>
+        <div class="int-desc">Realtime sync on Expo SDK 54</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

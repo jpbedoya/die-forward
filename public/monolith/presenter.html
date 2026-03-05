@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Die Forward — Presenter View</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: #0a0a0a;
+      font-family: 'Courier New', monospace;
+    }
+    .container {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+    
+    /* Left: Game embed (mobile width) */
+    .game-panel {
+      width: 375px;
+      min-width: 375px;
+      height: 100%;
+      background: #000;
+      border-right: 2px solid #1a1a1a;
+      display: flex;
+      flex-direction: column;
+    }
+    .game-header {
+      padding: 8px 12px;
+      background: #111;
+      border-bottom: 1px solid #222;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .game-title {
+      color: #f59e0b;
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+    .game-url {
+      color: #555;
+      font-size: 10px;
+    }
+    .game-iframe {
+      flex: 1;
+      width: 100%;
+      border: none;
+    }
+    
+    /* Right: Slides */
+    .slides-panel {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .slides-nav {
+      padding: 10px 20px;
+      background: #111;
+      border-bottom: 1px solid #222;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .nav-btn {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: #999;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 18px;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+    .nav-btn:hover {
+      background: #222;
+      color: #fff;
+      border-color: #444;
+    }
+    .nav-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+    .slide-indicator {
+      color: #666;
+      font-size: 14px;
+      margin-left: auto;
+    }
+    .slide-indicator .current {
+      color: #f59e0b;
+      font-weight: bold;
+    }
+    .slides-iframe {
+      flex: 1;
+      width: 100%;
+      border: none;
+    }
+    
+    /* CRT Overlay */
+    .crt-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      z-index: 100;
+    }
+    .crt-overlay::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.15),
+        rgba(0, 0, 0, 0.15) 1px,
+        transparent 1px,
+        transparent 2px
+      );
+      pointer-events: none;
+    }
+    .crt-overlay::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(
+        ellipse at center,
+        transparent 0%,
+        transparent 60%,
+        rgba(0, 0, 0, 0.3) 100%
+      );
+      pointer-events: none;
+    }
+    
+    .slides-panel {
+      position: relative;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Game Panel -->
+    <div class="game-panel">
+      <div class="game-header">
+        <span class="game-title">💀 LIVE DEMO</span>
+        <span class="game-url">play.dieforward.com</span>
+      </div>
+      <iframe 
+        class="game-iframe" 
+        src="https://play.dieforward.com"
+        allow="clipboard-write"
+      ></iframe>
+    </div>
+    
+    <!-- Slides Panel -->
+    <div class="slides-panel">
+      <div class="crt-overlay"></div>
+      <div class="slides-nav">
+        <button class="nav-btn" id="prevBtn" onclick="prevSlide()">←</button>
+        <button class="nav-btn" id="nextBtn" onclick="nextSlide()">→</button>
+        <span class="slide-indicator">
+          Slide <span class="current" id="currentSlide">1</span> / <span id="totalSlides">15</span>
+        </span>
+      </div>
+      <iframe 
+        class="slides-iframe" 
+        id="slideFrame"
+        src="slide-01-hook.html"
+      ></iframe>
+    </div>
+  </div>
+
+  <script>
+    // Order matches SLIDES_CONTENT.md
+    const slides = [
+      'slide-02-title.html',     // 1. TITLE
+      'slide-01-hook.html',      // 2. HOOK
+      'slide-04-problem.html',   // 3. THE PROBLEM
+      'slide-03-game.html',      // 4. THE GAME
+      'slide-03b-features.html',  // 5. FEATURES
+      'slide-community.html',    // 6. COMMUNITY
+      'slide-07-agents.html',    // 7. AGENTS
+      'slide-08-audius.html',    // 7. AUDIUS
+      'slide-05-tapestry.html',  // 8. TAPESTRY
+      'slide-04-magicblock.html',// 9. MAGICBLOCK
+      'slide-06-escrow.html',    // 10. SOLANA ESCROW
+      'slide-10-business.html',  // 11. BUSINESS MODEL
+      'slide-08-build.html',     // 12. THE BUILD
+      'slide-11-next.html',      // 13. WHAT'S NEXT
+      'slide-09-close.html',     // 14. CLOSE
+    ];
+    
+    let currentIndex = 0;
+    
+    function updateSlide() {
+      document.getElementById('slideFrame').src = slides[currentIndex];
+      document.getElementById('currentSlide').textContent = currentIndex + 1;
+      document.getElementById('totalSlides').textContent = slides.length;
+      document.getElementById('prevBtn').disabled = currentIndex === 0;
+      document.getElementById('nextBtn').disabled = currentIndex === slides.length - 1;
+    }
+    
+    function nextSlide() {
+      if (currentIndex < slides.length - 1) {
+        currentIndex++;
+        updateSlide();
+      }
+    }
+    
+    function prevSlide() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        updateSlide();
+      }
+    }
+    
+    // Keyboard navigation - use capture phase and window level
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevSlide();
+      }
+    }, true);
+    
+    // Refocus parent when clicking on slides area
+    document.querySelector('.slides-panel').addEventListener('click', () => {
+      window.focus();
+    });
+    
+    // Periodically refocus to ensure keyboard works
+    setInterval(() => {
+      if (document.activeElement?.tagName === 'IFRAME') {
+        window.focus();
+      }
+    }, 500);
+    
+    // Initialize
+    updateSlide();
+  </script>
+</body>
+</html>

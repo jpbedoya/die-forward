@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a0808 50%, #0a0a0a 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', monospace;
+      color: #e5e5e5;
+      position: relative;
+      overflow: hidden;
+    }
+    .bg-skull {
+      position: absolute;
+      font-size: clamp(150px, 20vw, 400px);
+      opacity: 0.03;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      max-width: 90%;
+      padding: 2vw;
+    }
+    .line1 {
+      font-size: clamp(20px, 2.5vw, 48px);
+      color: #71717a;
+      margin-bottom: clamp(20px, 3vh, 40px);
+      letter-spacing: 2px;
+    }
+    .line2 {
+      font-size: clamp(24px, 3.3vw, 64px);
+      color: #f5f5f5;
+      font-weight: bold;
+      letter-spacing: 3px;
+      text-shadow: 0 0 40px rgba(245, 158, 11, 0.3);
+    }
+    .highlight {
+      color: #f59e0b;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="bg-skull">💀</div>
+  <div class="content">
+    <div class="line1">Most games record your score in a database.</div>
+    <div class="line2">Die Forward records your <span class="highlight">death</span> on the blockchain.</div>
+  </div>
+</body>
+</html>

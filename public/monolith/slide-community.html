@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, #0a0a12 0%, #0d1a0d 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', monospace;
+      color: #e5e5e5;
+      padding: clamp(20px, 4vw, 54px);
+      position: relative;
+      overflow: hidden;
+    }
+    .bg-texture {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: url('bg-crypt.webp') center/cover;
+      opacity: 0.07; z-index: 0;
+    }
+    .content {
+      width: 100%; max-width: 1300px;
+      position: relative; z-index: 1;
+      display: flex; gap: clamp(30px, 5vw, 70px);
+      align-items: flex-start;
+    }
+    .left {
+      flex: 1;
+      display: flex; flex-direction: column;
+      justify-content: center;
+    }
+    .right {
+      flex: 1.3;
+      display: flex; flex-direction: column;
+      gap: clamp(12px, 1.8vh, 20px);
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(52, 211, 153, 0.12);
+      border: 1px solid rgba(52, 211, 153, 0.35);
+      color: #34d399;
+      padding: clamp(4px, 0.5vw, 8px) clamp(12px, 1.4vw, 20px);
+      border-radius: 999px;
+      font-size: clamp(10px, 1vw, 15px);
+      letter-spacing: 2px;
+      margin-bottom: clamp(14px, 2vh, 26px);
+      width: fit-content;
+    }
+    .title {
+      font-size: clamp(28px, 3.4vw, 54px);
+      color: #34d399;
+      margin-bottom: clamp(12px, 2vh, 22px);
+      text-shadow: 0 0 36px rgba(52, 211, 153, 0.35);
+      line-height: 1.15;
+    }
+    .subtitle {
+      font-size: clamp(13px, 1.3vw, 20px);
+      color: #9ca3af;
+      line-height: 1.75;
+      margin-bottom: clamp(20px, 3vh, 36px);
+    }
+    .flywheel {
+      background: rgba(13, 13, 13, 0.85);
+      border: 1px solid rgba(52, 211, 153, 0.2);
+      border-radius: 12px;
+      padding: clamp(14px, 1.8vw, 26px);
+    }
+    .flywheel-title {
+      font-size: clamp(11px, 1.05vw, 16px);
+      color: #34d399;
+      letter-spacing: 2px;
+      margin-bottom: clamp(10px, 1.4vh, 16px);
+    }
+    .flywheel-steps {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(8px, 1vh, 12px);
+    }
+    .step {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .step-arrow { color: #34d399; font-size: clamp(12px, 1.2vw, 18px); flex-shrink: 0; }
+    .step-text { font-size: clamp(11px, 1.05vw, 16px); color: #d1d5db; line-height: 1.4; }
+    .step-text strong { color: #f59e0b; }
+
+    .card {
+      background: #0d0d0d;
+      border: 1px solid #1f2a1f;
+      border-radius: 12px;
+      padding: clamp(14px, 1.6vw, 24px);
+    }
+    .card-header {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: clamp(8px, 1.2vh, 14px);
+    }
+    .card-icon { font-size: clamp(20px, 2.2vw, 32px); }
+    .card-title {
+      font-size: clamp(14px, 1.5vw, 22px);
+      color: #e5e5e5; font-weight: bold;
+    }
+    .card-body {
+      font-size: clamp(11px, 1.1vw, 16px);
+      color: #9ca3af; line-height: 1.6;
+    }
+    .card-body strong { color: #34d399; }
+    .card-tags {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      margin-top: clamp(8px, 1vh, 14px);
+    }
+    .tag {
+      background: rgba(52, 211, 153, 0.08);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+      color: #34d399;
+      font-size: clamp(9px, 0.9vw, 13px);
+      padding: 3px 10px;
+      border-radius: 999px;
+      letter-spacing: 0.5px;
+    }
+    @media (max-width: 900px) {
+      .content { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-texture"></div>
+  <div class="content">
+    <div class="left">
+      <div class="badge">COMMUNITY</div>
+      <div class="title">The World Is Built By Its Players</div>
+      <div class="subtitle">
+        Dungeons and soundscapes aren't just designed by us.<br>
+        Anyone can submit. The best ones get featured.
+      </div>
+
+      <div class="flywheel">
+        <div class="flywheel-title">▸ THE FLYWHEEL</div>
+        <div class="flywheel-steps">
+          <div class="step">
+            <div class="step-arrow">🗺</div>
+            <div class="step-text">Creator submits a <strong>dungeon or soundtrack</strong></div>
+          </div>
+          <div class="step">
+            <div class="step-arrow">⚔️</div>
+            <div class="step-text">Players run it — <strong>deaths + leaderboards accumulate</strong></div>
+          </div>
+          <div class="step">
+            <div class="step-arrow">📈</div>
+            <div class="step-text">Top dungeons surface to the <strong>featured feed</strong></div>
+          </div>
+          <div class="step">
+            <div class="step-arrow">💰</div>
+            <div class="step-text">Creator earns <strong>revenue share</strong> from run fees</div>
+          </div>
+          <div class="step">
+            <div class="step-arrow">🔁</div>
+            <div class="step-text">More submissions. <strong>Infinite content. Zero dev cost.</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">🗺️</div>
+          <div class="card-title">Community Dungeons</div>
+        </div>
+        <div class="card-body">
+          Any player can design and submit a dungeon — room layouts, enemy sets, loot rules, hazard placements.
+          Submissions go through a <strong>community review queue</strong>. Featured dungeons earn from every run fee collected inside them.
+        </div>
+        <div class="card-tags">
+          <span class="tag">CUSTOM LAYOUTS</span>
+          <span class="tag">ENEMY PACKS</span>
+          <span class="tag">LOOT TABLES</span>
+          <span class="tag">REVENUE SHARE</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">🎵</div>
+          <div class="card-title">Community Soundscapes</div>
+        </div>
+        <div class="card-body">
+          Musicians and sound designers can submit <strong>death soundtracks, ambient packs, and zone themes</strong>.
+          Attribution is on-chain — every death that plays your track credits you.
+          Top tracks appear on the global Soundtrack Leaderboard.
+        </div>
+        <div class="card-tags">
+          <span class="tag">DEATH SOUNDTRACKS</span>
+          <span class="tag">AMBIENT ZONES</span>
+          <span class="tag">ON-CHAIN CREDIT</span>
+          <span class="tag">LEADERBOARD</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">🏆</div>
+          <div class="card-title">What This Creates</div>
+        </div>
+        <div class="card-body">
+          A <strong>self-expanding content engine</strong>. Players become creators. Creators become stakeholders.
+          The game grows without us building every room — and every contributor earns a cut of what they bring to life.
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

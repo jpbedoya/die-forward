@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, #0a0a0a 0%, #0f0a1a 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', monospace;
+      color: #e5e5e5;
+      padding: clamp(30px, 5vw, 60px);
+      position: relative;
+      overflow: hidden;
+    }
+    .bg-texture {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('bg-crypt.webp') center/cover;
+      opacity: 0.1;
+      z-index: 0;
+    }
+    .content {
+      max-width: 1300px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: #f59e0b;
+      padding: clamp(4px, 0.5vw, 8px) clamp(12px, 1.5vw, 20px);
+      border-radius: 20px;
+      font-size: clamp(10px, 1vw, 16px);
+      letter-spacing: 2px;
+      margin-bottom: clamp(15px, 3vh, 30px);
+    }
+    .title {
+      font-size: clamp(24px, 3vw, 48px);
+      color: #f59e0b;
+      margin-bottom: clamp(25px, 4vh, 45px);
+      text-shadow: 0 0 30px rgba(245, 158, 11, 0.4);
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: clamp(15px, 2.5vw, 30px);
+      text-align: left;
+    }
+    .feature {
+      background: #0d0d0d;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: clamp(18px, 2vw, 30px);
+      display: flex;
+      gap: clamp(15px, 2vw, 25px);
+      align-items: flex-start;
+    }
+    .feature-icon-img {
+      width: clamp(80px, 8vw, 112px);
+      height: clamp(80px, 8vw, 112px);
+      object-fit: contain;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+    .feature-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .feature-title {
+      font-size: clamp(16px, 1.8vw, 26px);
+      color: #e5e5e5;
+      font-weight: bold;
+      margin-bottom: clamp(6px, 1vh, 12px);
+    }
+    .feature-desc {
+      font-size: clamp(12px, 1.2vw, 18px);
+      color: #9ca3af;
+      line-height: 1.6;
+      margin-bottom: clamp(8px, 1vh, 12px);
+    }
+    .feature-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+    }
+    .feature-tag img {
+      height: clamp(18px, 2vw, 28px);
+      opacity: 0.7;
+    }
+    .tag-magicblock { }
+    .tag-tapestry { }
+    .tag-tapestry img { filter: invert(1); }
+    .tag-audius { }
+    .tag-audius img { filter: invert(1); }
+    .tag-solana { }
+    @media (max-width: 800px) {
+      .features-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-texture"></div>
+  <div class="content">
+    <div class="badge">WHAT THE INTEGRATIONS ENABLE</div>
+    <div class="title">Gameplay powered by the stack</div>
+    <div class="features-grid">
+      <div class="feature">
+        <img src="icon-soundtrack-256.webp" class="feature-icon-img" alt="">
+        <div class="feature-content">
+          <div class="feature-title">Soundtrack Your Death</div>
+          <div class="feature-desc">
+            Music playing when you die is recorded forever. 
+            Leaderboard tracks the most-played death songs.
+          </div>
+          <span class="feature-tag tag-audius"><img src="logo-audius.svg" alt="Audius"></span>
+        </div>
+      </div>
+      <div class="feature">
+        <img src="icon-die-256.webp" class="feature-icon-img" alt="">
+        <div class="feature-content">
+          <div class="feature-title">Deaths Become Content</div>
+          <div class="feature-desc">
+            Your death posts to the social graph. Final message, depth reached, stake lost. 
+            Others discover and light candles.
+          </div>
+          <span class="feature-tag tag-tapestry"><img src="logo-tapestry.svg" alt="Tapestry"></span>
+        </div>
+      </div>
+      <div class="feature">
+        <img src="icon-fight-256.webp" class="feature-icon-img" alt="">
+        <div class="feature-content">
+          <div class="feature-title">Every Run is On-Chain</div>
+          <div class="feature-desc">
+            Your run progress is tracked in real-time on Solana. 
+            Not a database — actual blockchain state.
+          </div>
+          <span class="feature-tag tag-magicblock"><img src="logo-magicblock.svg" alt="MagicBlock"></span>
+        </div>
+      </div>
+      <div class="feature">
+        <img src="icon-stake-256.webp" class="feature-icon-img" alt="">
+        <div class="feature-content">
+          <div class="feature-title">Trustless Stakes</div>
+          <div class="feature-desc">
+            SOL locked in program escrow. Victory pays out automatically. 
+            No custody, no trust required.
+          </div>
+          <span class="feature-tag tag-solana"><img src="logo-solana.svg" alt="Solana"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
