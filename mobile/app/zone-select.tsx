@@ -335,7 +335,9 @@ export default function ZoneSelectScreen() {
   const [selectedZoneId, setSelectedZoneId] = useState('sunken-crypt');
   const { width: screenWidth } = useWindowDimensions();
   // Start with only Sunken Crypt unlocked to prevent flash of wrong state
-  const [unlockedZones, setUnlockedZones] = useState<string[]>(['sunken-crypt']);
+  // DEV MODE: all zones unlocked for testing — TODO: restore API fetch before launch
+  const ALL_ZONE_IDS = ZONES.map(z => z.id);
+  const [unlockedZones, setUnlockedZones] = useState<string[]>(ALL_ZONE_IDS);
 
   // Cap at 480 so the 2x2 grid works on Expo web (wide browser windows)
   const effectiveWidth = Math.min(screenWidth, 480);
@@ -345,21 +347,8 @@ export default function ZoneSelectScreen() {
     playAmbient('ambient-title');
   }, []);
 
-  // Fetch unlock status once we have an identifier
-  useEffect(() => {
-    if (!game.isAuthenticated && !game.walletAddress) return;
-    const identifier = game.walletAddress || game.authId;
-    if (!identifier) return;
-
-    fetch(`${API_BASE}/api/player/unlock-status?walletAddress=${encodeURIComponent(identifier)}`)
-      .then((r) => r.json())
-      .then((data) => {
-        setUnlockedZones(data.unlockedZones || ['sunken-crypt']);
-      })
-      .catch(() => {
-        setUnlockedZones(['sunken-crypt']); // fallback on error
-      });
-  }, [game.walletAddress, game.isAuthenticated, game.authId]);
+  // TODO: fetch unlock status post-auth (wallet is bound after zone select, so no identifier here yet)
+  // useEffect(() => { ... fetch /api/player/unlock-status ... }, [game.walletAddress]);
 
   const selectedZone = ZONES.find((z) => z.id === selectedZoneId) ?? ZONES[0];
 

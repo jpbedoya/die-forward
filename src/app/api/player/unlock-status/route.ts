@@ -35,13 +35,6 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // DEV MODE: all zones unlocked for all authenticated users — remove before launch
-  const ALL_ZONES = ['sunken-crypt', 'ashen-crypts', 'frozen-gallery', 'living-tomb', 'void-beyond'];
-  return NextResponse.json(
-    { unlockedZones: ALL_ZONES, totalRuns: 0, zonesCleared: [] },
-    { headers: corsHeaders },
-  );
-
   try {
     // Try authId lookup first (works for both wallet + guest-auth players)
     let player: Record<string, unknown> | null = null;
