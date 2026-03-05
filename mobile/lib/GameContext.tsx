@@ -72,7 +72,7 @@ interface GameContextType extends GameState {
   dismissNicknameModal: () => void;
   
   // Game actions
-  startGame: (amount: number, emptyHanded?: boolean) => Promise<void>;
+  startGame: (amount: number, emptyHanded?: boolean, zoneId?: string) => Promise<void>;
   advance: () => Promise<boolean>;
   recordDeath: (finalMessage: string, killedBy?: string, nowPlaying?: { title: string; artist: string }) => Promise<void>;
   claimVictory: () => Promise<void>;
@@ -499,7 +499,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, [unifiedWallet]);
 
   // Game actions
-  const startGame = useCallback(async (amount: number, emptyHanded = false) => {
+  const startGame = useCallback(async (amount: number, emptyHanded = false, zoneId?: string) => {
     updateState({ loading: true, error: null });
     try {
       let stakeTxSignature: string | undefined;
@@ -537,6 +537,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         emptyHanded ? 0 : amount,  // Empty handed runs have 0 stake
         stakeTxSignature,
         state.authId || playerIdentifier, // authId for player record lookup
+        zoneId,
       );
       
       // Defensive: ensure we got a session token and seed

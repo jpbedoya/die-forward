@@ -31,7 +31,7 @@ function AnimatedDescendButton() {
   return (
     <Pressable 
       className="flex-row items-center py-3 active:opacity-80"
-      onPress={() => { playSFX('depth-descend'); router.push('/stake'); }}
+      onPress={() => { playSFX('depth-descend'); router.push('/zone-select'); }}
     >
       <Text className="text-amber font-mono text-sm">{leftFrames[frame]}</Text>
       <Text className="text-amber text-lg font-bold font-mono tracking-widest mx-2">DESCEND</Text>

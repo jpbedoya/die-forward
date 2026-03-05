@@ -77,6 +77,7 @@ export async function startSession(
   stakeAmount: number,
   stakeTxSignature?: string,
   authId?: string,
+  zoneId?: string,
 ): Promise<StartSessionResponse> {
   const response = await fetch(`${API_BASE}/api/session/start`, {
     method: 'POST',
@@ -86,6 +87,7 @@ export async function startSession(
       stakeAmount,
       stakeTxSignature,
       authId, // Unique player identifier (InstantDB auth ID)
+      zoneId,
       // Demo mode if no signature
       demoMode: !stakeTxSignature,
     }),

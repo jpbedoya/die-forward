@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { View, Text, Pressable, ScrollView, Modal } from 'react-native';
 import { CryptBackground } from '../components/CryptBackground';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
 import { useAudio } from '../lib/audio';
@@ -15,13 +15,25 @@ import { AsciiLoader } from '../components/AsciiLoader';
 
 const STAKE_OPTIONS = [0.01, 0.05, 0.1, 0.25];
 
+// Zone data for display purposes only (name + emoji lookup)
+const ZONE_META: Record<string, { name: string; emoji: string; accentColor: string; bgColor: string }> = {
+  'sunken-crypt':   { name: 'THE SUNKEN CRYPT',   emoji: '🌊', accentColor: '#4a9eff', bgColor: '#0a1628' },
+  'ashen-crypts':   { name: 'THE ASHEN CRYPTS',   emoji: '🔥', accentColor: '#ff6b2b', bgColor: '#1a0800' },
+  'frozen-gallery': { name: 'THE FROZEN GALLERY',  emoji: '❄️', accentColor: '#7eceff', bgColor: '#040d14' },
+  'living-tomb':    { name: 'THE LIVING TOMB',     emoji: '🩸', accentColor: '#c0392b', bgColor: '#0f0000' },
+  'void-beyond':    { name: 'THE VOID BEYOND',     emoji: '🌑', accentColor: '#9b59b6', bgColor: '#06000f' },
+};
+
 export default function StakeScreen() {
   const game = useGame();
   const { playSFX, playAmbient } = useAudio();
   const { settings } = useGameSettings();
+  const { zoneId: rawZoneId } = useLocalSearchParams<{ zoneId: string }>();
+  const zoneId = rawZoneId ?? 'sunken-crypt';
+  const zoneMeta = ZONE_META[zoneId] ?? ZONE_META['sunken-crypt'];
+
   const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
   const [selectedStake, setSelectedStake] = useState(0.05);
-  
   const [staking, setStaking] = useState(false);
   const [stakingMode, setStakingMode] = useState<'stake' | 'free' | null>(null);
   const [showWalletPicker, setShowWalletPicker] = useState(false);
@@ -48,7 +60,6 @@ export default function StakeScreen() {
     playSFX('ui-click');
     game.clearError();
 
-    // If multiple wallets available, show picker
     if (game.connectors.length > 1) {
       setShowWalletPicker(true);
       return;
@@ -79,7 +90,6 @@ export default function StakeScreen() {
         flashWalletStatus('error');
       }
     } finally {
-      // Safety: never leave spinner stuck
       setTimeout(() => {
         setWalletStatus((prev) => (prev === 'connecting' ? 'idle' : prev));
       }, 50);
@@ -121,15 +131,13 @@ export default function StakeScreen() {
     setStakingMode(emptyHanded ? 'free' : 'stake');
     if (!emptyHanded) setSealStatus('signing');
     playSFX('confirm-action');
-    
+
     try {
-      // Ensure correct auth mode before starting game
       if (emptyHanded) {
         if (!game.isAuthenticated || game.authType !== 'guest') {
           await game.signInEmptyHanded();
         }
       } else {
-        // Staked play must use wallet auth (not guest auth)
         if (!game.walletConnected) {
           throw new Error('Connect wallet first');
         }
@@ -138,7 +146,7 @@ export default function StakeScreen() {
         }
       }
 
-      await game.startGame(selectedStake, emptyHanded);
+      await game.startGame(selectedStake, emptyHanded, zoneId);
       if (!emptyHanded) setSealStatus('idle');
       playSFX('depth-descend');
       router.push('/play');
@@ -178,8 +186,13 @@ export default function StakeScreen() {
     <SafeAreaView className="flex-1">
       {/* Header */}
       <View className="relative flex-row items-center justify-between px-4 py-3 border-b border-crypt-border">
-        <Pressable onPress={() => router.replace('/')} className="py-2 px-3 -ml-3">
-          <Text className="text-bone-muted text-sm font-mono">[HOME]</Text>
+        {/* Zone indicator — tap to go back */}
+        <Pressable
+          onPress={() => router.back()}
+          className="flex-row items-center gap-1 py-2 px-3 -ml-3"
+        >
+          <Text style={{ fontSize: 16 }}>{zoneMeta.emoji}</Text>
+          <Text className="text-bone-muted text-xs font-mono">{zoneMeta.name}</Text>
         </Pressable>
 
         {/* True center title across full header width */}
@@ -191,7 +204,6 @@ export default function StakeScreen() {
       </View>
 
       <ScrollView className="flex-1" contentContainerClassName="p-5" style={{ backgroundColor: 'transparent' }}>
-        {/* Top error banner removed — action errors are shown inline on buttons */}
 
         {/* Warning */}
         <View className="bg-blood/10 border border-blood-dark p-4 mb-6">
@@ -209,7 +221,7 @@ Offer it. Lose it on death. Escape and claim more.
                 key={amount}
                 className={`flex-1 py-3 items-center border ${
                   selectedStake === amount
-                    ? 'border-amber bg-amber/10' 
+                    ? 'border-amber bg-amber/10'
                     : 'border-crypt-border-light bg-crypt-surface'
                 }`}
                 onPress={() => {
@@ -225,8 +237,7 @@ Offer it. Lose it on death. Escape and claim more.
               </Pressable>
             ))}
           </View>
-
-                  </View>
+        </View>
 
         {/* Summary */}
         <View className="bg-crypt-surface border border-crypt-border p-4 mb-6">
@@ -244,7 +255,7 @@ Offer it. Lose it on death. Escape and claim more.
           </View>
         </View>
 
-        {/* Identity row — always above action buttons */}
+        {/* Identity row */}
         <View className="items-center mb-5">
           <Pressable
             className="flex-row items-center gap-2"
@@ -373,7 +384,7 @@ Offer it. Lose it on death. Escape and claim more.
         animationType="fade"
         onRequestClose={() => setShowWalletPicker(false)}
       >
-        <Pressable 
+        <Pressable
           className="flex-1 bg-black/80 justify-center items-center p-6"
           onPress={() => setShowWalletPicker(false)}
         >
@@ -381,7 +392,7 @@ Offer it. Lose it on death. Escape and claim more.
             <Text className="text-amber text-lg font-mono font-bold text-center mb-4">
               SELECT WALLET
             </Text>
-            
+
             {game.connectors.map((connector) => (
               <Pressable
                 key={connector.id}
@@ -394,7 +405,7 @@ Offer it. Lose it on death. Escape and claim more.
                 <Text className="text-bone-muted text-xl">→</Text>
               </Pressable>
             ))}
-            
+
             <Pressable
               className="mt-4 p-3"
               onPress={() => setShowWalletPicker(false)}
@@ -422,13 +433,13 @@ Offer it. Lose it on death. Escape and claim more.
         }}
         onSkip={() => setShowNicknameEdit(false)}
       />
-      
+
       {/* Link Wallet Modal - for guests to upgrade their account */}
       <LinkWalletModal
         visible={showLinkWallet}
         onClose={() => setShowLinkWallet(false)}
       />
-      
+
       <AudioSettingsModal visible={audioSettingsOpen} onClose={() => setAudioSettingsOpen(false)} />
     </SafeAreaView>
     <CRTOverlay />

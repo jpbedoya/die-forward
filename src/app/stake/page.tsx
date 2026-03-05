@@ -17,12 +17,79 @@ import { generateRandomDungeon } from '@/lib/content';
 import { usePoolStats } from '@/lib/instant';
 import { useAudio } from '@/lib/audio';
 import GameFrame from '@/components/GameFrame';
+import ZoneSelector, { type ZoneData } from '@/components/ZoneSelector';
 import { 
   buildStakeInstruction, 
   generateSessionId, 
   sessionIdToHex,
   ESCROW_CONFIG 
 } from '@/lib/escrow-program';
+
+// ---------------------------------------------------------------------------
+// Mock zone data — wired up here until the zones/ directory is ready
+// ---------------------------------------------------------------------------
+const MOCK_ZONES: ZoneData[] = [
+  {
+    id: 'sunken-crypt',
+    name: 'THE SUNKEN CRYPT',
+    tagline: 'The first descent. Nothing here is alive.',
+    element: 'water',
+    difficulty: 1,
+    mechanic: null,
+    emoji: '🌊',
+    colors: { primary: '#1e3a5f', accent: '#4a9eff', text: '#a8d4ff' },
+    unlockRequirement: null,
+    enabled: true,
+  },
+  {
+    id: 'ashen-crypts',
+    name: 'THE ASHEN CRYPTS',
+    tagline: 'A civilization that chose fire over surrender.',
+    element: 'fire',
+    difficulty: 2,
+    mechanic: 'BURN — hesitation kills you.',
+    emoji: '🔥',
+    colors: { primary: '#3d1a00', accent: '#ff6b2b', text: '#ffb380' },
+    unlockRequirement: 'Complete one run',
+    enabled: false,
+  },
+  {
+    id: 'frozen-gallery',
+    name: 'THE FROZEN GALLERY',
+    tagline: 'Time stopped here. The dead are preserved perfectly.',
+    element: 'ice',
+    difficulty: 2,
+    mechanic: 'CHILL — stamina slows. FREEZE — enemies skip turns.',
+    emoji: '❄️',
+    colors: { primary: '#0d1f2d', accent: '#7eceff', text: '#c8ecff' },
+    unlockRequirement: 'Complete one run',
+    enabled: false,
+  },
+  {
+    id: 'living-tomb',
+    name: 'THE LIVING TOMB',
+    tagline: 'Something grew in the dark. Now everything is part of it.',
+    element: 'organic',
+    difficulty: 2,
+    mechanic: 'INFECTION — kill fast or be consumed.',
+    emoji: '🩸',
+    colors: { primary: '#1a0a0a', accent: '#c0392b', text: '#e8a0a0' },
+    unlockRequirement: 'Complete one run',
+    enabled: false,
+  },
+  {
+    id: 'void-beyond',
+    name: 'THE VOID BEYOND',
+    tagline: 'Where the underworld forgot to finish building.',
+    element: 'void',
+    difficulty: 3,
+    mechanic: 'FLUX — nothing is reliable. CLARITY — protect your mind.',
+    emoji: '🌑',
+    colors: { primary: '#0d0010', accent: '#9b59b6', text: '#d7aef5' },
+    unlockRequirement: 'Clear 3 different zones',
+    enabled: false,
+  },
+];
 
 const stakeOptions = [
   { amount: 0.01, label: 'Timid' },
@@ -55,6 +122,14 @@ export default function StakeScreen() {
   const [nickname, setNickname] = useState('');
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Zone selection flow — 'zone' step comes before 'stake' step
+  type StakeStep = 'zone' | 'stake';
+  const [currentStep, setCurrentStep] = useState<StakeStep>('zone');
+  // Auto-select the only enabled zone (sunken-crypt)
+  const [selectedZoneId, setSelectedZoneId] = useState<string | null>(
+    MOCK_ZONES.find((z) => z.enabled)?.id ?? null
+  );
   
   // Check for demo wallet (fake wallet for testing without real connection)
   // Read synchronously to avoid race condition with redirect
@@ -265,6 +340,7 @@ export default function StakeScreen() {
           demoMode: DEMO_MODE || isDemo,
           escrowSessionId: escrowSessionId ? sessionIdToHex(escrowSessionId) : null,
           useEscrow: USE_ESCROW_PROGRAM && !DEMO_MODE && !isDemo,
+          zoneId: selectedZoneId,
         }),
       });
 
@@ -343,127 +419,225 @@ export default function StakeScreen() {
         </div>
       </header>
 
-      <main className="flex-1 flex flex-col items-center justify-center px-4 py-8">
-        
-        {/* Zone preview */}
-        <div className="text-center mb-6">
-          <div className="text-[var(--text-muted)] text-xs tracking-widest mb-1 flex items-center justify-center gap-2">
-            <span className="text-[var(--amber-dim)]">═══╣</span>
-            <span>ENTER</span>
-            <span className="text-[var(--amber-dim)]">╠═══</span>
-          </div>
-          <h1 className="text-[var(--amber-bright)] text-xl tracking-wider mb-1">THE SUNKEN CRYPT</h1>
-          <p className="text-[var(--text-muted)] text-xs">5-7 rooms • Water-themed horrors</p>
-        </div>
+      <main className="flex-1 flex flex-col items-center px-4 py-8">
 
-        {/* Stats */}
-        <div className="flex gap-6 text-xs text-[var(--text-muted)] mb-6">
-          <div className="text-center">
-            <div className="text-[var(--green-bright)] text-lg">
-              {selectedStake ? (selectedStake * 1.5).toFixed(3) : '--'}
-            </div>
-            <div>potential win</div>
-          </div>
-          <div className="text-center">
-            <div className="text-[var(--red-bright)] text-lg">
-              {statsLoading ? '...' : totalDeaths}
-            </div>
-            <div>deaths</div>
-          </div>
-          <div className="text-center">
-            <div className="text-[var(--amber-bright)] text-lg">
-              {selectedStake ? `${((1.5 - 1) * 100).toFixed(0)}%` : '--'}
-            </div>
-            <div>bonus</div>
-          </div>
-        </div>
+        {/* ── STEP 1: Zone Selection ─────────────────────────────────────── */}
+        {currentStep === 'zone' && (
+          <div className="w-full max-w-2xl flex flex-col gap-6">
 
-        {/* Stake selection */}
-        <div className="w-full max-w-xs mb-4">
-          <div className="text-[var(--text-muted)] text-xs uppercase tracking-wider mb-2">
-            Choose Your Stake
-          </div>
-          <div className="space-y-2">
-            {stakeOptions.map((option) => {
-              const canAfford = balance !== null && option.amount <= balance;
-              return (
-                <button
-                  key={option.amount}
-                  onClick={() => {
-                    if (canAfford) {
-                      playSFX('ui-click');
-                      setSelectedStake(option.amount);
-                    }
-                  }}
-                  disabled={!canAfford}
-                  className={`w-full text-left px-4 py-2.5 transition-all ${
-                    selectedStake === option.amount
-                      ? 'bg-[var(--amber-dim)]/30 border border-[var(--amber)] text-[var(--amber-bright)]'
-                      : canAfford
-                      ? 'bg-[var(--bg-surface)] border border-[var(--border-dim)] text-[var(--text-secondary)]'
-                      : 'bg-[var(--bg-base)] border border-[var(--border-dim)] text-[var(--text-dim)] opacity-50 cursor-not-allowed'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="text-[var(--amber)]">◎</span>
-                      <span className="ml-2 font-bold">{option.amount} SOL</span>
-                      {!canAfford && <span className="text-[var(--red)] text-[10px] ml-2">(insufficient)</span>}
-                    </div>
-                    <span className={selectedStake === option.amount ? 'text-[var(--amber)]' : 'text-[var(--text-muted)]'}>
-                      {option.label}
-                    </span>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Debug log - only shown when DEBUG=true */}
-        {DEBUG && debugLog.length > 0 && (
-          <div className="w-full max-w-xs mb-4 px-3 py-2 border border-[var(--border-dim)] bg-[var(--bg-surface)] text-[10px] font-mono max-h-40 overflow-y-auto">
-            {debugLog.map((msg, i) => (
-              <div key={i} className={msg.includes('ERROR') || msg.includes('FAILED') ? 'text-[var(--red-bright)]' : 'text-[var(--text-muted)]'}>
-                {msg}
+            {/* Section header */}
+            <div className="text-center">
+              <div className="text-[var(--text-muted)] text-xs tracking-widest mb-1 flex items-center justify-center gap-2">
+                <span className="text-[var(--amber-dim)]">═══╣</span>
+                <span>CHOOSE YOUR DESCENT</span>
+                <span className="text-[var(--amber-dim)]">╠═══</span>
               </div>
-            ))}
+              <p className="text-[var(--text-dim)] text-[10px] mt-1">
+                Select a zone. Each crypt has its own horrors.
+              </p>
+            </div>
+
+            {/* Zone cards */}
+            <ZoneSelector
+              zones={MOCK_ZONES}
+              selectedZoneId={selectedZoneId}
+              onSelect={(id) => setSelectedZoneId(id)}
+            />
+
+            {/* Selected zone confirmation panel */}
+            {selectedZoneId && (() => {
+              const zone = MOCK_ZONES.find((z) => z.id === selectedZoneId);
+              if (!zone) return null;
+              return (
+                <div
+                  className="border px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+                  style={{
+                    borderColor: zone.colors.accent,
+                    backgroundColor: `${zone.colors.primary}22`,
+                  }}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">{zone.emoji}</span>
+                    <div>
+                      <div
+                        className="text-xs font-bold tracking-wider"
+                        style={{ color: zone.colors.accent }}
+                      >
+                        {zone.name}
+                      </div>
+                      <div className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
+                        {zone.tagline}
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      playSFX('ui-click');
+                      setCurrentStep('stake');
+                    }}
+                    className="px-4 py-2.5 border text-xs tracking-wider transition-all hover:opacity-80 whitespace-nowrap"
+                    style={{
+                      borderColor: zone.colors.accent,
+                      color: zone.colors.accent,
+                      backgroundColor: `${zone.colors.primary}44`,
+                    }}
+                  >
+                    ENTER THE CRYPT →
+                  </button>
+                </div>
+              );
+            })()}
+
           </div>
         )}
 
-        {/* Error message */}
-        {error && (
-          <div className="w-full max-w-xs text-[var(--red-bright)] text-xs mb-4 px-4 py-2 border border-[var(--red-dim)] bg-[var(--red-dim)]/20">
-            {error}
-          </div>
-        )}
+        {/* ── STEP 2: Stake Amount ───────────────────────────────────────── */}
+        {currentStep === 'stake' && (() => {
+          const zone = MOCK_ZONES.find((z) => z.id === selectedZoneId);
+          return (
+            <div className="w-full max-w-xs flex flex-col gap-0">
 
-        {/* Enter button */}
-        <button
-          onClick={() => {
-            playSFX('ui-hover');
-            handleEnter();
-          }}
-          disabled={!selectedStake || confirming}
-          className="w-full max-w-xs px-6 py-4 bg-[var(--amber-dim)]/30 border border-[var(--amber)] text-[var(--amber-bright)] hover:bg-[var(--amber-dim)]/50 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-        >
-          {confirming ? (
-            <span className="flex items-center justify-center gap-2">
-              <span className="animate-pulse">◈</span>
-              Confirming transaction...
-            </span>
-          ) : selectedStake ? (
-            <span>▶ Stake {selectedStake} SOL & Enter</span>
-          ) : (
-            <span>Select a stake amount</span>
-          )}
-        </button>
+              {/* Back button */}
+              <button
+                onClick={() => {
+                  playSFX('ui-hover');
+                  setCurrentStep('zone');
+                }}
+                className="text-[var(--text-muted)] text-xs hover:text-[var(--text-secondary)] mb-5 self-start transition-colors"
+              >
+                ← change zone
+              </button>
 
-        {/* Warning */}
-        <p className="text-[var(--text-dim)] text-[10px] text-center mt-4 max-w-xs">
-          Your stake will be added to the Memorial Pool if you die. 
-          Clear the crypt to claim a share of the pool.
-        </p>
+              {/* Zone reminder */}
+              {zone && (
+                <div className="text-center mb-6">
+                  <div className="text-[var(--text-muted)] text-xs tracking-widest mb-1 flex items-center justify-center gap-2">
+                    <span className="text-[var(--amber-dim)]">═══╣</span>
+                    <span>ENTER</span>
+                    <span className="text-[var(--amber-dim)]">╠═══</span>
+                  </div>
+                  <h1
+                    className="text-xl tracking-wider mb-1"
+                    style={{ color: zone.colors.accent }}
+                  >
+                    {zone.emoji} {zone.name}
+                  </h1>
+                  <p className="text-[var(--text-muted)] text-xs">5-7 rooms • {zone.element}-themed horrors</p>
+                </div>
+              )}
+
+              {/* Stats */}
+              <div className="flex gap-6 text-xs text-[var(--text-muted)] mb-6 justify-center">
+                <div className="text-center">
+                  <div className="text-[var(--green-bright)] text-lg">
+                    {selectedStake ? (selectedStake * 1.5).toFixed(3) : '--'}
+                  </div>
+                  <div>potential win</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-[var(--red-bright)] text-lg">
+                    {statsLoading ? '...' : totalDeaths}
+                  </div>
+                  <div>deaths</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-[var(--amber-bright)] text-lg">
+                    {selectedStake ? `${((1.5 - 1) * 100).toFixed(0)}%` : '--'}
+                  </div>
+                  <div>bonus</div>
+                </div>
+              </div>
+
+              {/* Stake selection */}
+              <div className="w-full mb-4">
+                <div className="text-[var(--text-muted)] text-xs uppercase tracking-wider mb-2">
+                  Choose Your Stake
+                </div>
+                <div className="space-y-2">
+                  {stakeOptions.map((option) => {
+                    const canAfford = balance !== null && option.amount <= balance;
+                    return (
+                      <button
+                        key={option.amount}
+                        onClick={() => {
+                          if (canAfford) {
+                            playSFX('ui-click');
+                            setSelectedStake(option.amount);
+                          }
+                        }}
+                        disabled={!canAfford}
+                        className={`w-full text-left px-4 py-2.5 transition-all ${
+                          selectedStake === option.amount
+                            ? 'bg-[var(--amber-dim)]/30 border border-[var(--amber)] text-[var(--amber-bright)]'
+                            : canAfford
+                            ? 'bg-[var(--bg-surface)] border border-[var(--border-dim)] text-[var(--text-secondary)]'
+                            : 'bg-[var(--bg-base)] border border-[var(--border-dim)] text-[var(--text-dim)] opacity-50 cursor-not-allowed'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <span className="text-[var(--amber)]">◎</span>
+                            <span className="ml-2 font-bold">{option.amount} SOL</span>
+                            {!canAfford && <span className="text-[var(--red)] text-[10px] ml-2">(insufficient)</span>}
+                          </div>
+                          <span className={selectedStake === option.amount ? 'text-[var(--amber)]' : 'text-[var(--text-muted)]'}>
+                            {option.label}
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Debug log */}
+              {DEBUG && debugLog.length > 0 && (
+                <div className="w-full mb-4 px-3 py-2 border border-[var(--border-dim)] bg-[var(--bg-surface)] text-[10px] font-mono max-h-40 overflow-y-auto">
+                  {debugLog.map((msg, i) => (
+                    <div key={i} className={msg.includes('ERROR') || msg.includes('FAILED') ? 'text-[var(--red-bright)]' : 'text-[var(--text-muted)]'}>
+                      {msg}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Error message */}
+              {error && (
+                <div className="w-full text-[var(--red-bright)] text-xs mb-4 px-4 py-2 border border-[var(--red-dim)] bg-[var(--red-dim)]/20">
+                  {error}
+                </div>
+              )}
+
+              {/* Enter button */}
+              <button
+                onClick={() => {
+                  playSFX('ui-hover');
+                  handleEnter();
+                }}
+                disabled={!selectedStake || confirming}
+                className="w-full px-6 py-4 bg-[var(--amber-dim)]/30 border border-[var(--amber)] text-[var(--amber-bright)] hover:bg-[var(--amber-dim)]/50 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                {confirming ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="animate-pulse">◈</span>
+                    Confirming transaction...
+                  </span>
+                ) : selectedStake ? (
+                  <span>▶ Stake {selectedStake} SOL & Enter</span>
+                ) : (
+                  <span>Select a stake amount</span>
+                )}
+              </button>
+
+              {/* Warning */}
+              <p className="text-[var(--text-dim)] text-[10px] text-center mt-4">
+                Your stake will be added to the Memorial Pool if you die.
+                Clear the crypt to claim a share of the pool.
+              </p>
+
+            </div>
+          );
+        })()}
 
       </main>
 
