@@ -16,12 +16,12 @@ import { AsciiLoader } from '../components/AsciiLoader';
 const STAKE_OPTIONS = [0.01, 0.05, 0.1, 0.25];
 
 // Zone data for display purposes only (name + emoji lookup)
-const ZONE_META: Record<string, { name: string; emoji: string; accentColor: string; bgColor: string }> = {
-  'sunken-crypt':   { name: 'THE SUNKEN CRYPT',   emoji: '🌊', accentColor: '#4a9eff', bgColor: '#0a1628' },
-  'ashen-crypts':   { name: 'THE ASHEN CRYPTS',   emoji: '🔥', accentColor: '#ff6b2b', bgColor: '#1a0800' },
-  'frozen-gallery': { name: 'THE FROZEN GALLERY',  emoji: '❄️', accentColor: '#7eceff', bgColor: '#040d14' },
-  'living-tomb':    { name: 'THE LIVING TOMB',     emoji: '🩸', accentColor: '#c0392b', bgColor: '#0f0000' },
-  'void-beyond':    { name: 'THE VOID BEYOND',     emoji: '🌑', accentColor: '#9b59b6', bgColor: '#06000f' },
+const ZONE_META: Record<string, { name: string; emoji: string; accentColor: string; bgColor: string; element: string; tagline: string }> = {
+  'sunken-crypt':   { name: 'THE SUNKEN CRYPT',   emoji: '🌊', accentColor: '#4a9eff', bgColor: '#0a1628', element: 'WATER', tagline: 'The dead float here. They always rise.' },
+  'ashen-crypts':   { name: 'THE ASHEN CRYPTS',   emoji: '🔥', accentColor: '#ff6b2b', bgColor: '#1a0800', element: 'FIRE',  tagline: 'Everything here has already burned.' },
+  'frozen-gallery': { name: 'THE FROZEN GALLERY',  emoji: '❄️', accentColor: '#7eceff', bgColor: '#040d14', element: 'ICE',   tagline: 'Time stopped here. The dead are preserved perfectly.' },
+  'living-tomb':    { name: 'THE LIVING TOMB',     emoji: '🩸', accentColor: '#c0392b', bgColor: '#0f0000', element: 'ORGANIC', tagline: 'The walls breathe. Something grows in the dark.' },
+  'void-beyond':    { name: 'THE VOID BEYOND',     emoji: '🌑', accentColor: '#9b59b6', bgColor: '#06000f', element: 'VOID',  tagline: 'You are not sure this place exists.' },
 };
 
 export default function StakeScreen() {
@@ -186,13 +186,12 @@ export default function StakeScreen() {
     <SafeAreaView className="flex-1">
       {/* Header */}
       <View className="relative flex-row items-center justify-between px-4 py-3 border-b border-crypt-border">
-        {/* Zone indicator — tap to go back */}
+        {/* Back to zone selector */}
         <Pressable
           onPress={() => router.back()}
-          className="flex-row items-center gap-1 py-2 px-3 -ml-3"
+          className="py-2 px-3 -ml-3"
         >
-          <Text style={{ fontSize: 16 }}>{zoneMeta.emoji}</Text>
-          <Text className="text-bone-muted text-xs font-mono">{zoneMeta.name}</Text>
+          <Text className="text-bone-muted text-xs font-mono">[ ZONES ]</Text>
         </Pressable>
 
         {/* True center title across full header width */}
@@ -204,6 +203,19 @@ export default function StakeScreen() {
       </View>
 
       <ScrollView className="flex-1" contentContainerClassName="p-5" style={{ backgroundColor: 'transparent' }}>
+
+        {/* Zone identity */}
+        <View className="mb-5 pb-4 border-b border-crypt-border">
+          <Text style={{ color: zoneMeta.accentColor ?? '#c8a96e' }} className="text-[10px] font-mono tracking-widest mb-1">
+            [ {zoneMeta.element} ]
+          </Text>
+          <Text style={{ color: zoneMeta.accentColor ?? '#c8a96e' }} className="text-lg font-mono font-bold tracking-widest">
+            {zoneMeta.name}
+          </Text>
+          {zoneMeta.tagline ? (
+            <Text className="text-bone-muted text-xs font-mono mt-1 leading-4">{zoneMeta.tagline}</Text>
+          ) : null}
+        </View>
 
         {/* Warning */}
         <View className="bg-blood/10 border border-blood-dark p-4 mb-6">

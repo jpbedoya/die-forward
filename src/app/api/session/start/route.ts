@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { init, tx, id } from '@instantdb/admin';
 import { startErRun, requestErVrfSeed, getErVrfSeed } from '@/lib/magicblock';
+import { loadZone } from '@/lib/content';
 import crypto from 'crypto';
 
 // Initialize InstantDB Admin client
@@ -32,6 +33,8 @@ export async function POST(request: NextRequest) {
     // Validate zoneId — whitelist of known zones
     const VALID_ZONE_IDS = ['sunken-crypt', 'ashen-crypts', 'frozen-gallery', 'living-tomb', 'void-beyond'];
     const zoneId: string = VALID_ZONE_IDS.includes(rawZoneId) ? rawZoneId : 'sunken-crypt';
+    const zonePkg = await loadZone(zoneId).catch(() => null);
+    const zoneName = zonePkg?.meta?.name ?? zoneId.toUpperCase();
 
     // Validate inputs
     if (!walletAddress || typeof walletAddress !== 'string') {
@@ -101,12 +104,12 @@ export async function POST(request: NextRequest) {
         authId: authId || walletAddress, // Unique player ID for stats tracking
         stakeAmount,
         txSignature: txSignature || null,
-        zone: zoneId === 'sunken-crypt' ? 'THE SUNKEN CRYPT' : zoneId === 'living-tomb' ? 'THE LIVING TOMB' : zoneId,
+        zone: zoneName,
         zoneId,
         startedAt: Date.now(),
         status: 'active', // active, completed, dead
         currentRoom: 1, // Server-tracked room (1-indexed)
-        maxRooms: 7, // Total rooms in dungeon
+        maxRooms: 13, // Total rooms in dungeon
         demoMode: demoMode || false, // Demo mode flag for testing
         escrowSessionId: escrowSessionId || null, // On-chain session ID (hex string)
         useEscrow: useEscrow || false, // Whether using on-chain escrow
@@ -128,7 +131,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       sessionToken,
-      zone: zoneId === 'sunken-crypt' ? 'THE SUNKEN CRYPT' : zoneId,
+      zone: zoneName,
       zoneId,
       seed, // Client uses this for deterministic randomness
       seedSource,

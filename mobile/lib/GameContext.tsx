@@ -35,6 +35,7 @@ interface GameState {
   // Session
   sessionToken: string | null;
   stakeAmount: number;
+  zoneId: string;
   currentRoom: number;
   health: number;
   stamina: number;
@@ -103,6 +104,7 @@ const initialState: GameState = {
   guestProgressExists: false,
   sessionToken: null,
   stakeAmount: 0,
+  zoneId: 'sunken-crypt',
   currentRoom: 0,
   health: 100,
   stamina: 3,
@@ -556,6 +558,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       updateState({
         sessionToken: session.sessionToken,
         stakeAmount: emptyHanded ? 0 : amount,  // Empty handed stores 0 so isEmptyHanded works correctly
+        zoneId: session.zoneId || zoneId || 'sunken-crypt',
         currentRoom: 0,
         health: 100,
         stamina: 3,

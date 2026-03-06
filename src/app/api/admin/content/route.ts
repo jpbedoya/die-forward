@@ -1,15 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
 import { getZoneOverride, setZoneOverride } from '@/lib/zone-overrides';
 
-const ZONES_DIR = path.join(process.cwd(), 'zones');
 const VALID_ZONES = ['sunken-crypt', 'ashen-crypts', 'frozen-gallery', 'living-tomb', 'void-beyond'];
 const VALID_CATEGORIES = ['explore', 'combat', 'corpse', 'cache', 'exit', 'options'];
 
-function zonePath(zoneId: string) {
-  return path.join(ZONES_DIR, `${zoneId}.json`);
-}
+// Static zone loaders — same pattern as content.ts so Next.js bundles them at build time
+type ZoneData = { fragments?: Record<string, unknown>; rooms?: Record<string, unknown> };
+const ZONE_LOADERS: Record<string, () => Promise<ZoneData>> = {
+  'sunken-crypt':   () => import('../../../../../zones/sunken-crypt.json').then(m => m.default as unknown as ZoneData),
+  'ashen-crypts':  () => import('../../../../../zones/ashen-crypts.json').then(m => m.default as unknown as ZoneData),
+  'frozen-gallery':() => import('../../../../../zones/frozen-gallery.json').then(m => m.default as unknown as ZoneData),
+  'living-tomb':   () => import('../../../../../zones/living-tomb.json').then(m => m.default as unknown as ZoneData),
+  'void-beyond':   () => import('../../../../../zones/void-beyond.json').then(m => m.default as unknown as ZoneData),
+};
 
 /** InstantDB section key for fragment categories */
 function fragmentSection(category: string) {
@@ -31,9 +34,8 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ fragments: override });
     }
 
-    // Fall back to bundled JSON file
-    const raw = await fs.readFile(zonePath(zone), 'utf-8');
-    const data = JSON.parse(raw);
+    // Fall back to bundled zone data (works on Vercel — no fs required)
+    const data = await ZONE_LOADERS[zone]();
 
     // Zones use fragments (new system) or rooms (old sunken-crypt system)
     const fragments = data.fragments?.[category] ?? data.rooms?.[category] ?? {};

@@ -1,14 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
 import { getZoneOverride, setZoneOverride } from '@/lib/zone-overrides';
 
-const ZONES_DIR = path.join(process.cwd(), 'zones');
 const VALID_ZONES = ['sunken-crypt', 'ashen-crypts', 'frozen-gallery', 'living-tomb', 'void-beyond'];
 
-function zonePath(zoneId: string) {
-  return path.join(ZONES_DIR, `${zoneId}.json`);
-}
+// Static zone loaders — same pattern as content.ts so Next.js bundles them at build time
+const ZONE_LOADERS: Record<string, () => Promise<{ bestiary?: { local?: unknown[] } }>> = {
+  'sunken-crypt':   () => import('../../../../../zones/sunken-crypt.json').then(m => m.default as unknown as { bestiary?: { local?: unknown[] } }),
+  'ashen-crypts':  () => import('../../../../../zones/ashen-crypts.json').then(m => m.default as unknown as { bestiary?: { local?: unknown[] } }),
+  'frozen-gallery':() => import('../../../../../zones/frozen-gallery.json').then(m => m.default as unknown as { bestiary?: { local?: unknown[] } }),
+  'living-tomb':   () => import('../../../../../zones/living-tomb.json').then(m => m.default as unknown as { bestiary?: { local?: unknown[] } }),
+  'void-beyond':   () => import('../../../../../zones/void-beyond.json').then(m => m.default as unknown as { bestiary?: { local?: unknown[] } }),
+};
 
 export async function GET(req: NextRequest) {
   const zone = req.nextUrl.searchParams.get('zone') || 'sunken-crypt';
@@ -23,18 +25,20 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ creatures: override });
     }
 
-    // Fall back to bundled JSON file
-    const raw = await fs.readFile(zonePath(zone), 'utf-8');
-    const data = JSON.parse(raw);
-    const local: unknown[] = (data.bestiary?.local || []).map((c: Record<string, unknown>) => ({
-      name: typeof c === 'string' ? c : c.name,
-      tier: c.tier ?? 1,
-      health: c.health ?? { min: 40, max: 60 },
-      behaviors: c.behaviors ?? [],
-      description: c.description ?? '',
-      emoji: c.emoji ?? '👾',
-      artUrl: c.artUrl ?? '',
-    }));
+    // Fall back to bundled zone data (works on Vercel — no fs required)
+    const data = await ZONE_LOADERS[zone]();
+    const local: unknown[] = (data.bestiary?.local || []).map((c: unknown) => {
+      const creature = c as Record<string, unknown>;
+      return {
+        name: typeof creature === 'string' ? creature : creature.name,
+        tier: creature.tier ?? 1,
+        health: creature.health ?? { min: 40, max: 60 },
+        behaviors: creature.behaviors ?? [],
+        description: creature.description ?? '',
+        emoji: creature.emoji ?? '👾',
+        artUrl: creature.artUrl ?? '',
+      };
+    });
     return NextResponse.json({ creatures: local });
   } catch (err) {
     return NextResponse.json({ error: 'Failed to load zone' }, { status: 500 });

@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
 
     // Validate inputs
     if (!sessionToken || typeof sessionToken !== 'string') {
-      return NextResponse.json({ error: 'Invalid session token' }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid session token' }, { status: 400, headers: corsHeaders });
     }
 
     // Find the session by token
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
 
     const sessions = result?.sessions || [];
     if (sessions.length === 0) {
-      return NextResponse.json({ error: 'Invalid or expired session' }, { status: 403 });
+      return NextResponse.json({ error: 'Invalid or expired session' }, { status: 403, headers: corsHeaders });
     }
 
     const session = sessions[0];
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
         error: 'Dungeon not completed',
         currentRoom,
         required: maxRooms,
-      }, { status: 403 });
+      }, { status: 403, headers: corsHeaders });
     }
 
     // Calculate reward (stake back + bonus from pool)
@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
         reward: 0,
         payoutStatus: 'free_mode',
         message: session.isAgent ? 'Agent free mode - no staking' : 'Demo mode - no real payout',
-      });
+      }, { headers: corsHeaders });
     }
 
     // Get pool wallet
@@ -158,7 +158,7 @@ export async function POST(request: NextRequest) {
           reward: totalReward,
           payoutStatus: 'pending',
           message: 'Victory recorded! Escrow payout failed - manual intervention needed.',
-        });
+        }, { headers: corsHeaders });
       }
       
       signature = escrowSig;
@@ -186,7 +186,7 @@ export async function POST(request: NextRequest) {
           reward: totalReward,
           payoutStatus: 'pending', // Will need manual payout
           message: 'Victory recorded! Payout pending (pool needs funding).',
-        });
+        }, { headers: corsHeaders });
       }
 
       // Create and send payout transaction
@@ -234,7 +234,7 @@ export async function POST(request: NextRequest) {
       if (players && players.length > 0) {
         const player = players[0];
         const currentHighest = (player as Record<string, unknown>).highestRoom as number || 0;
-        const clearedRoom = 12; // Full dungeon clear = room 12
+        const clearedRoom = session.currentRoom || 12; // Full dungeon clear = actual room reached
 
         // Parse existing zonesCleared (stored as JSON string)
         const zonesClearedRaw = (player as Record<string, unknown>).zonesCleared as string || '[]';
@@ -290,10 +290,10 @@ export async function POST(request: NextRequest) {
       reward: totalReward,
       payoutStatus: 'paid',
       txSignature: signature,
-    });
+    }, { headers: corsHeaders });
 
   } catch (error) {
     console.error('Failed to process victory:', error);
-    return NextResponse.json({ error: 'Failed to process victory' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to process victory' }, { status: 500, headers: corsHeaders });
   }
 }

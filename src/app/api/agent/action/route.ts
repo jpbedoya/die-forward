@@ -249,6 +249,8 @@ export async function POST(request: NextRequest) {
           room: currentRoom,
           stakeAmount: 0,
           finalMessage: message,
+          killedBy: session.currentEnemy || 'Unknown',
+          finalRoom: currentRoom,
           inventory: session.inventory,
           isAgent: true,
           agentName: session.agentName,
@@ -261,15 +263,19 @@ export async function POST(request: NextRequest) {
           playerName: session.playerName,
           walletAddress: session.walletAddress,
           finalMessage: message,
+          killedBy: session.currentEnemy || 'Unknown',
           loot: inventory[0]?.name || 'Nothing',
           lootEmoji: inventory[0]?.emoji || '💀',
           discovered: false,
+          tipped: false,
+          tipAmount: 0,
           isAgent: true,
           createdAt: Date.now(),
         }),
         tx.sessions[sessionId].update({
           status: 'dead',
           endedAt: Date.now(),
+          finalRoom: currentRoom,
         }),
       ]);
       
@@ -663,7 +669,7 @@ export async function POST(request: NextRequest) {
       } else {
         // Enemy survives - new intent
         wasCharging = enemyIntent === 'CHARGING';
-        const newIntent = getCreatureIntent(room.enemy?.name || 'enemy');
+        const newIntent = getCreatureIntent(room.enemy?.name || 'enemy', session.zoneId || 'sunken-crypt');
         enemyIntent = newIntent.type;
         // CHILL reduces stamina regen: at 1+ stacks, stamina does not recover
         const staminaRegen = currentChillStacks === 0 ? 1 : 0;

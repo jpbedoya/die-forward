@@ -45,6 +45,7 @@ export interface StartSessionResponse {
   success: boolean;
   sessionToken: string;
   zone: string;
+  zoneId?: string;
   seed: string;  // Legacy/fallback RNG seed
   vrfSeed?: string; // Optional VRF seed when ER+VRF path is ready
   enableVrf?: boolean;
@@ -67,7 +68,7 @@ export interface DeathResponse {
 export interface VictoryResponse {
   success: boolean;
   reward?: number;
-  signature?: string;
+  txSignature?: string;
   message?: string;
 }
 

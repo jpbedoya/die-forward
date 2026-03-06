@@ -506,7 +506,7 @@ function ZonesTab() {
 // 👹 BESTIARY TAB
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const BEHAVIORS = ['AGGRESSIVE', 'DEFENSIVE', 'STALKING', 'ERRATIC', 'SUPPORT', 'BOSS'];
+const BEHAVIORS = ['AGGRESSIVE', 'DEFENSIVE', 'CHARGING', 'ERRATIC', 'HUNTING', 'STALKING', 'RETREATING'];
 const TIERS = [1, 2, 3];
 
 const EMPTY_CREATURE = {

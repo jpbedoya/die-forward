@@ -145,9 +145,6 @@ const ZONE_LOADERS: Record<string, () => Promise<ZonePackage>> = {
 // Cache of loaded zones (in-memory for the process lifetime)
 const ZONE_CACHE: Record<string, ZonePackage> = {};
 
-// Active zone for the current session (module-level singleton on the server)
-let _activeZone: ZonePackage | null = null;
-
 /**
  * Load a zone package by id. Merges InstantDB overrides on top of the bundled JSON.
  * Results are cached in-memory for the process lifetime.
@@ -188,23 +185,11 @@ export async function loadZone(zoneId: string): Promise<ZonePackage> {
 }
 
 /**
- * Set the active zone for this session (synchronous, zone must already be cached).
- * Call loadZone first to ensure it's cached.
+ * Get the zone for the given zoneId. Falls back to sunken-crypt data if not cached.
  */
-export function setActiveZone(zoneId: string): void {
-  const cached = ZONE_CACHE[zoneId];
-  if (!cached) {
-    console.warn(`[content] setActiveZone: zone "${zoneId}" not cached yet. Call loadZone() first.`);
-    return;
-  }
-  _activeZone = cached;
-}
-
-/**
- * Get the active zone. Falls back to sunken-crypt data if not loaded.
- */
-export function getActiveZone(): ZonePackage {
-  if (_activeZone) return _activeZone;
+export function getActiveZone(zoneId: string = 'sunken-crypt'): ZonePackage {
+  if (ZONE_CACHE[zoneId]) return ZONE_CACHE[zoneId];
+  if (zoneId !== 'sunken-crypt' && ZONE_CACHE['sunken-crypt']) return ZONE_CACHE['sunken-crypt'];
   // Return a fallback built from the legacy flat JSON files (backward compat)
   return buildFallbackZone();
 }
@@ -312,36 +297,36 @@ function pickRoom(rooms: RoomTemplate[], template?: string): RoomVariation {
 }
 
 // Get random explore room by template type
-export function getExploreRoom(template?: string): RoomVariation {
-  const rooms = getActiveZone().rooms;
+export function getExploreRoom(template?: string, zoneId: string = 'sunken-crypt'): RoomVariation {
+  const rooms = getActiveZone(zoneId).rooms;
   if (!rooms) throw new Error('Active zone has no rooms (use fragment assembly)');
   return pickRoom(rooms.explore, template);
 }
 
 // Get random combat room by template type
-export function getCombatRoom(template?: string): RoomVariation {
-  const rooms = getActiveZone().rooms;
+export function getCombatRoom(template?: string, zoneId: string = 'sunken-crypt'): RoomVariation {
+  const rooms = getActiveZone(zoneId).rooms;
   if (!rooms) throw new Error('Active zone has no rooms (use fragment assembly)');
   return pickRoom(rooms.combat, template);
 }
 
 // Get random corpse discovery by template type
-export function getCorpseRoom(template?: string): RoomVariation {
-  const rooms = getActiveZone().rooms;
+export function getCorpseRoom(template?: string, zoneId: string = 'sunken-crypt'): RoomVariation {
+  const rooms = getActiveZone(zoneId).rooms;
   if (!rooms) throw new Error('Active zone has no rooms (use fragment assembly)');
   return pickRoom(rooms.corpse, template);
 }
 
 // Get random cache room by template type
-export function getCacheRoom(template?: string): RoomVariation {
-  const rooms = getActiveZone().rooms;
+export function getCacheRoom(template?: string, zoneId: string = 'sunken-crypt'): RoomVariation {
+  const rooms = getActiveZone(zoneId).rooms;
   if (!rooms) throw new Error('Active zone has no rooms (use fragment assembly)');
   return pickRoom(rooms.cache, template);
 }
 
 // Get random exit room by template type
-export function getExitRoom(template?: string): RoomVariation {
-  const rooms = getActiveZone().rooms;
+export function getExitRoom(template?: string, zoneId: string = 'sunken-crypt'): RoomVariation {
+  const rooms = getActiveZone(zoneId).rooms;
   if (!rooms) throw new Error('Active zone has no rooms (use fragment assembly)');
   return pickRoom(rooms.exit, template);
 }
@@ -496,7 +481,7 @@ export interface DungeonRoom {
 
 export function generateDungeon(zoneId?: string): DungeonRoom[] {
   // If a different zoneId is specified and cached, use it; otherwise use active zone
-  const zone = zoneId && ZONE_CACHE[zoneId] ? ZONE_CACHE[zoneId] : getActiveZone();
+  const zone = getActiveZone(zoneId || 'sunken-crypt');
   const rooms = zone.rooms;
   const frags = zone.fragments;
 
@@ -736,9 +721,9 @@ export const BESTIARY: Record<string, CreatureInfo> = {
   },
 };
 
-// Build a merged bestiary record from the active zone (local + shared fallback)
-function getZoneBestiaryRecord(): Record<string, CreatureInfo> {
-  const zone = getActiveZone();
+// Build a merged bestiary record from the given zone (local + shared fallback)
+function getZoneBestiaryRecord(zoneId: string = 'sunken-crypt'): Record<string, CreatureInfo> {
+  const zone = getActiveZone(zoneId);
   const result: Record<string, CreatureInfo> = {};
 
   // Start with shared (fallback BESTIARY) entries referenced by name
@@ -762,20 +747,20 @@ function getZoneBestiaryRecord(): Record<string, CreatureInfo> {
 }
 
 // Get creature info by name (zone-aware)
-export function getCreatureInfo(name: string): CreatureInfo | null {
-  const zoneBestiary = getZoneBestiaryRecord();
+export function getCreatureInfo(name: string, zoneId: string = 'sunken-crypt'): CreatureInfo | null {
+  const zoneBestiary = getZoneBestiaryRecord(zoneId);
   return zoneBestiary[name] || BESTIARY[name] || null;
 }
 
 // Get creature tier (1, 2, or 3)
-export function getCreatureTier(name: string): number {
-  const info = getCreatureInfo(name);
+export function getCreatureTier(name: string, zoneId: string = 'sunken-crypt'): number {
+  const info = getCreatureInfo(name, zoneId);
   return info?.tier || 1;
 }
 
 // Get damage multiplier based on tier
-export function getTierDamageMultiplier(name: string): number {
-  const tier = getCreatureTier(name);
+export function getTierDamageMultiplier(name: string, zoneId: string = 'sunken-crypt'): number {
+  const tier = getCreatureTier(name, zoneId);
   switch (tier) {
     case 1: return 1.0;
     case 2: return 1.5;
@@ -815,9 +800,9 @@ export const DEPTHS: DepthInfo[] = [
   },
 ];
 
-// Get depths from active zone (falls back to static DEPTHS)
-export function getActiveDepths(): DepthInfo[] {
-  const zone = _activeZone;
+// Get depths from the given zone (falls back to static DEPTHS)
+export function getActiveDepths(zoneId: string = 'sunken-crypt'): DepthInfo[] {
+  const zone = ZONE_CACHE[zoneId];
   if (!zone) return DEPTHS;
   return zone.depths as DepthInfo[];
 }
@@ -851,9 +836,9 @@ export function getRoomDamageMultiplier(roomNumber: number): number {
 }
 
 // Get random creature appropriate for a depth/tier
-export function getCreatureForRoom(roomNumber: number): CreatureInfo {
+export function getCreatureForRoom(roomNumber: number, zoneId: string = 'sunken-crypt'): CreatureInfo {
   const tier = getTierForRoom(roomNumber);
-  const zoneBestiary = getZoneBestiaryRecord();
+  const zoneBestiary = getZoneBestiaryRecord(zoneId);
   const creaturesOfTier = Object.values(zoneBestiary).filter(c => c.tier === tier);
   if (creaturesOfTier.length > 0) return pick(creaturesOfTier);
   // Fallback to shared BESTIARY
@@ -862,21 +847,21 @@ export function getCreatureForRoom(roomNumber: number): CreatureInfo {
 }
 
 // Get all creatures of a specific tier
-export function getCreaturesByTier(tier: 1 | 2 | 3): CreatureInfo[] {
-  const zoneBestiary = getZoneBestiaryRecord();
+export function getCreaturesByTier(tier: 1 | 2 | 3, zoneId: string = 'sunken-crypt'): CreatureInfo[] {
+  const zoneBestiary = getZoneBestiaryRecord(zoneId);
   return Object.values(zoneBestiary).filter(c => c.tier === tier);
 }
 
 // Get random creature health based on their tier
-export function getCreatureHealth(name: string): number {
-  const info = getCreatureInfo(name);
+export function getCreatureHealth(name: string, zoneId: string = 'sunken-crypt'): number {
+  const info = getCreatureInfo(name, zoneId);
   if (!info) return 65; // Default fallback
   return info.health.min + Math.floor(Math.random() * (info.health.max - info.health.min));
 }
 
 // Get creature's preferred intent types
-export function getCreatureIntent(name: string): { type: IntentType; description: string } {
-  const info = getCreatureInfo(name);
+export function getCreatureIntent(name: string, zoneId: string = 'sunken-crypt'): { type: IntentType; description: string } {
+  const info = getCreatureInfo(name, zoneId);
   if (!info) return getEnemyIntent();
   
   // Pick from creature's preferred behaviors
@@ -1009,9 +994,9 @@ export function getItemEffects(inventory: {name: string}[]): ItemEffects {
   return effects;
 }
 
-// Get boss creature for the active zone's boss room
-export function getBossCreature(): CreatureInfo {
-  const zone = getActiveZone();
-  const boss = getCreatureInfo(zone.boss);
+// Get boss creature for the given zone's boss room
+export function getBossCreature(zoneId: string = 'sunken-crypt'): CreatureInfo {
+  const zone = getActiveZone(zoneId);
+  const boss = getCreatureInfo(zone.boss, zoneId);
   return boss || BESTIARY['The Keeper'];
 }

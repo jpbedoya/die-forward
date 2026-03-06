@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid session token' }, { status: 400, headers: corsHeaders });
     }
 
-    if (typeof room !== 'number' || room < 1 || room > 20) {
+    if (typeof room !== 'number' || room < 1 || room > 13) {
       return NextResponse.json({ error: 'Invalid room number' }, { status: 400, headers: corsHeaders });
     }
 
