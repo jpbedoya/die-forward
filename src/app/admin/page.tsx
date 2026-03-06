@@ -39,6 +39,13 @@ interface GameSettings {
   showLeaderboardLink: boolean;
   enableMagicBlock: boolean;
   enableVRF: boolean;
+  criticalChance: number;
+  criticalMultiplier: number;
+  dodgeSuccessRate: number;
+  braceReduction: number;
+  fleeChanceBase: number;
+  fleeCleanRatio: number;
+  staminaRegen: number;
 }
 
 interface Playlist {
@@ -64,6 +71,13 @@ const DEFAULT_SETTINGS: Omit<GameSettings, 'id'> = {
   showLeaderboardLink: false,
   enableMagicBlock: false,
   enableVRF: false,
+  criticalChance: 0.15,
+  criticalMultiplier: 1.5,
+  dodgeSuccessRate: 0.70,
+  braceReduction: 0.50,
+  fleeChanceBase: 0.50,
+  fleeCleanRatio: 0.60,
+  staminaRegen: 1,
 };
 
 type Tab = 'dashboard' | 'settings' | 'zones' | 'bestiary' | 'content' | 'music' | 'deaths' | 'corpses';
@@ -253,6 +267,13 @@ function SettingsTab() {
     showLeaderboardLink: settings?.showLeaderboardLink ?? DEFAULT_SETTINGS.showLeaderboardLink,
     enableMagicBlock: settings?.enableMagicBlock ?? DEFAULT_SETTINGS.enableMagicBlock,
     enableVRF: settings?.enableVRF ?? DEFAULT_SETTINGS.enableVRF,
+    criticalChance: settings?.criticalChance ?? DEFAULT_SETTINGS.criticalChance,
+    criticalMultiplier: settings?.criticalMultiplier ?? DEFAULT_SETTINGS.criticalMultiplier,
+    dodgeSuccessRate: settings?.dodgeSuccessRate ?? DEFAULT_SETTINGS.dodgeSuccessRate,
+    braceReduction: settings?.braceReduction ?? DEFAULT_SETTINGS.braceReduction,
+    fleeChanceBase: settings?.fleeChanceBase ?? DEFAULT_SETTINGS.fleeChanceBase,
+    fleeCleanRatio: settings?.fleeCleanRatio ?? DEFAULT_SETTINGS.fleeCleanRatio,
+    staminaRegen: settings?.staminaRegen ?? DEFAULT_SETTINGS.staminaRegen,
   } as GameSettings;
 
   return (
@@ -270,6 +291,15 @@ function SettingsTab() {
       </SettingsSection>
       <SettingsSection title="Victory">
         <SettingSlider label="Victory Pool Bonus" value={cs.victoryBonusPercent} min={10} max={100} step={5} format={(v) => `${v}%`} onChange={(v) => saveSettings({ victoryBonusPercent: v })} />
+      </SettingsSection>
+      <SettingsSection title="⚔️ COMBAT TUNING">
+        <SettingSlider label="Critical Chance" value={cs.criticalChance} min={0} max={1} step={0.01} format={pct} onChange={(v) => saveSettings({ criticalChance: v })} />
+        <SettingSlider label="Critical Multiplier" value={cs.criticalMultiplier} min={1} max={3} step={0.05} format={mult} onChange={(v) => saveSettings({ criticalMultiplier: v })} />
+        <SettingSlider label="Dodge Success Rate" value={cs.dodgeSuccessRate} min={0} max={1} step={0.01} format={pct} onChange={(v) => saveSettings({ dodgeSuccessRate: v })} />
+        <SettingSlider label="Brace Reduction" value={cs.braceReduction} min={0} max={1} step={0.01} format={pct} onChange={(v) => saveSettings({ braceReduction: v })} />
+        <SettingSlider label="Flee Chance Base" value={cs.fleeChanceBase} min={0} max={1} step={0.01} format={pct} onChange={(v) => saveSettings({ fleeChanceBase: v })} />
+        <SettingSlider label="Flee Clean Ratio" value={cs.fleeCleanRatio} min={0} max={1} step={0.01} format={pct} onChange={(v) => saveSettings({ fleeCleanRatio: v })} />
+        <SettingSlider label="Stamina Regen" value={cs.staminaRegen} min={0} max={3} step={1} onChange={(v) => saveSettings({ staminaRegen: v })} />
       </SettingsSection>
       <SettingsSection title="UI">
         <SettingToggle label="Show Leaderboard Link" description="Display leaderboard link on the title screen" value={cs.showLeaderboardLink} onChange={(v) => saveSettings({ showLeaderboardLink: v })} />

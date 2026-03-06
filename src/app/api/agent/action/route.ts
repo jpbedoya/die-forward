@@ -177,6 +177,72 @@ function calculateCombat(
   return { playerDamage, enemyDamage, heal, narrative, consumeHerbs, consumeEmberFlask, consumeClarityShard, consumeFrostShard, consumeThermalFlask, fleeSuccess };
 }
 
+// ── VICTORY HELPER ────────────────────────────────────────────────────────────
+// Shared handler for both combat and exploration victories.
+// Set includeHealthAndRoom=true (explore path) to persist health and currentRoom.
+async function processVictory(
+  sessionId: string,
+  session: any,
+  health: number,
+  currentRoom: number,
+  clarityAfter: number,
+  visitedRoomsAfter: string[],
+  options: { includeHealthAndRoom?: boolean } = {}
+): Promise<NextResponse> {
+  let payoutResult = null;
+
+  if (session.stakeAmount > 0 && session.walletAddress) {
+    try {
+      if (session.useEscrow && session.escrowSessionId) {
+        const sig = await processVictoryPayout(session.walletAddress, session.escrowSessionId);
+        payoutResult = sig ? { status: 'paid', tx: sig } : { status: 'escrow_failed' };
+      } else {
+        const sig = await processDirectPayout(session.walletAddress, session.stakeAmount);
+        payoutResult = sig ? { status: 'paid', tx: sig } : { status: 'pool_payout_failed' };
+      }
+    } catch (e) {
+      console.error('Victory payout failed:', e);
+      payoutResult = { status: 'failed', error: String(e) };
+    }
+  }
+
+  const dbUpdate: Record<string, any> = {
+    status: 'victory',
+    endedAt: Date.now(),
+    payoutStatus: payoutResult?.status || 'free_mode',
+    payoutTx: payoutResult?.tx || null,
+    burnStacks: 0,
+    chillStacks: 0,
+    enemyFrozen: false,
+    clarity: clarityAfter,
+    visitedRooms: JSON.stringify(visitedRoomsAfter),
+    fluxActive: false,
+  };
+
+  if (options.includeHealthAndRoom) {
+    dbUpdate.health = health;
+    dbUpdate.currentRoom = currentRoom;
+  }
+
+  await db.transact([tx.sessions[sessionId].update(dbUpdate)]);
+
+  return NextResponse.json({
+    state: {
+      phase: 'victory',
+      room: currentRoom - 1,
+      totalRooms: session.totalRooms,
+      health,
+      narrative: 'Light breaks through. You have conquered the crypt.',
+    },
+    result: {
+      type: 'victory',
+      narrative: 'You emerge victorious!',
+      payout: payoutResult,
+    },
+  });
+}
+// ────────────────────────────────────────────────────────────────────────────
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -616,55 +682,7 @@ export async function POST(request: NextRequest) {
         
         if (currentRoom > session.totalRooms) {
           // Victory!
-          let payoutResult = null;
-          
-          // Process payout for staked sessions
-          if (session.stakeAmount > 0 && session.walletAddress) {
-            try {
-              if (session.useEscrow && session.escrowSessionId) {
-                // Escrow program payout
-                const sig = await processVictoryPayout(session.walletAddress, session.escrowSessionId);
-                payoutResult = sig ? { status: 'paid', tx: sig } : { status: 'escrow_failed' };
-              } else {
-                // Direct pool wallet payout (AgentWallet flow)
-                const sig = await processDirectPayout(session.walletAddress, session.stakeAmount);
-                payoutResult = sig ? { status: 'paid', tx: sig } : { status: 'pool_payout_failed' };
-              }
-            } catch (e) {
-              console.error('Victory payout failed:', e);
-              payoutResult = { status: 'failed', error: String(e) };
-            }
-          }
-          
-          await db.transact([
-            tx.sessions[sessionId].update({
-              status: 'victory',
-              endedAt: Date.now(),
-              payoutStatus: payoutResult?.status || 'free_mode',
-              payoutTx: payoutResult?.tx || null,
-              burnStacks: 0,
-              chillStacks: 0,
-              enemyFrozen: false,
-              clarity: clarityAfter,
-              visitedRooms: JSON.stringify(visitedRoomsAfter),
-              fluxActive: false,
-            }),
-          ]);
-          
-          return NextResponse.json({
-            state: {
-              phase: 'victory',
-              room: currentRoom - 1,
-              totalRooms: session.totalRooms,
-              health,
-              narrative: 'Light breaks through. You have conquered the crypt.',
-            },
-            result: {
-              type: 'victory',
-              narrative: 'You emerge victorious!',
-              payout: payoutResult,
-            },
-          });
+          return processVictory(sessionId, session, health, currentRoom, clarityAfter, visitedRoomsAfter);
         }
       } else {
         // Enemy survives - new intent
@@ -875,56 +893,7 @@ export async function POST(request: NextRequest) {
       
       // Check if done
       if (currentRoom > session.totalRooms) {
-        let payoutResult = null;
-        
-        // Process payout for staked sessions
-        if (session.stakeAmount > 0 && session.walletAddress) {
-          try {
-            if (session.useEscrow && session.escrowSessionId) {
-              const sig = await processVictoryPayout(session.walletAddress, session.escrowSessionId);
-              payoutResult = sig ? { status: 'paid', tx: sig } : { status: 'escrow_failed' };
-            } else {
-              // Direct pool wallet payout (AgentWallet flow)
-              const sig = await processDirectPayout(session.walletAddress, session.stakeAmount);
-              payoutResult = sig ? { status: 'paid', tx: sig } : { status: 'pool_payout_failed' };
-            }
-          } catch (e) {
-            console.error('Victory payout failed:', e);
-            payoutResult = { status: 'failed', error: String(e) };
-          }
-        }
-        
-        await db.transact([
-          tx.sessions[sessionId].update({
-            status: 'victory',
-            health,
-            currentRoom,
-            endedAt: Date.now(),
-            payoutStatus: payoutResult?.status || 'free_mode',
-            payoutTx: payoutResult?.tx || null,
-            burnStacks: 0,
-            chillStacks: 0,
-            enemyFrozen: false,
-            clarity: clarityAfter,
-            visitedRooms: JSON.stringify(visitedRoomsAfter),
-            fluxActive: false,
-          }),
-        ]);
-        
-        return NextResponse.json({
-          state: {
-            phase: 'victory',
-            room: currentRoom - 1,
-            totalRooms: session.totalRooms,
-            health,
-            narrative: 'Light breaks through. You have conquered the crypt.',
-          },
-          result: { 
-            type: 'victory', 
-            narrative: 'You emerge victorious!',
-            payout: payoutResult,
-          },
-        });
+        return processVictory(sessionId, session, health, currentRoom, clarityAfter, visitedRoomsAfter, { includeHealthAndRoom: true });
       }
       
       const nextRoom = dungeon[currentRoom - 1];
