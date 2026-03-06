@@ -383,7 +383,7 @@ function ZonesTab() {
   const settings = settingsData?.gameSettings?.[0] as any;
 
   // enabledZones is stored as a comma-separated string in gameSettings
-  const rawEnabled: string = settings?.enabledZones ?? 'sunken-crypt';
+  const rawEnabled: string = settings?.enabledZones ?? 'sunken-crypt,ashen-crypts,frozen-gallery,living-tomb,void-beyond';
   const enabledZones: string[] = rawEnabled.split(',').map((s: string) => s.trim()).filter(Boolean);
 
   const [editingTrack, setEditingTrack] = useState<string | null>(null);
