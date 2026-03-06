@@ -41,6 +41,7 @@ export default function StakeScreen() {
   const [sealStatus, setSealStatus] = useState<'idle' | 'signing' | 'cancelled' | 'error'>('idle');
   const [showNicknameEdit, setShowNicknameEdit] = useState(false);
   const [showLinkWallet, setShowLinkWallet] = useState(false);
+  const [pendingRun, setPendingRun] = useState<{ stake: number; emptyHanded: boolean; zoneId: string } | null>(null);
 
   useEffect(() => {
     playAmbient('ambient-title');
@@ -144,6 +145,13 @@ export default function StakeScreen() {
         if (!game.isAuthenticated || game.authType !== 'wallet') {
           await game.signInWithWallet();
         }
+      }
+
+      // If new user needs to set a nickname, pause here — modal onSubmit will resume
+      if (!game.nickname) {
+        setPendingRun({ stake: selectedStake, emptyHanded, zoneId });
+        setStaking(false);
+        return;
       }
 
       await game.startGame(selectedStake, emptyHanded, zoneId);
@@ -431,8 +439,26 @@ Offer it. Lose it on death. Escape and claim more.
       {/* Nickname Modal - first-time setup */}
       <NicknameModal
         visible={game.showNicknameModal}
-        onSubmit={(name) => game.setNickname(name)}
-        onSkip={() => game.dismissNicknameModal()}
+        onSubmit={async (name) => {
+          await game.setNickname(name);
+          if (pendingRun) {
+            const { stake, emptyHanded, zoneId: pZoneId } = pendingRun;
+            setPendingRun(null);
+            await game.startGame(stake, emptyHanded, pZoneId);
+            playSFX('depth-descend');
+            router.push('/play');
+          }
+        }}
+        onSkip={async () => {
+          game.dismissNicknameModal();
+          if (pendingRun) {
+            const { stake, emptyHanded, zoneId: pZoneId } = pendingRun;
+            setPendingRun(null);
+            await game.startGame(stake, emptyHanded, pZoneId);
+            playSFX('depth-descend');
+            router.push('/play');
+          }
+        }}
       />
 
       {/* Nickname Edit Modal - tap 🪦 to open */}
