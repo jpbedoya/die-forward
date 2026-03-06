@@ -389,8 +389,8 @@ export default function CombatScreen() {
             {!artLoadFailed && (creature.artUrl ? getCreatureAsset(creature.artUrl) : getCreatureAssetByName(creature.name)) ? (
               <Image
                 source={creature.artUrl ? getCreatureAsset(creature.artUrl) : getCreatureAssetByName(creature.name)}
-                style={{ width: 120, height: 120 }}
-                resizeMode="contain"
+                style={{ width: 96, height: 96, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(180,30,30,0.35)' }}
+                resizeMode="cover"
                 onError={() => setArtLoadFailed(true)}
               />
             ) : (

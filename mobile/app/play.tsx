@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { View, Text, Pressable, ScrollView, Alert, Platform, ViewStyle } from 'react-native';
+import { View, Text, Pressable, ScrollView, Alert, Platform, ViewStyle, Image } from 'react-native';
+import { getCreatureAsset, getCreatureAssetByName } from '../lib/creatureAssets';
 import { AsciiLoader } from '../components/AsciiLoader';
 import { CryptBackground } from '../components/CryptBackground';
 import * as Haptics from 'expo-haptics';
@@ -362,25 +363,41 @@ export default function PlayScreen() {
         )}
 
         {/* Enemy preview for combat rooms — tap to inspect */}
-        {room.type === 'combat' && room.content?.enemy && (
-          <Pressable
-            className="bg-crypt-surface border border-blood/30 p-3 mb-4 active:border-blood active:bg-blood/10"
-            onPress={() => {
-              const c = getCreatureInfo(room.content!.enemy!);
-              if (c) {
-                playSFX('ui-click');
-                setSelectedCreature(c);
-              }
-            }}
-          >
-            <View className="flex-row items-center justify-between">
-              <Text className="text-blood-light text-sm font-mono">
-                {room.content.enemyEmoji || '👁️'} {room.content.enemy} blocks your path...
-              </Text>
-              <Text className="text-blood-dark text-xs font-mono ml-2">[tap]</Text>
-            </View>
-          </Pressable>
-        )}
+        {room.type === 'combat' && room.content?.enemy && (() => {
+          const c = getCreatureInfo(room.content.enemy);
+          const asset = c
+            ? (c.artUrl ? getCreatureAsset(c.artUrl) : getCreatureAssetByName(c.name))
+            : null;
+          return (
+            <Pressable
+              className="bg-crypt-surface border border-blood/30 p-3 mb-4 active:border-blood active:bg-blood/10"
+              onPress={() => {
+                if (c) { playSFX('ui-click'); setSelectedCreature(c); }
+              }}
+            >
+              <View className="flex-row items-center gap-3">
+                {/* Creature art thumbnail */}
+                {asset ? (
+                  <Image
+                    source={asset}
+                    style={{ width: 72, height: 72, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(180,30,30,0.35)' }}
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <View style={{ width: 72, height: 72, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(180,30,30,0.35)', alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={{ fontSize: 32 }}>{room.content.enemyEmoji || '👁️'}</Text>
+                  </View>
+                )}
+                {/* Text to the right */}
+                <View className="flex-1">
+                  <Text className="text-blood-light text-sm font-mono font-bold mb-1">{room.content.enemy}</Text>
+                  <Text className="text-blood-dark text-xs font-mono">blocks your path...</Text>
+                  <Text className="text-bone-muted text-xs font-mono mt-1">[tap to inspect]</Text>
+                </View>
+              </View>
+            </Pressable>
+          );
+        })()}
 
         {/* Message */}
         {message && (
