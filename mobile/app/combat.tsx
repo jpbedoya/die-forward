@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { View, Text, Pressable, ScrollView, Animated, Platform, ViewStyle, Image } from 'react-native';
-import { getCreatureAsset } from '../lib/creatureAssets';
+import { getCreatureAsset, getCreatureAssetByName } from '../lib/creatureAssets';
 import { AsciiLoader } from '../components/AsciiLoader';
 import { CryptBackground } from '../components/CryptBackground';
 import * as Haptics from 'expo-haptics';
@@ -386,9 +386,9 @@ export default function CombatScreen() {
             className="flex-row items-center gap-3 mb-3 active:opacity-70"
             onPress={() => setCreatureModalOpen(true)}
           >
-            {creature.artUrl && getCreatureAsset(creature.artUrl) && !artLoadFailed ? (
+            {!artLoadFailed && (creature.artUrl ? getCreatureAsset(creature.artUrl) : getCreatureAssetByName(creature.name)) ? (
               <Image
-                source={getCreatureAsset(creature.artUrl)}
+                source={creature.artUrl ? getCreatureAsset(creature.artUrl) : getCreatureAssetByName(creature.name)}
                 style={{ width: 120, height: 120 }}
                 resizeMode="contain"
                 onError={() => setArtLoadFailed(true)}

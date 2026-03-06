@@ -30,3 +30,34 @@ export function getCreatureAsset(artUrl: string): any {
   const key = artUrl.replace(/^.*\//, '').replace(/\.(png|webp|jpg)$/i, '');
   return CREATURE_ASSETS[key] ?? null;
 }
+
+// Maps creature names → asset keys for direct name-based lookup
+const NAME_TO_KEY: Record<string, string> = {
+  'The Drowned':       'the-drowned',
+  'Pale Crawler':      'pale-crawler',
+  'The Hollow':        'the-hollow',
+  'Bloated One':       'the-bloated',
+  'Flickering Shade':  'flickering-shade',
+  'The Hunched':       'the-hunched',
+  'Tideborn':          'tideborn',
+  'Bone Weavers':      'bone-weavers',
+  'Ash Children':      'ash-children',
+  'Hollow Clergy':     'hollow-clergy',
+  'The Bound':         'the-bound',
+  'Forgotten Guardian':'forgotten-guardian',
+  'Carrion Knight':    'carrion-knight',
+  'Pale Oracle':       'pale-oracle',
+  'The Congregation':  'the-congregation',
+  'Pale Crawler Swarm':'pale-crawler-swarm',
+  'The Unnamed':       'the-unnamed',
+  'The Keeper':        'the-keeper',
+};
+
+/**
+ * Look up asset by creature name directly — bypasses artUrl entirely.
+ * Use as fallback when artUrl is missing or undefined.
+ */
+export function getCreatureAssetByName(name: string): any {
+  const key = NAME_TO_KEY[name];
+  return key ? (CREATURE_ASSETS[key] ?? null) : null;
+}
