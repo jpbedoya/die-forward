@@ -380,11 +380,11 @@ export default function PlayScreen() {
                 {asset ? (
                   <Image
                     source={asset}
-                    style={{ width: 72, height: 72, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(180,30,30,0.35)' }}
-                    resizeMode="cover"
+                    style={{ width: 56, height: 84, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(180,30,30,0.35)' }}
+                    resizeMode="contain"
                   />
                 ) : (
-                  <View style={{ width: 72, height: 72, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(180,30,30,0.35)', alignItems: 'center', justifyContent: 'center' }}>
+                  <View style={{ width: 56, height: 84, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(180,30,30,0.35)', alignItems: 'center', justifyContent: 'center' }}>
                     <Text style={{ fontSize: 32 }}>{room.content.enemyEmoji || '👁️'}</Text>
                   </View>
                 )}

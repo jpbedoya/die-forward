@@ -163,8 +163,8 @@ export function CreatureModal({ visible, onClose, creature }: CreatureModalProps
           return asset ? (
             <Image
               source={asset}
-              style={{ width: '100%', height: 200, borderRadius: 10, borderWidth: 1, borderColor: 'rgba(180,30,30,0.35)', marginBottom: 12 }}
-              resizeMode="cover"
+              style={{ width: '100%', aspectRatio: 341/512, borderRadius: 10, borderWidth: 1, borderColor: 'rgba(180,30,30,0.35)', marginBottom: 12 }}
+              resizeMode="contain"
             />
           ) : (
             <Text className="text-6xl text-center mb-3">{creature.emoji}</Text>
