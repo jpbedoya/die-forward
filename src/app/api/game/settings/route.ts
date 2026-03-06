@@ -20,8 +20,8 @@ export async function OPTIONS() {
 
 export async function GET() {
   try {
-    const { data } = await db.query({ gameSettings: {} });
-    const settings = data?.gameSettings?.[0] as Record<string, unknown> | undefined;
+    const result = await db.query({ gameSettings: {} });
+    const settings = result?.gameSettings?.[0] as Record<string, unknown> | undefined;
 
     const rawEnabledZones = (settings?.enabledZones as string) ?? DEFAULT_ENABLED_ZONES.join(',');
     const enabledZones = rawEnabledZones
