@@ -12,7 +12,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'Content-Type',
 };
 
-const DEFAULT_ENABLED_ZONES = ['sunken-crypt'];
+// DEV: all zones enabled by default until explicitly set in admin
+const DEFAULT_ENABLED_ZONES = ['sunken-crypt', 'ashen-crypts', 'frozen-gallery', 'living-tomb', 'void-beyond'];
 
 export async function OPTIONS() {
   return NextResponse.json({}, { headers: corsHeaders });

@@ -336,7 +336,9 @@ export default function ZoneSelectScreen() {
   const { width: screenWidth } = useWindowDimensions();
   // enabledZones = admin-controlled zone availability (from gameSettings)
   // unlockedZones = player progression unlock (post-auth, future)
-  const [enabledZones, setEnabledZones] = useState<string[]>(['sunken-crypt']);
+  // DEV: default all zones enabled until admin sets otherwise
+  const ALL_ZONE_IDS = ZONES.map(z => z.id);
+  const [enabledZones, setEnabledZones] = useState<string[]>(ALL_ZONE_IDS);
 
   // Cap at 480 so the 2x2 grid works on Expo web (wide browser windows)
   const effectiveWidth = Math.min(screenWidth, 480);
