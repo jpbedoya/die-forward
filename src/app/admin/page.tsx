@@ -66,7 +66,7 @@ const DEFAULT_SETTINGS: Omit<GameSettings, 'id'> = {
   enableVRF: false,
 };
 
-type Tab = 'dashboard' | 'settings' | 'zones' | 'music' | 'deaths' | 'corpses';
+type Tab = 'dashboard' | 'settings' | 'zones' | 'bestiary' | 'content' | 'music' | 'deaths' | 'corpses';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // MAIN ADMIN PAGE
@@ -121,6 +121,8 @@ export default function AdminPage() {
     { id: 'dashboard', label: 'Dashboard', icon: '📊' },
     { id: 'settings', label: 'Settings', icon: '⚙️' },
     { id: 'zones', label: 'Zones', icon: '🗺️' },
+    { id: 'bestiary', label: 'Bestiary', icon: '👹' },
+    { id: 'content', label: 'Content', icon: '📜' },
     { id: 'music', label: 'Music', icon: '🎵' },
     { id: 'deaths', label: 'Deaths', icon: '💀' },
     { id: 'corpses', label: 'Corpses', icon: '⚰️' },
@@ -165,6 +167,8 @@ export default function AdminPage() {
         {activeTab === 'dashboard' && <DashboardTab />}
         {activeTab === 'settings' && <SettingsTab />}
         {activeTab === 'zones' && <ZonesTab />}
+        {activeTab === 'bestiary' && <BestiaryTab />}
+        {activeTab === 'content' && <ContentTab />}
         {activeTab === 'music' && <MusicTab />}
         {activeTab === 'deaths' && <DeathsTab />}
         {activeTab === 'corpses' && <CorpsesTab />}
@@ -494,6 +498,393 @@ function ZonesTab() {
       <div className="text-[var(--text-muted)] text-xs pt-2">
         ⚠ Zone mechanics (BURN, CHILL, INFECTION, FLUX) are content-wired but not yet implemented in combat. Enabling these zones will serve correct lore/creatures but mechanics are pending.
       </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// 👹 BESTIARY TAB
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const BEHAVIORS = ['AGGRESSIVE', 'DEFENSIVE', 'STALKING', 'ERRATIC', 'SUPPORT', 'BOSS'];
+const TIERS = [1, 2, 3];
+
+const EMPTY_CREATURE = {
+  name: '',
+  tier: 1,
+  health: { min: 40, max: 60 },
+  behaviors: ['AGGRESSIVE'],
+  description: '',
+  emoji: '👾',
+  artUrl: '',
+};
+
+function BestiaryTab() {
+  const [selectedZone, setSelectedZone] = useState('sunken-crypt');
+  const [creatures, setCreatures] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [editingIdx, setEditingIdx] = useState<number | null>(null);
+  const [editForm, setEditForm] = useState<any>(null);
+  const [adding, setAdding] = useState(false);
+  const [addForm, setAddForm] = useState<any>({ ...EMPTY_CREATURE });
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
+  const [saveOk, setSaveOk] = useState('');
+
+  useEffect(() => {
+    setLoading(true);
+    setEditingIdx(null);
+    setAdding(false);
+    fetch(`/api/admin/bestiary?zone=${selectedZone}`)
+      .then(r => r.json())
+      .then(d => { setCreatures(d.creatures || []); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, [selectedZone]);
+
+  const flash = (msg: string, isErr = false) => {
+    if (isErr) { setSaveError(msg); setTimeout(() => setSaveError(''), 4000); }
+    else { setSaveOk(msg); setTimeout(() => setSaveOk(''), 3000); }
+  };
+
+  const saveAll = async (updated: any[]) => {
+    setSaving(true);
+    try {
+      const res = await fetch('/api/admin/bestiary', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ zone: selectedZone, creatures: updated }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      setCreatures(updated);
+      flash('Saved ✓');
+    } catch (e: any) {
+      flash(e.message || 'Save failed', true);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const commitEdit = () => {
+    if (editingIdx === null || !editForm) return;
+    const updated = creatures.map((c, i) => i === editingIdx ? editForm : c);
+    setEditingIdx(null);
+    saveAll(updated);
+  };
+
+  const deleteCreature = (idx: number) => {
+    if (!confirm(`Delete "${creatures[idx].name}"?`)) return;
+    saveAll(creatures.filter((_, i) => i !== idx));
+  };
+
+  const commitAdd = () => {
+    if (!addForm.name.trim()) return;
+    saveAll([...creatures, { ...addForm }]);
+    setAdding(false);
+    setAddForm({ ...EMPTY_CREATURE });
+  };
+
+  const CreatureForm = ({ form, setForm, onSave, onCancel, label }: any) => (
+    <div className="mt-3 bg-[var(--bg-dark)] border border-[var(--amber)] p-4 space-y-3">
+      <div className="text-[var(--amber)] text-xs mb-2">{label}</div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <div className="text-[var(--text-muted)] text-xs mb-1">NAME</div>
+          <input value={form.name} onChange={e => setForm((f: any) => ({ ...f, name: e.target.value }))}
+            className="w-full bg-[var(--bg-surface)] border border-[var(--border)] text-[var(--text)] px-2 py-1 text-sm focus:outline-none focus:border-[var(--amber)]" />
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <div className="text-[var(--text-muted)] text-xs mb-1">EMOJI</div>
+            <input value={form.emoji} onChange={e => setForm((f: any) => ({ ...f, emoji: e.target.value }))}
+              className="w-full bg-[var(--bg-surface)] border border-[var(--border)] text-[var(--text)] px-2 py-1 text-sm focus:outline-none focus:border-[var(--amber)]" />
+          </div>
+          <div>
+            <div className="text-[var(--text-muted)] text-xs mb-1">TIER</div>
+            <select value={form.tier} onChange={e => setForm((f: any) => ({ ...f, tier: Number(e.target.value) }))}
+              className="w-full bg-[var(--bg-surface)] border border-[var(--border)] text-[var(--text)] px-2 py-1 text-sm focus:outline-none">
+              {TIERS.map(t => <option key={t} value={t}>Tier {t}</option>)}
+            </select>
+          </div>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <div className="text-[var(--text-muted)] text-xs mb-1">HP MIN</div>
+          <input type="number" value={form.health?.min ?? 40} onChange={e => setForm((f: any) => ({ ...f, health: { ...f.health, min: Number(e.target.value) } }))}
+            className="w-full bg-[var(--bg-surface)] border border-[var(--border)] text-[var(--text)] px-2 py-1 text-sm focus:outline-none focus:border-[var(--amber)]" />
+        </div>
+        <div>
+          <div className="text-[var(--text-muted)] text-xs mb-1">HP MAX</div>
+          <input type="number" value={form.health?.max ?? 60} onChange={e => setForm((f: any) => ({ ...f, health: { ...f.health, max: Number(e.target.value) } }))}
+            className="w-full bg-[var(--bg-surface)] border border-[var(--border)] text-[var(--text)] px-2 py-1 text-sm focus:outline-none focus:border-[var(--amber)]" />
+        </div>
+      </div>
+      <div>
+        <div className="text-[var(--text-muted)] text-xs mb-1">ART URL</div>
+        <input value={form.artUrl || ''} onChange={e => setForm((f: any) => ({ ...f, artUrl: e.target.value }))}
+          placeholder="https://... or /images/beasts/..."
+          className="w-full bg-[var(--bg-surface)] border border-[var(--border)] text-[var(--text)] px-2 py-1 text-sm focus:outline-none focus:border-[var(--amber)]" />
+      </div>
+      <div>
+        <div className="text-[var(--text-muted)] text-xs mb-1">BEHAVIORS</div>
+        <div className="flex flex-wrap gap-2">
+          {BEHAVIORS.map(b => (
+            <label key={b} className="flex items-center gap-1 cursor-pointer">
+              <input type="checkbox" checked={(form.behaviors || []).includes(b)}
+                onChange={e => {
+                  const cur = form.behaviors || [];
+                  setForm((f: any) => ({ ...f, behaviors: e.target.checked ? [...cur, b] : cur.filter((x: string) => x !== b) }));
+                }} className="accent-[var(--amber)]" />
+              <span className="text-xs text-[var(--text)]">{b}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+      <div>
+        <div className="text-[var(--text-muted)] text-xs mb-1">DESCRIPTION</div>
+        <textarea value={form.description} onChange={e => setForm((f: any) => ({ ...f, description: e.target.value }))}
+          rows={3}
+          className="w-full bg-[var(--bg-surface)] border border-[var(--border)] text-[var(--text)] px-2 py-1 text-sm focus:outline-none focus:border-[var(--amber)] resize-none" />
+      </div>
+      <div className="flex gap-2 pt-1">
+        <button onClick={onSave} disabled={saving}
+          className="px-4 py-1.5 bg-[var(--amber)] text-black text-sm font-bold hover:bg-[var(--amber-bright)] disabled:opacity-50">
+          {saving ? 'Saving…' : 'Save'}
+        </button>
+        <button onClick={onCancel} className="px-4 py-1.5 border border-[var(--border)] text-[var(--text-dim)] text-sm hover:border-[var(--amber)]">Cancel</button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="space-y-4">
+      {/* Zone picker */}
+      <div className="flex items-center gap-3">
+        <span className="text-[var(--text-muted)] text-sm">Zone:</span>
+        <select value={selectedZone} onChange={e => setSelectedZone(e.target.value)}
+          className="bg-[var(--bg-surface)] border border-[var(--border)] text-[var(--text)] px-3 py-1.5 text-sm focus:outline-none focus:border-[var(--amber)]">
+          {ZONE_META.map(z => <option key={z.id} value={z.id}>{z.emoji} {z.name}</option>)}
+        </select>
+        <span className="text-[var(--text-muted)] text-xs">{creatures.length} creatures</span>
+        {saveOk && <span className="text-green-400 text-xs">{saveOk}</span>}
+        {saveError && <span className="text-[var(--red)] text-xs">{saveError}</span>}
+      </div>
+
+      {loading && <div className="text-[var(--text-muted)] text-sm">Loading…</div>}
+
+      {/* Creature list */}
+      <div className="space-y-2">
+        {creatures.map((c, i) => (
+          <div key={i} className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg">
+            <div className="flex items-start gap-3 p-4">
+              {/* Art / emoji */}
+              <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-[var(--bg-dark)] rounded overflow-hidden border border-[var(--border)]">
+                {c.artUrl
+                  ? <img src={c.artUrl} alt={c.name} className="w-full h-full object-cover" />
+                  : <span className="text-2xl">{c.emoji}</span>}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[var(--amber-bright)] font-bold">{c.name}</span>
+                  <span className="text-[10px] px-1.5 py-0.5 bg-[var(--border)] text-[var(--text-muted)] rounded">T{c.tier}</span>
+                  <span className="text-[var(--text-muted)] text-xs">HP {c.health?.min}–{c.health?.max}</span>
+                  {(c.behaviors || []).map((b: string) => (
+                    <span key={b} className="text-[10px] px-1.5 py-0.5 bg-[var(--amber)]/10 text-[var(--amber)] rounded">{b}</span>
+                  ))}
+                </div>
+                <div className="text-[var(--text-dim)] text-xs mt-1 line-clamp-2">{c.description}</div>
+                {c.artUrl && <div className="text-[var(--text-muted)] text-[10px] mt-1 truncate">🖼 {c.artUrl}</div>}
+              </div>
+              <div className="flex gap-1 flex-shrink-0">
+                <button onClick={() => { setEditingIdx(i); setEditForm({ ...c }); }}
+                  className="px-2 py-1 border border-[var(--border)] text-[var(--text-dim)] hover:border-[var(--amber)] hover:text-[var(--amber)] text-xs">✎</button>
+                <button onClick={() => deleteCreature(i)}
+                  className="px-2 py-1 border border-[var(--border)] text-[var(--text-dim)] hover:border-[var(--red)] hover:text-[var(--red)] text-xs">✕</button>
+              </div>
+            </div>
+            {editingIdx === i && editForm && (
+              <div className="px-4 pb-4">
+                <CreatureForm form={editForm} setForm={setEditForm} onSave={commitEdit} onCancel={() => setEditingIdx(null)} label="✎ EDITING" />
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Add new */}
+      {adding ? (
+        <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg p-4">
+          <CreatureForm form={addForm} setForm={setAddForm} onSave={commitAdd} onCancel={() => setAdding(false)} label="+ NEW CREATURE" />
+        </div>
+      ) : (
+        <button onClick={() => setAdding(true)}
+          className="w-full py-2 border border-dashed border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--amber)] hover:text-[var(--amber)] text-sm transition-colors">
+          + Add Creature
+        </button>
+      )}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// 📜 CONTENT TAB
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const FRAG_CATEGORIES = ['explore', 'combat', 'corpse', 'cache', 'exit', 'options'] as const;
+type FragCategory = typeof FRAG_CATEGORIES[number];
+
+function ContentTab() {
+  const [selectedZone, setSelectedZone] = useState('sunken-crypt');
+  const [category, setCategory] = useState<FragCategory>('explore');
+  const [fragments, setFragments] = useState<Record<string, any>>({});
+  const [loading, setLoading] = useState(false);
+  const [editKey, setEditKey] = useState<string | null>(null); // "section:idx"
+  const [editVal, setEditVal] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [saveMsg, setSaveMsg] = useState('');
+
+  useEffect(() => {
+    setLoading(true);
+    setEditKey(null);
+    fetch(`/api/admin/content?zone=${selectedZone}&category=${category}`)
+      .then(r => r.json())
+      .then(d => { setFragments(d.fragments || {}); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, [selectedZone, category]);
+
+  const flash = (msg: string) => { setSaveMsg(msg); setTimeout(() => setSaveMsg(''), 3000); };
+
+  const saveEdit = async (section: string, idx: number, value: string) => {
+    setSaving(true);
+    try {
+      const updated = { ...fragments };
+      if (!updated[section]) updated[section] = [];
+      updated[section][idx] = value;
+      const res = await fetch('/api/admin/content', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ zone: selectedZone, category, fragments: updated }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      setFragments(updated);
+      setEditKey(null);
+      flash('Saved ✓');
+    } catch (e: any) {
+      flash('Error: ' + e.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const addFragment = async (section: string) => {
+    const updated = { ...fragments };
+    if (!updated[section]) updated[section] = [];
+    updated[section] = [...updated[section], '[New fragment — click to edit]'];
+    setSaving(true);
+    try {
+      const res = await fetch('/api/admin/content', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ zone: selectedZone, category, fragments: updated }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      setFragments(updated);
+      flash('Added ✓');
+    } catch (e: any) { flash('Error: ' + e.message); }
+    finally { setSaving(false); }
+  };
+
+  const deleteFragment = async (section: string, idx: number) => {
+    const updated = { ...fragments };
+    updated[section] = updated[section].filter((_: any, i: number) => i !== idx);
+    setSaving(true);
+    try {
+      const res = await fetch('/api/admin/content', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ zone: selectedZone, category, fragments: updated }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      setFragments(updated);
+      flash('Deleted ✓');
+    } catch (e: any) { flash('Error: ' + e.message); }
+    finally { setSaving(false); }
+  };
+
+  const sections = Object.keys(fragments);
+
+  return (
+    <div className="space-y-4">
+      {/* Controls */}
+      <div className="flex flex-wrap items-center gap-3">
+        <select value={selectedZone} onChange={e => setSelectedZone(e.target.value)}
+          className="bg-[var(--bg-surface)] border border-[var(--border)] text-[var(--text)] px-3 py-1.5 text-sm focus:outline-none focus:border-[var(--amber)]">
+          {ZONE_META.map(z => <option key={z.id} value={z.id}>{z.emoji} {z.name}</option>)}
+        </select>
+        <div className="flex gap-1 flex-wrap">
+          {FRAG_CATEGORIES.map(cat => (
+            <button key={cat} onClick={() => setCategory(cat)}
+              className={`px-3 py-1 text-xs border transition-colors ${category === cat ? 'border-[var(--amber)] text-[var(--amber)] bg-[var(--amber)]/10' : 'border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--amber)]'}`}>
+              {cat}
+            </button>
+          ))}
+        </div>
+        {saveMsg && <span className={`text-xs ${saveMsg.startsWith('Error') ? 'text-[var(--red)]' : 'text-green-400'}`}>{saveMsg}</span>}
+      </div>
+
+      {loading && <div className="text-[var(--text-muted)] text-sm">Loading…</div>}
+
+      {sections.length === 0 && !loading && (
+        <div className="text-[var(--text-muted)] text-sm py-4 text-center">No fragments found for this category.</div>
+      )}
+
+      {/* Sections */}
+      {sections.map(section => (
+        <div key={section} className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-2 bg-[var(--bg-dark)] border-b border-[var(--border)]">
+            <span className="text-[var(--amber)] text-sm font-bold uppercase tracking-wider">{section}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-[var(--text-muted)] text-xs">{(fragments[section] || []).length} entries</span>
+              <button onClick={() => addFragment(section)}
+                className="px-2 py-0.5 border border-dashed border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--amber)] hover:text-[var(--amber)] text-xs">+ Add</button>
+            </div>
+          </div>
+          <div className="divide-y divide-[var(--border)]">
+            {(fragments[section] || []).map((frag: any, idx: number) => {
+              const key = `${section}:${idx}`;
+              const isEditing = editKey === key;
+              const text = typeof frag === 'string' ? frag : JSON.stringify(frag);
+              return (
+                <div key={idx} className="group px-4 py-3">
+                  {isEditing ? (
+                    <div className="space-y-2">
+                      <textarea value={editVal} onChange={e => setEditVal(e.target.value)} rows={4}
+                        className="w-full bg-[var(--bg-dark)] border border-[var(--amber)] text-[var(--text)] px-2 py-1 text-sm focus:outline-none resize-y" />
+                      <div className="flex gap-2">
+                        <button onClick={() => saveEdit(section, idx, editVal)} disabled={saving}
+                          className="px-3 py-1 bg-[var(--amber)] text-black text-xs font-bold disabled:opacity-50">
+                          {saving ? 'Saving…' : 'Save'}
+                        </button>
+                        <button onClick={() => setEditKey(null)}
+                          className="px-3 py-1 border border-[var(--border)] text-[var(--text-dim)] text-xs">Cancel</button>
+                        <button onClick={() => deleteFragment(section, idx)}
+                          className="px-3 py-1 border border-[var(--border)] text-[var(--red)] hover:border-[var(--red)] text-xs ml-auto">Delete</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-start gap-3">
+                      <span className="text-[var(--text-muted)] text-xs w-5 flex-shrink-0 pt-0.5">{idx + 1}</span>
+                      <span className="flex-1 text-[var(--text)] text-sm leading-relaxed">{text}</span>
+                      <button onClick={() => { setEditKey(key); setEditVal(text); }}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity px-2 py-0.5 border border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--amber)] hover:text-[var(--amber)] text-xs flex-shrink-0">✎</button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
