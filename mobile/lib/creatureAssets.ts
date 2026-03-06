@@ -20,6 +20,7 @@ const CREATURE_ASSETS: Record<string, any> = {
   'the-keeper':         require('../assets/creatures/the-keeper.webp'),
   'the-unnamed':        require('../assets/creatures/the-unnamed.webp'),
   'tideborn':           require('../assets/creatures/tideborn.webp'),
+  'mother-of-tides':    require('../assets/creatures/mother-of-tides.webp'),
 };
 
 /**
@@ -51,6 +52,7 @@ const NAME_TO_KEY: Record<string, string> = {
   'Pale Crawler Swarm':'pale-crawler-swarm',
   'The Unnamed':       'the-unnamed',
   'The Keeper':        'the-keeper',
+  'Mother of Tides':   'mother-of-tides',
 };
 
 /**

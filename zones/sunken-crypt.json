@@ -1782,7 +1782,8 @@
           "DEFENSIVE"
         ],
         "description": "The water itself, given will. Everything that drowns belongs to her.",
-        "emoji": "\ud83c\udf0a"
+        "emoji": "\ud83c\udf0a",
+        "artUrl": "/creatures/mother-of-tides.png"
       },
       {
         "name": "The Keeper",

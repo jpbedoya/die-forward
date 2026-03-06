@@ -347,6 +347,7 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['CHARGING', 'AGGRESSIVE', 'DEFENSIVE'],
     description: 'The water itself, given will. Everything that drowns belongs to her.',
     emoji: '🌊',
+    artUrl: '/creatures/mother-of-tides.png',
   },
   'The Keeper': {
     name: 'The Keeper',
