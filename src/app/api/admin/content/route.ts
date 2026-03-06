@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
+import { getZoneOverride, setZoneOverride } from '@/lib/zone-overrides';
 
 const ZONES_DIR = path.join(process.cwd(), 'zones');
 const VALID_ZONES = ['sunken-crypt', 'ashen-crypts', 'frozen-gallery', 'living-tomb', 'void-beyond'];
@@ -8,6 +9,11 @@ const VALID_CATEGORIES = ['explore', 'combat', 'corpse', 'cache', 'exit', 'optio
 
 function zonePath(zoneId: string) {
   return path.join(ZONES_DIR, `${zoneId}.json`);
+}
+
+/** InstantDB section key for fragment categories */
+function fragmentSection(category: string) {
+  return `fragments_${category}`;
 }
 
 export async function GET(req: NextRequest) {
@@ -19,6 +25,13 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    // Check InstantDB override first
+    const override = await getZoneOverride(zone, fragmentSection(category));
+    if (override !== null) {
+      return NextResponse.json({ fragments: override });
+    }
+
+    // Fall back to bundled JSON file
     const raw = await fs.readFile(zonePath(zone), 'utf-8');
     const data = JSON.parse(raw);
 
@@ -38,21 +51,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid zone or category' }, { status: 400 });
     }
 
-    const raw = await fs.readFile(zonePath(zone), 'utf-8');
-    const data = JSON.parse(raw);
-
-    // Write to fragments (preferred) or rooms (sunken-crypt legacy)
-    if (data.fragments) {
-      data.fragments[category] = fragments;
-    } else if (data.rooms) {
-      data.rooms[category] = fragments;
-    } else {
-      data.fragments = { [category]: fragments };
-    }
-
-    await fs.writeFile(zonePath(zone), JSON.stringify(data, null, 2), 'utf-8');
+    // Persist to InstantDB (works in production on Vercel)
+    await setZoneOverride(zone, fragmentSection(category), fragments);
     return NextResponse.json({ ok: true });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || 'Save failed' }, { status: 500 });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Save failed';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

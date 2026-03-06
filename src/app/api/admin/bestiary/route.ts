@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
+import { getZoneOverride, setZoneOverride } from '@/lib/zone-overrides';
 
 const ZONES_DIR = path.join(process.cwd(), 'zones');
 const VALID_ZONES = ['sunken-crypt', 'ashen-crypts', 'frozen-gallery', 'living-tomb', 'void-beyond'];
@@ -14,10 +15,18 @@ export async function GET(req: NextRequest) {
   if (!VALID_ZONES.includes(zone)) {
     return NextResponse.json({ error: 'Invalid zone' }, { status: 400 });
   }
+
   try {
+    // Check InstantDB override first
+    const override = await getZoneOverride(zone, 'bestiary');
+    if (override !== null) {
+      return NextResponse.json({ creatures: override });
+    }
+
+    // Fall back to bundled JSON file
     const raw = await fs.readFile(zonePath(zone), 'utf-8');
     const data = JSON.parse(raw);
-    const local: any[] = (data.bestiary?.local || []).map((c: any) => ({
+    const local: unknown[] = (data.bestiary?.local || []).map((c: Record<string, unknown>) => ({
       name: typeof c === 'string' ? c : c.name,
       tier: c.tier ?? 1,
       health: c.health ?? { min: 40, max: 60 },
@@ -41,13 +50,12 @@ export async function POST(req: NextRequest) {
     if (!Array.isArray(creatures)) {
       return NextResponse.json({ error: 'creatures must be an array' }, { status: 400 });
     }
-    const raw = await fs.readFile(zonePath(zone), 'utf-8');
-    const data = JSON.parse(raw);
-    data.bestiary = data.bestiary || {};
-    data.bestiary.local = creatures;
-    await fs.writeFile(zonePath(zone), JSON.stringify(data, null, 2), 'utf-8');
+
+    // Persist to InstantDB (works in production on Vercel)
+    await setZoneOverride(zone, 'bestiary', creatures);
     return NextResponse.json({ ok: true, count: creatures.length });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || 'Save failed' }, { status: 500 });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Save failed';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

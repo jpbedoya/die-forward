@@ -1,5 +1,6 @@
 // Content loader - zone-aware. Pulls from zone packages in /zones/.
 // Falls back to sunken-crypt if no zone is set.
+// InstantDB overrides (set via admin panel) take priority over bundled JSON when present.
 
 import exploreRooms from '../../content/explore-rooms.json';
 import combatRooms from '../../content/combat-rooms.json';
@@ -148,13 +149,40 @@ const ZONE_CACHE: Record<string, ZonePackage> = {};
 let _activeZone: ZonePackage | null = null;
 
 /**
- * Load a zone package by id. Caches after first load.
+ * Load a zone package by id. Merges InstantDB overrides on top of the bundled JSON.
+ * Results are cached in-memory for the process lifetime.
  */
 export async function loadZone(zoneId: string): Promise<ZonePackage> {
   if (ZONE_CACHE[zoneId]) return ZONE_CACHE[zoneId];
   const loader = ZONE_LOADERS[zoneId];
   if (!loader) throw new Error(`Unknown zone: ${zoneId}`);
   const zone = await loader();
+
+  // Apply InstantDB overrides (admin edits) on top of the bundled JSON.
+  // We do this lazily at load time so it works on Vercel without file writes.
+  try {
+    const { getZoneOverride } = await import('./zone-overrides');
+
+    // Bestiary override — replaces bestiary.local
+    const bestiaryOverride = await getZoneOverride(zoneId, 'bestiary');
+    if (bestiaryOverride !== null && Array.isArray(bestiaryOverride)) {
+      zone.bestiary = { ...zone.bestiary, local: bestiaryOverride as ZoneCreature[] };
+    }
+
+    // Fragment overrides — replace per category
+    const fragmentCategories = ['explore', 'combat', 'corpse', 'cache', 'exit', 'options'] as const;
+    for (const cat of fragmentCategories) {
+      const override = await getZoneOverride(zoneId, `fragments_${cat}`);
+      if (override !== null) {
+        zone.fragments = zone.fragments ?? {};
+        (zone.fragments as Record<string, unknown>)[cat] = override;
+      }
+    }
+  } catch (err) {
+    // Never crash the game if InstantDB is unavailable — fall back to bundled JSON
+    console.warn(`[content] loadZone: failed to fetch InstantDB overrides for "${zoneId}":`, err);
+  }
+
   ZONE_CACHE[zoneId] = zone;
   return zone;
 }
