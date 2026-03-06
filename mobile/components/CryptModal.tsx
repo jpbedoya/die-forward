@@ -1,6 +1,7 @@
 // CryptModal - Reusable modal component with consistent dark theme styling
 import React from 'react';
-import { View, Text, Pressable, Modal, ScrollView, Platform } from 'react-native';
+import { View, Text, Pressable, Modal, ScrollView, Platform, Image } from 'react-native';
+import { getCreatureAsset, getCreatureAssetByName } from '../lib/creatureAssets';
 
 interface CryptModalProps {
   visible: boolean;
@@ -150,10 +151,27 @@ export function CreatureModal({ visible, onClose, creature }: CreatureModalProps
     <CryptModal
       visible={visible}
       onClose={onClose}
-      title={`${creature.emoji} ${creature.name}`}
+      title={creature.name}
       showCloseButton={false}
     >
       <View className="bg-crypt-bg border border-crypt-border p-4">
+        {/* Creature art or emoji */}
+        {(() => {
+          const asset = creature.artUrl
+            ? getCreatureAsset(creature.artUrl)
+            : getCreatureAssetByName(creature.name);
+          return asset ? (
+            <Image
+              source={asset}
+              style={{ width: '100%', height: 200 }}
+              resizeMode="contain"
+              className="mb-3"
+            />
+          ) : (
+            <Text className="text-6xl text-center mb-3">{creature.emoji}</Text>
+          );
+        })()}
+
         {/* Tier · HP inline */}
         <Text className="text-bone-dark font-mono text-xs mb-3">
           <Text className="text-amber">Tier {creature.tier}</Text>
