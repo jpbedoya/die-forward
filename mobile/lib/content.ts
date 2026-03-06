@@ -162,6 +162,7 @@ export interface CreatureInfo {
   behaviors: IntentType[];
   description: string;
   emoji: string;
+  artUrl?: string;
 }
 
 const BESTIARY: Record<string, CreatureInfo> = {
@@ -173,6 +174,7 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['AGGRESSIVE', 'ERRATIC', 'DEFENSIVE'],
     description: 'Waterlogged husks animated by the underworld\'s hunger.',
     emoji: '🧟',
+    artUrl: '/creatures/the-drowned.png',
   },
   'Pale Crawler': {
     name: 'Pale Crawler',
@@ -181,6 +183,7 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['STALKING', 'AGGRESSIVE', 'HUNTING'],
     description: 'Too many limbs. They cling to walls and ceilings.',
     emoji: '🕷️',
+    artUrl: '/creatures/pale-crawler.png',
   },
   'The Hollow': {
     name: 'The Hollow',
@@ -189,6 +192,7 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['STALKING', 'ERRATIC', 'CHARGING'],
     description: 'No face, no features. Just shadow.',
     emoji: '👤',
+    artUrl: '/creatures/the-hollow.png',
   },
   'Bloated One': {
     name: 'Bloated One',
@@ -197,6 +201,7 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['AGGRESSIVE', 'CHARGING', 'ERRATIC'],
     description: 'Corpses swollen with dark water.',
     emoji: '🫧',
+    artUrl: '/creatures/the-bloated.png',
   },
   'Flickering Shade': {
     name: 'Flickering Shade',
@@ -205,6 +210,7 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['ERRATIC', 'STALKING', 'RETREATING'],
     description: 'Afterimages of the dead.',
     emoji: '👻',
+    artUrl: '/creatures/flickering-shade.png',
   },
   'The Hunched': {
     name: 'The Hunched',
@@ -213,6 +219,42 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['HUNTING', 'AGGRESSIVE', 'STALKING'],
     description: 'Bent figures that move on all fours.',
     emoji: '🐺',
+    artUrl: '/creatures/the-hunched.png',
+  },
+  'Tideborn': {
+    name: 'Tideborn',
+    tier: 1,
+    health: { min: 60, max: 80 },
+    behaviors: ['CHARGING', 'AGGRESSIVE', 'DEFENSIVE'],
+    description: 'Creatures of living water. They rise from puddles, take form, then collapse.',
+    emoji: '🌊',
+    artUrl: '/creatures/tideborn.png',
+  },
+  'Bone Weavers': {
+    name: 'Bone Weavers',
+    tier: 1,
+    health: { min: 40, max: 55 },
+    behaviors: ['AGGRESSIVE', 'CHARGING', 'STALKING'],
+    description: 'Skeletal hands that emerge from walls and floors. Just hands.',
+    emoji: '🦴',
+    artUrl: '/creatures/bone-weavers.png',
+  },
+  'Ash Children': {
+    name: 'Ash Children',
+    tier: 1,
+    health: { min: 25, max: 40 },
+    behaviors: ['STALKING', 'DEFENSIVE', 'CHARGING'],
+    description: 'Small. Gray. They don\'t attack — they suffocate.',
+    emoji: '👶',
+    artUrl: '/creatures/ash-children.png',
+  },
+  'Echo Husks': {
+    name: 'Echo Husks',
+    tier: 1,
+    health: { min: 35, max: 50 },
+    behaviors: ['STALKING', 'ERRATIC', 'AGGRESSIVE'],
+    description: 'They repeat the last words of the dead. Over and over.',
+    emoji: '🗣️',
   },
 
   // Tier 2 - Uncommon Threats
@@ -223,6 +265,7 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['CHARGING', 'DEFENSIVE', 'AGGRESSIVE'],
     description: 'Priests of a nameless god.',
     emoji: '🧙',
+    artUrl: '/creatures/hollow-clergy.png',
   },
   'The Bound': {
     name: 'The Bound',
@@ -231,6 +274,7 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['HUNTING', 'AGGRESSIVE', 'CHARGING'],
     description: 'Souls wrapped in chains of regret.',
     emoji: '⛓️',
+    artUrl: '/creatures/the-bound.png',
   },
   'Forgotten Guardian': {
     name: 'Forgotten Guardian',
@@ -239,6 +283,15 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['DEFENSIVE', 'AGGRESSIVE', 'CHARGING'],
     description: 'Stone sentinels animated by old magic.',
     emoji: '🗿',
+    artUrl: '/creatures/forgotten-guardian.png',
+  },
+  'The Weeping': {
+    name: 'The Weeping',
+    tier: 2,
+    health: { min: 60, max: 80 },
+    behaviors: ['STALKING', 'ERRATIC', 'CHARGING'],
+    description: 'Spirits of grief. Their touch brings sorrow so deep it wounds.',
+    emoji: '😢',
   },
   'Carrion Knight': {
     name: 'Carrion Knight',
@@ -247,6 +300,34 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['AGGRESSIVE', 'DEFENSIVE', 'CHARGING'],
     description: 'Warriors who refused to stop fighting.',
     emoji: '⚔️',
+    artUrl: '/creatures/carrion-knight.png',
+  },
+  'Pale Oracle': {
+    name: 'Pale Oracle',
+    tier: 2,
+    health: { min: 55, max: 70 },
+    behaviors: ['CHARGING', 'RETREATING', 'STALKING'],
+    description: 'Eyeless seers who speak truths you don\'t want to hear.',
+    emoji: '🔮',
+    artUrl: '/creatures/pale-oracle.png',
+  },
+  'The Congregation': {
+    name: 'The Congregation',
+    tier: 2,
+    health: { min: 100, max: 130 },
+    behaviors: ['AGGRESSIVE', 'CHARGING', 'STALKING'],
+    description: 'Pilgrims fused at the edges, moving as one.',
+    emoji: '👥',
+    artUrl: '/creatures/the-congregation.png',
+  },
+  'Pale Crawler Swarm': {
+    name: 'Pale Crawler Swarm',
+    tier: 2,
+    health: { min: 75, max: 95 },
+    behaviors: ['AGGRESSIVE', 'HUNTING', 'CHARGING'],
+    description: 'One wouldn\'t be a threat. But there isn\'t one.',
+    emoji: '🕷️',
+    artUrl: '/creatures/pale-crawler-swarm.png',
   },
 
   // Tier 3 - Rare Terrors / Bosses
@@ -257,6 +338,15 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['ERRATIC', 'CHARGING', 'STALKING'],
     description: 'You cannot see it clearly. Your mind refuses.',
     emoji: '❓',
+    artUrl: '/creatures/the-unnamed.png',
+  },
+  'Mother of Tides': {
+    name: 'Mother of Tides',
+    tier: 3,
+    health: { min: 130, max: 160 },
+    behaviors: ['CHARGING', 'AGGRESSIVE', 'DEFENSIVE'],
+    description: 'The water itself, given will. Everything that drowns belongs to her.',
+    emoji: '🌊',
   },
   'The Keeper': {
     name: 'The Keeper',
@@ -265,6 +355,7 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['CHARGING', 'AGGRESSIVE', 'DEFENSIVE', 'CHARGING'],
     description: 'Guardian of the exit. None have passed.',
     emoji: '👁️',
+    artUrl: '/creatures/the-keeper.png',
   },
 };
 

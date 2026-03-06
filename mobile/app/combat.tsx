@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
-import { View, Text, Pressable, ScrollView, Animated, Platform, ViewStyle } from 'react-native';
+import { View, Text, Pressable, ScrollView, Animated, Platform, ViewStyle, Image } from 'react-native';
 import { AsciiLoader } from '../components/AsciiLoader';
 import { CryptBackground } from '../components/CryptBackground';
 import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
+import { API_BASE } from '../lib/api';
 import { ProgressBar } from '../components/ProgressBar';
 import { GameMenu, MenuButton } from '../components/GameMenu';
 import { MiniPlayer } from '../components/MiniPlayer';
@@ -77,6 +78,7 @@ export default function CombatScreen() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [creatureModalOpen, setCreatureModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<{ id: string; name: string; emoji: string } | null>(null);
+  const [artLoadFailed, setArtLoadFailed] = useState(false);
   
   // Screen shake animation
   const shakeAnim = useRef(new Animated.Value(0)).current;
@@ -126,6 +128,7 @@ export default function CombatScreen() {
     }
     
     setCreature(roomCreature);
+    setArtLoadFailed(false);
     
     const hp = getCreatureHealth(roomCreature.name);
     setEnemyHealth(hp);
@@ -382,7 +385,16 @@ export default function CombatScreen() {
             className="flex-row items-center gap-3 mb-3 active:opacity-70"
             onPress={() => setCreatureModalOpen(true)}
           >
-            <Text className="text-4xl">{creature.emoji}</Text>
+            {creature.artUrl && !artLoadFailed ? (
+              <Image
+                source={{ uri: `${API_BASE}${creature.artUrl}` }}
+                style={{ width: 120, height: 120 }}
+                resizeMode="contain"
+                onError={() => setArtLoadFailed(true)}
+              />
+            ) : (
+              <Text className="text-4xl">{creature.emoji}</Text>
+            )}
             <View className="flex-1">
               <Text className="text-bone text-lg font-mono font-bold">{creature.name}</Text>
               <Text className="text-bone-dark text-xs font-mono">Tier {creature.tier} · tap to inspect</Text>
