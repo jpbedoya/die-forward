@@ -398,17 +398,15 @@ export default function CombatScreen() {
             )}
             <View className="flex-1">
               <Text className="text-bone text-lg font-mono font-bold">{creature.name}</Text>
-              <Text className="text-bone-dark text-xs font-mono">Tier {creature.tier} · tap to inspect</Text>
+              <Text className="text-bone-dark text-xs font-mono">Tier {creature.tier}</Text>
+              <View className="flex-row items-center gap-2 mt-2">
+                <Text className="text-blood text-sm">♥</Text>
+                <HealthBar current={enemyHealth} max={enemyMaxHealth} />
+                <Text className="text-blood-light text-sm font-mono font-bold">{enemyHealth}/{enemyMaxHealth}</Text>
+              </View>
             </View>
             <Text className="text-bone-dark text-xs font-mono">[?]</Text>
           </Pressable>
-          
-          {/* Enemy Health */}
-          <View className="flex-row items-center gap-2 mb-2">
-            <Text className="text-blood text-sm">♥</Text>
-            <HealthBar current={enemyHealth} max={enemyMaxHealth} />
-            <Text className="text-blood-light text-sm font-mono font-bold">{enemyHealth}/{enemyMaxHealth}</Text>
-          </View>
           
           {/* Enemy Intent */}
           <View className={`p-2 border-l-2 ${intentEffects.isCharging ? 'border-amber bg-amber/10' : 'border-ethereal bg-ethereal/10'}`}>

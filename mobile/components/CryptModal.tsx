@@ -49,7 +49,7 @@ export function CryptModal({
           {title && (
             <View className="flex-row items-center justify-between mb-4 pb-2 border-b border-crypt-border">
               <Text className="text-amber font-mono text-sm tracking-wider">{title}</Text>
-              <Pressable onPress={onClose}>
+              <Pressable onPress={onClose} hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }} className="p-3">
                 <Text className="text-bone-muted font-mono">[×]</Text>
               </Pressable>
             </View>
