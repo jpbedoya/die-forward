@@ -11,6 +11,51 @@ const ASCII_LOGO = `
  ██████╔╝██║███████╗    ██║     ╚██████╔╝██║  ██║╚███╔███╔╝██║  ██║██║  ██║██████╔╝
  ╚═════╝ ╚═╝╚══════╝    ╚═╝      ╚═════╝ ╚═╝  ╚═╝ ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ `;
 
+type BehaviorTag = 'AGGRESSIVE' | 'DEFENSIVE' | 'STALKING' | 'ERRATIC' | 'CHARGING' | 'HUNTING' | 'RETREATING';
+
+type CreatureEntry = {
+  name: string;
+  tier: 1 | 2 | 3;
+  hp: [number, number];
+  behaviors: BehaviorTag[];
+  description: string;
+  art: string | null;
+  emoji: string;
+};
+
+const BESTIARY: CreatureEntry[] = [
+  { name: 'The Drowned',       tier: 1, hp: [45, 65],   behaviors: ['AGGRESSIVE', 'ERRATIC', 'DEFENSIVE'],   description: "Waterlogged husks animated by the underworld's hunger.", art: '/creatures/the-drowned.png',         emoji: '🧟' },
+  { name: 'Pale Crawler',      tier: 1, hp: [35, 50],   behaviors: ['STALKING', 'AGGRESSIVE', 'HUNTING'],    description: 'Too many limbs. They cling to walls and ceilings.',        art: '/creatures/pale-crawler.png',        emoji: '🕷️' },
+  { name: 'The Hollow',        tier: 1, hp: [40, 55],   behaviors: ['STALKING', 'ERRATIC', 'CHARGING'],      description: 'No face, no features. Just shadow.',                        art: '/creatures/the-hollow.png',          emoji: '👤' },
+  { name: 'Bloated One',       tier: 1, hp: [55, 75],   behaviors: ['AGGRESSIVE', 'CHARGING', 'ERRATIC'],    description: 'Corpses swollen with dark water.',                           art: '/creatures/the-bloated.png',         emoji: '🫧' },
+  { name: 'Flickering Shade',  tier: 1, hp: [30, 45],   behaviors: ['ERRATIC', 'STALKING', 'RETREATING'],    description: 'Afterimages of the dead.',                                   art: '/creatures/flickering-shade.png',    emoji: '👻' },
+  { name: 'The Hunched',       tier: 1, hp: [50, 70],   behaviors: ['HUNTING', 'AGGRESSIVE', 'STALKING'],    description: 'Bent figures that move on all fours.',                       art: '/creatures/the-hunched.png',         emoji: '🐺' },
+  { name: 'Tideborn',          tier: 1, hp: [60, 80],   behaviors: ['CHARGING', 'AGGRESSIVE', 'DEFENSIVE'],  description: 'Creatures of living water. They rise from puddles, take form, then collapse.', art: '/creatures/tideborn.png', emoji: '🌊' },
+  { name: 'Bone Weavers',      tier: 1, hp: [40, 55],   behaviors: ['AGGRESSIVE', 'CHARGING', 'STALKING'],   description: 'Skeletal hands that emerge from walls and floors. Just hands.', art: '/creatures/bone-weavers.png',      emoji: '🦴' },
+  { name: 'Ash Children',      tier: 1, hp: [25, 40],   behaviors: ['STALKING', 'DEFENSIVE', 'CHARGING'],    description: "Small. Gray. They don't attack — they suffocate.",            art: '/creatures/ash-children.png',        emoji: '👶' },
+  { name: 'Echo Husks',        tier: 1, hp: [35, 50],   behaviors: ['STALKING', 'ERRATIC', 'AGGRESSIVE'],    description: 'They repeat the last words of the dead. Over and over.',     art: null,                                 emoji: '🗣️' },
+  { name: 'Hollow Clergy',     tier: 2, hp: [70, 90],   behaviors: ['CHARGING', 'DEFENSIVE', 'AGGRESSIVE'],  description: 'Priests of a nameless god.',                                  art: '/creatures/hollow-clergy.png',       emoji: '🧙' },
+  { name: 'The Bound',         tier: 2, hp: [80, 100],  behaviors: ['HUNTING', 'AGGRESSIVE', 'CHARGING'],    description: 'Souls wrapped in chains of regret.',                         art: '/creatures/the-bound.png',           emoji: '⛓️' },
+  { name: 'Forgotten Guardian',tier: 2, hp: [90, 110],  behaviors: ['DEFENSIVE', 'AGGRESSIVE', 'CHARGING'],  description: 'Stone sentinels animated by old magic.',                     art: '/creatures/forgotten-guardian.png',  emoji: '🗿' },
+  { name: 'The Weeping',       tier: 2, hp: [60, 80],   behaviors: ['STALKING', 'ERRATIC', 'CHARGING'],      description: 'Spirits of grief. Their touch brings sorrow so deep it wounds.', art: null,                            emoji: '😢' },
+  { name: 'Carrion Knight',    tier: 2, hp: [85, 105],  behaviors: ['AGGRESSIVE', 'DEFENSIVE', 'CHARGING'],  description: 'Warriors who refused to stop fighting.',                     art: '/creatures/carrion-knight.png',      emoji: '⚔️' },
+  { name: 'Pale Oracle',       tier: 2, hp: [55, 70],   behaviors: ['CHARGING', 'RETREATING', 'STALKING'],   description: "Eyeless seers who speak truths you don't want to hear.",    art: '/creatures/pale-oracle.png',         emoji: '🔮' },
+  { name: 'The Congregation',  tier: 2, hp: [100, 130], behaviors: ['AGGRESSIVE', 'CHARGING', 'STALKING'],   description: 'Pilgrims fused at the edges, moving as one.',                art: '/creatures/the-congregation.png',    emoji: '👥' },
+  { name: 'Pale Crawler Swarm',tier: 2, hp: [75, 95],   behaviors: ['AGGRESSIVE', 'HUNTING', 'CHARGING'],    description: "One wouldn't be a threat. But there isn't one.",             art: '/creatures/pale-crawler-swarm.png',  emoji: '🕷️' },
+  { name: 'The Unnamed',       tier: 3, hp: [120, 150], behaviors: ['ERRATIC', 'CHARGING', 'STALKING'],      description: 'You cannot see it clearly. Your mind refuses.',              art: '/creatures/the-unnamed.png',         emoji: '❓' },
+  { name: 'Mother of Tides',   tier: 3, hp: [130, 160], behaviors: ['CHARGING', 'AGGRESSIVE', 'DEFENSIVE'],  description: 'The water itself, given will. Everything that drowns belongs to her.', art: '/creatures/mother-of-tides.webp', emoji: '🌊' },
+  { name: 'The Keeper',        tier: 3, hp: [180, 220], behaviors: ['CHARGING', 'AGGRESSIVE', 'DEFENSIVE'],  description: 'Guardian of the exit. None have passed.',                    art: '/creatures/the-keeper.png',          emoji: '👁️' },
+];
+
+const TIER_COLORS: Record<number, { label: string; border: string; text: string; bg: string }> = {
+  1: { label: 'TIER I',   border: 'border-[var(--border-default)]', text: 'text-[var(--text-dim)]',  bg: 'bg-[var(--bg-surface)]' },
+  2: { label: 'TIER II',  border: 'border-[#c47a3a]',               text: 'text-[#c47a3a]',          bg: 'bg-[#c47a3a]/10' },
+  3: { label: 'TIER III', border: 'border-[var(--blood)]',          text: 'text-[var(--blood)]',     bg: 'bg-[var(--blood)]/10' },
+};
+
+const BESTIARY_ROW1 = BESTIARY.slice(0, 10);
+const BESTIARY_ROW2 = BESTIARY.slice(10);
+
 const SCREENSHOTS = [
   { src: '/screenshots/01-home.png', alt: 'Home Screen' },
   { src: '/screenshots/02-toll.png', alt: 'Toll Gate Stake Screen' },
@@ -21,9 +66,55 @@ const SCREENSHOTS = [
   { src: '/screenshots/07-death-card.png', alt: 'Death Card Share Modal' },
 ];
 
+function CreatureCard({ creature, onClick }: { creature: CreatureEntry; onClick: () => void }) {
+  const tier = TIER_COLORS[creature.tier];
+  return (
+    <button
+      onClick={onClick}
+      className="flex-shrink-0 w-[160px] mx-2 bg-[var(--bg-base)] border border-[var(--border-dim)] hover:border-[var(--amber-dim,#7a6a3a)] transition-colors group cursor-pointer text-left"
+    >
+      {/* Art */}
+      <div className="relative w-full overflow-hidden" style={{ aspectRatio: '341/420' }}>
+        {creature.art ? (
+          <Image
+            src={creature.art}
+            alt={creature.name}
+            fill
+            className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
+            sizes="160px"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-[var(--bg-surface)]">
+            <span className="text-5xl">{creature.emoji}</span>
+          </div>
+        )}
+        {/* Tier badge overlay */}
+        <span className={`absolute top-1.5 left-1.5 text-[10px] font-mono px-1.5 py-0.5 border ${tier.border} ${tier.text} ${tier.bg} backdrop-blur-sm`}>
+          {tier.label}
+        </span>
+      </div>
+
+      {/* Info */}
+      <div className="p-2.5">
+        <p className="text-[var(--amber)] font-mono text-xs font-bold leading-tight mb-1 truncate">{creature.name}</p>
+        <p className="text-[#c84040] font-mono text-[10px] mb-1.5">♥ {creature.hp[0]}–{creature.hp[1]}</p>
+        <p className="text-[var(--text-dim)] font-mono text-[10px] leading-tight line-clamp-2 italic mb-2">{creature.description}</p>
+        <div className="flex flex-wrap gap-1">
+          {creature.behaviors.slice(0, 2).map((b) => (
+            <span key={b} className="text-[9px] font-mono text-[var(--ethereal,#9d8ec4)] border border-[var(--border-dim)] px-1 py-0.5 leading-none">
+              {b}
+            </span>
+          ))}
+        </div>
+      </div>
+    </button>
+  );
+}
+
 export default function LandingPage() {
   const [mounted, setMounted] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [selectedCreature, setSelectedCreature] = useState<CreatureEntry | null>(null);
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
 
@@ -325,6 +416,106 @@ export default function LandingPage() {
           </p>
         </div>
       </section>
+
+      {/* Bestiary Section */}
+      <section className="py-20 border-t border-[var(--border-dim)] overflow-hidden">
+        <div className="max-w-6xl mx-auto mb-8 px-4">
+          <h2 className="text-[var(--amber)] text-2xl mb-2 text-center tracking-wider">
+            ◈ WHAT AWAITS YOU
+          </h2>
+          <p className="text-[var(--text-dim)] text-sm text-center">
+            {BESTIARY.length} creatures across 3 tiers · Click to inspect
+          </p>
+        </div>
+
+        {/* Row 1 — scrolls right */}
+        <div className="marquee-row mb-3 relative" style={{ maskImage: 'linear-gradient(to right, transparent, black 8%, black 92%, transparent)' }}>
+          <div className="flex animate-marquee" style={{ width: 'max-content' }}>
+            {[...BESTIARY_ROW1, ...BESTIARY_ROW1].map((c, i) => (
+              <CreatureCard key={`r1-${i}`} creature={c} onClick={() => setSelectedCreature(c)} />
+            ))}
+          </div>
+        </div>
+
+        {/* Row 2 — scrolls left */}
+        <div className="marquee-row relative" style={{ maskImage: 'linear-gradient(to right, transparent, black 8%, black 92%, transparent)' }}>
+          <div className="flex animate-marquee-reverse" style={{ width: 'max-content' }}>
+            {[...BESTIARY_ROW2, ...BESTIARY_ROW2].map((c, i) => (
+              <CreatureCard key={`r2-${i}`} creature={c} onClick={() => setSelectedCreature(c)} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Creature Detail Modal */}
+      {selectedCreature && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+          onClick={() => setSelectedCreature(null)}
+        >
+          <div
+            className="bg-[var(--bg-surface)] border border-[var(--border-default)] max-w-sm w-full max-h-[85vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Art */}
+            {selectedCreature.art ? (
+              <div className="relative w-full" style={{ aspectRatio: '341/300' }}>
+                <Image
+                  src={selectedCreature.art}
+                  alt={selectedCreature.name}
+                  fill
+                  className="object-cover object-top"
+                  sizes="448px"
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[var(--bg-surface)]" />
+              </div>
+            ) : (
+              <div className="w-full flex items-center justify-center py-12 bg-[var(--bg-base)]">
+                <span className="text-7xl">{selectedCreature.emoji}</span>
+              </div>
+            )}
+
+            {/* Info */}
+            <div className="p-5">
+              {/* Header */}
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <h3 className="text-[var(--amber)] font-mono text-xl font-bold">{selectedCreature.name}</h3>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className={`text-xs font-mono px-2 py-0.5 border ${TIER_COLORS[selectedCreature.tier].border} ${TIER_COLORS[selectedCreature.tier].text} ${TIER_COLORS[selectedCreature.tier].bg}`}>
+                      {TIER_COLORS[selectedCreature.tier].label}
+                    </span>
+                    <span className="text-[#c84040] text-xs font-mono">♥ {selectedCreature.hp[0]}–{selectedCreature.hp[1]} HP</span>
+                  </div>
+                </div>
+                <button
+                  className="text-[var(--text-dim)] hover:text-white font-mono text-lg p-2 -mr-2 -mt-1"
+                  onClick={() => setSelectedCreature(null)}
+                >
+                  [×]
+                </button>
+              </div>
+
+              {/* Description */}
+              <p className="text-[var(--text-base)] font-mono text-sm italic leading-relaxed mb-4">
+                &ldquo;{selectedCreature.description}&rdquo;
+              </p>
+
+              {/* Behaviors */}
+              <div>
+                <p className="text-[var(--text-dim)] font-mono text-xs mb-2 tracking-wider">BEHAVIORS</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {selectedCreature.behaviors.map((b) => (
+                    <span key={b} className="text-[var(--ethereal,#9d8ec4)] font-mono text-xs border border-[var(--border-dim)] px-2 py-0.5">
+                      {b}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Lightbox Gallery */}
       {lightboxIndex !== null && (
