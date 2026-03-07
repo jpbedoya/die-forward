@@ -245,13 +245,16 @@ export default function HomeScreen() {
       
       {/* Header */}
       <View className="flex-row items-center justify-between px-4 py-2">
-        {settings.showLeaderboardLink ? (
-          <Pressable onPress={() => router.push('/leaderboard')} className="py-2 px-3 -ml-3 active:opacity-70">
-            <Text className="text-amber font-mono text-xs tracking-wider">◈ RANKS</Text>
+        <View className="flex-row items-center gap-1 -ml-3">
+          {settings.showLeaderboardLink && (
+            <Pressable onPress={() => router.push('/leaderboard')} className="py-2 px-3 active:opacity-70">
+              <Text className="text-amber font-mono text-xs tracking-wider">◈ RANKS</Text>
+            </Pressable>
+          )}
+          <Pressable onPress={() => router.push('/bestiary')} className="py-2 px-3 active:opacity-70">
+            <Text className="text-amber font-mono text-xs tracking-wider">◈ BESTIARY</Text>
           </Pressable>
-        ) : (
-          <View className="w-16" />
-        )}
+        </View>
         <View className="items-end">
           <AudioToggle ambientTrack="ambient-title" inline onSettingsPress={() => setAudioSettingsOpen(true)} />
           <Pressable 

@@ -103,6 +103,7 @@ interface CreatureModalProps {
     health: { min: number; max: number };
     behaviors: string[];
     description: string;
+    artUrl?: string;
   } | null;
 }
 

@@ -367,6 +367,11 @@ export function getCreatureInfo(name: string): CreatureInfo | null {
   return BESTIARY[name] || null;
 }
 
+// Get all creatures sorted by tier then name
+export function getAllCreatures(): CreatureInfo[] {
+  return Object.values(BESTIARY).sort((a, b) => a.tier - b.tier || a.name.localeCompare(b.name));
+}
+
 // Get creature tier (1, 2, or 3)
 export function getCreatureTier(name: string): number {
   const info = BESTIARY[name];
