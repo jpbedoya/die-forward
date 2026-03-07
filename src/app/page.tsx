@@ -169,9 +169,9 @@ export default function LandingPage() {
               className="hover:opacity-80 transition-opacity"
             >
               <img
-                src="/badges/android-apk.svg"
+                src="/badges/android-apk-clean.svg"
                 alt="Download APK for Android"
-                width="130"
+                width="135"
                 height="40"
                 className="h-10 w-auto"
               />
