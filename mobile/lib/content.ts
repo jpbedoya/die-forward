@@ -255,6 +255,7 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['STALKING', 'ERRATIC', 'AGGRESSIVE'],
     description: 'They repeat the last words of the dead. Over and over.',
     emoji: '🗣️',
+    artUrl: '/creatures/echo-husks.webp',
   },
 
   // Tier 2 - Uncommon Threats
@@ -292,6 +293,7 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['STALKING', 'ERRATIC', 'CHARGING'],
     description: 'Spirits of grief. Their touch brings sorrow so deep it wounds.',
     emoji: '😢',
+    artUrl: '/creatures/the-weeping.webp',
   },
   'Carrion Knight': {
     name: 'Carrion Knight',

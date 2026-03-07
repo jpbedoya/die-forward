@@ -4,6 +4,7 @@
 const CREATURE_ASSETS: Record<string, any> = {
   'ash-children':       require('../assets/creatures/ash-children.webp'),
   'bone-weavers':       require('../assets/creatures/bone-weavers.webp'),
+  'echo-husks':         require('../assets/creatures/echo-husks.webp'),
   'carrion-knight':     require('../assets/creatures/carrion-knight.webp'),
   'flickering-shade':   require('../assets/creatures/flickering-shade.webp'),
   'forgotten-guardian': require('../assets/creatures/forgotten-guardian.webp'),
@@ -13,6 +14,7 @@ const CREATURE_ASSETS: Record<string, any> = {
   'pale-oracle':        require('../assets/creatures/pale-oracle.webp'),
   'the-bloated':        require('../assets/creatures/the-bloated.webp'),
   'the-bound':          require('../assets/creatures/the-bound.webp'),
+  'the-weeping':        require('../assets/creatures/the-weeping.webp'),
   'the-congregation':   require('../assets/creatures/the-congregation.webp'),
   'the-drowned':        require('../assets/creatures/the-drowned.webp'),
   'the-hollow':         require('../assets/creatures/the-hollow.webp'),
