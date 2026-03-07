@@ -91,20 +91,20 @@
 
   <script>
     const slides = [
-      'slide-02-title.html',
       'slide-01-hook.html',
-      'slide-03-problem.html',      // Why we built this
-      'slide-04-game.html',         // The game
-      'slide-05-features.html',    // Features enabled by integrations
-      'slide-06-agents.html',       // Agents (after features)
-      'slide-07-audius.html',       // Audius
-      'slide-08-tapestry.html',     // Tapestry
-      'slide-09-magicblock.html',   // MagicBlock
-      'slide-10-escrow.html',       // Solana escrow
-      'slide-11-business.html',     // Business model
-      'slide-12-build.html',        // Built with Pisco
-      'slide-13-next.html',         // What's Next
-      'slide-14-close.html',        // Close
+      'slide-02-title.html',
+      'slide-03-problem.html',
+      'slide-04-game.html',
+      'slide-05-features.html',
+      'slide-06-agents.html',
+      'slide-07-audius.html',
+      'slide-08-tapestry.html',
+      'slide-09-magicblock.html',
+      'slide-10-escrow.html',
+      'slide-11-business.html',
+      'slide-12-build.html',
+      'slide-13-next.html',
+      'slide-14-close.html',
     ];
     
     let current = 0;
@@ -117,14 +117,12 @@
       document.getElementById('next').disabled = current === slides.length - 1;
     }
     
-    function prev() { show(current - 1); }
     function next() { show(current + 1); }
+    function prev() { show(current - 1); }
     
     document.addEventListener('keydown', (e) => {
-      const tag = document.activeElement?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement?.isContentEditable) return;
-      if (e.key === 'ArrowLeft') prev();
       if (e.key === 'ArrowRight') next();
+      if (e.key === 'ArrowLeft') prev();
     });
     
     show(0);
