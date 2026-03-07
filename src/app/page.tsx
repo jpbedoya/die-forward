@@ -158,7 +158,7 @@ export default function LandingPage() {
               />
             </div>
             <a
-              href="https://github.com/jpbedoya/die-forward/releases/download/v1.3.0/die-forward-v1.3.0.af4680e.apk"
+              href="https://github.com/jpbedoya/die-forward/releases/download/v1.3.0/die-forward-v1.3.0.apk"
               target="_blank"
               rel="noopener noreferrer"
             >
