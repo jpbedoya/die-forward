@@ -118,6 +118,7 @@ export default function LandingPage() {
         <div className="flex flex-col items-center gap-4">
           <div className="text-[var(--text-dim)] text-xs uppercase tracking-wider">Coming Soon</div>
           <div className="flex flex-wrap justify-center gap-3">
+            {/* App Store + Google Play — hidden for now, restore when ready
             <div className="relative group cursor-not-allowed">
               <div className="opacity-50 group-hover:opacity-70 transition-opacity">
                 <Image 
@@ -146,6 +147,7 @@ export default function LandingPage() {
                 Coming soon
               </div>
             </div>
+            */}
             <div className="relative group cursor-not-allowed">
               <div className="opacity-50 group-hover:opacity-70 transition-opacity">
                 <Image 
