@@ -118,32 +118,47 @@ export default function LandingPage() {
         <div className="flex flex-col items-center gap-4">
           <div className="text-[var(--text-dim)] text-xs uppercase tracking-wider">Coming Soon</div>
           <div className="flex flex-wrap justify-center gap-3">
-            <div className="opacity-50 hover:opacity-70 transition-opacity cursor-not-allowed">
-              <Image 
-                src="/badges/app-store.svg" 
-                alt="Download on the App Store" 
-                width={120} 
-                height={40}
-                className="h-10 w-auto"
-              />
+            <div className="relative group cursor-not-allowed">
+              <div className="opacity-50 group-hover:opacity-70 transition-opacity">
+                <Image 
+                  src="/badges/app-store.svg" 
+                  alt="Download on the App Store" 
+                  width={120} 
+                  height={40}
+                  className="h-10 w-auto"
+                />
+              </div>
+              <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-[var(--bg-card)] text-[var(--text-dim)] text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                Coming soon
+              </div>
             </div>
-            <div className="opacity-50 hover:opacity-70 transition-opacity cursor-not-allowed">
-              <Image 
-                src="/badges/google-play.svg" 
-                alt="Get it on Google Play" 
-                width={135} 
-                height={40}
-                className="h-10 w-auto"
-              />
+            <div className="relative group cursor-not-allowed">
+              <div className="opacity-50 group-hover:opacity-70 transition-opacity">
+                <Image 
+                  src="/badges/google-play.svg" 
+                  alt="Get it on Google Play" 
+                  width={135} 
+                  height={40}
+                  className="h-10 w-auto"
+                />
+              </div>
+              <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-[var(--bg-card)] text-[var(--text-dim)] text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                Coming soon
+              </div>
             </div>
-            <div className="opacity-50 hover:opacity-70 transition-opacity cursor-not-allowed">
-              <Image 
-                src="/badges/solana-dapp-store.svg" 
-                alt="Get it on Solana dApp Store" 
-                width={102} 
-                height={40}
-                className="h-10 w-auto"
-              />
+            <div className="relative group cursor-not-allowed">
+              <div className="opacity-50 group-hover:opacity-70 transition-opacity">
+                <Image 
+                  src="/badges/solana-dapp-store.svg" 
+                  alt="Get it on Solana dApp Store" 
+                  width={102} 
+                  height={40}
+                  className="h-10 w-auto"
+                />
+              </div>
+              <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-[var(--bg-card)] text-[var(--text-dim)] text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                Coming soon
+              </div>
             </div>
             <a
               href="https://github.com/jpbedoya/die-forward/releases/download/v1.3.0/die-forward-v1.3.0.af4680e.apk"
