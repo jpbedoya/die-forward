@@ -168,11 +168,11 @@ export default function LandingPage() {
               rel="noopener noreferrer"
               className="hover:opacity-80 transition-opacity"
             >
-              <Image
+              <img
                 src="/badges/android-apk.svg"
                 alt="Download APK for Android"
-                width={130}
-                height={40}
+                width="130"
+                height="40"
                 className="h-10 w-auto"
               />
             </a>
