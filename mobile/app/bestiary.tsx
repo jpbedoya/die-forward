@@ -140,8 +140,8 @@ function CreatureDetailModal({ creature, onClose }: {
           <ScrollView bounces={false} showsVerticalScrollIndicator={false}>
             {/* Art */}
             {asset ? (
-              <View style={{ width: '100%', aspectRatio: 341 / 280, overflow: 'hidden' }}>
-                <Image source={asset} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+              <View style={{ width: '100%', aspectRatio: 341 / 512, overflow: 'hidden' }}>
+                <Image source={asset} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
                 {/* Gradient fade into content */}
                 <View style={{
                   position: 'absolute', bottom: 0, left: 0, right: 0, height: 60,
