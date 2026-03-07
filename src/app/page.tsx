@@ -145,6 +145,20 @@ export default function LandingPage() {
                 className="h-10 w-auto"
               />
             </div>
+            <a
+              href="https://github.com/jpbedoya/die-forward/releases/download/v1.3.0/die-forward-v1.3.0.af4680e.apk"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="opacity-90 hover:opacity-100 transition-opacity"
+            >
+              <Image
+                src="/badges/android-apk.svg"
+                alt="Download APK for Android"
+                width={135}
+                height={40}
+                className="h-10 w-auto"
+              />
+            </a>
           </div>
         </div>
 
