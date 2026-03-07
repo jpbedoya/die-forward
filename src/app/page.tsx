@@ -169,7 +169,7 @@ export default function LandingPage() {
               <Image
                 src="/badges/android-apk.svg"
                 alt="Download APK for Android"
-                width={135}
+                width={130}
                 height={40}
                 className="h-10 w-auto"
               />
