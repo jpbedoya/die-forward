@@ -115,7 +115,7 @@ export default function LandingPage() {
         </div>
 
         {/* Store Links */}
-        <div className="flex flex-col items-center gap-4">
+        <div className="relative z-10 flex flex-col items-center gap-4">
           <div className="text-[var(--text-dim)] text-xs uppercase tracking-wider">Coming Soon</div>
           <div className="flex flex-wrap justify-center gap-3">
             {/* App Store + Google Play — hidden for now, restore when ready
@@ -163,11 +163,11 @@ export default function LandingPage() {
               rel="noopener noreferrer"
             >
               <img
-                src="/badges/android-apk.png"
+                src="/badges/android-apk-official.png"
                 alt="Download APK for Android"
-                width="180"
+                width="122"
                 height="40"
-                className="h-10 w-auto"
+                className="h-10 w-auto rounded-md border border-white/40"
               />
             </a>
           </div>
