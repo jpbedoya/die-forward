@@ -326,7 +326,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, [state.authId, state.authType, state.walletAddress, updateState]);
 
   const dismissNicknameModal = useCallback(async () => {
-    updateState({ showNicknameModal: false });
+    // Assign a random default name if the player has none
+    const name = randomDefaultName();
+    await AsyncStorage.setItem(NICKNAME_STORAGE_KEY, name);
+    updateState({ showNicknameModal: false, nickname: name });
     await AsyncStorage.setItem(NICKNAME_PROMPTED_KEY, 'true');
   }, [updateState]);
 
