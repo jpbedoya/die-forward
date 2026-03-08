@@ -244,7 +244,7 @@ export default function HomeScreen() {
       <CRTOverlay />
       
       {/* Header */}
-      <View className="flex-row items-center justify-between px-4 py-2">
+      <View className="flex-row items-center justify-between px-3 py-[10px]">
         <View className="flex-row items-center gap-1 -ml-3">
           {settings.showLeaderboardLink && (
             <Pressable onPress={() => router.push('/leaderboard')} className="py-2 px-3 active:opacity-70">

@@ -6,6 +6,7 @@ import { useLeaderboard, usePlayer, useDeathSoundtrack } from '../lib/instant';
 import { useGame } from '../lib/GameContext';
 import { AudioToggle } from '../components/AudioToggle';
 import { AudioSettingsModal } from '../components/AudioSettingsModal';
+import { ScreenHeader } from '../components/ScreenHeader';
 
 export default function LeaderboardScreen() {
   const game = useGame();
@@ -17,21 +18,11 @@ export default function LeaderboardScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-crypt-bg">
-      {/* Header */}
-      <View className="relative px-3 py-3 border-b border-amber/30">
-        {/* Back button - absolute left */}
-        <Pressable onPress={() => router.replace('/')} hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }} className="absolute left-1 top-1 z-10 py-3 px-4">
-          <Text className="text-bone-muted text-sm font-mono">[HOME]</Text>
-        </Pressable>
-        
-        {/* Title - centered full width */}
-        <Text className="text-amber text-xs font-mono tracking-widest text-center">◈ RANKS</Text>
-        
-        {/* Audio toggle - absolute right */}
-        <View className="absolute right-3 top-2 z-10">
-          <AudioToggle inline onSettingsPress={() => setAudioSettingsOpen(true)} />
-        </View>
-      </View>
+      <ScreenHeader
+        showHome
+        title="◈ RANKS"
+        right={<AudioToggle inline onSettingsPress={() => setAudioSettingsOpen(true)} />}
+      />
       
       <AudioSettingsModal visible={audioSettingsOpen} onClose={() => setAudioSettingsOpen(false)} />
 

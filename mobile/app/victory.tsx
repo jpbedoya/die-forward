@@ -258,7 +258,7 @@ export default function VictoryScreen() {
     <CryptBackground screen="victory">
     <SafeAreaView className="flex-1">
       {/* Header with audio toggle */}
-      <View className="flex-row items-center justify-end px-4 py-2">
+      <View className="flex-row items-center justify-end px-3 py-[10px]">
         <AudioToggle ambientTrack="ambient-victory" inline onSettingsPress={() => setAudioSettingsOpen(true)} />
       </View>
 

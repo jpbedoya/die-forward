@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAudio } from '../lib/audio';
 import { AudioToggle } from '../components/AudioToggle';
 import { AudioSettingsModal } from '../components/AudioSettingsModal';
+import { ScreenHeader } from '../components/ScreenHeader';
 import { CRTOverlay } from '../components/CRTOverlay';
 import { useGame } from '../lib/GameContext';
 import { API_BASE } from '../lib/api';
@@ -386,16 +387,11 @@ export default function ZoneSelectScreen() {
   return (
     <CryptBackground screen="stake">
       <SafeAreaView className="flex-1">
-        {/* Header */}
-        <View className="relative flex-row items-center justify-between px-4 py-3 border-b border-crypt-border">
-          <Pressable onPress={() => router.replace('/')} hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }} className="py-3 px-4 -ml-3">
-            <Text className="text-bone-muted text-sm font-mono">[HOME]</Text>
-          </Pressable>
-          <View className="absolute inset-x-0 items-center" style={{ pointerEvents: 'none' }}>
-            <Text className="text-amber text-base font-mono font-bold tracking-widest">CHOOSE YOUR DESCENT</Text>
-          </View>
-          <AudioToggle ambientTrack="ambient-title" inline onSettingsPress={() => setAudioSettingsOpen(true)} />
-        </View>
+        <ScreenHeader
+          showHome
+          title="◈ CHOOSE YOUR DESCENT"
+          right={<AudioToggle ambientTrack="ambient-title" inline onSettingsPress={() => setAudioSettingsOpen(true)} />}
+        />
 
         {/* Subheader */}
         <View className="items-center py-2 border-b border-crypt-border">

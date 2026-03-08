@@ -7,6 +7,7 @@ import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AudioToggle } from '../components/AudioToggle';
 import { AudioSettingsModal } from '../components/AudioSettingsModal';
+import { ScreenHeader } from '../components/ScreenHeader';
 import { getAllCreatures, CreatureInfo } from '../lib/content';
 import { getCreatureAsset, getCreatureAssetByName } from '../lib/creatureAssets';
 import { CRTOverlay } from '../components/CRTOverlay';
@@ -277,18 +278,11 @@ export default function BestiaryScreen() {
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'left', 'right', 'bottom']}>
         <CRTOverlay />
 
-        {/* Header */}
-        <View style={{
-          flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-          paddingHorizontal: 12, paddingVertical: 10,
-          borderBottomWidth: 1, borderColor: 'rgba(245,158,11,0.2)',
-        }}>
-          <Pressable onPress={() => router.replace('/')} hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }} style={{ paddingVertical: 8, paddingHorizontal: 12 }}>
-            <Text style={{ fontFamily: 'monospace', fontSize: 12, color: '#78716c' }}>[HOME]</Text>
-          </Pressable>
-          <Text style={{ fontFamily: 'monospace', fontSize: 12, color: '#f59e0b', letterSpacing: 3 }}>◈ BESTIARY</Text>
-          <AudioToggle inline onSettingsPress={() => setAudioSettingsOpen(true)} />
-        </View>
+        <ScreenHeader
+          showHome
+          title="◈ BESTIARY"
+          right={<AudioToggle inline onSettingsPress={() => setAudioSettingsOpen(true)} />}
+        />
 
         <AudioSettingsModal visible={audioSettingsOpen} onClose={() => setAudioSettingsOpen(false)} />
 
