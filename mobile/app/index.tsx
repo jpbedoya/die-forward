@@ -170,44 +170,41 @@ function EchoSheet({
             paddingVertical: 14,
             borderBottomWidth: 1,
             borderColor: C.border,
+            alignItems: 'center',
           }}>
-            {/* Row 1: name left · candle right */}
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Text style={{ fontFamily: 'monospace', fontSize: 14, fontWeight: '600', flex: 1 }} numberOfLines={1}>
-                <Text style={{ color: C.ethereal }}>† </Text>
-                <Text style={{ color: C.bone }}>{(death.playerName || 'Unknown').toUpperCase()}</Text>
-              </Text>
-              <Pressable
-                onPress={() => handleLike(death)}
-                disabled={!canLike}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                style={{ flexDirection: 'row', alignItems: 'center', gap: 3, opacity: !walletAddress ? 0.3 : 1, marginLeft: 8 }}
-              >
-                <Text style={{ fontSize: 14 }}>{hasLiked ? '🕯️' : '🕯'}</Text>
-                {count > 0 && (
-                  <Text style={{ fontFamily: 'monospace', fontSize: 11, color: hasLiked ? C.amber : C.boneMuted }}>
-                    {count}
-                  </Text>
-                )}
-              </Pressable>
-            </View>
-
-            {/* Row 2: depth · epitaph centered */}
-            <Text style={{
-              fontFamily: 'monospace',
-              fontSize: 12,
-              color: C.boneDark,
-              fontStyle: 'italic',
-              marginTop: 5,
-              lineHeight: 18,
-              textAlign: 'center',
-            }} numberOfLines={2}>
-              <Text style={{ fontStyle: 'normal' }}>{'depth '}</Text>
-              <Text style={{ color: C.amber, fontStyle: 'normal', fontWeight: '600' }}>{death.room || '?'}</Text>
-              {death.finalMessage ? (
-                <Text>{`  "${death.finalMessage}"`}</Text>
-              ) : null}
+            <Text style={{ fontFamily: 'monospace', fontSize: 14, textAlign: 'center' }} numberOfLines={1}>
+              <Text style={{ color: C.ethereal }}>†</Text>
+              <Text style={{ color: C.bone, fontWeight: '600' }}> {(death.playerName || 'Unknown').toUpperCase()}</Text>
+              <Text style={{ color: C.boneDark }}> · </Text>
+              <Text style={{ color: C.boneDark }}>depth </Text>
+              <Text style={{ color: C.amber, fontWeight: '600' }}>{death.room || '?'}</Text>
             </Text>
+            {death.finalMessage ? (
+              <Text style={{
+                fontFamily: 'monospace',
+                fontSize: 13,
+                color: C.boneDark,
+                fontStyle: 'italic',
+                marginTop: 6,
+                lineHeight: 19,
+                textAlign: 'center',
+              }} numberOfLines={2}>
+                "{death.finalMessage}"
+              </Text>
+            ) : null}
+            {/* 🕯️ Light a candle */}
+            <Pressable
+              onPress={() => handleLike(death)}
+              disabled={!canLike}
+              style={{ marginTop: 8, flexDirection: 'row', alignItems: 'center', gap: 4, opacity: !walletAddress ? 0.3 : 1 }}
+            >
+              <Text style={{ fontSize: 13 }}>{hasLiked ? '🕯️' : '🕯'}</Text>
+              {count > 0 && (
+                <Text style={{ fontFamily: 'monospace', fontSize: 11, color: hasLiked ? C.amber : C.boneMuted }}>
+                  {count}
+                </Text>
+              )}
+            </Pressable>
           </View>
           );
         }) : (
