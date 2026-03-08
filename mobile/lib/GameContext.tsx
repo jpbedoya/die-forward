@@ -177,7 +177,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     }
   }, [unifiedWallet.balance, updateState]);
 
-  // Restore auth state on mount
+  // Restore auth state on mount — always re-validate guest token with backend
   useEffect(() => {
     const restoreAuth = async () => {
       const [stored, guestProgressRaw] = await Promise.all([
@@ -187,13 +187,36 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
       updateState({ guestProgressExists: guestProgressRaw === 'true' });
 
-      if (stored?.isAuthenticated) {
+      if (stored?.isAuthenticated && stored.authType === 'wallet') {
+        // Wallet auth — restore from storage as-is (wallet re-connects via unified wallet hook)
         updateState({
           isAuthenticated: true,
           authId: stored.authId,
           authType: stored.authType,
           walletAddress: stored.walletAddress,
         });
+      } else if (!unifiedWallet.connected) {
+        // Guest — always do a fresh sign-in to get a valid token + load player record immediately
+        try {
+          const authState = await signInAsGuest();
+          updateState({
+            isAuthenticated: true,
+            authId: authState.authId,
+            authType: 'guest',
+            walletAddress: null,
+          });
+        } catch (err) {
+          console.warn('[Auth] Guest re-auth on mount failed:', err);
+          // Fall back to stored state if backend is unreachable
+          if (stored?.isAuthenticated) {
+            updateState({
+              isAuthenticated: true,
+              authId: stored.authId,
+              authType: stored.authType,
+              walletAddress: stored.walletAddress,
+            });
+          }
+        }
       }
     };
     restoreAuth();
