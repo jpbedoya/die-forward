@@ -407,7 +407,7 @@ export function useCorpsesForRoom(zone: string, room: number) {
 export function useDeathFeed(limit = 10) {
   // Fetch deaths + players together so we can always resolve the current nickname
   const { data, isLoading, error } = db.useQuery({
-    deaths: { $: { limit: 50 } },
+    deaths: { $: { limit: 50, order: { serverCreatedAt: 'desc' } } },
     players: {},
   });
 

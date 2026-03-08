@@ -369,6 +369,7 @@ export function useDeathFeed(limit = 10) {
     deaths: {
       $: {
         limit,
+        order: { serverCreatedAt: 'desc' },
       },
     },
   });
