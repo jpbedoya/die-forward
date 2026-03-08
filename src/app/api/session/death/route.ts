@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
     let displayName = playerName;
     const isDemo = session.walletAddress?.startsWith('demo-wallet') || session.walletAddress === 'demo-wallet';
     if (isDemo) {
-      displayName = playerName && playerName !== 'Wanderer' ? playerName : 'Wanderer';
+      displayName = playerName || 'Wanderer';
     } else {
       try {
         const lookupField = session.authId ? 'authId' : 'walletAddress';
@@ -85,8 +85,9 @@ export async function POST(request: NextRequest) {
           players: { $: { where: { [lookupField]: lookupValue } } },
         });
         const playerRecord = playerResult?.players?.[0];
+        const DEFAULT_NAMES = ['Wanderer','AshenpilgriM','HollowSeeker','Saltborn','Cairnwalker','Unremembered','PaleVenture','GraveWarden','Tidecaller','TheForsaken','MurkDelver','Bonepath','Driftborn'];
         if (playerRecord?.nickname
-          && playerRecord.nickname !== 'Wanderer'
+          && !DEFAULT_NAMES.includes(playerRecord.nickname)
           && playerRecord.nickname !== playerRecord.walletAddress) {
           displayName = playerRecord.nickname;
         }

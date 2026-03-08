@@ -18,7 +18,8 @@ function getCorpseDisplayName(corpse: Corpse | null): string {
   if (!corpse) return 'Unknown Wanderer';
   
   // If they have a real nickname (not generic "Wanderer"), use it
-  if (corpse.playerName && corpse.playerName !== 'Wanderer' && corpse.playerName !== 'Unknown Wanderer') {
+  const DEFAULT_NAMES = ['Wanderer','AshenpilgriM','HollowSeeker','Saltborn','Cairnwalker','Unremembered','PaleVenture','GraveWarden','Tidecaller','TheForsaken','MurkDelver','Bonepath','Driftborn','Unknown Wanderer'];
+  if (corpse.playerName && !DEFAULT_NAMES.includes(corpse.playerName)) {
     return corpse.playerName;
   }
   

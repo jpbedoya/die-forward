@@ -12,6 +12,15 @@ import { createRunRng, generateRandomSeed, type SeededRng } from './seeded-rando
 const NICKNAME_STORAGE_KEY = 'die-forward-nickname';
 const NICKNAME_PROMPTED_KEY = 'die-forward-nickname-prompted';
 const GUEST_PROGRESS_KEY = 'die-forward-guest-progress';
+
+const DEFAULT_NAMES = [
+  'Wanderer', 'AshenpilgriM', 'HollowSeeker', 'Saltborn', 'Cairnwalker',
+  'Unremembered', 'PaleVenture', 'GraveWarden', 'Tidecaller',
+  'TheForsaken', 'MurkDelver', 'Bonepath', 'Driftborn',
+];
+function randomDefaultName(): string {
+  return DEFAULT_NAMES[Math.floor(Math.random() * DEFAULT_NAMES.length)];
+}
 const AUTH_STORAGE_KEY = 'die-forward-auth';   // mirrors auth.ts
 const GUEST_ID_KEY = 'die-forward-guest-id';   // mirrors auth.ts
 
@@ -214,7 +223,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
           const { player, isNew } = result;
           const dbNickname = player.nickname;
           const isDefaultNickname =
-            dbNickname === 'Wanderer' ||
+            DEFAULT_NAMES.includes(dbNickname) ||
             (state.walletAddress &&
               dbNickname === `${state.walletAddress.slice(0, 4)}...${state.walletAddress.slice(-4)}`);
 
@@ -628,7 +637,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       // Use nickname first, fall back to formatted wallet address, then default
       const playerName = state.nickname || (state.walletAddress 
         ? `${state.walletAddress.slice(0, 4)}...${state.walletAddress.slice(-4)}`
-        : 'Wanderer');
+        : randomDefaultName());
       
       await api.recordDeath(
         state.sessionToken, 
