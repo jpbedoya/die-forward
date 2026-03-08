@@ -97,14 +97,14 @@ export function DeathCard({ data }: { data: DeathCardData }) {
 
         {/* Now Playing */}
         {data.nowPlaying && (
-          <View className="border-t border-stone-800 mt-2 pt-2 mb-2 flex-row items-center justify-center gap-1">
-            <Text className="text-[11px]">🎧</Text>
-            <Text className="text-stone-400 text-[11px] font-mono italic" numberOfLines={1}>
-              {data.nowPlaying.title}
+          <View className="border-t border-stone-800 mt-2 pt-2 mb-2 flex-row items-center gap-1" style={{ maxWidth: '100%', overflow: 'hidden' }}>
+            <Text className="text-[11px]" style={{ flexShrink: 0 }}>🎧</Text>
+            <Text className="text-stone-400 text-[11px] font-mono italic" numberOfLines={1} ellipsizeMode="tail" style={{ flexShrink: 1 }}>
+              {data.nowPlaying.title.length > 22 ? data.nowPlaying.title.slice(0, 22) + '…' : data.nowPlaying.title}
             </Text>
-            <Text className="text-stone-500 text-[11px] font-mono">·</Text>
-            <Text className="text-stone-500 text-[11px] font-mono" numberOfLines={1}>
-              {data.nowPlaying.artist}
+            <Text className="text-stone-500 text-[11px] font-mono" style={{ flexShrink: 0 }}>·</Text>
+            <Text className="text-stone-500 text-[11px] font-mono" numberOfLines={1} ellipsizeMode="tail" style={{ flexShrink: 1 }}>
+              {data.nowPlaying.artist.length > 12 ? data.nowPlaying.artist.slice(0, 12) + '…' : data.nowPlaying.artist}
             </Text>
           </View>
         )}
@@ -164,14 +164,14 @@ export function VictoryCard({ data }: { data: VictoryCardData }) {
 
         {/* Now Playing */}
         {data.nowPlaying && (
-          <View className="border-t border-stone-800 mt-2 pt-2 mb-2 flex-row items-center justify-center gap-1">
-            <Text className="text-[11px]">🎧</Text>
-            <Text className="text-stone-400 text-[11px] font-mono italic" numberOfLines={1}>
-              {data.nowPlaying.title}
+          <View className="border-t border-stone-800 mt-2 pt-2 mb-2 flex-row items-center gap-1" style={{ maxWidth: '100%', overflow: 'hidden' }}>
+            <Text className="text-[11px]" style={{ flexShrink: 0 }}>🎧</Text>
+            <Text className="text-stone-400 text-[11px] font-mono italic" numberOfLines={1} ellipsizeMode="tail" style={{ flexShrink: 1 }}>
+              {data.nowPlaying.title.length > 22 ? data.nowPlaying.title.slice(0, 22) + '…' : data.nowPlaying.title}
             </Text>
-            <Text className="text-stone-500 text-[11px] font-mono">·</Text>
-            <Text className="text-stone-500 text-[11px] font-mono" numberOfLines={1}>
-              {data.nowPlaying.artist}
+            <Text className="text-stone-500 text-[11px] font-mono" style={{ flexShrink: 0 }}>·</Text>
+            <Text className="text-stone-500 text-[11px] font-mono" numberOfLines={1} ellipsizeMode="tail" style={{ flexShrink: 1 }}>
+              {data.nowPlaying.artist.length > 12 ? data.nowPlaying.artist.slice(0, 12) + '…' : data.nowPlaying.artist}
             </Text>
           </View>
         )}
