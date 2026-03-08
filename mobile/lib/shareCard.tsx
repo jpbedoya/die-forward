@@ -5,6 +5,7 @@
 import React, { useRef, useCallback } from 'react';
 import { View, Text, Platform } from 'react-native';
 import ViewShot from 'react-native-view-shot';
+import RNShare from 'react-native-share';
 import * as Sharing from 'expo-sharing';
 import { Paths, File as ExpoFile } from 'expo-file-system';
 import { DieForwardLogoImage } from '../components/DieForwardLogoImage';
@@ -291,12 +292,13 @@ export function useShareCard() {
       const cacheUri = cacheFile.uri;
       console.log('[ShareCard] Copied to cache:', cacheUri);
 
-      // Use expo-sharing - simpler API, better compatibility
-      // Note: expo-sharing doesn't support passing text with the image
-      // Users can add their own caption in the target app
-      await Sharing.shareAsync(cacheUri, {
-        mimeType: 'image/png',
-        dialogTitle: title,
+      // react-native-share: properly supports image + text on both iOS and Android
+      await RNShare.open({
+        url: cacheUri,
+        message,
+        title,
+        type: 'image/png',
+        failOnCancel: false,
       });
 
       console.log('[ShareCard] Share completed');
