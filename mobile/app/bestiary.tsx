@@ -283,7 +283,7 @@ export default function BestiaryScreen() {
           paddingHorizontal: 12, paddingVertical: 10,
           borderBottomWidth: 1, borderColor: 'rgba(245,158,11,0.2)',
         }}>
-          <Pressable onPress={() => router.replace('/')} style={{ paddingVertical: 6, paddingHorizontal: 8 }}>
+          <Pressable onPress={() => router.replace('/')} hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }} style={{ paddingVertical: 8, paddingHorizontal: 12 }}>
             <Text style={{ fontFamily: 'monospace', fontSize: 12, color: '#78716c' }}>[HOME]</Text>
           </Pressable>
           <Text style={{ fontFamily: 'monospace', fontSize: 12, color: '#f59e0b', letterSpacing: 3 }}>◈ BESTIARY</Text>

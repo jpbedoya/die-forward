@@ -388,7 +388,7 @@ export default function ZoneSelectScreen() {
       <SafeAreaView className="flex-1">
         {/* Header */}
         <View className="relative flex-row items-center justify-between px-4 py-3 border-b border-crypt-border">
-          <Pressable onPress={() => router.replace('/')} className="py-2 px-3 -ml-3">
+          <Pressable onPress={() => router.replace('/')} hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }} className="py-3 px-4 -ml-3">
             <Text className="text-bone-muted text-sm font-mono">[HOME]</Text>
           </Pressable>
           <View className="absolute inset-x-0 items-center" style={{ pointerEvents: 'none' }}>
