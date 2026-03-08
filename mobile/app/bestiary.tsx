@@ -222,11 +222,14 @@ export default function BestiaryScreen() {
   const { width } = useWindowDimensions();
   const [selected, setSelected] = useState<CreatureInfo | null>(null);
   const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
+  const [filterTier, setFilterTier] = useState<1 | 2 | 3 | null>(null);
 
   const COLS = 2;
   const GUTTER = 12;
   const H_PAD = 16;
   const cardWidth = Math.floor((width - H_PAD * 2 - GUTTER) / COLS);
+
+  const filteredCreatures = filterTier ? CREATURES.filter(c => c.tier === filterTier) : CREATURES;
 
   const renderItem = useCallback(({ item, index }: { item: CreatureInfo; index: number }) => (
     <View style={{ marginLeft: index % COLS === 0 ? 0 : GUTTER }}>
@@ -240,23 +243,34 @@ export default function BestiaryScreen() {
 
   const renderHeader = useCallback(() => (
     <View style={{ marginBottom: 16 }}>
-      {/* Tier legend */}
-      <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 12, paddingVertical: 8 }}>
+      {/* Tier filter buttons */}
+      <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 8, paddingVertical: 8 }}>
         {([1, 2, 3] as const).map((t) => {
           const cfg = TIER_CONFIG[t];
+          const active = filterTier === t;
           return (
-            <View key={t} style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+            <Pressable
+              key={t}
+              onPress={() => setFilterTier(prev => prev === t ? null : t)}
+              style={{
+                flexDirection: 'row', alignItems: 'center', gap: 5,
+                borderWidth: 1,
+                borderColor: active ? cfg.color : cfg.border,
+                backgroundColor: active ? cfg.bg : 'transparent',
+                paddingHorizontal: 10, paddingVertical: 5,
+              }}
+            >
               <View style={{ width: 6, height: 6, backgroundColor: cfg.color }} />
-              <Text style={{ fontFamily: 'monospace', fontSize: 10, color: cfg.color }}>{cfg.label}</Text>
-            </View>
+              <Text style={{ fontFamily: 'monospace', fontSize: 10, color: cfg.color, letterSpacing: 1 }}>{cfg.label}</Text>
+            </Pressable>
           );
         })}
       </View>
       <Text style={{ fontFamily: 'monospace', fontSize: 10, color: '#57534e', textAlign: 'center', marginTop: 2 }}>
-        {CREATURES.length} creatures · tap to inspect
+        {filteredCreatures.length} creature{filteredCreatures.length !== 1 ? 's' : ''}{filterTier ? ` · tier ${filterTier}` : ''} · tap to inspect
       </Text>
     </View>
-  ), []);
+  ), [filterTier, filteredCreatures.length]);
 
   return (
     <CryptBackground screen="home">
@@ -280,12 +294,13 @@ export default function BestiaryScreen() {
 
         {/* Grid */}
         <FlatList
-          data={CREATURES}
+          data={filteredCreatures}
           keyExtractor={(item) => item.name}
           renderItem={renderItem}
           numColumns={COLS}
           ListHeaderComponent={renderHeader}
           contentContainerStyle={{ padding: H_PAD, paddingTop: 12 }}
+          key={filterTier ?? 'all'}
           showsVerticalScrollIndicator={false}
           columnWrapperStyle={{ justifyContent: 'flex-start' }}
         />
