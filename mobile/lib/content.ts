@@ -174,7 +174,7 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['AGGRESSIVE', 'ERRATIC', 'DEFENSIVE'],
     description: 'Waterlogged husks animated by the underworld\'s hunger.',
     emoji: '🧟',
-    artUrl: '/creatures/the-drowned.png',
+    artUrl: '/creatures/the-drowned.webp',
   },
   'Pale Crawler': {
     name: 'Pale Crawler',
@@ -183,7 +183,7 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['STALKING', 'AGGRESSIVE', 'HUNTING'],
     description: 'Too many limbs. They cling to walls and ceilings.',
     emoji: '🕷️',
-    artUrl: '/creatures/pale-crawler.png',
+    artUrl: '/creatures/pale-crawler.webp',
   },
   'The Hollow': {
     name: 'The Hollow',
@@ -192,7 +192,7 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['STALKING', 'ERRATIC', 'CHARGING'],
     description: 'No face, no features. Just shadow.',
     emoji: '👤',
-    artUrl: '/creatures/the-hollow.png',
+    artUrl: '/creatures/the-hollow.webp',
   },
   'Bloated One': {
     name: 'Bloated One',
@@ -201,7 +201,7 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['AGGRESSIVE', 'CHARGING', 'ERRATIC'],
     description: 'Corpses swollen with dark water.',
     emoji: '🫧',
-    artUrl: '/creatures/the-bloated.png',
+    artUrl: '/creatures/the-bloated.webp',
   },
   'Flickering Shade': {
     name: 'Flickering Shade',
@@ -210,7 +210,7 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['ERRATIC', 'STALKING', 'RETREATING'],
     description: 'Afterimages of the dead.',
     emoji: '👻',
-    artUrl: '/creatures/flickering-shade.png',
+    artUrl: '/creatures/flickering-shade.webp',
   },
   'The Hunched': {
     name: 'The Hunched',
@@ -219,7 +219,7 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['HUNTING', 'AGGRESSIVE', 'STALKING'],
     description: 'Bent figures that move on all fours.',
     emoji: '🐺',
-    artUrl: '/creatures/the-hunched.png',
+    artUrl: '/creatures/the-hunched.webp',
   },
   'Tideborn': {
     name: 'Tideborn',
@@ -228,7 +228,7 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['CHARGING', 'AGGRESSIVE', 'DEFENSIVE'],
     description: 'Creatures of living water. They rise from puddles, take form, then collapse.',
     emoji: '🌊',
-    artUrl: '/creatures/tideborn.png',
+    artUrl: '/creatures/tideborn.webp',
   },
   'Bone Weavers': {
     name: 'Bone Weavers',
@@ -237,7 +237,7 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['AGGRESSIVE', 'CHARGING', 'STALKING'],
     description: 'Skeletal hands that emerge from walls and floors. Just hands.',
     emoji: '🦴',
-    artUrl: '/creatures/bone-weavers.png',
+    artUrl: '/creatures/bone-weavers.webp',
   },
   'Ash Children': {
     name: 'Ash Children',
@@ -246,7 +246,7 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['STALKING', 'DEFENSIVE', 'CHARGING'],
     description: 'Small. Gray. They don\'t attack — they suffocate.',
     emoji: '👶',
-    artUrl: '/creatures/ash-children.png',
+    artUrl: '/creatures/ash-children.webp',
   },
   'Echo Husks': {
     name: 'Echo Husks',
@@ -266,7 +266,7 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['CHARGING', 'DEFENSIVE', 'AGGRESSIVE'],
     description: 'Priests of a nameless god.',
     emoji: '🧙',
-    artUrl: '/creatures/hollow-clergy.png',
+    artUrl: '/creatures/hollow-clergy.webp',
   },
   'The Bound': {
     name: 'The Bound',
@@ -275,7 +275,7 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['HUNTING', 'AGGRESSIVE', 'CHARGING'],
     description: 'Souls wrapped in chains of regret.',
     emoji: '⛓️',
-    artUrl: '/creatures/the-bound.png',
+    artUrl: '/creatures/the-bound.webp',
   },
   'Forgotten Guardian': {
     name: 'Forgotten Guardian',
@@ -284,7 +284,7 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['DEFENSIVE', 'AGGRESSIVE', 'CHARGING'],
     description: 'Stone sentinels animated by old magic.',
     emoji: '🗿',
-    artUrl: '/creatures/forgotten-guardian.png',
+    artUrl: '/creatures/forgotten-guardian.webp',
   },
   'The Weeping': {
     name: 'The Weeping',
@@ -302,7 +302,7 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['AGGRESSIVE', 'DEFENSIVE', 'CHARGING'],
     description: 'Warriors who refused to stop fighting.',
     emoji: '⚔️',
-    artUrl: '/creatures/carrion-knight.png',
+    artUrl: '/creatures/carrion-knight.webp',
   },
   'Pale Oracle': {
     name: 'Pale Oracle',
@@ -311,7 +311,7 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['CHARGING', 'RETREATING', 'STALKING'],
     description: 'Eyeless seers who speak truths you don\'t want to hear.',
     emoji: '🔮',
-    artUrl: '/creatures/pale-oracle.png',
+    artUrl: '/creatures/pale-oracle.webp',
   },
   'The Congregation': {
     name: 'The Congregation',
@@ -320,7 +320,7 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['AGGRESSIVE', 'CHARGING', 'STALKING'],
     description: 'Pilgrims fused at the edges, moving as one.',
     emoji: '👥',
-    artUrl: '/creatures/the-congregation.png',
+    artUrl: '/creatures/the-congregation.webp',
   },
   'Pale Crawler Swarm': {
     name: 'Pale Crawler Swarm',
@@ -329,7 +329,7 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['AGGRESSIVE', 'HUNTING', 'CHARGING'],
     description: 'One wouldn\'t be a threat. But there isn\'t one.',
     emoji: '🕷️',
-    artUrl: '/creatures/pale-crawler-swarm.png',
+    artUrl: '/creatures/pale-crawler-swarm.webp',
   },
 
   // Tier 3 - Rare Terrors / Bosses
@@ -340,7 +340,7 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['ERRATIC', 'CHARGING', 'STALKING'],
     description: 'You cannot see it clearly. Your mind refuses.',
     emoji: '❓',
-    artUrl: '/creatures/the-unnamed.png',
+    artUrl: '/creatures/the-unnamed.webp',
   },
   'Mother of Tides': {
     name: 'Mother of Tides',
@@ -349,7 +349,7 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['CHARGING', 'AGGRESSIVE', 'DEFENSIVE'],
     description: 'The water itself, given will. Everything that drowns belongs to her.',
     emoji: '🌊',
-    artUrl: '/creatures/mother-of-tides.png',
+    artUrl: '/creatures/mother-of-tides.webp',
   },
   'The Keeper': {
     name: 'The Keeper',
@@ -358,7 +358,7 @@ const BESTIARY: Record<string, CreatureInfo> = {
     behaviors: ['CHARGING', 'AGGRESSIVE', 'DEFENSIVE', 'CHARGING'],
     description: 'Guardian of the exit. None have passed.',
     emoji: '👁️',
-    artUrl: '/creatures/the-keeper.png',
+    artUrl: '/creatures/the-keeper.webp',
   },
 };
 
