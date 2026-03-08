@@ -37,8 +37,8 @@ export async function GET(req: NextRequest) {
     // Fall back to bundled zone data (works on Vercel — no fs required)
     const data = await ZONE_LOADERS[zone]();
 
-    // Zones use fragments (new system) or rooms (old sunken-crypt system)
-    const fragments = data.fragments?.[category] ?? data.rooms?.[category] ?? {};
+    // Only return fragments (new system) — old sunken-crypt rooms format is not editable here
+    const fragments = data.fragments?.[category] ?? {};
     return NextResponse.json({ fragments });
   } catch (err) {
     return NextResponse.json({ error: 'Failed to load zone' }, { status: 500 });
