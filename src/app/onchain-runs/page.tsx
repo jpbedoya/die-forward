@@ -308,7 +308,12 @@ export default async function OnchainRunsPage() {
                         <tr key={run.pda} className="border-b border-amber/10 hover:bg-amber/5 transition-colors">
                           <td className={`p-3 font-bold ${color}`}>
                             {label}
-                            {run.delegated && <span className="text-amber/50 text-[10px] ml-1" title="Pending L1 settlement">⚡ER</span>}
+                            {(run.delegated || run.erCommitTx) && (
+                              <span
+                                className="text-amber/50 text-[10px] ml-1"
+                                title={run.delegated ? 'Active on Ephemeral Rollup (pending L1 settlement)' : 'Ran on Ephemeral Rollup (committed to L1)'}
+                              >⚡ER</span>
+                            )}
                           </td>
                           <td className="p-3">
                             <a
