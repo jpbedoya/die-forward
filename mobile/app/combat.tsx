@@ -599,7 +599,7 @@ export default function CombatScreen() {
                 setNarrative(`You quickly apply the herbs. Wounds close. +${heal} HP.`);
                 playSFX('heal');
               } else if (name === 'Pale Rations') {
-                game.setStamina(Math.min(settings.staminaPool, game.stamina + 1));
+                game.setStamina(Math.min(settings.staminaPool, game.stamina + settings.staminaRegen));
                 setNarrative('You eat quickly. Strength returns to your legs.');
                 playSFX('loot-discover');
               } else if (name === 'Bone Dust') {
