@@ -412,7 +412,7 @@ export default function CombatScreen() {
             {!artLoadFailed && (creature.artUrl ? getCreatureAsset(creature.artUrl) : getCreatureAssetByName(creature.name)) ? (
               <Image
                 source={creature.artUrl ? getCreatureAsset(creature.artUrl) : getCreatureAssetByName(creature.name)}
-                style={{ width: 80, aspectRatio: 341/512, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(180,30,30,0.35)' }}
+                style={{ width: 80, height: 100, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(180,30,30,0.35)' }}
                 resizeMode="cover"
                 onError={() => setArtLoadFailed(true)}
               />
