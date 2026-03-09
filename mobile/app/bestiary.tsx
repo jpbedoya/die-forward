@@ -116,14 +116,19 @@ function CreatureDetailModal({ creature, onClose }: {
   onClose: () => void;
 }) {
   if (!creature) return null;
-  const { height: screenHeight } = useWindowDimensions();
+  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
   const tier = TIER_CONFIG[creature.tier];
   const asset = creature.artUrl
     ? getCreatureAsset(creature.artUrl)
     : getCreatureAssetByName(creature.name);
 
-  // Cap image at 42% of screen height — looks great, leaves room for content
-  const imageHeight = Math.round(screenHeight * 0.42);
+  // Show as much of the portrait as fits, leaving room for content below.
+  // On large phones/tablets the full image is visible; on small phones it clips from bottom.
+  const modalWidth = Math.min(screenWidth - 40, 400);
+  const naturalImageHeight = Math.round(modalWidth * (512 / 341));
+  const contentHeight = 220; // name + tier + description + behaviors
+  const availableForImage = Math.round(screenHeight * 0.90) - contentHeight;
+  const imageHeight = Math.min(naturalImageHeight, availableForImage);
 
   return (
     <Modal visible transparent animationType="fade" onRequestClose={onClose}>
