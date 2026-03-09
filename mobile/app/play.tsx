@@ -263,8 +263,8 @@ export default function PlayScreen() {
         ];
       case 'combat':
         return [
-          { id: '1', text: '⚔️ Enter combat', action: 'combat' },
-          { id: '2', text: '🏃 Try to flee', action: 'flee' },
+          { id: '1', text: 'Enter combat', action: 'combat', icon: 'strike' },
+          { id: '2', text: 'Try to flee', action: 'flee', icon: 'flee' },
         ];
       case 'corpse':
         return [
@@ -304,7 +304,7 @@ export default function PlayScreen() {
 
   return (
     <CryptBackground screen="play" style={containerStyle}>
-      <SafeAreaView style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: 'transparent' }} edges={['top']}>
+      <SafeAreaView style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: 'transparent' }} edges={['top', 'bottom']}>
         {/* Header */}
         <View className="flex-row items-center justify-between px-3 py-2 border-b border-amber/30" style={{ flexShrink: 0 }}>
           <View className="flex-row items-center gap-2">
@@ -491,7 +491,16 @@ export default function PlayScreen() {
               onPress={() => handleAction(option.action)}
               disabled={processing}
             >
-              <Text className="text-bone text-sm font-mono">{option.text}</Text>
+              <View className="flex-row items-center">
+                {(option as any).icon && (
+                  <Image
+                    source={(Icons as any)[(option as any).icon]}
+                    style={{ width: 20, height: 20, marginRight: 8 }}
+                    resizeMode="contain"
+                  />
+                )}
+                <Text className="text-bone text-sm font-mono">{option.text}</Text>
+              </View>
             </Pressable>
           ))
         )}
