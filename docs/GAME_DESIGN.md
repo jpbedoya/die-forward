@@ -26,15 +26,21 @@ Die Forward is a text-based social roguelite. Players navigate procedurally gene
 
 ### Philosophy
 
+**Most runs end in death. Skilled players can make it.**
+
+This is the Dark Souls philosophy: death is expected, but skilled play matters. The stamina system forces pacing — you can't spam Strike every turn. Reading enemy intent and responding correctly is mechanically rewarded. Every decision is a real tradeoff.
+
 No HP trading ping-pong. Every choice is a risk/reward tradeoff. Fights are short (2-4 exchanges) but tense. **Enemies hit harder as you go deeper** — tier matters.
 
 ### Resources
 
 | Resource | Description |
 |----------|-------------|
-| ❤️ Health | 100 max. Lose it all, you die |
-| ⚡ Stamina | 3 max. Spent on aggressive moves, regens 1 between turns |
-| 🎒 Items | Equipment that provides combat bonuses |
+| ❤️ Health | 100 max. Lose it all, you die. Persists across rooms (gauntlet). |
+| ⚡ Stamina | **4 max** (admin-tunable). Spent on actions, regens 1 per turn. |
+| 🎒 Items | Equipment that provides passive combat bonuses. |
+
+> **Gauntlet design**: HP carries over between rooms. Winning fight 1 at 40 HP means entering fight 2 at 40 HP. Resource management across the full run is the real challenge.
 
 ### Enemy Properties
 
@@ -79,11 +85,15 @@ Enemy intent **actively affects combat**. Read it carefully:
 
 | Move | Cost | Base Effect |
 |------|------|-------------|
-| ⚔️ Strike | 1 ⚡ | Deal 20-29 damage, take 10-17 |
-| 🛡️ Brace | 0 | Take 50% reduced damage, **negates charge bonus** |
-| 💨 Dodge | 1 ⚡ | 70% avoid all damage, **negates charge bonus** |
-| 🌿 Herbs | 0 | Heal 20-29, but take a hit (consumes item) |
-| 🏃 Flee | 1 ⚡ | Base 50% escape (modified by intent/items) |
+| ⚔️ Strike | **2 ⚡** | Deal 20-29 damage, take 10-17. +50% bonus vs AGGRESSIVE/HUNTING. |
+| 🛡️ Brace | 0 ⚡ | Take 50% reduced damage. Negates CHARGING bonus. Costs 6-12 stamina damage. |
+| 💨 Dodge | 1 ⚡ | 65% avoid all damage. Negates CHARGING. **Counter-attacks CHARGING enemies.** |
+| 🌿 Herbs | 0 ⚡ | Heal 20-29, but take a hit (consumes item). |
+| 🏃 Flee | 1 ⚡ | Base 50% escape (modified by intent/items). |
+
+> **Strike costs 2 stamina** — you can't spam it. With a pool of 4 and regen of 1/turn, you get roughly 2 strikes before needing to Brace or Dodge to recover. This forces real decisions.
+
+> **Brace is free but costly** — taking a hit always costs you. Brace reduces damage but doesn't avoid it. It's a recovery move, not a winning move.
 
 ### Item Combat Effects
 
@@ -108,16 +118,32 @@ Example: Tier 2 enemy (1.5x) with HUNTING intent (1.3x) vs player with Shield (-
 - After intent: 22.5 × 1.3 = 29.25
 - After shield: 29.25 × 0.75 = **22 damage**
 
+### Intent Counter System (v1.4.0)
+
+Reading enemy intent and responding correctly is **mechanically rewarded**:
+
+| Intent | Correct Counter | Bonus |
+|--------|----------------|-------|
+| **CHARGING** | Dodge | Counter-attack fires immediately after dodge |
+| **CHARGING** | Brace | Negates double-damage spike |
+| **AGGRESSIVE** | Strike | +50% damage on your hit |
+| **HUNTING** | Strike | +50% damage on your hit |
+
+**Wrong reads are punished**:
+- Strike into CHARGING = you deal normal damage, then eat double damage next turn
+- ERRATIC enemies cap their damage variance at 1.3× (still random, not one-shot)
+
 ### The Charge Mindgame
 
 When you see **CHARGING**:
 - Enemy deals reduced damage this turn
-- But **NEXT TURN** they deal **DOUBLE**
-- **Dodge** or **Brace** negates the charge bonus!
-- Failing to counter = massive spike damage
+- But **NEXT TURN** they deal **DOUBLE** unless countered
+- **Dodge** = counter-attack fires, charge is wasted
+- **Brace** = charge wasted, you absorb minimal damage
+- **Strike** = you hit them, but eat double damage next turn — usually a bad trade
 
 > ⚠️ IT'S CHARGING UP!
-> *DODGE or BRACE to avoid double damage!*
+> *DODGE to counter-attack. BRACE to tank it. Don't Strike.*
 
 ### Example Exchange
 

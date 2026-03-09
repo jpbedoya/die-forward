@@ -24,10 +24,14 @@ Deeper rooms have better loot chances to reward progression.
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| `baseDamageMin` | 15 | Minimum damage per hit |
-| `baseDamageMax` | 25 | Maximum damage per hit |
+| `baseDamageMin` | 15 | Minimum base damage per hit |
+| `baseDamageMax` | 25 | Maximum base damage per hit |
 | `tier2Multiplier` | 1.5 | Damage multiplier for Tier 2 enemies |
 | `tier3Multiplier` | 2.0 | Damage multiplier for Tier 3 enemies |
+| `enemyCounterMultiplier` | 0.85 | Enemy damage multiplier when player counters correctly |
+| `chargePunishment` | 2.0 | Multiplier applied to enemy damage when CHARGING goes unpunished |
+| `intentCounterBonus` | 1.5 | Player damage bonus for striking into AGGRESSIVE or HUNTING intent |
+| `erraticDamageMax` | 1.3 | Max variance cap on ERRATIC enemy damage modifier (prevents one-shots) |
 
 Enemy tiers increase with depth:
 - Rooms 1-4: Tier 1 (base damage)
@@ -38,10 +42,15 @@ Enemy tiers increase with depth:
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| `dodgeSuccessRate` | 0.7 | Chance to successfully dodge (70%) |
+| `strikeCost` | 2 | Stamina cost per Strike action |
+| `dodgeSuccessRate` | 0.65 | Chance to successfully dodge (65%) |
 | `braceReduction` | 0.5 | Damage reduction when bracing (50%) |
+| `braceBaseDamageMin` | 6 | Minimum damage taken when bracing (floor, not zero) |
+| `braceBaseDamageMax` | 12 | Maximum damage taken when bracing |
 | `criticalChance` | 0.15 | Chance for critical hit on Strike (15%) |
-| `criticalMultiplier` | 1.5 | Damage multiplier on critical hits |
+| `criticalMultiplier` | 1.75 | Damage multiplier on critical hits |
+
+> **Strike costs 2**: With a pool of 4 and regen of 1/turn, you get roughly 2 strikes before needing recovery. Brace is free but always deals some damage — it's a recovery move, not a winning move.
 
 ### Flee Settings
 
@@ -59,7 +68,8 @@ Flee has 3 outcomes:
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| `staminaRegen` | 1 | Stamina recovered per combat turn |
+| `staminaPool` | 4 | Maximum stamina capacity |
+| `staminaRegen` | 1 | Stamina recovered per combat turn. Also controls Pale Rations restore amount. |
 
 ### Victory Settings
 
@@ -103,3 +113,29 @@ Settings changes propagate immediately to all connected clients via InstantDB's 
 ## Default Fallbacks
 
 If no settings exist in the database, the game uses hardcoded defaults from `DEFAULT_GAME_SETTINGS` in `mobile/lib/instant.ts`.
+
+## Balance Rationale (v1.4.0)
+
+These defaults were derived from gauntlet simulations (persistent HP across rooms, 500–2000 runs each). Key findings:
+
+**Why stamina pool = 4, strike cost = 2**
+- Old system (pool 3, cost 1): stamina was net-zero. Regen matched cost — spam Strike every turn, no decisions.
+- New system: 2 strikes depletes your pool. Third action must be Brace or Dodge. Creates real pacing.
+- Gauntlet sim result: ~60% of runs die by room 5 (as intended). Skilled players who read intent routinely reach room 8+.
+
+**Why intent counter bonus = 1.5×**
+- Reading intent needs a mechanical reward, not just flavor.
+- Striking into AGGRESSIVE/HUNTING gives a meaningful damage spike.
+- Dodging CHARGING counter-attacks — both punish the enemy AND conserve stamina long-term.
+
+**Why erratic cap = 1.3×**
+- ERRATIC was one-shotting players at 2× variance with no counter-play.
+- 1.3× keeps unpredictability without removing agency.
+
+**Why brace min damage = 6**
+- Old brace: effectively free (minimal damage). Turtling was always optimal.
+- New brace: guaranteed cost keeps Strike competitive. Recovery, not immunity.
+
+**Why dodge success = 0.65 (down from 0.70)**
+- Small nerf to prevent dodge-spam as a dominant strategy.
+- Still the best response to CHARGING (counter-attack reward offsets the 35% fail rate).
