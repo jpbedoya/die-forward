@@ -149,10 +149,14 @@ function CreatureDetailModal({ creature, onClose }: {
           }}
         >
           <ScrollView bounces={false} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 16 }}>
-            {/* Art — height capped at 42% screen height, maintains crop from top */}
+            {/* Art — anchored to top, clips at bottom — head always visible */}
             {asset ? (
               <View style={{ width: '100%', height: imageHeight, overflow: 'hidden' }}>
-                <Image source={asset} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+                <Image
+                  source={asset}
+                  style={{ width: '100%', height: undefined, aspectRatio: 341 / 512 }}
+                  resizeMode="cover"
+                />
               </View>
             ) : (
               <View style={{ width: '100%', paddingVertical: 40, alignItems: 'center', backgroundColor: '#130f0c' }}>
