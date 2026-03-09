@@ -131,11 +131,9 @@ function CreatureDetailModal({ creature, onClose }: {
         style={{
           flex: 1,
           backgroundColor: 'rgba(0,0,0,0.88)',
-          justifyContent: 'flex-start',
+          justifyContent: 'center',
           alignItems: 'center',
-          paddingTop: 48,
-          paddingHorizontal: 16,
-          paddingBottom: 16,
+          padding: 20,
         }}
         onPress={onClose}
       >
