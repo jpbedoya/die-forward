@@ -249,7 +249,7 @@ export default function LandingPage() {
               />
             </div>
             <a
-              href="https://github.com/jpbedoya/die-forward/releases/download/v1.3.0/die-forward-v1.3.0.apk"
+              href="https://github.com/jpbedoya/die-forward/releases/download/v1.4.0/die-forward-v1.4.0.apk"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -315,7 +315,7 @@ export default function LandingPage() {
                   <div className="hidden sm:block absolute top-4 -left-2 w-0 h-0 border-t-8 border-b-8 border-r-8 border-transparent border-r-[var(--border-dim)]" />
                   <h3 className="text-[var(--red-bright)] font-bold text-lg mb-2">FIGHT OR FLEE</h3>
                   <p className="text-[var(--text-muted)] text-sm leading-relaxed">
-                    Battle creatures in the dark. Strike, dodge, brace, or run. Each choice could be your last.
+                    Battle creatures in the dark. Read their intent — Strike when they charge, dodge when they lunge. Each choice costs stamina. Make them count.
                   </p>
                   <div className="text-[var(--text-dim)] text-xs mt-3 font-mono">FLOORS 1-12</div>
                 </div>
