@@ -128,13 +128,11 @@ export function ItemModal({ visible, onClose, onUse, item }: ItemModalProps) {
             : getItemAssetByName(item.name);
           if (!asset) return null;
           return (
-            <View className="bg-crypt-bg border border-crypt-border mb-4 items-center justify-center" style={{ height: 180 }}>
-              <Image
-                source={asset}
-                style={{ width: '100%', height: '100%' }}
-                resizeMode="contain"
-              />
-            </View>
+            <Image
+              source={asset}
+              style={{ height: 180, aspectRatio: 1, alignSelf: 'center', borderRadius: 10, borderWidth: 1, borderColor: 'rgba(180,30,30,0.35)', marginBottom: 12 }}
+              resizeMode="cover"
+            />
           );
         })()}
 
