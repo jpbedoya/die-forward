@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { View, Text, Pressable, ScrollView, Animated, Platform, ViewStyle, Image } from 'react-native';
 import { getCreatureAsset, getCreatureAssetByName } from '../lib/creatureAssets';
+import { Icons, COMBAT_ACTION_ICONS } from '../lib/iconAssets';
 import { AsciiLoader } from '../components/AsciiLoader';
 import { CryptBackground } from '../components/CryptBackground';
 import * as Haptics from 'expo-haptics';
@@ -480,13 +481,20 @@ export default function CombatScreen() {
                   >
                     <View className="flex-row items-center justify-between">
                       <View className="flex-row items-center">
-                        <Text className="text-xl mr-2">{option.emoji}</Text>
+                        <Image
+                          source={COMBAT_ACTION_ICONS[option.id]}
+                          style={{ width: 28, height: 28, marginRight: 8, opacity: canUse ? 1 : 0.4 }}
+                          resizeMode="contain"
+                        />
                         <Text className={`font-mono font-bold ${canUse ? 'text-bone' : 'text-bone-dark'}`}>
                           {option.text}
                         </Text>
                       </View>
                       {option.cost > 0 && (
-                        <Text className="text-blue-400 text-xs font-mono">⚡{option.cost}</Text>
+                        <View className="flex-row items-center">
+                          <Image source={Icons.stamina} style={{ width: 12, height: 12, marginRight: 2 }} resizeMode="contain" />
+                          <Text className="text-blue-400 text-xs font-mono">{option.cost}</Text>
+                        </View>
                       )}
                     </View>
                   </Pressable>
@@ -501,14 +509,14 @@ export default function CombatScreen() {
           <View className="border-t border-crypt-border p-3 bg-crypt-bg" style={{ flexShrink: 0, flexGrow: 0 }}>
             <View className="flex-row items-center justify-between mb-3">
               <View className="flex-row items-center gap-2">
-                <Text className="text-blood">♥</Text>
+                <Image source={Icons.heart} style={{ width: 16, height: 16 }} resizeMode="contain" />
                 <HealthBar current={game.health} max={100} />
                 <Text className={`text-sm font-mono font-bold ${game.health < 30 ? 'text-blood' : 'text-blood-light'}`}>
                   {game.health}
                 </Text>
               </View>
               <View className="flex-row items-center gap-2">
-                <Text className="text-blue-400">⚡</Text>
+                <Image source={Icons.stamina} style={{ width: 14, height: 14 }} resizeMode="contain" />
                 <Text className="text-blue-400 font-mono">
                   {'◆'.repeat(game.stamina)}{'◇'.repeat(3 - game.stamina)}
                 </Text>
