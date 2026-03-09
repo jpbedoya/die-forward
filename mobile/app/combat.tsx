@@ -423,7 +423,7 @@ export default function CombatScreen() {
               <Text className="text-bone text-lg font-mono font-bold">{creature.name}</Text>
               <Text className="text-bone-dark text-xs font-mono">Tier {creature.tier}</Text>
               <View className="flex-row items-center gap-2 mt-2">
-                <Text className="text-blood text-sm">♥</Text>
+                <Image source={Icons.heart} style={{ width: 18, height: 18 }} resizeMode="contain" />
                 <HealthBar current={enemyHealth} max={enemyMaxHealth} />
                 <Text className="text-blood-light text-sm font-mono font-bold">{enemyHealth}/{enemyMaxHealth}</Text>
               </View>
