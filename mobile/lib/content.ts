@@ -502,6 +502,7 @@ export interface ItemDetails {
   description: string;
   effect: string;
   type: 'consumable' | 'weapon' | 'artifact';
+  artUrl?: string;
 }
 
 export const ITEM_DETAILS: Record<string, ItemDetails> = {
@@ -512,6 +513,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Bitter leaves that numb pain and slow bleeding. They taste like regret.',
     effect: 'Restores health when used',
     type: 'consumable',
+    artUrl: '/items/herbs.webp',
   },
   'Pale Rations': {
     name: 'Pale Rations',
@@ -519,6 +521,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Food from below. It sustains, but you try not to think about what it was.',
     effect: 'Restores stamina',
     type: 'consumable',
+    artUrl: '/items/pale-rations.webp',
   },
   'Bone Dust': {
     name: 'Bone Dust',
@@ -526,6 +529,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Ground remains of something old. Inhale it to see what it saw.',
     effect: 'Reveals hidden paths',
     type: 'consumable',
+    artUrl: '/items/bone-dust.webp',
   },
   'Void Salt': {
     name: 'Void Salt',
@@ -533,6 +537,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Black crystals that burn on contact. Creatures of water fear it.',
     effect: '+40% damage vs aquatic enemies',
     type: 'consumable',
+    artUrl: '/items/void-salt.webp',
   },
   'Poison Vial': {
     name: 'Poison Vial',
@@ -540,6 +545,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Something extracted from something else. The smell alone is a weapon.',
     effect: '+40% damage bonus',
     type: 'consumable',
+    artUrl: '/items/poison-vial.webp',
   },
   
   // Weapons
@@ -549,6 +555,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Pitted with age and old blood. Still sharp enough.',
     effect: '+20% damage bonus',
     type: 'weapon',
+    artUrl: '/items/rusty-blade.webp',
   },
   'Dagger': {
     name: 'Dagger',
@@ -556,6 +563,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Small, ceremonial. It was meant for offerings, not combat. It works anyway.',
     effect: '+35% damage bonus',
     type: 'weapon',
+    artUrl: '/items/dagger.webp',
   },
   'Bone Hook': {
     name: 'Bone Hook',
@@ -563,6 +571,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Carved from a rib. Meant for pulling things closer. Or keeping them away.',
     effect: 'Creates distance in combat',
     type: 'weapon',
+    artUrl: '/items/bone-hook.webp',
   },
   'Shield': {
     name: 'Shield',
@@ -570,6 +579,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Dented, scarred, still standing. Like whoever carried it.',
     effect: '+25% defense bonus',
     type: 'weapon',
+    artUrl: '/items/shield.webp',
   },
   'Tattered Shield': {
     name: 'Tattered Shield',
@@ -577,6 +587,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'More holes than metal. But it still catches blows that would kill you.',
     effect: '+25% defense bonus',
     type: 'weapon',
+    artUrl: '/items/tattered-shield.webp',
   },
   'Cloak': {
     name: 'Cloak',
@@ -584,6 +595,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Wrapped around your shoulders, things have trouble finding you.',
     effect: '+15% flee, +10% defense',
     type: 'weapon',
+    artUrl: '/items/cloak.webp',
   },
   
   // Artifacts
@@ -593,6 +605,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'A flickering flame. It pushes back the dark, but the dark pushes back.',
     effect: '+25% damage, light source',
     type: 'artifact',
+    artUrl: '/items/torch.webp',
   },
   'Bone Charm': {
     name: 'Bone Charm',
@@ -600,6 +613,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Carved from something\'s finger. It hums when danger is near. It never stops humming.',
     effect: '+15% defense bonus',
     type: 'artifact',
+    artUrl: '/items/bone-charm.webp',
   },
   'Ancient Scroll': {
     name: 'Ancient Scroll',
@@ -607,6 +621,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Waterlogged pages in a language you almost understand. Reading it feels like remembering something you never knew.',
     effect: '+20% defense, +10% flee',
     type: 'artifact',
+    artUrl: '/items/ancient-scroll.webp',
   },
   'Eye of the Hollow': {
     name: 'Eye of the Hollow',
@@ -614,6 +629,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'It blinks when you\'re not looking. But it shows you things you\'d otherwise miss.',
     effect: 'Reveals hidden corpses and caches',
     type: 'artifact',
+    artUrl: '/items/eye-of-the-hollow.webp',
   },
   'Heartstone': {
     name: 'Heartstone',
@@ -621,6 +637,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Cold to the touch. Warm when death is near. Yours or someone else\'s.',
     effect: 'Shows when you\'re near death',
     type: 'artifact',
+    artUrl: '/items/heartstone.webp',
   },
   'Pale Coin': {
     name: 'Pale Coin',
@@ -628,6 +645,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Currency of the dead. Worth nothing above. Worth everything below.',
     effect: 'Can be offered for passage',
     type: 'artifact',
+    artUrl: '/items/pale-coin.webp',
   },
 };
 

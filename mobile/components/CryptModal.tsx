@@ -2,6 +2,7 @@
 import React from 'react';
 import { View, Text, Pressable, Modal, ScrollView, Platform, Image } from 'react-native';
 import { getCreatureAsset, getCreatureAssetByName } from '../lib/creatureAssets';
+import { getItemAsset, getItemAssetByName } from '../lib/itemAssets';
 
 interface CryptModalProps {
   visible: boolean;
@@ -90,6 +91,7 @@ interface ItemModalProps {
     description?: string;
     effect?: string;
     type?: 'consumable' | 'weapon' | 'artifact';
+    artUrl?: string;
   } | null;
 }
 
@@ -119,6 +121,23 @@ export function ItemModal({ visible, onClose, onUse, item }: ItemModalProps) {
       showCloseButton={false}
     >
       <View>
+        {/* Item art */}
+        {(() => {
+          const asset = item.artUrl
+            ? getItemAsset(item.artUrl)
+            : getItemAssetByName(item.name);
+          if (!asset) return null;
+          return (
+            <View className="bg-crypt-bg border border-crypt-border mb-4 items-center justify-center" style={{ height: 180 }}>
+              <Image
+                source={asset}
+                style={{ width: '100%', height: '100%' }}
+                resizeMode="contain"
+              />
+            </View>
+          );
+        })()}
+
         {/* Description */}
         {item.description && (
           <Text className="text-bone font-mono text-sm italic leading-5 mb-4">

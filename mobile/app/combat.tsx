@@ -558,6 +558,7 @@ export default function CombatScreen() {
               description: getItemDetails(selectedItem.name)?.description,
               effect: getItemDetails(selectedItem.name)?.effect,
               type: getItemDetails(selectedItem.name)?.type,
+              artUrl: getItemDetails(selectedItem.name)?.artUrl,
             } : null}
             onUse={() => {
               if (!selectedItem) return;
