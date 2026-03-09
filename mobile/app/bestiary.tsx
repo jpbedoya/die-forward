@@ -116,15 +116,27 @@ function CreatureDetailModal({ creature, onClose }: {
   onClose: () => void;
 }) {
   if (!creature) return null;
+  const { height: screenHeight } = useWindowDimensions();
   const tier = TIER_CONFIG[creature.tier];
   const asset = creature.artUrl
     ? getCreatureAsset(creature.artUrl)
     : getCreatureAssetByName(creature.name);
 
+  // Cap image at 42% of screen height — looks great, leaves room for content
+  const imageHeight = Math.round(screenHeight * 0.42);
+
   return (
     <Modal visible transparent animationType="fade" onRequestClose={onClose}>
       <Pressable
-        style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.88)', justifyContent: 'center', alignItems: 'center', padding: 20 }}
+        style={{
+          flex: 1,
+          backgroundColor: 'rgba(0,0,0,0.88)',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          paddingTop: 48,
+          paddingHorizontal: 16,
+          paddingBottom: 16,
+        }}
         onPress={onClose}
       >
         <Pressable
@@ -134,14 +146,14 @@ function CreatureDetailModal({ creature, onClose }: {
             borderWidth: 1,
             borderColor: '#2a2520',
             width: '100%',
-            maxWidth: 360,
-            maxHeight: 580,
+            maxWidth: 400,
+            maxHeight: screenHeight * 0.90,
           }}
         >
           <ScrollView bounces={false} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 16 }}>
-            {/* Art — full portrait, ScrollView handles overflow */}
+            {/* Art — height capped at 42% screen height, maintains crop from top */}
             {asset ? (
-              <View style={{ width: '100%', aspectRatio: 341 / 512 }}>
+              <View style={{ width: '100%', height: imageHeight, overflow: 'hidden' }}>
                 <Image source={asset} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
               </View>
             ) : (
