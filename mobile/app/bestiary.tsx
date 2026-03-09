@@ -98,7 +98,7 @@ function CreatureCard({ creature, onPress, cardWidth }: {
         </Text>
         {/* Top 2 behavior tags */}
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
-          {creature.behaviors.slice(0, 2).map((b) => (
+          {[...new Set(creature.behaviors)].slice(0, 2).map((b) => (
             <View key={b} style={{ borderWidth: 1, borderColor: '#2a2520', paddingHorizontal: 5, paddingVertical: 2 }}>
               <Text style={{ fontFamily: 'monospace', fontSize: 8, color: '#a78bfa', letterSpacing: 0.5 }}>{b}</Text>
             </View>
@@ -203,7 +203,7 @@ function CreatureDetailModal({ creature, onClose }: {
                 BEHAVIORS
               </Text>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
-                {creature.behaviors.map((b) => (
+                {[...new Set(creature.behaviors)].map((b) => (
                   <View key={b} style={{ borderWidth: 1, borderColor: '#2a2520', paddingHorizontal: 8, paddingVertical: 4 }}>
                     <Text style={{ fontFamily: 'monospace', fontSize: 11, color: '#a78bfa' }}>{b}</Text>
                   </View>

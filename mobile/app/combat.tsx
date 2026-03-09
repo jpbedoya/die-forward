@@ -100,12 +100,13 @@ export default function CombatScreen() {
     }
     
     // Screen shake
+    const nativeDriver = Platform.OS !== 'web';
     Animated.sequence([
-      Animated.timing(shakeAnim, { toValue: magnitude, duration: 50, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: -magnitude, duration: 50, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: magnitude * 0.6, duration: 50, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: -magnitude * 0.6, duration: 50, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: 0, duration: 50, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: magnitude, duration: 50, useNativeDriver: nativeDriver }),
+      Animated.timing(shakeAnim, { toValue: -magnitude, duration: 50, useNativeDriver: nativeDriver }),
+      Animated.timing(shakeAnim, { toValue: magnitude * 0.6, duration: 50, useNativeDriver: nativeDriver }),
+      Animated.timing(shakeAnim, { toValue: -magnitude * 0.6, duration: 50, useNativeDriver: nativeDriver }),
+      Animated.timing(shakeAnim, { toValue: 0, duration: 50, useNativeDriver: nativeDriver }),
     ]).start();
   };
 
@@ -452,12 +453,12 @@ export default function CombatScreen() {
               <View className="border-t border-amber/30 py-4">
                 {enemyDmgTaken > 0 && (
                   <Text className="text-victory text-lg font-mono font-bold text-center">
-                    YOU DEALT {enemyDmgTaken}
+                    {`YOU DEALT ${enemyDmgTaken}`}
                   </Text>
                 )}
                 {playerDmgTaken > 0 && (
                   <Text className="text-blood text-lg font-mono font-bold text-center mt-1">
-                    YOU TOOK {playerDmgTaken}
+                    {`YOU TOOK ${playerDmgTaken}`}
                   </Text>
                 )}
               </View>
