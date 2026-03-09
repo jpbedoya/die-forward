@@ -128,11 +128,9 @@ export function ItemModal({ visible, onClose, onUse, item }: ItemModalProps) {
             : getItemAssetByName(item.name);
           if (!asset) return null;
           return (
-            <Image
-              source={asset}
-              style={{ width: '100%', height: 200, borderRadius: 10, borderWidth: 1, borderColor: 'rgba(180,30,30,0.35)', marginBottom: 12 }}
-              resizeMode="cover"
-            />
+            <View style={{ width: '100%', aspectRatio: 341/512, borderRadius: 10, borderWidth: 1, borderColor: 'rgba(180,30,30,0.35)', overflow: 'hidden', marginBottom: 12 }}>
+              <Image source={asset} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} resizeMode="cover" />
+            </View>
           );
         })()}
 
@@ -179,11 +177,9 @@ export function CreatureModal({ visible, onClose, creature }: CreatureModalProps
             ? getCreatureAsset(creature.artUrl)
             : getCreatureAssetByName(creature.name);
           return asset ? (
-            <Image
-              source={asset}
-              style={{ width: '100%', height: 200, borderRadius: 10, borderWidth: 1, borderColor: 'rgba(180,30,30,0.35)', marginBottom: 12 }}
-              resizeMode="cover"
-            />
+            <View style={{ width: '100%', aspectRatio: 341/512, borderRadius: 10, borderWidth: 1, borderColor: 'rgba(180,30,30,0.35)', overflow: 'hidden', marginBottom: 12 }}>
+              <Image source={asset} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} resizeMode="cover" />
+            </View>
           ) : (
             <Text className="text-6xl text-center mb-3">{creature.emoji}</Text>
           );
