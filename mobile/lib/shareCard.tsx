@@ -5,8 +5,14 @@
 import React, { useRef, useCallback } from 'react';
 import { View, Text, Platform } from 'react-native';
 import ViewShot from 'react-native-view-shot';
-import RNShare from 'react-native-share';
 import * as Sharing from 'expo-sharing';
+
+// react-native-share is native-only — dynamic import to avoid web crash
+let RNShare: any = null;
+if (Platform.OS !== 'web') {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  RNShare = require('react-native-share').default;
+}
 import { Paths, File as ExpoFile } from 'expo-file-system';
 import { DieForwardLogoImage } from '../components/DieForwardLogoImage';
 
