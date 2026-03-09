@@ -23,15 +23,39 @@ import { SplashScreen } from '../components/SplashScreen';
 import { getAudioManager } from '../lib/audio';
 
 const APP_VERSION_KEY = 'APP_BUILD_VERSION';
-const CURRENT_VERSION = Constants.expoConfig?.version || '1.0.0';
+// Use only BASE_VERSION (without commit hash) for migration gating
+// so routine builds don't trigger a state wipe
+const fullVersion = Constants.expoConfig?.version || '1.0.0';
+const CURRENT_VERSION = fullVersion.split('.').slice(0, 3).join('.'); // "1.4.0" not "1.4.0.abc1234"
 
-// On startup: if version changed, wipe stale AsyncStorage state
+const PROTECTED_KEYS = [
+  'die-forward-nickname',
+  'die-forward-auth',
+  'die-forward-nickname-prompted',
+  'audio-master-enabled',
+  'audio-sfx-enabled',
+  'audio-ambient-volume',
+];
+
+async function clearNonIdentityStorage() {
+  try {
+    const allKeys = await AsyncStorage.getAllKeys();
+    const keysToRemove = allKeys.filter(k => !PROTECTED_KEYS.includes(k));
+    if (keysToRemove.length > 0) {
+      await AsyncStorage.multiRemove(keysToRemove);
+    }
+  } catch (e) {
+    console.warn('Failed to clear storage:', e);
+  }
+}
+
+// On startup: if version changed, wipe stale AsyncStorage state (preserving identity keys)
 async function checkVersionAndMigrate() {
   try {
     const stored = await AsyncStorage.getItem(APP_VERSION_KEY);
     if (stored && stored !== CURRENT_VERSION) {
       console.log(`[Version] ${stored} → ${CURRENT_VERSION} — clearing stale state`);
-      await AsyncStorage.clear();
+      await clearNonIdentityStorage();
     }
     await AsyncStorage.setItem(APP_VERSION_KEY, CURRENT_VERSION);
   } catch (e) {
@@ -97,9 +121,9 @@ class ErrorBoundary extends React.Component<
   }
 
   handleReset = async () => {
-    // Nuke stale state — this is the nuclear option after a crash
+    // Clear stale state after a crash, but preserve identity/settings keys
     try {
-      await AsyncStorage.clear();
+      await clearNonIdentityStorage();
     } catch (e) {
       console.warn('[ErrorBoundary] Failed to clear storage:', e);
     }
