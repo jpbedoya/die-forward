@@ -510,14 +510,14 @@ export default function PlayScreen() {
       <View className="border-t border-crypt-border p-3 bg-crypt-bg" style={{ flexShrink: 0 }}>
         <View className="flex-row items-center justify-between mb-3">
           <View className="flex-row items-center gap-2">
-            <Image source={Icons.heart} style={{ width: 16, height: 16 }} resizeMode="contain" />
+            <Image source={Icons.heart} style={{ width: 22, height: 22 }} resizeMode="contain" />
             <HealthBar current={game.health} max={100} />
             <Text className={`text-sm font-mono font-bold ${game.health < 30 ? 'text-blood' : 'text-blood-light'}`}>
               {game.health}
             </Text>
           </View>
           <View className="flex-row items-center gap-2">
-            <Image source={Icons.stamina} style={{ width: 14, height: 14 }} resizeMode="contain" />
+            <Image source={Icons.stamina} style={{ width: 20, height: 20 }} resizeMode="contain" />
             <Text className="text-blue-400 font-mono">
               {'◆'.repeat(game.stamina)}{'◇'.repeat(Math.max(0, settings.staminaPool - game.stamina))}
             </Text>
