@@ -135,10 +135,10 @@ function CreatureDetailModal({ creature, onClose }: {
             borderColor: '#2a2520',
             width: '100%',
             maxWidth: 360,
-            maxHeight: '85%',
+            maxHeight: 580,
           }}
         >
-          <ScrollView bounces={false} showsVerticalScrollIndicator={false}>
+          <ScrollView bounces={false} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 16 }}>
             {/* Art */}
             {asset ? (
               <View style={{ width: '100%', height: 220, overflow: 'hidden' }}>
@@ -228,7 +228,10 @@ export default function BestiaryScreen() {
   const COLS = 2;
   const GUTTER = 12;
   const H_PAD = 16;
-  const cardWidth = Math.floor((width - H_PAD * 2 - GUTTER) / COLS);
+  // On web, useWindowDimensions returns full browser viewport width, but WebFrame
+  // constrains the game to maxWidth 430 — cap so cards don't overflow and stack.
+  const effectiveWidth = Math.min(width, 430);
+  const cardWidth = Math.floor((effectiveWidth - H_PAD * 2 - GUTTER) / COLS);
 
   const filteredCreatures = filterTier ? CREATURES.filter(c => c.tier === filterTier) : CREATURES;
 
