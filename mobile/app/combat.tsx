@@ -424,7 +424,7 @@ export default function CombatScreen() {
               <Text className="text-bone text-lg font-mono font-bold">{creature.name}</Text>
               <Text className="text-bone-dark text-xs font-mono">Tier {creature.tier}</Text>
               <View className="flex-row items-center gap-2 mt-2">
-                <Image source={Icons.heart} style={{ width: 18, height: 18 }} resizeMode="contain" />
+                <Image source={Icons.heart} style={{ width: 22, height: 22, alignSelf: "center" }} resizeMode="contain" />
                 <HealthBar current={enemyHealth} max={enemyMaxHealth} />
                 <Text className="text-blood-light text-sm font-mono font-bold">{enemyHealth}/{enemyMaxHealth}</Text>
               </View>
@@ -515,7 +515,7 @@ export default function CombatScreen() {
                       </View>
                       {option.cost > 0 && (
                         <View className="flex-row items-center">
-                          <Image source={Icons.stamina} style={{ width: 16, height: 16, marginRight: 2 }} resizeMode="contain" />
+                          <Image source={Icons.stamina} style={{ width: 20, height: 20, marginRight: 2, alignSelf: "center" }} resizeMode="contain" />
                           <Text className="text-blue-400 text-xs font-mono">{option.cost}</Text>
                         </View>
                       )}
@@ -532,14 +532,14 @@ export default function CombatScreen() {
           <View className="border-t border-crypt-border p-3 bg-crypt-bg" style={{ flexShrink: 0, flexGrow: 0 }}>
             <View className="flex-row items-center justify-between mb-3">
               <View className="flex-row items-center gap-2">
-                <Image source={Icons.heart} style={{ width: 22, height: 22 }} resizeMode="contain" />
+                <Image source={Icons.heart} style={{ width: 26, height: 26, alignSelf: "center" }} resizeMode="contain" />
                 <HealthBar current={game.health} max={100} />
                 <Text className={`text-sm font-mono font-bold ${game.health < 30 ? 'text-blood' : 'text-blood-light'}`}>
                   {game.health}
                 </Text>
               </View>
               <View className="flex-row items-center gap-2">
-                <Image source={Icons.stamina} style={{ width: 20, height: 20 }} resizeMode="contain" />
+                <Image source={Icons.stamina} style={{ width: 24, height: 24, alignSelf: "center" }} resizeMode="contain" />
                 <Text className="text-blue-400 font-mono">
                   {'◆'.repeat(game.stamina)}{'◇'.repeat(Math.max(0, settings.staminaPool - game.stamina))}
                 </Text>
