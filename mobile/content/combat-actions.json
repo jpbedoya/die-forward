@@ -5,13 +5,13 @@
       "success": [
         "Your blade finds flesh. The impact shudders up your arm. It staggers back, hurt but not finished.",
         "Steel meets corruption. The creature reels, ichor spraying. You've wounded it. It knows pain now.",
-        "You swing true. The blow lands solid, driving the thing back a step. Blood — or something like blood — flows.",
-        "A clean hit. The creature howls — or tries to, with what's left of its throat. You've hurt it badly.",
+        "You swing true. The blow lands solid, driving the thing back a step. Blood \u2014 or something like blood \u2014 flows.",
+        "A clean hit. The creature howls \u2014 or tries to, with what's left of its throat. You've hurt it badly.",
         "Your weapon bites deep. The creature's eyes widen with something like surprise. It didn't expect you to fight back."
       ],
       "mutual": [
         "You swing. It swings. Both connect. Pain blooms in your side as the creature staggers. Fair trade. Barely.",
-        "Steel meets claw. You tear into each other. Neither retreats. Blood mingles — yours and whatever passes for its.",
+        "Steel meets claw. You tear into each other. Neither retreats. Blood mingles \u2014 yours and whatever passes for its.",
         "A vicious exchange. You hurt it. It hurt you. The math of violence: both numbers go down.",
         "Your blade sinks in as its claws rake across you. Agony and satisfaction, tangled together.",
         "You cut deep. Its teeth find your arm. Mutual destruction. Mutual determination. Neither of you will stop."
@@ -19,7 +19,7 @@
       "weak": [
         "The blow glances off. Not enough. It barely notices, already lunging for you.",
         "You strike, but the angle is wrong. It absorbs the hit and keeps coming. This will take more.",
-        "Your weapon connects, but weakly. The creature laughs — or makes the sound where laughter should be.",
+        "Your weapon connects, but weakly. The creature laughs \u2014 or makes the sound where laughter should be.",
         "Your swing goes wide. Fatigue? Fear? The creature doesn't care about reasons. It cares about the opening.",
         "The hit lands, but on hardened flesh. Like striking stone. Your arm reverberates. It doesn't even flinch.",
         "You miss. Completely. The momentum carries you off balance. This is going to cost you."
@@ -34,7 +34,7 @@
         "The attack passes through where you were. You're somewhere else now. Somewhere safe. Somewhere ready."
       ],
       "close": [
-        "Almost. You almost dodge cleanly. A claw catches your shoulder — grazing, not gutting. Still stings.",
+        "Almost. You almost dodge cleanly. A claw catches your shoulder \u2014 grazing, not gutting. Still stings.",
         "You move, but not quite fast enough. The edge of the attack finds you. Pain, but survivable.",
         "Close enough to feel the air pressure. Close enough that it rips cloth but not flesh. Next time, be faster.",
         "You dodge into the wall. Solid stone stops your escape. The creature's strike finds you, glancing but real.",
@@ -45,6 +45,13 @@
         "You move the wrong direction. Into the attack. Full force. You feel things break.",
         "The dodge that worked before doesn't work now. It learned. It adapted. You didn't.",
         "Your legs betray you. Frozen. The attack connects with everything it has."
+      ],
+      "counter": [
+        "You read the charge. You step aside. Something cracks.",
+        "It came at you hard. You let it pass. The counter lands clean.",
+        "The charge opens them up. You make them pay for it.",
+        "You dodge into the gap. They gave it to you.",
+        "A step left and a sharp elbow. You knew it was coming."
       ]
     },
     "brace": {
@@ -70,7 +77,7 @@
     "herbs": {
       "heal": [
         "Bitter leaves. Bitter medicine. Warmth spreads through you as wounds close, pain recedes. The taste lingers.",
-        "You crush the herbs and press them to your wounds. Healing comes fast down here — survival demands it.",
+        "You crush the herbs and press them to your wounds. Healing comes fast down here \u2014 survival demands it.",
         "The herbs burn going down, but the burning is good. Cleansing. You feel strength return.",
         "Ancient remedies. They work here, in the dark, where modern medicine fears to tread. You're mending.",
         "You eat what looks like rot and tastes like hope. Your body remembers health. Your wounds remember to close."
@@ -82,23 +89,23 @@
     },
     "flee": {
       "success": [
-        "EVADED — You turn and run. Survival over pride. The darkness swallows you before it can follow.",
-        "EVADED — Flight. Not cowardice — tactics. You disengage, sprinting for the passage. Behind you, frustrated sounds.",
-        "EVADED — You break away, legs pumping, lungs burning. It doesn't chase. It doesn't need to. There's always another way.",
-        "EVADED — Running isn't losing. Running is choosing to fight later, somewhere else, on your terms. You run.",
-        "EVADED — You flee. The word tastes bitter, but you're alive to taste it. That's what matters."
+        "EVADED \u2014 You turn and run. Survival over pride. The darkness swallows you before it can follow.",
+        "EVADED \u2014 Flight. Not cowardice \u2014 tactics. You disengage, sprinting for the passage. Behind you, frustrated sounds.",
+        "EVADED \u2014 You break away, legs pumping, lungs burning. It doesn't chase. It doesn't need to. There's always another way.",
+        "EVADED \u2014 Running isn't losing. Running is choosing to fight later, somewhere else, on your terms. You run.",
+        "EVADED \u2014 You flee. The word tastes bitter, but you're alive to taste it. That's what matters."
       ],
       "hurt": [
-        "PAINFULLY EVADED — You run. A claw catches your back — parting gift. Blood flows, but so do your legs. Distance grows.",
-        "PAINFULLY EVADED — Escape isn't free. It takes a chunk of you as you go. The price of flight. Still cheaper than failure.",
-        "PAINFULLY EVADED — You flee, but not fast enough. Not clean enough. It marks you before you're gone. A reminder.",
-        "PAINFULLY EVADED — Running is painful. Every step costs something. But staying costs more. You pay the price and go.",
-        "PAINFULLY EVADED — It gets a piece of you. A deep gash, a trophy. But you're alive. Alive and moving. That's what matters."
+        "PAINFULLY EVADED \u2014 You run. A claw catches your back \u2014 parting gift. Blood flows, but so do your legs. Distance grows.",
+        "PAINFULLY EVADED \u2014 Escape isn't free. It takes a chunk of you as you go. The price of flight. Still cheaper than failure.",
+        "PAINFULLY EVADED \u2014 You flee, but not fast enough. Not clean enough. It marks you before you're gone. A reminder.",
+        "PAINFULLY EVADED \u2014 Running is painful. Every step costs something. But staying costs more. You pay the price and go.",
+        "PAINFULLY EVADED \u2014 It gets a piece of you. A deep gash, a trophy. But you're alive. Alive and moving. That's what matters."
       ],
       "fail": [
-        "EVADE FAILED — You turn to run and hit the wall. Wrong direction. No direction. It's on you before you can correct.",
-        "EVADE FAILED — Your legs give out. Too much. Too fast. You collapse before you can flee. The creature looms.",
-        "EVADE FAILED — There's nowhere to run. You realize this as you try. Dead end. Dead you."
+        "EVADE FAILED \u2014 You turn to run and hit the wall. Wrong direction. No direction. It's on you before you can correct.",
+        "EVADE FAILED \u2014 Your legs give out. Too much. Too fast. You collapse before you can flee. The creature looms.",
+        "EVADE FAILED \u2014 There's nowhere to run. You realize this as you try. Dead end. Dead you."
       ]
     }
   },
@@ -166,12 +173,12 @@
     "RETREATING": [
       "Backing away, wounded but watching",
       "Creating distance, planning something",
-      "Fading into shadows, not fleeing — repositioning",
+      "Fading into shadows, not fleeing \u2014 repositioning",
       "Its retreat feels like a trap",
       "Pulling back toward something",
       "Limping away but not defeated",
       "Drawing you somewhere specific",
-      "This isn't surrender — it's strategy"
+      "This isn't surrender \u2014 it's strategy"
     ]
   }
 }

@@ -90,7 +90,7 @@ export function getStrikeNarration(outcome: 'success' | 'mutual' | 'weak'): stri
   return pick(actions[outcome]);
 }
 
-export function getDodgeNarration(outcome: 'success' | 'close' | 'fail'): string {
+export function getDodgeNarration(outcome: 'success' | 'close' | 'fail' | 'counter'): string {
   const actions = combatActions.actions.dodge as Record<string, string[]>;
   return pick(actions[outcome]);
 }

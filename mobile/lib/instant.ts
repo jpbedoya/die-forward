@@ -472,7 +472,19 @@ export interface GameSettings {
   fleeChanceBase: number;      // Base chance to flee (0-1)
   fleeCleanRatio: number;      // Ratio of clean escapes vs hurt escapes (0-1)
   // Player settings
+  staminaPool: number;         // Max stamina (pip count)
   staminaRegen: number;        // Stamina recovered per turn
+  strikeCost: number;          // Stamina cost for Strike action
+  // Enemy settings
+  enemyCounterMultiplier: number; // Enemy counter-attack as fraction of base damage
+  chargePunishment: number;    // Damage multiplier when enemy is CHARGING and player doesn't dodge
+  // Intent counter system
+  intentCounterBonus: number;  // Damage bonus for correct counter (dodge vs CHARGING etc)
+  // Brace settings
+  braceBaseDamageMin: number;  // Min damage taken when bracing (before reductions)
+  braceBaseDamageMax: number;  // Max damage taken when bracing (before reductions)
+  // Erratic cap
+  erraticDamageMax: number;    // Cap on ERRATIC intent damage multiplier
   // Victory settings
   victoryBonusPercent: number;
   // UI settings
@@ -488,13 +500,21 @@ export const DEFAULT_GAME_SETTINGS: Omit<GameSettings, 'id'> = {
   baseDamageMax: 25,
   tier2Multiplier: 1.5,
   tier3Multiplier: 2.0,
-  dodgeSuccessRate: 0.7,
+  dodgeSuccessRate: 0.65,
   braceReduction: 0.5,
   criticalChance: 0.15,
-  criticalMultiplier: 1.5,
+  criticalMultiplier: 1.75,
   fleeChanceBase: 0.5,
   fleeCleanRatio: 0.6,
+  staminaPool: 4,
   staminaRegen: 1,
+  strikeCost: 2,
+  enemyCounterMultiplier: 0.85,
+  chargePunishment: 2.0,
+  intentCounterBonus: 1.5,
+  braceBaseDamageMin: 6,
+  braceBaseDamageMax: 12,
+  erraticDamageMax: 1.3,
   victoryBonusPercent: 50,
   showLeaderboardLink: false,
 };
@@ -524,7 +544,15 @@ export function useGameSettings() {
     criticalMultiplier: dbSettings?.criticalMultiplier ?? DEFAULT_GAME_SETTINGS.criticalMultiplier,
     fleeChanceBase: dbSettings?.fleeChanceBase ?? DEFAULT_GAME_SETTINGS.fleeChanceBase,
     fleeCleanRatio: dbSettings?.fleeCleanRatio ?? DEFAULT_GAME_SETTINGS.fleeCleanRatio,
+    staminaPool: dbSettings?.staminaPool ?? DEFAULT_GAME_SETTINGS.staminaPool,
     staminaRegen: dbSettings?.staminaRegen ?? DEFAULT_GAME_SETTINGS.staminaRegen,
+    strikeCost: dbSettings?.strikeCost ?? DEFAULT_GAME_SETTINGS.strikeCost,
+    enemyCounterMultiplier: dbSettings?.enemyCounterMultiplier ?? DEFAULT_GAME_SETTINGS.enemyCounterMultiplier,
+    chargePunishment: dbSettings?.chargePunishment ?? DEFAULT_GAME_SETTINGS.chargePunishment,
+    intentCounterBonus: dbSettings?.intentCounterBonus ?? DEFAULT_GAME_SETTINGS.intentCounterBonus,
+    braceBaseDamageMin: dbSettings?.braceBaseDamageMin ?? DEFAULT_GAME_SETTINGS.braceBaseDamageMin,
+    braceBaseDamageMax: dbSettings?.braceBaseDamageMax ?? DEFAULT_GAME_SETTINGS.braceBaseDamageMax,
+    erraticDamageMax: dbSettings?.erraticDamageMax ?? DEFAULT_GAME_SETTINGS.erraticDamageMax,
     victoryBonusPercent: dbSettings?.victoryBonusPercent ?? DEFAULT_GAME_SETTINGS.victoryBonusPercent,
     showLeaderboardLink: dbSettings?.showLeaderboardLink ?? DEFAULT_GAME_SETTINGS.showLeaderboardLink,
   };

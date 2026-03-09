@@ -37,11 +37,12 @@ import {
 
 type CombatPhase = 'choose' | 'resolve' | 'victory' | 'death';
 
-const COMBAT_OPTIONS = [
-  { id: 'strike', text: 'Strike', cost: 1, emoji: '⚔️', desc: 'Attack the enemy' },
-  { id: 'dodge', text: 'Dodge', cost: 1, emoji: '💨', desc: 'Evade the attack' },
-  { id: 'brace', text: 'Brace', cost: 0, emoji: '🛡️', desc: 'Reduce damage' },
-  { id: 'flee', text: 'Flee', cost: 1, emoji: '🏃', desc: 'Try to escape' },
+// Costs are settings-driven — getCombatOptions() builds this at render time
+const BASE_COMBAT_OPTIONS = [
+  { id: 'strike', text: 'Strike', emoji: '⚔️', desc: 'Attack the enemy' },
+  { id: 'dodge',  text: 'Dodge',  emoji: '💨', desc: 'Evade the attack' },
+  { id: 'brace',  text: 'Brace',  emoji: '🛡️', desc: 'Reduce damage' },
+  { id: 'flee',   text: 'Flee',   emoji: '🏃', desc: 'Try to escape' },
 ];
 
 function HealthBar({ current, max, color = 'red' }: { current: number; max: number; color?: string }) {
@@ -143,18 +144,27 @@ export default function CombatScreen() {
     playSFX('enemy-growl');
   }, [roomNumber, params.enemy]);
 
+  // Build combat options with settings-driven costs
+  const COMBAT_OPTIONS = BASE_COMBAT_OPTIONS.map(o => ({
+    ...o,
+    cost: o.id === 'strike' ? settings.strikeCost : o.id === 'brace' ? 0 : 1,
+  }));
+
   // Calculate damage using admin settings
   const calculateDamage = (base: number, isPlayerAttacking: boolean) => {
-    // Use tier multiplier from settings
     const tier = depth.tier;
     const tierMult = tier === 3 ? settings.tier3Multiplier : tier === 2 ? settings.tier2Multiplier : 1.0;
     const itemEffects = getItemEffects(game.inventory);
-    
+    // Cap ERRATIC intent damage to erraticDamageMax
+    const cappedDealtMod = enemyIntent.type === 'ERRATIC'
+      ? Math.min(intentEffects.damageDealtMod, settings.erraticDamageMax)
+      : intentEffects.damageDealtMod;
+
     if (isPlayerAttacking) {
       return Math.round(base * (1 + itemEffects.damageBonus) * intentEffects.damageTakenMod);
     } else {
-      const chargeMult = wasCharging ? 2.0 : 1.0;
-      return Math.round(base * tierMult * intentEffects.damageDealtMod * (1 - itemEffects.defenseBonus) * chargeMult);
+      const chargeMult = wasCharging ? settings.chargePunishment : 1.0;
+      return Math.round(base * tierMult * cappedDealtMod * (1 - itemEffects.defenseBonus) * chargeMult);
     }
   };
   
@@ -192,11 +202,14 @@ export default function CombatScreen() {
     
     switch (action) {
       case 'strike': {
-        // Player damage uses settings range, enemy counter-attack is lower
+        // Player damage uses settings range; enemy counter scales by enemyCounterMultiplier
         const basePlayerHit = getBaseDamage();
-        const baseEnemyHit = Math.floor(getBaseDamage() * 0.6);
+        const baseEnemyHit = Math.floor(getBaseDamage() * settings.enemyCounterMultiplier);
         playerDmg = calculateDamage(baseEnemyHit, false);
-        enemyDmg = calculateDamage(basePlayerHit, true);
+        // Bonus damage for striking AGGRESSIVE/HUNTING correctly
+        const strikeIntentBonus = (enemyIntent.type === 'AGGRESSIVE' || enemyIntent.type === 'HUNTING')
+          ? settings.intentCounterBonus : 1.0;
+        enemyDmg = Math.round(calculateDamage(basePlayerHit, true) * strikeIntentBonus);
         
         // Critical hit chance from settings
         const isCritical = game.rng ? game.rng.chance(settings.criticalChance) : Math.random() < settings.criticalChance;
@@ -215,7 +228,14 @@ export default function CombatScreen() {
         const success = game.rng ? game.rng.chance(settings.dodgeSuccessRate) : Math.random() < settings.dodgeSuccessRate;
         if (success) {
           playerDmg = 0;
-          actionNarrative = getDodgeNarration('success');
+          // Counter-attack bonus when dodging a CHARGING enemy
+          if (wasCharging) {
+            const counterBase = game.rng ? game.rng.range(8, 14) : 8 + Math.floor(Math.random() * 7);
+            enemyDmg = Math.round(counterBase * settings.intentCounterBonus);
+            actionNarrative = getDodgeNarration('counter');
+          } else {
+            actionNarrative = getDodgeNarration('success');
+          }
         } else {
           const dodgeDmgBase = game.rng ? game.rng.range(5, 9) : 5 + Math.floor(Math.random() * 5);
           playerDmg = calculateDamage(dodgeDmgBase, false);
@@ -225,7 +245,9 @@ export default function CombatScreen() {
       }
       case 'brace': {
         playSFX('brace-impact');
-        const baseDmg = game.rng ? game.rng.range(3, 7) : 3 + Math.floor(Math.random() * 5);
+        const brMin = settings.braceBaseDamageMin;
+        const brMax = settings.braceBaseDamageMax;
+        const baseDmg = game.rng ? game.rng.range(brMin, brMax) : brMin + Math.floor(Math.random() * (brMax - brMin + 1));
         playerDmg = Math.round(calculateDamage(baseDmg, false) * (1 - settings.braceReduction));
         actionNarrative = getBraceNarration('success');
         break;
@@ -342,7 +364,7 @@ export default function CombatScreen() {
       setEnemyIntent(newIntent);
       setIntentEffects(getIntentEffects(newIntent.type));
       setPhase('choose');
-      game.setStamina(Math.min(3, game.stamina + settings.staminaRegen));
+      game.setStamina(Math.min(settings.staminaPool, game.stamina + settings.staminaRegen));
     }, 1500);
   };
 
@@ -518,7 +540,7 @@ export default function CombatScreen() {
               <View className="flex-row items-center gap-2">
                 <Image source={Icons.stamina} style={{ width: 14, height: 14 }} resizeMode="contain" />
                 <Text className="text-blue-400 font-mono">
-                  {'◆'.repeat(game.stamina)}{'◇'.repeat(3 - game.stamina)}
+                  {'◆'.repeat(game.stamina)}{'◇'.repeat(Math.max(0, settings.staminaPool - game.stamina))}
                 </Text>
               </View>
               <View className="flex-row items-center gap-1">
@@ -577,7 +599,7 @@ export default function CombatScreen() {
                 setNarrative(`You quickly apply the herbs. Wounds close. +${heal} HP.`);
                 playSFX('heal');
               } else if (name === 'Pale Rations') {
-                game.setStamina(Math.min(3, game.stamina + 1));
+                game.setStamina(Math.min(settings.staminaPool, game.stamina + 1));
                 setNarrative('You eat quickly. Strength returns to your legs.');
                 playSFX('loot-discover');
               } else if (name === 'Bone Dust') {

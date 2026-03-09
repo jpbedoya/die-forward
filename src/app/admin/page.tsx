@@ -45,7 +45,15 @@ interface GameSettings {
   braceReduction: number;
   fleeChanceBase: number;
   fleeCleanRatio: number;
+  staminaPool: number;
   staminaRegen: number;
+  strikeCost: number;
+  enemyCounterMultiplier: number;
+  chargePunishment: number;
+  intentCounterBonus: number;
+  braceBaseDamageMin: number;
+  braceBaseDamageMax: number;
+  erraticDamageMax: number;
 }
 
 interface Playlist {
@@ -77,7 +85,15 @@ const DEFAULT_SETTINGS: Omit<GameSettings, 'id'> = {
   braceReduction: 0.50,
   fleeChanceBase: 0.50,
   fleeCleanRatio: 0.60,
+  staminaPool: 4,
   staminaRegen: 1,
+  strikeCost: 2,
+  enemyCounterMultiplier: 0.85,
+  chargePunishment: 2.0,
+  intentCounterBonus: 1.5,
+  braceBaseDamageMin: 6,
+  braceBaseDamageMax: 12,
+  erraticDamageMax: 1.3,
 };
 
 type Tab = 'dashboard' | 'settings' | 'zones' | 'bestiary' | 'content' | 'music' | 'deaths' | 'corpses';
@@ -273,7 +289,15 @@ function SettingsTab() {
     braceReduction: settings?.braceReduction ?? DEFAULT_SETTINGS.braceReduction,
     fleeChanceBase: settings?.fleeChanceBase ?? DEFAULT_SETTINGS.fleeChanceBase,
     fleeCleanRatio: settings?.fleeCleanRatio ?? DEFAULT_SETTINGS.fleeCleanRatio,
+    staminaPool: settings?.staminaPool ?? DEFAULT_SETTINGS.staminaPool,
     staminaRegen: settings?.staminaRegen ?? DEFAULT_SETTINGS.staminaRegen,
+    strikeCost: settings?.strikeCost ?? DEFAULT_SETTINGS.strikeCost,
+    enemyCounterMultiplier: settings?.enemyCounterMultiplier ?? DEFAULT_SETTINGS.enemyCounterMultiplier,
+    chargePunishment: settings?.chargePunishment ?? DEFAULT_SETTINGS.chargePunishment,
+    intentCounterBonus: settings?.intentCounterBonus ?? DEFAULT_SETTINGS.intentCounterBonus,
+    braceBaseDamageMin: settings?.braceBaseDamageMin ?? DEFAULT_SETTINGS.braceBaseDamageMin,
+    braceBaseDamageMax: settings?.braceBaseDamageMax ?? DEFAULT_SETTINGS.braceBaseDamageMax,
+    erraticDamageMax: settings?.erraticDamageMax ?? DEFAULT_SETTINGS.erraticDamageMax,
   } as GameSettings;
 
   return (
@@ -299,7 +323,15 @@ function SettingsTab() {
         <SettingSlider label="Brace Reduction" value={cs.braceReduction} min={0} max={1} step={0.01} format={pct} onChange={(v) => saveSettings({ braceReduction: v })} />
         <SettingSlider label="Flee Chance Base" value={cs.fleeChanceBase} min={0} max={1} step={0.01} format={pct} onChange={(v) => saveSettings({ fleeChanceBase: v })} />
         <SettingSlider label="Flee Clean Ratio" value={cs.fleeCleanRatio} min={0} max={1} step={0.01} format={pct} onChange={(v) => saveSettings({ fleeCleanRatio: v })} />
+        <SettingSlider label="Stamina Pool (max pips)" value={cs.staminaPool} min={2} max={6} step={1} onChange={(v) => saveSettings({ staminaPool: v })} />
         <SettingSlider label="Stamina Regen" value={cs.staminaRegen} min={0} max={3} step={1} onChange={(v) => saveSettings({ staminaRegen: v })} />
+        <SettingSlider label="Strike Cost" value={cs.strikeCost} min={1} max={3} step={1} onChange={(v) => saveSettings({ strikeCost: v })} />
+        <SettingSlider label="Enemy Counter Multiplier" value={cs.enemyCounterMultiplier} min={0.3} max={1.5} step={0.05} format={mult} onChange={(v) => saveSettings({ enemyCounterMultiplier: v })} />
+        <SettingSlider label="Charge Punishment" value={cs.chargePunishment} min={1} max={4} step={0.1} format={mult} onChange={(v) => saveSettings({ chargePunishment: v })} />
+        <SettingSlider label="Intent Counter Bonus" value={cs.intentCounterBonus} min={1} max={3} step={0.05} format={mult} onChange={(v) => saveSettings({ intentCounterBonus: v })} />
+        <SettingSlider label="Brace Damage Min" value={cs.braceBaseDamageMin} min={1} max={20} step={1} onChange={(v) => saveSettings({ braceBaseDamageMin: v })} />
+        <SettingSlider label="Brace Damage Max" value={cs.braceBaseDamageMax} min={5} max={30} step={1} onChange={(v) => saveSettings({ braceBaseDamageMax: v })} />
+        <SettingSlider label="Erratic Damage Cap" value={cs.erraticDamageMax} min={0.5} max={2.5} step={0.05} format={mult} onChange={(v) => saveSettings({ erraticDamageMax: v })} />
       </SettingsSection>
       <SettingsSection title="UI">
         <SettingToggle label="Show Leaderboard Link" description="Display leaderboard link on the title screen" value={cs.showLeaderboardLink} onChange={(v) => saveSettings({ showLeaderboardLink: v })} />

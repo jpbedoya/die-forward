@@ -519,7 +519,7 @@ export default function PlayScreen() {
           <View className="flex-row items-center gap-2">
             <Image source={Icons.stamina} style={{ width: 14, height: 14 }} resizeMode="contain" />
             <Text className="text-blue-400 font-mono">
-              {'◆'.repeat(game.stamina)}{'◇'.repeat(3 - game.stamina)}
+              {'◆'.repeat(game.stamina)}{'◇'.repeat(Math.max(0, settings.staminaPool - game.stamina))}
             </Text>
           </View>
           <View className="flex-row items-center gap-1">
@@ -579,7 +579,7 @@ export default function PlayScreen() {
             setMessage(`You apply the herbs. +${heal} HP.`);
             playSFX('heal');
           } else if (name === 'Pale Rations') {
-            game.setStamina(Math.min(3, game.stamina + 1));
+            game.setStamina(Math.min(settings.staminaPool, game.stamina + 1));
             setMessage('You eat quickly. Stamina restored.');
             playSFX('loot-discover');
           } else if (name === 'Bone Dust') {
