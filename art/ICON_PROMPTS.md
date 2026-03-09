@@ -16,10 +16,10 @@ Every icon uses this same visual language:
 - One dominant accent color per icon (specified per prompt)
 - Bold, simple silhouette — readable at tiny sizes
 - No photorealism — this is flat iconography, not illustration
-- **Transparent background** — no black fill, no background color of any kind
+- **Transparent background** — generate with alpha, no background fill
 - Export as PNG with alpha channel
 
-> 💡 **DALL·E tip:** Ask ChatGPT to generate with a white background, then use [remove.bg](https://remove.bg) or Photoshop "Remove Background" to extract the icon cleanly. Alternatively, prompt with *"isolated on white"* and strip the white in post.
+
 
 ---
 
@@ -122,14 +122,57 @@ Muted aged palette. Rough strokes. White background. Square format 512x512.
 
 ---
 
+## UI Indicators
+
+### Heart ❤️ — *HP / health*
+
+**Output file:** `heart.png`
+
+```
+Dark fantasy UI icon for a dungeon roguelite game.
+A stylized heart shape — not anatomical, but not cute either. Somewhere between.
+Slightly asymmetric, slightly wrong. Cracked down the center, edges worn and rough.
+Feels like it's been used hard and has very little left. Still beating, barely.
+Flat simplified linework. Hand-carved or woodcut aesthetic.
+Dominant accent color: deep muted crimson (#991B1B). Transparent background.
+No gradients, no glow. Icon fills 70% of frame.
+Must read clearly at 24x24px — this appears as a tiny HP indicator. No text, no border.
+
+Style: flat dark fantasy icon, woodcut linework, medieval manuscript aesthetic.
+Muted aged palette. Rough strokes. Transparent background. Square format 512x512.
+```
+
+---
+
+### Backpack 🎒 — *Inventory / items carried*
+
+**Output file:** `backpack.png`
+
+```
+Dark fantasy UI icon for a dungeon roguelite game.
+A worn dungeon pack — heavy leather satchel with thick buckled straps and a flap closure.
+Overstuffed, bulging slightly. The leather is cracked and stained. A bone or tool handle
+pokes out from a side strap. This is what a grave robber carries, not an adventurer.
+Flat simplified linework. Hand-carved or woodcut aesthetic.
+Dominant accent color: dark aged leather brown (#78350F). Transparent background.
+No gradients, no glow. Icon fills 70% of frame.
+Must read clearly at 48x48px. No text, no border, no UI chrome.
+
+Style: flat dark fantasy icon, woodcut linework, medieval manuscript aesthetic.
+Muted aged palette. Rough strokes. Transparent background. Square format 512x512.
+```
+
+---
+
 ## Usage Notes
 
-- Generate on **white background**, then remove background (remove.bg, Photoshop, or Canva)
-- Save final as **PNG with transparency** before converting
+- Generate with **transparent background** directly in the AI tool
+- Save as **PNG with alpha channel**
 - All final icon assets → `art/generated/icons/`
 - File naming: `{kebab-name}.webp` (e.g. `strike.webp`, `brace.webp`)
 - Convert to WebP (preserves transparency): `vert strike.png strike.webp`
 - These go into `mobile/assets/icons/` + `public/icons/` (same dual-location pattern as items)
-- Generate `strike.png` first — confirm it reads at small sizes before batching the rest
+- Generate `strike.png` first — confirm the style lands before batching the rest
+- For `heart.png` — test at **24×24px** specifically, HP indicator is tiny
 - If too detailed / painterly: add *"flat, icon-style, simplified shapes only, no fine detail"*
 - If too decorative: add *"brutally minimal, functional UI icon, no flourishes"*
