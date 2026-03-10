@@ -108,6 +108,11 @@ function MobileWalletConsumer({ children }: { children: ReactNode }) {
     }
   }, [wallet]);
   
+  const signMessage = useCallback(async (message: Uint8Array): Promise<Uint8Array> => {
+    if (!wallet.account) throw new Error('Wallet not connected');
+    return await wallet.signMessage(message);
+  }, [wallet]);
+
   const refreshBalance = useCallback(async () => {
     if (address && wallet.connection) {
       const lamports = await wallet.connection.getBalance(new PublicKey(address));
@@ -126,8 +131,9 @@ function MobileWalletConsumer({ children }: { children: ReactNode }) {
     disconnect,
     sendSOL,
     signAndSendTransaction,
+    signMessage,
     refreshBalance,
-  }), [connected, connecting, address, balance, connect, disconnect, sendSOL, signAndSendTransaction, refreshBalance]);
+  }), [connected, connecting, address, balance, connect, disconnect, sendSOL, signAndSendTransaction, signMessage, refreshBalance]);
   
   return (
     <UnifiedWalletContext.Provider value={contextValue}>

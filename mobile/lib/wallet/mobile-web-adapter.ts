@@ -170,7 +170,7 @@ export async function mobileWebSignAndSend(tx: Transaction): Promise<string> {
         
         // Update cache with new token
         setCachedAuth(authToken, pubkey.toBase58());
-      } catch (reAuthErr) {
+      } catch {
         console.log('[MWA] Reauthorize failed, trying fresh authorize...');
         
         // Fall back to full authorize
@@ -232,6 +232,51 @@ export async function mobileWebSignAndSend(tx: Transaction): Promise<string> {
   }
   
   return signature;
+}
+
+/**
+ * Sign an arbitrary message using transact() (atomic session, same as signing TXs)
+ * Returns the raw Ed25519 signature bytes.
+ */
+export async function mobileWebSignMessage(message: Uint8Array): Promise<Uint8Array> {
+  const cached = getCachedAuth();
+  if (!cached?.publicKey) {
+    throw new Error('Wallet not connected - please connect your wallet first');
+  }
+
+  return await transact(async (wallet) => {
+    // Reauth to get a valid session
+    let pubkey: string;
+    if (cached.authToken) {
+      try {
+        const reAuthResult = await wallet.reauthorize({
+          auth_token: cached.authToken,
+          identity: APP_IDENTITY,
+        });
+        pubkey = decodeAddress(reAuthResult.accounts[0]?.address as string | Uint8Array);
+        setCachedAuth(reAuthResult.auth_token, pubkey);
+      } catch {
+        const authResult = await wallet.authorize({ cluster: CLUSTER, identity: APP_IDENTITY });
+        pubkey = decodeAddress(authResult.accounts[0]?.address as string | Uint8Array);
+        setCachedAuth(authResult.auth_token, pubkey);
+      }
+    } else {
+      const authResult = await wallet.authorize({ cluster: CLUSTER, identity: APP_IDENTITY });
+      pubkey = decodeAddress(authResult.accounts[0]?.address as string | Uint8Array);
+      setCachedAuth(authResult.auth_token, pubkey);
+    }
+
+    // signMessages expects base64-encoded address
+    const addressBase64 = Buffer.from(new PublicKey(pubkey).toBytes()).toString('base64');
+
+    const results = await wallet.signMessages({
+      addresses: [addressBase64],
+      payloads: [message],
+    });
+
+    if (!results[0]) throw new Error('No signature returned from wallet');
+    return results[0];
+  });
 }
 
 /**

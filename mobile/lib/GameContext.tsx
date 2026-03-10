@@ -143,11 +143,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
   }, [unifiedWallet.connected, unifiedWallet.address, updateState]);
 
-  // Auto sign-in when wallet connects — gets a real InstantDB token via backend
+  // Auto sign-in when wallet connects — requires signed challenge
   useEffect(() => {
     if (!unifiedWallet.connected || !unifiedWallet.address || state.isAuthenticated) return;
 
-    signInWithWallet(unifiedWallet.address)
+    signInWithWallet(unifiedWallet.address, unifiedWallet.signMessage)
       .then(authState => {
         setState(prev => ({
           ...prev,
@@ -158,17 +158,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
         }));
       })
       .catch(err => {
-        // Network error or backend down — fall back to local auth so game still works
-        console.warn('[Auth] Backend sign-in failed, using local auth fallback:', err);
-        setState(prev => ({
-          ...prev,
-          isAuthenticated: true,
-          authId: unifiedWallet.address!,
-          authType: 'wallet' as const,
-          walletAddress: unifiedWallet.address,
-        }));
+        console.warn('[Auth] Wallet sign-in failed:', err);
       });
-  }, [unifiedWallet.connected, unifiedWallet.address, state.isAuthenticated]);
+  }, [unifiedWallet, state.isAuthenticated]);
 
   // Sync balance from unified wallet
   useEffect(() => {
@@ -341,12 +333,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
     updateState({ loading: true, error: null });
     try {
-      // Get signMessage function from wallet
-      // For now, we'll skip signature verification and just use wallet address as auth
-      // TODO: Implement proper signature flow when wallet adapter supports signMessage
-      // No signMessage implementation yet — use SKIP_VERIFICATION path
-      // which still hits the server (creates InstantDB token + Tapestry profile)
-      const authState = await signInWithWallet(unifiedWallet.address);
+      const authState = await signInWithWallet(unifiedWallet.address, unifiedWallet.signMessage);
 
       updateState({
         isAuthenticated: true,
@@ -355,22 +342,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
         walletAddress: authState.walletAddress,
         isNewUser: authState.isNewUser,
         loading: false,
-        // Don't show nickname modal here - let syncNickname useEffect handle it
-        // after auth state is fully settled
       });
     } catch (err) {
-      // Fall back to simple auth without signature
-      console.log('[Auth] Signature flow failed, using simple auth:', err);
-      
-      updateState({
-        isAuthenticated: true,
-        authId: unifiedWallet.address,
-        authType: 'wallet',
-        walletAddress: unifiedWallet.address,
-        loading: false,
-      });
+      const errMsg = err instanceof Error ? err.message : String(err);
+      updateState({ loading: false, error: errMsg });
+      throw err;
     }
-  }, [unifiedWallet.connected, unifiedWallet.address, updateState]);
+  }, [unifiedWallet, updateState]);
 
   const signInEmptyHandedAction = useCallback(async () => {
     updateState({ loading: true, error: null });
@@ -407,7 +385,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
     updateState({ loading: true, error: null });
     try {
-      const result = await linkWalletToGuest(unifiedWallet.address);
+      const result = await linkWalletToGuest(unifiedWallet.address, unifiedWallet.signMessage);
 
       updateState({
         authId: unifiedWallet.address,
@@ -424,7 +402,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       updateState({ loading: false, error: errMsg });
       throw err;
     }
-  }, [unifiedWallet.connected, unifiedWallet.address, state.authType, updateState]);
+  }, [unifiedWallet, state.authType, updateState]);
 
   // Wallet actions (delegate to unified wallet)
   const connect = useCallback(async () => {

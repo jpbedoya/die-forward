@@ -82,6 +82,7 @@ if (Platform.OS === 'ios' || Platform.OS === 'android') {
 
 // Mobile web: use wallet-adapter-mobile (proper OS wallet picker)
 let clearMobileWebCache: (() => void) | undefined;
+let mobileWebSignMessage: ((message: Uint8Array) => Promise<Uint8Array>) | undefined;
 if (isMobileWeb) {
   const mwa = require('./mobile-web-adapter');
   mobileWebConnect = mwa.mobileWebConnect;
@@ -92,6 +93,7 @@ if (isMobileWeb) {
   isMobileWebConnected = mwa.isMobileWebConnected;
   getMobileWebAddress = mwa.getMobileWebAddress;
   clearMobileWebCache = mwa.clearMobileWebCache;
+  mobileWebSignMessage = mwa.mobileWebSignMessage;
 }
 
 // Wallet connector info
@@ -113,6 +115,7 @@ export interface UnifiedWalletContextState {
   disconnect: () => Promise<void>;
   sendSOL: (to: Address, amount: number) => Promise<string>;
   signAndSendTransaction: (transaction: any) => Promise<string>; // For escrow/custom txs
+  signMessage: (message: Uint8Array) => Promise<Uint8Array>; // For auth challenges
   refreshBalance: () => Promise<void>;
 }
 
@@ -127,6 +130,7 @@ export const UnifiedWalletContext = createContext<UnifiedWalletContextState>({
   disconnect: async () => {},
   sendSOL: async () => { throw new Error('Not connected'); },
   signAndSendTransaction: async () => { throw new Error('Not connected'); },
+  signMessage: async () => { throw new Error('Not connected'); },
   refreshBalance: async () => {},
 });
 
@@ -215,6 +219,15 @@ function WebWalletConsumer({ children }: { children: ReactNode }) {
     }
   }, [walletAddress, walletConnection.wallet, txSender]);
   
+  // Sign arbitrary message (for auth challenges) — uses wallet session's signMessage
+  const doSignMessage = useCallback(async (message: Uint8Array): Promise<Uint8Array> => {
+    if (!walletConnection.wallet) throw new Error('Wallet not connected');
+    if (!walletConnection.wallet.signMessage) {
+      throw new Error('Connected wallet does not support message signing. Please use Phantom, Backpack, or Solflare.');
+    }
+    return await walletConnection.wallet.signMessage(message);
+  }, [walletConnection.wallet]);
+
   // Map connectors to our interface
   const connectors: WalletConnector[] = useMemo(() => 
     walletConnection.connectors.map((c: any) => ({
@@ -277,10 +290,11 @@ function WebWalletConsumer({ children }: { children: ReactNode }) {
     },
     sendSOL: doSendSOL,
     signAndSendTransaction: doSignAndSend,
+    signMessage: doSignMessage,
     refreshBalance: async () => {
       balanceResult.refresh?.();
     },
-  }), [walletConnection, walletAddress, balanceResult, connectors, doSendSOL, doSignAndSend]);
+  }), [walletConnection, walletAddress, balanceResult, connectors, doSendSOL, doSignAndSend, doSignMessage]);
   
   return (
     <UnifiedWalletContext.Provider value={contextValue}>
@@ -460,7 +474,13 @@ function MobileWalletProvider({ children }: { children: ReactNode }) {
       throw e;
     }
   }, [address]);
-  
+
+  const doSignMessageMobileWeb = useCallback(async (message: Uint8Array): Promise<Uint8Array> => {
+    if (!address) throw new Error('Wallet not connected');
+    if (!mobileWebSignMessage) throw new Error('signMessage not available on this platform');
+    return await mobileWebSignMessage(message);
+  }, [address]);
+
   const refreshBalance = useCallback(async () => {
     if (address) {
       const bal = await getMobileWebBalance(address);
@@ -479,8 +499,9 @@ function MobileWalletProvider({ children }: { children: ReactNode }) {
     disconnect,
     sendSOL,
     signAndSendTransaction,
+    signMessage: doSignMessageMobileWeb,
     refreshBalance,
-  }), [connected, connecting, address, balance, connect, disconnect, sendSOL, signAndSendTransaction, refreshBalance]);
+  }), [connected, connecting, address, balance, connect, disconnect, sendSOL, signAndSendTransaction, doSignMessageMobileWeb, refreshBalance]);
   
   return (
     <UnifiedWalletContext.Provider value={contextValue}>
