@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect, useMemo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as api from './api';
-import { generateRandomDungeon, DungeonRoom, getItemDetails } from './content';
+import { generateRandomDungeon, generateDungeon, DungeonRoom, getItemDetails, rollRandomItem } from './content';
+import { getMilestonePerks } from './milestones';
 
 // Pending item when inventory is full — includes full item details for the swap UI
 export interface PendingInventoryItem {
@@ -17,7 +18,7 @@ export interface PendingInventoryItem {
 import { useUnifiedWallet, type Address } from './wallet/unified';
 import { GAME_POOL_PDA, buildStakeInstruction, generateSessionId } from './solana/escrow';
 import { Transaction, LAMPORTS_PER_SOL } from '@solana/web3.js';
-import { getOrCreatePlayerByAuth, updatePlayerNicknameByAuth } from './instant';
+import { getOrCreatePlayerByAuth, updatePlayerNicknameByAuth, useGameSettings } from './instant';
 import { signInWithWallet, signInAsGuest, signOut, linkWalletToGuest, getStoredAuthState, type AuthState } from './auth';
 import { createRunRng, generateRandomSeed, type SeededRng } from './seeded-random';
 import { rollModifier, type RunModifier } from './modifiers';
@@ -99,7 +100,7 @@ interface GameContextType extends GameState {
   dismissNicknameModal: () => void;
   
   // Game actions
-  startGame: (amount: number, emptyHanded?: boolean, zoneId?: string) => Promise<void>;
+  startGame: (amount: number, emptyHanded?: boolean, zoneId?: string, totalDeaths?: number) => Promise<void>;
   advance: () => Promise<boolean>;
   recordDeath: (finalMessage: string, killedBy?: string, nowPlaying?: { title: string; artist: string }) => Promise<void>;
   claimVictory: () => Promise<void>;
@@ -179,6 +180,7 @@ const GameContext = createContext<GameContextType | null>(null);
 export function GameProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<GameState>(initialState);
   const unifiedWallet = useUnifiedWallet();
+  const { settings } = useGameSettings();
 
   const updateState = useCallback((updates: Partial<GameState>) => {
     setState(prev => ({ ...prev, ...updates }));
@@ -563,7 +565,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, [unifiedWallet]);
 
   // Game actions
-  const startGame = useCallback(async (amount: number, emptyHanded = false, zoneId?: string) => {
+  const startGame = useCallback(async (amount: number, emptyHanded = false, zoneId?: string, totalDeaths?: number) => {
     updateState({ loading: true, error: null });
     try {
       let stakeTxSignature: string | undefined;
@@ -621,12 +623,31 @@ export function GameProvider({ children }: { children: ReactNode }) {
       const modifier = rollModifier(modifierRng);
       console.log('[GameContext] Run modifier:', modifier.id);
       
-      // Apply modifier starting overrides
-      const startingHP = modifier.startingHP ?? 100;
+      // Apply milestone perks
+      const perks = getMilestonePerks(totalDeaths ?? 0);
+
+      // Apply modifier starting overrides, factoring in milestone perks
+      const startingHP = modifier.startingHP ?? (perks.bonusHp ? 110 : 100);
       const startingStamina = modifier.startingStamina ?? 3;
-      
-      // Generate dungeon client-side with full content system
-      const dungeon = generateRandomDungeon();
+
+      // Starting item perk (250 deaths): give a random item at run start
+      let initialInventory: { id: string; name: string; emoji: string }[] = [];
+      if (perks.startingItem) {
+        const excludes = perks.soulstoneUnlocked ? [] : ['Soulstone'];
+        const startItemName = rollRandomItem(() => modifierRng.random(), undefined, excludes);
+        const startItemDetails = getItemDetails(startItemName);
+        initialInventory = [{
+          id: `perk-start-${seed.slice(0, 8)}`,
+          name: startItemName,
+          emoji: startItemDetails?.emoji || '❓',
+        }];
+      }
+
+      // BUG 2 FIX: Generate dungeon with the selected zone and a dedicated seeded RNG.
+      // Use a separate RNG instance from the same seed so the modifier roll
+      // doesn't offset the dungeon generation sequence.
+      const mainRng = createRunRng(seed);
+      const dungeon = generateDungeon(session.zoneId || zoneId || 'sunken-crypt', mainRng);
       
       updateState({
         sessionToken: session.sessionToken,
@@ -635,7 +656,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         currentRoom: 0,
         health: startingHP,
         stamina: startingStamina,
-        inventory: [],
+        inventory: initialInventory,
         itemsFound: 0,
         dungeon,
         seed,
@@ -677,9 +698,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
     }
     
     // Update room client-side (dungeon is generated locally)
+    // Fix 9: use settings.staminaPool instead of hardcoded 3
     updateState({
       currentRoom: nextRoom,
-      stamina: Math.min(3, state.stamina + 1),
+      stamina: Math.min(settings.staminaPool, state.stamina + 1),
     });
     
     // Notify backend - send CURRENT room (1-indexed for server)
@@ -691,7 +713,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
     
     return true;
-  }, [state.sessionToken, state.currentRoom, state.stamina, state.dungeon?.length, updateState]);
+  }, [state.sessionToken, state.currentRoom, state.stamina, state.dungeon?.length, settings.staminaPool, updateState]);
 
   const recordDeathAction = useCallback(async (finalMessage: string, killedBy?: string, nowPlaying?: { title: string; artist: string }) => {
     if (!state.sessionToken) return;
