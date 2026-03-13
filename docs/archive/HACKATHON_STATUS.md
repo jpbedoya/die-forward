@@ -1,3 +1,4 @@
+<!-- Archived 2026-03-13 — hackathon-era doc, superseded by current roadmap -->
 # Die Forward — Hackathon Status
 
 **Last Updated**: Mar 7, 2026  

@@ -73,6 +73,54 @@ Some enemy + intent combinations may be too punishing or too easy. Combat balanc
 
 Later depths (Flooded Halls, Bone Gardens) are significantly harder. This is intentional — clear rate should be ~10-15%.
 
+### Void Salt Damage Bonus Not Wired
+**Status:** Known gap (Phase 1)
+
+`voidSaltBonus` flag is correctly set in `getItemEffects` when the player carries Void Salt, but the +40% damage multiplier is **not** applied in `calculateDamage`. Additionally, the BESTIARY creatures that Void Salt should affect (aquatic types) don't yet have a `type: 'aquatic'` field.
+
+**Impact:** Void Salt has no effect on combat damage. Players carrying it get no mechanical benefit.
+
+**Fix:** Add `type: 'aquatic'` to relevant creatures in BESTIARY data; wire `voidSaltBonus` into `calculateDamage` multiplier chain.
+
+### activeTitle / activeBorder Not Rendered
+**Status:** Known gap (Phase 1)
+
+`activeTitle` (e.g., "The Persistent", "The Undying") and `activeBorder` (e.g., bone frame) are stored on the player record when death milestones are unlocked, but they are not rendered anywhere:
+- ❌ Not shown on share/death cards
+- ❌ Not shown on death card borders
+- ❌ Not shown on play screen
+
+**Impact:** Death milestone cosmetics are effectively invisible to the player.
+
+**Fix:** Read `activeTitle` and `activeBorder` from player record on death screen, victory screen, and share card generation.
+
+### Sunken Crypt Explore Options Incomplete
+**Status:** Known gap (Phase 1)
+
+Sunken Crypt explore room variations only have 2 authored options. The tertiary option (intel peek) always falls back to the generic "Observe carefully" text because no authored tertiary exists in the zone JSON.
+
+**Impact:** Slightly repetitive tertiary option text across Sunken Crypt explore rooms.
+
+**Fix:** Author tertiary options for Sunken Crypt room variations in zone JSON.
+
+### Zone-Aware Depth Names Not Surfaced
+**Status:** Known gap (Phase 1)
+
+Each zone defines zone-specific depth names, but the play screen always displays the Sunken Crypt depth names ("Shallow Graves", "Bone Warren", "The Abyss") regardless of which zone is active.
+
+**Impact:** Players in Ashen Crypts, Frozen Gallery, etc. still see Sunken Crypt UI labels.
+
+**Fix:** Pull active zone's depth name array and display on play screen header.
+
+### Modifier Badge Missing from Combat Screen
+**Status:** Known gap (Phase 1)
+
+The run modifier badge (e.g., 🩸 Blood Pact) is shown on the play screen room header but does not appear on the combat screen. Players may forget their active modifier during fights.
+
+**Impact:** Minor UX issue — modifier effects still apply correctly, just not labeled on screen.
+
+**Fix:** Add modifier badge to combat screen header alongside enemy tier/intent display.
+
 ---
 
 ## Technical
@@ -95,86 +143,82 @@ Works with Phantom mobile browser. Deep-link flow may have issues with some wall
 |----------|--------|
 | Can't pause mid-run | Roguelite design — commitment matters |
 | Corpses disappear after discovery | One-time content, encourages re-runs |
-| No HP recovery between rooms | Roguelite resource management |
+| No HP recovery between rooms (base) | Roguelite resource management — cache rooms provide the only healing |
 | Final message is permanent | Core mechanic — death = content |
 | Stake is locked until run ends | Prevents gaming the system |
+| Death's Mantle consumed on save | Intentional — legendary items shouldn't be indefinitely reusable |
+| Voidblade deals -5 HP/turn | Intentional tradeoff — high risk/reward legendary |
 
 ---
 
-## Recently Resolved (Feb 2026)
+## Recently Resolved (Feb–Mar 2026)
+
+### Run Modifier Not Applied to Healing (Phase 1)
+**Status:** ✅ Fixed
+
+Healing was applied inconsistently — cache room heals, Herbs usage, and combat heals each had their own logic. Blood Pact's -30% healing reduction was not applied in all cases.
+
+Fix: All healing routes through `applyHealing(amount)` in GameContext. Blood Pact modifier applied at that single choke point.
+
+### Combat Randomness Not Seeded (Phase 1)
+**Status:** ✅ Fixed
+
+Creature HP and intent were using `Math.random()`, producing inconsistent results and allowing potential manipulation.
+
+Fix: `getCreatureHealthSeeded` and `getCreatureIntentSeeded` now use seeded RNG derived from `seed + '-gameplay'` sub-seed. All combat is deterministic and reproducible from the run seed.
 
 ### Nickname Mismatch — Death Echoes vs. Toll (Feb 21)
 **Status:** ✅ Fixed
 
 Root cause: `recordDeathAction` in `GameContext.tsx` built `playerName` from the wallet address format (`Ab12...ef34`) instead of `state.nickname`.
 
-Fix:
-- `playerName = state.nickname || walletAddressFormat || 'Wanderer'`
-- Added `state.nickname` to `recordDeathAction` dependency array.
+Fix: `playerName = state.nickname || walletAddressFormat || 'Wanderer'`; added `state.nickname` to `recordDeathAction` dependency array.
 
 ### Nickname Prompt Shown Repeatedly (Empty-Handed) (Feb 21)
 **Status:** ✅ Fixed
 
 Root cause: On guest auth, `syncNickname` was passing the local nickname to `getOrCreatePlayerByAuth` which could overwrite a fresh guest DB record; combined with a logic bug, the prompt was shown even when a name was already set.
 
-Fix:
-- Separated wallet vs. guest sync paths explicitly.
-- Guest path: only prompts if no local name AND never prompted before.
+Fix: Separated wallet vs. guest sync paths explicitly. Guest path: only prompts if no local name AND never prompted before.
 
 ### Nickname Not Updating on Wallet Bind (Feb 21)
 **Status:** ✅ Fixed
 
 Root cause: `signInWithWallet()` (which triggers `syncNickname`) was only called inside `handleStake()`, not on wallet connect. DB nickname wasn't loaded until user tapped SEAL YOUR FATE.
 
-Fix:
-- Added `useEffect` in `GameContext` that auto-authenticates when `unifiedWallet.connected` becomes true. DB nickname loads immediately on wallet bind.
+Fix: Added `useEffect` in `GameContext` that auto-authenticates when `unifiedWallet.connected` becomes true. DB nickname loads immediately on wallet bind.
 
 ### Nickname Surviving Logout (Feb 21)
 **Status:** ✅ Fixed
 
 Root cause: `syncNickname` awaits a DB call. If logout fires during that await, the DB result wrote back over the freshly cleared state (stale async closure).
 
-Fix:
-- Added `cancelled` cleanup flag to `syncNickname` useEffect.
-- `disconnect()` now also does a full reset: clears `AsyncStorage` keys for nickname, prompted flag, and guest progress — not just auth state.
-
-### Death Echoes Used Wallet Address as Player Name (Feb 21)
-**Status:** ✅ Fixed
-
-Root cause: `recordDeathAction` always derived `playerName` from wallet address format, ignoring the player's chosen nickname entirely.
-
-Fix: See "Nickname Mismatch" above.
+Fix: Added `cancelled` cleanup flag to `syncNickname` useEffect. `disconnect()` now also does a full reset: clears `AsyncStorage` keys for nickname, prompted flag, and guest progress — not just auth state.
 
 ### Android Stake Screen Crash (`.map` of undefined)
 **Status:** ✅ Fixed
 
 Root cause: MWA provider context value omitted `connectors`, so stake screen attempted `.map()` on undefined.
 
-Fix:
-- Added `connectors: []` and `connectTo` to native MWA context value.
+Fix: Added `connectors: []` and `connectTo` to native MWA context value.
 
 ### Native Wallet Connect No-Op
 **Status:** ✅ Fixed
 
 Root cause: `mwa-provider.tsx` used a private context instance, while `GameContext` read from `unified.tsx` context.
 
-Fix:
-- Exported shared `UnifiedWalletContext` from `unified.tsx`
-- Native provider now writes to same context consumed by game state.
+Fix: Exported shared `UnifiedWalletContext` from `unified.tsx`; native provider now writes to same context consumed by game state.
 
 ### Audio Not Starting on Title/Victory
 **Status:** ✅ Fixed
 
 Root cause: `playAmbient()` called before native audio module init completed.
 
-Fix:
-- Added `audioReady` gating in title and victory `useEffect` hooks.
+Fix: Added `audioReady` gating in title and victory `useEffect` hooks.
 
 ### Free Mode Showing Claim Rewards
 **Status:** ✅ Fixed
 
 Root cause: free mode runs were persisting selected stake amount instead of zero.
 
-Fix:
-- In `startGame`, demo/free mode now stores `stakeAmount: 0`.
-
+Fix: In `startGame`, demo/free mode now stores `stakeAmount: 0`.

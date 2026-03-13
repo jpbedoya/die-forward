@@ -1,52 +1,191 @@
-# Game Design
+# Die Forward — Game Design
+
+*Last updated: 2026-03-13*
 
 ## Overview
 
-Die Forward is a text-based social roguelite. Players navigate procedurally generated dungeons through narrative choices. Death is not failure — it's contribution. Your corpse becomes content for future players.
+Die Forward is a social roguelite on Solana where players navigate procedurally generated dungeons with narrative choices, zone-specific creatures, and persistent death — every run is unique, every death feeds the world.
 
-## The Run
+---
 
-- Enter dungeon with a SOL stake
-- Navigate 10-15 rooms
-- Each room contains an encounter
-- Make choices (not twitch reactions)
-- Die → become content | Clear → claim rewards
+## Core Loop
 
-## Encounter Types
+### The 30-Second Loop (In-Room)
 
-| Type | Description |
-|------|-------------|
-| ⚔️ **Combat** | Fight enemies, risk HP for loot |
-| 🪤 **Trap** | Test perception/items, failure = damage |
-| 💀 **Ghost** | Find dead player's remains — loot them, read their message |
-| 🎁 **Cache** | Safe loot room (rare) |
-| ❓ **Mystery** | Agent-generated wildcard encounters |
+Each room presents one of five encounter types. Choices matter — resources carry over across all rooms in a run.
+
+#### EXPLORE Rooms
+
+Every explore room presents 2-3 options:
+
+| Option | Cost | Outcome |
+|--------|------|---------|
+| **Primary** (safe advance) | Free | Move forward, no risk |
+| **Secondary [RISK]** | Free | 55% item find / 30% nothing / 15% damage |
+| **Tertiary [1⚡]** | 1 stamina | Intel peek at the next room |
+
+Options are authored per zone for full-room zones (Sunken Crypt). Fragment-based zones draw from cautious/aggressive/investigative pools. A generic "Observe carefully" tertiary always appears as a fallback.
+
+#### COMBAT Rooms
+
+Fight enemies using the intent-reading system. See **Combat System** below for full details.
+
+- Enemy HP and first intent are rolled deterministically from the run seed
+- Run modifiers affect combat directly (see **Run Modifiers**)
+- Voidblade deals -5 HP/turn while equipped; Death's Mantle can absorb one lethal hit
+
+#### CORPSE Rooms
+
+Find the remains of a fallen player:
+
+- **Search** — loot their inventory items
+- **Pay Respects** — tip SOL to the dead player
+- **Move On** — skip it
+
+#### CACHE Rooms
+
+A safe supply room. Choose to heal or continue:
+
+- Heal restores HP (amount varies)
+- All healing routes through `applyHealing()` — Blood Pact modifier applies here too
+- No combat, no risk
+
+#### EXIT Room
+
+Proceed to the next depth. Three depths total — Shallow Graves, Bone Warren, The Abyss. Rooms get harder and creatures scale up as you descend.
+
+---
+
+### Run Modifiers
+
+Each run rolls exactly one modifier, determined deterministically from the run seed. The modifier badge is shown on the play screen.
+
+| Modifier | Effect |
+|----------|--------|
+| 🩸 **Blood Pact** | +25% damage dealt, -30% healing received |
+| 🌑 **Blind Descent** | Enemy intent is hidden on turn 1 |
+| 💀 **Death's Echo** | +30% chance to find a corpse room |
+| 🧊 **Numbing Cold** | Start with 2 stamina; regenerate +1 extra stamina per turn |
+| 🛡️ **Iron Will** | Brace action negates all incoming damage |
+| ⚡ **Glass Cannon** | Start with 60 HP; deal +50% damage |
+
+---
+
+### The 5-Minute Loop (Per-Run Arc)
+
+Each run spans 10-15 rooms across 3 depths:
+
+- **Depth 1 — Shallow Graves**: Tier 1 enemies, introductory rooms. Establishes zone flavor.
+- **Depth 2 — Bone Warren**: Tier 2 enemies appear. Stamina management tightens.
+- **Depth 3 — The Abyss**: Tier 3 enemies and the boss. Clear rate is intentionally low (~10-15%).
+
+Room composition per depth is determined by the active zone. Each run includes explore, combat, corpse, and cache rooms — the exact mix is generated from the zone's room pool.
+
+---
+
+### Run Streak & Replayability
+
+- Every run has a unique seed, producing deterministic but varied content
+- The run modifier changes the risk/reward calculus each time
+- Zone progression unlocks new content as death count increases
+- Your corpse persists for others to find — your run becomes content
+
+---
+
+## Progression
+
+### Death Milestones
+
+Death is the primary progression currency. Thresholds unlock permanent perks:
+
+| Deaths | Unlock Type | Description |
+|--------|-------------|-------------|
+| 10 | Title | "The Persistent" |
+| 25 | Death card border | Bone frame on share cards |
+| 50 | Loot pool addition | Soulstone added to possible drops |
+| 100 | Title | "The Undying" |
+| 250 | Start-with-item perk | Begin each run with a starting item |
+| 500 | HP boost | Start every run with 110 HP instead of 100 |
+
+When a threshold is crossed, the death screen displays a milestone banner.
+
+---
+
+### Zone Progression
+
+The dungeon system supports 5 zones. Each run takes place in one zone, generating zone-specific rooms, creatures, and boss encounters.
+
+| Zone | Type | Unlock Condition | Description |
+|------|------|-----------------|-------------|
+| **Sunken Crypt** | Full-room | Default (always available) | Flooded stone chambers, aquatic horrors, The Keeper boss |
+| **Ashen Crypts** | Fragment | Room 8+ reached | Ash and embers, burned dead, fire-adjacent enemies |
+| **Frozen Gallery** | Fragment | Room 8+ reached | Ice-encased statues, cold silence, slow dread |
+| **Living Tomb** | Fragment | Room 8+ reached | Organic horror, things that grow in the dark |
+| **Void Beyond** | Fragment | 3 zone clears | Reality unravels, enemies defy logic, deepest rewards |
+
+Zone clears are tracked on the player record (`clearedZones`). Full-room zones have authored narrative options per room. Fragment zones draw from curated option pools (cautious / aggressive / investigative).
+
+---
+
+### Inventory & Items
+
+#### Inventory Limit
+
+Players can carry up to **4 items**. Finding a 5th triggers an item swap modal — keep one, drop one. There's no automatic overflow.
+
+#### Item Rarity
+
+All loot drops use a weighted picker:
+
+| Rarity | Chance |
+|--------|--------|
+| Common | 55% |
+| Uncommon | 30% |
+| Rare | 12% |
+| Legendary | 3% |
+
+#### Item Effects
+
+All items provide passive bonuses while in inventory:
+
+| Item | Rarity | Effect |
+|------|--------|--------|
+| 🔦 Torch | Common | +25% damage dealt |
+| 🗡️ Rusty Blade | Common | +20% damage dealt |
+| 🛡️ Tattered Shield | Common | -25% damage taken |
+| 🧥 Cloak | Common | +15% flee chance, +10% defense |
+| 🌿 Herbs | Common | Consumable heal (not passive) |
+| 💎 Soulstone | Uncommon | +10% damage / defense / flee |
+| 👁️ Eye of the Hollow | Uncommon | +20% corpse and cache room discovery |
+| 🪝 Bone Hook | Uncommon | +20% flee success |
+| 🪙 Pale Coin | Uncommon | +10% flee success |
+| 🧂 Void Salt | Rare | +40% damage vs aquatic enemies (pending bestiary annotation) |
+| 🗡️ Dagger | Rare | +35% damage dealt |
+| 🛡️ Shield | Rare | -25% damage taken |
+| 🌑 **Death's Mantle** | Legendary | Survive one lethal hit (consumed on use) |
+| ⚔️ **Voidblade** | Legendary | +50% damage dealt, -5 HP per turn |
+
+---
 
 ## Combat System
 
 ### Philosophy
 
-**Most runs end in death. Skilled players can make it.**
-
-This is the Dark Souls philosophy: death is expected, but skilled play matters. The stamina system forces pacing — you can't spam Strike every turn. Reading enemy intent and responding correctly is mechanically rewarded. Every decision is a real tradeoff.
-
-No HP trading ping-pong. Every choice is a risk/reward tradeoff. Fights are short (2-4 exchanges) but tense. **Enemies hit harder as you go deeper** — tier matters.
+Most runs end in death. Skilled players can make it. The stamina system forces pacing — you can't spam Strike. Reading enemy intent and responding correctly is mechanically rewarded. Every decision is a real tradeoff.
 
 ### Resources
 
 | Resource | Description |
 |----------|-------------|
-| ❤️ Health | 100 max. Lose it all, you die. Persists across rooms (gauntlet). |
-| ⚡ Stamina | **4 max** (admin-tunable). Spent on actions, regens 1 per turn. |
-| 🎒 Items | Equipment that provides passive combat bonuses. |
-
-> **Gauntlet design**: HP carries over between rooms. Winning fight 1 at 40 HP means entering fight 2 at 40 HP. Resource management across the full run is the real challenge.
+| ❤️ Health | 100 max (110 at 500 deaths milestone; 60 with Glass Cannon). Lose it all, you die. Persists across rooms. |
+| ⚡ Stamina | 4 max. Spent on actions, regens 1 per turn (2 with Numbing Cold). |
+| 🎒 Items | Up to 4 equipped items providing passive combat bonuses. |
 
 ### Enemy Properties
 
 - **Tier**: Determines base damage (Tier 1 = 1x, Tier 2 = 1.5x, Tier 3 = 2x)
 - **Intent**: Telegraphed each turn — affects damage, defense, and flee chance
-- **Health**: Varies by creature type and tier (25-160 HP)
+- **Health**: Rolled deterministically from run seed via `getCreatureHealthSeeded`
 
 ### Enemy Tiers
 
@@ -65,20 +204,23 @@ Enemy intent **actively affects combat**. Read it carefully:
 | **AGGRESSIVE** | Normal | Normal | Normal | — |
 | **CHARGING** | 0.5x this turn | Normal | Normal | ⚠️ **DOUBLE damage next turn** unless you Dodge/Brace! |
 | **DEFENSIVE** | 0.5x | 0.5x | +20% | Harder to hurt |
-| **STALKING** | Normal | Normal | -30% | Watching — hard to escape |
+| **STALKING** | Normal | Normal | -30% | Hard to escape |
 | **HUNTING** | 1.3x | Normal | -20% | Deals bonus damage |
 | **ERRATIC** | 0.5x-2x random | Normal | +10% | Unpredictable |
 | **RETREATING** | 0.5x | 1.2x | +30% | Vulnerable, easy to flee |
+
+Intent is rolled deterministically via `getCreatureIntentSeeded` each turn.
 
 ### Turn Flow
 
 ```
 1. Enemy intent shown (AGGRESSIVE, CHARGING, etc.)
-2. Combat modifiers displayed (tier, item bonuses)
+2. Active modifier effects displayed
 3. Player picks action
 4. Damage calculated with ALL modifiers
-5. Stamina regens, new intent chosen
-6. Repeat until someone drops
+5. Voidblade tick: -5 HP if equipped
+6. Stamina regens, new intent chosen
+7. Repeat until someone drops
 ```
 
 ### Actions
@@ -86,52 +228,46 @@ Enemy intent **actively affects combat**. Read it carefully:
 | Move | Cost | Base Effect |
 |------|------|-------------|
 | ⚔️ Strike | **2 ⚡** | Deal 20-29 damage, take 10-17. +50% bonus vs AGGRESSIVE/HUNTING. |
-| 🛡️ Brace | 0 ⚡ | Take 50% reduced damage. Negates CHARGING bonus. Costs 6-12 stamina damage. |
-| 💨 Dodge | 1 ⚡ | 65% avoid all damage. Negates CHARGING. **Counter-attacks CHARGING enemies.** |
-| 🌿 Herbs | 0 ⚡ | Heal 20-29, but take a hit (consumes item). |
+| 🛡️ Brace | 0 ⚡ | Take 50% reduced damage. Negates CHARGING bonus. **Iron Will: negates ALL damage.** |
+| 💨 Dodge | 1 ⚡ | 65% avoid all damage. Negates CHARGING. Counter-attacks CHARGING enemies. |
+| 🌿 Herbs | 0 ⚡ | Heal 20-29, but take a hit (consumes item). Healing reduced by Blood Pact. |
 | 🏃 Flee | 1 ⚡ | Base 50% escape (modified by intent/items). |
 
-> **Strike costs 2 stamina** — you can't spam it. With a pool of 4 and regen of 1/turn, you get roughly 2 strikes before needing to Brace or Dodge to recover. This forces real decisions.
+### Modifier Interactions in Combat
 
-> **Brace is free but costly** — taking a hit always costs you. Brace reduces damage but doesn't avoid it. It's a recovery move, not a winning move.
+| Modifier | Combat Effect |
+|----------|--------------|
+| 🩸 Blood Pact | +25% damage on all Strikes; Herbs and combat healing reduced 30% |
+| 🌑 Blind Descent | Enemy intent not shown on turn 1 |
+| 🛡️ Iron Will | Brace action absorbs full damage (0 taken) |
+| ⚡ Glass Cannon | +50% damage on all Strikes; start HP is 60 |
 
 ### Item Combat Effects
 
-Items provide **passive bonuses** while in inventory:
-
-| Item | Effect |
-|------|--------|
+| Item | Passive Bonus in Combat |
+|------|------------------------|
 | 🔦 Torch | +25% damage dealt |
 | 🗡️ Dagger | +35% damage dealt |
 | 🗡️ Rusty Blade | +20% damage dealt |
 | 🛡️ Shield / Tattered Shield | -25% damage taken |
 | 🧥 Cloak | +15% flee chance, +10% defense |
-| 🌿 Herbs | Consumable heal (not passive) |
+| 💎 Soulstone | +10% damage / defense / flee |
+| 🪝 Bone Hook | +20% flee success |
+| 🪙 Pale Coin | +10% flee success |
+| 🌑 Death's Mantle | Survive one lethal hit (auto-consumed when HP would reach 0) |
+| ⚔️ Voidblade | +50% damage dealt, -5 HP per turn at end of round |
 
 ### Damage Calculation
 
-Final damage = `Base × TierMult × IntentMult × ItemMods × ChargeMult`
+Final damage = `Base × TierMult × IntentMult × ItemMods × ChargeMult × ModifierMult`
 
-Example: Tier 2 enemy (1.5x) with HUNTING intent (1.3x) vs player with Shield (-25%):
-- Base hit: 15 damage
+Example: Tier 2 enemy (1.5x) with HUNTING intent (1.3x) vs player with Shield (-25%) and Glass Cannon (+50% damage dealt):
+- Player base hit: 25 damage
+- After Glass Cannon: 25 × 1.5 = 37.5
+- Enemy base hit: 15 damage
 - After tier: 15 × 1.5 = 22.5
 - After intent: 22.5 × 1.3 = 29.25
 - After shield: 29.25 × 0.75 = **22 damage**
-
-### Intent Counter System (v1.4.0)
-
-Reading enemy intent and responding correctly is **mechanically rewarded**:
-
-| Intent | Correct Counter | Bonus |
-|--------|----------------|-------|
-| **CHARGING** | Dodge | Counter-attack fires immediately after dodge |
-| **CHARGING** | Brace | Negates double-damage spike |
-| **AGGRESSIVE** | Strike | +50% damage on your hit |
-| **HUNTING** | Strike | +50% damage on your hit |
-
-**Wrong reads are punished**:
-- Strike into CHARGING = you deal normal damage, then eat double damage next turn
-- ERRATIC enemies cap their damage variance at 1.3× (still random, not one-shot)
 
 ### The Charge Mindgame
 
@@ -139,44 +275,55 @@ When you see **CHARGING**:
 - Enemy deals reduced damage this turn
 - But **NEXT TURN** they deal **DOUBLE** unless countered
 - **Dodge** = counter-attack fires, charge is wasted
-- **Brace** = charge wasted, you absorb minimal damage
+- **Brace** = charge wasted, minimal damage taken (zero with Iron Will)
 - **Strike** = you hit them, but eat double damage next turn — usually a bad trade
 
-> ⚠️ IT'S CHARGING UP!
-> *DODGE to counter-attack. BRACE to tank it. Don't Strike.*
+### Death Saves & Legendaries
 
-### Example Exchange
+**Death's Mantle**: If your HP would drop to 0 or below, Death's Mantle activates automatically, leaving you at 1 HP. The item is consumed. One save per run per item (you can't carry two).
 
-```
-┌────────────────────────────────────────────────┐
-│  🧟 THE DROWNED                 ❤️ ██████░░░░  │
-│  TIER 1 • Intent: CHARGING                     │
-│                                                │
-│  It draws back, muscles tensing,               │
-│  preparing to lunge...                         │
-│                                                │
-│  ⚠️ CHARGING — will deal DOUBLE next turn!     │
-├────────────────────────────────────────────────┤
-│  ⚔️ +25% DMG    🛡️ -25% TAKEN                  │
-├────────────────────────────────────────────────┤
-│  You: ❤️ 73   ⚡ 2/3   🎒 Torch, Shield, Herbs │
-├────────────────────────────────────────────────┤
-│  [1] ⚔️ Strike — trade blows                   │
-│  [2] 🛡️ Brace — tank the hit (negates charge!) │
-│  [3] 💨 Dodge — avoid damage (negates charge!) │
-│  [4] 🌿 Herbs — heal now, take the hit         │
-│  [5] 🏃 Flee — try to escape                   │
-└────────────────────────────────────────────────┘
-```
+**Voidblade**: The -5 HP/turn cost applies at the end of every combat round. If this would reduce you to 0 HP, normal death rules apply — Death's Mantle can save you from it.
 
-Player picks Brace → Takes minimal damage, charge is wasted. Smart play.
+---
+
+## Economy
+
+### SOL Staking
+
+| Stake | Outcome |
+|-------|---------|
+| 0.01-0.25 SOL | Locked for run duration |
+| **Death** | 95% to Memorial Pool (5% fee), death hash written to Solana Memo Program |
+| **Victory** | Stake returned + 50% bonus from pool |
+
+Browser wallet users (Phantom, Solflare) get fully trustless escrow via the on-chain Anchor program. AgentWallet users use a custodial pool wallet — same mechanics, different trust model.
+
+**Free Play** mode is available with no stake required. Deaths still count toward milestones and appear in the live feed.
+
+### Essence Currency (Phase 2)
+
+A dungeon-specific currency earned through play. Details planned for Phase 2.
+
+---
+
+## What's Coming
+
+**Phase 2** focuses on retention: Ashen Crypts zone with BURN mechanic, daily challenges, bestiary mastery tracking, Essence currency, and run streaks.
+
+**Phase 3** covers polish and expansion: Frozen Gallery and Living Tomb zones, cosmetics shop, difficulty scaling, and live run spectating.
+
+See `ROADMAP.md` for the full plan.
+
+---
 
 ## Death System
 
 ### When You Die
 
 ```
-Health reaches 0
+Health reaches 0 (or Voidblade tick)
+       ↓
+Death's Mantle check (if equipped)
        ↓
 Final narrative plays
        ↓
@@ -187,6 +334,8 @@ Death hash written to Solana Memo Program (on-chain proof)
 Corpse enters world pool
        ↓
 Stake transfers to zone memorial
+       ↓
+Death milestone check — banner shown if threshold crossed
        ↓
 Run ends
 ```
@@ -202,220 +351,42 @@ DIE_FORWARD:v1:<sha256 hash>
 The hash includes: wallet address, zone, room, final message, stake amount, timestamp.
 
 - **Cost:** ~0.000005 SOL (~$0.001) per death
-- **Verification:** Anyone can look up the transaction on Solana Explorer
-- **Immutable:** Permanent proof of your demise on-chain
+- **Verification:** Verifiable on Solana Explorer
+- **Immutable:** Permanent on-chain proof
 
 ### What Persists
 
-- Your corpse location (room + zone)
-- Your inventory at death
-- Your final message
+- Corpse location (room + zone)
+- Inventory at death
+- Final message
 - Time of death
-- Your wallet address (for tips)
-- On-chain transaction signature (verifiable)
+- Wallet address (for tips)
+- On-chain transaction signature
 
 ### Finding Corpses
 
-Future players encounter your remains:
-
 > *You find the remains of @player... they died 2 hours ago.*
-> *They were carrying a Rusty Sword and 0.02 SOL worth of loot.*
 > *Their final words: "...should have dodged..."*
 
-Options:
-- Search the corpse (get items)
-- Pay respects (small tip to dead player)
-- Read their run history
-- Move on
-
-## Progression
-
-### Per-Run
-
-- Health, stamina, items — reset each run
-- Choices accumulate (clear rooms, kill enemies, find loot)
-
-### Meta (Persistent)
-
-| Unlock Type | Description |
-|-------------|-------------|
-| Knowledge | Hints about enemy types from past encounters |
-| Zones | Successful clears unlock harder areas |
-| Stats | Lifetime deaths, kills, SOL earned/lost, players helped |
-
-## Social Layer
-
-### Async Connection
-
-- No real-time multiplayer
-- See evidence of others through corpses, messages, world state
-- "Lonely but not alone" — Dark Souls inspiration
-
-### World State
-
-- Collective deaths shape danger levels
-- High death areas = more dangerous but more rewarding
-- Successful clears temporarily "calm" zones
-- Agent weaves player deaths into narrative
-
-## Screen Layout
-
-```
-┌──────────────────────────────────────────────────┐
-│  ◈ THE SUNKEN CRYPT — Room 7/12                 │
-│  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │
-├──────────────────────────────────────────────────┤
-│                                                  │
-│  You descend into a flooded chamber. Water      │
-│  laps at your knees. In the corner, a corpse    │
-│  slumps against the wall — @deadplayer's        │
-│  remains. They died 2 hours ago.                │
-│                                                  │
-│  Something moves in the water.                  │
-│                                                  │
-├──────────────────────────────────────────────────┤
-│  ❤️ 73/100    🎒 Torch, Rusty Blade, Herbs      │
-│  ◎ 0.05 SOL staked                              │
-├──────────────────────────────────────────────────┤
-│                                                  │
-│  [1] Search the corpse                          │
-│  [2] Ready your blade and wait                  │
-│  [3] Wade toward the exit quickly               │
-│  [4] Use your torch to scan the water           │
-│                                                  │
-└──────────────────────────────────────────────────┘
-        
-        ◈ 12 adventurers died here today
-```
-
-## Boss Fight: The Keeper
-
-### Final Challenge (Room 12)
-
-The Keeper guards the exit. Unlike regular enemies, The Keeper is a true boss:
-
-- **HP**: 180-220 (vs ~50-100 for regular enemies)
-- **Tier**: 3 (2x damage)
-- **Behaviors**: Aggressive, Charging, Defensive
-- **Description**: "Guardian of the exit. None have passed. None will pass. It has waited millennia for you."
-
-### Boss Introduction
-
-Special narrative and sound design:
-- Dramatic intro sound plays on encounter
-- Unique narrative: "The chamber opens into a vast arena. Something ancient waits here. THE KEEPER rises."
-- Boss roar on aggressive attacks
-
-## Juice & Feedback
-
-### Screen Shake
-
-Visual feedback on damage received:
-- **Light shake**: Normal hits (<30 damage)
-- **Heavy shake**: Big hits (≥30 damage)
-- CSS animations for smooth, game-feel feedback
-
-### Haptic Feedback
-
-Mobile vibration patterns via `navigator.vibrate()`:
-- **Light** [30ms]: Enemy defeated
-- **Medium** [50, 30, 50ms]: Taking damage
-- **Heavy** [100, 50, 100, 50, 100ms]: Big hit
-- **Death** [200, 100, 200, 100, 300ms]: Player death
-
-### Low Health Warning
-
-When HP ≤25:
-- Heartbeat sound plays
-- HP bar pulses red
-- Creates tension without being annoying
-
-## Share Cards
-
-### Social Proof System
-
-Canvas-generated images players can share to social media:
-
-**Death Card** (red theme):
-- Skull emoji + "YOU DIED"
-- Player name, room reached
-- "Slain by [Enemy]"
-- Epitaph in a styled box
-- SOL lost, game URL
-
-**Victory Card** (green theme):
-- Trophy emoji + "ESCAPED"
-- Player name
-- Rooms cleared, enemies slain, SOL won
-- Victory message
-- Game URL
-
-### Implementation
-
-- HTML5 Canvas API for image generation
-- Web Share API for native mobile sharing
-- Fallback to download for desktop
-
-## Sound Design
-
-### 40+ ElevenLabs-Generated Sounds
-
-All audio generated via ElevenLabs Sound Effects API with prompts matching the Content Bible tone.
-
-**Combat**: boss-intro, boss-roar, dodge-whoosh, brace-impact, flee-run/fail, enemy-growl, critical-hit, parry-clang, attack-miss
-
-**Player State**: heartbeat-low, stamina-depleted/recover, poison-tick
-
-**Environment**: depth-descend, water-splash, chains-rattle, eerie-whispers, stone-grinding, drip-echo
-
-**Rewards**: tip-chime, loot-discover, victory-fanfare, share-click
-
-**UI**: menu-open/close, confirm-action, error-buzz
+Options: Search (get items), Pay Respects (tip SOL), Move On.
 
 ---
 
-## Recent Gameplay Updates (Feb 2026)
+## Social Layer
 
-### Inspect Modals (Combat + Play)
+Die Forward is **async multiplayer** — you see evidence of others through corpses, messages, and world state. Lonely but not alone.
 
-- **Creature inspect modal** is now available directly from enemy names in:
-  - play screen combat preview
-  - combat screen enemy header
-- Modal layout is streamlined:
-  - `Tier X · HP min-max` on one row
-  - description below
-  - traits chips below description
-  - all content inside one dark container
+- Live death feed via InstantDB real-time queries
+- Corpse discovery woven into explore and combat rooms
+- Collective deaths shape perceived danger levels
+- Death cards shareable to social media (canvas-generated)
 
-### Item Inspect + Consumable Use
+---
 
-- Inventory items are tappable in both **play** and **combat**.
-- Item modal now supports **USE** for consumables:
-  - **Herbs** → restores HP
-  - **Pale Rations** → restores stamina
-  - **Bone Dust** → flavor/intel message
-- Using consumables removes them from inventory.
+## Juice & Feedback
 
-### Flee + Death Edge Case
-
-- Fixed edge case where flee could resolve as success even when flee damage dropped player HP to 0.
-- Death now resolves first when HP reaches 0.
-
-### Victory / Free Run Logic
-
-- Free-mode runs now correctly store `stakeAmount = 0`.
-- Victory screen in free mode does **not** show claim reward section.
-
-### Stats Tracking
-
-- `Items Found` is now a dedicated counter (`itemsFound`) and includes:
-  - inventory loot
-  - supplies pickups
-- This replaces misleading `inventory.length` as a proxy for discovery.
-
-### Audio UX
-
-- `[SND]/[MUTE]` is a true master switch.
-- Toggle width fixed to prevent layout shift between `[SND]` and `[MUTE]`.
-- Spacing between toggle and ⚙ settings icon tightened.
-
+- **Screen shake**: Light (<30 dmg), Heavy (≥30 dmg)
+- **Haptics**: Light (enemy defeated), Medium (taking damage), Heavy (big hit), Death pattern
+- **Low HP warning**: Heartbeat sound + pulsing HP bar when ≤25 HP
+- **Milestone banners**: Shown on death screen when a threshold is crossed
+- **Item swap modal**: Triggered when finding a 5th item

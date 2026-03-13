@@ -1,228 +1,142 @@
-# Roadmap
+# Die Forward — Roadmap
 
-## Phase 0: Hackathon MVP ✅
-*Target: Week 1 — COMPLETE*
-
-The playable proof of concept.
-
-- [x] Game design locked
-- [x] Tech stack chosen
-- [x] Core game loop (3 depths, 12 rooms)
-- [x] Intent-based combat system (7 enemy intents)
-- [x] Death → corpse → discovery flow
-- [x] SOL staking (devnet) with payouts
-- [x] InstantDB integration
-- [x] Live death feed (real-time)
-- [x] Full audio system (28 SFX + ambient)
-- [x] Boss encounter (The Keeper)
-- [x] Mobile Wallet Adapter support
-- [x] Agent API (`/api/agent/*`)
-- [x] Skill file for agent discovery
-- [x] AgentWallet integration
-- [x] On-chain death verification (Memo program)
-- [x] Share cards (death/victory)
-- [x] Screen shake + haptics
-- [x] Deployed on Vercel
-
-**✅ Success**: Players stake, play, die, become content for others. Agents can play too.
+*Updated: 2026-03-13*
 
 ---
 
-## Phase 1: Post-Hackathon Polish
-*Target: Weeks 2-3*
+## ✅ Phase 0 — Hackathon Prototype (Feb 2026)
 
-Improve balance and add admin tooling.
+Built in ~1 week for the Colosseum Agent Hackathon (deadline Feb 12, 2026).
 
-### Admin Dashboard 🆕
-- [x] `/admin` route with wallet auth
-- [x] Live metrics (deaths, players, avg depth)
-- [ ] Game settings panel (loot %, damage scaling)
-- [ ] A/B config testing
-- [ ] Time-series analytics
-
-### Gameplay Tuning
-- [x] Depth-scaled loot chances (50%/65%/80%)
-- [x] Bonus loot pool by depth
-- [ ] Enemy stat rebalancing
-- [ ] Item effect tuning
-- [ ] Stamina economy pass
-
-### UX Polish
-- [x] Prominent feedback messages
-- [x] Landing page at root (game moved to /game)
-- [x] Responsive logo scaling
-- [x] Corpse display shows wallet address when no nickname
-- [ ] Better onboarding for new players
-- [ ] Tutorial hints (first 2 rooms)
-- [ ] Loading skeletons
-- [ ] Error recovery flows
-
-### Mobile Prep
-- [x] Expo project scaffolded (`/mobile`)
-- [x] Mobile screens designed (Home, Stake, Play, Death, Victory)
-- [ ] EAS Build setup for APK/IPA
-- [ ] Solana dApp Store submission
-- [ ] App Store / Play Store submission
-
-### Audio
-- [x] 28 SFX complete
-- [ ] Ambient variety per depth
-- [ ] Volume controls UI
-- [ ] Music tracks (low priority)
-
-**Success**: Admin can tune game without deploys. Players understand mechanics faster.
+- Core game loop: 3 depths, 12 rooms, boss fight (The Keeper)
+- Intent-based combat system with 7 enemy intents and 5 actions
+- Death flow: final message → corpse persisted → on-chain hash
+- SOL staking on devnet with escrow and victory payout (+50% bonus)
+- InstantDB real-time death feed
+- Corpse discovery in gameplay
+- Mobile Wallet Adapter (Phantom/Solflare on Android)
+- Agent API (`/api/agent/*`) with skill.md for agent discovery
+- AgentWallet integration for custodial agent staking
+- On-chain death verification via Solana Memo Program
+- Share cards (death/victory), screen shake, haptic feedback
+- 40+ ElevenLabs-generated SFX + 5 ambient loops
+- Deployed on Vercel
 
 ---
 
-## Phase 2: More Zones 🗺️
-*Target: Weeks 4-6*
+## ✅ Phase 1 — Content Engine + Progression (Mar 2026)
 
-Expand the world.
+Wired up the existing content engine and added progression systems. All items shipped.
 
-### New Zones
-- [ ] **The Flooded Cathedral** — water mechanics, breath management
-- [ ] **Ashen Crypts** — fire hazards, burn DoT
-- [ ] **The Void Beyond** — reality warping, unpredictable enemies
-- [ ] **The Living Tomb** — organic horror, infection mechanics
+### 1.1 Zone-Aware Content Loader ✅
+- `zone-loader.ts` now powers dungeon generation
+- `generateDungeon(zoneId, rng)` replaces the hardcoded room generator
+- 5 zones defined: Sunken Crypt, Ashen Crypts, Frozen Gallery, Living Tomb, Void Beyond
+- Zone unlock gates: Ashen/Frozen/Living unlock at room 8+; Void Beyond after 3 zone clears
+- `clearedZones` tracked on player record
 
-### Zone Mechanics
-- [ ] Zone-specific enemy types
-- [ ] Environmental hazards
-- [ ] Zone-locked items
-- [ ] Zone selection at start (unlock via depth reached)
+### 1.2 Explore Room Options ✅
+- Every explore room shows 2-3 choice options (replaces "Press forward")
+- Option types: primary (safe), secondary [RISK] (55% item / 30% nothing / 15% damage), tertiary [1⚡] (intel peek)
+- Options sourced from zone JSON data; fallback "Observe carefully" tertiary always available
 
-### Progression
-- [ ] "Knowledge" persists between runs (enemy hints)
-- [ ] Unlockable starting items
-- [ ] Achievement system
-- [ ] Player profiles with stats
+### 1.3 Zone Bestiary Integration ✅
+- 17 new creatures + 4 zone-specific bosses now active
+- Zone-specific creature pools, depths, and boss encounters wired to dungeon generator
+- Tier 1/2/3 enemy assignments per zone
 
-**Success**: Players have variety. "I want to try the fire zone today."
+### 1.4 Death Milestones ✅
+- 6 thresholds: 10 / 25 / 50 / 100 / 250 / 500 deaths
+- Unlocks: titles, death card border (bone frame), Soulstone in loot pool, start-with-item perk, 110 HP start
+- Death screen shows milestone banner when a threshold is crossed
 
----
+### 1.5 Run Modifiers ✅
+- 1 random modifier per run, rolled deterministically from run seed
+- 6 modifiers: 🩸 Blood Pact, 🌑 Blind Descent, 💀 Death's Echo, 🧊 Numbing Cold, 🛡️ Iron Will, ⚡ Glass Cannon
+- Modifier badge visible on play screen
 
-## Phase 3: On-Chain Program ✅
-*Target: Weeks 7-10 — COMPLETE (Hackathon MVP)*
+### 1.6 Inventory Limit + Item Rarity ✅
+- 4-slot inventory cap; finding a 5th item triggers a swap modal
+- Item rarities: Common 55% / Uncommon 30% / Rare 12% / Legendary 3%
+- 2 new Legendaries: Death's Mantle 🌑 (death save, consumed) and Voidblade ⚔️ (+50% dmg, -5 HP/turn)
+- `rollRandomItem(rng)` weighted picker used for all loot drops
 
-Trustless Solana integration for browser wallet users.
-
-### Anchor Program
-- [x] Escrow PDA for stakes
-- [x] Pool PDA (game_pool)
-- [x] Trustless claim mechanics
-- [x] Session PDA per player
-- [x] Death verification (hash on-chain)
-- [ ] On-chain tip system (post-hackathon)
-- [ ] Admin/emergency functions
-- [ ] Upgrade authority management
-
-**Program ID:** `3KLgtdRvfJuLK1t9mKCe2soJbx4LgZfP6LQWVW9TQ7yN`
-**Game Pool:** `E4LRRyeFXDbFg1WaS1pjKm5DAJzJDWbAs1v5qvqe5xYM`
-
-### Security
-- [ ] Formal audit (Sec3/OtterSec)
-- [x] Rate limiting (basic)
-- [ ] Sybil resistance
-- [ ] Bot detection
-
-### Known Limitation
-> ⚠️ **AgentWallet staking is custodial.** Agents can't sign escrow transactions, so their stakes go to a pool wallet. Browser wallet users get full trustless escrow. See `docs/STAKING_FLOWS.md` for details.
-
-**Success**: Browser wallet users have fully trustless stake/claim. Agents have functional staking with custodial tradeoff.
+### Also Shipped ✅
+- All items now have active combat effects (Soulstone, Eye of the Hollow, Bone Hook, Pale Coin, Void Salt wired)
+- Healing centralized through `applyHealing(amount)` — Blood Pact applies consistently
+- Combat determinism: creature HP and intent use seeded RNG (`getCreatureHealthSeeded` / `getCreatureIntentSeeded`)
+- Revy review bug fixes
 
 ---
 
-## Phase 4: Token Economy 💰
-*Target: Weeks 11-14*
+## 🔄 Phase 2 — Retention Systems (Target: Weeks 5-8)
 
-Optional $DIE token integration.
+### 2.1 Ashen Crypts
+First new active zone. BURN mechanic: enemies apply a damage-over-time status. Zone-specific creatures and narrative.
 
-### Token Design
-- [ ] $DIE token (SPL)
-- [ ] Earned through notable deaths
-- [ ] Stake $DIE for cosmetics/perks
-- [ ] Burn for special runs
+### 2.2 Daily Challenges
+Seeded daily runs with a fixed modifier and zone. Shared leaderboard for the day's challenge. Replayable but only one daily score.
 
-### Seasons
-- [ ] Time-limited seasons (2-4 weeks)
-- [ ] Season leaderboards with $DIE prizes
-- [ ] Season-end pool distribution
-- [ ] World "reset" narrative
+### 2.3 Bestiary Mastery
+Track encounters per creature type. Unlock flavor text, stat hints, and counter tips after enough encounters. "Knowledge persists" from ROADMAP v1.
 
-### Economy Balance
-- [ ] Dynamic stake suggestions
-- [ ] Anti-whale measures
-- [ ] Sustainable emission curve
+### 2.4 Essence Currency
+Dungeon-specific currency earned through play. Spendable on cosmetics or run perks. Distinct from SOL staking.
 
-**Success**: Token adds engagement without being required.
+### 2.5 Run Streaks
+Track consecutive successful runs (or depth milestones). Streak bonuses and streak-specific leaderboard.
 
 ---
 
-## Phase 5: Social & Community
-*Target: Weeks 15+*
+## Phase 3 — Polish + Expansion (Target: Weeks 9-12)
 
-### Guilds
-- [ ] Create/join guilds
-- [ ] Guild leaderboards
-- [ ] Shared guild pools
-- [ ] Guild challenges
+### 3.1 Frozen Gallery + Living Tomb
+Two of the unlockable fragment zones get full authored room content and zone-specific mechanics (cold/ice for Frozen Gallery, organic horror/infection for Living Tomb).
 
-### Spectating
-- [ ] Watch live runs
-- [ ] Spectator reactions
-- [ ] Betting on runners
+### 3.2 Cosmetics Shop
+Spend Essence on death card borders, run titles, and UI themes. No pay-to-win — cosmetics only.
 
-### Content Creation
-- [ ] Run replays
-- [ ] Auto-generated highlight clips
-- [ ] Death compilations
-- [ ] Social sharing improvements
+### 3.3 Difficulty Scaling
+Optional harder modes. Increased enemy scaling or reduced player resources with higher potential rewards.
 
-**Success**: Die Forward is a community, not just a game.
+### 3.4 Live Run Spectating
+Watch an active run in progress. Spectators see room-by-room updates via InstantDB real-time.
+
+### 3.5 Void Beyond
+Void Beyond zone gets full authored content and its reality-warping mechanics. Requires 3 zone clears to unlock.
+
+---
+
+## Known Gaps / Backlog
+
+- **Void Salt not wired in combat**: `voidSaltBonus` flag is set in `getItemEffects` but the +40% damage multiplier is not applied in `calculateDamage` — also needs `type: 'aquatic'` annotations on relevant BESTIARY creatures
+- **activeTitle / activeBorder not rendered**: Stored on player record but not displayed on share cards, death card borders, or play screen
+- **Sunken Crypt explore options**: Only 2 authored options per variation — tertiary always shows generic "Observe carefully" fallback
+- **Zone-aware depth names not surfaced**: Play screen always shows Sunken Crypt depth names regardless of the active zone
+- **Modifier badge missing from combat screen**: Badge appears on play screen only; combat screen doesn't show it
+- **AgentWallet staking is custodial**: Agents can't sign escrow transactions; stakes go to a pool wallet. Browser wallet users get full trustless escrow. See `docs/STAKING_FLOWS.md`.
+- **Pool funding requirement**: Victory bonuses paid from pool. Pool needs seeding or sufficient deaths to stay solvent (~67% death rate is the break-even point).
 
 ---
 
 ## Future Ideas (Backlog)
 
-*Not committed, just possibilities.*
-
 | Idea | Notes |
 |------|-------|
+| **$DIE Token** | Earn for notable deaths, spend on cosmetics/perks |
 | **NFT Corpses** | Mint notable deaths as collectibles |
-| **Custom Death Messages** | Pay extra for longer/formatted messages |
-| **Haunting** | Dead players briefly influence living runs |
-| **PvP Zones** | Direct player combat areas |
-| **Crafting** | Combine items for upgrades |
-| **Companions** | AI helpers that die with you |
-| **Mobile App** | Native iOS/Android |
-| **VR Mode** | Full immersion horror |
-| **Cross-chain** | EVM bridge for stakes |
-| **AI Dungeon Master** | Claude generates unique encounters |
+| **Guilds** | Team leaderboards, shared pools, guild challenges |
+| **Run Replays** | Shareable run recordings |
+| **PvP Zones** | Invade other players' runs |
+| **AI Dungeon Master** | Claude generates unique encounters per run |
+| **On-Chain Tip System** | Trustless tipping for corpse finds |
+| **Formal Audit** | Sec3/OtterSec review of escrow program |
 
 ---
 
-## Metrics to Track
+## On-Chain Programs
 
-| Metric | Current | Target |
-|--------|---------|--------|
-| Daily Active Players | TBD | Growing WoW |
-| Average Depth Reached | ~4 | 6-7 |
-| Runs per Player/Day | TBD | > 2 |
-| Return Rate (D1) | TBD | > 40% |
-| Return Rate (D7) | TBD | > 20% |
-| Stake Conversion | TBD | > 30% |
-| Clear Rate (Room 12) | ~5% | 10-15% |
-| Corpse Discovery Rate | TBD | > 60% |
-
----
-
-## Non-Goals (For Now)
-
-Things we're explicitly **not** doing yet:
-
-- ❌ Real-time multiplayer (async is the point)
-- ❌ Complex graphics/art (terminal aesthetic is intentional)
-- 🔄 Native apps (Expo in progress, web-first)
-- ❌ Multiple tokens (SOL only for now)
-- ❌ DAO governance (keep it simple)
-- ❌ VCs/fundraising (bootstrap first)
+| Program | Address | Purpose |
+|---------|---------|---------|
+| **die_forward** (Escrow) | `34NSi8ShkixLt8Eg8XahXaRnaNuiFV63xdtC3ZfdTAt6` | Stake management |
+| **run_record** (MagicBlock) | `9rGjguBZAnittA4Cbm7YNP5qomatY3c4MTV7LSqNomzS` | On-chain run records |

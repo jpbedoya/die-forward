@@ -91,10 +91,11 @@ When you die:
 
 1. **Connect** your Solana wallet (Phantom, Solflare, or Mobile Wallet Adapter)
 2. **Stake** SOL to enter the dungeon (0.01 - 0.25 SOL)
-3. **Navigate** procedurally generated rooms with narrative choices
-4. **Fight** enemies using an intent-reading combat system
-5. **Die** → Leave final words, become content for others
-6. **...or Win** → Claim your stake + 50% bonus from the Memorial Pool
+3. **Roll your modifier** — each run gets one: Blood Pact, Glass Cannon, Iron Will, and more
+4. **Navigate** procedurally generated rooms; explore rooms give you real choices (advance safely, risk it for loot, or spend 1⚡ for an intel peek)
+5. **Fight** enemies using an intent-reading combat system; manage a 4-slot inventory with Common to Legendary items
+6. **Die** → Leave final words, become content for others; cross a death milestone to unlock titles and perks
+7. **...or Win** → Claim your stake + 50% bonus from the Memorial Pool
 
 ### Game Features
 
@@ -102,12 +103,18 @@ When you die:
 |---------|-------------|
 | **🏔️ Three Depths** | The dungeon gets harder as you descend through Shallow Graves → Bone Warren → The Abyss |
 | **⚔️ Intent-Based Combat** | Read enemy telegraphs, exploit weaknesses — no HP trading ping-pong |
+| **🗺️ Zone System** | 5 zones with unique creatures and content — Sunken Crypt, Ashen Crypts, Frozen Gallery, Living Tomb, Void Beyond |
+| **🎲 Explore Choices** | Every explore room presents 2-3 options: safe advance, [RISK] loot gamble, or [1⚡] intel peek |
+| **🔮 Run Modifiers** | Each run rolls a unique modifier (Blood Pact, Glass Cannon, Iron Will, and more) |
+| **💀 Death Milestones** | 6 death thresholds unlock titles, cosmetics, items, and HP boosts |
+| **🎒 Inventory Limit** | 4-item cap with rarity tiers (Common → Legendary) and a swap modal when full |
+| **🌑 Legendary Items** | Death's Mantle (death save) and Voidblade (+50% dmg, -5 HP/turn) |
 | **👁️ Boss Fight** | The Keeper awaits at Room 12 |
 | **💀 Persistent Deaths** | Your corpse, final words, and loot persist for other players to discover |
 | **🎴 Death Cards** | Share your death as a stylized card on social media |
 | **💸 Corpse Tipping** | Tip SOL to fallen players whose corpses you find |
 | **🏆 Leaderboards** | Compete on depth reached, total deaths, and earnings |
-| **🎮 Free Play** | Try empty-handed without staking — deaths still count |
+| **🎮 Free Play** | Try empty-handed without staking — deaths still count toward milestones |
 | **⛓️ On-Chain Records** | Staked runs recorded via MagicBlock ephemeral rollups |
 | **🎵 Decentralized Soundtrack** | Music streamed from Audius — your death track goes on the leaderboard |
 | **🤖 Agent API** | AI agents can play via REST API — their deaths appear in the feed |
@@ -218,7 +225,7 @@ Player profiles and social features powered by [Tapestry](https://usetapestry.de
 
 ## ⚔️ Combat System
 
-No HP trading ping-pong. Every choice is a **risk/reward tradeoff**. Read enemy intent, exploit weaknesses, gear up.
+No HP trading ping-pong. Every choice is a **risk/reward tradeoff**. Read enemy intent, exploit weaknesses, gear up. Each run's modifier changes the math.
 
 ### Intent System
 Enemy intent **matters**:
@@ -231,10 +238,13 @@ Enemy intent **matters**:
 | HUNTING | Bonus damage |
 
 ### Actions
-- **⚔️ Strike** — Trade blows
-- **🛡️ Brace** — Tank hit, negates charge
-- **💨 Dodge** — Avoid damage, negates charge
-- **🏃 Flee** — Try to escape
+- **⚔️ Strike** — Trade blows (+50% vs AGGRESSIVE/HUNTING)
+- **🛡️ Brace** — Tank hit, negates charge (Iron Will modifier: zero damage)
+- **💨 Dodge** — Avoid damage, counter-attack on CHARGING
+- **🏃 Flee** — Try to escape (Bone Hook / Pale Coin boost odds)
+
+### Run Modifiers
+Each run rolls one modifier from six: 🩸 Blood Pact (+25% dmg, -30% healing), 🌑 Blind Descent (intent hidden turn 1), 💀 Death's Echo (+30% corpse chance), 🧊 Numbing Cold (+1 stamina regen/turn), 🛡️ Iron Will (Brace negates all damage), ⚡ Glass Cannon (60 HP start, +50% dmg).
 
 ---
 
@@ -311,36 +321,34 @@ Die Forward is a **mobile-first** experience:
 
 ### Completed ✅
 
-**Core Game**
+**Phase 0 — Hackathon Prototype (Feb 2026)**
 - Roguelite dungeon crawler (3 depths, 12 rooms, boss fight)
 - Intent-based combat system with 7 enemy intents
-- Procedural room generation with narrative content
 - Death persistence — corpses, final words, memorials
-
-**On-Chain Infrastructure**
-- SOL staking with on-chain escrow program (Anchor)
-- MagicBlock ephemeral rollups for real-time game logic
-- Run records written on-chain with automatic settlement
-- Victory payouts (stake + 50% bonus from pool)
-
-**Integrations**
-- Audius decentralized soundtrack with death leaderboard
-- Tapestry social profiles and achievement tracking
+- SOL staking with on-chain escrow (Anchor), MagicBlock ephemeral rollups
+- Audius decentralized soundtrack, Tapestry social profiles
 - Mobile Wallet Adapter for Phantom/Solflare
+- Agent API for AI players; Android APK via GitHub releases
 
-**Platform**
-- Mobile-first Expo app (iOS, Android, Web)
-- Agent API for AI players
-- Android APK builds via GitHub releases
+**Phase 1 — Content Engine + Progression (Mar 2026)**
+- Zone system: 5 zones with unique creatures and bosses (zone-loader.ts powers dungeon generation)
+- Explore room choices: primary / [RISK] / [1⚡] intel peek options
+- Run modifiers: 6 unique per-run modifiers (Blood Pact, Glass Cannon, Iron Will, and more)
+- Death milestones: 6 thresholds unlocking titles, cosmetics, items, and HP boosts
+- Inventory limit: 4-slot cap with item swap modal
+- Item rarity: Common / Uncommon / Rare / Legendary tiers with weighted drops
+- Legendary items: Death's Mantle (death save) and Voidblade (+50% dmg, -5 HP/turn)
+- Combat determinism: seeded RNG for creature HP and intent
+- Healing centralized through applyHealing (Blood Pact applies consistently)
 
 ### Coming Soon 🚧
 
 | Phase | Features |
 |-------|----------|
+| **Phase 2 (Weeks 5-8)** | Ashen Crypts zone, daily challenges, bestiary mastery, Essence currency, run streaks |
+| **Phase 3 (Weeks 9-12)** | Frozen Gallery + Living Tomb, cosmetics shop, difficulty scaling, live spectating |
 | **Mainnet Launch** | Deploy to Solana mainnet, real stakes |
 | **App Distribution** | Solana dApp Store, Google Play, iOS App Store |
-| **Expanded Content** | New zones, enemies, items, boss variants |
-| **Business Model** | Premium runs, cosmetics, seasonal content |
 
 ### Future 🔮
 

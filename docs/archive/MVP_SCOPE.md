@@ -1,3 +1,4 @@
+<!-- Archived 2026-03-13 — hackathon-era doc, superseded by current roadmap -->
 # MVP Scope
 
 ## Hackathon Constraints
