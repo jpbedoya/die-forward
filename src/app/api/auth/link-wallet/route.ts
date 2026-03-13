@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { init, tx, id } from '@instantdb/admin';
+import { init, tx } from '@instantdb/admin';
 import * as nacl from 'tweetnacl';
 import bs58 from 'bs58';
 
@@ -70,6 +70,17 @@ function verifySignature(
  * Link a wallet to an existing guest account.
  * If wallet already has an account, merge the accounts.
  */
+function isFreshNonceMessage(message: string, maxAgeMs = 5 * 60 * 1000): boolean {
+  const nonceMatch = message.match(/Nonce: (\d+)-/);
+  if (!nonceMatch) return false;
+
+  const timestamp = parseInt(nonceMatch[1], 10);
+  if (!Number.isFinite(timestamp)) return false;
+
+  const now = Date.now();
+  return Math.abs(now - timestamp) <= maxAgeMs;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { guestAuthId, walletAddress, signature, message } = await req.json();
@@ -89,7 +100,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Verify wallet signature
+    // Verify wallet signature challenge format + nonce freshness
     if (!message.includes('Link wallet to Die Forward')) {
       return NextResponse.json(
         { error: 'Invalid message format' },
@@ -97,15 +108,26 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const skipVerification = signature === 'SKIP_VERIFICATION';
-    if (!skipVerification) {
-      const isValid = verifySignature(walletAddress, signature, message);
-      if (!isValid) {
-        return NextResponse.json(
-          { error: 'Invalid signature' },
-          { status: 401, headers: corsHeaders }
-        );
-      }
+    if (!isFreshNonceMessage(message)) {
+      return NextResponse.json(
+        { error: 'Missing or expired nonce, please try again' },
+        { status: 401, headers: corsHeaders }
+      );
+    }
+
+    if (signature === 'SKIP_VERIFICATION') {
+      return NextResponse.json(
+        { error: 'Unsigned wallet linking is not allowed' },
+        { status: 401, headers: corsHeaders }
+      );
+    }
+
+    const isValid = verifySignature(walletAddress, signature, message);
+    if (!isValid) {
+      return NextResponse.json(
+        { error: 'Invalid signature' },
+        { status: 401, headers: corsHeaders }
+      );
     }
 
     // Find the guest player record

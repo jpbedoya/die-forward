@@ -55,6 +55,17 @@ function verifySignature(
  * Authenticate a user by verifying their wallet signature.
  * Creates InstantDB token with wallet address as user ID.
  */
+function isFreshNonceMessage(message: string, maxAgeMs = 5 * 60 * 1000): boolean {
+  const nonceMatch = message.match(/Nonce: (\d+)-/);
+  if (!nonceMatch) return false;
+
+  const timestamp = parseInt(nonceMatch[1], 10);
+  if (!Number.isFinite(timestamp)) return false;
+
+  const now = Date.now();
+  return Math.abs(now - timestamp) <= maxAgeMs;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { walletAddress, signature, message } = await req.json();
@@ -66,7 +77,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Validate message format (should include nonce for replay protection)
+    // Validate message format (must include expected challenge text + fresh nonce)
     if (!message.includes('Sign in to Die Forward')) {
       return NextResponse.json(
         { error: 'Invalid message format' },
@@ -74,32 +85,28 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Extract and validate nonce timestamp (within 5 minutes)
-    const nonceMatch = message.match(/Nonce: (\d+)-/);
-    if (nonceMatch) {
-      const timestamp = parseInt(nonceMatch[1], 10);
-      const now = Date.now();
-      const fiveMinutes = 5 * 60 * 1000;
-      if (Math.abs(now - timestamp) > fiveMinutes) {
-        return NextResponse.json(
-          { error: 'Signature expired, please try again' },
-          { status: 401, headers: corsHeaders }
-        );
-      }
+    if (!isFreshNonceMessage(message)) {
+      return NextResponse.json(
+        { error: 'Missing or expired nonce, please try again' },
+        { status: 401, headers: corsHeaders }
+      );
     }
 
-    // Verify the signature (or skip for development)
-    const skipVerification = signature === 'SKIP_VERIFICATION';
-    if (!skipVerification) {
-      const isValid = verifySignature(walletAddress, signature, message);
-      if (!isValid) {
-        return NextResponse.json(
-          { error: 'Invalid signature' },
-          { status: 401, headers: corsHeaders }
-        );
-      }
+    // Never allow signature bypass in any environment.
+    if (signature === 'SKIP_VERIFICATION') {
+      return NextResponse.json(
+        { error: 'Unsigned authentication is not allowed' },
+        { status: 401, headers: corsHeaders }
+      );
     }
-    // TODO: In production, remove SKIP_VERIFICATION option
+
+    const isValid = verifySignature(walletAddress, signature, message);
+    if (!isValid) {
+      return NextResponse.json(
+        { error: 'Invalid signature' },
+        { status: 401, headers: corsHeaders }
+      );
+    }
 
     // Create InstantDB auth token (email-based custom auth)
     // Instant `id` must be UUID; use deterministic wallet email instead.

@@ -39,9 +39,9 @@ module.exports = function withReleaseSigning(config) {
     const releaseConfig = `
         release {
             storeFile file("../keystores/release.keystore")
-            storePassword "dieforward2026"
-            keyAlias "die-forward"
-            keyPassword "dieforward2026"
+            storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD") ?: (findProperty("ANDROID_KEYSTORE_PASSWORD") ?: "")
+            keyAlias System.getenv("ANDROID_KEY_ALIAS") ?: (findProperty("ANDROID_KEY_ALIAS") ?: "die-forward")
+            keyPassword System.getenv("ANDROID_KEY_PASSWORD") ?: (findProperty("ANDROID_KEY_PASSWORD") ?: "")
         }`;
 
     // Add after the debug signingConfig closing brace

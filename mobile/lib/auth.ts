@@ -26,62 +26,39 @@ export interface AuthState {
  * Sign in with a connected wallet
  * 
  * @param walletAddress - The wallet's public address
- * @param signMessage - Optional function to sign a message (for signature verification)
+ * @param signMessage - Function to sign a challenge message
  */
 export async function signInWithWallet(
   walletAddress: string,
-  signMessage?: (message: Uint8Array) => Promise<Uint8Array>
+  signMessage: (message: Uint8Array) => Promise<Uint8Array>
 ): Promise<AuthState> {
   let token: string;
   let isNewUser: boolean;
 
-  if (signMessage) {
-    // Full signature verification flow
-    const nonce = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-    const message = `Sign in to Die Forward\nNonce: ${nonce}`;
-    const messageBytes = new TextEncoder().encode(message);
+  // Full signature verification flow (required)
+  const nonce = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  const message = `Sign in to Die Forward\nNonce: ${nonce}`;
+  const messageBytes = new TextEncoder().encode(message);
 
-    // Request signature from wallet
-    const signatureBytes = await signMessage(messageBytes);
-    const signature = bs58.encode(signatureBytes);
+  // Request signature from wallet
+  const signatureBytes = await signMessage(messageBytes);
+  const signature = bs58.encode(signatureBytes);
 
-    // Send to backend for verification
-    const response = await fetch(`${API_BASE}/api/auth/wallet`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ walletAddress, signature, message }),
-    });
+  // Send to backend for verification
+  const response = await fetch(`${API_BASE}/api/auth/wallet`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ walletAddress, signature, message }),
+  });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Wallet authentication failed');
-    }
-
-    const data = await response.json();
-    token = data.token;
-    isNewUser = data.isNewUser;
-  } else {
-    // Simple auth without signature (less secure, but works without signMessage support)
-    // Backend creates token directly using wallet address as ID
-    const response = await fetch(`${API_BASE}/api/auth/wallet`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        walletAddress, 
-        signature: 'SKIP_VERIFICATION',
-        message: `Sign in to Die Forward\nNonce: ${Date.now()}-skip` 
-      }),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Wallet authentication failed');
-    }
-
-    const data = await response.json();
-    token = data.token;
-    isNewUser = data.isNewUser;
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Wallet authentication failed');
   }
+
+  const data = await response.json();
+  token = data.token;
+  isNewUser = data.isNewUser;
 
   // Sign in to InstantDB
   await db.auth.signInWithToken(token);
@@ -144,28 +121,19 @@ export async function signInAsGuest(): Promise<AuthState> {
  */
 export async function linkWalletToGuest(
   walletAddress: string,
-  signMessage?: (message: Uint8Array) => Promise<Uint8Array>
+  signMessage: (message: Uint8Array) => Promise<Uint8Array>
 ): Promise<{ merged: boolean }> {
   const guestId = await AsyncStorage.getItem(GUEST_ID_KEY);
   if (!guestId) {
     throw new Error('No guest account to link');
   }
 
-  let signature: string;
-  let message: string;
-
-  if (signMessage) {
-    // Full signature verification flow
-    const nonce = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-    message = `Link wallet to Die Forward\nNonce: ${nonce}`;
-    const messageBytes = new TextEncoder().encode(message);
-    const signatureBytes = await signMessage(messageBytes);
-    signature = bs58.encode(signatureBytes);
-  } else {
-    // SKIP_VERIFICATION fallback (until signMessage is implemented)
-    message = `Link wallet to Die Forward\nNonce: ${Date.now()}-skip`;
-    signature = 'SKIP_VERIFICATION';
-  }
+  // Full signature verification flow (required)
+  const nonce = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  const message = `Link wallet to Die Forward\nNonce: ${nonce}`;
+  const messageBytes = new TextEncoder().encode(message);
+  const signatureBytes = await signMessage(messageBytes);
+  const signature = bs58.encode(signatureBytes);
 
   // Send to backend
   const response = await fetch(`${API_BASE}/api/auth/link-wallet`, {
