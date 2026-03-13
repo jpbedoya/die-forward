@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { View, Text, Pressable, ScrollView, Alert, Platform, ViewStyle, Image, Modal } from 'react-native';
 import { getCreatureAsset, getCreatureAssetByName } from '../lib/creatureAssets';
 import { Icons } from '../lib/iconAssets';
@@ -9,13 +9,14 @@ import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
 import { useAudio } from '../lib/audio';
-import { useCorpsesForRoom, discoverCorpse, recordTip, useGameSettings, Corpse } from '../lib/instant';
+import { useCorpsesForRoom, discoverCorpse, recordTip, useGameSettings, useCurrentPlayer, Corpse } from '../lib/instant';
 import { ProgressBar } from '../components/ProgressBar';
 import { GameMenu, MenuButton } from '../components/GameMenu';
 import { MiniPlayer } from '../components/MiniPlayer';
 import { AudioToggle } from '../components/AudioToggle';
 import { CRTOverlay } from '../components/CRTOverlay';
 import { getDepthForRoom, DungeonRoom, getItemDetails, getCreatureInfo, CreatureInfo, rollRandomItem } from '../lib/content';
+import { getMilestonePerks } from '../lib/milestones';
 import { useUnifiedWallet, type Address } from '../lib/wallet/unified';
 import { ItemModal, CreatureModal } from '../components/CryptModal';
 
@@ -34,6 +35,9 @@ export default function PlayScreen() {
   const wallet = useUnifiedWallet();
   const { playSFX, playAmbient } = useAudio();
   const { settings } = useGameSettings();
+  const { player } = useCurrentPlayer();
+  // Fix 4: ref to cancel pending auto-advance when player taps Continue
+  const advanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
   const [showCorpse, setShowCorpse] = useState(false);
@@ -130,7 +134,10 @@ export default function PlayScreen() {
           if (roll < 0.55) {
             // Risk paid off — find a random item
             const rngFn = game.rng ? () => game.rng!.random() : () => Math.random();
-            const itemName = rollRandomItem(rngFn);
+            // Fix 8: exclude Soulstone until 50-death milestone
+            const perks = getMilestonePerks(player?.totalDeaths ?? 0);
+            const excludes = perks.soulstoneUnlocked ? [] : ['Soulstone'];
+            const itemName = rollRandomItem(rngFn, undefined, excludes);
             const itemDetails = getItemDetails(itemName);
             const newItem = {
               id: Date.now().toString(),
@@ -142,29 +149,42 @@ export default function PlayScreen() {
             setLastFoundItem({ name: newItem.name, emoji: newItem.emoji });
             setMessage(`Found: ${newItem.emoji} ${newItem.name}`);
           } else if (roll < 0.85) {
-            // Nothing — just advance silently
+            // Fix 5: "nothing" branch — show a contextual message instead of silently advancing
+            const nothingMessages = [
+              'You find nothing of interest.',
+              'The room offers no reward. You press on.',
+              'Dust and silence. Nothing here.',
+              'Whatever was here is long gone.',
+            ];
+            const msgIdx = game.rng
+              ? Math.floor(game.rng.random() * nothingMessages.length)
+              : Math.floor(Math.random() * nothingMessages.length);
+            setMessage(nothingMessages[msgIdx]);
           } else {
             // Danger — take 8–15 damage
             const dmg = game.rng
               ? game.rng.range(8, 15)
               : 8 + Math.floor(Math.random() * 8);
             const newHp = game.health - dmg;
+            // BUG 1 FIX: set health BEFORE calling checkDeathSave so the guard
+            // (prev.health > 0) sees the correct (fatal) value.
+            game.setHealth(newHp);
             if (newHp <= 0) {
               const save = game.checkDeathSave();
               if (save.saved) {
                 setMessage(save.message || "Death's Mantle shatters — you survive with 1 HP!");
               } else {
-                game.setHealth(0);
                 playSFX('player-death');
                 router.replace({ pathname: '/death', params: { killedBy: 'The darkness' } });
                 return;
               }
             } else {
-              game.setHealth(newHp);
               setMessage(`You take ${dmg} damage!`);
             }
           }
-          setTimeout(async () => {
+          // Fix 4: store timeout ref so Continue can cancel it
+          advanceTimerRef.current = setTimeout(async () => {
+            advanceTimerRef.current = null;
             await game.advance();
             setMessage(null);
           }, 1500);
@@ -201,7 +221,9 @@ export default function PlayScreen() {
             }
           }
           setMessage(`[Intel] ${intelMsg}`);
-          setTimeout(async () => {
+          // Fix 4: store timeout ref so Continue can cancel it
+          advanceTimerRef.current = setTimeout(async () => {
+            advanceTimerRef.current = null;
             await game.advance();
             setMessage(null);
           }, 2000);
@@ -224,18 +246,32 @@ export default function PlayScreen() {
           const fleeDamage = game.rng ? game.rng.range(5, 19) : Math.floor(Math.random() * 15) + 5;
           const newHealth = game.health - fleeDamage;
           
+          // BUG 1 FIX: set health BEFORE checkDeathSave so it sees the fatal value
+          game.setHealth(newHealth);
+
           if (newHealth <= 0) {
-            game.setHealth(0);
+            const save = game.checkDeathSave();
+            if (save.saved) {
+              setMessage(save.message || "Death's Mantle shatters — you survive with 1 HP!");
+              playSFX('flee-fail');
+              advanceTimerRef.current = setTimeout(async () => {
+                advanceTimerRef.current = null;
+                await game.advance();
+                setMessage(null);
+              }, 1500);
+              break;
+            }
             playSFX('player-death');
             router.replace({ pathname: '/death', params: { killedBy: room?.content?.enemy } });
             return;
           }
           
-          game.setHealth(newHealth);
           setMessage(`Escaped! -${fleeDamage} HP`);
           playSFX('flee-fail');
           
-          setTimeout(async () => {
+          // Fix 4: store timeout ref so Continue can cancel it
+          advanceTimerRef.current = setTimeout(async () => {
+            advanceTimerRef.current = null;
             await game.advance();
             setMessage(null);
           }, 1500);
@@ -245,12 +281,13 @@ export default function PlayScreen() {
         case 'loot': {
           playSFX('corpse-discover');
           
-          // Calculate loot chance based on depth
-          const lootChance = roomNumber >= 9 
-            ? settings.lootChanceDepth9 
-            : roomNumber >= 5 
-              ? settings.lootChanceDepth5 
+          // Fix 6: apply Death's Echo modifier to corpse chance
+          const rawLootChance = roomNumber >= 9
+            ? settings.lootChanceDepth9
+            : roomNumber >= 5
+              ? settings.lootChanceDepth5
               : settings.lootChanceBase;
+          const lootChance = game.getModifiedCorpseChance(rawLootChance);
           
           const foundLoot = game.rng ? game.rng.chance(lootChance) : Math.random() < lootChance;
           
@@ -278,7 +315,10 @@ export default function PlayScreen() {
           } else {
             if (foundLoot) {
               const rngFn = game.rng ? () => game.rng!.random() : () => Math.random();
-              const itemName = rollRandomItem(rngFn);
+              // Fix 8: exclude Soulstone until 50-death milestone
+              const lootPerks = getMilestonePerks(player?.totalDeaths ?? 0);
+              const lootExcludes = lootPerks.soulstoneUnlocked ? [] : ['Soulstone'];
+              const itemName = rollRandomItem(rngFn, undefined, lootExcludes);
               const itemDetails = getItemDetails(itemName);
               const loot = { name: itemName, emoji: itemDetails?.emoji || '❓' };
               
@@ -327,6 +367,11 @@ export default function PlayScreen() {
           break;
 
         case 'continue':
+          // Fix 4: cancel pending auto-advance before manually advancing
+          if (advanceTimerRef.current) {
+            clearTimeout(advanceTimerRef.current);
+            advanceTimerRef.current = null;
+          }
           await game.advance();
           setMessage(null);
           break;
@@ -347,7 +392,12 @@ export default function PlayScreen() {
           const opts = [];
           if (contentOpts[0]) opts.push({ id: '1', text: contentOpts[0], action: 'explore-primary', tag: null as string | null });
           if (contentOpts[1]) opts.push({ id: '2', text: contentOpts[1], action: 'explore-secondary', tag: '[RISK]' as string | null });
-          if (contentOpts[2]) opts.push({ id: '3', text: contentOpts[2], action: 'explore-tertiary', tag: '[1⚡]' as string | null });
+          if (contentOpts[2]) {
+            opts.push({ id: '3', text: contentOpts[2], action: 'explore-tertiary', tag: '[1⚡]' as string | null });
+          } else {
+            // Fix 11: always include tertiary (intel scout) even if zone only has 2 authored options
+            opts.push({ id: '3', text: 'Observe carefully', action: 'explore-tertiary', tag: '[1⚡]' as string | null });
+          }
           return opts;
         }
         return [{ id: '1', text: 'Press forward', action: 'explore-primary', tag: null as string | null }];
