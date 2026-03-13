@@ -9,7 +9,20 @@ import { AudioSettingsModal } from '../components/AudioSettingsModal';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { CRTOverlay } from '../components/CRTOverlay';
 import { useGame } from '../lib/GameContext';
+import { useCurrentPlayer, Player } from '../lib/instant';
 import { API_BASE } from '../lib/api';
+
+// Determine if a player has unlocked a zone through progression
+function isZoneUnlocked(zoneId: string, player: Player | undefined): boolean {
+  if (zoneId === 'sunken-crypt') return true;
+  if (['ashen-crypts', 'frozen-gallery', 'living-tomb'].includes(zoneId)) {
+    return (player?.highestRoom ?? 0) >= 8;
+  }
+  if (zoneId === 'void-beyond') {
+    return (player?.clearedZones?.length ?? 0) >= 3;
+  }
+  return false;
+}
 
 const ZONES = [
   {
@@ -95,24 +108,22 @@ function GridZoneCard({
   isSelected,
   onPress,
   enabled: enabledProp,
+  playerLocked,
 }: {
   zone: Zone;
   isSelected: boolean;
   onPress: () => void;
   enabled?: boolean;
+  playerLocked?: boolean;
 }) {
   const enabled = enabledProp ?? zone.enabled;
   const borderColor = isSelected ? zone.accentColor : '#2a2a2a';
   const bgColor = isSelected ? zone.bgColor + '40' : zone.bgColor + '1a';
 
+  // Admin disabled — "COMING SOON"
   if (!enabled) {
     return (
-      <View
-        style={{
-          flex: 1,
-          opacity: 0.45,
-        }}
-      >
+      <View style={{ flex: 1, opacity: 0.45 }}>
         <View
           style={{
             flex: 1,
@@ -124,50 +135,17 @@ function GridZoneCard({
             padding: 12,
           }}
         >
-          <Text
-            style={{
-              fontFamily: 'monospace',
-              fontSize: 10,
-              color: zone.accentColor,
-              letterSpacing: 1,
-              marginBottom: 6,
-            }}
-          >
+          <Text style={{ fontFamily: 'monospace', fontSize: 10, color: zone.accentColor, letterSpacing: 1, marginBottom: 6 }}>
             [ {zone.element} ]
           </Text>
-          <Text
-            style={{
-              fontFamily: 'monospace',
-              fontWeight: 'bold',
-              fontSize: 13,
-              color: '#a8a29e',
-              lineHeight: 18,
-              marginBottom: 4,
-            }}
-          >
+          <Text style={{ fontFamily: 'monospace', fontWeight: 'bold', fontSize: 13, color: '#a8a29e', lineHeight: 18, marginBottom: 4 }}>
             {zone.name}
           </Text>
-          <Text
-            style={{
-              fontFamily: 'monospace',
-              fontSize: 9,
-              color: '#6b6b6b',
-              marginBottom: 6,
-              lineHeight: 13,
-            }}
-          >
+          <Text style={{ fontFamily: 'monospace', fontSize: 9, color: '#6b6b6b', marginBottom: 6, lineHeight: 13 }}>
             {zone.tagline}
           </Text>
           <DifficultyDots difficulty={zone.difficulty} accentColor={zone.accentColor} />
-          <Text
-            style={{
-              fontFamily: 'monospace',
-              fontSize: 9,
-              color: '#555',
-              marginTop: 8,
-              letterSpacing: 0.5,
-            }}
-          >
+          <Text style={{ fontFamily: 'monospace', fontSize: 9, color: '#555', marginTop: 8, letterSpacing: 0.5 }}>
             // COMING SOON
           </Text>
         </View>
@@ -175,11 +153,41 @@ function GridZoneCard({
     );
   }
 
+  // Admin enabled but player hasn't unlocked yet — show lock hint
+  if (playerLocked) {
+    return (
+      <View style={{ flex: 1, opacity: 0.6 }}>
+        <View
+          style={{
+            flex: 1,
+            borderWidth: 1,
+            borderColor: '#3a3a3a',
+            borderLeftWidth: 3,
+            borderLeftColor: zone.accentColor,
+            backgroundColor: zone.bgColor + '1a',
+            padding: 12,
+          }}
+        >
+          <Text style={{ fontFamily: 'monospace', fontSize: 10, color: zone.accentColor, letterSpacing: 1, marginBottom: 6 }}>
+            [ {zone.element} ]
+          </Text>
+          <Text style={{ fontFamily: 'monospace', fontWeight: 'bold', fontSize: 13, color: '#a8a29e', lineHeight: 18, marginBottom: 4 }}>
+            🔒 {zone.name}
+          </Text>
+          <Text style={{ fontFamily: 'monospace', fontSize: 9, color: '#6b6b6b', marginBottom: 6, lineHeight: 13 }}>
+            {zone.tagline}
+          </Text>
+          <DifficultyDots difficulty={zone.difficulty} accentColor={zone.accentColor} />
+          <Text style={{ fontFamily: 'monospace', fontSize: 9, color: '#666', marginTop: 8, letterSpacing: 0.5 }}>
+            // Reach room 8 to unlock
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
   return (
-    <Pressable
-      style={{ flex: 1 }}
-      onPress={onPress}
-    >
+    <Pressable style={{ flex: 1 }} onPress={onPress}>
       <View
         style={{
           flex: 1,
@@ -191,38 +199,13 @@ function GridZoneCard({
           padding: 12,
         }}
       >
-        <Text
-          style={{
-            fontFamily: 'monospace',
-            fontSize: 10,
-            color: zone.accentColor,
-            letterSpacing: 1,
-            marginBottom: 6,
-          }}
-        >
+        <Text style={{ fontFamily: 'monospace', fontSize: 10, color: zone.accentColor, letterSpacing: 1, marginBottom: 6 }}>
           [ {zone.element} ]
         </Text>
-        <Text
-          style={{
-            fontFamily: 'monospace',
-            fontWeight: 'bold',
-            fontSize: 13,
-            color: isSelected ? zone.accentColor : '#a8a29e',
-            lineHeight: 18,
-            marginBottom: 4,
-          }}
-        >
+        <Text style={{ fontFamily: 'monospace', fontWeight: 'bold', fontSize: 13, color: isSelected ? zone.accentColor : '#a8a29e', lineHeight: 18, marginBottom: 4 }}>
           {zone.name}
         </Text>
-        <Text
-          style={{
-            fontFamily: 'monospace',
-            fontSize: 9,
-            color: '#6b6b6b',
-            marginTop: 6,
-            lineHeight: 13,
-          }}
-        >
+        <Text style={{ fontFamily: 'monospace', fontSize: 9, color: '#6b6b6b', marginTop: 6, lineHeight: 13 }}>
           {zone.tagline}
         </Text>
         <DifficultyDots difficulty={zone.difficulty} accentColor={zone.accentColor} />
@@ -236,11 +219,13 @@ function VoidBeyondCard({
   isSelected,
   onPress,
   enabled: enabledProp,
+  playerLocked,
 }: {
   zone: Zone;
   isSelected: boolean;
   onPress: () => void;
   enabled?: boolean;
+  playerLocked?: boolean;
 }) {
   const enabled = enabledProp ?? zone.enabled;
   const borderColor = isSelected ? zone.accentColor : '#2a2a2a';
@@ -294,26 +279,20 @@ function VoidBeyondCard({
       </Text>
       <DifficultyDots difficulty={zone.difficulty} accentColor={zone.accentColor} />
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
-        <Text
-          style={{
-            fontFamily: 'monospace',
-            fontSize: 9,
-            color: '#555',
-            letterSpacing: 0.5,
-          }}
-        >
-          // COMING SOON
-        </Text>
-        <Text
-          style={{
-            fontFamily: 'monospace',
-            fontSize: 9,
-            color: '#3a2a4a',
-            letterSpacing: 1,
-          }}
-        >
-          // UNLOCKS AFTER 3 CLEARED ZONES
-        </Text>
+        {enabled && playerLocked ? (
+          <Text style={{ fontFamily: 'monospace', fontSize: 9, color: '#666', letterSpacing: 0.5 }}>
+            🔒 Clear 3 zones to unlock
+          </Text>
+        ) : (
+          <>
+            <Text style={{ fontFamily: 'monospace', fontSize: 9, color: '#555', letterSpacing: 0.5 }}>
+              // COMING SOON
+            </Text>
+            <Text style={{ fontFamily: 'monospace', fontSize: 9, color: '#3a2a4a', letterSpacing: 1 }}>
+              // UNLOCKS AFTER 3 CLEARED ZONES
+            </Text>
+          </>
+        )}
       </View>
     </View>
   );
@@ -332,6 +311,7 @@ function VoidBeyondCard({
 export default function ZoneSelectScreen() {
   const { playSFX, playAmbient } = useAudio();
   const game = useGame();
+  const { player } = useCurrentPlayer();
   const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
   const [selectedZoneId, setSelectedZoneId] = useState('sunken-crypt');
   const { width: screenWidth } = useWindowDimensions();
@@ -374,6 +354,8 @@ export default function ZoneSelectScreen() {
   };
 
   const handleSelect = (zoneId: string) => {
+    // Don't select zones that are player-progression-locked
+    if (isPlayerLocked(zoneId)) return;
     playSFX('ui-click');
     setSelectedZoneId(zoneId);
   };
@@ -383,6 +365,8 @@ export default function ZoneSelectScreen() {
 
   // A zone is selectable if admin has enabled it
   const isZoneEnabled = (zoneId: string) => enabledZones.includes(zoneId);
+  // A zone is player-locked if admin enabled it but player hasn't progressed enough
+  const isPlayerLocked = (zoneId: string) => isZoneEnabled(zoneId) && !isZoneUnlocked(zoneId, player);
 
   return (
     <CryptBackground screen="stake">
@@ -414,6 +398,7 @@ export default function ZoneSelectScreen() {
                     isSelected={selectedZoneId === zone.id}
                     onPress={() => handleSelect(zone.id)}
                     enabled={isZoneEnabled(zone.id)}
+                    playerLocked={isPlayerLocked(zone.id)}
                   />
                 ))}
               </View>
@@ -426,6 +411,7 @@ export default function ZoneSelectScreen() {
             isSelected={selectedZoneId === voidZone.id}
             onPress={() => handleSelect(voidZone.id)}
             enabled={isZoneEnabled(voidZone.id)}
+            playerLocked={isPlayerLocked(voidZone.id)}
           />
 
           <View style={{ height: 16 }} />

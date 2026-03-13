@@ -65,6 +65,8 @@ export interface Player {
   activeBorder?: string;
   unlockedTitles?: string[];
   unlockedBorders?: string[];
+  // Zone progression — IDs of zones where the boss was defeated
+  clearedZones?: string[];
 }
 
 // Initialize the database
@@ -328,6 +330,24 @@ export async function updateHighestRoom(walletAddress: string, room: number): Pr
     }
   } catch (error) {
     console.error('Failed to update highest room:', error);
+  }
+}
+
+// Add a zone to the player's clearedZones list (idempotent — won't add duplicates)
+export async function updatePlayerClearedZone(authId: string, zoneId: string): Promise<void> {
+  try {
+    const result = await db.queryOnce({
+      players: { $: { where: { authId }, limit: 1 } },
+    });
+    const player = result.data?.players?.[0] as unknown as Player | undefined;
+    if (!player) return;
+    const current = player.clearedZones ?? [];
+    if (current.includes(zoneId)) return; // already recorded
+    await db.transact([
+      tx.players[player.id].update({ clearedZones: [...current, zoneId] }),
+    ]);
+  } catch (error) {
+    console.error('Failed to update cleared zones:', error);
   }
 }
 
