@@ -43,6 +43,7 @@ export default function PlayScreen() {
   const [selectedItem, setSelectedItem] = useState<{ name: string; emoji: string } | null>(null);
   const [lastFoundItem, setLastFoundItem] = useState<{ name: string; emoji: string } | null>(null);
   const [selectedCreature, setSelectedCreature] = useState<CreatureInfo | null>(null);
+  const [modifierExpanded, setModifierExpanded] = useState(false);
 
   // Handle tipping a corpse
   const handleTip = async (corpse: Corpse) => {
@@ -276,12 +277,10 @@ export default function PlayScreen() {
             }
           } else {
             if (foundLoot) {
-              const lootItems = [
-                { name: 'Herbs', emoji: '🌿' },
-                { name: 'Bone Charm', emoji: '💀' },
-                { name: 'Rusty Blade', emoji: '🗡️' },
-              ];
-              const loot = game.rng ? game.rng.pick(lootItems) : lootItems[Math.floor(Math.random() * lootItems.length)];
+              const rngFn = game.rng ? () => game.rng!.random() : () => Math.random();
+              const itemName = rollRandomItem(rngFn);
+              const itemDetails = getItemDetails(itemName);
+              const loot = { name: itemName, emoji: itemDetails?.emoji || '❓' };
               
               if (!game.inventory.some(i => i.name === loot.name)) {
                 playSFX('loot-discover');
@@ -406,13 +405,32 @@ export default function PlayScreen() {
             }`}>
               ◈ {depth.name}
             </Text>
-            {/* empty-handed tag removed */}
+            {/* Modifier badge */}
+            {game.currentModifier && (
+              <Pressable
+                onPress={() => setModifierExpanded(v => !v)}
+                style={{ backgroundColor: 'rgba(245,158,11,0.12)', borderWidth: 1, borderColor: 'rgba(245,158,11,0.4)', borderRadius: 3, paddingHorizontal: 5, paddingVertical: 2 }}
+              >
+                <Text style={{ color: '#f59e0b', fontFamily: 'monospace', fontSize: 10 }}>
+                  {game.currentModifier.emoji} {game.currentModifier.name}
+                </Text>
+              </Pressable>
+            )}
           </View>
           <View className="flex-row items-center gap-1">
             <AudioToggle ambientTrack="ambient-explore" inline onSettingsPress={() => setMenuOpen(true)} />
             <ProgressBar current={roomNumber} total={dungeon.length} />
           </View>
         </View>
+
+        {/* Modifier expanded description */}
+        {game.currentModifier && modifierExpanded && (
+          <View style={{ backgroundColor: 'rgba(245,158,11,0.08)', borderBottomWidth: 1, borderBottomColor: 'rgba(245,158,11,0.3)', paddingHorizontal: 12, paddingVertical: 6 }}>
+            <Text style={{ color: '#d97706', fontFamily: 'monospace', fontSize: 11 }}>
+              {game.currentModifier.description}
+            </Text>
+          </View>
+        )}
 
         {/* Game Menu */}
         <GameMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />

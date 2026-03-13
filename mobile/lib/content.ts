@@ -493,6 +493,7 @@ export function getItemEffects(inventory: {name: string}[]): ItemEffects {
       case 'Poison Vial': effects.damageBonus += 0.40; break;
       case 'Ancient Scroll': effects.defenseBonus += 0.20; effects.fleeBonus += 0.10; break;
       case 'Bone Charm': effects.defenseBonus += 0.15; break;
+      case 'Voidblade': effects.damageBonus += 0.50; break;
     }
   }
   return effects;

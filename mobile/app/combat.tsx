@@ -82,6 +82,7 @@ export default function CombatScreen() {
   const [creatureModalOpen, setCreatureModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<{ id: string; name: string; emoji: string } | null>(null);
   const [artLoadFailed, setArtLoadFailed] = useState(false);
+  const [isFirstTurn, setIsFirstTurn] = useState(true);
   
   // Screen shake animation
   const shakeAnim = useRef(new Animated.Value(0)).current;
@@ -148,7 +149,7 @@ export default function CombatScreen() {
   // Build combat options with settings-driven costs
   const COMBAT_OPTIONS = BASE_COMBAT_OPTIONS.map(o => ({
     ...o,
-    cost: o.id === 'strike' ? settings.strikeCost : o.id === 'brace' ? 0 : 1,
+    cost: o.id === 'strike' ? settings.strikeCost : o.id === 'brace' ? game.getModifiedBraceCost(0) : 1,
   }));
 
   // Calculate damage using admin settings
@@ -162,7 +163,7 @@ export default function CombatScreen() {
       : intentEffects.damageDealtMod;
 
     if (isPlayerAttacking) {
-      return Math.round(base * (1 + itemEffects.damageBonus) * intentEffects.damageTakenMod);
+      return Math.round(base * (1 + itemEffects.damageBonus + game.getModifiedDamageBonus()) * intentEffects.damageTakenMod);
     } else {
       const chargeMult = wasCharging ? settings.chargePunishment : 1.0;
       return Math.round(base * tierMult * cappedDealtMod * (1 - itemEffects.defenseBonus) * chargeMult);
@@ -249,7 +250,7 @@ export default function CombatScreen() {
         const brMin = settings.braceBaseDamageMin;
         const brMax = settings.braceBaseDamageMax;
         const baseDmg = game.rng ? game.rng.range(brMin, brMax) : brMin + Math.floor(Math.random() * (brMax - brMin + 1));
-        playerDmg = Math.round(calculateDamage(baseDmg, false) * (1 - settings.braceReduction));
+        playerDmg = game.modifierBraceNegatesAll() ? 0 : Math.round(calculateDamage(baseDmg, false) * (1 - settings.braceReduction));
         actionNarrative = getBraceNarration('success');
         break;
       }
@@ -321,16 +322,22 @@ export default function CombatScreen() {
     // IMPORTANT: death check must come before flee success.
     // Edge case: player can "successfully flee" but still die from flee damage.
     if (newPlayerHealth <= 0) {
-      playSFX('player-death');
-      triggerShake('heavy');
-      if (Platform.OS !== 'web') {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      const save = game.checkDeathSave();
+      if (save.saved) {
+        // Death's Mantle triggered — show save message and let combat continue
+        setNarrative(save.message || "Death's Mantle shatters — you survive with 1 HP!");
+      } else {
+        playSFX('player-death');
+        triggerShake('heavy');
+        if (Platform.OS !== 'web') {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        }
+        setPhase('death');
+        setTimeout(() => {
+          router.replace({ pathname: '/death', params: { killedBy: creature?.name } });
+        }, 2000);
+        return;
       }
-      setPhase('death');
-      setTimeout(() => {
-        router.replace({ pathname: '/death', params: { killedBy: creature?.name } });
-      }, 2000);
-      return;
     }
 
     if (fleeSuccess) {
@@ -361,11 +368,32 @@ export default function CombatScreen() {
     setWasCharging(intentEffects.isCharging);
     
     setTimeout(() => {
+      // Voidblade per-turn damage — fires after each turn resolves
+      const voidDmg = game.applyVoidbladeEffect();
+      if (voidDmg > 0) {
+        // newPlayerHealth is captured from closure (reflects post-action health)
+        if (newPlayerHealth - voidDmg <= 0) {
+          const save = game.checkDeathSave();
+          if (!save.saved) {
+            playSFX('player-death');
+            setPhase('death');
+            setTimeout(() => {
+              router.replace({ pathname: '/death', params: { killedBy: 'Voidblade' } });
+            }, 2000);
+            return;
+          }
+          setNarrative(save.message || "Death's Mantle shatters — you survive with 1 HP!");
+        } else {
+          setNarrative(`Voidblade burns — ${voidDmg} damage!`);
+        }
+      }
+
       const newIntent = getCreatureIntent(creature?.name || 'The Drowned');
       setEnemyIntent(newIntent);
       setIntentEffects(getIntentEffects(newIntent.type));
       setPhase('choose');
-      game.setStamina(Math.min(settings.staminaPool, game.stamina + settings.staminaRegen));
+      setIsFirstTurn(false);
+      game.setStamina(Math.min(settings.staminaPool, game.stamina + game.getModifiedStaminaRegen(settings.staminaRegen)));
     }, 1500);
   };
 
@@ -432,12 +460,14 @@ export default function CombatScreen() {
             <Text className="text-bone-dark text-xs font-mono">[?]</Text>
           </Pressable>
           
-          {/* Enemy Intent */}
-          <View className={`p-2 border-l-2 ${intentEffects.isCharging ? 'border-amber bg-amber/10' : 'border-ethereal bg-ethereal/10'}`}>
-            <Text className={`text-xs font-mono ${intentEffects.isCharging ? 'text-amber' : 'text-ethereal'}`}>
-              {intentEffects.description}
-            </Text>
-          </View>
+          {/* Enemy Intent — hidden on first turn with Blind Descent modifier */}
+          {!(game.modifierHidesFirstIntent() && isFirstTurn) && (
+            <View className={`p-2 border-l-2 ${intentEffects.isCharging ? 'border-amber bg-amber/10' : 'border-ethereal bg-ethereal/10'}`}>
+              <Text className={`text-xs font-mono ${intentEffects.isCharging ? 'text-amber' : 'text-ethereal'}`}>
+                {intentEffects.description}
+              </Text>
+            </View>
+          )}
         </View>
 
         {/* Combat Narrative */}
@@ -595,7 +625,8 @@ export default function CombatScreen() {
               if (!selectedItem) return;
               const name = selectedItem.name;
               if (name === 'Herbs') {
-                const heal = game.rng ? game.rng.range(25, 40) : Math.floor(Math.random() * 15) + 25; // 25-40 HP
+                const baseHeal = game.rng ? game.rng.range(25, 40) : Math.floor(Math.random() * 15) + 25; // 25-40 HP
+                const heal = Math.round(baseHeal * game.getModifiedHealMultiplier());
                 game.setHealth(Math.min(100, game.health + heal));
                 setNarrative(`You quickly apply the herbs. Wounds close. +${heal} HP.`);
                 playSFX('heal');
