@@ -44,11 +44,13 @@ export function getNewMilestone(prevDeaths: number, newDeaths: number): Mileston
 
 /**
  * Returns the perk flags derived from total deaths.
+ * soulstoneUnlocked: Soulstone enters the loot pool at 50 deaths.
  */
-export function getMilestonePerks(totalDeaths: number): { startingItem: boolean; bonusHp: boolean } {
+export function getMilestonePerks(totalDeaths: number): { startingItem: boolean; bonusHp: boolean; soulstoneUnlocked: boolean } {
   return {
     startingItem: totalDeaths >= 250,
     bonusHp: totalDeaths >= 500,
+    soulstoneUnlocked: totalDeaths >= 50,
   };
 }
 
