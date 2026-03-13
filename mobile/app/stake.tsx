@@ -5,7 +5,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
 import { useAudio } from '../lib/audio';
-import { useGameSettings } from '../lib/instant';
+import { useGameSettings, useCurrentPlayer } from '../lib/instant';
 import { AudioToggle } from '../components/AudioToggle';
 import { AudioSettingsModal } from '../components/AudioSettingsModal';
 import { CRTOverlay } from '../components/CRTOverlay';
@@ -28,6 +28,7 @@ export default function StakeScreen() {
   const game = useGame();
   const { playSFX, playAmbient } = useAudio();
   const { settings } = useGameSettings();
+  const { player } = useCurrentPlayer();
   const { zoneId: rawZoneId } = useLocalSearchParams<{ zoneId: string }>();
   const zoneId = rawZoneId ?? 'sunken-crypt';
   const zoneMeta = ZONE_META[zoneId] ?? ZONE_META['sunken-crypt'];
@@ -154,7 +155,7 @@ export default function StakeScreen() {
         return;
       }
 
-      await game.startGame(selectedStake, emptyHanded, zoneId);
+      await game.startGame(selectedStake, emptyHanded, zoneId, player?.totalDeaths);
       if (!emptyHanded) setSealStatus('idle');
       playSFX('depth-descend');
       router.push('/play');
@@ -444,7 +445,7 @@ Offer it. Lose it on death. Escape and claim more.
           if (pendingRun) {
             const { stake, emptyHanded, zoneId: pZoneId } = pendingRun;
             setPendingRun(null);
-            await game.startGame(stake, emptyHanded, pZoneId);
+            await game.startGame(stake, emptyHanded, pZoneId, player?.totalDeaths);
             playSFX('depth-descend');
             router.push('/play');
           }
@@ -454,7 +455,7 @@ Offer it. Lose it on death. Escape and claim more.
           if (pendingRun) {
             const { stake, emptyHanded, zoneId: pZoneId } = pendingRun;
             setPendingRun(null);
-            await game.startGame(stake, emptyHanded, pZoneId);
+            await game.startGame(stake, emptyHanded, pZoneId, player?.totalDeaths);
             playSFX('depth-descend');
             router.push('/play');
           }
