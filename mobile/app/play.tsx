@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, Pressable, ScrollView, Alert, Platform, ViewStyle, Image } from 'react-native';
+import { View, Text, Pressable, ScrollView, Alert, Platform, ViewStyle, Image, Modal } from 'react-native';
 import { getCreatureAsset, getCreatureAssetByName } from '../lib/creatureAssets';
 import { Icons } from '../lib/iconAssets';
 import { AsciiLoader } from '../components/AsciiLoader';
@@ -15,7 +15,7 @@ import { GameMenu, MenuButton } from '../components/GameMenu';
 import { MiniPlayer } from '../components/MiniPlayer';
 import { AudioToggle } from '../components/AudioToggle';
 import { CRTOverlay } from '../components/CRTOverlay';
-import { getDepthForRoom, DungeonRoom, getItemDetails, getCreatureInfo, CreatureInfo } from '../lib/content';
+import { getDepthForRoom, DungeonRoom, getItemDetails, getCreatureInfo, CreatureInfo, rollRandomItem } from '../lib/content';
 import { useUnifiedWallet, type Address } from '../lib/wallet/unified';
 import { ItemModal, CreatureModal } from '../components/CryptModal';
 
@@ -118,9 +118,94 @@ export default function PlayScreen() {
     try {
       switch (action) {
         case 'explore':
+        case 'explore-primary':
           playSFX('footstep');
           await game.advance();
           break;
+
+        case 'explore-secondary': {
+          playSFX('footstep');
+          const roll = game.rng ? game.rng.random() : Math.random();
+          if (roll < 0.55) {
+            // Risk paid off — find a random item
+            const rngFn = game.rng ? () => game.rng!.random() : () => Math.random();
+            const itemName = rollRandomItem(rngFn);
+            const itemDetails = getItemDetails(itemName);
+            const newItem = {
+              id: Date.now().toString(),
+              name: itemName,
+              emoji: itemDetails?.emoji || '❓',
+            };
+            game.addToInventory(newItem);
+            game.incrementItemsFound();
+            setLastFoundItem({ name: newItem.name, emoji: newItem.emoji });
+            setMessage(`Found: ${newItem.emoji} ${newItem.name}`);
+          } else if (roll < 0.85) {
+            // Nothing — just advance silently
+          } else {
+            // Danger — take 8–15 damage
+            const dmg = game.rng
+              ? game.rng.range(8, 15)
+              : 8 + Math.floor(Math.random() * 8);
+            const newHp = game.health - dmg;
+            if (newHp <= 0) {
+              const save = game.checkDeathSave();
+              if (save.saved) {
+                setMessage(save.message || "Death's Mantle shatters — you survive with 1 HP!");
+              } else {
+                game.setHealth(0);
+                playSFX('player-death');
+                router.replace({ pathname: '/death', params: { killedBy: 'The darkness' } });
+                return;
+              }
+            } else {
+              game.setHealth(newHp);
+              setMessage(`You take ${dmg} damage!`);
+            }
+          }
+          setTimeout(async () => {
+            await game.advance();
+            setMessage(null);
+          }, 1500);
+          break;
+        }
+
+        case 'explore-tertiary': {
+          if (game.stamina < 1) {
+            setMessage('Not enough stamina.');
+            break;
+          }
+          playSFX('footstep');
+          game.setStamina(game.stamina - 1);
+          // Intel: peek at the next room
+          const nextRoomIndex = currentRoom + 1;
+          const nextRoom = dungeon[nextRoomIndex] as DungeonRoom | undefined;
+          let intelMsg = 'You read the signs ahead. The path continues.';
+          if (nextRoom) {
+            switch (nextRoom.type) {
+              case 'combat':
+                intelMsg = `You sense a presence beyond. ${nextRoom.content?.enemy ? `Something called ${nextRoom.content.enemy} waits.` : 'Danger waits.'}`;
+                break;
+              case 'corpse':
+                intelMsg = 'A scent of death lingers ahead. Someone fell here.';
+                break;
+              case 'cache':
+                intelMsg = 'You hear a faint echo ahead. Supplies may remain.';
+                break;
+              case 'exit':
+                intelMsg = 'You feel the air change. The exit draws near.';
+                break;
+              default:
+                intelMsg = 'The path ahead seems passable. Stay alert.';
+            }
+          }
+          setMessage(`[Intel] ${intelMsg}`);
+          setTimeout(async () => {
+            await game.advance();
+            setMessage(null);
+          }, 2000);
+          break;
+        }
 
         case 'combat':
           // Navigate to full combat screen
@@ -257,10 +342,17 @@ export default function PlayScreen() {
     if (!room) return [];
     
     switch (room.type) {
-      case 'explore':
-        return [
-          { id: '1', text: 'Press forward', action: 'explore' },
-        ];
+      case 'explore': {
+        const contentOpts = room.content?.options;
+        if (contentOpts && contentOpts.length > 0) {
+          const opts = [];
+          if (contentOpts[0]) opts.push({ id: '1', text: contentOpts[0], action: 'explore-primary', tag: null as string | null });
+          if (contentOpts[1]) opts.push({ id: '2', text: contentOpts[1], action: 'explore-secondary', tag: '[RISK]' as string | null });
+          if (contentOpts[2]) opts.push({ id: '3', text: contentOpts[2], action: 'explore-tertiary', tag: '[1⚡]' as string | null });
+          return opts;
+        }
+        return [{ id: '1', text: 'Press forward', action: 'explore-primary', tag: null as string | null }];
+      }
       case 'combat':
         return [
           { id: '1', text: 'Enter combat', action: 'combat', icon: 'strike' },
@@ -484,25 +576,37 @@ export default function PlayScreen() {
             <Text className="text-bone text-sm font-mono">Continue...</Text>
           </Pressable>
         ) : (
-          options.map((option) => (
-            <Pressable
-              key={option.id}
-              className={`bg-crypt-surface border-l-2 border-crypt-border-light py-4 px-3 mb-2 active:border-amber active:bg-amber/5 ${processing ? 'opacity-50' : ''}`}
-              onPress={() => handleAction(option.action)}
-              disabled={processing}
-            >
-              <View className="flex-row items-center">
-                {(option as any).icon && (
-                  <Image
-                    source={(Icons as any)[(option as any).icon]}
-                    style={{ width: 20, height: 20, marginRight: 8 }}
-                    resizeMode="contain"
-                  />
-                )}
-                <Text className="text-bone text-sm font-mono">{option.text}</Text>
-              </View>
-            </Pressable>
-          ))
+          options.map((option) => {
+            const tag = (option as any).tag as string | null | undefined;
+            const isRisk = tag === '[RISK]';
+            const isTertiary = tag === '[1⚡]';
+            return (
+              <Pressable
+                key={option.id}
+                className={`bg-crypt-surface border-l-2 py-4 px-3 mb-2 ${isRisk ? 'border-blood/60 active:border-blood active:bg-blood/5' : isTertiary ? 'border-blue-700/60 active:border-blue-500 active:bg-blue-900/10' : 'border-crypt-border-light active:border-amber active:bg-amber/5'} ${processing ? 'opacity-50' : ''}`}
+                onPress={() => handleAction(option.action)}
+                disabled={processing}
+              >
+                <View className="flex-row items-center justify-between">
+                  <View className="flex-row items-center flex-1">
+                    {(option as any).icon && (
+                      <Image
+                        source={(Icons as any)[(option as any).icon]}
+                        style={{ width: 20, height: 20, marginRight: 8 }}
+                        resizeMode="contain"
+                      />
+                    )}
+                    <Text className="text-bone text-sm font-mono flex-1">{option.text}</Text>
+                  </View>
+                  {tag && (
+                    <Text className={`text-xs font-mono ml-2 ${isRisk ? 'text-blood' : isTertiary ? 'text-blue-400' : 'text-amber'}`}>
+                      {tag}
+                    </Text>
+                  )}
+                </View>
+              </Pressable>
+            );
+          })
         )}
       </ScrollView>
 
@@ -558,6 +662,108 @@ export default function PlayScreen() {
 
         <MiniPlayer />
       </View>
+
+      {/* Inventory Full / Swap Modal */}
+      <Modal
+        visible={!!game.pendingItem}
+        transparent
+        animationType="fade"
+        onRequestClose={() => game.dismissPendingItem()}
+      >
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.85)', justifyContent: 'center', alignItems: 'center', padding: 24 }}>
+          <View style={{ width: '100%', maxWidth: 340, backgroundColor: '#0d0d0d', borderWidth: 1, borderColor: '#f59e0b', padding: 0, overflow: 'hidden' }}>
+            {/* Header */}
+            <View style={{ backgroundColor: '#1a0a00', borderBottomWidth: 1, borderBottomColor: '#f59e0b', padding: 12 }}>
+              <Text style={{ color: '#f59e0b', fontFamily: 'monospace', fontSize: 12, textAlign: 'center', letterSpacing: 2 }}>
+                ▓ INVENTORY FULL (4/4) ▓
+              </Text>
+            </View>
+
+            {/* Found item */}
+            {game.pendingItem && (
+              <View style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: '#2a2a2a' }}>
+                <Text style={{ color: '#9ca3af', fontFamily: 'monospace', fontSize: 10, letterSpacing: 1, marginBottom: 6 }}>FOUND</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                  <Text style={{ fontSize: 28 }}>{game.pendingItem.emoji}</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ color: '#e5e0d0', fontFamily: 'monospace', fontSize: 14, fontWeight: 'bold' }}>
+                      {game.pendingItem.name}
+                    </Text>
+                    {game.pendingItem.rarity && (
+                      <Text style={{ fontFamily: 'monospace', fontSize: 10, letterSpacing: 1, color: game.pendingItem.rarity === 'legendary' ? '#fbbf24' : game.pendingItem.rarity === 'rare' ? '#a78bfa' : game.pendingItem.rarity === 'uncommon' ? '#6ee7b7' : '#9ca3af' }}>
+                        {game.pendingItem.rarity.toUpperCase()}
+                      </Text>
+                    )}
+                  </View>
+                </View>
+                {game.pendingItem.effect && (
+                  <Text style={{ color: '#9ca3af', fontFamily: 'monospace', fontSize: 11, fontStyle: 'italic' }}>
+                    {game.pendingItem.effect}
+                  </Text>
+                )}
+              </View>
+            )}
+
+            {/* Swap options */}
+            <View style={{ padding: 12 }}>
+              <Text style={{ color: '#6b7280', fontFamily: 'monospace', fontSize: 10, textAlign: 'center', letterSpacing: 2, marginBottom: 8 }}>
+                ── SWAP FOR ──
+              </Text>
+              {game.inventory.map((item, idx) => {
+                const details = getItemDetails(item.name);
+                return (
+                  <Pressable
+                    key={item.id}
+                    style={({ pressed }) => ({
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      padding: 10,
+                      marginBottom: 4,
+                      borderWidth: 1,
+                      borderColor: pressed ? '#f59e0b' : '#2a2a2a',
+                      backgroundColor: pressed ? 'rgba(245,158,11,0.05)' : 'transparent',
+                    })}
+                    onPress={() => {
+                      playSFX('ui-click');
+                      game.swapItem(idx);
+                    }}
+                  >
+                    <Text style={{ fontSize: 18, marginRight: 8 }}>{item.emoji}</Text>
+                    <View style={{ flex: 1 }}>
+                      <Text style={{ color: '#e5e0d0', fontFamily: 'monospace', fontSize: 12 }}>{item.name}</Text>
+                      {details?.rarity && (
+                        <Text style={{ color: '#6b7280', fontFamily: 'monospace', fontSize: 10 }}>
+                          {details.rarity}
+                        </Text>
+                      )}
+                    </View>
+                    <Text style={{ color: '#6b7280', fontFamily: 'monospace', fontSize: 10 }}>SWAP ▶</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+
+            {/* Dismiss */}
+            <Pressable
+              style={({ pressed }) => ({
+                margin: 12,
+                marginTop: 0,
+                padding: 12,
+                borderWidth: 1,
+                borderColor: '#4b5563',
+                backgroundColor: pressed ? '#1a1a1a' : 'transparent',
+                alignItems: 'center',
+              })}
+              onPress={() => {
+                playSFX('ui-click');
+                game.dismissPendingItem();
+              }}
+            >
+              <Text style={{ color: '#9ca3af', fontFamily: 'monospace', fontSize: 12 }}>Leave it</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
 
       {/* Item Detail Modal */}
       <ItemModal

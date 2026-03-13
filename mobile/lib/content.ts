@@ -517,6 +517,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Bitter leaves that numb pain and slow bleeding. They taste like regret.',
     effect: 'Restores health when used',
     type: 'consumable',
+    rarity: 'common',
     artUrl: '/items/herbs.webp',
   },
   'Pale Rations': {
@@ -525,6 +526,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Food from below. It sustains, but you try not to think about what it was.',
     effect: 'Restores stamina',
     type: 'consumable',
+    rarity: 'common',
     artUrl: '/items/pale-rations.webp',
   },
   'Bone Dust': {
@@ -533,6 +535,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Ground remains of something old. Inhale it to see what it saw.',
     effect: 'Reveals hidden paths',
     type: 'consumable',
+    rarity: 'common',
     artUrl: '/items/bone-dust.webp',
   },
   'Void Salt': {
@@ -541,6 +544,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Black crystals that burn on contact. Creatures of water fear it.',
     effect: '+40% damage vs aquatic enemies',
     type: 'consumable',
+    rarity: 'uncommon',
     artUrl: '/items/void-salt.webp',
   },
   'Poison Vial': {
@@ -549,6 +553,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Something extracted from something else. The smell alone is a weapon.',
     effect: '+40% damage bonus',
     type: 'consumable',
+    rarity: 'rare',
     artUrl: '/items/poison-vial.webp',
   },
   
@@ -559,6 +564,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Pitted with age and old blood. Still sharp enough.',
     effect: '+20% damage bonus',
     type: 'weapon',
+    rarity: 'common',
     artUrl: '/items/rusty-blade.webp',
   },
   'Dagger': {
@@ -567,6 +573,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Small, ceremonial. It was meant for offerings, not combat. It works anyway.',
     effect: '+35% damage bonus',
     type: 'weapon',
+    rarity: 'uncommon',
     artUrl: '/items/dagger.webp',
   },
   'Bone Hook': {
@@ -575,6 +582,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Carved from a rib. Meant for pulling things closer. Or keeping them away.',
     effect: 'Creates distance in combat',
     type: 'weapon',
+    rarity: 'uncommon',
     artUrl: '/items/bone-hook.webp',
   },
   'Shield': {
@@ -583,6 +591,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Dented, scarred, still standing. Like whoever carried it.',
     effect: '+25% defense bonus',
     type: 'weapon',
+    rarity: 'uncommon',
     artUrl: '/items/shield.webp',
   },
   'Tattered Shield': {
@@ -591,6 +600,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'More holes than metal. But it still catches blows that would kill you.',
     effect: '+25% defense bonus',
     type: 'weapon',
+    rarity: 'common',
     artUrl: '/items/tattered-shield.webp',
   },
   'Cloak': {
@@ -599,6 +609,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Wrapped around your shoulders, things have trouble finding you.',
     effect: '+15% flee, +10% defense',
     type: 'weapon',
+    rarity: 'uncommon',
     artUrl: '/items/cloak.webp',
   },
   
@@ -609,6 +620,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'A flickering flame. It pushes back the dark, but the dark pushes back.',
     effect: '+25% damage, light source',
     type: 'artifact',
+    rarity: 'uncommon',
     artUrl: '/items/torch.webp',
   },
   'Bone Charm': {
@@ -617,6 +629,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Carved from something\'s finger. It hums when danger is near. It never stops humming.',
     effect: '+15% defense bonus',
     type: 'artifact',
+    rarity: 'uncommon',
     artUrl: '/items/bone-charm.webp',
   },
   'Ancient Scroll': {
@@ -625,6 +638,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Waterlogged pages in a language you almost understand. Reading it feels like remembering something you never knew.',
     effect: '+20% defense, +10% flee',
     type: 'artifact',
+    rarity: 'rare',
     artUrl: '/items/ancient-scroll.webp',
   },
   'Eye of the Hollow': {
@@ -633,6 +647,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'It blinks when you\'re not looking. But it shows you things you\'d otherwise miss.',
     effect: 'Reveals hidden corpses and caches',
     type: 'artifact',
+    rarity: 'rare',
     artUrl: '/items/eye-of-the-hollow.webp',
   },
   'Heartstone': {
@@ -641,6 +656,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Cold to the touch. Warm when death is near. Yours or someone else\'s.',
     effect: 'Shows when you\'re near death',
     type: 'artifact',
+    rarity: 'legendary',
     artUrl: '/items/heartstone.webp',
   },
   'Pale Coin': {
@@ -649,6 +665,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Currency of the dead. Worth nothing above. Worth everything below.',
     effect: 'Can be offered for passage',
     type: 'artifact',
+    rarity: 'common',
     artUrl: '/items/pale-coin.webp',
   },
   'Soulstone': {
@@ -659,11 +676,85 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     rarity: 'rare',
     type: 'artifact',
   },
+  "Death's Mantle": {
+    name: "Death's Mantle",
+    emoji: '🌑',
+    description: 'Woven from shadow and last breaths. It remembers what it means to die.',
+    effect: 'Survive one lethal hit with 1 HP (consumed)',
+    rarity: 'legendary',
+    type: 'artifact',
+  },
+  'Voidblade': {
+    name: 'Voidblade',
+    emoji: '⚔️',
+    description: 'A blade that hungers. It cuts through anything — including you.',
+    effect: '+50% damage, take 5 damage per turn',
+    rarity: 'legendary',
+    type: 'weapon',
+  },
 };
 
 // Get item details by name
 export function getItemDetails(name: string): ItemDetails | undefined {
   return ITEM_DETAILS[name];
+}
+
+// Rarity tier order for comparison
+const RARITY_ORDER: Record<string, number> = { common: 0, uncommon: 1, rare: 2, legendary: 3 };
+
+/**
+ * Pick a random item name using weighted rarity distribution.
+ * Weights: common 55%, uncommon 30%, rare 12%, legendary 3%
+ * minRarity optionally filters out lower rarities (e.g. for special loot).
+ */
+export function rollRandomItem(
+  rng: () => number,
+  minRarity?: 'common' | 'uncommon' | 'rare' | 'legendary',
+): string {
+  const minTier = minRarity ? (RARITY_ORDER[minRarity] ?? 0) : 0;
+  const weights: Record<string, number> = { common: 55, uncommon: 30, rare: 12, legendary: 3 };
+
+  // Group eligible items by rarity
+  const byRarity: Record<string, string[]> = { common: [], uncommon: [], rare: [], legendary: [] };
+  for (const item of Object.values(ITEM_DETAILS)) {
+    const tier = RARITY_ORDER[item.rarity ?? 'common'] ?? 0;
+    if (tier >= minTier) {
+      const bucket = item.rarity ?? 'common';
+      byRarity[bucket].push(item.name);
+    }
+  }
+
+  // Build weighted rarity pool (only rarities that have items)
+  const pool: Array<{ rarity: string; weight: number; items: string[] }> = [];
+  let totalWeight = 0;
+  for (const [rarity, items] of Object.entries(byRarity)) {
+    if (items.length > 0) {
+      const w = weights[rarity] ?? 0;
+      pool.push({ rarity, weight: w, items });
+      totalWeight += w;
+    }
+  }
+
+  if (pool.length === 0 || totalWeight === 0) {
+    // Fallback: just pick any eligible item uniformly
+    const all = Object.values(ITEM_DETAILS)
+      .filter(i => (RARITY_ORDER[i.rarity ?? 'common'] ?? 0) >= minTier)
+      .map(i => i.name);
+    return all.length > 0 ? all[Math.floor(rng() * all.length)] : 'Herbs';
+  }
+
+  // Roll rarity bucket, then pick item within it
+  const roll = rng() * totalWeight;
+  let cumulative = 0;
+  for (const { weight, items } of pool) {
+    cumulative += weight;
+    if (roll < cumulative) {
+      return items[Math.floor(rng() * items.length)];
+    }
+  }
+
+  // Fallback
+  return pool[pool.length - 1].items[0];
 }
 
 // Generate a combat room with a specific creature assigned (legacy, non-seeded)

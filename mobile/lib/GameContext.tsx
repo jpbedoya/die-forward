@@ -1,7 +1,19 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect, useMemo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as api from './api';
-import { generateRandomDungeon, DungeonRoom } from './content';
+import { generateRandomDungeon, DungeonRoom, getItemDetails } from './content';
+
+// Pending item when inventory is full — includes full item details for the swap UI
+export interface PendingInventoryItem {
+  id: string;
+  name: string;
+  emoji: string;
+  description: string;
+  effect: string;
+  type: 'consumable' | 'weapon' | 'artifact';
+  rarity?: 'common' | 'uncommon' | 'rare' | 'legendary';
+  artUrl?: string;
+}
 import { useUnifiedWallet, type Address } from './wallet/unified';
 import { GAME_POOL_PDA, buildStakeInstruction, generateSessionId } from './solana/escrow';
 import { Transaction, LAMPORTS_PER_SOL } from '@solana/web3.js';
@@ -9,6 +21,8 @@ import { getOrCreatePlayerByAuth, updatePlayerNicknameByAuth } from './instant';
 import { signInWithWallet, signInAsGuest, signOut, linkWalletToGuest, getStoredAuthState, type AuthState } from './auth';
 import { createRunRng, generateRandomSeed, type SeededRng } from './seeded-random';
 import { rollModifier, type RunModifier } from './modifiers';
+
+const INVENTORY_MAX = 4;
 
 const NICKNAME_STORAGE_KEY = 'die-forward-nickname';
 const NICKNAME_PROMPTED_KEY = 'die-forward-nickname-prompted';
@@ -50,6 +64,7 @@ interface GameState {
   health: number;
   stamina: number;
   inventory: { id: string; name: string; emoji: string }[];
+  pendingItem: PendingInventoryItem | null;  // Item waiting to swap when inventory full
   dungeon: DungeonRoom[];
   itemsFound: number;
   seed: string | null;  // RNG seed for verifiable randomness
@@ -97,6 +112,17 @@ interface GameContextType extends GameState {
   itemsFound: number;
   incrementItemsFound: () => void;
   clearError: () => void;
+
+  // Inventory management (4-slot limit)
+  pendingItem: PendingInventoryItem | null;
+  swapItem: (slotIndex: number) => void;
+  dismissPendingItem: () => void;
+
+  // Item effect helpers
+  /** Apply Voidblade's per-turn 5 damage if present. Returns damage dealt (0 if not present). */
+  applyVoidbladeEffect: () => number;
+  /** Check for Death's Mantle death save when HP <= 0. Returns {saved, message}. */
+  checkDeathSave: () => { saved: boolean; message: string | null };
   
   // RNG for verifiable randomness
   rng: SeededRng | null;
@@ -139,6 +165,7 @@ const initialState: GameState = {
   health: 100,
   stamina: 3,
   inventory: [],
+  pendingItem: null,
   itemsFound: 0,
   dungeon: [],
   seed: null,
@@ -720,10 +747,17 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, [updateState]);
 
   const addToInventory = useCallback((item: { id: string; name: string; emoji: string }) => {
-    setState(prev => ({
-      ...prev,
-      inventory: [...prev.inventory, item],
-    }));
+    setState(prev => {
+      if (prev.inventory.length >= INVENTORY_MAX) {
+        // Inventory full — queue as pendingItem so UI can offer a swap
+        const details = getItemDetails(item.name);
+        const pending: PendingInventoryItem = details
+          ? { ...details, id: item.id }
+          : { id: item.id, name: item.name, emoji: item.emoji, description: '', effect: '', type: 'artifact' as const };
+        return { ...prev, pendingItem: pending };
+      }
+      return { ...prev, inventory: [...prev.inventory, item] };
+    });
   }, []);
 
   const removeFromInventory = useCallback((itemId: string) => {
@@ -731,6 +765,43 @@ export function GameProvider({ children }: { children: ReactNode }) {
       ...prev,
       inventory: prev.inventory.filter(i => i.id !== itemId),
     }));
+  }, []);
+
+  const swapItem = useCallback((slotIndex: number) => {
+    setState(prev => {
+      if (!prev.pendingItem || slotIndex < 0 || slotIndex >= prev.inventory.length) return prev;
+      const newInventory = [...prev.inventory];
+      const newItem = { id: prev.pendingItem.id, name: prev.pendingItem.name, emoji: prev.pendingItem.emoji };
+      newInventory[slotIndex] = newItem;
+      return { ...prev, inventory: newInventory, pendingItem: null };
+    });
+  }, []);
+
+  const dismissPendingItem = useCallback(() => {
+    updateState({ pendingItem: null });
+  }, [updateState]);
+
+  const applyVoidbladeEffect = useCallback((): number => {
+    let dmg = 0;
+    setState(prev => {
+      if (!prev.inventory.some(item => item.name === 'Voidblade')) return prev;
+      dmg = 5;
+      return { ...prev, health: Math.max(0, prev.health - 5) };
+    });
+    return dmg;
+  }, []);
+
+  const checkDeathSave = useCallback((): { saved: boolean; message: string | null } => {
+    let result = { saved: false, message: null as string | null };
+    setState(prev => {
+      if (prev.health > 0) return prev;
+      const mantleIndex = prev.inventory.findIndex(item => item.name === "Death's Mantle");
+      if (mantleIndex === -1) return prev;
+      result = { saved: true, message: "Death's Mantle shatters — you survive with 1 HP!" };
+      const newInventory = prev.inventory.filter((_, i) => i !== mantleIndex);
+      return { ...prev, health: 1, inventory: newInventory };
+    });
+    return result;
   }, []);
 
   const incrementItemsFound = useCallback(() => {
@@ -809,6 +880,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
     incrementItemsFound,
     clearError,
     rng,
+    // Inventory management
+    pendingItem: state.pendingItem,
+    swapItem,
+    dismissPendingItem,
+    // Item effect helpers
+    applyVoidbladeEffect,
+    checkDeathSave,
     // Modifier
     currentModifier: state.currentModifier,
     getModifiedDamageBonus,
