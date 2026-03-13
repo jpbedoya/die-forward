@@ -1,0 +1,336 @@
+{
+  "id": "living-tomb",
+  "version": "1.0.0",
+  "meta": {
+    "name": "THE LIVING TOMB",
+    "tagline": "Something grew in the dark. Now everything is part of it.",
+    "element": "organic",
+    "difficulty": 2,
+    "colors": {
+      "primary": "#1a0a0a",
+      "accent": "#c0392b",
+      "text": "#e8a0a0"
+    },
+    "mechanic": "INFECTION",
+    "mechanicDescription": "Infection stacks accumulate. At 3: lose a random item. At 5: -30% damage. Kill fast.",
+    "unlockRequirement": "Complete one run",
+    "emoji": "🩸"
+  },
+
+  "lore": "The tomb does not have a beginning anyone can trace. It grew while no one was watching, and by the time anyone understood what it was growing toward, the growth had become the answer to that question. Every body here became part of what keeps it warm.",
+
+  "fragments": {
+    "explore": {
+      "opening": [
+        "The air meets you like a held breath. Warm — body temperature, exactly — and carrying the iron smell of living things.",
+        "The smell reaches you first. Iron and yeast, and something else beneath: the inside of a living thing, close and animal.",
+        "Heat. Underground, where everything should be cold, the air sits at body temperature. The floor beneath your boots gives slightly when you press it.",
+        "The walls here are wrong. Still roughly stone in shape, but warm when you brush them and soft where they should be hard.",
+        "Something breathes in the walls. Slow and measured. A heartbeat — patient, thick — in the floor, in the ceiling, everywhere but in you.",
+        "The passage ahead glows faintly. Not torchlight. Something bioluminescent and red, pulsing at long regular intervals.",
+        "Warmth radiates from every surface. Your skin reads it as comfort before your mind reads it as wrong.",
+        "The floor yields under your weight. Not stone — something that gives, slightly, with each step. You stop trying to identify it.",
+        "A dripping, somewhere close. Not water. The sound is too thick, too slow. You step forward. The air smells of iron.",
+        "The heartbeat reaches your feet first. Through the floor, through your boots, into your bones. It is not yours.",
+        "You breathe and the room breathes back. The rhythm almost matches yours. Almost.",
+        "The stone here has been gone a long time. What replaced it is warmer and wet to the touch, and faintly luminescent where it catches your light."
+      ],
+      "middle": [
+        "The wall beside you bulges outward in a long slow pulse, then returns. Something circulates beneath the membrane.",
+        "Shapes press against the inside of the walls. The outline of a hand. A ribcage. A face, sealed beneath grey-pink tissue, mouth open.",
+        "An object — a blade, maybe — is visible through the growth that covers the floor. Sealed in. The tomb has been incorporating things for a long time.",
+        "The ceiling drips. Not water. Something warm and slightly viscous falls in slow drops onto surfaces that absorb it without a splash.",
+        "The passage has narrowed — not from structural damage, but from growth extending inward. It is closing. Slowly. It is not finished.",
+        "The objects in this space have been incorporated. You can see their shapes through the membrane — the suggestion of a pack, a lantern, a hand.",
+        "Something moves in the wall beside you. A peristaltic wave, traveling from one end to the other. The wall is processing.",
+        "The bioluminescence here is brighter. Deeper red. The growth is older in this section — more complete, more confident of itself.",
+        "A seam in the membrane marks where something was extruded and then reabsorbed. The shape it left behind is human-sized.",
+        "Every surface here is warm at exactly the same temperature. Body temperature. Exactly. As if you have stepped inside something rather than into something.",
+        "A bone presses against the surface of the far wall — visible through the membrane but not free. Preserved and claimed at the same time.",
+        "The growth has sealed over a doorway to the left. A newer passage has opened to the right. The tomb reroutes itself."
+      ],
+      "closing": [
+        "The heartbeat is louder here. Closer. It is paying attention.",
+        "Something in the walls shifts. The room adjusts to your presence.",
+        "You are a foreign body. It knows.",
+        "The warmth behind you is different from the warmth ahead. The one behind you is new.",
+        "Nothing here is moving. That is not the same as nothing here being alive.",
+        "The floor remembers every step you have taken. So does the tomb.",
+        "It is patient. It does not need to hurry.",
+        "The growth at the far end has spread since you entered. You were not watching. It was.",
+        "A low slow sound, somewhere close. Not a moan — the shape of one. The suggestion of breath through something that is not a throat.",
+        "The pulse in the floor steadies. It has found your rhythm.",
+        "A sound behind you that stops when you stop. Stillness with intention behind it.",
+        "The walls are closer than when you came in. You are not imagining it."
+      ]
+    },
+
+    "combat": {
+      "opening": [
+        "The air thickens. Iron and something warm. The heartbeat in the floor accelerates slightly.",
+        "The floor pulses under your feet in a pattern that is not the room's heartbeat. Something else is in here.",
+        "The bioluminescence at the far end flickers once, then steadies, then flickers again.",
+        "The room is too warm. Even by this tomb's standards. Something has been here long enough to raise the temperature.",
+        "The membrane on the far wall is moving. Not the slow breath of the tomb. Something beneath it is pushing.",
+        "A drip from the ceiling. You look up. The ceiling looks back.",
+        "The smell in this room is different. Stronger. More iron. Less yeast. The metabolic smell of something active.",
+        "A sound from the wall to your left. Wet. Rhythmic. Close.",
+        "The growth on the floor ahead is fresher than the surrounding tissue. Something has been moving through here.",
+        "The passage behind you makes a sound like a soft exhalation. The room settles into a new silence.",
+        "Your feet find purchase less easily here. The surface is more yielding. More receptive.",
+        "The heartbeat changes cadence. A double beat where there was one. Something in the room has a pulse of its own."
+      ],
+      "middle": [
+        "They pour from a gap in the membrane wall — Mycelium Crawlers, dozens, too many legs each, moving in fast clicking bursts. Every hit will cost you.",
+        "The Incorporated stands at the center of the room, still. Its head tracks your movement. Something behind its eyes is still trying to reach you. The rest of it has stopped trying.",
+        "The Bloom drifts from the far end of the space, trailing conversion behind it across the floor. It is not hunting you. It does not need to. It only needs to be here.",
+        "They emerge from the floor — Mycelium Crawlers, two, then four, then more — clicking and skittering, the infected ground they leave already spreading.",
+        "The Incorporated steps from the wall where it was standing. It was there long enough that the wall had begun to claim it. Membrane still clings to its back as it moves.",
+        "A Membrane Guardian fills the passage ahead, slow and rhythmic and breathing. It is aware of you. The room contracts behind you.",
+        "The Incorporated, plural — extruded from the membrane into the room, slow, dragging, trailing connections back into the tissue they emerged from.",
+        "The Crawlers come in silence. Then the clicking starts, and by then they are already close.",
+        "A Bloom hangs in the center of the room, converting the floor in slow expanding rings. You are already in the outer ring. You are already accumulating.",
+        "The Incorporated turns its head toward you. Its mouth opens. What comes out is not language — it is the shape of language, with nothing behind it that means anything. It moves forward.",
+        "From the ceiling: a drop of warm fluid. Then a Crawler follows it, legs spread wide, falling fast.",
+        "The Guardian seals the room. The passage behind you contracts. The sound it makes is like a breath held."
+      ],
+      "closing": [
+        "It does not want to kill you. That is not a comfort. That is the problem.",
+        "Kill fast. Every second in this room is another second accumulating.",
+        "The infection is already working. You can feel warmth in places that should not be warm. Do not give it more time.",
+        "It is close. Getting closer. The warmth it radiates is the wrongest thing you have felt in here.",
+        "The tomb wants to keep you. Everything in this room is working toward that end.",
+        "You have been in here too long already.",
+        "Move. Do not let it touch you more than once.",
+        "Whatever it was before, it is something else now. Deal with what it is.",
+        "The spores are already in the air. Fight quickly and leave quickly.",
+        "The room's heartbeat and yours are almost aligned. Do not let them finish aligning."
+      ]
+    },
+
+    "corpse": {
+      "framing": [
+        "The body is warm. This is the first thing. This is always the first thing here.",
+        "They are not fully visible. The wall has claimed the lower half. The face is clear, and still readable.",
+        "The floor has grown into their legs. They are sealed below the knee. The rest of them is still, recognizably, a person.",
+        "Half-emerged from the membrane, half within it. At some point this stopped being dying and became something else.",
+        "Seated. One hand incorporated into the wall behind them, one hand free. The free hand wrote something before it could no longer write.",
+        "The tomb has preserved them. They are warm to the touch. The warmth is not theirs anymore. It is the tomb's claim on them.",
+        "The body is sealed in membrane below the shoulders. The face, turned toward you, carries an expression that is not quite fear.",
+        "They are horizontal on the floor, the growth risen around them in a low ridge. They have been here long enough to become part of the architecture.",
+        "Face-down. The floor has grown up around their hands. They were reaching for something when the incorporation found them.",
+        "Upright. The wall behind them holds them upright. What remains of their upper half has the posture of someone who decided to stop moving and wait."
+      ],
+      "discoveryBeats": [
+        "The shape in the membrane ahead is too regular to be growth anatomy. You approach. It resolves into something you recognize.",
+        "A hand emerges from the wall at waist height, open. Not reaching — just present. Preserved. Extended.",
+        "You smell iron before you see them. Iron and something warm that used to be living and is still, technically, warm.",
+        "The floor ahead has a slight ridge — a seam where the growth texture differs. You follow the seam until you understand what caused it.",
+        "Movement, at first. Then you understand it is not movement — it is the slow breathing of the membrane around something stationary.",
+        "Something catches the light wrong. Too regular. Too specific. Not growth anatomy. A face, beneath the membrane, looking up.",
+        "The heartbeat in this part of the room is different. A second rhythm beneath the first. Faint. Decelerating.",
+        "Something protrudes from the wall that is not wall anatomy. You look closer. You take a step back.",
+        "The bioluminescence is brighter here — the growth more active, warmer, processing. At the center of the activity, something that used to move.",
+        "You almost walked through them. The growth on the floor covers most of them. You see the hand first."
+      ]
+    },
+
+    "cache": {
+      "locationLines": [
+        "A sealed alcove — stone, actual stone, cold and mineral, untouched by the growth that covers everything outside it.",
+        "A pocket in the original architecture where the tomb has not spread. The temperature drops noticeably at the threshold.",
+        "Something in the stone here resists incorporation. The growth stops at the wall, curls back from it. Inside: dry, cold, undisturbed.",
+        "A chamber the growth has avoided. The air tastes of mineral and age rather than iron. Cold in a way that feels like relief.",
+        "A dry passage, older than the tomb's growth, sealed from above by its own collapse. The rubble kept the growth out. Supplies accumulated in the gap.",
+        "An acidic seep runs along one wall — pale yellow stone, corroded. The tomb gives this area a wide margin. In the dry space beside it, things have been left.",
+        "Behind a section of growth that has not fused completely — a gap, tight, cold, stone on the other side. Someone found it before you.",
+        "Where two original passages intersect, the growth covers both approaches but not the junction itself. A seam in the tomb's coverage. Brief."
+      ],
+      "toneClosers": [
+        "The wall behind you breathes. The cold here muffles it. Does not stop it.",
+        "You can hear the heartbeat from here. Quieter. Present.",
+        "The growth at the threshold appears to be considering the gap. It has time. It is not in a hurry.",
+        "Safe. Briefly. The word does not mean what it usually means, but it is the closest word available.",
+        "Whatever kept the tomb out of this space is not a guarantee. It is a delay.",
+        "The cold is not cold enough. It is cool. The tomb is at the edges of this space, not in it. Yet.",
+        "Take what you need. Do not linger. The warmth is already returning.",
+        "Nothing here is watching you. You notice this. You appreciate it. You do not trust it."
+      ]
+    },
+
+    "exit": {
+      "opening": [
+        "Stone. Real stone, cold and mineral, in a passage where everything has been warm and soft and wrong.",
+        "The heartbeat fades by degrees as the passage changes. One step, then another, and the pulse under your feet is quieter.",
+        "The air here is dry. Cold in a way that registers as absence — the absence of the tomb's warmth.",
+        "Ahead: the growth ends. Precisely. The membrane stops and stone begins and the temperature drops several degrees in a single step.",
+        "The bioluminescence fades. Ahead there is only darkness, and darkness is not alive.",
+        "The warmth releases you, one step at a time. You feel the difference in your hands first.",
+        "The smell changes. Iron and yeast give way to cold earth and mineral. This passage has not been incorporated.",
+        "Your footsteps sound different here. Harder. The floor does not absorb the sound. The floor is stone."
+      ],
+      "middle": [
+        "The heartbeat reaches a threshold and stops. Not fading — stopping. You have moved outside the range of whatever produces it.",
+        "The growth falls away behind you. You can feel it at your back: the boundary, precisely where you crossed it.",
+        "The tomb releases you without comment. The warmth diminishes, the wetness gone, the weight of the place lifting.",
+        "You realize your own heartbeat is loud now. You have been walking through something with its own, and yours was muted under it. Now yours is all there is.",
+        "The passage behind you breathes once more. A slight pressure at your back, then nothing. The tomb has exhaled. It is finished with you.",
+        "The temperature of your own skin becomes perceptible again — separate from the surrounding air. You are a body in a space, not a body being held.",
+        "Behind you: warmth and pulse and the smell of something alive. Ahead: cold, and mineral, and surfaces that do not breathe.",
+        "The membrane at your back — you can feel where it stops. A line. The tomb does not cross it. The tomb stops there, patient, at the threshold it keeps."
+      ],
+      "closing": [
+        "You check yourself for spores. The check takes longer than it should.",
+        "The cold ahead is correct. The cold ahead is what underground should feel like. You did not realize how wrong the warmth was until it stopped.",
+        "You will return. The tomb knows this. There is no way to know how it knows, and no reason it would be wrong.",
+        "The tomb did not lose you. It let you leave. Note the difference.",
+        "You are out of it. For now, you are out of it.",
+        "Whatever you are carrying out — the memory of the warmth, the rhythm of the heartbeat, the smell of iron — that stays with you.",
+        "Something in you has been adjusted. You will not notice it immediately. You will notice it later.",
+        "You turn once to look back. The passage is still and warm and patient. It is already waiting."
+      ]
+    },
+
+    "options": {
+      "cautious": [
+        "Move carefully through the growth",
+        "Press along the edge",
+        "Advance without touching the walls",
+        "Step around it",
+        "Move slowly"
+      ],
+      "aggressive": [
+        "Cut through",
+        "Push past",
+        "Force your way",
+        "Move fast",
+        "Don't stop"
+      ],
+      "investigative": [
+        "Examine the membrane",
+        "Probe the growth",
+        "Look closer",
+        "Search for what's beneath",
+        "Study the surface"
+      ],
+      "retreat": [
+        "Step back",
+        "Move away from the warmth",
+        "Pull back",
+        "Put distance between you",
+        "Wait"
+      ]
+    }
+  },
+
+  "bestiary": {
+    "shared": ["The Unfinished", "Bloated One", "The Congregation"],
+    "local": [
+      {
+        "name": "Mycelium Crawlers",
+        "tier": 1,
+        "health": { "min": 30, "max": 45 },
+        "behaviors": ["AGGRESSIVE", "ERRATIC", "CHARGING"],
+        "description": "Too many legs — the count shifts when you look. They move in fast bursts and inject spores on contact. Every hit adds infection. They are individually fragile. They are frequently not individual.",
+        "emoji": "🍄"
+      },
+      {
+        "name": "The Incorporated",
+        "tier": 1,
+        "health": { "min": 50, "max": 70 },
+        "behaviors": ["STALKING", "AGGRESSIVE", "RETREATING"],
+        "description": "They were people. The tomb pushed them back out because it needed them to move. They do not attack because they want to. Their eyes still register you. Some of them are still trying to say something.",
+        "emoji": "🫀"
+      },
+      {
+        "name": "Membrane Guardian",
+        "tier": 2,
+        "health": { "min": 90, "max": 115 },
+        "behaviors": ["DEFENSIVE", "CHARGING", "AGGRESSIVE"],
+        "description": "It does not stand in the passage. It is the passage, at that point — sphincter-like, pulsing, sealing when engaged. It can be fought. It takes time. During that time, the room is sealed.",
+        "emoji": "🫁"
+      },
+      {
+        "name": "The Bloom",
+        "tier": 2,
+        "health": { "min": 65, "max": 85 },
+        "behaviors": ["STALKING", "ERRATIC", "RETREATING"],
+        "description": "A walking infection event. It drifts. It meanders. It does not come for you. It only needs to be in the same room. Proximity accumulates infection stacks. Keep distance. Kill fast.",
+        "emoji": "🌸"
+      },
+      {
+        "name": "The Root",
+        "tier": 3,
+        "health": { "min": 180, "max": 220 },
+        "behaviors": ["CHARGING", "AGGRESSIVE", "DEFENSIVE", "ERRATIC"],
+        "description": "The Root is not a creature that occupies the final chamber. The Root is the final chamber. Every wall is it. Every surface. The floor rises. The ceiling descends. A wall reaches. It is doing what the tomb has always done. You have simply come close enough to matter.",
+        "emoji": "🌿"
+      }
+    ]
+  },
+
+  "depths": [
+    {
+      "name": "THE OUTER GROWTH",
+      "tier": 1,
+      "roomRange": [1, 4],
+      "description": "The edges. Still mostly stone. The growth is newer here."
+    },
+    {
+      "name": "THE DEEP FLESH",
+      "tier": 2,
+      "roomRange": [5, 8],
+      "description": "Pure organic. No stone visible. The walls breathe."
+    },
+    {
+      "name": "THE CORE",
+      "tier": 3,
+      "roomRange": [9, 12],
+      "description": "The oldest growth. The center of whatever this is."
+    }
+  ],
+
+  "dungeonLayout": {
+    "totalRooms": 12,
+    "structure": [
+      { "type": "explore", "template": "explore" },
+      { "type": "combat", "template": "combat" },
+      { "type": "combat", "template": "combat" },
+      { "type": "corpse", "template": "corpse" },
+      { "type": "combat", "template": "combat" },
+      { "type": "combat", "template": "combat" },
+      { "type": "cache", "template": "cache" },
+      { "type": "combat", "template": "combat" },
+      { "type": "explore", "template": "explore" },
+      { "type": "combat", "template": "combat" },
+      { "type": "corpse", "template": "corpse" },
+      { "type": "combat", "template": "combat", "boss": true }
+    ]
+  },
+
+  "boss": "The Root",
+
+  "audio": {
+    "ambient": {
+      "explore": "/audio/zones/living-tomb/ambient-explore.mp3",
+      "combat": "/audio/zones/living-tomb/ambient-combat.mp3"
+    },
+    "sfx": {
+      "footstep": "/audio/zones/living-tomb/footstep.mp3",
+      "descend": "/audio/zones/living-tomb/depth-descend.mp3",
+      "environment": [
+        "/audio/zones/living-tomb/heartbeat.mp3",
+        "/audio/zones/living-tomb/wet-drip.mp3",
+        "/audio/zones/living-tomb/membrane-breathe.mp3"
+      ],
+      "atmosphere": [
+        "/audio/zones/living-tomb/distant-pulse.mp3",
+        "/audio/zones/living-tomb/growth-creak.mp3"
+      ],
+      "boss": {
+        "intro": "/audio/zones/living-tomb/boss-intro.mp3",
+        "roar": "/audio/zones/living-tomb/boss-roar.mp3"
+      }
+    }
+  }
+}
