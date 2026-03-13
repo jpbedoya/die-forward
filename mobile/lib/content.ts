@@ -707,19 +707,21 @@ const RARITY_ORDER: Record<string, number> = { common: 0, uncommon: 1, rare: 2, 
  * Pick a random item name using weighted rarity distribution.
  * Weights: common 55%, uncommon 30%, rare 12%, legendary 3%
  * minRarity optionally filters out lower rarities (e.g. for special loot).
+ * excludeItems optionally filters specific items (e.g. Soulstone before 50-death milestone).
  */
 export function rollRandomItem(
   rng: () => number,
   minRarity?: 'common' | 'uncommon' | 'rare' | 'legendary',
+  excludeItems?: string[],
 ): string {
   const minTier = minRarity ? (RARITY_ORDER[minRarity] ?? 0) : 0;
   const weights: Record<string, number> = { common: 55, uncommon: 30, rare: 12, legendary: 3 };
 
-  // Group eligible items by rarity
+  // Group eligible items by rarity, excluding specified items
   const byRarity: Record<string, string[]> = { common: [], uncommon: [], rare: [], legendary: [] };
   for (const item of Object.values(ITEM_DETAILS)) {
     const tier = RARITY_ORDER[item.rarity ?? 'common'] ?? 0;
-    if (tier >= minTier) {
+    if (tier >= minTier && !excludeItems?.includes(item.name)) {
       const bucket = item.rarity ?? 'common';
       byRarity[bucket].push(item.name);
     }
@@ -739,7 +741,7 @@ export function rollRandomItem(
   if (pool.length === 0 || totalWeight === 0) {
     // Fallback: just pick any eligible item uniformly
     const all = Object.values(ITEM_DETAILS)
-      .filter(i => (RARITY_ORDER[i.rarity ?? 'common'] ?? 0) >= minTier)
+      .filter(i => (RARITY_ORDER[i.rarity ?? 'common'] ?? 0) >= minTier && !excludeItems?.includes(i.name))
       .map(i => i.name);
     return all.length > 0 ? all[Math.floor(rng() * all.length)] : 'Herbs';
   }
@@ -787,7 +789,7 @@ export function generateDungeon(zoneId: string, rng: SeededRng): DungeonRoom[] {
     if (slot.boss) {
       // Boss room — creature comes from zone's boss definition
       const boss = getZoneBoss(zone, BESTIARY);
-      const content = getZoneRoom(zone, slot.type, rng, slot.template);
+      const content = getZoneRoom(zone, slot.type, rng, slot.template, index);
       return {
         type: slot.type,
         template: slot.template,
@@ -800,7 +802,7 @@ export function generateDungeon(zoneId: string, rng: SeededRng): DungeonRoom[] {
       };
     }
 
-    const content = getZoneRoom(zone, slot.type, rng, slot.template);
+    const content = getZoneRoom(zone, slot.type, rng, slot.template, index);
 
     if (slot.type === 'combat') {
       // Combat rooms get a zone-appropriate creature at the right tier
@@ -824,7 +826,7 @@ export function generateDungeon(zoneId: string, rng: SeededRng): DungeonRoom[] {
   });
 
   // Append exit room (always appended after the boss; zone structure ends at boss)
-  const exitContent = getZoneRoom(zone, 'exit', rng);
+  const exitContent = getZoneRoom(zone, 'exit', rng, undefined, structure.length);
   rooms.push({
     type: 'exit',
     template: 'zone-exit',
