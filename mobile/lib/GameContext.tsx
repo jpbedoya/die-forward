@@ -8,6 +8,7 @@ import { Transaction, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { getOrCreatePlayerByAuth, updatePlayerNicknameByAuth } from './instant';
 import { signInWithWallet, signInAsGuest, signOut, linkWalletToGuest, getStoredAuthState, type AuthState } from './auth';
 import { createRunRng, generateRandomSeed, type SeededRng } from './seeded-random';
+import { rollModifier, type RunModifier } from './modifiers';
 
 const NICKNAME_STORAGE_KEY = 'die-forward-nickname';
 const NICKNAME_PROMPTED_KEY = 'die-forward-nickname-prompted';
@@ -52,6 +53,7 @@ interface GameState {
   dungeon: DungeonRoom[];
   itemsFound: number;
   seed: string | null;  // RNG seed for verifiable randomness
+  currentModifier: RunModifier | null;  // Run modifier rolled at game start
   
   // UI state
   loading: boolean;
@@ -98,6 +100,25 @@ interface GameContextType extends GameState {
   
   // RNG for verifiable randomness
   rng: SeededRng | null;
+
+  // Run modifier (rolled at game start, persists for the run)
+  currentModifier: RunModifier | null;
+
+  // Modifier effect helpers — call these instead of raw values in combat/play screens
+  /** Additional damage multiplier from the run modifier (e.g. 0.25 = +25%) */
+  getModifiedDamageBonus: () => number;
+  /** Healing multiplier after modifier penalty (e.g. 0.7 if healingPenalty = 0.3) */
+  getModifiedHealMultiplier: () => number;
+  /** Total stamina regen for a turn, factoring in modifier bonus */
+  getModifiedStaminaRegen: (baseRegen: number) => number;
+  /** Brace stamina cost, factoring in modifier (default 0, Iron Will = 1) */
+  getModifiedBraceCost: (baseCost: number) => number;
+  /** Whether brace should negate all damage (Iron Will) */
+  modifierBraceNegatesAll: () => boolean;
+  /** Corpse discovery chance with modifier bonus applied */
+  getModifiedCorpseChance: (baseChance: number) => number;
+  /** Whether enemy intent should be hidden on turn 1 of combat */
+  modifierHidesFirstIntent: () => boolean;
 }
 
 const initialState: GameState = {
@@ -121,6 +142,7 @@ const initialState: GameState = {
   itemsFound: 0,
   dungeon: [],
   seed: null,
+  currentModifier: null,
   loading: false,
   error: null,
 };
@@ -565,6 +587,17 @@ export function GameProvider({ children }: { children: ReactNode }) {
       const seed = session.vrfSeed || session.seed || generateRandomSeed();
       console.log('[GameContext] Using run seed:', seed.slice(0, 16) + '...');
       
+      // Roll run modifier deterministically from seed.
+      // Use a dedicated RNG instance so the modifier roll is always the first
+      // value consumed from the sequence — this keeps other rng calls stable.
+      const modifierRng = createRunRng(seed);
+      const modifier = rollModifier(modifierRng);
+      console.log('[GameContext] Run modifier:', modifier.id);
+      
+      // Apply modifier starting overrides
+      const startingHP = modifier.startingHP ?? 100;
+      const startingStamina = modifier.startingStamina ?? 3;
+      
       // Generate dungeon client-side with full content system
       const dungeon = generateRandomDungeon();
       
@@ -573,12 +606,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
         stakeAmount: emptyHanded ? 0 : amount,  // Empty handed stores 0 so isEmptyHanded works correctly
         zoneId: session.zoneId || zoneId || 'sunken-crypt',
         currentRoom: 0,
-        health: 100,
-        stamina: 3,
+        health: startingHP,
+        stamina: startingStamina,
         inventory: [],
         itemsFound: 0,
         dungeon,
         seed,
+        currentModifier: modifier,
         loading: false,
       });
     } catch (err) {
@@ -712,6 +746,40 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return state.seed ? createRunRng(state.seed) : null;
   }, [state.seed]);
 
+  // ── Modifier helper functions ─────────────────────────────────────────────
+  // All modifier effect logic lives here; combat/play screens stay clean.
+
+  const getModifiedDamageBonus = useCallback((): number => {
+    return state.currentModifier?.damageBonus ?? 0;
+  }, [state.currentModifier]);
+
+  const getModifiedHealMultiplier = useCallback((): number => {
+    const penalty = state.currentModifier?.healingPenalty ?? 0;
+    return 1 - penalty;
+  }, [state.currentModifier]);
+
+  const getModifiedStaminaRegen = useCallback((baseRegen: number): number => {
+    const bonus = state.currentModifier?.staminaRegenBonus ?? 0;
+    return baseRegen + bonus;
+  }, [state.currentModifier]);
+
+  const getModifiedBraceCost = useCallback((baseCost: number): number => {
+    return state.currentModifier?.braceCost ?? baseCost;
+  }, [state.currentModifier]);
+
+  const modifierBraceNegatesAll = useCallback((): boolean => {
+    return state.currentModifier?.braceNegatesAll ?? false;
+  }, [state.currentModifier]);
+
+  const getModifiedCorpseChance = useCallback((baseChance: number): number => {
+    const bonus = state.currentModifier?.corpseChanceBonus ?? 0;
+    return Math.min(1, baseChance + bonus);
+  }, [state.currentModifier]);
+
+  const modifierHidesFirstIntent = useCallback((): boolean => {
+    return state.currentModifier?.hideFirstIntent ?? false;
+  }, [state.currentModifier]);
+
   const value: GameContextType = {
     ...state,
     // Auth actions
@@ -741,6 +809,15 @@ export function GameProvider({ children }: { children: ReactNode }) {
     incrementItemsFound,
     clearError,
     rng,
+    // Modifier
+    currentModifier: state.currentModifier,
+    getModifiedDamageBonus,
+    getModifiedHealMultiplier,
+    getModifiedStaminaRegen,
+    getModifiedBraceCost,
+    modifierBraceNegatesAll,
+    getModifiedCorpseChance,
+    modifierHidesFirstIntent,
   };
 
   return (

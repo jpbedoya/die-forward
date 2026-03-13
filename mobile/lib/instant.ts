@@ -60,6 +60,11 @@ export interface Player {
   highestRoom: number;
   createdAt: number;
   lastPlayedAt: number;
+  // Milestone cosmetics
+  activeTitle?: string;
+  activeBorder?: string;
+  unlockedTitles?: string[];
+  unlockedBorders?: string[];
 }
 
 // Initialize the database
