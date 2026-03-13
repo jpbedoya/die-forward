@@ -1,5 +1,8 @@
 // Content loader - pulls from pre-generated JSON content
 
+import { loadZone, getZoneRoom, getZoneCreatureSeeded, getZoneBoss, getZoneDepth } from './zone-loader';
+import { createRunRng, generateRandomSeed, type SeededRng } from './seeded-random';
+
 import exploreRooms from '../content/explore-rooms.json';
 import combatRooms from '../content/combat-rooms.json';
 import corpseRooms from '../content/corpse-rooms.json';
@@ -165,7 +168,7 @@ export interface CreatureInfo {
   artUrl?: string;
 }
 
-const BESTIARY: Record<string, CreatureInfo> = {
+export const BESTIARY: Record<string, CreatureInfo> = {
   // Tier 1 - Common Horrors
   'The Drowned': {
     name: 'The Drowned',
@@ -503,6 +506,7 @@ export interface ItemDetails {
   effect: string;
   type: 'consumable' | 'weapon' | 'artifact';
   artUrl?: string;
+  rarity?: 'common' | 'uncommon' | 'rare' | 'legendary';
 }
 
 export const ITEM_DETAILS: Record<string, ItemDetails> = {
@@ -513,6 +517,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Bitter leaves that numb pain and slow bleeding. They taste like regret.',
     effect: 'Restores health when used',
     type: 'consumable',
+    rarity: 'common',
     artUrl: '/items/herbs.webp',
   },
   'Pale Rations': {
@@ -521,6 +526,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Food from below. It sustains, but you try not to think about what it was.',
     effect: 'Restores stamina',
     type: 'consumable',
+    rarity: 'common',
     artUrl: '/items/pale-rations.webp',
   },
   'Bone Dust': {
@@ -529,6 +535,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Ground remains of something old. Inhale it to see what it saw.',
     effect: 'Reveals hidden paths',
     type: 'consumable',
+    rarity: 'common',
     artUrl: '/items/bone-dust.webp',
   },
   'Void Salt': {
@@ -537,6 +544,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Black crystals that burn on contact. Creatures of water fear it.',
     effect: '+40% damage vs aquatic enemies',
     type: 'consumable',
+    rarity: 'uncommon',
     artUrl: '/items/void-salt.webp',
   },
   'Poison Vial': {
@@ -545,6 +553,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Something extracted from something else. The smell alone is a weapon.',
     effect: '+40% damage bonus',
     type: 'consumable',
+    rarity: 'rare',
     artUrl: '/items/poison-vial.webp',
   },
   
@@ -555,6 +564,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Pitted with age and old blood. Still sharp enough.',
     effect: '+20% damage bonus',
     type: 'weapon',
+    rarity: 'common',
     artUrl: '/items/rusty-blade.webp',
   },
   'Dagger': {
@@ -563,6 +573,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Small, ceremonial. It was meant for offerings, not combat. It works anyway.',
     effect: '+35% damage bonus',
     type: 'weapon',
+    rarity: 'uncommon',
     artUrl: '/items/dagger.webp',
   },
   'Bone Hook': {
@@ -571,6 +582,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Carved from a rib. Meant for pulling things closer. Or keeping them away.',
     effect: 'Creates distance in combat',
     type: 'weapon',
+    rarity: 'uncommon',
     artUrl: '/items/bone-hook.webp',
   },
   'Shield': {
@@ -579,6 +591,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Dented, scarred, still standing. Like whoever carried it.',
     effect: '+25% defense bonus',
     type: 'weapon',
+    rarity: 'uncommon',
     artUrl: '/items/shield.webp',
   },
   'Tattered Shield': {
@@ -587,6 +600,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'More holes than metal. But it still catches blows that would kill you.',
     effect: '+25% defense bonus',
     type: 'weapon',
+    rarity: 'common',
     artUrl: '/items/tattered-shield.webp',
   },
   'Cloak': {
@@ -595,6 +609,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Wrapped around your shoulders, things have trouble finding you.',
     effect: '+15% flee, +10% defense',
     type: 'weapon',
+    rarity: 'uncommon',
     artUrl: '/items/cloak.webp',
   },
   
@@ -605,6 +620,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'A flickering flame. It pushes back the dark, but the dark pushes back.',
     effect: '+25% damage, light source',
     type: 'artifact',
+    rarity: 'uncommon',
     artUrl: '/items/torch.webp',
   },
   'Bone Charm': {
@@ -613,6 +629,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Carved from something\'s finger. It hums when danger is near. It never stops humming.',
     effect: '+15% defense bonus',
     type: 'artifact',
+    rarity: 'uncommon',
     artUrl: '/items/bone-charm.webp',
   },
   'Ancient Scroll': {
@@ -621,6 +638,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Waterlogged pages in a language you almost understand. Reading it feels like remembering something you never knew.',
     effect: '+20% defense, +10% flee',
     type: 'artifact',
+    rarity: 'rare',
     artUrl: '/items/ancient-scroll.webp',
   },
   'Eye of the Hollow': {
@@ -629,6 +647,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'It blinks when you\'re not looking. But it shows you things you\'d otherwise miss.',
     effect: 'Reveals hidden corpses and caches',
     type: 'artifact',
+    rarity: 'rare',
     artUrl: '/items/eye-of-the-hollow.webp',
   },
   'Heartstone': {
@@ -637,6 +656,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Cold to the touch. Warm when death is near. Yours or someone else\'s.',
     effect: 'Shows when you\'re near death',
     type: 'artifact',
+    rarity: 'legendary',
     artUrl: '/items/heartstone.webp',
   },
   'Pale Coin': {
@@ -645,7 +665,32 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     description: 'Currency of the dead. Worth nothing above. Worth everything below.',
     effect: 'Can be offered for passage',
     type: 'artifact',
+    rarity: 'common',
     artUrl: '/items/pale-coin.webp',
+  },
+  'Soulstone': {
+    name: 'Soulstone',
+    emoji: '💎',
+    description: 'Crystallized from the residue of a hundred deaths. It pulses faintly — something is still inside.',
+    effect: '+10% to all stats',
+    rarity: 'rare',
+    type: 'artifact',
+  },
+  "Death's Mantle": {
+    name: "Death's Mantle",
+    emoji: '🌑',
+    description: 'Woven from shadow and last breaths. It remembers what it means to die.',
+    effect: 'Survive one lethal hit with 1 HP (consumed)',
+    rarity: 'legendary',
+    type: 'artifact',
+  },
+  'Voidblade': {
+    name: 'Voidblade',
+    emoji: '⚔️',
+    description: 'A blade that hungers. It cuts through anything — including you.',
+    effect: '+50% damage, take 5 damage per turn',
+    rarity: 'legendary',
+    type: 'weapon',
   },
 };
 
@@ -654,7 +699,65 @@ export function getItemDetails(name: string): ItemDetails | undefined {
   return ITEM_DETAILS[name];
 }
 
-// Generate a combat room with a specific creature assigned
+// Rarity tier order for comparison
+const RARITY_ORDER: Record<string, number> = { common: 0, uncommon: 1, rare: 2, legendary: 3 };
+
+/**
+ * Pick a random item name using weighted rarity distribution.
+ * Weights: common 55%, uncommon 30%, rare 12%, legendary 3%
+ * minRarity optionally filters out lower rarities (e.g. for special loot).
+ */
+export function rollRandomItem(
+  rng: () => number,
+  minRarity?: 'common' | 'uncommon' | 'rare' | 'legendary',
+): string {
+  const minTier = minRarity ? (RARITY_ORDER[minRarity] ?? 0) : 0;
+  const weights: Record<string, number> = { common: 55, uncommon: 30, rare: 12, legendary: 3 };
+
+  // Group eligible items by rarity
+  const byRarity: Record<string, string[]> = { common: [], uncommon: [], rare: [], legendary: [] };
+  for (const item of Object.values(ITEM_DETAILS)) {
+    const tier = RARITY_ORDER[item.rarity ?? 'common'] ?? 0;
+    if (tier >= minTier) {
+      const bucket = item.rarity ?? 'common';
+      byRarity[bucket].push(item.name);
+    }
+  }
+
+  // Build weighted rarity pool (only rarities that have items)
+  const pool: Array<{ rarity: string; weight: number; items: string[] }> = [];
+  let totalWeight = 0;
+  for (const [rarity, items] of Object.entries(byRarity)) {
+    if (items.length > 0) {
+      const w = weights[rarity] ?? 0;
+      pool.push({ rarity, weight: w, items });
+      totalWeight += w;
+    }
+  }
+
+  if (pool.length === 0 || totalWeight === 0) {
+    // Fallback: just pick any eligible item uniformly
+    const all = Object.values(ITEM_DETAILS)
+      .filter(i => (RARITY_ORDER[i.rarity ?? 'common'] ?? 0) >= minTier)
+      .map(i => i.name);
+    return all.length > 0 ? all[Math.floor(rng() * all.length)] : 'Herbs';
+  }
+
+  // Roll rarity bucket, then pick item within it
+  const roll = rng() * totalWeight;
+  let cumulative = 0;
+  for (const { weight, items } of pool) {
+    cumulative += weight;
+    if (roll < cumulative) {
+      return items[Math.floor(rng() * items.length)];
+    }
+  }
+
+  // Fallback
+  return pool[pool.length - 1].items[0];
+}
+
+// Generate a combat room with a specific creature assigned (legacy, non-seeded)
 function getCombatRoomWithCreature(roomNumber: number, template?: string): RoomVariation & { enemy: string; enemyEmoji: string } {
   const baseContent = getCombatRoom(template);
   const creature = getCreatureForRoom(roomNumber);
@@ -665,36 +768,90 @@ function getCombatRoomWithCreature(roomNumber: number, template?: string): RoomV
   };
 }
 
-// Generate randomized dungeon (12 rooms with boss at the end)
-export function generateRandomDungeon(): DungeonRoom[] {
-  const exploreTemplates = ['descent', 'corridor', 'flooded', 'chamber', 'shrine', 'crossroads'];
-  const combatTemplates = ['ambush', 'confrontation', 'territorial', 'pursuit', 'guardian'];
-  const corpseTemplates = ['fresh', 'old', 'heroic', 'disturbing', 'peaceful'];
-  const cacheTemplates = ['alcove', 'survivor_stash', 'spring', 'offering_site'];
-  const exitTemplates = ['threshold', 'earned', 'release', 'changed'];
-  
-  return [
-    // Depth 1: Upper Crypt (Rooms 1-4)
-    { type: 'explore', template: pick(exploreTemplates), content: getExploreRoom() },
-    { type: 'combat', template: pick(combatTemplates), content: getCombatRoomWithCreature(2) },
-    { type: 'corpse', template: pick(corpseTemplates), content: getCorpseRoom() },
-    { type: 'combat', template: pick(combatTemplates), content: getCombatRoomWithCreature(4) },
-    
-    // Depth 2: Flooded Halls (Rooms 5-8)
-    { type: 'explore', template: 'flooded', content: getExploreRoom('flooded') },
-    { type: 'combat', template: pick(combatTemplates), content: getCombatRoomWithCreature(6) },
-    { type: 'cache', template: pick(cacheTemplates), content: getCacheRoom() },
-    { type: 'combat', template: pick(combatTemplates), content: getCombatRoomWithCreature(8) },
-    
-    // Depth 3: The Abyss (Rooms 9-12)
-    { type: 'explore', template: pick(exploreTemplates), content: getExploreRoom() },
-    { type: 'corpse', template: pick(corpseTemplates), content: getCorpseRoom() },
-    { type: 'combat', template: pick(combatTemplates), content: getCombatRoomWithCreature(11) },
-    { type: 'combat', template: 'arena', content: { ...getCombatRoom('arena'), enemy: 'The Keeper', enemyEmoji: '👁️' }, boss: true },
-    { type: 'exit', template: pick(exitTemplates), content: getExitRoom() },
-  ];
+/**
+ * Zone-aware dungeon generator. Reads zone's dungeonLayout.structure to build
+ * rooms, assigns creatures from zone bestiary (80% local / 20% shared), and
+ * uses zone's boss for the final encounter.
+ *
+ * All random choices go through the seeded RNG for full reproducibility.
+ */
+export function generateDungeon(zoneId: string, rng: SeededRng): DungeonRoom[] {
+  const zone = loadZone(zoneId);
+  const structure = zone.dungeonLayout.structure;
+
+  const rooms: DungeonRoom[] = structure.map((slot, index) => {
+    const roomNumber = index + 1;
+    const depth = getZoneDepth(zone, roomNumber);
+
+    if (slot.boss) {
+      // Boss room — creature comes from zone's boss definition
+      const boss = getZoneBoss(zone, BESTIARY);
+      const content = getZoneRoom(zone, slot.type, rng, slot.template);
+      return {
+        type: slot.type,
+        template: slot.template,
+        content: {
+          ...content,
+          enemy: boss.name,
+          enemyEmoji: boss.emoji,
+        } as RoomVariation,
+        boss: true,
+      };
+    }
+
+    const content = getZoneRoom(zone, slot.type, rng, slot.template);
+
+    if (slot.type === 'combat') {
+      // Combat rooms get a zone-appropriate creature at the right tier
+      const creature = getZoneCreatureSeeded(zone, depth.tier, rng, BESTIARY);
+      return {
+        type: slot.type,
+        template: slot.template,
+        content: {
+          ...content,
+          enemy: creature.name,
+          enemyEmoji: creature.emoji,
+        } as RoomVariation,
+      };
+    }
+
+    return {
+      type: slot.type,
+      template: slot.template,
+      content: content as RoomVariation,
+    };
+  });
+
+  // Append exit room (always appended after the boss; zone structure ends at boss)
+  const exitContent = getZoneRoom(zone, 'exit', rng);
+  rooms.push({
+    type: 'exit',
+    template: 'zone-exit',
+    content: exitContent as RoomVariation,
+  });
+
+  return rooms;
 }
 
-export function getBossCreature(): CreatureInfo {
-  return BESTIARY['The Keeper'];
+/**
+ * Generate a randomized dungeon using the Sunken Crypt zone.
+ * Backward-compatible wrapper around generateDungeon — uses a fresh random
+ * seed each call so behavior is indistinguishable from the old implementation.
+ */
+export function generateRandomDungeon(): DungeonRoom[] {
+  const seed = generateRandomSeed();
+  const rng = createRunRng(seed);
+  return generateDungeon('sunken-crypt', rng);
+}
+
+/**
+ * Get the boss creature for a zone (defaults to sunken-crypt / The Keeper).
+ */
+export function getBossCreature(zoneId = 'sunken-crypt'): CreatureInfo {
+  try {
+    const zone = loadZone(zoneId);
+    return getZoneBoss(zone, BESTIARY);
+  } catch {
+    return BESTIARY['The Keeper'];
+  }
 }

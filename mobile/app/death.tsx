@@ -13,13 +13,20 @@ import { useAudius } from '../lib/AudiusContext';
 import { AudioSettingsModal } from '../components/AudioSettingsModal';
 import { AudioToggle } from '../components/AudioToggle';
 import { CRTOverlay } from '../components/CRTOverlay';
+import { useCurrentPlayer } from '../lib/instant';
+import { getNewMilestone, getMilestoneTypeLabel, type Milestone } from '../lib/milestones';
 
 export default function DeathScreen() {
   const game = useGame();
   const { playSFX, playAmbient } = useAudio();
   const { viewShotRef, webRef, captureAndShare } = useShareCard();
   const { currentTrack, musicSource } = useAudius();
+  const { player } = useCurrentPlayer();
   const params = useLocalSearchParams<{ killedBy?: string }>();
+
+  // Milestone unlock check — computed once when player data arrives
+  const [newMilestone, setNewMilestone] = useState<Milestone | null>(null);
+  const [milestoneChecked, setMilestoneChecked] = useState(false);
 
   // Dramatic intro state
   const [showDramaticIntro, setShowDramaticIntro] = useState(true);
@@ -40,6 +47,16 @@ export default function DeathScreen() {
   const depth = getDepthForRoom(roomNumber);
   const stakeAmountNum = Number(game.stakeAmount || 0);
   const isEmptyHanded = !Number.isFinite(stakeAmountNum) || stakeAmountNum <= 0;
+
+  // Check for milestone unlock when player data is ready (run once)
+  useEffect(() => {
+    if (milestoneChecked || !player) return;
+    const prevDeaths = player.totalDeaths ?? 0;
+    const nextDeaths = prevDeaths + 1;
+    const milestone = getNewMilestone(prevDeaths, nextDeaths);
+    setNewMilestone(milestone);
+    setMilestoneChecked(true);
+  }, [player, milestoneChecked]);
 
   const handleShare = async () => {
     setSharing(true);
@@ -319,6 +336,70 @@ export default function DeathScreen() {
             "{deathMoment}"
           </Text>
         </View>
+
+        {/* Milestone Unlock Banner */}
+        {newMilestone && (
+          <View
+            style={{
+              borderWidth: 1,
+              borderColor: '#c8a96e',
+              backgroundColor: 'rgba(200, 169, 110, 0.08)',
+              padding: 16,
+              marginBottom: 20,
+              alignItems: 'center',
+            }}
+          >
+            <Text
+              style={{
+                fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+                color: '#c8a96e',
+                fontSize: 10,
+                letterSpacing: 4,
+                marginBottom: 6,
+              }}
+            >
+              ─── MILESTONE UNLOCKED ───
+            </Text>
+            <Text
+              style={{
+                fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+                color: '#fef3c7',
+                fontSize: 18,
+                fontWeight: 'bold',
+                marginBottom: 4,
+              }}
+            >
+              {newMilestone.type === 'perk' || newMilestone.type === 'border'
+                ? getMilestoneTypeLabel(newMilestone.type)
+                : newMilestone.value}
+            </Text>
+            <Text
+              style={{
+                fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+                color: '#a8a29e',
+                fontSize: 11,
+                textAlign: 'center',
+              }}
+            >
+              {newMilestone.description}
+            </Text>
+            {newMilestone.type === 'perk' && (
+              <Text
+                style={{
+                  fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+                  color: '#c8a96e',
+                  fontSize: 10,
+                  marginTop: 6,
+                  textAlign: 'center',
+                }}
+              >
+                {newMilestone.value === 'starting_item'
+                  ? 'You will now begin each run with a random item'
+                  : 'You will now begin each run with 110 HP'}
+              </Text>
+            )}
+          </View>
+        )}
 
         {/* Final Words Input */}
         {!submitted ? (

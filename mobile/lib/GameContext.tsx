@@ -1,13 +1,28 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect, useMemo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as api from './api';
-import { generateRandomDungeon, DungeonRoom } from './content';
+import { generateRandomDungeon, DungeonRoom, getItemDetails } from './content';
+
+// Pending item when inventory is full — includes full item details for the swap UI
+export interface PendingInventoryItem {
+  id: string;
+  name: string;
+  emoji: string;
+  description: string;
+  effect: string;
+  type: 'consumable' | 'weapon' | 'artifact';
+  rarity?: 'common' | 'uncommon' | 'rare' | 'legendary';
+  artUrl?: string;
+}
 import { useUnifiedWallet, type Address } from './wallet/unified';
 import { GAME_POOL_PDA, buildStakeInstruction, generateSessionId } from './solana/escrow';
 import { Transaction, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { getOrCreatePlayerByAuth, updatePlayerNicknameByAuth } from './instant';
 import { signInWithWallet, signInAsGuest, signOut, linkWalletToGuest, getStoredAuthState, type AuthState } from './auth';
 import { createRunRng, generateRandomSeed, type SeededRng } from './seeded-random';
+import { rollModifier, type RunModifier } from './modifiers';
+
+const INVENTORY_MAX = 4;
 
 const NICKNAME_STORAGE_KEY = 'die-forward-nickname';
 const NICKNAME_PROMPTED_KEY = 'die-forward-nickname-prompted';
@@ -49,9 +64,11 @@ interface GameState {
   health: number;
   stamina: number;
   inventory: { id: string; name: string; emoji: string }[];
+  pendingItem: PendingInventoryItem | null;  // Item waiting to swap when inventory full
   dungeon: DungeonRoom[];
   itemsFound: number;
   seed: string | null;  // RNG seed for verifiable randomness
+  currentModifier: RunModifier | null;  // Run modifier rolled at game start
   
   // UI state
   loading: boolean;
@@ -95,9 +112,39 @@ interface GameContextType extends GameState {
   itemsFound: number;
   incrementItemsFound: () => void;
   clearError: () => void;
+
+  // Inventory management (4-slot limit)
+  pendingItem: PendingInventoryItem | null;
+  swapItem: (slotIndex: number) => void;
+  dismissPendingItem: () => void;
+
+  // Item effect helpers
+  /** Apply Voidblade's per-turn 5 damage if present. Returns damage dealt (0 if not present). */
+  applyVoidbladeEffect: () => number;
+  /** Check for Death's Mantle death save when HP <= 0. Returns {saved, message}. */
+  checkDeathSave: () => { saved: boolean; message: string | null };
   
   // RNG for verifiable randomness
   rng: SeededRng | null;
+
+  // Run modifier (rolled at game start, persists for the run)
+  currentModifier: RunModifier | null;
+
+  // Modifier effect helpers — call these instead of raw values in combat/play screens
+  /** Additional damage multiplier from the run modifier (e.g. 0.25 = +25%) */
+  getModifiedDamageBonus: () => number;
+  /** Healing multiplier after modifier penalty (e.g. 0.7 if healingPenalty = 0.3) */
+  getModifiedHealMultiplier: () => number;
+  /** Total stamina regen for a turn, factoring in modifier bonus */
+  getModifiedStaminaRegen: (baseRegen: number) => number;
+  /** Brace stamina cost, factoring in modifier (default 0, Iron Will = 1) */
+  getModifiedBraceCost: (baseCost: number) => number;
+  /** Whether brace should negate all damage (Iron Will) */
+  modifierBraceNegatesAll: () => boolean;
+  /** Corpse discovery chance with modifier bonus applied */
+  getModifiedCorpseChance: (baseChance: number) => number;
+  /** Whether enemy intent should be hidden on turn 1 of combat */
+  modifierHidesFirstIntent: () => boolean;
 }
 
 const initialState: GameState = {
@@ -118,9 +165,11 @@ const initialState: GameState = {
   health: 100,
   stamina: 3,
   inventory: [],
+  pendingItem: null,
   itemsFound: 0,
   dungeon: [],
   seed: null,
+  currentModifier: null,
   loading: false,
   error: null,
 };
@@ -565,6 +614,17 @@ export function GameProvider({ children }: { children: ReactNode }) {
       const seed = session.vrfSeed || session.seed || generateRandomSeed();
       console.log('[GameContext] Using run seed:', seed.slice(0, 16) + '...');
       
+      // Roll run modifier deterministically from seed.
+      // Use a dedicated RNG instance so the modifier roll is always the first
+      // value consumed from the sequence — this keeps other rng calls stable.
+      const modifierRng = createRunRng(seed);
+      const modifier = rollModifier(modifierRng);
+      console.log('[GameContext] Run modifier:', modifier.id);
+      
+      // Apply modifier starting overrides
+      const startingHP = modifier.startingHP ?? 100;
+      const startingStamina = modifier.startingStamina ?? 3;
+      
       // Generate dungeon client-side with full content system
       const dungeon = generateRandomDungeon();
       
@@ -573,12 +633,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
         stakeAmount: emptyHanded ? 0 : amount,  // Empty handed stores 0 so isEmptyHanded works correctly
         zoneId: session.zoneId || zoneId || 'sunken-crypt',
         currentRoom: 0,
-        health: 100,
-        stamina: 3,
+        health: startingHP,
+        stamina: startingStamina,
         inventory: [],
         itemsFound: 0,
         dungeon,
         seed,
+        currentModifier: modifier,
         loading: false,
       });
     } catch (err) {
@@ -686,10 +747,17 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, [updateState]);
 
   const addToInventory = useCallback((item: { id: string; name: string; emoji: string }) => {
-    setState(prev => ({
-      ...prev,
-      inventory: [...prev.inventory, item],
-    }));
+    setState(prev => {
+      if (prev.inventory.length >= INVENTORY_MAX) {
+        // Inventory full — queue as pendingItem so UI can offer a swap
+        const details = getItemDetails(item.name);
+        const pending: PendingInventoryItem = details
+          ? { ...details, id: item.id }
+          : { id: item.id, name: item.name, emoji: item.emoji, description: '', effect: '', type: 'artifact' as const };
+        return { ...prev, pendingItem: pending };
+      }
+      return { ...prev, inventory: [...prev.inventory, item] };
+    });
   }, []);
 
   const removeFromInventory = useCallback((itemId: string) => {
@@ -697,6 +765,43 @@ export function GameProvider({ children }: { children: ReactNode }) {
       ...prev,
       inventory: prev.inventory.filter(i => i.id !== itemId),
     }));
+  }, []);
+
+  const swapItem = useCallback((slotIndex: number) => {
+    setState(prev => {
+      if (!prev.pendingItem || slotIndex < 0 || slotIndex >= prev.inventory.length) return prev;
+      const newInventory = [...prev.inventory];
+      const newItem = { id: prev.pendingItem.id, name: prev.pendingItem.name, emoji: prev.pendingItem.emoji };
+      newInventory[slotIndex] = newItem;
+      return { ...prev, inventory: newInventory, pendingItem: null };
+    });
+  }, []);
+
+  const dismissPendingItem = useCallback(() => {
+    updateState({ pendingItem: null });
+  }, [updateState]);
+
+  const applyVoidbladeEffect = useCallback((): number => {
+    let dmg = 0;
+    setState(prev => {
+      if (!prev.inventory.some(item => item.name === 'Voidblade')) return prev;
+      dmg = 5;
+      return { ...prev, health: Math.max(0, prev.health - 5) };
+    });
+    return dmg;
+  }, []);
+
+  const checkDeathSave = useCallback((): { saved: boolean; message: string | null } => {
+    let result = { saved: false, message: null as string | null };
+    setState(prev => {
+      if (prev.health > 0) return prev;
+      const mantleIndex = prev.inventory.findIndex(item => item.name === "Death's Mantle");
+      if (mantleIndex === -1) return prev;
+      result = { saved: true, message: "Death's Mantle shatters — you survive with 1 HP!" };
+      const newInventory = prev.inventory.filter((_, i) => i !== mantleIndex);
+      return { ...prev, health: 1, inventory: newInventory };
+    });
+    return result;
   }, []);
 
   const incrementItemsFound = useCallback(() => {
@@ -711,6 +816,40 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const rng = useMemo(() => {
     return state.seed ? createRunRng(state.seed) : null;
   }, [state.seed]);
+
+  // ── Modifier helper functions ─────────────────────────────────────────────
+  // All modifier effect logic lives here; combat/play screens stay clean.
+
+  const getModifiedDamageBonus = useCallback((): number => {
+    return state.currentModifier?.damageBonus ?? 0;
+  }, [state.currentModifier]);
+
+  const getModifiedHealMultiplier = useCallback((): number => {
+    const penalty = state.currentModifier?.healingPenalty ?? 0;
+    return 1 - penalty;
+  }, [state.currentModifier]);
+
+  const getModifiedStaminaRegen = useCallback((baseRegen: number): number => {
+    const bonus = state.currentModifier?.staminaRegenBonus ?? 0;
+    return baseRegen + bonus;
+  }, [state.currentModifier]);
+
+  const getModifiedBraceCost = useCallback((baseCost: number): number => {
+    return state.currentModifier?.braceCost ?? baseCost;
+  }, [state.currentModifier]);
+
+  const modifierBraceNegatesAll = useCallback((): boolean => {
+    return state.currentModifier?.braceNegatesAll ?? false;
+  }, [state.currentModifier]);
+
+  const getModifiedCorpseChance = useCallback((baseChance: number): number => {
+    const bonus = state.currentModifier?.corpseChanceBonus ?? 0;
+    return Math.min(1, baseChance + bonus);
+  }, [state.currentModifier]);
+
+  const modifierHidesFirstIntent = useCallback((): boolean => {
+    return state.currentModifier?.hideFirstIntent ?? false;
+  }, [state.currentModifier]);
 
   const value: GameContextType = {
     ...state,
@@ -741,6 +880,22 @@ export function GameProvider({ children }: { children: ReactNode }) {
     incrementItemsFound,
     clearError,
     rng,
+    // Inventory management
+    pendingItem: state.pendingItem,
+    swapItem,
+    dismissPendingItem,
+    // Item effect helpers
+    applyVoidbladeEffect,
+    checkDeathSave,
+    // Modifier
+    currentModifier: state.currentModifier,
+    getModifiedDamageBonus,
+    getModifiedHealMultiplier,
+    getModifiedStaminaRegen,
+    getModifiedBraceCost,
+    modifierBraceNegatesAll,
+    getModifiedCorpseChance,
+    modifierHidesFirstIntent,
   };
 
   return (
