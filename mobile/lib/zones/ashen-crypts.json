@@ -1,0 +1,344 @@
+{
+  "id": "ashen-crypts",
+  "version": "1.0.0",
+  "meta": {
+    "name": "THE ASHEN CRYPTS",
+    "tagline": "A civilization that chose fire over surrender.",
+    "element": "fire",
+    "difficulty": 2,
+    "colors": {
+      "primary": "#3d1a00",
+      "accent": "#ff6b2b",
+      "text": "#ffb380"
+    },
+    "mechanic": "BURN",
+    "mechanicDescription": "Burn stacks deal damage each turn. Max 5. Decay by 1 per turn. Hesitation kills.",
+    "unlockRequirement": "Complete one run",
+    "emoji": "🔥"
+  },
+  "lore": "The stairs descend into heat. Below, a city burns — not in catastrophe, but in ritual, in deliberate continuation. They looked at what climbed from below and made a choice: burn all of it. The fire worked. The fire never stopped.",
+  "fragments": {
+    "explore": {
+      "opening": [
+        "Heat before light. Before sound. The Crypts announce themselves through your skin.",
+        "Ash falls. Slow, continuous, from somewhere above that isn't sky.",
+        "The smell reaches you first — char, and something sweet underneath it that has no business being here.",
+        "Dry heat pressing into your chest. The moisture leaves your mouth in seconds.",
+        "Orange light, steady and ancient. Not torch. Something that has been burning longer than torches exist.",
+        "The air tastes burnt. You breathe through your teeth. It doesn't help.",
+        "Soot on every surface, deep and layered. Centuries of ash, still falling, still accumulating.",
+        "The stone radiates heat through your boots. Whatever burns below has been burning a long time.",
+        "No moisture in this air. Your lips crack before you notice. The heat takes without asking.",
+        "The crackle reaches you before anything else. Distant. Constant. Undeniable.",
+        "Ash drifts from the walls as you move. Each step raises a small cloud. The floor is soft underfoot.",
+        "Something sweet in the smoke. You breathe it in before you can stop yourself. You breathe it in again."
+      ],
+      "middle": [
+        "The walls were carved. Tool marks visible under the soot. Someone built this knowing it would burn.",
+        "Symbols on the floor, still faintly glowing. The ritual is still running. It has been running since before you were born.",
+        "You're standing in a street. Ash to your knees. Buildings on either side, their facades intact. This was a city.",
+        "Pillars ahead, charred but upright. Between them: the silhouette of what used to be a gathering hall.",
+        "Handprints in the soot — dozens of them, pressed flat against the stone. Someone tried to hold the wall from the inside.",
+        "A market stall. The goods are ash. The vendor's scale is charred, but still balanced.",
+        "The ceiling shows where the fire moved — black patterns, exact, purposeful. Not random. Designed to spread exactly this far.",
+        "Bones in the ash, visible only where your feet disturb the floor. They've always been there. You just hadn't noticed.",
+        "A door, sealed from the inside. Cooler than the surrounding stone. The seal held through everything. Something in there didn't burn.",
+        "Writing on the wall in a language that burned with everything else. The direction is clear. Someone wanted others to follow.",
+        "An altar, intact, deliberately preserved. The fire moved around it. Whatever ritual lives here, the burning respects it.",
+        "The charred remnants of furniture. A table, a chair, the ghost of domestic space inside catastrophe. Someone lived here. Then chose otherwise."
+      ],
+      "closing": [
+        "The ash still falls.",
+        "Something here is still burning.",
+        "The fire hasn't forgotten this place.",
+        "The crackle is closer than it was.",
+        "Not all the embers here are cooling.",
+        "This part of the city is not empty.",
+        "The ritual isn't finished.",
+        "The heat keeps rising.",
+        "You've disturbed something that was waiting.",
+        "Somewhere ahead, something is still praying.",
+        "The city burns on. Patient. Specific.",
+        "Whatever chose this place chose it for a reason. The reason hasn't changed."
+      ]
+    },
+    "combat": {
+      "opening": [
+        "The heat spikes. Not gradual — immediate. A degree that means something is here.",
+        "The ash falls faster. A disturbance in the air. Movement you haven't located yet.",
+        "The crackle shifts pitch. Sharper. Directed. Aware of you.",
+        "Your skin tightens. The temperature in this space is wrong, even for the Crypts.",
+        "The orange light shifts. Something between you and its source.",
+        "Ash drifts from the walls, disturbed by a vibration. Weight, moving.",
+        "Fresh char on old ash. Something burning here that wasn't burning a moment ago.",
+        "Hot air against your face — not ambient. Aimed. A breath, or what passes for one here.",
+        "The floor is warm underfoot in a way the rest of the Crypts aren't. Recent heat. Concentrated.",
+        "A sound stops. The specific absence of something you hadn't noticed until it was gone.",
+        "The ash ahead is disturbed. Something moved through here moments ago, or is moving now.",
+        "A charge in the air, the way a fire sounds before it spreads. This room is building toward something."
+      ],
+      "middle": [
+        "It rises from the ash bank along the wall. Smoke trailing from joints that haven't been joints in centuries. It sees you.",
+        "Three shapes resolve from the haze. Slow. Relentless. Each one trailing heat like a signature.",
+        "It kneels at the ritual fire, back to you. It knows you're here. Its chanting grows louder. The room grows hotter.",
+        "A charge. Straight line. No hesitation, no warning. It was already moving before you registered it.",
+        "Hands push through the charred wall like it's cloth. Then arms. Then the rest of it.",
+        "The heat-blur in the far corner solidifies. Hands moving with precise, terrible purpose. Fire follows the motion.",
+        "The congregation fills the passage ahead. Dozens of faces pressed into its surface, all of them watching you.",
+        "It steps from the fire. Not through — from. The flame contracts behind it like a closing door.",
+        "Embers on the floor ignite one by one, drawing lines between them. Something is shaping fire into a plan.",
+        "It drops from above. Heavy. The ash of impact settles on your skin and it is already standing.",
+        "The wall moves. The wall was always moving. The wall has been watching you since you entered.",
+        "Four of them, slow, each leaving scorched trails. The trails are still smoking where they've been."
+      ],
+      "closing": [
+        "It doesn't hesitate. Neither can you.",
+        "End this fast. Every second costs you a stack you won't want.",
+        "There is no path around. Only through.",
+        "The fire doesn't negotiate.",
+        "Strike first. The Crypts were built on this philosophy.",
+        "Every second you wait costs something you won't get back.",
+        "It has been burning for centuries. It has patience you don't.",
+        "The room has no exits that aren't through it.",
+        "It's already moving.",
+        "Hesitation is a choice. The Crypts know what it costs."
+      ]
+    },
+    "corpse": {
+      "framing": [
+        "Ash preserves, in its way. You can still read what's left.",
+        "The heat rendered them down to what matters. Less flesh, more record.",
+        "Char and bone. The specifics are gone. The shape of what happened remains.",
+        "They burned slowly — not violently, but through long presence. The Crypts take time, but they take everything.",
+        "The ash has settled over them, filling in. A month, a decade, a century — the fire doesn't distinguish.",
+        "Preserved by heat the way cold preserves elsewhere. Dried. Fixed. Still legible.",
+        "Fire collapses things. They're smaller now than they were.",
+        "What remains has a quality of patience. Like they've been waiting for someone to find them.",
+        "The soot tells the story. Heat damage radiating outward from a sequence. Readable, if you know what to look for.",
+        "The fire kept them, in its way. Everything in the Crypts belongs to the fire eventually. These belonged sooner."
+      ],
+      "discoveryBeats": [
+        "A scorch pattern on the floor, circular. Someone stood in one place for a long time.",
+        "The ash here is disturbed — a wide area, the pattern of someone who moved back and forth and finally stopped.",
+        "The smell changes. Char gives way to something specific. Recent. Close.",
+        "Something in the ash ahead. An object. Flask, blade, something that was carried. Its owner is here.",
+        "The ash is compressed in the shape of a person.",
+        "Footprints in the ash. Leading in. None leading out.",
+        "The heat in this section of passage is different — a small gap in the warmth, where something blocked it.",
+        "Writing on the wall. You see the letters before you see what was holding the stylus.",
+        "A shadow that doesn't belong to anything standing.",
+        "The ambient crackle has a gap here. A quiet spot. The fire moves around what's left of them."
+      ]
+    },
+    "cache": {
+      "locationLines": [
+        "A stone alcove, sealed with material that didn't burn. Inside: cool air and what someone left behind.",
+        "A firebreak in the wall — the ash stops here, and the supplies don't.",
+        "A sealed container on a stone shelf. The shelf is intact. The container unmarked. Everything else burned.",
+        "A door that held. The mechanism still works. The room beyond smells like nothing on fire.",
+        "A priest's stockroom, deliberately fireproof. They needed it functional. The contents survived.",
+        "A structural pocket where the fire moved around. Ash at the threshold. Stillness inside.",
+        "Stone shelves carved into the wall above the soot line. Someone put these here knowing what was coming.",
+        "A seam in the wall, barely visible. Behind it: a space that was sealed and stayed sealed."
+      ],
+      "toneClosers": [
+        "The relief is wrong. Too warm to be comfort.",
+        "You rest. The fire keeps burning. In the Crypts, these are not contradictions.",
+        "Safe means something different here. It means: not yet.",
+        "The quiet is borrowed. You can feel it already trying to end.",
+        "The crackle is patient, not absent. It's still out there. It knows where you are.",
+        "The fire knows where this room is. It has simply chosen to wait.",
+        "Whatever preserved this space is still working. Don't ask what it cost.",
+        "You breathe. The air doesn't taste burnt. It will again, soon."
+      ]
+    },
+    "exit": {
+      "opening": [
+        "The heat drops. Sudden. Noticeable. Something ahead is different.",
+        "Cooler air from somewhere above — it reaches you before you find the stairs.",
+        "The ash thins underfoot. Stone beneath it. Actual stone, not compacted centuries.",
+        "A crack of light ahead — not orange, not ember-red. Something else entirely.",
+        "The crackle recedes behind you with each step. Deliberate. Fading.",
+        "The orange haze clears at a point you can see. Beyond it: different dark. Better dark.",
+        "Your lungs take a full breath. You hadn't realized they'd stopped.",
+        "Temperature change. The Crypts end somewhere close. You can feel the boundary."
+      ],
+      "middle": [
+        "The fire doesn't follow past this point. You can still hear it behind you.",
+        "Steps leading up. The stone is cool beneath your hands.",
+        "The ash stops at a line on the floor. As if it knows. As if it agreed to stop here.",
+        "The sound of the Crypts drops behind you like a closing door.",
+        "All of it stays below. The fire stays below. For now.",
+        "The smell of char lifts. You smell stone that hasn't burned.",
+        "The orange glow continues behind you. It will continue. It has continued for centuries.",
+        "Each step takes you further from the fire. The fire doesn't move to stop you."
+      ],
+      "closing": [
+        "The fire keeps burning. It will be here when you return.",
+        "Not an ending. A pause.",
+        "The city burned because it chose to. You survived because you chose to. The fire finds this interesting.",
+        "For now.",
+        "They always come back.",
+        "The heat on your skin fades. The memory of it doesn't.",
+        "The ember in the deepest room is still burning. You felt it watching you leave.",
+        "The Crypts remember everyone who walks through. They'll remember you."
+      ]
+    },
+    "options": {
+      "cautious": [
+        "Step through the ash carefully",
+        "Hug the cool wall",
+        "Move slow, breathe shallow",
+        "Watch where you step"
+      ],
+      "aggressive": [
+        "Push through",
+        "Charge the heat",
+        "Move fast, don't stop",
+        "Burn through it"
+      ],
+      "investigative": [
+        "Search the burnt remnants",
+        "Read the soot",
+        "Examine what's left",
+        "Study the char patterns"
+      ],
+      "retreat": [
+        "Pull back from the heat",
+        "Step away from the fire",
+        "Find cooler ground",
+        "Wait in the ash"
+      ]
+    }
+  },
+  "bestiary": {
+    "shared": ["Ash Children", "Flickering Shades", "Bone Weavers"],
+    "local": [
+      {
+        "name": "Ember Husks",
+        "tier": 1,
+        "health": { "min": 35, "max": 55 },
+        "behaviors": ["AGGRESSIVE", "STALKING"],
+        "description": "Charred corpses still moving. They trail smoke from gaps in their skin. Slow. Relentless. They collapse into burning ash clouds on death.",
+        "emoji": "💀"
+      },
+      {
+        "name": "Cinder Priests",
+        "tier": 1,
+        "health": { "min": 40, "max": 60 },
+        "behaviors": ["ERRATIC", "RETREATING", "CHARGING"],
+        "description": "They designed the rituals. They lit the first fires. They're still here, still praying, still feeding flames that have burned for centuries. Enemies near them hit harder.",
+        "emoji": "🙏"
+      },
+      {
+        "name": "The Scorched",
+        "tier": 1,
+        "health": { "min": 45, "max": 65 },
+        "behaviors": ["CHARGING", "AGGRESSIVE"],
+        "description": "Warriors mid-charge when the fire took them. They didn't stop. Pure aggression, no defense, no retreat. They apply burn on contact. They do not stop.",
+        "emoji": "🔥"
+      },
+      {
+        "name": "Flame Weavers",
+        "tier": 1,
+        "health": { "min": 35, "max": 55 },
+        "behaviors": ["ERRATIC", "HUNTING", "RETREATING"],
+        "description": "They shaped fire before the end. They still do. Suggestions of people — heat-blur and orange light and hands moving with terrible purpose. They don't get close. They don't need to.",
+        "emoji": "🌀"
+      },
+      {
+        "name": "Ashen Congregation",
+        "tier": 2,
+        "health": { "min": 80, "max": 110 },
+        "behaviors": ["AGGRESSIVE", "CHARGING", "STALKING"],
+        "description": "The city's civilian dead, fused by centuries of heat. Individual faces press against the surface — a hand, a mouth. They were separate people. The fire made them one.",
+        "emoji": "👥"
+      },
+      {
+        "name": "The Scorched Veteran",
+        "tier": 2,
+        "health": { "min": 70, "max": 95 },
+        "behaviors": ["CHARGING", "AGGRESSIVE", "ERRATIC"],
+        "description": "What the Scorched become after burning long enough to accumulate mass. Larger. Faster. Multiple burn stacks per hit. The same behavior, amplified until it leaves footprints in stone.",
+        "emoji": "🔥"
+      },
+      {
+        "name": "Senior Flame Weaver",
+        "tier": 2,
+        "health": { "min": 65, "max": 85 },
+        "behaviors": ["HUNTING", "DEFENSIVE", "ERRATIC"],
+        "description": "The senior practitioners. They sealed themselves in living flame deliberately. Centuries have made their craft vast and precise. They build the room into a furnace. They watch before acting.",
+        "emoji": "🌀"
+      },
+      {
+        "name": "The Pyre Keeper",
+        "tier": 3,
+        "health": { "min": 180, "max": 220 },
+        "behaviors": ["CHARGING", "AGGRESSIVE", "DEFENSIVE", "ERRATIC"],
+        "description": "A figure made of accumulated fire. The city's final ritual fused its consciousness with the collective flame. It has been burning through the same thoughts for centuries. It doesn't want to fight. It wants company. It doesn't understand the difference.",
+        "emoji": "🔥"
+      }
+    ]
+  },
+  "depths": [
+    {
+      "name": "THE OUTER RUINS",
+      "tier": 1,
+      "roomRange": [1, 4],
+      "description": "The city's edge. Still standing. Still burning."
+    },
+    {
+      "name": "THE BURNING HEART",
+      "tier": 2,
+      "roomRange": [5, 8],
+      "description": "The center. Where the fire started. Where it was meant to."
+    },
+    {
+      "name": "THE PYRE",
+      "tier": 3,
+      "roomRange": [9, 12],
+      "description": "The source. The fire that never went out."
+    }
+  ],
+  "dungeonLayout": {
+    "totalRooms": 12,
+    "structure": [
+      { "type": "explore", "template": "descent" },
+      { "type": "combat", "template": "husk-field" },
+      { "type": "combat", "template": "priest-ritual" },
+      { "type": "corpse", "template": "hesitator" },
+      { "type": "explore", "template": "ruins" },
+      { "type": "combat", "template": "weaver-den" },
+      { "type": "cache", "template": "sealed-alcove" },
+      { "type": "combat", "template": "congregation-press" },
+      { "type": "explore", "template": "ashfield" },
+      { "type": "combat", "template": "scorched-charge" },
+      { "type": "corpse", "template": "fighter" },
+      { "type": "combat", "template": "pyre-chamber", "boss": true }
+    ]
+  },
+  "boss": "The Pyre Keeper",
+  "audio": {
+    "ambient": {
+      "explore": "/audio/zones/ashen-crypts/ambient-explore.mp3",
+      "combat": "/audio/zones/ashen-crypts/ambient-combat.mp3"
+    },
+    "sfx": {
+      "footstep": "/audio/zones/ashen-crypts/footstep.mp3",
+      "descend": "/audio/zones/ashen-crypts/depth-descend.mp3",
+      "environment": [
+        "/audio/zones/ashen-crypts/fire-crackle.mp3",
+        "/audio/zones/ashen-crypts/ember-pop.mp3",
+        "/audio/zones/ashen-crypts/ash-fall.mp3"
+      ],
+      "atmosphere": [
+        "/audio/zones/ashen-crypts/distant-roar.mp3",
+        "/audio/zones/ashen-crypts/stone-crack.mp3"
+      ],
+      "boss": {
+        "intro": "/audio/zones/ashen-crypts/boss-intro.mp3",
+        "roar": "/audio/zones/ashen-crypts/boss-roar.mp3"
+      }
+    }
+  }
+}

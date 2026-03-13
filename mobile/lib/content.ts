@@ -1,5 +1,8 @@
 // Content loader - pulls from pre-generated JSON content
 
+import { loadZone, getZoneRoom, getZoneCreatureSeeded, getZoneBoss, getZoneDepth } from './zone-loader';
+import { createRunRng, generateRandomSeed, type SeededRng } from './seeded-random';
+
 import exploreRooms from '../content/explore-rooms.json';
 import combatRooms from '../content/combat-rooms.json';
 import corpseRooms from '../content/corpse-rooms.json';
@@ -165,7 +168,7 @@ export interface CreatureInfo {
   artUrl?: string;
 }
 
-const BESTIARY: Record<string, CreatureInfo> = {
+export const BESTIARY: Record<string, CreatureInfo> = {
   // Tier 1 - Common Horrors
   'The Drowned': {
     name: 'The Drowned',
@@ -503,6 +506,7 @@ export interface ItemDetails {
   effect: string;
   type: 'consumable' | 'weapon' | 'artifact';
   artUrl?: string;
+  rarity?: 'common' | 'uncommon' | 'rare' | 'legendary';
 }
 
 export const ITEM_DETAILS: Record<string, ItemDetails> = {
@@ -647,6 +651,14 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     type: 'artifact',
     artUrl: '/items/pale-coin.webp',
   },
+  'Soulstone': {
+    name: 'Soulstone',
+    emoji: '💎',
+    description: 'Crystallized from the residue of a hundred deaths. It pulses faintly — something is still inside.',
+    effect: '+10% to all stats',
+    rarity: 'rare',
+    type: 'artifact',
+  },
 };
 
 // Get item details by name
@@ -654,7 +666,7 @@ export function getItemDetails(name: string): ItemDetails | undefined {
   return ITEM_DETAILS[name];
 }
 
-// Generate a combat room with a specific creature assigned
+// Generate a combat room with a specific creature assigned (legacy, non-seeded)
 function getCombatRoomWithCreature(roomNumber: number, template?: string): RoomVariation & { enemy: string; enemyEmoji: string } {
   const baseContent = getCombatRoom(template);
   const creature = getCreatureForRoom(roomNumber);
@@ -665,36 +677,90 @@ function getCombatRoomWithCreature(roomNumber: number, template?: string): RoomV
   };
 }
 
-// Generate randomized dungeon (12 rooms with boss at the end)
-export function generateRandomDungeon(): DungeonRoom[] {
-  const exploreTemplates = ['descent', 'corridor', 'flooded', 'chamber', 'shrine', 'crossroads'];
-  const combatTemplates = ['ambush', 'confrontation', 'territorial', 'pursuit', 'guardian'];
-  const corpseTemplates = ['fresh', 'old', 'heroic', 'disturbing', 'peaceful'];
-  const cacheTemplates = ['alcove', 'survivor_stash', 'spring', 'offering_site'];
-  const exitTemplates = ['threshold', 'earned', 'release', 'changed'];
-  
-  return [
-    // Depth 1: Upper Crypt (Rooms 1-4)
-    { type: 'explore', template: pick(exploreTemplates), content: getExploreRoom() },
-    { type: 'combat', template: pick(combatTemplates), content: getCombatRoomWithCreature(2) },
-    { type: 'corpse', template: pick(corpseTemplates), content: getCorpseRoom() },
-    { type: 'combat', template: pick(combatTemplates), content: getCombatRoomWithCreature(4) },
-    
-    // Depth 2: Flooded Halls (Rooms 5-8)
-    { type: 'explore', template: 'flooded', content: getExploreRoom('flooded') },
-    { type: 'combat', template: pick(combatTemplates), content: getCombatRoomWithCreature(6) },
-    { type: 'cache', template: pick(cacheTemplates), content: getCacheRoom() },
-    { type: 'combat', template: pick(combatTemplates), content: getCombatRoomWithCreature(8) },
-    
-    // Depth 3: The Abyss (Rooms 9-12)
-    { type: 'explore', template: pick(exploreTemplates), content: getExploreRoom() },
-    { type: 'corpse', template: pick(corpseTemplates), content: getCorpseRoom() },
-    { type: 'combat', template: pick(combatTemplates), content: getCombatRoomWithCreature(11) },
-    { type: 'combat', template: 'arena', content: { ...getCombatRoom('arena'), enemy: 'The Keeper', enemyEmoji: '👁️' }, boss: true },
-    { type: 'exit', template: pick(exitTemplates), content: getExitRoom() },
-  ];
+/**
+ * Zone-aware dungeon generator. Reads zone's dungeonLayout.structure to build
+ * rooms, assigns creatures from zone bestiary (80% local / 20% shared), and
+ * uses zone's boss for the final encounter.
+ *
+ * All random choices go through the seeded RNG for full reproducibility.
+ */
+export function generateDungeon(zoneId: string, rng: SeededRng): DungeonRoom[] {
+  const zone = loadZone(zoneId);
+  const structure = zone.dungeonLayout.structure;
+
+  const rooms: DungeonRoom[] = structure.map((slot, index) => {
+    const roomNumber = index + 1;
+    const depth = getZoneDepth(zone, roomNumber);
+
+    if (slot.boss) {
+      // Boss room — creature comes from zone's boss definition
+      const boss = getZoneBoss(zone, BESTIARY);
+      const content = getZoneRoom(zone, slot.type, rng, slot.template);
+      return {
+        type: slot.type,
+        template: slot.template,
+        content: {
+          ...content,
+          enemy: boss.name,
+          enemyEmoji: boss.emoji,
+        } as RoomVariation,
+        boss: true,
+      };
+    }
+
+    const content = getZoneRoom(zone, slot.type, rng, slot.template);
+
+    if (slot.type === 'combat') {
+      // Combat rooms get a zone-appropriate creature at the right tier
+      const creature = getZoneCreatureSeeded(zone, depth.tier, rng, BESTIARY);
+      return {
+        type: slot.type,
+        template: slot.template,
+        content: {
+          ...content,
+          enemy: creature.name,
+          enemyEmoji: creature.emoji,
+        } as RoomVariation,
+      };
+    }
+
+    return {
+      type: slot.type,
+      template: slot.template,
+      content: content as RoomVariation,
+    };
+  });
+
+  // Append exit room (always appended after the boss; zone structure ends at boss)
+  const exitContent = getZoneRoom(zone, 'exit', rng);
+  rooms.push({
+    type: 'exit',
+    template: 'zone-exit',
+    content: exitContent as RoomVariation,
+  });
+
+  return rooms;
 }
 
-export function getBossCreature(): CreatureInfo {
-  return BESTIARY['The Keeper'];
+/**
+ * Generate a randomized dungeon using the Sunken Crypt zone.
+ * Backward-compatible wrapper around generateDungeon — uses a fresh random
+ * seed each call so behavior is indistinguishable from the old implementation.
+ */
+export function generateRandomDungeon(): DungeonRoom[] {
+  const seed = generateRandomSeed();
+  const rng = createRunRng(seed);
+  return generateDungeon('sunken-crypt', rng);
+}
+
+/**
+ * Get the boss creature for a zone (defaults to sunken-crypt / The Keeper).
+ */
+export function getBossCreature(zoneId = 'sunken-crypt'): CreatureInfo {
+  try {
+    const zone = loadZone(zoneId);
+    return getZoneBoss(zone, BESTIARY);
+  } catch {
+    return BESTIARY['The Keeper'];
+  }
 }
