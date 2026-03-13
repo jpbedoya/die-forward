@@ -32,6 +32,11 @@ function pick<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+// Seeded variant of pick — uses provided RNG for deterministic results
+export function pickSeeded<T>(arr: T[], rng: SeededRng): T {
+  return arr[Math.floor(rng.random() * arr.length)];
+}
+
 // Get random explore room by template type
 export function getExploreRoom(template?: string): RoomVariation {
   const rooms = exploreRooms.rooms as RoomTemplate[];
@@ -433,12 +438,30 @@ export function getCreatureHealth(name: string): number {
   return info.health.min + Math.floor(Math.random() * (info.health.max - info.health.min));
 }
 
+// Seeded variant — uses provided RNG so HP is reproducible from the same seed
+export function getCreatureHealthSeeded(name: string, rng: SeededRng): number {
+  const info = BESTIARY[name];
+  if (!info) return 65;
+  return info.health.min + Math.floor(rng.random() * (info.health.max - info.health.min));
+}
+
 // Get creature's preferred intent types
 export function getCreatureIntent(name: string): { type: IntentType; description: string } {
   const info = BESTIARY[name];
   if (!info) return getEnemyIntent();
   const preferredType = pick(info.behaviors);
   return getEnemyIntent(preferredType);
+}
+
+// Seeded variant — uses provided RNG so intent sequence is reproducible from the same seed
+export function getCreatureIntentSeeded(name: string, rng: SeededRng): { type: IntentType; description: string } {
+  const intents = combatActions.enemy_intents as Record<IntentType, string[]>;
+  const info = BESTIARY[name];
+  const preferredType = info ? pickSeeded(info.behaviors, rng) : pickSeeded(Object.keys(intents) as IntentType[], rng);
+  return {
+    type: preferredType,
+    description: pickSeeded(intents[preferredType], rng),
+  };
 }
 
 // Intent combat effects
@@ -477,6 +500,8 @@ export interface ItemEffects {
   damageBonus: number;
   defenseBonus: number;
   fleeBonus: number;
+  corpseBonus?: number;   // Extra chance to find loot in corpse/cache rooms
+  voidSaltBonus?: boolean; // +40% damage vs aquatic enemies when true
 }
 
 export function getItemEffects(inventory: {name: string}[]): ItemEffects {
@@ -494,6 +519,23 @@ export function getItemEffects(inventory: {name: string}[]): ItemEffects {
       case 'Ancient Scroll': effects.defenseBonus += 0.20; effects.fleeBonus += 0.10; break;
       case 'Bone Charm': effects.defenseBonus += 0.15; break;
       case 'Voidblade': effects.damageBonus += 0.50; break;
+      case 'Soulstone':
+        effects.damageBonus += 0.10;
+        effects.defenseBonus += 0.10;
+        effects.fleeBonus += 0.10;
+        break;
+      case 'Eye of the Hollow':
+        effects.corpseBonus = (effects.corpseBonus ?? 0) + 0.20;
+        break;
+      case 'Bone Hook':
+        effects.fleeBonus += 0.20;
+        break;
+      case 'Void Salt':
+        effects.voidSaltBonus = true;
+        break;
+      case 'Pale Coin':
+        effects.fleeBonus += 0.10;
+        break;
     }
   }
   return effects;

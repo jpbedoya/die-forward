@@ -8,6 +8,7 @@ import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
+import { updatePlayerClearedZone } from '../lib/instant';
 import { API_BASE } from '../lib/api';
 import { ProgressBar } from '../components/ProgressBar';
 import { GameMenu, MenuButton } from '../components/GameMenu';
@@ -21,7 +22,9 @@ import {
   getCreatureForRoom,
   getCreatureInfo,
   getCreatureHealth,
+  getCreatureHealthSeeded,
   getCreatureIntent,
+  getCreatureIntentSeeded,
   getIntentEffects,
   getItemEffects,
   getItemDetails,
@@ -135,11 +138,13 @@ export default function CombatScreen() {
     setCreature(roomCreature);
     setArtLoadFailed(false);
     
-    const hp = getCreatureHealth(roomCreature.name);
+    // Fix 1 (Revy): use seeded RNG for deterministic creature HP per seed
+    const hp = game.rng ? getCreatureHealthSeeded(roomCreature.name, game.rng) : getCreatureHealth(roomCreature.name);
     setEnemyHealth(hp);
     setEnemyMaxHealth(hp);
     
-    const intent = getCreatureIntent(roomCreature.name);
+    // Fix 1 (Revy): use seeded RNG for deterministic initial intent per seed
+    const intent = game.rng ? getCreatureIntentSeeded(roomCreature.name, game.rng) : getCreatureIntent(roomCreature.name);
     setEnemyIntent(intent);
     setIntentEffects(getIntentEffects(intent.type));
     
@@ -355,6 +360,13 @@ export default function CombatScreen() {
       if (Platform.OS !== 'web') {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
+      // Fix 6 (Revy): record zone clear when boss is defeated
+      const currentRoomData = game.dungeon[roomNumber - 1];
+      if (currentRoomData?.boss && game.authId && game.zoneId) {
+        updatePlayerClearedZone(game.authId, game.zoneId).catch(err =>
+          console.warn('[combat] Failed to record zone clear:', err)
+        );
+      }
       setPhase('victory');
       setTimeout(() => {
         game.advance();
@@ -388,7 +400,10 @@ export default function CombatScreen() {
         }
       }
 
-      const newIntent = getCreatureIntent(creature?.name || 'The Drowned');
+      // Fix 1 (Revy): use seeded RNG for deterministic intent sequence per seed
+      const newIntent = game.rng
+        ? getCreatureIntentSeeded(creature?.name || 'The Drowned', game.rng)
+        : getCreatureIntent(creature?.name || 'The Drowned');
       setEnemyIntent(newIntent);
       setIntentEffects(getIntentEffects(newIntent.type));
       setPhase('choose');
@@ -626,9 +641,9 @@ export default function CombatScreen() {
               const name = selectedItem.name;
               if (name === 'Herbs') {
                 const baseHeal = game.rng ? game.rng.range(25, 40) : Math.floor(Math.random() * 15) + 25; // 25-40 HP
-                const heal = Math.round(baseHeal * game.getModifiedHealMultiplier());
-                game.setHealth(Math.min(100, game.health + heal));
-                setNarrative(`You quickly apply the herbs. Wounds close. +${heal} HP.`);
+                // Fix 2 (Revy): use applyHealing so modifier penalty and HP cap apply consistently
+                const healed = game.applyHealing(baseHeal);
+                setNarrative(`You quickly apply the herbs. Wounds close. +${healed} HP.`);
                 playSFX('heal');
               } else if (name === 'Pale Rations') {
                 game.setStamina(Math.min(settings.staminaPool, game.stamina + settings.staminaRegen));
