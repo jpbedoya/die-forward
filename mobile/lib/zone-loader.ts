@@ -188,18 +188,21 @@ export function listZoneIds(): string[] {
  * - Full-room zones (sunken-crypt): picks a random variation from the matching
  *   template, falling back to any template if the requested one isn't found.
  * - Fragment zones: assembles opening + middle + closing via seeded RNG.
+ *
+ * @param roomIndex - 0-based room index used to generate deterministic IDs for fragment zones.
  */
 export function getZoneRoom(
   zone: ZoneData,
   roomType: 'explore' | 'combat' | 'corpse' | 'cache' | 'exit',
   rng: SeededRng,
   template?: string,
+  roomIndex?: number,
 ): RoomContent {
   if (zone.rooms) {
     return _getFullRoomContent(zone, roomType, rng, template);
   }
   if (zone.fragments) {
-    return _getFragmentRoomContent(zone, roomType, rng);
+    return _getFragmentRoomContent(zone, roomType, rng, roomIndex ?? 0);
   }
   throw new Error(`Zone "${zone.id}" has neither rooms nor fragments data.`);
 }
@@ -412,9 +415,11 @@ function _getFragmentRoomContent(
   zone: ZoneData,
   roomType: 'explore' | 'combat' | 'corpse' | 'cache' | 'exit',
   rng: SeededRng,
+  roomIndex: number,
 ): RoomContent {
   const frags = zone.fragments!;
-  const id = `${zone.id}-${roomType}-${Date.now()}`;
+  // Fix 10: use roomIndex instead of Date.now() for deterministic IDs
+  const id = `${zone.id}-${roomType}-${roomIndex}`;
 
   if (roomType === 'corpse') {
     const corpse = frags.corpse;
@@ -423,7 +428,7 @@ function _getFragmentRoomContent(
     return {
       id,
       narrative: `${framing} ${beat}`,
-      options: _getFragmentOptions(frags, 2),
+      options: _getFragmentOptions(frags, 2, rng),
     };
   }
 
@@ -434,7 +439,7 @@ function _getFragmentRoomContent(
     return {
       id,
       narrative: `${location} ${tone}`,
-      options: _getFragmentOptions(frags, 2),
+      options: _getFragmentOptions(frags, 2, rng),
     };
   }
 
@@ -446,23 +451,24 @@ function _getFragmentRoomContent(
   return {
     id,
     narrative: `${opening} ${middle} ${closing}`,
-    options: _getFragmentOptions(frags, roomType === 'combat' ? 2 : 3),
+    options: _getFragmentOptions(frags, roomType === 'combat' ? 2 : 3, rng),
   };
 }
 
 /**
  * Returns a small mixed set of options from fragment option pools.
  * Picks `count` options spread across pools for variety.
+ * Uses seeded RNG for full reproducibility (BUG 3 fix).
  */
-function _getFragmentOptions(frags: ZoneFragments, count: number): string[] {
+function _getFragmentOptions(frags: ZoneFragments, count: number, rng: SeededRng): string[] {
   const opts = frags.options;
   if (!opts) return [];
   // Pick one from cautious, one from aggressive, rest from investigative/retreat
   const result: string[] = [];
-  if (opts.cautious.length > 0) result.push(opts.cautious[Math.floor(Math.random() * opts.cautious.length)]);
-  if (opts.aggressive.length > 0) result.push(opts.aggressive[Math.floor(Math.random() * opts.aggressive.length)]);
-  if (count > 2 && opts.investigative.length > 0) result.push(opts.investigative[Math.floor(Math.random() * opts.investigative.length)]);
-  if (count > 3 && opts.retreat.length > 0) result.push(opts.retreat[Math.floor(Math.random() * opts.retreat.length)]);
+  if (opts.cautious.length > 0) result.push(rng.pick(opts.cautious));
+  if (opts.aggressive.length > 0) result.push(rng.pick(opts.aggressive));
+  if (count > 2 && opts.investigative.length > 0) result.push(rng.pick(opts.investigative));
+  if (count > 3 && opts.retreat.length > 0) result.push(rng.pick(opts.retreat));
   return result.slice(0, count);
 }
 
