@@ -15,7 +15,7 @@ import { GameMenu, MenuButton } from '../components/GameMenu';
 import { MiniPlayer } from '../components/MiniPlayer';
 import { AudioToggle } from '../components/AudioToggle';
 import { CRTOverlay } from '../components/CRTOverlay';
-import { getDepthForRoom, DungeonRoom, getItemDetails, getCreatureInfo, CreatureInfo, rollRandomItem } from '../lib/content';
+import { getDepthForRoom, DungeonRoom, getItemDetails, getCreatureInfo, CreatureInfo, rollRandomItem, getItemEffects } from '../lib/content';
 import { getMilestonePerks } from '../lib/milestones';
 import { useUnifiedWallet, type Address } from '../lib/wallet/unified';
 import { ItemModal, CreatureModal } from '../components/CryptModal';
@@ -243,7 +243,10 @@ export default function PlayScreen() {
 
         case 'flee': {
           playSFX('flee-run');
-          const fleeDamage = game.rng ? game.rng.range(5, 19) : Math.floor(Math.random() * 15) + 5;
+          const fleeItemEffects = getItemEffects(game.inventory);
+          const rawFleeDamage = game.rng ? game.rng.range(5, 19) : Math.floor(Math.random() * 15) + 5;
+          // Fix 5 (Revy): fleeBonus items (Bone Hook, Cloak, Pale Coin) reduce flee damage
+          const fleeDamage = Math.round(rawFleeDamage * (1 - (fleeItemEffects.fleeBonus ?? 0)));
           const newHealth = game.health - fleeDamage;
           
           // BUG 1 FIX: set health BEFORE checkDeathSave so it sees the fatal value
@@ -287,7 +290,9 @@ export default function PlayScreen() {
             : roomNumber >= 5
               ? settings.lootChanceDepth5
               : settings.lootChanceBase;
-          const lootChance = game.getModifiedCorpseChance(rawLootChance);
+          // Fix 5 (Revy): also stack item corpseBonus (Eye of the Hollow)
+          const lootItemEffects = getItemEffects(game.inventory);
+          const lootChance = Math.min(1, game.getModifiedCorpseChance(rawLootChance) + (lootItemEffects.corpseBonus ?? 0));
           
           const foundLoot = game.rng ? game.rng.chance(lootChance) : Math.random() < lootChance;
           
@@ -349,17 +354,19 @@ export default function PlayScreen() {
           break;
         }
 
-        case 'heal':
+        case 'heal': {
           playSFX('heal');
-          game.setHealth(Math.min(100, game.health + 30));
+          // Fix 2 (Revy): use applyHealing so Blood Pact penalty and HP cap apply
+          const healed = game.applyHealing(30);
           game.incrementItemsFound();
-          setMessage('Found supplies. +30 HP');
+          setMessage(`Found supplies. +${healed} HP`);
           
           setTimeout(async () => {
             await game.advance();
             setMessage(null);
           }, 1500);
           break;
+        }
 
         case 'victory':
           playSFX('victory-fanfare');
@@ -848,9 +855,10 @@ export default function PlayScreen() {
           if (!selectedItem) return;
           const name = selectedItem.name;
           if (name === 'Herbs') {
-            const heal = game.rng ? game.rng.range(25, 40) : Math.floor(Math.random() * 15) + 25;
-            game.setHealth(Math.min(100, game.health + heal));
-            setMessage(`You apply the herbs. +${heal} HP.`);
+            const baseHeal = game.rng ? game.rng.range(25, 40) : Math.floor(Math.random() * 15) + 25;
+            // Fix 2 (Revy): use applyHealing so Blood Pact penalty and HP cap apply
+            const healed = game.applyHealing(baseHeal);
+            setMessage(`You apply the herbs. +${healed} HP.`);
             playSFX('heal');
           } else if (name === 'Pale Rations') {
             game.setStamina(Math.min(settings.staminaPool, game.stamina + 1));

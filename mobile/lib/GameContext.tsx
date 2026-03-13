@@ -146,6 +146,10 @@ interface GameContextType extends GameState {
   getModifiedCorpseChance: (baseChance: number) => number;
   /** Whether enemy intent should be hidden on turn 1 of combat */
   modifierHidesFirstIntent: () => boolean;
+  /** Max HP for this run (60 for Glass Cannon, 100 otherwise) */
+  getMaxHp: () => number;
+  /** Apply healing with modifier penalty and HP cap. Returns actual HP gained. */
+  applyHealing: (baseAmount: number) => number;
 }
 
 const initialState: GameState = {
@@ -699,9 +703,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
     
     // Update room client-side (dungeon is generated locally)
     // Fix 9: use settings.staminaPool instead of hardcoded 3
+    // Fix 3 (Revy): apply modifier staminaRegenBonus so Numbing Cold works between rooms too
+    const staminaRegenBonus = state.currentModifier?.staminaRegenBonus ?? 0;
     updateState({
       currentRoom: nextRoom,
-      stamina: Math.min(settings.staminaPool, state.stamina + 1),
+      stamina: Math.min(settings.staminaPool, state.stamina + 1 + staminaRegenBonus),
     });
     
     // Notify backend - send CURRENT room (1-indexed for server)
@@ -713,7 +719,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
     
     return true;
-  }, [state.sessionToken, state.currentRoom, state.stamina, state.dungeon?.length, settings.staminaPool, updateState]);
+  }, [state.sessionToken, state.currentRoom, state.stamina, state.dungeon?.length, settings.staminaPool, state.currentModifier, updateState]);
 
   const recordDeathAction = useCallback(async (finalMessage: string, killedBy?: string, nowPlaying?: { title: string; artist: string }) => {
     if (!state.sessionToken) return;
@@ -835,8 +841,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, [updateState]);
 
   // Create RNG from seed (memoized to avoid recreating on every render)
+  // Fix 4 (Revy): derive from sub-seed so gameplay RNG is independent of modifier/dungeon gen sequences
   const rng = useMemo(() => {
-    return state.seed ? createRunRng(state.seed) : null;
+    return state.seed ? createRunRng(`${state.seed}-gameplay`) : null;
   }, [state.seed]);
 
   // ── Modifier helper functions ─────────────────────────────────────────────
@@ -871,6 +878,24 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const modifierHidesFirstIntent = useCallback((): boolean => {
     return state.currentModifier?.hideFirstIntent ?? false;
+  }, [state.currentModifier]);
+
+  // Fix 2 (Revy): centralize healing so modifier penalty and HP cap apply everywhere
+  const getMaxHp = useCallback((): number => {
+    return state.currentModifier?.id === 'glass-cannon' ? 60 : 100;
+  }, [state.currentModifier]);
+
+  const applyHealing = useCallback((baseAmount: number): number => {
+    const multiplier = 1 - (state.currentModifier?.healingPenalty ?? 0);
+    const modified = Math.round(baseAmount * multiplier);
+    const maxHp = state.currentModifier?.id === 'glass-cannon' ? 60 : 100;
+    let actual = 0;
+    setState(prev => {
+      const newHp = Math.min(maxHp, prev.health + modified);
+      actual = newHp - prev.health;
+      return { ...prev, health: newHp };
+    });
+    return actual;
   }, [state.currentModifier]);
 
   const value: GameContextType = {
@@ -918,6 +943,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
     modifierBraceNegatesAll,
     getModifiedCorpseChance,
     modifierHidesFirstIntent,
+    getMaxHp,
+    applyHealing,
   };
 
   return (
