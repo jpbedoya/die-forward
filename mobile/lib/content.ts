@@ -503,6 +503,7 @@ export interface ItemDetails {
   effect: string;
   type: 'consumable' | 'weapon' | 'artifact';
   artUrl?: string;
+  rarity?: 'common' | 'uncommon' | 'rare' | 'legendary';
 }
 
 export const ITEM_DETAILS: Record<string, ItemDetails> = {
@@ -646,6 +647,14 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     effect: 'Can be offered for passage',
     type: 'artifact',
     artUrl: '/items/pale-coin.webp',
+  },
+  'Soulstone': {
+    name: 'Soulstone',
+    emoji: '💎',
+    description: 'Crystallized from the residue of a hundred deaths. It pulses faintly — something is still inside.',
+    effect: '+10% to all stats',
+    rarity: 'rare',
+    type: 'artifact',
   },
 };
 
