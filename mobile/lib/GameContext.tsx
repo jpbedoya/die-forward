@@ -199,23 +199,48 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, [unifiedWallet.connected, unifiedWallet.address, updateState]);
 
   // Auto sign-in when wallet connects — requires signed challenge
+  // Also handles guest→wallet upgrade when user was signed in as guest
   useEffect(() => {
-    if (!unifiedWallet.connected || !unifiedWallet.address || state.isAuthenticated) return;
+    if (!unifiedWallet.connected || !unifiedWallet.address) return;
+    // Already authenticated as wallet — nothing to do
+    if (state.isAuthenticated && state.authType === 'wallet') return;
 
-    signInWithWallet(unifiedWallet.address, unifiedWallet.signMessage)
-      .then(authState => {
-        setState(prev => ({
-          ...prev,
-          isAuthenticated: true,
-          authId: authState.authId,
-          authType: 'wallet' as const,
-          walletAddress: authState.walletAddress,
-        }));
-      })
-      .catch(err => {
+    // Capture address as non-null string (guarded above)
+    const address = unifiedWallet.address as string;
+    let cancelled = false;
+    const doWalletAuth = async () => {
+      try {
+        if (state.isAuthenticated && state.authType === 'guest') {
+          // Upgrade: link existing guest session to wallet
+          // linkWalletToGuest reads guestId from AsyncStorage and updates it internally
+          await linkWalletToGuest(address, unifiedWallet.signMessage);
+          if (!cancelled) {
+            updateState({
+              isAuthenticated: true,
+              authId: address,
+              authType: 'wallet' as const,
+              walletAddress: address,
+            });
+          }
+        } else {
+          // Fresh wallet sign-in (no prior auth)
+          const authState = await signInWithWallet(address, unifiedWallet.signMessage);
+          if (!cancelled) {
+            updateState({
+              isAuthenticated: true,
+              authId: authState.authId,
+              authType: 'wallet' as const,
+              walletAddress: authState.walletAddress,
+            });
+          }
+        }
+      } catch (err) {
         console.warn('[Auth] Wallet sign-in failed:', err);
-      });
-  }, [unifiedWallet, state.isAuthenticated]);
+      }
+    };
+    doWalletAuth();
+    return () => { cancelled = true; };
+  }, [unifiedWallet.connected, unifiedWallet.address, unifiedWallet.signMessage, state.isAuthenticated, state.authType, updateState]);
 
   // Sync balance from unified wallet
   useEffect(() => {
