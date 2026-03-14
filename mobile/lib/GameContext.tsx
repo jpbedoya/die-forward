@@ -19,7 +19,7 @@ import { useUnifiedWallet, type Address } from './wallet/unified';
 import { GAME_POOL_PDA, buildStakeInstruction, generateSessionId } from './solana/escrow';
 import { Transaction, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { getOrCreatePlayerByAuth, updatePlayerNicknameByAuth, useGameSettings } from './instant';
-import { signInWithWallet, signInAsGuest, signOut, linkWalletToGuest, getStoredAuthState, type AuthState } from './auth';
+import { signInWithWallet, signInAsGuest, signOut, linkWalletToGuest, getStoredAuthState, restoreInstantDBSession, type AuthState } from './auth';
 import { createRunRng, generateRandomSeed, type SeededRng } from './seeded-random';
 import { rollModifier, type RunModifier } from './modifiers';
 
@@ -44,7 +44,7 @@ interface GameState {
   // Auth
   isAuthenticated: boolean;
   authId: string | null;
-  authType: 'wallet' | 'guest' | null;
+  authType: 'wallet' | 'guest' | 'email' | null;
   
   // Wallet
   walletConnected: boolean;
@@ -260,13 +260,25 @@ export function GameProvider({ children }: { children: ReactNode }) {
       updateState({ guestProgressExists: guestProgressRaw === 'true' });
 
       if (stored?.isAuthenticated && stored.authType === 'wallet') {
-        // Wallet auth — restore from storage as-is (wallet re-connects via unified wallet hook)
-        updateState({
-          isAuthenticated: true,
-          authId: stored.authId,
-          authType: stored.authType,
-          walletAddress: stored.walletAddress,
-        });
+        // Wallet auth — try to restore InstantDB session with stored token
+        if (stored.customToken) {
+          const restored = await restoreInstantDBSession(stored.customToken);
+          if (restored) {
+            updateState({
+              isAuthenticated: true,
+              authId: stored.authId,
+              authType: stored.authType,
+              walletAddress: stored.walletAddress,
+            });
+          } else {
+            // Token expired — pre-fill wallet address, let wallet reconnect trigger fresh signInWithWallet
+            console.warn('[Auth] Stored token expired — wallet re-sign required on connect');
+            updateState({ walletAddress: stored.walletAddress });
+          }
+        } else {
+          // No stored token (old install) — wallet reconnect will handle it
+          updateState({ walletAddress: stored.walletAddress });
+        }
       } else if (!unifiedWallet.connected) {
         // Guest — always do a fresh sign-in to get a valid token + load player record immediately
         try {

@@ -17,9 +17,10 @@ const API_BASE = process.env.EXPO_PUBLIC_API_URL || 'https://www.dieforward.com'
 export interface AuthState {
   isAuthenticated: boolean;
   authId: string | null;
-  authType: 'wallet' | 'guest' | null;
+  authType: 'wallet' | 'guest' | 'email' | null;
   walletAddress: string | null;
   isNewUser: boolean;
+  customToken?: string; // InstantDB custom auth token for session restore
 }
 
 /**
@@ -63,13 +64,14 @@ export async function signInWithWallet(
   // Sign in to InstantDB
   await db.auth.signInWithToken(token);
 
-  // Store auth state
+  // Store auth state (include token for session restore on restart)
   const authState: AuthState = {
     isAuthenticated: true,
     authId: walletAddress,
     authType: 'wallet',
     walletAddress,
     isNewUser,
+    customToken: token,
   };
   await AsyncStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authState));
 
@@ -103,13 +105,14 @@ export async function signInAsGuest(): Promise<AuthState> {
   // Store guest ID for persistence
   await AsyncStorage.setItem(GUEST_ID_KEY, guestId);
 
-  // Store auth state
+  // Store auth state (include token for session restore on restart)
   const authState: AuthState = {
     isAuthenticated: true,
     authId: guestId,
     authType: 'guest',
     walletAddress: null,
     isNewUser,
+    customToken: token,
   };
   await AsyncStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authState));
 
@@ -152,13 +155,14 @@ export async function linkWalletToGuest(
   // Sign in with new wallet token
   await db.auth.signInWithToken(token);
 
-  // Update auth state
+  // Update auth state (include token for session restore on restart)
   const authState: AuthState = {
     isAuthenticated: true,
     authId: walletAddress,
     authType: 'wallet',
     walletAddress,
     isNewUser: false,
+    customToken: token,
   };
   await AsyncStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authState));
 
@@ -197,4 +201,43 @@ export async function signOut(): Promise<void> {
 export async function canUpgradeToWallet(): Promise<boolean> {
   const authState = await getStoredAuthState();
   return authState?.authType === 'guest';
+}
+
+/**
+ * Restore an existing InstantDB session using a stored custom token.
+ * Returns true if successful, false if the token is expired or invalid.
+ * Used on app restart to avoid requiring wallet re-sign every time.
+ */
+export async function restoreInstantDBSession(customToken: string): Promise<boolean> {
+  try {
+    await db.auth.signInWithToken(customToken);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// ── Email auth stubs (future use) ────────────────────────────────────────────
+
+/**
+ * Send a magic code to the given email address.
+ */
+export async function sendMagicCode(email: string): Promise<void> {
+  await db.auth.sendMagicCode({ email });
+}
+
+/**
+ * Verify a magic code and sign in.
+ */
+export async function verifyMagicCode(email: string, code: string): Promise<AuthState> {
+  await db.auth.signInWithMagicCode({ email, code });
+  const authState: AuthState = {
+    isAuthenticated: true,
+    authId: email,
+    authType: 'email',
+    walletAddress: null,
+    isNewUser: false,
+  };
+  await AsyncStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authState));
+  return authState;
 }

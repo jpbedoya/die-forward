@@ -1,106 +1,207 @@
-# Die Forward — Auth Plan
+# Die Forward — Auth System
 
-## Implementation Status (Feb 2026)
+## Implementation Status
 
 | Phase | Status | Notes |
 |-------|--------|-------|
-| Phase 1: Backend auth endpoints | ✅ Done | All 3 routes live (`/auth/wallet`, `/auth/guest`, `/auth/link-wallet`) |
-| Phase 2: Frontend auth flow | ✅ Done | Wallet + guest both get real InstantDB tokens |
-| Phase 3: Player records | ✅ Done | `players` table with `authId`, `authType` |
-| Phase 4: Nickname flow | ✅ Done | DB-wins for wallet, local-first for guest, 🪦 edit UI |
-| Phase 5: InstantDB permissions | ✅ Done | Perms written + enforceable now that tokens are real |
-| Phase 6: Account linking | ✅ Done | LinkWalletModal + merge logic in backend |
-
-### One remaining item
-
-| Item | Status | Blocker |
-|------|--------|---------|
-| Wallet signature verification | ⏳ Waiting | `signMessage` not exposed by `@wallet-ui/react-native-web3js`. Backend nacl verification is already implemented and `SKIP_VERIFICATION` backdoor exists as placeholder. Remove it when MWA adapter adds `signMessage`. |
+| Backend auth endpoints | ✅ Done | `/auth/wallet`, `/auth/guest`, `/auth/link-wallet` |
+| Frontend wallet auth | ✅ Done | Wallet sign + nacl signature verification |
+| Frontend guest auth | ✅ Done | UUID guestId, persistent via AsyncStorage |
+| Player records | ✅ Done | `players` table, `authId` / `authType` |
+| Nickname flow | ✅ Done | DB-wins for wallet, local-first for guest |
+| InstantDB permissions | ✅ Done | Players self-only, deaths immutable |
+| Account linking | ✅ Done | Guest → wallet merge, `link-wallet` backend route |
+| Wallet signature verification | ✅ Done | Full nacl verification live, SKIP_VERIFICATION removed |
+| Session restore on restart | 🔴 Broken | InstantDB session lost on restart for wallet users |
+| Update-safe migration | 🔴 Broken | Migration condition bug, pre-migration builds unaffected |
+| Email / magic code auth | ⏳ Planned | InstantDB built-in, no extra backend needed |
 
 ---
 
-## Current Auth Architecture
+## How InstantDB Auth Works
+
+InstantDB uses custom auth tokens to link an external identity (wallet, guest ID, email) to an InstantDB user record:
+
+1. **Backend** (admin SDK): `db.auth.createToken({ email: identifier })` → short-lived custom JWT
+2. **Frontend** (client SDK): `db.auth.signInWithToken(token)` → InstantDB creates an internal session
+
+InstantDB is designed to persist this session internally using IndexedDB. **React Native does not have native IndexedDB**, so InstantDB's session storage fails silently and the session is lost on every app restart.
+
+### The consequence
+
+The app maintains a parallel auth state in `die-forward-auth` (AsyncStorage) so the user appears logged in after restart. But `restoreAuth` in `GameContext.tsx` never calls `signInWithToken` again — so InstantDB has no session while React thinks the user is authenticated. Queries eventually fail → crash.
+
+---
+
+## Current Architecture
 
 ### Identity Model
 
 ```
 WALLET USER                          GUEST USER
 ──────────────────────────────       ──────────────────────────────
-authId  = wallet address             authId  = UUID (stored locally)
+authId  = wallet address             authId  = "guest-<uuid>"
 authType = 'wallet'                  authType = 'guest'
-walletAddress = address              walletAddress = undefined
-nickname ← DB is source of truth     nickname ← AsyncStorage is source of truth
+email   = addr@wallet.dieforward.com email   = guestId@guest.dieforward.com
+nickname ← DB is source of truth     nickname ← AsyncStorage only
+InstantDB token ← signed challenge   InstantDB token ← /api/auth/guest (silent)
 ```
 
-### Source of Truth Rules (critical)
+### AsyncStorage Keys
 
-| State | Nickname source | Local cache |
-|-------|----------------|-------------|
-| Wallet auth | **InstantDB DB always wins** | Write-through cache only |
-| Guest auth | AsyncStorage | IS the source |
+| Key | Protected | Purpose |
+|-----|-----------|---------|
+| `die-forward-auth` | ✅ | Full auth state (AuthState JSON) |
+| `die-forward-nickname` | ✅ | Cached nickname |
+| `die-forward-nickname-prompted` | ✅ | Has user been prompted? |
+| `die-forward-guest-id` | ✅ | Guest UUID for silent re-auth |
+| `audio-master-enabled` | ✅ | Audio setting |
+| `audio-sfx-enabled` | ✅ | Audio setting |
+| `audio-ambient-volume` | ✅ | Audio setting |
+| `APP_BUILD_VERSION` | (set on launch) | Version migration gating |
+| `die-forward-guest-progress` | — | Guest progress flag, safe to clear |
 
-**Why DB wins for wallet users:** The wallet address is stable across devices and sessions. The DB is the canonical store. Local cache is just for fast reads — it is always populated FROM the DB, never pushed TO the DB on sync.
+### Source of Truth
 
-### Disconnect = Full Logout
-
-Calling `game.disconnect()` clears:
-- All auth state (`isAuthenticated`, `authId`, `authType`)
-- Local nickname cache (`AsyncStorage`)
-- Prompted flag
-- Guest progress flag
-- Resets to `initialState`
+| State | Nickname | Auth |
+|-------|----------|------|
+| Wallet | **InstantDB DB wins** | Wallet address stable across sessions |
+| Guest | **AsyncStorage only** | guestId stored locally |
 
 ---
 
 ## Auth Flows
 
-### Wallet Flow
+### Wallet Sign-In (Full Flow)
 
 ```
 1. User taps "BIND WALLET"
-   → wallet.connect() → walletAddress set
-   → useEffect auto-authenticates (sets isAuthenticated: true, authId = walletAddress)
-   → syncNickname useEffect fires
+   → wallet.connect() → unified wallet hook fires
+   → auto-auth useEffect triggers signInWithWallet(address, signMessage)
+
+2. signInWithWallet()
+   → generates challenge message + nonce
+   → requests wallet signature (user approval required)
+   → POST /api/auth/wallet { walletAddress, signature, message }
+   → backend: verifies nacl signature, creates InstantDB custom token
+   → db.auth.signInWithToken(token) — InstantDB session created
+   → stores AuthState in die-forward-auth (including customToken)
+   → returns AuthState
+
+3. syncNickname useEffect fires
    → getOrCreatePlayerByAuth(authId, 'wallet')
-   → DB nickname loaded, overwrites local cache
-   → If default name (new user): show NicknameModal
-
-2. User sets nickname via 🪦 NAME ✎ tap
-   → Opens NicknameModal (pre-filled)
-   → On confirm: write to DB first, then update local cache + state
-
-3. User taps [logout]
-   → Full reset: auth state + local storage cleared
+   → DB nickname loaded
+   → If new user (default name): NicknameModal shown
 ```
 
-### Guest Flow
+### Guest Sign-In (Silent)
 
 ```
-1. User taps "EMPTY-HANDED"
-   → signInAsGuest() → new UUID authId
-   → syncNickname reads AsyncStorage first
-   → If no local name: show NicknameModal
-   → Guest player record created in DB
+1. User taps "EMPTY-HANDED" — OR — app restores guest session on startup
 
-2. User sets nickname
-   → Saved to AsyncStorage only (not DB-authoritative for guests)
+2. signInAsGuest()
+   → reads existing guestId from die-forward-guest-id (if any)
+   → POST /api/auth/guest { existingGuestId }
+   → backend: creates new token for existing guest, or creates new guestId
+   → db.auth.signInWithToken(token) — InstantDB session created
+   → stores AuthState in die-forward-auth (including customToken)
+   → returns AuthState
 
-3. No explicit logout needed (ephemeral session)
+3. syncNickname fires — reads AsyncStorage (not DB) for guest
 ```
 
-### Wallet Bind After Guest Session
+### Session Restore on App Restart
+
+```
+restoreAuth() — runs on mount
+
+WALLET user:
+  → read die-forward-auth → has customToken?
+  → try db.auth.signInWithToken(customToken) [silent]
+    → SUCCESS: restore React auth state ✅
+    → FAIL (expired): set walletAddress but isAuthenticated=false
+      → wallet auto-connects → auto-auth useEffect fires
+      → signInWithWallet() runs (requires wallet signature, once)
+
+GUEST user:
+  → always calls signInAsGuest() silently
+  → uses stored guestId → new token from backend → signInWithToken
+  → fully transparent to user ✅
+```
+
+### Guest → Wallet Upgrade
 
 ```
 Guest playing → taps "BIND WALLET" in The Toll
-→ wallet.connect() runs
-→ auto-auth fires → authType switches to 'wallet'
-→ syncNickname fetches DB for this wallet address
-→ DB record wins — local guest name is NOT carried over
-→ If new wallet (no DB record): nickname prompt shown
-→ If existing wallet: their DB name restored
+→ wallet.connect()
+→ auto-auth useEffect: sees isAuthenticated && authType === 'guest'
+→ calls linkWalletToGuest(address, signMessage)
+  → signs challenge, POST /api/auth/link-wallet { guestAuthId, walletAddress, ... }
+  → backend merges guest + wallet records
+  → db.auth.signInWithToken(walletToken)
+  → authType upgraded to 'wallet', die-forward-guest-id cleared
+→ syncNickname re-fires → DB wins for wallet users
 ```
 
-**Design decision:** DB always wins when wallet auth is present. Guest names are ephemeral.
+---
+
+## Planned: Email / Magic Code Auth
+
+**No backend changes needed.** Uses InstantDB's built-in magic code flow.
+
+```typescript
+// Send code
+await db.auth.sendMagicCode({ email })
+
+// Verify and sign in
+await db.auth.signInWithMagicCode({ email, code })
+// → user.refresh_token available → store it → same restore pattern
+```
+
+Auth type: `authType: 'email'` — add to union in `AuthState`.
+
+Nickname: treated like wallet (DB source of truth, since email is stable identity).
+
+No wallet, no backend route. InstantDB handles user creation automatically.
+
+---
+
+## Known Issues & Fixes Needed
+
+### 1. Migration condition bug (high priority)
+
+**File**: `mobile/app/_layout.tsx`
+
+```typescript
+// BUG: never fires for users upgrading from pre-migration builds (no stored version key)
+if (stored && stored !== CURRENT_VERSION) {
+
+// FIX:
+if (!stored || stored !== CURRENT_VERSION) {
+```
+
+### 2. `die-forward-guest-id` not protected
+
+**File**: `mobile/app/_layout.tsx` — `PROTECTED_KEYS` array
+
+Currently missing `'die-forward-guest-id'` — gets wiped on version migration, breaking guest silent re-auth. Add it.
+
+### 3. InstantDB session not restored for wallet users on restart
+
+**File**: `mobile/lib/auth.ts`, `mobile/lib/GameContext.tsx`
+
+- Add `customToken?: string` to `AuthState`
+- Store `token` in `AuthState` when calling `signInWithToken` (in `signInWithWallet`, `signInAsGuest`, `linkWalletToGuest`)
+- In `restoreAuth` (GameContext), for wallet users: try `db.auth.signInWithToken(storedAuth.customToken)` before restoring React state
+- If token reuse fails → fall back to `isAuthenticated: false` so wallet auto-reconnect triggers fresh `signInWithWallet`
+
+Backend: extend token TTL in `/api/auth/wallet` and `/api/auth/guest` if InstantDB admin SDK supports it.
+
+### 4. ErrorBoundary doesn't clear InstantDB session
+
+**File**: `mobile/app/_layout.tsx`
+
+`handleReset` calls `clearNonIdentityStorage()` but doesn't call `db.auth.signOut()`. On mobile, the app re-renders without clearing InstantDB's in-memory state. Add `db.auth.signOut()` to `handleReset`.
 
 ---
 
@@ -108,102 +209,51 @@ Guest playing → taps "BIND WALLET" in The Toll
 
 | File | Purpose |
 |------|---------|
-| `mobile/lib/GameContext.tsx` | Auth state machine, syncNickname, disconnect |
-| `mobile/lib/auth.ts` | signInWithWallet, signInAsGuest, linkWalletToGuest helpers |
-| `mobile/lib/instant.ts` | getOrCreatePlayerByAuth, updatePlayerNicknameByAuth |
-| `mobile/app/stake.tsx` | Wallet connect UI, identity row (🪦), NicknameModal trigger |
-| `mobile/components/NicknameModal.tsx` | Name entry modal (first-time + editing, initialValue prop) |
-| `mobile/components/LinkWalletModal.tsx` | Guest → wallet linking UI |
+| `mobile/lib/auth.ts` | Auth primitives: signInWithWallet, signInAsGuest, linkWalletToGuest |
+| `mobile/lib/GameContext.tsx` | Auth state machine, restoreAuth, syncNickname |
+| `mobile/lib/instant.ts` | db init, getOrCreatePlayerByAuth, updatePlayerNicknameByAuth |
+| `mobile/app/_layout.tsx` | Version migration, PROTECTED_KEYS, ErrorBoundary |
+| `src/app/api/auth/wallet/route.ts` | Wallet signature verification, token creation |
+| `src/app/api/auth/guest/route.ts` | Guest token creation / re-auth |
+| `src/app/api/auth/link-wallet/route.ts` | Guest → wallet merge |
 
 ---
 
-## Simplified Auth (Current Implementation)
+## getOrCreatePlayerByAuth Safeguards
 
-The planned signature verification (Phase 1) is not yet live. Current auth is:
-
-```
-Wallet: authId = walletAddress (no signature verification)
-Guest:  authId = UUID stored in AsyncStorage via signInAsGuest()
-```
-
-This is sufficient for the current stage — ownership is implied by wallet address, not cryptographically proven. Full signature verification is a post-hackathon hardening task.
+1. **Wallet fallback**: If authId lookup returns nothing, falls back to `walletAddress` lookup
+2. **AuthId drift correction**: Non-wallet authId on a wallet user auto-corrected to wallet address
+3. **Guest ID protection**: Guest ID can never overwrite a wallet user's `authId`
+4. **Stale async protection**: `cancelled` flag in `syncNickname` prevents stale DB writes after logout
 
 ---
 
-## syncNickname — Stale Async Protection
+## Leaderboard Rules
 
-`syncNickname` runs in a `useEffect` and awaits DB calls. A `cancelled` flag prevents stale responses from writing state after logout:
-
-```typescript
-useEffect(() => {
-  let cancelled = false;
-  const syncNickname = async () => {
-    const result = await getOrCreatePlayerByAuth(...);
-    if (cancelled) return; // ignore if logged out while awaiting
-    updateState({ nickname: result.player.nickname });
-  };
-  syncNickname();
-  return () => { cancelled = true; };
-}, [state.isAuthenticated, state.authId, ...]);
-```
-
----
-
-## Player Stats & Leaderboard
-
-### Stats Tracking
-Deaths and victories update player stats server-side via `authId` lookup (not `walletAddress`). This supports both wallet and guest players correctly.
-
-- **Death** → increments `totalDeaths`, updates `highestRoom`, `totalLost`
-- **Victory** (session `status: 'completed'`) → increments `totalClears`, updates `totalEarned`, `highestRoom`
-- Session stores `authId` at creation time so server routes can always find the right player record
-
-### Leaderboard Rules
 Players appear in RANKS if:
-- `highestRoom > 0` (has played)
-- Nickname is not `"Wanderer"` (default guest name)
+- `highestRoom > 0` (has actually played)
+- Nickname is not `"Wanderer"` (default guest fallback)
 - Nickname doesn't match wallet-address format (`AB12...XY78`)
-
-### getOrCreatePlayerByAuth Safeguards (added Feb 2026)
-1. **Wallet fallback:** If authId lookup returns no result, falls back to lookup by `walletAddress` — prevents duplicate records when authId was stored differently
-2. **AuthId drift correction:** If a wallet user's record has a non-wallet authId (e.g. a guest ID from a bad migration), it is auto-corrected to the wallet address on next login
-3. **Guest ID protection:** A guest ID can never overwrite a wallet user's `authId`
-
----
-
-## Remaining Work
-
-### Wallet Signature Verification
-**Status:** Waiting on external dependency
-
-The backend already has full nacl verification implemented in `src/app/api/auth/wallet/route.ts`. When the MWA wallet adapter exposes `signMessage`, the flow is:
-
-1. Remove `SKIP_VERIFICATION` check from the backend route
-2. Pass a real `signMessage` function into `signInWithWallet()` in `auth.ts`
-3. Done — no other changes needed
-
-**How to detect when unblocked:** Check `@wallet-ui/react-native-web3js` release notes for `signMessage` / `signBytes` support.
-
-### Email Claiming (Future)
-Allow guest users to claim their account with an email address (magic link flow) to persist across device reinstalls. Not planned for current release.
 
 ---
 
 ## Testing Checklist
 
-- [x] Wallet user sign-in (simplified, no signature)
-- [x] DB nickname loads on wallet connect (auto-auth useEffect)
-- [x] Empty-handed user gets unique guest ID
-- [x] Nickname prompt for new wallet users (default name check)
+- [x] Wallet sign-in with nacl signature verification
+- [x] DB nickname loads on wallet connect
+- [x] Empty-handed → unique guestId
+- [x] Nickname prompt for new wallet users
 - [x] Nickname prompt for new guests (no local name)
-- [x] Nickname edits write to DB (wallet) or local (guest)
-- [x] Disconnect = full logout, clears all state
+- [x] Nickname edits → DB (wallet) or AsyncStorage (guest)
+- [x] Disconnect = full logout + state clear
 - [x] Stale syncNickname cancelled on logout
-- [x] Guest session → wallet bind → DB name wins
+- [x] Guest → wallet upgrade → DB name wins
 - [x] Deaths use nickname (not wallet address)
-- [x] Wallet auth hits backend + gets real InstantDB token
-- [x] Guest re-auth uses existingGuestId — returning guests keep same identity
-- [x] disconnect() calls signOut() → clears InstantDB session + all local storage
-- [x] InstantDB perms enforced (players self-only update, deaths immutable)
-- [ ] Wallet signature verification — waiting on MWA signMessage support
-- [ ] Email claiming — future
+- [x] Wallet auth: real InstantDB token via backend
+- [x] Guest re-auth: existingGuestId → same identity
+- [x] disconnect() clears InstantDB session + all local storage
+- [x] InstantDB perms: players self-only, deaths immutable
+- [ ] Session restore without wallet signature (token reuse)
+- [ ] Update migration fires for pre-migration builds
+- [ ] guest-id preserved across updates
+- [ ] Email magic code auth

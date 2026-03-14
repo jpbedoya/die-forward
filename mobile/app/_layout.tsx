@@ -21,6 +21,7 @@ import { WebFrame } from '../components/WebFrame';
 import { AudiusProvider } from '../lib/AudiusContext';
 import { SplashScreen } from '../components/SplashScreen';
 import { getAudioManager } from '../lib/audio';
+import { db } from '../lib/instant';
 
 const APP_VERSION_KEY = 'APP_BUILD_VERSION';
 // Use only BASE_VERSION (without commit hash) for migration gating
@@ -32,6 +33,7 @@ const PROTECTED_KEYS = [
   'die-forward-nickname',
   'die-forward-auth',
   'die-forward-nickname-prompted',
+  'die-forward-guest-id',
   'audio-master-enabled',
   'audio-sfx-enabled',
   'audio-ambient-volume',
@@ -53,7 +55,7 @@ async function clearNonIdentityStorage() {
 async function checkVersionAndMigrate() {
   try {
     const stored = await AsyncStorage.getItem(APP_VERSION_KEY);
-    if (stored && stored !== CURRENT_VERSION) {
+    if (!stored || stored !== CURRENT_VERSION) {
       console.log(`[Version] ${stored} → ${CURRENT_VERSION} — clearing stale state`);
       await clearNonIdentityStorage();
     }
@@ -121,6 +123,12 @@ class ErrorBoundary extends React.Component<
   }
 
   handleReset = async () => {
+    // Sign out from InstantDB to clear in-memory session
+    try {
+      await db.auth.signOut();
+    } catch (e) {
+      console.warn('[ErrorBoundary] InstantDB signOut failed:', e);
+    }
     // Clear stale state after a crash, but preserve identity/settings keys
     try {
       await clearNonIdentityStorage();
