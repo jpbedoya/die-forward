@@ -224,7 +224,7 @@ export default function HomeScreen() {
   const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
 
   const game = useGame();
-  const { deaths: recentDeaths } = useDeathFeed(50);
+  const { deaths: recentDeaths, isLoading: feedLoading } = useDeathFeed(50);
   const { playAmbient, ready: audioReady } = useAudio();
   const { settings } = useGameSettings();
 
@@ -297,7 +297,7 @@ export default function HomeScreen() {
           {/* Preview content */}
           <View className="px-2 items-center" style={{ minHeight: 120 }}>
             <View className="items-center w-full" style={{ maxWidth: 280 }}>
-              {displayedDeaths.length > 0 ? (
+              {feedLoading ? null : displayedDeaths.length > 0 ? (
                 displayedDeaths.map((death, i) => (
                   <View key={death.id || i} className="py-1">
                     <Text className="text-xs text-bone-muted font-mono text-center" numberOfLines={1}>
@@ -331,8 +331,8 @@ export default function HomeScreen() {
       {/* Version badge */}
       <Text
         style={{
-          position: 'absolute', bottom: 6, right: 10,
-          fontSize: 9, fontFamily: 'monospace', color: '#3a3632', letterSpacing: 0.5,
+          position: 'absolute', bottom: 6, right: 28,
+          fontSize: 9, fontFamily: 'monospace', color: '#6b6460', letterSpacing: 0.5,
         }}
         pointerEvents="none"
       >
