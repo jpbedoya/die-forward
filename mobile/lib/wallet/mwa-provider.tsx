@@ -3,7 +3,7 @@
  * This is the official Solana Foundation approach for Expo apps
  */
 
-import React, { useMemo, useCallback, ReactNode } from 'react';
+import React, { useMemo, useCallback, useRef, ReactNode } from 'react';
 import { MobileWalletProvider as WalletUIProvider, useMobileWallet } from '@wallet-ui/react-native-web3js';
 import type { Address } from '@solana/kit';
 import { LAMPORTS_PER_SOL, Transaction, SystemProgram, PublicKey } from '@solana/web3.js';
@@ -26,7 +26,11 @@ function MobileWalletConsumer({ children }: { children: ReactNode }) {
   
   const address = wallet.account?.address?.toBase58() as Address | null;
   const connected = !!wallet.account;
-  
+
+  // Ref keeps wallet access stable — prevents useCallback recreation on every wallet state change
+  const walletRef = useRef(wallet);
+  walletRef.current = wallet;
+
   // Fetch balance on connect
   React.useEffect(() => {
     if (address && wallet.connection) {
@@ -42,7 +46,7 @@ function MobileWalletConsumer({ children }: { children: ReactNode }) {
     setConnecting(true);
     try {
       console.log('[MWA] Calling wallet.connect()...');
-      const account = await wallet.connect();
+      const account = await walletRef.current.connect();
       console.log('[MWA] Connect success, account:', account?.address?.toBase58?.());
       return account?.address?.toBase58() as Address | null;
     } catch (e: any) {
@@ -52,46 +56,46 @@ function MobileWalletConsumer({ children }: { children: ReactNode }) {
     } finally {
       setConnecting(false);
     }
-  }, [wallet]);
-  
+  }, []);
+
   const disconnect = useCallback(async () => {
-    await wallet.disconnect();
-  }, [wallet]);
-  
+    await walletRef.current.disconnect();
+  }, []);
+
   const sendSOL = useCallback(async (to: Address, amount: number): Promise<string> => {
-    if (!wallet.account) throw new Error('Wallet not connected');
-    
+    if (!walletRef.current.account) throw new Error('Wallet not connected');
+
     const tx = new Transaction().add(
       SystemProgram.transfer({
-        fromPubkey: wallet.account.publicKey,
+        fromPubkey: walletRef.current.account.publicKey,
         toPubkey: new PublicKey(to),
         lamports: Math.floor(amount * LAMPORTS_PER_SOL),
       })
     );
-    
-    const { blockhash, lastValidBlockHeight } = await wallet.connection.getLatestBlockhash();
+
+    const { blockhash, lastValidBlockHeight } = await walletRef.current.connection.getLatestBlockhash();
     tx.recentBlockhash = blockhash;
-    tx.feePayer = wallet.account.publicKey;
-    
-    const minContextSlot = await wallet.connection.getSlot();
-    return await wallet.signAndSendTransaction(tx, minContextSlot);
-  }, [wallet]);
-  
+    tx.feePayer = walletRef.current.account.publicKey;
+
+    const minContextSlot = await walletRef.current.connection.getSlot();
+    return await walletRef.current.signAndSendTransaction(tx, minContextSlot);
+  }, []);
+
   const signAndSendTransaction = useCallback(async (transaction: any): Promise<string> => {
-    if (!wallet.account) throw new Error('Wallet not connected');
-    
+    if (!walletRef.current.account) throw new Error('Wallet not connected');
+
     // Ensure blockhash and fee payer are set
     if (!transaction.recentBlockhash) {
-      const { blockhash } = await wallet.connection.getLatestBlockhash();
+      const { blockhash } = await walletRef.current.connection.getLatestBlockhash();
       transaction.recentBlockhash = blockhash;
     }
     if (!transaction.feePayer) {
-      transaction.feePayer = wallet.account.publicKey;
+      transaction.feePayer = walletRef.current.account.publicKey;
     }
-    
+
     try {
-      const minContextSlot = await wallet.connection.getSlot();
-      return await wallet.signAndSendTransaction(transaction, minContextSlot);
+      const minContextSlot = await walletRef.current.connection.getSlot();
+      return await walletRef.current.signAndSendTransaction(transaction, minContextSlot);
     } catch (e: any) {
       const msg = e?.message || String(e);
       const isCancellation =
@@ -106,12 +110,12 @@ function MobileWalletConsumer({ children }: { children: ReactNode }) {
       }
       throw e;
     }
-  }, [wallet]);
-  
+  }, []);
+
   const signMessage = useCallback(async (message: Uint8Array): Promise<Uint8Array> => {
-    if (!wallet.account) throw new Error('Wallet not connected');
-    return await wallet.signMessage(message);
-  }, [wallet]);
+    if (!walletRef.current.account) throw new Error('Wallet not connected');
+    return await walletRef.current.signMessage(message);
+  }, []);
 
   const refreshBalance = useCallback(async () => {
     if (address && wallet.connection) {

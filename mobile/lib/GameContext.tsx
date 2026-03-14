@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect, useMemo } from 'react';
+import React, { createContext, useContext, useState, useCallback, useRef, ReactNode, useEffect, useMemo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as api from './api';
 import { generateRandomDungeon, generateDungeon, DungeonRoom, getItemDetails, rollRandomItem } from './content';
@@ -200,6 +200,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
   }, [unifiedWallet.connected, unifiedWallet.address, updateState]);
 
+  // Keep a stable ref to signMessage — avoids including it in effect deps
+  // (the MWA wallet object recreates signMessage on every state change, which would
+  // cause the auto-auth effect below to cancel-restart in a loop)
+  const signMessageRef = useRef(unifiedWallet.signMessage);
+  signMessageRef.current = unifiedWallet.signMessage;
+
   // Auto sign-in when wallet connects — requires signed challenge
   // Also handles guest→wallet upgrade when user was signed in as guest
   useEffect(() => {
@@ -215,7 +221,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         if (state.isAuthenticated && state.authType === 'guest') {
           // Upgrade: link existing guest session to wallet
           // linkWalletToGuest reads guestId from AsyncStorage and updates it internally
-          await linkWalletToGuest(address, unifiedWallet.signMessage);
+          await linkWalletToGuest(address, signMessageRef.current);
           if (!cancelled) {
             updateState({
               isAuthenticated: true,
@@ -226,7 +232,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
           }
         } else {
           // Fresh wallet sign-in (no prior auth)
-          const authState = await signInWithWallet(address, unifiedWallet.signMessage);
+          const authState = await signInWithWallet(address, signMessageRef.current);
           if (!cancelled) {
             updateState({
               isAuthenticated: true,
@@ -238,11 +244,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
         }
       } catch (err) {
         console.warn('[Auth] Wallet sign-in failed:', err);
+        if (!cancelled) {
+          updateState({ error: `Wallet sign-in failed: ${err instanceof Error ? err.message : String(err)}` });
+        }
       }
     };
     doWalletAuth();
     return () => { cancelled = true; };
-  }, [unifiedWallet.connected, unifiedWallet.address, unifiedWallet.signMessage, state.isAuthenticated, state.authType, updateState]);
+  }, [unifiedWallet.connected, unifiedWallet.address, state.isAuthenticated, state.authType, updateState]);
 
   // Sync balance from unified wallet
   useEffect(() => {
