@@ -34,9 +34,12 @@ const PROTECTED_KEYS = [
   'die-forward-auth',
   'die-forward-nickname-prompted',
   'die-forward-guest-id',
+  'die-forward-guest-progress',
+  'audius-prefs-v1',
   'audio-master-enabled',
   'audio-sfx-enabled',
   'audio-ambient-volume',
+  APP_VERSION_KEY,
 ];
 
 async function clearNonIdentityStorage() {
@@ -58,6 +61,9 @@ async function checkVersionAndMigrate() {
     if (!stored || stored !== CURRENT_VERSION) {
       console.log(`[Version] ${stored} → ${CURRENT_VERSION} — clearing stale state`);
       await clearNonIdentityStorage();
+      // Reset InstantDB to clean state after cache wipe — the subsequent
+      // restoreAuth in GameProvider will re-authenticate with signInWithToken
+      try { await db.auth.signOut(); } catch {}
     }
     await AsyncStorage.setItem(APP_VERSION_KEY, CURRENT_VERSION);
   } catch (e) {
@@ -199,10 +205,12 @@ let splashShownThisSession = false;
 export default function RootLayout() {
   useWebSafeAreaCSS();
   const [showSplash, setShowSplash] = useState(!splashShownThisSession);
+  const [migrationDone, setMigrationDone] = useState(false);
 
-  // Clear stale state on version change (handles APK updates without uninstall)
+  // Clear stale state on version change — must complete before providers mount
+  // to avoid racing with GameProvider.restoreAuth and InstantDB queries
   useEffect(() => {
-    checkVersionAndMigrate();
+    checkVersionAndMigrate().then(() => setMigrationDone(true));
   }, []);
 
   // Unlock audio on splash tap
@@ -228,7 +236,7 @@ export default function RootLayout() {
       <SafeAreaProvider style={{ backgroundColor: '#0d0d0d' }}>
         <WebFrame>
           <StatusBar style="light" />
-          {showSplash ? (
+          {!migrationDone ? null : showSplash ? (
             // Splash renders OUTSIDE wallet provider — immune to MWA init issues
             <SplashScreen onComplete={handleSplashComplete} onTap={handleSplashTap} />
           ) : (
