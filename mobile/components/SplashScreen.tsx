@@ -65,18 +65,19 @@ export function SplashScreen({ onComplete, onTap }: SplashScreenProps) {
             style={{ 
               opacity: fadeAnim,
               transform: [{ scale: scaleAnim }],
+              alignItems: 'center',
             }}
           >
             <DieForwardLogoImage variant="vertical" size="large" showGlow glowColor="#f59e0b" />
+            <Text style={{ 
+              color: '#57534e', 
+              fontSize: 12, 
+              fontFamily: 'monospace', 
+              marginTop: 32 
+            }}>
+              tap to enable sound
+            </Text>
           </Animated.View>
-          <Text style={{ 
-            color: '#57534e', 
-            fontSize: 12, 
-            fontFamily: 'monospace', 
-            marginTop: 32 
-          }}>
-            tap to enable sound
-          </Text>
         </View>
       </Pressable>
     </CryptBackground>

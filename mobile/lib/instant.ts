@@ -550,7 +550,7 @@ export const DEFAULT_GAME_SETTINGS: Omit<GameSettings, 'id'> = {
   braceBaseDamageMax: 12,
   erraticDamageMax: 1.3,
   victoryBonusPercent: 50,
-  showLeaderboardLink: false,
+  showLeaderboardLink: true,
 };
 
 // Hook to get game settings (from admin panel)

@@ -295,7 +295,7 @@ export default function HomeScreen() {
           </View>
 
           {/* Preview content */}
-          <View className="px-2 items-center" style={{ minHeight: 120 }}>
+          <View className="px-2 items-center" style={{ height: 120, overflow: 'hidden' }}>
             <View className="items-center w-full" style={{ maxWidth: 280 }}>
               {feedLoading ? null : displayedDeaths.length > 0 ? (
                 displayedDeaths.map((death, i) => (
