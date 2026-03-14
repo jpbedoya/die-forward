@@ -74,9 +74,7 @@ interface GameState {
   // UI state
   loading: boolean;
   error: string | null;
-  // True once restoreAuth has completed (at least one render cycle with correct auth state).
-  // Use this to gate home screen content so it never renders in the un-initialized default state.
-  authInitialized: boolean;
+  authInitialized: boolean;  // retained for internal tracking only
 }
 
 interface WalletConnector {
@@ -256,64 +254,71 @@ export function GameProvider({ children }: { children: ReactNode }) {
   // Restore auth state on mount — always re-validate guest token with backend
   useEffect(() => {
     const restoreAuth = async () => {
-      const [stored, guestProgressRaw] = await Promise.all([
-        getStoredAuthState(),
-        AsyncStorage.getItem(GUEST_PROGRESS_KEY),
-      ]);
+      // Declare outside try so it's accessible in finally
+      const stateUpdates: Partial<GameState> = {};
+      try {
+        const [stored, guestProgressRaw] = await Promise.all([
+          getStoredAuthState(),
+          AsyncStorage.getItem(GUEST_PROGRESS_KEY),
+        ]);
 
-      // Accumulate all updates and apply in one call to avoid flicker from multiple re-renders
-      const stateUpdates: Partial<GameState> = {
-        guestProgressExists: guestProgressRaw === 'true',
-      };
+        stateUpdates.guestProgressExists = guestProgressRaw === 'true';
 
-      if (stored?.isAuthenticated && stored.authType === 'wallet') {
-        // Wallet auth — try to restore InstantDB session with stored token
-        if (stored.customToken) {
-          const restored = await restoreInstantDBSession(stored.customToken);
-          if (restored) {
-            Object.assign(stateUpdates, {
-              isAuthenticated: true,
-              authId: stored.authId,
-              authType: stored.authType,
-              walletAddress: stored.walletAddress,
-            });
+        if (stored?.isAuthenticated && stored.authType === 'wallet') {
+          // Wallet auth — try to restore InstantDB session with stored token
+          if (stored.customToken) {
+            const restored = await restoreInstantDBSession(stored.customToken);
+            if (restored) {
+              Object.assign(stateUpdates, {
+                isAuthenticated: true,
+                authId: stored.authId,
+                authType: stored.authType,
+                walletAddress: stored.walletAddress,
+              });
+            } else {
+              // Token expired — pre-fill wallet address, let wallet reconnect trigger fresh signInWithWallet
+              console.warn('[Auth] Stored token expired — wallet re-sign required on connect');
+              stateUpdates.walletAddress = stored.walletAddress;
+            }
           } else {
-            // Token expired — pre-fill wallet address, let wallet reconnect trigger fresh signInWithWallet
-            console.warn('[Auth] Stored token expired — wallet re-sign required on connect');
+            // No stored token (old install) — wallet reconnect will handle it
             stateUpdates.walletAddress = stored.walletAddress;
           }
-        } else {
-          // No stored token (old install) — wallet reconnect will handle it
-          stateUpdates.walletAddress = stored.walletAddress;
-        }
-      } else if (!unifiedWallet.connected) {
-        // Guest — always do a fresh sign-in to get a valid token + load player record immediately
-        try {
-          const authState = await signInAsGuest();
-          Object.assign(stateUpdates, {
-            isAuthenticated: true,
-            authId: authState.authId,
-            authType: 'guest' as const,
-            walletAddress: null,
-          });
-        } catch (err) {
-          console.warn('[Auth] Guest re-auth on mount failed:', err);
-          // Fall back to stored state if backend is unreachable
-          if (stored?.isAuthenticated) {
+        } else if (!unifiedWallet.connected) {
+          // Guest — always do a fresh sign-in to get a valid token + load player record immediately
+          try {
+            const authState = await signInAsGuest();
             Object.assign(stateUpdates, {
               isAuthenticated: true,
-              authId: stored.authId,
-              authType: stored.authType,
-              walletAddress: stored.walletAddress,
+              authId: authState.authId,
+              authType: 'guest' as const,
+              walletAddress: null,
             });
+          } catch (err) {
+            console.warn('[Auth] Guest re-auth on mount failed:', err);
+            // Fall back to stored state if backend is unreachable
+            if (stored?.isAuthenticated) {
+              Object.assign(stateUpdates, {
+                isAuthenticated: true,
+                authId: stored.authId,
+                authType: stored.authType,
+                walletAddress: stored.walletAddress,
+              });
+            }
           }
         }
+      } catch (err) {
+        console.error('[Auth] restoreAuth failed — proceeding as unauthenticated:', err);
+      } finally {
+        // ALWAYS mark auth as initialized so the home screen renders
+        updateState({ ...stateUpdates, authInitialized: true });
       }
-
-      // Single state update — no flicker. Mark authInitialized so home screen renders.
-      updateState({ ...stateUpdates, authInitialized: true });
     };
-    restoreAuth();
+    restoreAuth().catch(err => {
+      // Belt-and-suspenders: should never reach here since we have try-finally above
+      console.error('[Auth] restoreAuth unexpected rejection:', err);
+      updateState({ authInitialized: true });
+    });
   }, [updateState]);
 
   // Sync nickname when authenticated

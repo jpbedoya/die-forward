@@ -238,12 +238,6 @@ export default function HomeScreen() {
     setShowAllSheet(true);
   }, []);
 
-  // Stay dark until auth is restored — prevents a flash of un-initialized default state
-  // (authInitialized flips to true once restoreAuth completes, which takes ~100-500ms)
-  if (!game.authInitialized) {
-    return <View style={{ flex: 1, backgroundColor: '#0d0d0d' }} />;
-  }
-
   return (
     <CryptBackground screen="home">
     <SafeAreaView className="flex-1" edges={['top', 'left', 'right', 'bottom']}>
@@ -303,7 +297,11 @@ export default function HomeScreen() {
           {/* Preview content */}
           <View className="px-2 items-center" style={{ height: 120, overflow: 'hidden' }}>
             <View className="items-center w-full" style={{ maxWidth: 280 }}>
-              {feedLoading ? null : displayedDeaths.length > 0 ? (
+              {feedLoading ? (
+                <Text className="text-xs text-bone-dark font-mono italic text-center">
+                  Listening for echoes...
+                </Text>
+              ) : displayedDeaths.length > 0 ? (
                 displayedDeaths.map((death, i) => (
                   <View key={death.id || i} className="py-1">
                     <Text className="text-xs text-bone-muted font-mono text-center" numberOfLines={1}>

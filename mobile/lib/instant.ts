@@ -439,14 +439,18 @@ export function useCorpsesForRoom(zone: string, room: number) {
 
 // Hook to get recent deaths feed
 export function useDeathFeed(limit = 10) {
-  // Fetch deaths + players together so we can always resolve the current nickname
-  const { data, isLoading, error } = db.useQuery({
+  // Phase 1: deaths only — renders quickly so echoes appear without delay
+  const { data: deathData, isLoading: deathsLoading, error: deathsError } = db.useQuery({
     deaths: { $: { limit: 50, order: { serverCreatedAt: 'desc' } } },
+  });
+
+  // Phase 2: player names — arrives later, upgrades names progressively
+  const { data: playerData } = db.useQuery({
     players: {},
   });
 
   // Build lookup maps: walletAddress → nickname, authId → nickname
-  const players = (data?.players || []) as unknown as Player[];
+  const players = (playerData?.players || []) as unknown as Player[];
   const nameByWallet: Record<string, string> = {};
   const nameByAuthId: Record<string, string> = {};
   for (const p of players) {
@@ -455,7 +459,7 @@ export function useDeathFeed(limit = 10) {
     if (name && p.authId) nameByAuthId[p.authId] = name;
   }
 
-  const deaths = [...(data?.deaths || [])]
+  const deaths = [...(deathData?.deaths || [])]
     .map((d) => {
       const raw = d as unknown as Death;
       // Resolve current name: wallet lookup → authId lookup → stored playerName
@@ -468,7 +472,8 @@ export function useDeathFeed(limit = 10) {
     .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
     .slice(0, limit);
 
-  return { deaths, isLoading, error };
+  // isLoading only depends on deaths — players upgrade names progressively
+  return { deaths, isLoading: deathsLoading, error: deathsError };
 }
 
 // Hook to get pool stats
