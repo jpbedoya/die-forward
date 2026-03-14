@@ -238,6 +238,12 @@ export default function HomeScreen() {
     setShowAllSheet(true);
   }, []);
 
+  // Stay dark until auth is restored — prevents a flash of un-initialized default state
+  // (authInitialized flips to true once restoreAuth completes, which takes ~100-500ms)
+  if (!game.authInitialized) {
+    return <View style={{ flex: 1, backgroundColor: '#0d0d0d' }} />;
+  }
+
   return (
     <CryptBackground screen="home">
     <SafeAreaView className="flex-1" edges={['top', 'left', 'right', 'bottom']}>

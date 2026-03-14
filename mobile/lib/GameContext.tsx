@@ -74,6 +74,9 @@ interface GameState {
   // UI state
   loading: boolean;
   error: string | null;
+  // True once restoreAuth has completed (at least one render cycle with correct auth state).
+  // Use this to gate home screen content so it never renders in the un-initialized default state.
+  authInitialized: boolean;
 }
 
 interface WalletConnector {
@@ -177,6 +180,7 @@ const initialState: GameState = {
   currentModifier: null,
   loading: false,
   error: null,
+  authInitialized: false,
 };
 
 const GameContext = createContext<GameContextType | null>(null);
@@ -306,8 +310,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      // Single state update — no flicker
-      updateState(stateUpdates);
+      // Single state update — no flicker. Mark authInitialized so home screen renders.
+      updateState({ ...stateUpdates, authInitialized: true });
     };
     restoreAuth();
   }, [updateState]);

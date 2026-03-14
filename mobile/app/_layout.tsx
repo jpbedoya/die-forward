@@ -218,40 +218,38 @@ export default function RootLayout() {
     // (the replace was causing a remount flash)
   }, []);
 
-  // Splash renders OUTSIDE wallet provider — immune to MWA init issues
-  if (showSplash) {
-    return (
+  // GestureHandlerRootView + SafeAreaProvider are ALWAYS mounted (never torn down).
+  // Previously they were split across the splash/main branches, which meant SafeAreaProvider
+  // remounted on the splash→home transition and briefly reported zero insets — causing the
+  // vertically-centered home screen content to jump on first render.
+  // UnifiedWalletProvider stays inside the main branch (splash must stay outside it for MWA stability).
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider style={{ backgroundColor: '#0d0d0d' }}>
         <WebFrame>
           <StatusBar style="light" />
-          <SplashScreen onComplete={handleSplashComplete} onTap={handleSplashTap} />
+          {showSplash ? (
+            // Splash renders OUTSIDE wallet provider — immune to MWA init issues
+            <SplashScreen onComplete={handleSplashComplete} onTap={handleSplashTap} />
+          ) : (
+            <ErrorBoundary>
+              <UnifiedWalletProvider>
+                <GameProvider>
+                  <AudiusProvider>
+                    <Stack
+                      screenOptions={{
+                        headerShown: false,
+                        contentStyle: { backgroundColor: '#0d0d0d' },
+                        animation: 'fade',
+                      }}
+                    />
+                  </AudiusProvider>
+                </GameProvider>
+              </UnifiedWalletProvider>
+            </ErrorBoundary>
+          )}
         </WebFrame>
       </SafeAreaProvider>
-    );
-  }
-  
-  return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <ErrorBoundary>
-        <SafeAreaProvider style={{ backgroundColor: '#0d0d0d' }}>
-          <WebFrame>
-            <UnifiedWalletProvider>
-              <GameProvider>
-                <AudiusProvider>
-                  <StatusBar style="light" />
-                  <Stack
-                    screenOptions={{
-                      headerShown: false,
-                      contentStyle: { backgroundColor: '#0d0d0d' },
-                      animation: 'fade',
-                    }}
-                  />
-                </AudiusProvider>
-              </GameProvider>
-            </UnifiedWalletProvider>
-          </WebFrame>
-        </SafeAreaProvider>
-      </ErrorBoundary>
     </GestureHandlerRootView>
   );
 }
