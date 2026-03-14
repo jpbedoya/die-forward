@@ -143,8 +143,11 @@ export default function StakeScreen() {
         if (!game.walletConnected) {
           throw new Error('Connect wallet first');
         }
+        // Auto-auth useEffect in GameProvider owns wallet sign-in.
+        // If authType is still not 'wallet' at this point, auth is in progress — bail.
         if (!game.isAuthenticated || game.authType !== 'wallet') {
-          await game.signInWithWallet();
+          setStaking(false);
+          return;
         }
       }
 
