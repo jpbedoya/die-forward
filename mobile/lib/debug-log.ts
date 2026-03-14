@@ -1,21 +1,26 @@
 /**
  * On-device debug logger — stores timestamped entries in AsyncStorage
- * so they survive app restarts. Exportable via share sheet.
+ * and auto-saves to a file on the filesystem for adb extraction.
  *
  * Usage:
  *   import { dlog } from './debug-log';
  *   dlog('Auth', 'restoreAuth started');
  *   dlog.warn('Auth', 'token expired');
  *   dlog.error('Auth', 'signIn failed', err);
+ *
+ * Pull logs from device:
+ *   adb shell run-as com.dieforward.app cat files/debug.log
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
+import * as FileSystem from 'expo-file-system';
 
 const STORAGE_KEY = 'die-forward-debug-logs';
 const MAX_ENTRIES = 500;
+const LOG_FILE = `${FileSystem.documentDirectory}debug.log`;
 
-// In-memory buffer — flushed to AsyncStorage periodically
+// In-memory buffer — flushed periodically
 let buffer: string[] = [];
 let flushTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -46,7 +51,7 @@ function append(level: string, tag: string, args: unknown[]) {
     fn(`[dlog][${tag}]`, ...args);
   }
 
-  // Debounce flush — write to AsyncStorage at most every 500ms
+  // Debounce flush — write at most every 500ms
   if (!flushTimer) {
     flushTimer = setTimeout(flush, 500);
   }
@@ -59,21 +64,33 @@ async function flush() {
   const toWrite = [...buffer];
   buffer = [];
 
+  // Write to AsyncStorage (for in-app access)
   try {
     const existing = await AsyncStorage.getItem(STORAGE_KEY);
     const lines: string[] = existing ? JSON.parse(existing) : [];
     lines.push(...toWrite);
-    // Keep only the most recent entries
     const trimmed = lines.length > MAX_ENTRIES ? lines.slice(-MAX_ENTRIES) : lines;
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
-  } catch (e) {
-    // Can't log to self — just drop silently
+  } catch {}
+
+  // Also append to filesystem log file (for adb extraction)
+  if (Platform.OS !== 'web') {
+    try {
+      const chunk = toWrite.join('\n') + '\n';
+      const exists = await FileSystem.getInfoAsync(LOG_FILE);
+      if (exists.exists) {
+        // Append by reading + rewriting (expo-file-system has no append API)
+        const current = await FileSystem.readAsStringAsync(LOG_FILE);
+        await FileSystem.writeAsStringAsync(LOG_FILE, current + chunk);
+      } else {
+        await FileSystem.writeAsStringAsync(LOG_FILE, chunk);
+      }
+    } catch {}
   }
 }
 
 /** Read all stored log entries */
 export async function getDebugLogs(): Promise<string[]> {
-  // Flush any buffered entries first
   await flush();
   try {
     const stored = await AsyncStorage.getItem(STORAGE_KEY);
@@ -89,7 +106,6 @@ export async function exportDebugLogs(): Promise<void> {
   const text = lines.join('\n') || '(no logs)';
 
   if (Platform.OS === 'web') {
-    // Web fallback: download as file
     const blob = new Blob([text], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -100,10 +116,7 @@ export async function exportDebugLogs(): Promise<void> {
     return;
   }
 
-  // Native: write to cache, then share
-  const FileSystem = await import('expo-file-system');
   const Sharing = await import('expo-sharing');
-
   const fileUri = `${FileSystem.cacheDirectory}die-forward-debug-${Date.now()}.log`;
   await FileSystem.writeAsStringAsync(fileUri, text, { encoding: FileSystem.EncodingType.UTF8 });
 
@@ -116,6 +129,9 @@ export async function exportDebugLogs(): Promise<void> {
 export async function clearDebugLogs(): Promise<void> {
   buffer = [];
   await AsyncStorage.removeItem(STORAGE_KEY);
+  if (Platform.OS !== 'web') {
+    try { await FileSystem.deleteAsync(LOG_FILE, { idempotent: true }); } catch {}
+  }
 }
 
 // Main log function + level variants
