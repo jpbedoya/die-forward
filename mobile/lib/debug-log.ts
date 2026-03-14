@@ -1,15 +1,13 @@
 /**
  * On-device debug logger — stores timestamped entries in AsyncStorage
- * and auto-saves to a file on the filesystem for adb extraction.
+ * and auto-saves to filesystem. Auto-exports via share sheet on startup
+ * so logs are accessible even when the UI is frozen.
  *
  * Usage:
  *   import { dlog } from './debug-log';
  *   dlog('Auth', 'restoreAuth started');
  *   dlog.warn('Auth', 'token expired');
  *   dlog.error('Auth', 'signIn failed', err);
- *
- * Pull logs from device:
- *   adb shell run-as com.dieforward.app cat files/debug.log
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -79,7 +77,6 @@ async function flush() {
       const chunk = toWrite.join('\n') + '\n';
       const exists = await FileSystem.getInfoAsync(LOG_FILE);
       if (exists.exists) {
-        // Append by reading + rewriting (expo-file-system has no append API)
         const current = await FileSystem.readAsStringAsync(LOG_FILE);
         await FileSystem.writeAsStringAsync(LOG_FILE, current + chunk);
       } else {
@@ -123,6 +120,18 @@ export async function exportDebugLogs(): Promise<void> {
   if (await Sharing.isAvailableAsync()) {
     await Sharing.shareAsync(fileUri, { mimeType: 'text/plain', dialogTitle: 'Export Debug Logs' });
   }
+}
+
+/**
+ * Schedule auto-export after a delay. The share sheet is system UI
+ * that pops over a frozen app — save to Downloads from there.
+ * Call this once at app startup.
+ */
+export function scheduleAutoExport(delayMs = 8000) {
+  if (Platform.OS === 'web') return;
+  setTimeout(() => {
+    exportDebugLogs().catch(() => {});
+  }, delayMs);
 }
 
 /** Clear all stored logs */

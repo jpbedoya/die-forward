@@ -22,7 +22,7 @@ import { AudiusProvider } from '../lib/AudiusContext';
 import { SplashScreen } from '../components/SplashScreen';
 import { getAudioManager } from '../lib/audio';
 import { db } from '../lib/instant';
-import { dlog } from '../lib/debug-log';
+import { dlog, scheduleAutoExport } from '../lib/debug-log';
 
 const APP_VERSION_KEY = 'APP_BUILD_VERSION';
 // Use only BASE_VERSION (without commit hash) for migration gating
@@ -219,7 +219,13 @@ export default function RootLayout() {
   // Clear stale state on version change — must complete before providers mount
   // to avoid racing with GameProvider.restoreAuth and InstantDB queries
   useEffect(() => {
-    checkVersionAndMigrate().then(() => setMigrationDone(true));
+    dlog('Layout', 'RootLayout mounted');
+    checkVersionAndMigrate().then(() => {
+      dlog('Layout', 'migration done, mounting providers');
+      setMigrationDone(true);
+    });
+    // Auto-export logs 8s after launch — share sheet pops over frozen UI
+    scheduleAutoExport(8000);
   }, []);
 
   // Unlock audio on splash tap
