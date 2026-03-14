@@ -61,9 +61,6 @@ async function checkVersionAndMigrate() {
     if (!stored || stored !== CURRENT_VERSION) {
       console.log(`[Version] ${stored} → ${CURRENT_VERSION} — clearing stale state`);
       await clearNonIdentityStorage();
-      // Reset InstantDB to clean state after cache wipe — the subsequent
-      // restoreAuth in GameProvider will re-authenticate with signInWithToken
-      try { await db.auth.signOut(); } catch {}
     }
     await AsyncStorage.setItem(APP_VERSION_KEY, CURRENT_VERSION);
   } catch (e) {
