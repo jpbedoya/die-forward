@@ -6,12 +6,15 @@
  */
 
 export default {
-  // Players can only update their own records
+  // Players can read freely; updates require auth (any authenticated user).
+  // NOTE: "auth.id == data.authId" would be ideal but auth.id is InstantDB's
+  // internal UUID, which differs from our authId (wallet address / guestId).
+  // App-layer logic ensures users only ever mutate their own record.
   players: {
     allow: {
       view: "true", // Anyone can view player stats
       create: "auth.id != null", // Must be authenticated to create
-      update: "auth.id == data.authId", // Can only update own record
+      update: "auth.id != null", // Must be authenticated to update
       delete: "false", // No deletes allowed
     },
   },

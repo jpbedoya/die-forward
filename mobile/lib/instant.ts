@@ -220,13 +220,22 @@ export async function getOrCreatePlayerByAuth(
         ? (existing.walletAddress || existing.authId)
         : existing.authId;
 
-      await db.transact([
-        tx.players[existing.id].update({
-          authId: safeAuthId,
-          lastPlayedAt: Date.now(),
-          ...(nickname && nickname !== existing.nickname ? { nickname } : {}),
-        }),
-      ]);
+      // Update lastPlayedAt (and nickname if provided) — but don't let a
+      // failed transact prevent us from returning the player data. The read
+      // already succeeded (view: "true"); the write may fail if the auth
+      // session is missing or expired.
+      try {
+        await db.transact([
+          tx.players[existing.id].update({
+            authId: safeAuthId,
+            lastPlayedAt: Date.now(),
+            ...(nickname && nickname !== existing.nickname ? { nickname } : {}),
+          }),
+        ]);
+      } catch (updateErr) {
+        console.warn('[Player] Could not update lastPlayedAt (will retry next session):', updateErr);
+      }
+
       return {
         player: { ...existing, authId: safeAuthId, nickname: nickname || existing.nickname },
         isNew: false,
