@@ -257,14 +257,17 @@ export function GameProvider({ children }: { children: ReactNode }) {
         AsyncStorage.getItem(GUEST_PROGRESS_KEY),
       ]);
 
-      updateState({ guestProgressExists: guestProgressRaw === 'true' });
+      // Accumulate all updates and apply in one call to avoid flicker from multiple re-renders
+      const stateUpdates: Partial<GameState> = {
+        guestProgressExists: guestProgressRaw === 'true',
+      };
 
       if (stored?.isAuthenticated && stored.authType === 'wallet') {
         // Wallet auth — try to restore InstantDB session with stored token
         if (stored.customToken) {
           const restored = await restoreInstantDBSession(stored.customToken);
           if (restored) {
-            updateState({
+            Object.assign(stateUpdates, {
               isAuthenticated: true,
               authId: stored.authId,
               authType: stored.authType,
@@ -273,27 +276,27 @@ export function GameProvider({ children }: { children: ReactNode }) {
           } else {
             // Token expired — pre-fill wallet address, let wallet reconnect trigger fresh signInWithWallet
             console.warn('[Auth] Stored token expired — wallet re-sign required on connect');
-            updateState({ walletAddress: stored.walletAddress });
+            stateUpdates.walletAddress = stored.walletAddress;
           }
         } else {
           // No stored token (old install) — wallet reconnect will handle it
-          updateState({ walletAddress: stored.walletAddress });
+          stateUpdates.walletAddress = stored.walletAddress;
         }
       } else if (!unifiedWallet.connected) {
         // Guest — always do a fresh sign-in to get a valid token + load player record immediately
         try {
           const authState = await signInAsGuest();
-          updateState({
+          Object.assign(stateUpdates, {
             isAuthenticated: true,
             authId: authState.authId,
-            authType: 'guest',
+            authType: 'guest' as const,
             walletAddress: null,
           });
         } catch (err) {
           console.warn('[Auth] Guest re-auth on mount failed:', err);
           // Fall back to stored state if backend is unreachable
           if (stored?.isAuthenticated) {
-            updateState({
+            Object.assign(stateUpdates, {
               isAuthenticated: true,
               authId: stored.authId,
               authType: stored.authType,
@@ -302,6 +305,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
           }
         }
       }
+
+      // Single state update — no flicker
+      updateState(stateUpdates);
     };
     restoreAuth();
   }, [updateState]);
