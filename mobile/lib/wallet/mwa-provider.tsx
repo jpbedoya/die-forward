@@ -5,6 +5,7 @@
 
 import React, { useMemo, useCallback, useRef, ReactNode } from 'react';
 import { MobileWalletProvider as WalletUIProvider, useMobileWallet } from '@wallet-ui/react-native-web3js';
+import { dlog } from '../debug-log';
 import type { Address } from '@solana/kit';
 import { LAMPORTS_PER_SOL, Transaction, SystemProgram, PublicKey } from '@solana/web3.js';
 // Import the shared context from unified — NOT a local duplicate
@@ -45,13 +46,13 @@ function MobileWalletConsumer({ children }: { children: ReactNode }) {
   const connect = useCallback(async (): Promise<Address | null> => {
     setConnecting(true);
     try {
-      console.log('[MWA] Calling wallet.connect()...');
+      dlog('MWA', 'calling wallet.connect()...');
       const account = await walletRef.current.connect();
-      console.log('[MWA] Connect success, account:', account?.address?.toBase58?.());
+      dlog('MWA', 'connect success, account:', account?.address?.toBase58?.());
       return account?.address?.toBase58() as Address | null;
     } catch (e: any) {
       const msg = e?.message || String(e) || 'Wallet connection failed';
-      console.error('[MWA] Connect failed:', msg, e);
+      dlog.error('MWA', 'connect failed:', msg);
       throw new Error(msg);
     } finally {
       setConnecting(false);
@@ -114,7 +115,10 @@ function MobileWalletConsumer({ children }: { children: ReactNode }) {
 
   const signMessage = useCallback(async (message: Uint8Array): Promise<Uint8Array> => {
     if (!walletRef.current.account) throw new Error('Wallet not connected');
-    return await walletRef.current.signMessage(message);
+    dlog('MWA', 'signMessage requested');
+    const result = await walletRef.current.signMessage(message);
+    dlog('MWA', 'signMessage success');
+    return result;
   }, []);
 
   const refreshBalance = useCallback(async () => {

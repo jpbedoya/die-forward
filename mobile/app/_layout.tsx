@@ -22,6 +22,7 @@ import { AudiusProvider } from '../lib/AudiusContext';
 import { SplashScreen } from '../components/SplashScreen';
 import { getAudioManager } from '../lib/audio';
 import { db } from '../lib/instant';
+import { dlog } from '../lib/debug-log';
 
 const APP_VERSION_KEY = 'APP_BUILD_VERSION';
 // Use only BASE_VERSION (without commit hash) for migration gating
@@ -40,31 +41,37 @@ const PROTECTED_KEYS = [
   'audio-sfx-enabled',
   'audio-ambient-volume',
   APP_VERSION_KEY,
+  'die-forward-debug-logs',
 ];
 
 async function clearNonIdentityStorage() {
   try {
     const allKeys = await AsyncStorage.getAllKeys();
     const keysToRemove = allKeys.filter(k => !PROTECTED_KEYS.includes(k));
+    dlog('Migration', `clearing ${keysToRemove.length} keys, keeping ${allKeys.length - keysToRemove.length}`, { keysToRemove });
     if (keysToRemove.length > 0) {
       await AsyncStorage.multiRemove(keysToRemove);
     }
+    dlog('Migration', 'storage clear complete');
   } catch (e) {
-    console.warn('Failed to clear storage:', e);
+    dlog.error('Migration', 'clearNonIdentityStorage failed', e);
   }
 }
 
 // On startup: if version changed, wipe stale AsyncStorage state (preserving identity keys)
 async function checkVersionAndMigrate() {
+  dlog('Migration', `start — stored version check, current=${CURRENT_VERSION}`);
   try {
     const stored = await AsyncStorage.getItem(APP_VERSION_KEY);
+    dlog('Migration', `stored=${stored}, current=${CURRENT_VERSION}, match=${stored === CURRENT_VERSION}`);
     if (!stored || stored !== CURRENT_VERSION) {
-      console.log(`[Version] ${stored} → ${CURRENT_VERSION} — clearing stale state`);
+      dlog('Migration', `version changed ${stored} → ${CURRENT_VERSION} — clearing stale state`);
       await clearNonIdentityStorage();
     }
     await AsyncStorage.setItem(APP_VERSION_KEY, CURRENT_VERSION);
+    dlog('Migration', 'complete');
   } catch (e) {
-    console.warn('[Version] Migration check failed:', e);
+    dlog.error('Migration', 'checkVersionAndMigrate failed', e);
   }
 }
 

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, useRef, ReactNode, useEffect, useMemo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as api from './api';
+import { dlog } from './debug-log';
 import { generateRandomDungeon, generateDungeon, DungeonRoom, getItemDetails, rollRandomItem } from './content';
 import { getMilestonePerks } from './milestones';
 
@@ -215,13 +216,15 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
     // Capture address as non-null string (guarded above)
     const address = unifiedWallet.address as string;
+    dlog('Auth', `wallet connected: ${address}, authType=${state.authType}, isAuth=${state.isAuthenticated}`);
     let cancelled = false;
     const doWalletAuth = async () => {
       try {
         if (state.isAuthenticated && state.authType === 'guest') {
           // Upgrade: link existing guest session to wallet
-          // linkWalletToGuest reads guestId from AsyncStorage and updates it internally
+          dlog('Auth', 'upgrading guest → wallet');
           await linkWalletToGuest(address, signMessageRef.current);
+          dlog('Auth', 'guest → wallet upgrade complete');
           if (!cancelled) {
             updateState({
               isAuthenticated: true,
@@ -232,7 +235,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
           }
         } else {
           // Fresh wallet sign-in (no prior auth)
+          dlog('Auth', 'fresh wallet sign-in');
           const authState = await signInWithWallet(address, signMessageRef.current);
+          dlog('Auth', 'fresh wallet sign-in complete');
           if (!cancelled) {
             updateState({
               isAuthenticated: true,
@@ -243,7 +248,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
           }
         }
       } catch (err) {
-        console.warn('[Auth] Wallet sign-in failed:', err);
+        dlog.error('Auth', 'wallet sign-in failed', err);
         if (!cancelled) {
           updateState({ error: `Wallet sign-in failed: ${err instanceof Error ? err.message : String(err)}` });
         }
@@ -263,6 +268,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   // Restore auth state on mount — always re-validate guest token with backend
   useEffect(() => {
     const restoreAuth = async () => {
+      dlog('Auth', 'restoreAuth start');
       // Declare outside try so it's accessible in finally
       const stateUpdates: Partial<GameState> = {};
       try {
@@ -271,12 +277,15 @@ export function GameProvider({ children }: { children: ReactNode }) {
           AsyncStorage.getItem(GUEST_PROGRESS_KEY),
         ]);
 
+        dlog('Auth', 'stored auth:', { type: stored?.authType, hasToken: !!stored?.customToken, guestProgress: guestProgressRaw });
         stateUpdates.guestProgressExists = guestProgressRaw === 'true';
 
         if (stored?.isAuthenticated && stored.authType === 'wallet') {
           // Wallet auth — try to restore InstantDB session with stored token
           if (stored.customToken) {
+            dlog('Auth', 'restoring wallet session via token');
             const restored = await restoreInstantDBSession(stored.customToken);
+            dlog('Auth', 'wallet session restore result:', restored);
             if (restored) {
               Object.assign(stateUpdates, {
                 isAuthenticated: true,
@@ -285,18 +294,19 @@ export function GameProvider({ children }: { children: ReactNode }) {
                 walletAddress: stored.walletAddress,
               });
             } else {
-              // Token expired — pre-fill wallet address, let wallet reconnect trigger fresh signInWithWallet
-              console.warn('[Auth] Stored token expired — wallet re-sign required on connect');
+              dlog.warn('Auth', 'stored token expired — wallet re-sign required on connect');
               stateUpdates.walletAddress = stored.walletAddress;
             }
           } else {
-            // No stored token (old install) — wallet reconnect will handle it
+            dlog('Auth', 'no stored token (old install) — wallet reconnect will handle it');
             stateUpdates.walletAddress = stored.walletAddress;
           }
         } else if (!unifiedWallet.connected) {
           // Guest — always do a fresh sign-in to get a valid token + load player record immediately
+          dlog('Auth', 'signing in as guest');
           try {
             const authState = await signInAsGuest();
+            dlog('Auth', 'guest sign-in success:', authState.authId);
             Object.assign(stateUpdates, {
               isAuthenticated: true,
               authId: authState.authId,
@@ -304,7 +314,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
               walletAddress: null,
             });
           } catch (err) {
-            console.warn('[Auth] Guest re-auth on mount failed:', err);
+            dlog.warn('Auth', 'guest re-auth failed, falling back to stored', err);
             // Fall back to stored state if backend is unreachable
             if (stored?.isAuthenticated) {
               Object.assign(stateUpdates, {
@@ -315,17 +325,19 @@ export function GameProvider({ children }: { children: ReactNode }) {
               });
             }
           }
+        } else {
+          dlog('Auth', 'wallet already connected, skipping guest sign-in');
         }
       } catch (err) {
-        console.error('[Auth] restoreAuth failed — proceeding as unauthenticated:', err);
+        dlog.error('Auth', 'restoreAuth failed — proceeding as unauthenticated', err);
       } finally {
+        dlog('Auth', 'restoreAuth complete, applying state:', stateUpdates);
         // ALWAYS mark auth as initialized so the home screen renders
         updateState({ ...stateUpdates, authInitialized: true });
       }
     };
     restoreAuth().catch(err => {
-      // Belt-and-suspenders: should never reach here since we have try-finally above
-      console.error('[Auth] restoreAuth unexpected rejection:', err);
+      dlog.error('Auth', 'restoreAuth unexpected rejection', err);
       updateState({ authInitialized: true });
     });
   }, [updateState]);

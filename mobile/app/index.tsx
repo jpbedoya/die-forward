@@ -6,6 +6,7 @@ import BottomSheet, { BottomSheetScrollView, BottomSheetBackdrop } from '@gorhom
 import { CryptBackground } from '../components/CryptBackground';
 import { router } from 'expo-router';
 import { useAudio } from '../lib/audio';
+import { exportDebugLogs } from '../lib/debug-log';
 
 // Animated gradient button decoration - constantly flows inward
 function AnimatedDescendButton() {
@@ -333,15 +334,18 @@ export default function HomeScreen() {
       </View>
 
       {/* Version badge */}
-      <Text
-        style={{
-          position: 'absolute', bottom: 6, right: 28,
-          fontSize: 9, fontFamily: 'monospace', color: '#6b6460', letterSpacing: 0.5,
-        }}
-        pointerEvents="none"
+      <Pressable
+        style={{ position: 'absolute', bottom: 6, right: 28 }}
+        onPress={() => exportDebugLogs()}
       >
-        v{Constants.expoConfig?.version}
-      </Text>
+        <Text
+          style={{
+            fontSize: 9, fontFamily: 'monospace', color: '#6b6460', letterSpacing: 0.5,
+          }}
+        >
+          v{Constants.expoConfig?.version} [logs]
+        </Text>
+      </Pressable>
 
       {/* Echo Sheet */}
       <EchoSheet
