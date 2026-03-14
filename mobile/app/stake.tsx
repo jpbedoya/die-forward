@@ -198,7 +198,7 @@ export default function StakeScreen() {
       <View className="relative flex-row items-center justify-between px-4 py-3 border-b border-crypt-border">
         {/* Back to zone selector */}
         <Pressable
-          onPress={() => router.back()}
+          onPress={() => router.replace('/zone-select')}
           className="py-2 px-3 -ml-3"
         >
           <Text className="text-bone-muted text-xs font-mono">[ ZONES ]</Text>

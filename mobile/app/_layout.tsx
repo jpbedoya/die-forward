@@ -91,6 +91,11 @@ function useWebSafeAreaCSS() {
         background-color: #0d0d0d !important;
         min-height: 100%;
       }
+      * {
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
+      }
     `;
     document.head.appendChild(style);
     
