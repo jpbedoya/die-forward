@@ -41,6 +41,11 @@ function randomDefaultName(): string {
 const AUTH_STORAGE_KEY = 'die-forward-auth';   // mirrors auth.ts
 const GUEST_ID_KEY = 'die-forward-guest-id';   // mirrors auth.ts
 
+// Module-level guard: restoreAuth must only run ONCE per app session.
+// Without this, db.auth.signInWithToken() triggers a re-render cascade
+// that remounts GameProvider, which re-fires the effect in an infinite loop.
+let authRestoreStarted = false;
+
 interface GameState {
   // Auth
   isAuthenticated: boolean;
@@ -267,6 +272,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   // Restore auth state on mount — always re-validate guest token with backend
   useEffect(() => {
+    if (authRestoreStarted) return;
+    authRestoreStarted = true;
+
     const restoreAuth = async () => {
       dlog('Auth', 'restoreAuth start');
       // Declare outside try so it's accessible in finally
