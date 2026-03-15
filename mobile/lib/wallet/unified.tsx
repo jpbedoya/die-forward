@@ -37,6 +37,7 @@ let mobileSignAndSend: any;
 let mobileSendSOL: any;
 let getMobileBalance: any;
 let mobileConnection: any;
+let mobileSignMessage: any;
 
 // Mobile web adapter (uses OS wallet picker)
 let mobileWebConnect: any;
@@ -79,6 +80,7 @@ if (Platform.OS === 'ios' || Platform.OS === 'android') {
   mobileSendSOL = mwa.mobileSendSOL;
   getMobileBalance = mwa.getMobileBalance;
   mobileConnection = mwa.mobileConnection;
+  mobileSignMessage = mwa.mobileSignMessage;
 }
 
 // Mobile web: use wallet-adapter-mobile (proper OS wallet picker)
@@ -519,12 +521,99 @@ if (isNativeMobile) {
 }
 
 /**
+ * Native raw MWA fallback provider (no @wallet-ui dependency).
+ * Used only when NativeMWAProvider crashes after force-close.
+ */
+function NativeRawWalletProvider({ children }: { children: ReactNode }) {
+  const [connecting, setConnecting] = useState(false);
+  const [address, setAddress] = useState<Address | null>(null);
+  const [authToken, setAuthToken] = useState<string | null>(null);
+  const [balance, setBalance] = useState<number | null>(null);
+
+  const connected = !!address && !!authToken;
+
+  const connect = useCallback(async (): Promise<Address | null> => {
+    setConnecting(true);
+    try {
+      const result = await mobileConnect();
+      setAddress(result.address);
+      setAuthToken(result.authToken);
+      const bal = await getMobileBalance(result.address);
+      setBalance(bal);
+      return result.address;
+    } catch (e: any) {
+      const msg = e?.message || String(e);
+      const isCancellation =
+        msg.includes('User rejected') ||
+        msg.includes('cancelled') ||
+        msg.includes('Cancelled') ||
+        msg.includes('CancellationException') ||
+        msg.includes('ACTION_CANCELLED');
+      if (isCancellation) {
+        throw Object.assign(new Error('WALLET_CANCELLED'), { isCancellation: true });
+      }
+      throw new Error(msg || 'Wallet connection failed');
+    } finally {
+      setConnecting(false);
+    }
+  }, []);
+
+  const disconnect = useCallback(async () => {
+    setAddress(null);
+    setAuthToken(null);
+    setBalance(null);
+  }, []);
+
+  const sendSOL = useCallback(async (to: Address, amount: number): Promise<string> => {
+    if (!address || !authToken) throw new Error('Wallet not connected');
+    return await mobileSendSOL(address, to, amount, authToken);
+  }, [address, authToken]);
+
+  const signAndSendTransaction = useCallback(async (transaction: any): Promise<string> => {
+    if (!authToken) throw new Error('Wallet not connected');
+    return await mobileSignAndSend(transaction, authToken);
+  }, [authToken]);
+
+  const signMessage = useCallback(async (message: Uint8Array): Promise<Uint8Array> => {
+    if (!authToken) throw new Error('Wallet not connected');
+    if (!mobileSignMessage) throw new Error('signMessage not available');
+    return await mobileSignMessage(message, authToken);
+  }, [authToken]);
+
+  const refreshBalance = useCallback(async () => {
+    if (!address) return;
+    const bal = await getMobileBalance(address);
+    setBalance(bal);
+  }, [address]);
+
+  const contextValue = useMemo<UnifiedWalletContextState>(() => ({
+    connected,
+    connecting,
+    address,
+    balance,
+    connectors: [],
+    connect,
+    connectTo: connect,
+    disconnect,
+    sendSOL,
+    signAndSendTransaction,
+    signMessage,
+    refreshBalance,
+  }), [connected, connecting, address, balance, connect, disconnect, sendSOL, signAndSendTransaction, signMessage, refreshBalance]);
+
+  return (
+    <UnifiedWalletContext.Provider value={contextValue}>
+      {children}
+    </UnifiedWalletContext.Provider>
+  );
+}
+
+/**
  * Error boundary for MWA native module crashes (common after Android force-close).
  * IMPORTANT: Never render `null` during recovery. Returning null here causes visible
  * black flashes and unmount/remount cascades (Home/GameProvider restart loops).
  *
- * Strategy: fail-open to walletless mode for this app session.
- * If MWA throws once, keep the app running without NativeMWAProvider and avoid retries.
+ * Strategy: fail-open to native raw MWA provider for this app session.
  */
 class WalletProviderBoundary extends React.Component<
   { children: ReactNode; fallback: ReactNode },
@@ -540,7 +629,7 @@ class WalletProviderBoundary extends React.Component<
   }
 
   componentDidCatch(err: Error) {
-    dlog.error('WalletBoundary', 'init error, switching to walletless mode for this session:', err?.message);
+    dlog.error('WalletBoundary', 'init error, switching to raw native fallback for this session:', err?.message);
   }
 
   render() {
@@ -566,11 +655,10 @@ export function UnifiedWalletProvider({ children }: { children: ReactNode }) {
   
   // Native mobile (iOS/Android app): standard MWA provider per Solana docs.
   // WalletProviderBoundary handles native module crashes (e.g. after force-close)
-  // by switching immediately to walletless mode for this app session.
-  // This avoids blank-frame retries and remount cascades.
+  // by switching to raw native MWA fallback (keeps bind/connect working).
   if (isNativeMobile) {
     return (
-      <WalletProviderBoundary fallback={children}>
+      <WalletProviderBoundary fallback={<NativeRawWalletProvider>{children}</NativeRawWalletProvider>}>
         <NativeMWAProvider>
           {children}
         </NativeMWAProvider>

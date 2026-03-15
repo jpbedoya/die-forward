@@ -10,6 +10,7 @@ import type { Web3MobileWallet } from '@solana-mobile/mobile-wallet-adapter-prot
 import { PublicKey, Transaction, Connection, clusterApiUrl, LAMPORTS_PER_SOL, SystemProgram } from '@solana/web3.js';
 import type { Address } from '@solana/kit';
 import bs58 from 'bs58';
+import { fromUint8Array } from 'js-base64';
 
 const CLUSTER = 'devnet';
 const RPC_ENDPOINT = process.env.EXPO_PUBLIC_SOLANA_RPC || clusterApiUrl(CLUSTER);
@@ -74,6 +75,42 @@ export async function mobileSignAndSend(
     return typeof sigRaw === 'object' && 'length' in sigRaw
       ? bs58.encode(sigRaw as Uint8Array) 
       : sigRaw as string;
+  });
+}
+
+function toBase64Address(address: string | Uint8Array): string {
+  if (typeof address === 'string') {
+    // If already base64, keep it. Otherwise assume base58 public key string.
+    const looksBase64 = address.includes('+') || address.includes('/') || address.endsWith('=');
+    if (looksBase64) return address;
+    return fromUint8Array(new PublicKey(address).toBytes());
+  }
+  return fromUint8Array(address);
+}
+
+/**
+ * Sign arbitrary message via MWA (used for wallet auth challenge signing)
+ */
+export async function mobileSignMessage(
+  message: Uint8Array,
+  authToken: string,
+): Promise<Uint8Array> {
+  return await transact(async (wallet: Web3MobileWallet) => {
+    const reAuthResult = await wallet.reauthorize({
+      auth_token: authToken,
+      identity: APP_IDENTITY,
+    });
+
+    const addressRaw = reAuthResult.accounts[0]?.address as string | Uint8Array;
+    const addressBase64 = toBase64Address(addressRaw);
+
+    const signed = await wallet.signMessages({
+      addresses: [addressBase64],
+      payloads: [message],
+    });
+
+    if (!signed[0]) throw new Error('No signature returned from wallet');
+    return signed[0];
   });
 }
 
