@@ -58,27 +58,25 @@ async function clearNonIdentityStorage() {
   }
 }
 
-// Flag: did this startup clear storage? GameContext reads this to decide
-// whether signInWithToken is needed (it's not on normal restarts since
-// InstantDB persists its own session in AsyncStorage).
-export let migrationClearedStorage = false;
-
 // On startup: if version changed, wipe stale AsyncStorage state (preserving identity keys)
-async function checkVersionAndMigrate() {
+// Returns whether this startup cleared storage (used by GameProvider auth restore logic).
+async function checkVersionAndMigrate(): Promise<boolean> {
   dlog('Migration', `start — stored version check, current=${CURRENT_VERSION}`);
+  let clearedStorage = false;
   try {
     const stored = await AsyncStorage.getItem(APP_VERSION_KEY);
     dlog('Migration', `stored=${stored}, current=${CURRENT_VERSION}, match=${stored === CURRENT_VERSION}`);
     if (!stored || stored !== CURRENT_VERSION) {
       dlog('Migration', `version changed ${stored} → ${CURRENT_VERSION} — clearing stale state`);
       await clearNonIdentityStorage();
-      migrationClearedStorage = true;
+      clearedStorage = true;
     }
     await AsyncStorage.setItem(APP_VERSION_KEY, CURRENT_VERSION);
-    dlog('Migration', `complete, clearedStorage=${migrationClearedStorage}`);
+    dlog('Migration', `complete, clearedStorage=${clearedStorage}`);
   } catch (e) {
     dlog.error('Migration', 'checkVersionAndMigrate failed', e);
   }
+  return clearedStorage;
 }
 
 // Inject critical CSS for web safe areas
@@ -221,13 +219,15 @@ export default function RootLayout() {
   useWebSafeAreaCSS();
   const [showSplash, setShowSplash] = useState(!splashShownThisSession);
   const [migrationDone, setMigrationDone] = useState(false);
+  const [startupClearedStorage, setStartupClearedStorage] = useState(false);
 
   // Clear stale state on version change — must complete before providers mount
-  // to avoid racing with GameProvider.restoreAuth and InstantDB queries
+  // to avoid racing with GameProvider.restoreAuth and InstantDB queries.
   useEffect(() => {
     dlog('Layout', 'RootLayout mounted');
-    checkVersionAndMigrate().then(() => {
-      dlog('Layout', 'migration done, mounting providers');
+    checkVersionAndMigrate().then((clearedStorage) => {
+      dlog('Layout', `migration done, mounting providers (clearedStorage=${clearedStorage})`);
+      setStartupClearedStorage(clearedStorage);
       setMigrationDone(true);
     });
     // Auto-export logs 8s after launch — share sheet pops over frozen UI
@@ -258,13 +258,14 @@ export default function RootLayout() {
       <SafeAreaProvider style={{ backgroundColor: '#0d0d0d' }}>
         <WebFrame>
           <StatusBar style="light" />
-          {!migrationDone ? null : showSplash ? (
-            // Splash renders OUTSIDE wallet provider — immune to MWA init issues
+          {!migrationDone || showSplash ? (
+            // Keep splash visible until migration completes and user dismisses it.
+            // Never render `null` here — blank frame causes visible black flicker.
             <SplashScreen onComplete={handleSplashComplete} onTap={handleSplashTap} />
           ) : (
             <ErrorBoundary>
               <UnifiedWalletProvider>
-                <GameProvider>
+                <GameProvider migrationClearedStorage={startupClearedStorage}>
                   <AudiusProvider>
                     <Stack
                       screenOptions={{

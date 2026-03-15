@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { View, Text, Pressable, Platform, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import { BlurView } from 'expo-blur';
 import BottomSheet, { BottomSheetScrollView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
@@ -62,6 +63,8 @@ const C = {
   amber:      '#f59e0b',   // depth number
   victory:    '#86efac',   // victor name
 };
+
+const ECHOES_CACHE_KEY = 'die-forward-echoes-cache-v1';
 
 // ─── Sheet bottom panel with native swipe gestures ───────────────────────────
 function EchoSheet({
@@ -223,6 +226,7 @@ function EchoSheet({
 export default function HomeScreen() {
   const [showAllSheet, setShowAllSheet] = useState(false);
   const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
+  const [cachedPreviewDeaths, setCachedPreviewDeaths] = useState<any[]>([]);
 
   const game = useGame();
   const { deaths: recentDeaths, isLoading: feedLoading } = useDeathFeed(50);
@@ -238,11 +242,48 @@ export default function HomeScreen() {
     dlog('Home', `state: auth=${game.isAuthenticated}, type=${game.authType}, feed=${feedLoading}, deaths=${recentDeaths.length}`);
   }, [game.isAuthenticated, game.authType, feedLoading, recentDeaths.length]);
 
+  // Load cached echoes preview immediately on startup to avoid loading/flicker jump.
+  useEffect(() => {
+    let cancelled = false;
+    AsyncStorage.getItem(ECHOES_CACHE_KEY)
+      .then((raw) => {
+        if (cancelled || !raw) return;
+        try {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            setCachedPreviewDeaths(parsed.slice(0, 5));
+          }
+        } catch {
+          // ignore malformed cache
+        }
+      })
+      .catch(() => {
+        // ignore cache read errors
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Refresh cache once live feed arrives.
+  useEffect(() => {
+    if (!recentDeaths.length) return;
+    const top = recentDeaths.slice(0, 5);
+    setCachedPreviewDeaths(top);
+    AsyncStorage.setItem(ECHOES_CACHE_KEY, JSON.stringify(top)).catch(() => {
+      // ignore cache write errors
+    });
+  }, [recentDeaths]);
+
   useEffect(() => {
     if (audioReady) playAmbient('ambient-title');
-  }, [audioReady]);
+  }, [audioReady, playAmbient]);
 
-  const displayedDeaths = recentDeaths.slice(0, 5);
+  const displayedDeaths = (feedLoading && cachedPreviewDeaths.length > 0
+    ? cachedPreviewDeaths
+    : recentDeaths
+  ).slice(0, 5);
 
   const openSheet = useCallback(() => {
     setShowAllSheet(true);
@@ -307,7 +348,7 @@ export default function HomeScreen() {
           {/* Preview content */}
           <View className="px-2 items-center" style={{ height: 120, overflow: 'hidden' }}>
             <View className="items-center w-full" style={{ maxWidth: 280 }}>
-              {feedLoading ? (
+              {feedLoading && cachedPreviewDeaths.length === 0 ? (
                 <Text className="text-xs text-bone-dark font-mono italic text-center">
                   Listening for echoes...
                 </Text>

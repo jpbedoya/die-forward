@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useCallback, useRef, ReactN
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as api from './api';
 import { dlog } from './debug-log';
-import { migrationClearedStorage } from '../app/_layout';
+
 import { generateRandomDungeon, generateDungeon, DungeonRoom, getItemDetails, rollRandomItem } from './content';
 import { getMilestonePerks } from './milestones';
 
@@ -42,10 +42,6 @@ function randomDefaultName(): string {
 const AUTH_STORAGE_KEY = 'die-forward-auth';   // mirrors auth.ts
 const GUEST_ID_KEY = 'die-forward-guest-id';   // mirrors auth.ts
 
-// Module-level guard: restoreAuth must only run ONCE per app session.
-// Without this, db.auth.signInWithToken() triggers a re-render cascade
-// that remounts GameProvider, which re-fires the effect in an infinite loop.
-let authRestoreStarted = false;
 
 interface GameState {
   // Auth
@@ -190,10 +186,17 @@ const initialState: GameState = {
 
 const GameContext = createContext<GameContextType | null>(null);
 
-export function GameProvider({ children }: { children: ReactNode }) {
+export function GameProvider({
+  children,
+  migrationClearedStorage,
+}: {
+  children: ReactNode;
+  migrationClearedStorage: boolean;
+}) {
   const [state, setState] = useState<GameState>(initialState);
   const unifiedWallet = useUnifiedWallet();
   const { settings } = useGameSettings();
+  const authRestoreStartedRef = useRef(false);
 
   const updateState = useCallback((updates: Partial<GameState>) => {
     setState(prev => ({ ...prev, ...updates }));
@@ -278,8 +281,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   // Restore auth state on mount — always re-validate guest token with backend
   useEffect(() => {
-    if (authRestoreStarted) return;
-    authRestoreStarted = true;
+    if (authRestoreStartedRef.current) return;
+    authRestoreStartedRef.current = true;
 
     const restoreAuth = async () => {
       dlog('Auth', 'restoreAuth start');
@@ -356,7 +359,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       dlog.error('Auth', 'restoreAuth unexpected rejection', err);
       updateState({ authInitialized: true });
     });
-  }, [updateState]);
+  }, [updateState, migrationClearedStorage, unifiedWallet.connected]);
 
   // Sync nickname when authenticated
   useEffect(() => {
