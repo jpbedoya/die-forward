@@ -200,11 +200,12 @@ function EchoSheet({
             <Pressable
               onPress={() => handleLike(death)}
               disabled={!canLike}
-              style={{ marginTop: 8, flexDirection: 'row', alignItems: 'center', gap: 4, opacity: !walletAddress ? 0.3 : 1 }}
+              hitSlop={{ top: 12, bottom: 12, left: 16, right: 16 }}
+              style={{ marginTop: 8, flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 6, paddingHorizontal: 8, opacity: !walletAddress ? 0.3 : 1 }}
             >
-              <Text style={{ fontSize: 13 }}>{hasLiked ? '🕯️' : '🕯'}</Text>
+              <Text style={{ fontSize: 16 }}>{hasLiked ? '🕯️' : '🕯'}</Text>
               {count > 0 && (
-                <Text style={{ fontFamily: 'monospace', fontSize: 11, color: hasLiked ? C.amber : C.boneMuted }}>
+                <Text style={{ fontFamily: 'monospace', fontSize: 12, color: hasLiked ? C.amber : C.boneMuted }}>
                   {count}
                 </Text>
               )}

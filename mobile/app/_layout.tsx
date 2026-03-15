@@ -230,8 +230,8 @@ export default function RootLayout() {
       setStartupClearedStorage(clearedStorage);
       setMigrationDone(true);
     });
-    // Auto-export logs 8s after launch — share sheet pops over frozen UI
-    scheduleAutoExport(8000);
+    // Auto-export disabled — was used for debugging frozen-UI glitch
+    // scheduleAutoExport(8000);
   }, []);
 
   // Unlock audio on splash tap
