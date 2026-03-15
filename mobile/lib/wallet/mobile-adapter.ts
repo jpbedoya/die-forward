@@ -10,7 +10,7 @@ import type { Web3MobileWallet } from '@solana-mobile/mobile-wallet-adapter-prot
 import { PublicKey, Transaction, Connection, clusterApiUrl, LAMPORTS_PER_SOL, SystemProgram } from '@solana/web3.js';
 import type { Address } from '@solana/kit';
 import bs58 from 'bs58';
-import { fromUint8Array } from 'js-base64';
+import { fromUint8Array, toUint8Array } from 'js-base64';
 
 const LEGACY_CLUSTER: 'devnet' = 'devnet';
 const CHAIN = 'solana:devnet';
@@ -73,7 +73,7 @@ export interface MobileWalletState {
 export async function mobileConnect(): Promise<{ address: Address; authToken: string }> {
   const result = await transact(async (wallet: Web3MobileWallet) => {
     const authResult = await authorizeWithTokenFallback(wallet);
-    const pubkey = new PublicKey(authResult.accounts[0]?.address);
+    const pubkey = toPublicKey(authResult.accounts[0]?.address as string | Uint8Array);
     const authToken = authResult.auth_token;
     if (!authToken) {
       throw new Error('MWA authorize returned no auth token');
@@ -96,7 +96,7 @@ export async function mobileSignAndSend(
 ): Promise<string> {
   return await transact(async (wallet: Web3MobileWallet) => {
     const authResult = await authorizeWithTokenFallback(wallet, authToken);
-    const pubkey = new PublicKey(authResult.accounts[0]?.address);
+    const pubkey = toPublicKey(authResult.accounts[0]?.address as string | Uint8Array);
 
     const { blockhash } = await mobileConnection.getLatestBlockhash();
     tx.recentBlockhash = blockhash;
@@ -113,14 +113,28 @@ export async function mobileSignAndSend(
   });
 }
 
+function toPublicKey(address: string | Uint8Array): PublicKey {
+  if (address instanceof Uint8Array) return new PublicKey(address);
+
+  // MWA accounts[].address is base64 per protocol, but some stacks may hand back base58.
+  // Try base64 decode first, then fall back to base58 string parsing.
+  try {
+    return new PublicKey(toUint8Array(address));
+  } catch {
+    return new PublicKey(address);
+  }
+}
+
 function toBase64Address(address: string | Uint8Array): string {
-  if (typeof address === 'string') {
-    // If already base64, keep it. Otherwise assume base58 public key string.
-    const looksBase64 = address.includes('+') || address.includes('/') || address.endsWith('=');
-    if (looksBase64) return address;
+  if (address instanceof Uint8Array) return fromUint8Array(address);
+
+  // If already base64, keep it; otherwise convert base58 -> bytes -> base64.
+  try {
+    toUint8Array(address);
+    return address;
+  } catch {
     return fromUint8Array(new PublicKey(address).toBytes());
   }
-  return fromUint8Array(address);
 }
 
 /**
