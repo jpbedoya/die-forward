@@ -27,6 +27,7 @@ const APP_IDENTITY = {
 
 async function authorizeWithTokenFallback(wallet: Web3MobileWallet, authToken?: string) {
   if (authToken) {
+    // Preferred MWA 2.0 path
     try {
       return await wallet.authorize({
         identity: APP_IDENTITY,
@@ -34,14 +35,30 @@ async function authorizeWithTokenFallback(wallet: Web3MobileWallet, authToken?: 
         auth_token: authToken,
       });
     } catch {
-      // Token may be stale after app restart/force-close; fall through to fresh auth.
+      // Compatibility path for wallets that still prefer explicit reauthorize.
+      try {
+        return await wallet.reauthorize({
+          auth_token: authToken,
+          identity: APP_IDENTITY,
+        });
+      } catch {
+        // fall through to fresh auth
+      }
     }
   }
 
-  return await wallet.authorize({
-    identity: APP_IDENTITY,
-    chain: CHAIN,
-  });
+  // Fresh auth: try MWA 2.0 chain first, then legacy cluster for compatibility.
+  try {
+    return await wallet.authorize({
+      identity: APP_IDENTITY,
+      chain: CHAIN,
+    });
+  } catch {
+    return await wallet.authorize({
+      identity: APP_IDENTITY,
+      cluster: LEGACY_CLUSTER,
+    });
+  }
 }
 
 export interface MobileWalletState {

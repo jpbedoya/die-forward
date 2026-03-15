@@ -154,7 +154,9 @@ function MobileWalletConsumer({ children }: { children: ReactNode }) {
 export function MWAWalletProvider({ children }: { children: ReactNode }) {
   return (
     <WalletUIProvider
-      chain="solana:devnet"
+      // Wallet UI provider currently behaves most reliably with legacy cluster string.
+      // Raw fallback path still supports MWA 2.0 chain semantics.
+      chain="devnet"
       endpoint={RPC_ENDPOINT}
       identity={APP_IDENTITY}
     >
