@@ -199,6 +199,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
     setState(prev => ({ ...prev, ...updates }));
   }, []);
 
+  useEffect(() => {
+    dlog('GameProvider', 'mounted');
+    return () => dlog('GameProvider', 'UNMOUNTED');
+  }, []);
+
   // Sync wallet state from unified wallet
   useEffect(() => {
     updateState({

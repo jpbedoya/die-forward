@@ -9,6 +9,7 @@
 
 import React, { createContext, useContext, useMemo, useCallback, useState, useEffect, ReactNode } from 'react';
 import { Platform } from 'react-native';
+import { dlog } from '../debug-log';
 import type { Address } from '@solana/kit';
 
 // Detect if we're on mobile web
@@ -536,11 +537,12 @@ class WalletProviderBoundary extends React.Component<
   }
 
   componentDidCatch(err: Error) {
-    console.warn('[WalletProvider] Init error (will retry):', err?.message);
+    dlog.error('WalletBoundary', `init error (retry ${this.state.retryCount}/3):`, err?.message);
     // Auto-retry up to 3 times with increasing delay
     const { retryCount } = this.state;
     if (retryCount < 3) {
       setTimeout(() => {
+        dlog('WalletBoundary', `retrying (attempt ${retryCount + 1})`);
         this.setState(s => ({ crashed: false, retryCount: s.retryCount + 1 }));
       }, 500 * (retryCount + 1));
     }

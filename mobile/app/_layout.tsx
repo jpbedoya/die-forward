@@ -140,7 +140,7 @@ class ErrorBoundary extends React.Component<
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('App crashed:', error, errorInfo);
+    dlog.error('ErrorBoundary', 'CAUGHT ERROR:', error.message, errorInfo?.componentStack?.slice(0, 500));
   }
 
   handleReset = async () => {
@@ -241,11 +241,12 @@ export default function RootLayout() {
 
   // Splash complete — transition to main app
   const handleSplashComplete = useCallback(() => {
+    dlog('Layout', 'splash complete, showing main app');
     splashShownThisSession = true;
     setShowSplash(false);
-    // Note: no router.replace needed — Stack default route is already '/'
-    // (the replace was causing a remount flash)
   }, []);
+
+  dlog('Layout', `render: migrationDone=${migrationDone}, showSplash=${showSplash}`);
 
   // GestureHandlerRootView + SafeAreaProvider are ALWAYS mounted (never torn down).
   // Previously they were split across the splash/main branches, which meant SafeAreaProvider

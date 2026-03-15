@@ -6,7 +6,7 @@ import BottomSheet, { BottomSheetScrollView, BottomSheetBackdrop } from '@gorhom
 import { CryptBackground } from '../components/CryptBackground';
 import { router } from 'expo-router';
 import { useAudio } from '../lib/audio';
-import { exportDebugLogs } from '../lib/debug-log';
+import { dlog, exportDebugLogs } from '../lib/debug-log';
 
 // Animated gradient button decoration - constantly flows inward
 function AnimatedDescendButton() {
@@ -228,6 +228,15 @@ export default function HomeScreen() {
   const { deaths: recentDeaths, isLoading: feedLoading } = useDeathFeed(50);
   const { playAmbient, ready: audioReady } = useAudio();
   const { settings } = useGameSettings();
+
+  useEffect(() => {
+    dlog('Home', 'HomeScreen mounted');
+    return () => dlog('Home', 'HomeScreen UNMOUNTED');
+  }, []);
+
+  useEffect(() => {
+    dlog('Home', `state: auth=${game.isAuthenticated}, type=${game.authType}, feed=${feedLoading}, deaths=${recentDeaths.length}`);
+  }, [game.isAuthenticated, game.authType, feedLoading, recentDeaths.length]);
 
   useEffect(() => {
     if (audioReady) playAmbient('ambient-title');
