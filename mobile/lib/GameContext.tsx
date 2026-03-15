@@ -665,37 +665,57 @@ export function GameProvider({
     updateState({ loading: true, error: null });
     try {
       let stakeTxSignature: string | undefined;
+      // Prefer live wallet address from provider, then fallback to restored auth state.
+      let activeWalletAddress = (unifiedWallet.address || state.walletAddress) as Address | null;
       // Use authId for player identity, fall back to wallet address or generate guest ID
-      let playerIdentifier = state.authId || state.walletAddress || `guest-${Date.now()}`;
+      let playerIdentifier = state.authId || activeWalletAddress || `guest-${Date.now()}`;
 
-      if (!emptyHanded && (!state.walletAddress || !unifiedWallet.connected)) {
-        throw new Error('Connect wallet first');
-      }
+      if (!emptyHanded) {
+        dlog('Stake', `startGame stake flow: providerConnected=${unifiedWallet.connected}, providerAddress=${unifiedWallet.address}, stateWallet=${state.walletAddress}`);
 
-      if (!emptyHanded && state.walletAddress && unifiedWallet.connected) {
+        // After force-close/reopen, auth state can restore before provider session does.
+        // Reconnect here defensively if provider session is not live.
+        if (!unifiedWallet.connected) {
+          dlog.warn('Stake', 'provider not connected at stake start, attempting reconnect');
+          try {
+            const reconnected = await unifiedWallet.connect();
+            if (reconnected) {
+              activeWalletAddress = reconnected as Address;
+              dlog('Stake', `reconnect success inside startGame: ${reconnected}`);
+            }
+          } catch (err) {
+            dlog.error('Stake', 'reconnect inside startGame failed', err);
+            throw new Error('Connect wallet first');
+          }
+        }
+
+        activeWalletAddress = (unifiedWallet.address || activeWalletAddress || state.walletAddress) as Address | null;
+        if (!activeWalletAddress) {
+          throw new Error('Connect wallet first');
+        }
+
         // Build escrow stake transaction
-        const { hex: sessionIdHex, bytes: sessionIdBytes } = generateSessionId();
+        const { bytes: sessionIdBytes } = generateSessionId();
         const amountLamports = BigInt(Math.floor(amount * LAMPORTS_PER_SOL));
-        
-        // Build stake instruction for escrow program
+
         const stakeIx = buildStakeInstruction(
-          state.walletAddress as Address,
+          activeWalletAddress,
           sessionIdBytes,
           amountLamports
         );
-        
-        // Create and send transaction
+
         const transaction = new Transaction().add(stakeIx);
         const signature = await unifiedWallet.signAndSendTransaction(transaction);
-        
+
         stakeTxSignature = signature;
-        playerIdentifier = state.walletAddress;
+        playerIdentifier = activeWalletAddress;
+        dlog('Stake', `stake tx sent: ${signature}`);
       }
 
       // Start session with backend
       // Pass authId separately for proper player tracking (guests + wallet users)
       const session = await api.startSession(
-        state.walletAddress || playerIdentifier, // walletAddress for on-chain stuff
+        (activeWalletAddress || state.walletAddress || playerIdentifier), // walletAddress for on-chain stuff
         emptyHanded ? 0 : amount,  // Empty handed runs have 0 stake
         stakeTxSignature,
         state.authId || playerIdentifier, // authId for player record lookup
