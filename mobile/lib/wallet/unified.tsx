@@ -513,12 +513,7 @@ function MobileWalletProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// Import the official MWA provider for native mobile only
-let NativeMWAProvider: any;
 const isNativeMobile = Platform.OS === 'ios' || Platform.OS === 'android';
-if (isNativeMobile) {
-  NativeMWAProvider = require('./mwa-provider').MWAWalletProvider;
-}
 
 /**
  * Native raw MWA fallback provider (no @wallet-ui dependency).
@@ -530,12 +525,14 @@ function NativeRawWalletProvider({ children }: { children: ReactNode }) {
   const [authToken, setAuthToken] = useState<string | null>(null);
   const [balance, setBalance] = useState<number | null>(null);
 
-  const connected = !!address && !!authToken;
+  const connected = !!address;
 
   const connect = useCallback(async (): Promise<Address | null> => {
     setConnecting(true);
+    dlog('MWA-Raw', 'connect requested');
     try {
       const result = await mobileConnect();
+      dlog('MWA-Raw', `connect success, address=${result.address}, hasToken=${!!result.authToken}`);
       setAddress(result.address);
       setAuthToken(result.authToken);
       const bal = await getMobileBalance(result.address);
@@ -543,6 +540,7 @@ function NativeRawWalletProvider({ children }: { children: ReactNode }) {
       return result.address;
     } catch (e: any) {
       const msg = e?.message || String(e);
+      dlog.error('MWA-Raw', 'connect failed', msg);
       const isCancellation =
         msg.includes('User rejected') ||
         msg.includes('cancelled') ||
@@ -653,16 +651,14 @@ export function UnifiedWalletProvider({ children }: { children: ReactNode }) {
     );
   }
   
-  // Native mobile (iOS/Android app): standard MWA provider per Solana docs.
-  // WalletProviderBoundary handles native module crashes (e.g. after force-close)
-  // by switching to raw native MWA fallback (keeps bind/connect working).
+  // Native mobile (iOS/Android app): use direct MWA session flow.
+  // This avoids wallet-ui init crashes after force-close and matches official
+  // "invoke MWA sessions directly" guidance.
   if (isNativeMobile) {
     return (
-      <WalletProviderBoundary fallback={<NativeRawWalletProvider>{children}</NativeRawWalletProvider>}>
-        <NativeMWAProvider>
-          {children}
-        </NativeMWAProvider>
-      </WalletProviderBoundary>
+      <NativeRawWalletProvider>
+        {children}
+      </NativeRawWalletProvider>
     );
   }
   

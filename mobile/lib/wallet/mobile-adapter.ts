@@ -74,9 +74,13 @@ export async function mobileConnect(): Promise<{ address: Address; authToken: st
   const result = await transact(async (wallet: Web3MobileWallet) => {
     const authResult = await authorizeWithTokenFallback(wallet);
     const pubkey = new PublicKey(authResult.accounts[0]?.address);
+    const authToken = authResult.auth_token;
+    if (!authToken) {
+      throw new Error('MWA authorize returned no auth token');
+    }
     return {
       address: pubkey.toBase58() as Address,
-      authToken: authResult.auth_token,
+      authToken,
     };
   });
 
