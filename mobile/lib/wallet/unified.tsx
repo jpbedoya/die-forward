@@ -519,62 +519,85 @@ if (isNativeMobile) {
 }
 
 /**
- * Lazy MWA provider — does NOT mount NativeMWAProvider at startup.
- * Instead, provides a lightweight context with a connect() that
- * activates MWA on demand (when user taps BIND WALLET).
- *
- * This eliminates the crash loop: the MWA native module has stale state
- * after force-close and throws 'undefined is not a function' during
- * initial render. By deferring mount until the user explicitly connects,
- * the native module has time to initialize and the app never flickers.
+ * Lazy MWA provider — mounts NativeMWAProvider as a SIBLING (not a wrapper)
+ * and forwards its context values to children via state. This means:
+ * - Children never unmount when MWA activates (stable tree position)
+ * - MWA native module crash doesn't tear down GameProvider/HomeScreen
+ * - connect() activates MWA on demand, then auto-triggers the real connect
  */
 function LazyMWAProvider({ children }: { children: ReactNode }) {
   const [mwaActive, setMwaActive] = useState(false);
   const [mwaFailed, setMwaFailed] = useState(false);
+  const [mwaContext, setMwaContext] = useState<UnifiedWalletContextState | null>(null);
+  const [pendingConnect, setPendingConnect] = useState(false);
 
-  // Provide a connect function that activates MWA on first call
+  // When MWA mounts and forwards its context, auto-trigger the pending connect
+  useEffect(() => {
+    if (pendingConnect && mwaContext && !mwaContext.connecting) {
+      dlog('MWA', 'auto-triggering connect after MWA mount');
+      setPendingConnect(false);
+      mwaContext.connect().catch(err => {
+        dlog.error('MWA', 'auto-connect failed:', err?.message || String(err));
+      });
+    }
+  }, [pendingConnect, mwaContext]);
+
+  // Lazy connect: activate MWA, then auto-connect once it's ready
   const lazyConnect = useCallback(async (): Promise<Address | null> => {
+    if (mwaFailed) {
+      dlog.warn('MWA', 'MWA previously failed, retrying');
+      setMwaFailed(false);
+    }
     dlog('MWA', 'lazy connect: activating NativeMWAProvider');
     setMwaActive(true);
-    // Return null — the actual connect will be triggered by the MWA consumer
-    // once it mounts (via the auto-auth effect or a second connect call)
+    setPendingConnect(true);
     return null;
-  }, []);
+  }, [mwaFailed]);
 
-  const lazyContext = useMemo<UnifiedWalletContextState>(() => ({
-    connected: false,
-    connecting: false,
-    address: null,
-    balance: null,
-    connectors: [],
-    connect: lazyConnect,
-    connectTo: lazyConnect,
-    disconnect: async () => {},
-    sendSOL: async () => { throw new Error('Wallet not connected'); },
-    signAndSendTransaction: async () => { throw new Error('Wallet not connected'); },
-    signMessage: async () => { throw new Error('Wallet not connected'); },
-    refreshBalance: async () => {},
-  }), [lazyConnect]);
+  // Build the context value: use MWA context if available, otherwise lazy placeholder
+  const contextValue = useMemo<UnifiedWalletContextState>(() => {
+    if (mwaContext) return mwaContext;
+    return {
+      connected: false,
+      connecting: false,
+      address: null,
+      balance: null,
+      connectors: [],
+      connect: lazyConnect,
+      connectTo: lazyConnect,
+      disconnect: async () => {},
+      sendSOL: async () => { throw new Error('Wallet not connected'); },
+      signAndSendTransaction: async () => { throw new Error('Wallet not connected'); },
+      signMessage: async () => { throw new Error('Wallet not connected'); },
+      refreshBalance: async () => {},
+    };
+  }, [mwaContext, lazyConnect]);
 
-  if (!mwaActive || mwaFailed) {
-    return (
-      <UnifiedWalletContext.Provider value={lazyContext}>
-        {children}
-      </UnifiedWalletContext.Provider>
-    );
-  }
-
-  // MWA activated — mount the real provider inside an error boundary
   return (
-    <MWAErrorBoundary onFail={() => { dlog.error('MWA', 'init failed, falling back to lazy context'); setMwaFailed(true); }}>
-      <NativeMWAProvider>
-        {children}
-      </NativeMWAProvider>
-    </MWAErrorBoundary>
+    <UnifiedWalletContext.Provider value={contextValue}>
+      {/* MWA mounted as sibling — children stay at same tree position, never remount */}
+      {mwaActive && !mwaFailed && (
+        <MWAErrorBoundary onFail={() => { dlog.error('MWA', 'init failed'); setMwaFailed(true); setMwaContext(null); }}>
+          <NativeMWAProvider>
+            <MWAContextForwarder onContext={setMwaContext} />
+          </NativeMWAProvider>
+        </MWAErrorBoundary>
+      )}
+      {children}
+    </UnifiedWalletContext.Provider>
   );
 }
 
-/** Simple error boundary for MWA — on crash, calls onFail and renders children */
+/** Reads MWA's wallet context and forwards it to the parent via callback */
+function MWAContextForwarder({ onContext }: { onContext: (ctx: UnifiedWalletContextState) => void }) {
+  const walletCtx = useContext(UnifiedWalletContext);
+  useEffect(() => {
+    onContext(walletCtx);
+  }, [walletCtx, onContext]);
+  return null;
+}
+
+/** Simple error boundary for MWA — on crash, calls onFail */
 class MWAErrorBoundary extends React.Component<
   { children: ReactNode; onFail: () => void },
   { hasError: boolean }
