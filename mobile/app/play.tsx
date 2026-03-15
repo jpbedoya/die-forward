@@ -457,27 +457,30 @@ export default function PlayScreen() {
         <View className="flex-row items-center justify-between px-3 py-2 border-b border-amber/30" style={{ flexShrink: 0 }}>
           <View className="flex-row items-center gap-2">
             <MenuButton onPress={() => setMenuOpen(true)} />
-            <Text className={`text-xs font-mono tracking-wider ${
-              depth.tier === 1 ? 'text-amber' : depth.tier === 2 ? 'text-amber-light' : 'text-ethereal'
-            }`}>
-              ◈ {depth.name}
-            </Text>
-            {/* Modifier badge */}
-            {game.currentModifier && (
-              <Pressable
-                onPress={() => setModifierExpanded(v => !v)}
-                style={{ backgroundColor: 'rgba(245,158,11,0.12)', borderWidth: 1, borderColor: 'rgba(245,158,11,0.4)', borderRadius: 3, paddingHorizontal: 5, paddingVertical: 2 }}
-              >
-                <Text style={{ color: '#f59e0b', fontFamily: 'monospace', fontSize: 10 }}>
-                  {game.currentModifier.emoji} {game.currentModifier.name}
-                </Text>
-              </Pressable>
-            )}
           </View>
           <View className="flex-row items-center gap-1">
             <AudioToggle ambientTrack="ambient-explore" inline onSettingsPress={() => setMenuOpen(true)} />
             <ProgressBar current={roomNumber} total={dungeon.length} />
           </View>
+        </View>
+
+        {/* Zone name + modifier row */}
+        <View className="flex-row items-center justify-between px-4 pt-2 pb-1" style={{ flexShrink: 0 }}>
+          <Text className={`text-base font-mono ${
+            depth.tier === 1 ? 'text-amber' : depth.tier === 2 ? 'text-amber-light' : 'text-ethereal'
+          }`}>
+            ◈ {depth.name}
+          </Text>
+          {game.currentModifier && (
+            <Pressable
+              onPress={() => setModifierExpanded(v => !v)}
+              style={{ backgroundColor: 'rgba(245,158,11,0.12)', borderWidth: 1, borderColor: 'rgba(245,158,11,0.4)', borderRadius: 3, paddingHorizontal: 6, paddingVertical: 2 }}
+            >
+              <Text style={{ color: '#f59e0b', fontFamily: 'monospace', fontSize: 14 }}>
+                {game.currentModifier.emoji} {game.currentModifier.name}
+              </Text>
+            </Pressable>
+          )}
         </View>
 
         {/* Modifier expanded description */}
