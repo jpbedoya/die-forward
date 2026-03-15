@@ -13,7 +13,7 @@ import { useAudius } from '../lib/AudiusContext';
 import { AudioSettingsModal } from '../components/AudioSettingsModal';
 import { AudioToggle } from '../components/AudioToggle';
 import { CRTOverlay } from '../components/CRTOverlay';
-import { useCurrentPlayer } from '../lib/instant';
+import { useCurrentPlayer, applyMilestoneCosmetics } from '../lib/instant';
 import { getNewMilestone, getMilestoneTypeLabel, type Milestone } from '../lib/milestones';
 
 export default function DeathScreen() {
@@ -51,11 +51,19 @@ export default function DeathScreen() {
   // Check for milestone unlock when player data is ready (run once)
   useEffect(() => {
     if (milestoneChecked || !player) return;
+
     const prevDeaths = player.totalDeaths ?? 0;
     const nextDeaths = prevDeaths + 1;
     const milestone = getNewMilestone(prevDeaths, nextDeaths);
     setNewMilestone(milestone);
     setMilestoneChecked(true);
+
+    // Persist title/border unlocks immediately when crossed.
+    if (milestone) {
+      applyMilestoneCosmetics(player, milestone).catch((err) => {
+        console.warn('[Milestone] Failed to persist cosmetic unlock:', err);
+      });
+    }
   }, [player, milestoneChecked]);
 
   const handleShare = async () => {

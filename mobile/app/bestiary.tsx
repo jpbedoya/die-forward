@@ -9,6 +9,7 @@ import { AudioToggle } from '../components/AudioToggle';
 import { AudioSettingsModal } from '../components/AudioSettingsModal';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { getAllCreatures, CreatureInfo } from '../lib/content';
+import { listZoneIds, loadZone } from '../lib/zone-loader';
 import { getCreatureAsset, getCreatureAssetByName } from '../lib/creatureAssets';
 import { CRTOverlay } from '../components/CRTOverlay';
 import { CryptBackground } from '../components/CryptBackground';
@@ -21,12 +22,85 @@ const TIER_CONFIG = {
   3: { label: 'TIER III', color: '#c84040', border: '#5a1a1a', bg: 'rgba(90,26,26,0.3)' },
 } as const;
 
-const CREATURES = getAllCreatures();
+type BestiaryCreature = CreatureInfo & {
+  key: string;
+  zones: string[];
+  zoneNames: string[];
+  isZoneLocal: boolean;
+};
+
+const ZONES = listZoneIds().map((id) => {
+  const zone = loadZone(id);
+  return { id, name: zone.meta.name, zone };
+});
+
+function addZoneTag(entry: BestiaryCreature, zoneId: string, zoneName: string) {
+  if (!entry.zones.includes(zoneId)) entry.zones.push(zoneId);
+  if (!entry.zoneNames.includes(zoneName)) entry.zoneNames.push(zoneName);
+}
+
+function buildBestiary(): BestiaryCreature[] {
+  const byName = new Map<string, BestiaryCreature>();
+
+  // Start from global/shared bestiary
+  for (const c of getAllCreatures()) {
+    byName.set(c.name, {
+      ...c,
+      key: c.name,
+      zones: [],
+      zoneNames: [],
+      isZoneLocal: false,
+    });
+  }
+
+  // Attach zone tags for shared + inject/override with local zone creatures
+  for (const { id: zoneId, name: zoneName, zone } of ZONES) {
+    for (const sharedName of zone.bestiary.shared ?? []) {
+      const shared = byName.get(sharedName);
+      if (shared) {
+        addZoneTag(shared, zoneId, zoneName);
+      }
+    }
+
+    for (const local of zone.bestiary.local ?? []) {
+      const existing = byName.get(local.name);
+      const localEntry: BestiaryCreature = {
+        ...(existing ?? {
+          name: local.name,
+          tier: local.tier,
+          health: { min: local.health.min, max: local.health.max },
+          behaviors: local.behaviors as CreatureInfo['behaviors'],
+          description: local.description,
+          emoji: local.emoji,
+          artUrl: local.artUrl,
+        }),
+        // Local zone definitions are source-of-truth when present
+        name: local.name,
+        tier: local.tier,
+        health: { min: local.health.min, max: local.health.max },
+        behaviors: local.behaviors as CreatureInfo['behaviors'],
+        description: local.description,
+        emoji: local.emoji,
+        artUrl: local.artUrl ?? existing?.artUrl,
+        key: local.name,
+        zones: existing?.zones ?? [],
+        zoneNames: existing?.zoneNames ?? [],
+        isZoneLocal: true,
+      };
+      addZoneTag(localEntry, zoneId, zoneName);
+      byName.set(local.name, localEntry);
+    }
+  }
+
+  return Array.from(byName.values()).sort((a, b) => a.tier - b.tier || a.name.localeCompare(b.name));
+}
+
+const CREATURES: BestiaryCreature[] = buildBestiary();
 
 // ─── Creature Card ────────────────────────────────────────────────────────────
 
 function CreatureCard({ creature, onPress, cardWidth }: {
-  creature: CreatureInfo;
+  creature: BestiaryCreature;
   onPress: () => void;
   cardWidth: number;
 }) {
@@ -87,6 +161,11 @@ function CreatureCard({ creature, onPress, cardWidth }: {
         >
           {creature.name}
         </Text>
+        {creature.zoneNames.length > 0 && (
+          <Text style={{ fontFamily: 'monospace', fontSize: 9, color: '#a78bfa', marginBottom: 4 }} numberOfLines={1}>
+            {creature.zoneNames[0]}{creature.zoneNames.length > 1 ? ` +${creature.zoneNames.length - 1}` : ''}
+          </Text>
+        )}
         <Text style={{ fontFamily: 'monospace', fontSize: 10, color: '#c84040', marginBottom: 6 }}>
           ♥ {creature.health.min}–{creature.health.max}
         </Text>
@@ -112,7 +191,7 @@ function CreatureCard({ creature, onPress, cardWidth }: {
 // ─── Detail Modal ─────────────────────────────────────────────────────────────
 
 function CreatureDetailModal({ creature, onClose }: {
-  creature: CreatureInfo | null;
+  creature: BestiaryCreature | null;
   onClose: () => void;
 }) {
   if (!creature) return null;
@@ -176,7 +255,7 @@ function CreatureDetailModal({ creature, onClose }: {
                   <Text style={{ fontFamily: 'monospace', fontSize: 20, fontWeight: '700', color: '#f59e0b', marginBottom: 6 }}>
                     {creature.name}
                   </Text>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                     <View style={{
                       borderWidth: 1, borderColor: tier.border,
                       backgroundColor: tier.bg, paddingHorizontal: 7, paddingVertical: 3,
@@ -185,6 +264,11 @@ function CreatureDetailModal({ creature, onClose }: {
                         {tier.label}
                       </Text>
                     </View>
+                    {creature.zoneNames.length > 0 && (
+                      <Text style={{ fontFamily: 'monospace', fontSize: 10, color: '#a78bfa' }}>
+                        {creature.zoneNames.join(' · ')}
+                      </Text>
+                    )}
                     <Text style={{ fontFamily: 'monospace', fontSize: 11, color: '#c84040' }}>
                       ♥ {creature.health.min}–{creature.health.max} HP
                     </Text>
@@ -233,9 +317,10 @@ function CreatureDetailModal({ creature, onClose }: {
 
 export default function BestiaryScreen() {
   const { width } = useWindowDimensions();
-  const [selected, setSelected] = useState<CreatureInfo | null>(null);
+  const [selected, setSelected] = useState<BestiaryCreature | null>(null);
   const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
   const [filterTier, setFilterTier] = useState<1 | 2 | 3 | null>(null);
+  const [filterZone, setFilterZone] = useState<string | null>(null);
 
   const COLS = 2;
   const GUTTER = 12;
@@ -245,9 +330,13 @@ export default function BestiaryScreen() {
   const effectiveWidth = Math.min(width, 430);
   const cardWidth = Math.floor((effectiveWidth - H_PAD * 2 - GUTTER) / COLS);
 
-  const filteredCreatures = filterTier ? CREATURES.filter(c => c.tier === filterTier) : CREATURES;
+  const filteredCreatures = CREATURES.filter((c) => {
+    const tierMatch = filterTier ? c.tier === filterTier : true;
+    const zoneMatch = filterZone ? c.zones.includes(filterZone) : true;
+    return tierMatch && zoneMatch;
+  });
 
-  const renderItem = useCallback(({ item, index }: { item: CreatureInfo; index: number }) => (
+  const renderItem = useCallback(({ item, index }: { item: BestiaryCreature; index: number }) => (
     <View style={{ marginLeft: index % COLS === 0 ? 0 : GUTTER }}>
       <CreatureCard
         creature={item}
@@ -282,11 +371,48 @@ export default function BestiaryScreen() {
           );
         })}
       </View>
+      {/* Zone filters */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingVertical: 8, gap: 8, paddingHorizontal: 4 }}>
+        <Pressable
+          onPress={() => setFilterZone(null)}
+          style={{
+            borderWidth: 1,
+            borderColor: filterZone ? '#2a2520' : '#a78bfa',
+            backgroundColor: filterZone ? 'transparent' : 'rgba(167,139,250,0.2)',
+            paddingHorizontal: 10,
+            paddingVertical: 5,
+          }}
+        >
+          <Text style={{ fontFamily: 'monospace', fontSize: 10, color: filterZone ? '#78716c' : '#a78bfa' }}>ALL ZONES</Text>
+        </Pressable>
+        {ZONES.map((z) => {
+          const active = filterZone === z.id;
+          return (
+            <Pressable
+              key={z.id}
+              onPress={() => setFilterZone(active ? null : z.id)}
+              style={{
+                borderWidth: 1,
+                borderColor: active ? '#a78bfa' : '#2a2520',
+                backgroundColor: active ? 'rgba(167,139,250,0.2)' : 'transparent',
+                paddingHorizontal: 10,
+                paddingVertical: 5,
+              }}
+            >
+              <Text style={{ fontFamily: 'monospace', fontSize: 10, color: active ? '#a78bfa' : '#78716c' }}>{z.name.toUpperCase()}</Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
+
       <Text style={{ fontFamily: 'monospace', fontSize: 10, color: '#57534e', textAlign: 'center', marginTop: 2 }}>
-        {filteredCreatures.length} creature{filteredCreatures.length !== 1 ? 's' : ''}{filterTier ? ` · tier ${filterTier}` : ''} · tap to inspect
+        {filteredCreatures.length} creature{filteredCreatures.length !== 1 ? 's' : ''}
+        {filterTier ? ` · tier ${filterTier}` : ''}
+        {filterZone ? ` · ${ZONES.find(z => z.id === filterZone)?.name ?? filterZone}` : ''}
+        {' · tap to inspect'}
       </Text>
     </View>
-  ), [filterTier, filteredCreatures.length]);
+  ), [filterTier, filterZone, filteredCreatures.length]);
 
   return (
     <CryptBackground screen="home">
@@ -304,12 +430,12 @@ export default function BestiaryScreen() {
         {/* Grid */}
         <FlatList
           data={filteredCreatures}
-          keyExtractor={(item) => item.name}
+          keyExtractor={(item) => item.key}
           renderItem={renderItem}
           numColumns={COLS}
           ListHeaderComponent={renderHeader}
           contentContainerStyle={{ padding: H_PAD, paddingTop: 12 }}
-          key={filterTier ?? 'all'}
+          key={`${filterTier ?? 'all'}-${filterZone ?? 'all'}`}
           showsVerticalScrollIndicator={false}
           columnWrapperStyle={{ justifyContent: 'flex-start' }}
         />

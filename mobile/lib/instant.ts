@@ -70,6 +70,38 @@ export interface Player {
   clearedZones?: string[];
 }
 
+// Persist title/border milestone unlocks in player profile (idempotent).
+export async function applyMilestoneCosmetics(
+  player: Pick<Player, 'id' | 'activeTitle' | 'activeBorder' | 'unlockedTitles' | 'unlockedBorders'>,
+  milestone: { type: 'title' | 'border' | 'item_pool' | 'perk'; value: string },
+): Promise<void> {
+  if (milestone.type !== 'title' && milestone.type !== 'border') return;
+
+  const updates: Partial<Player> = {};
+
+  if (milestone.type === 'title') {
+    const unlocked = Array.from(new Set([...(player.unlockedTitles || []), milestone.value]));
+    updates.unlockedTitles = unlocked;
+    if (!player.activeTitle) {
+      updates.activeTitle = milestone.value;
+    }
+  }
+
+  if (milestone.type === 'border') {
+    const unlocked = Array.from(new Set([...(player.unlockedBorders || []), milestone.value]));
+    updates.unlockedBorders = unlocked;
+    if (!player.activeBorder) {
+      updates.activeBorder = milestone.value;
+    }
+  }
+
+  if (Object.keys(updates).length === 0) return;
+
+  await db.transact([
+    tx.players[player.id].update(updates),
+  ]);
+}
+
 // Initialize the database
 export const db = init({ appId: APP_ID });
 
