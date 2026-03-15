@@ -58,6 +58,11 @@ async function clearNonIdentityStorage() {
   }
 }
 
+// Flag: did this startup clear storage? GameContext reads this to decide
+// whether signInWithToken is needed (it's not on normal restarts since
+// InstantDB persists its own session in AsyncStorage).
+export let migrationClearedStorage = false;
+
 // On startup: if version changed, wipe stale AsyncStorage state (preserving identity keys)
 async function checkVersionAndMigrate() {
   dlog('Migration', `start — stored version check, current=${CURRENT_VERSION}`);
@@ -67,9 +72,10 @@ async function checkVersionAndMigrate() {
     if (!stored || stored !== CURRENT_VERSION) {
       dlog('Migration', `version changed ${stored} → ${CURRENT_VERSION} — clearing stale state`);
       await clearNonIdentityStorage();
+      migrationClearedStorage = true;
     }
     await AsyncStorage.setItem(APP_VERSION_KEY, CURRENT_VERSION);
-    dlog('Migration', 'complete');
+    dlog('Migration', `complete, clearedStorage=${migrationClearedStorage}`);
   } catch (e) {
     dlog.error('Migration', 'checkVersionAndMigrate failed', e);
   }

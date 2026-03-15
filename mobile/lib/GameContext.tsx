@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useCallback, useRef, ReactN
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as api from './api';
 import { dlog } from './debug-log';
+import { migrationClearedStorage } from '../app/_layout';
 import { generateRandomDungeon, generateDungeon, DungeonRoom, getItemDetails, rollRandomItem } from './content';
 import { getMilestonePerks } from './milestones';
 
@@ -289,26 +290,28 @@ export function GameProvider({ children }: { children: ReactNode }) {
         stateUpdates.guestProgressExists = guestProgressRaw === 'true';
 
         if (stored?.isAuthenticated && stored.authType === 'wallet') {
-          // Wallet auth — try to restore InstantDB session with stored token
-          if (stored.customToken) {
-            dlog('Auth', 'restoring wallet session via token');
+          // Wallet auth — restore game state. Only call signInWithToken when
+          // migration cleared storage (fresh install or version change), since
+          // InstantDB persists its own session in AsyncStorage on normal restarts.
+          // Calling signInWithToken unnecessarily disrupts all queries and causes
+          // a re-render cascade that overwhelms the JS thread.
+          if (stored.customToken && migrationClearedStorage) {
+            dlog('Auth', 'migration cleared storage, restoring wallet session via token');
             const restored = await restoreInstantDBSession(stored.customToken);
             dlog('Auth', 'wallet session restore result:', restored);
-            if (restored) {
-              Object.assign(stateUpdates, {
-                isAuthenticated: true,
-                authId: stored.authId,
-                authType: stored.authType,
-                walletAddress: stored.walletAddress,
-              });
-            } else {
+            if (!restored) {
               dlog.warn('Auth', 'stored token expired — wallet re-sign required on connect');
-              stateUpdates.walletAddress = stored.walletAddress;
             }
           } else {
-            dlog('Auth', 'no stored token (old install) — wallet reconnect will handle it');
-            stateUpdates.walletAddress = stored.walletAddress;
+            dlog('Auth', 'normal restart, skipping signInWithToken (InstantDB session persisted)');
           }
+          // Always restore game state from our stored auth
+          Object.assign(stateUpdates, {
+            isAuthenticated: true,
+            authId: stored.authId,
+            authType: stored.authType,
+            walletAddress: stored.walletAddress,
+          });
         } else if (!unifiedWallet.connected) {
           // Guest — always do a fresh sign-in to get a valid token + load player record immediately
           dlog('Auth', 'signing in as guest');
