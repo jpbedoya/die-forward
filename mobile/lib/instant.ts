@@ -1,4 +1,5 @@
 import { init, tx, id } from '@instantdb/react-native';
+import { useMemo } from 'react';
 
 // App ID - same as web version
 // Fallback to production ID if env var missing (for Vercel builds before env is set)
@@ -567,9 +568,11 @@ export function useGameSettings() {
   });
 
   const dbSettings = data?.gameSettings?.[0] as unknown as GameSettings | undefined;
-  
-  // Merge with defaults
-  const settings: Omit<GameSettings, 'id'> = {
+
+  // Memoize merged settings — prevents re-render cascade when InstantDB
+  // re-evaluates queries after signInWithToken (the object reference stays
+  // stable unless actual DB values change)
+  const settings = useMemo<Omit<GameSettings, 'id'>>(() => ({
     lootChanceBase: dbSettings?.lootChanceBase ?? DEFAULT_GAME_SETTINGS.lootChanceBase,
     lootChanceDepth5: dbSettings?.lootChanceDepth5 ?? DEFAULT_GAME_SETTINGS.lootChanceDepth5,
     lootChanceDepth9: dbSettings?.lootChanceDepth9 ?? DEFAULT_GAME_SETTINGS.lootChanceDepth9,
@@ -594,7 +597,7 @@ export function useGameSettings() {
     erraticDamageMax: dbSettings?.erraticDamageMax ?? DEFAULT_GAME_SETTINGS.erraticDamageMax,
     victoryBonusPercent: dbSettings?.victoryBonusPercent ?? DEFAULT_GAME_SETTINGS.victoryBonusPercent,
     showLeaderboardLink: dbSettings?.showLeaderboardLink ?? DEFAULT_GAME_SETTINGS.showLeaderboardLink,
-  };
+  }), [dbSettings]);
 
   return { settings, isLoading, error };
 }

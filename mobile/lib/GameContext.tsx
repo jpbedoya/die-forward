@@ -979,7 +979,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return actual;
   }, [state.currentModifier]);
 
-  const value: GameContextType = {
+  // Memoize context value — prevents cascading re-renders to all useGame()
+  // consumers when useGameSettings re-evaluates after signInWithToken.
+  // Most action callbacks are stable (useCallback), so this memo is effective.
+  const value = useMemo<GameContextType>(() => ({
     ...state,
     // Auth actions
     signInWithWallet: signInWithWalletAction,
@@ -1026,7 +1029,19 @@ export function GameProvider({ children }: { children: ReactNode }) {
     modifierHidesFirstIntent,
     getMaxHp,
     applyHealing,
-  };
+  }), [
+    state, unifiedWallet.connectors,
+    signInWithWalletAction, signInEmptyHandedAction, linkWalletAction,
+    connect, connectTo, disconnect, refreshBalance,
+    setNicknameAction, dismissNicknameModal,
+    startGame, advance, recordDeathAction, claimVictoryAction,
+    setHealth, setStamina, addToInventory, removeFromInventory,
+    incrementItemsFound, clearError, rng,
+    swapItem, dismissPendingItem, applyVoidbladeEffect, checkDeathSave,
+    getModifiedDamageBonus, getModifiedHealMultiplier, getModifiedStaminaRegen,
+    getModifiedBraceCost, modifierBraceNegatesAll, getModifiedCorpseChance,
+    modifierHidesFirstIntent, getMaxHp, applyHealing,
+  ]);
 
   return (
     <GameContext.Provider value={value}>
