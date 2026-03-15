@@ -705,6 +705,7 @@ export function GameProvider({
         );
 
         const transaction = new Transaction().add(stakeIx);
+        dlog('Stake', `about to signAndSend stake tx, activeWallet=${activeWalletAddress}`);
         const signature = await unifiedWallet.signAndSendTransaction(transaction);
 
         stakeTxSignature = signature;
@@ -780,6 +781,7 @@ export function GameProvider({
         loading: false,
       });
     } catch (err) {
+      dlog.error('Stake', 'startGame failed', err);
       const errMsg = err instanceof Error ? err.message : String(err);
       const isCancellation =
         errMsg === 'WALLET_CANCELLED' ||
@@ -799,7 +801,7 @@ export function GameProvider({
       });
       throw err;
     }
-  }, [state.walletAddress, updateState]);
+  }, [state.authId, state.walletAddress, unifiedWallet, updateState]);
 
   const advance = useCallback(async (): Promise<boolean> => {
     if (!state.sessionToken) return false;
