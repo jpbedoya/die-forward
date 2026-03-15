@@ -11,7 +11,7 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Platform } from 'react-native';
+import { Platform, Share, Alert } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 
 const STORAGE_KEY = 'die-forward-debug-logs';
@@ -97,7 +97,7 @@ export async function getDebugLogs(): Promise<string[]> {
   }
 }
 
-/** Export logs as a text file via share sheet */
+/** Export logs via RN Share API (system dialog, works on frozen UI) */
 export async function exportDebugLogs(): Promise<void> {
   const lines = await getDebugLogs();
   const text = lines.join('\n') || '(no logs)';
@@ -113,24 +113,40 @@ export async function exportDebugLogs(): Promise<void> {
     return;
   }
 
-  const Sharing = await import('expo-sharing');
-  const fileUri = `${FileSystem.cacheDirectory}die-forward-debug-${Date.now()}.log`;
-  await FileSystem.writeAsStringAsync(fileUri, text, { encoding: FileSystem.EncodingType.UTF8 });
-
-  if (await Sharing.isAvailableAsync()) {
-    await Sharing.shareAsync(fileUri, { mimeType: 'text/plain', dialogTitle: 'Export Debug Logs' });
+  // Use RN's built-in Share API — guaranteed to work, no extra deps
+  try {
+    await Share.share({
+      message: text,
+      title: 'Die Forward Debug Logs',
+    });
+  } catch {
+    // If Share fails, show in an Alert (system UI, always works)
+    Alert.alert('Debug Logs', text.slice(-2000), [{ text: 'OK' }]);
   }
 }
 
 /**
- * Schedule auto-export after a delay. The share sheet is system UI
- * that pops over a frozen app — save to Downloads from there.
+ * Schedule auto-export after a delay. Uses Alert to show logs
+ * as system UI that pops over a frozen app.
  * Call this once at app startup.
  */
 export function scheduleAutoExport(delayMs = 8000) {
   if (Platform.OS === 'web') return;
-  setTimeout(() => {
-    exportDebugLogs().catch(() => {});
+  setTimeout(async () => {
+    try {
+      await flush();
+      const lines = await getDebugLogs();
+      const text = lines.join('\n') || '(no logs)';
+      // Alert is system UI — guaranteed to show over frozen app
+      Alert.alert(
+        'Debug Logs',
+        text.slice(-3000),
+        [
+          { text: 'Share', onPress: () => Share.share({ message: text, title: 'Debug Logs' }).catch(() => {}) },
+          { text: 'Dismiss' },
+        ],
+      );
+    } catch {}
   }, delayMs);
 }
 
