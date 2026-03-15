@@ -519,43 +519,82 @@ if (isNativeMobile) {
 }
 
 /**
- * Error boundary that catches MWA native module init failures (e.g. after
- * Android background kills) and retries after a short delay instead of
- * crashing the whole app.
+ * Lazy MWA provider — does NOT mount NativeMWAProvider at startup.
+ * Instead, provides a lightweight context with a connect() that
+ * activates MWA on demand (when user taps BIND WALLET).
+ *
+ * This eliminates the crash loop: the MWA native module has stale state
+ * after force-close and throws 'undefined is not a function' during
+ * initial render. By deferring mount until the user explicitly connects,
+ * the native module has time to initialize and the app never flickers.
  */
-class WalletProviderBoundary extends React.Component<
-  { children: ReactNode; fallback: ReactNode },
-  { crashed: boolean; retryCount: number }
+function LazyMWAProvider({ children }: { children: ReactNode }) {
+  const [mwaActive, setMwaActive] = useState(false);
+  const [mwaFailed, setMwaFailed] = useState(false);
+
+  // Provide a connect function that activates MWA on first call
+  const lazyConnect = useCallback(async (): Promise<Address | null> => {
+    dlog('MWA', 'lazy connect: activating NativeMWAProvider');
+    setMwaActive(true);
+    // Return null — the actual connect will be triggered by the MWA consumer
+    // once it mounts (via the auto-auth effect or a second connect call)
+    return null;
+  }, []);
+
+  const lazyContext = useMemo<UnifiedWalletContextState>(() => ({
+    connected: false,
+    connecting: false,
+    address: null,
+    balance: null,
+    connectors: [],
+    connect: lazyConnect,
+    connectTo: lazyConnect,
+    disconnect: async () => {},
+    sendSOL: async () => { throw new Error('Wallet not connected'); },
+    signAndSendTransaction: async () => { throw new Error('Wallet not connected'); },
+    signMessage: async () => { throw new Error('Wallet not connected'); },
+    refreshBalance: async () => {},
+  }), [lazyConnect]);
+
+  if (!mwaActive || mwaFailed) {
+    return (
+      <UnifiedWalletContext.Provider value={lazyContext}>
+        {children}
+      </UnifiedWalletContext.Provider>
+    );
+  }
+
+  // MWA activated — mount the real provider inside an error boundary
+  return (
+    <MWAErrorBoundary onFail={() => { dlog.error('MWA', 'init failed, falling back to lazy context'); setMwaFailed(true); }}>
+      <NativeMWAProvider>
+        {children}
+      </NativeMWAProvider>
+    </MWAErrorBoundary>
+  );
+}
+
+/** Simple error boundary for MWA — on crash, calls onFail and renders children */
+class MWAErrorBoundary extends React.Component<
+  { children: ReactNode; onFail: () => void },
+  { hasError: boolean }
 > {
-  constructor(props: { children: ReactNode; fallback: ReactNode }) {
+  constructor(props: { children: ReactNode; onFail: () => void }) {
     super(props);
-    this.state = { crashed: false, retryCount: 0 };
+    this.state = { hasError: false };
   }
 
   static getDerivedStateFromError() {
-    return { crashed: true };
+    return { hasError: true };
   }
 
   componentDidCatch(err: Error) {
-    dlog.error('WalletBoundary', `init error (retry ${this.state.retryCount}/3):`, err?.message);
-    // Auto-retry up to 3 times with increasing delay
-    const { retryCount } = this.state;
-    if (retryCount < 3) {
-      setTimeout(() => {
-        dlog('WalletBoundary', `retrying (attempt ${retryCount + 1})`);
-        this.setState(s => ({ crashed: false, retryCount: s.retryCount + 1 }));
-      }, 500 * (retryCount + 1));
-    }
+    dlog.error('MWABoundary', 'caught:', err?.message);
+    this.props.onFail();
   }
 
   render() {
-    if (this.state.crashed && this.state.retryCount >= 3) {
-      // Exhausted retries — render fallback WITHOUT NativeMWAProvider.
-      // The default UnifiedWalletContext value provides no-op wallet methods.
-      dlog.warn('WalletBoundary', 'exhausted retries, running walletless');
-      return <>{this.props.fallback}</>;
-    }
-    if (this.state.crashed) return null; // Blank while retrying
+    if (this.state.hasError) return null;
     return this.props.children;
   }
 }
@@ -573,16 +612,12 @@ export function UnifiedWalletProvider({ children }: { children: ReactNode }) {
     );
   }
   
-  // Native mobile (iOS/Android app): use official @wallet-ui MWA
-  // fallback={children} renders WITHOUT NativeMWAProvider if MWA crashes —
-  // the default UnifiedWalletContext value provides no-op wallet methods.
+  // Native mobile (iOS/Android app): lazy MWA — only mounts when user connects
   if (isNativeMobile) {
     return (
-      <WalletProviderBoundary fallback={children}>
-        <NativeMWAProvider>
-          {children}
-        </NativeMWAProvider>
-      </WalletProviderBoundary>
+      <LazyMWAProvider>
+        {children}
+      </LazyMWAProvider>
     );
   }
   
