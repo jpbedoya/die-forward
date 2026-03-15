@@ -500,6 +500,12 @@ export function GameProvider({
   }, [unifiedWallet.connected, unifiedWallet.address, runWalletAuth, updateState]);
 
   const signInEmptyHandedAction = useCallback(async () => {
+    // Guard: if already wallet-authenticated, do not downgrade to guest.
+    if (state.isAuthenticated && state.authType === 'wallet') {
+      dlog('Auth', 'signInEmptyHanded skipped — already wallet-authenticated');
+      return;
+    }
+
     updateState({ loading: true, error: null });
     try {
       const authState = await signInAsGuest();
@@ -522,7 +528,7 @@ export function GameProvider({
       updateState({ loading: false, error: errMsg });
       throw err;
     }
-  }, [updateState, state.walletAddress]);
+  }, [updateState, state.walletAddress, state.isAuthenticated, state.authType]);
 
   const linkWalletAction = useCallback(async (): Promise<{ merged: boolean }> => {
     if (!unifiedWallet.connected || !unifiedWallet.address) {

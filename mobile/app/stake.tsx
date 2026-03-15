@@ -136,7 +136,9 @@ export default function StakeScreen() {
 
     try {
       if (emptyHanded) {
-        if (!game.isAuthenticated || game.authType !== 'guest') {
+        // Empty-handed should NEVER force wallet users back into guest mode.
+        // Only establish guest auth if the player is not authenticated yet.
+        if (!game.isAuthenticated) {
           await game.signInEmptyHanded();
         }
       } else {
