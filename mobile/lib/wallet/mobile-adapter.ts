@@ -12,8 +12,9 @@ import type { Address } from '@solana/kit';
 import bs58 from 'bs58';
 import { fromUint8Array } from 'js-base64';
 
-const CLUSTER = 'devnet';
-const RPC_ENDPOINT = process.env.EXPO_PUBLIC_SOLANA_RPC || clusterApiUrl(CLUSTER);
+const LEGACY_CLUSTER: 'devnet' = 'devnet';
+const CHAIN = 'solana:devnet';
+const RPC_ENDPOINT = process.env.EXPO_PUBLIC_SOLANA_RPC || clusterApiUrl(LEGACY_CLUSTER);
 
 // Connection for mobile (web3.js)
 export const mobileConnection = new Connection(RPC_ENDPOINT, 'confirmed');
@@ -23,6 +24,25 @@ const APP_IDENTITY = {
   uri: 'https://dieforward.com',
   icon: 'favicon.ico',
 };
+
+async function authorizeWithTokenFallback(wallet: Web3MobileWallet, authToken?: string) {
+  if (authToken) {
+    try {
+      return await wallet.authorize({
+        identity: APP_IDENTITY,
+        chain: CHAIN,
+        auth_token: authToken,
+      });
+    } catch {
+      // Token may be stale after app restart/force-close; fall through to fresh auth.
+    }
+  }
+
+  return await wallet.authorize({
+    identity: APP_IDENTITY,
+    chain: CHAIN,
+  });
+}
 
 export interface MobileWalletState {
   connected: boolean;
@@ -35,17 +55,14 @@ export interface MobileWalletState {
  */
 export async function mobileConnect(): Promise<{ address: Address; authToken: string }> {
   const result = await transact(async (wallet: Web3MobileWallet) => {
-    const authResult = await wallet.authorize({
-      cluster: CLUSTER,
-      identity: APP_IDENTITY,
-    });
+    const authResult = await authorizeWithTokenFallback(wallet);
     const pubkey = new PublicKey(authResult.accounts[0]?.address);
     return {
       address: pubkey.toBase58() as Address,
       authToken: authResult.auth_token,
     };
   });
-  
+
   return result;
 }
 
@@ -57,23 +74,20 @@ export async function mobileSignAndSend(
   authToken: string
 ): Promise<string> {
   return await transact(async (wallet: Web3MobileWallet) => {
-    const reAuthResult = await wallet.reauthorize({
-      auth_token: authToken,
-      identity: APP_IDENTITY,
-    });
-    const pubkey = new PublicKey(reAuthResult.accounts[0]?.address);
-    
+    const authResult = await authorizeWithTokenFallback(wallet, authToken);
+    const pubkey = new PublicKey(authResult.accounts[0]?.address);
+
     const { blockhash } = await mobileConnection.getLatestBlockhash();
     tx.recentBlockhash = blockhash;
     tx.feePayer = pubkey;
-    
+
     const signatures = await wallet.signAndSendTransactions({
       transactions: [tx],
     });
-    
+
     const sigRaw = signatures[0];
     return typeof sigRaw === 'object' && 'length' in sigRaw
-      ? bs58.encode(sigRaw as Uint8Array) 
+      ? bs58.encode(sigRaw as Uint8Array)
       : sigRaw as string;
   });
 }
@@ -96,12 +110,9 @@ export async function mobileSignMessage(
   authToken: string,
 ): Promise<Uint8Array> {
   return await transact(async (wallet: Web3MobileWallet) => {
-    const reAuthResult = await wallet.reauthorize({
-      auth_token: authToken,
-      identity: APP_IDENTITY,
-    });
+    const authResult = await authorizeWithTokenFallback(wallet, authToken);
 
-    const addressRaw = reAuthResult.accounts[0]?.address as string | Uint8Array;
+    const addressRaw = authResult.accounts[0]?.address as string | Uint8Array;
     const addressBase64 = toBase64Address(addressRaw);
 
     const signed = await wallet.signMessages({

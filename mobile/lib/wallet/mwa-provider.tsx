@@ -154,7 +154,7 @@ function MobileWalletConsumer({ children }: { children: ReactNode }) {
 export function MWAWalletProvider({ children }: { children: ReactNode }) {
   return (
     <WalletUIProvider
-      chain="devnet"
+      chain="solana:devnet"
       endpoint={RPC_ENDPOINT}
       identity={APP_IDENTITY}
     >
