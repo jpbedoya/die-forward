@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, Pressable, ScrollView, Alert, Platform, ViewStyle, Image, Modal } from 'react-native';
 import { getCreatureAsset, getCreatureAssetByName } from '../lib/creatureAssets';
 import { Icons } from '../lib/iconAssets';
@@ -36,8 +36,7 @@ export default function PlayScreen() {
   const { playSFX, playAmbient } = useAudio();
   const { settings } = useGameSettings();
   const { player } = useCurrentPlayer();
-  // Fix 4: ref to cancel pending auto-advance when player taps Continue
-  const advanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const [message, setMessage] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
   const [showCorpse, setShowCorpse] = useState(false);
@@ -182,12 +181,6 @@ export default function PlayScreen() {
               setMessage(`You take ${dmg} damage!`);
             }
           }
-          // Fix 4: store timeout ref so Continue can cancel it
-          advanceTimerRef.current = setTimeout(async () => {
-            advanceTimerRef.current = null;
-            await game.advance();
-            setMessage(null);
-          }, 1500);
           break;
         }
 
@@ -221,12 +214,6 @@ export default function PlayScreen() {
             }
           }
           setMessage(`[Intel] ${intelMsg}`);
-          // Fix 4: store timeout ref so Continue can cancel it
-          advanceTimerRef.current = setTimeout(async () => {
-            advanceTimerRef.current = null;
-            await game.advance();
-            setMessage(null);
-          }, 2000);
           break;
         }
 
@@ -257,11 +244,6 @@ export default function PlayScreen() {
             if (save.saved) {
               setMessage(save.message || "Death's Mantle shatters — you survive with 1 HP!");
               playSFX('flee-fail');
-              advanceTimerRef.current = setTimeout(async () => {
-                advanceTimerRef.current = null;
-                await game.advance();
-                setMessage(null);
-              }, 1500);
               break;
             }
             playSFX('player-death');
@@ -271,13 +253,6 @@ export default function PlayScreen() {
           
           setMessage(`Escaped! -${fleeDamage} HP`);
           playSFX('flee-fail');
-          
-          // Fix 4: store timeout ref so Continue can cancel it
-          advanceTimerRef.current = setTimeout(async () => {
-            advanceTimerRef.current = null;
-            await game.advance();
-            setMessage(null);
-          }, 1500);
           break;
         }
 
@@ -360,11 +335,6 @@ export default function PlayScreen() {
           const healed = game.applyHealing(30);
           game.incrementItemsFound();
           setMessage(`Found supplies. +${healed} HP`);
-          
-          setTimeout(async () => {
-            await game.advance();
-            setMessage(null);
-          }, 1500);
           break;
         }
 
@@ -374,11 +344,6 @@ export default function PlayScreen() {
           break;
 
         case 'continue':
-          // Fix 4: cancel pending auto-advance before manually advancing
-          if (advanceTimerRef.current) {
-            clearTimeout(advanceTimerRef.current);
-            advanceTimerRef.current = null;
-          }
           await game.advance();
           setMessage(null);
           break;
