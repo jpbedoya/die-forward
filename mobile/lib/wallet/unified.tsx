@@ -519,41 +519,34 @@ if (isNativeMobile) {
 }
 
 /**
- * Error boundary for MWA native module crashes (e.g. after Android force-close).
- * Retries up to 3 times with increasing delays. On exhaustion, renders children
- * WITHOUT NativeMWAProvider (walletless fallback via default context).
+ * Error boundary for MWA native module crashes (common after Android force-close).
+ * IMPORTANT: Never render `null` during recovery. Returning null here causes visible
+ * black flashes and unmount/remount cascades (Home/GameProvider restart loops).
+ *
+ * Strategy: fail-open to walletless mode for this app session.
+ * If MWA throws once, keep the app running without NativeMWAProvider and avoid retries.
  */
 class WalletProviderBoundary extends React.Component<
   { children: ReactNode; fallback: ReactNode },
-  { crashed: boolean; retryCount: number }
+  { walletless: boolean }
 > {
   constructor(props: { children: ReactNode; fallback: ReactNode }) {
     super(props);
-    this.state = { crashed: false, retryCount: 0 };
+    this.state = { walletless: false };
   }
 
   static getDerivedStateFromError() {
-    return { crashed: true };
+    return { walletless: true };
   }
 
   componentDidCatch(err: Error) {
-    dlog.error('WalletBoundary', `init error (retry ${this.state.retryCount}/3):`, err?.message);
-    const { retryCount } = this.state;
-    if (retryCount < 3) {
-      setTimeout(() => {
-        dlog('WalletBoundary', `retrying (attempt ${retryCount + 1})`);
-        this.setState(s => ({ crashed: false, retryCount: s.retryCount + 1 }));
-      }, 1000 * (retryCount + 1)); // 1s, 2s, 3s delays
-    }
+    dlog.error('WalletBoundary', 'init error, switching to walletless mode for this session:', err?.message);
   }
 
   render() {
-    if (this.state.crashed && this.state.retryCount >= 3) {
-      // Exhausted retries — render fallback WITHOUT NativeMWAProvider.
-      dlog.warn('WalletBoundary', 'exhausted retries, running walletless');
+    if (this.state.walletless) {
       return <>{this.props.fallback}</>;
     }
-    if (this.state.crashed) return null; // Brief blank during retry delay
     return this.props.children;
   }
 }
@@ -573,8 +566,8 @@ export function UnifiedWalletProvider({ children }: { children: ReactNode }) {
   
   // Native mobile (iOS/Android app): standard MWA provider per Solana docs.
   // WalletProviderBoundary handles native module crashes (e.g. after force-close)
-  // by retrying 3 times, then falling back to walletless mode via fallback prop
-  // (which skips NativeMWAProvider entirely — no infinite crash loop).
+  // by switching immediately to walletless mode for this app session.
+  // This avoids blank-frame retries and remount cascades.
   if (isNativeMobile) {
     return (
       <WalletProviderBoundary fallback={children}>
