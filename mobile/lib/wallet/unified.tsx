@@ -524,10 +524,10 @@ if (isNativeMobile) {
  * crashing the whole app.
  */
 class WalletProviderBoundary extends React.Component<
-  { children: ReactNode },
+  { children: ReactNode; fallback: ReactNode },
   { crashed: boolean; retryCount: number }
 > {
-  constructor(props: { children: ReactNode }) {
+  constructor(props: { children: ReactNode; fallback: ReactNode }) {
     super(props);
     this.state = { crashed: false, retryCount: 0 };
   }
@@ -550,9 +550,10 @@ class WalletProviderBoundary extends React.Component<
 
   render() {
     if (this.state.crashed && this.state.retryCount >= 3) {
-      // Exhausted retries — render children without wallet (graceful degradation)
-      console.warn('[WalletProvider] Exhausted retries, running walletless');
-      return <>{this.props.children}</>;
+      // Exhausted retries — render fallback WITHOUT NativeMWAProvider.
+      // The default UnifiedWalletContext value provides no-op wallet methods.
+      dlog.warn('WalletBoundary', 'exhausted retries, running walletless');
+      return <>{this.props.fallback}</>;
     }
     if (this.state.crashed) return null; // Blank while retrying
     return this.props.children;
@@ -573,9 +574,11 @@ export function UnifiedWalletProvider({ children }: { children: ReactNode }) {
   }
   
   // Native mobile (iOS/Android app): use official @wallet-ui MWA
+  // fallback={children} renders WITHOUT NativeMWAProvider if MWA crashes —
+  // the default UnifiedWalletContext value provides no-op wallet methods.
   if (isNativeMobile) {
     return (
-      <WalletProviderBoundary>
+      <WalletProviderBoundary fallback={children}>
         <NativeMWAProvider>
           {children}
         </NativeMWAProvider>
