@@ -217,60 +217,70 @@ export function GameProvider({
 
   // Keep a stable ref to signMessage — avoids including it in effect deps
   // (the MWA wallet object recreates signMessage on every state change, which would
-  // cause the auto-auth effect below to cancel-restart in a loop)
+  // cause auth flows to cancel/restart in a loop)
   const signMessageRef = useRef(unifiedWallet.signMessage);
   signMessageRef.current = unifiedWallet.signMessage;
 
-  // Auto sign-in when wallet connects — requires signed challenge
-  // Also handles guest→wallet upgrade when user was signed in as guest
+  // Serialize wallet auth (connect/verify) so connect handler and effect fallback
+  // can't trigger duplicate signature prompts.
+  const walletAuthInFlightRef = useRef(false);
+
+  const runWalletAuth = useCallback(async (address: string, source: 'connect' | 'effect' | 'manual') => {
+    if (walletAuthInFlightRef.current) {
+      dlog('Auth', `wallet auth already in flight, skipping duplicate (${source})`);
+      return;
+    }
+
+    walletAuthInFlightRef.current = true;
+    try {
+      // Already verified for this wallet
+      if (state.isAuthenticated && state.authType === 'wallet' && state.authId === address) {
+        dlog('Auth', `wallet already verified (${source})`);
+        return;
+      }
+
+      dlog('Auth', `wallet verify start (${source}) address=${address} authType=${state.authType}`);
+
+      if (state.isAuthenticated && state.authType === 'guest') {
+        // Upgrade: link existing guest session to wallet
+        dlog('Auth', 'upgrading guest → wallet');
+        await linkWalletToGuest(address, signMessageRef.current);
+        dlog('Auth', 'guest → wallet upgrade complete');
+        updateState({
+          isAuthenticated: true,
+          authId: address,
+          authType: 'wallet' as const,
+          walletAddress: address,
+        });
+      } else {
+        // Fresh wallet sign-in (no prior auth)
+        dlog('Auth', 'fresh wallet sign-in');
+        const authState = await signInWithWallet(address, signMessageRef.current);
+        dlog('Auth', 'fresh wallet sign-in complete');
+        updateState({
+          isAuthenticated: true,
+          authId: authState.authId,
+          authType: 'wallet' as const,
+          walletAddress: authState.walletAddress,
+        });
+      }
+    } catch (err) {
+      dlog.error('Auth', `wallet verify failed (${source})`, err);
+      throw err;
+    } finally {
+      walletAuthInFlightRef.current = false;
+    }
+  }, [state.isAuthenticated, state.authType, state.authId, updateState]);
+
+  // Fallback auto-verify when wallet appears connected but explicit connect flow didn't run.
   useEffect(() => {
     if (!unifiedWallet.connected || !unifiedWallet.address) return;
-    // Already authenticated as wallet — nothing to do
-    if (state.isAuthenticated && state.authType === 'wallet') return;
+    if (state.isAuthenticated && state.authType === 'wallet' && state.authId === unifiedWallet.address) return;
 
-    // Capture address as non-null string (guarded above)
-    const address = unifiedWallet.address as string;
-    dlog('Auth', `wallet connected: ${address}, authType=${state.authType}, isAuth=${state.isAuthenticated}`);
-    let cancelled = false;
-    const doWalletAuth = async () => {
-      try {
-        if (state.isAuthenticated && state.authType === 'guest') {
-          // Upgrade: link existing guest session to wallet
-          dlog('Auth', 'upgrading guest → wallet');
-          await linkWalletToGuest(address, signMessageRef.current);
-          dlog('Auth', 'guest → wallet upgrade complete');
-          if (!cancelled) {
-            updateState({
-              isAuthenticated: true,
-              authId: address,
-              authType: 'wallet' as const,
-              walletAddress: address,
-            });
-          }
-        } else {
-          // Fresh wallet sign-in (no prior auth)
-          dlog('Auth', 'fresh wallet sign-in');
-          const authState = await signInWithWallet(address, signMessageRef.current);
-          dlog('Auth', 'fresh wallet sign-in complete');
-          if (!cancelled) {
-            updateState({
-              isAuthenticated: true,
-              authId: authState.authId,
-              authType: 'wallet' as const,
-              walletAddress: authState.walletAddress,
-            });
-          }
-        }
-      } catch (err) {
-        dlog.error('Auth', 'wallet sign-in failed', err);
-        if (!cancelled) {
-          updateState({ error: `Wallet sign-in failed: ${err instanceof Error ? err.message : String(err)}` });
-        }
-      }
-    };
-    doWalletAuth();
-    return () => { cancelled = true; };
-  }, [unifiedWallet.connected, unifiedWallet.address, state.isAuthenticated, state.authType, updateState]);
+    runWalletAuth(unifiedWallet.address as string, 'effect').catch((err) => {
+      updateState({ error: `Wallet sign-in failed: ${err instanceof Error ? err.message : String(err)}` });
+    });
+  }, [unifiedWallet.connected, unifiedWallet.address, state.isAuthenticated, state.authType, state.authId, runWalletAuth, updateState]);
 
   // Sync balance from unified wallet
   useEffect(() => {
@@ -480,22 +490,14 @@ export function GameProvider({
 
     updateState({ loading: true, error: null });
     try {
-      const authState = await signInWithWallet(unifiedWallet.address, unifiedWallet.signMessage);
-
-      updateState({
-        isAuthenticated: true,
-        authId: authState.authId,
-        authType: 'wallet',
-        walletAddress: authState.walletAddress,
-        isNewUser: authState.isNewUser,
-        loading: false,
-      });
+      await runWalletAuth(unifiedWallet.address, 'manual');
+      updateState({ loading: false });
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : String(err);
       updateState({ loading: false, error: errMsg });
       throw err;
     }
-  }, [unifiedWallet, updateState]);
+  }, [unifiedWallet.connected, unifiedWallet.address, runWalletAuth, updateState]);
 
   const signInEmptyHandedAction = useCallback(async () => {
     updateState({ loading: true, error: null });
@@ -561,8 +563,11 @@ export function GameProvider({
           walletConnected: true,
           walletAddress: address,
           balance: unifiedWallet.balance,
-          loading: false,
         });
+
+        // Verify immediately after connect (do not wait for effect/rerender)
+        await runWalletAuth(address, 'connect');
+        updateState({ loading: false });
       } else {
         // null means redirect in progress or user cancelled - not an error
         // State will sync when returning from wallet app
@@ -592,8 +597,9 @@ export function GameProvider({
         loading: false,
         error: errMsg || 'Failed to connect wallet',
       });
+      throw err;
     }
-  }, [updateState, unifiedWallet]);
+  }, [runWalletAuth, updateState, unifiedWallet]);
 
   const connectTo = useCallback(async (connectorId: string) => {
     updateState({ loading: true, error: null });
@@ -604,8 +610,11 @@ export function GameProvider({
           walletConnected: true,
           walletAddress: address,
           balance: unifiedWallet.balance,
-          loading: false,
         });
+
+        // Verify immediately after connect (do not wait for effect/rerender)
+        await runWalletAuth(address, 'connect');
+        updateState({ loading: false });
       } else {
         updateState({ loading: false });
       }
@@ -627,8 +636,9 @@ export function GameProvider({
         loading: false,
         error: errMsg || 'Failed to connect wallet',
       });
+      throw err;
     }
-  }, [updateState, unifiedWallet]);
+  }, [runWalletAuth, updateState, unifiedWallet]);
 
   const disconnect = useCallback(async () => {
     await unifiedWallet.disconnect();
