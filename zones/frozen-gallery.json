@@ -214,9 +214,10 @@
   },
   "bestiary": {
     "shared": [
-      "Flickering Shades",
       "Forgotten Guardian",
-      "Bone Weavers"
+      "The Hollow",
+      "The Weeping",
+      "The Bound"
     ],
     "local": [
       {
