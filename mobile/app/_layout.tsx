@@ -271,7 +271,7 @@ export default function RootLayout() {
                       screenOptions={{
                         headerShown: false,
                         contentStyle: { backgroundColor: '#0d0d0d' },
-                        animation: 'fade',
+                        animation: 'none',
                       }}
                     />
                   </AudiusProvider>

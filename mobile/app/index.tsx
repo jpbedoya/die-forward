@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { View, Text, Pressable, Platform, StyleSheet } from 'react-native';
+import { View, Text, Pressable, Platform, StyleSheet, AppState } from 'react-native';
+import { useFocusEffect } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import { BlurView } from 'expo-blur';
@@ -13,6 +14,7 @@ import { dlog, exportDebugLogs } from '../lib/debug-log';
 function AnimatedDescendButton() {
   const { playSFX } = useAudio();
   const [frame, setFrame] = useState(0);
+  const [focused, setFocused] = useState(true);
   
   const leftFrames = [
     '░░▒▒▓▓', '░░░▒▒▓', '░░░░▒▒', '░░░░░▒',
@@ -24,11 +26,20 @@ function AnimatedDescendButton() {
     '░░░░░░', '░░░░░▒', '░░░░▒▓', '░░░▒▓▓',
     '░░▒▓▓▓', '░▒▓▓▓▓',
   ];
+
+  // Pause animation when screen is not focused — avoids JS thread churn during nav
+  useFocusEffect(
+    useCallback(() => {
+      setFocused(true);
+      return () => setFocused(false);
+    }, [])
+  );
   
   useEffect(() => {
+    if (!focused) return;
     const interval = setInterval(() => setFrame(f => (f + 1) % leftFrames.length), 120);
     return () => clearInterval(interval);
-  }, []);
+  }, [focused]);
   
   return (
     <Pressable 

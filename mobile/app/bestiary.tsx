@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import {
   View, Text, Pressable, FlatList, Image, Modal, ScrollView,
   useWindowDimensions,
@@ -95,7 +95,8 @@ function buildBestiary(): BestiaryCreature[] {
   return Array.from(byName.values()).sort((a, b) => a.tier - b.tier || a.name.localeCompare(b.name));
 }
 
-const CREATURES: BestiaryCreature[] = buildBestiary();
+// Lazy: built once inside the component so it doesn't block module load during navigation
+// const CREATURES: BestiaryCreature[] = buildBestiary(); -- removed, now a useMemo below
 
 // ─── Creature Card ────────────────────────────────────────────────────────────
 
@@ -322,6 +323,9 @@ export default function BestiaryScreen() {
   const [filterTier, setFilterTier] = useState<1 | 2 | 3 | null>(null);
   const [filterZone, setFilterZone] = useState<string | null>(null);
 
+  // Build once after the screen mounts — avoids blocking JS thread during navigation
+  const CREATURES = useMemo(() => buildBestiary(), []);
+
   const COLS = 2;
   const GUTTER = 12;
   const H_PAD = 16;
@@ -404,15 +408,8 @@ export default function BestiaryScreen() {
           );
         })}
       </ScrollView>
-
-      <Text style={{ fontFamily: 'monospace', fontSize: 10, color: '#57534e', textAlign: 'center', marginTop: 2 }}>
-        {filteredCreatures.length} creature{filteredCreatures.length !== 1 ? 's' : ''}
-        {filterTier ? ` · tier ${filterTier}` : ''}
-        {filterZone ? ` · ${ZONES.find(z => z.id === filterZone)?.name ?? filterZone}` : ''}
-        {' · tap to inspect'}
-      </Text>
     </View>
-  ), [filterTier, filterZone, filteredCreatures.length]);
+  ), [filterTier, filterZone]);
 
   return (
     <CryptBackground screen="home">
