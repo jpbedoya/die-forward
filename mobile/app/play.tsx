@@ -424,7 +424,7 @@ export default function PlayScreen() {
             <MenuButton onPress={() => setMenuOpen(true)} />
           </View>
           <View className="flex-row items-center gap-1">
-            <AudioToggle ambientTrack="ambient-explore" inline onSettingsPress={() => setMenuOpen(true)} />
+            <AudioToggle ambientTrack="ambient-explore" inline />
             <ProgressBar current={roomNumber} total={dungeon.length} />
           </View>
         </View>
