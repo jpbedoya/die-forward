@@ -217,9 +217,10 @@
   },
   "bestiary": {
     "shared": [
-      "The Unfinished",
       "Bloated One",
-      "The Congregation"
+      "The Congregation",
+      "Pale Crawler",
+      "Carrion Knight"
     ],
     "local": [
       {
