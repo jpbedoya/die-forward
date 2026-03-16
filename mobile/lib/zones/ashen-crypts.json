@@ -14,15 +14,15 @@
     "mechanic": "BURN",
     "mechanicDescription": "Burn stacks deal damage each turn. Max 5. Decay by 1 per turn. Hesitation kills.",
     "unlockRequirement": "Complete one run",
-    "emoji": "🔥"
+    "emoji": "\ud83d\udd25"
   },
-  "lore": "The stairs descend into heat. Below, a city burns — not in catastrophe, but in ritual, in deliberate continuation. They looked at what climbed from below and made a choice: burn all of it. The fire worked. The fire never stopped.",
+  "lore": "The stairs descend into heat. Below, a city burns \u2014 not in catastrophe, but in ritual, in deliberate continuation. They looked at what climbed from below and made a choice: burn all of it. The fire worked. The fire never stopped.",
   "fragments": {
     "explore": {
       "opening": [
         "Heat before light. Before sound. The Crypts announce themselves through your skin.",
         "Ash falls. Slow, continuous, from somewhere above that isn't sky.",
-        "The smell reaches you first — char, and something sweet underneath it that has no business being here.",
+        "The smell reaches you first \u2014 char, and something sweet underneath it that has no business being here.",
         "Dry heat pressing into your chest. The moisture leaves your mouth in seconds.",
         "Orange light, steady and ancient. Not torch. Something that has been burning longer than torches exist.",
         "The air tastes burnt. You breathe through your teeth. It doesn't help.",
@@ -38,9 +38,9 @@
         "Symbols on the floor, still faintly glowing. The ritual is still running. It has been running since before you were born.",
         "You're standing in a street. Ash to your knees. Buildings on either side, their facades intact. This was a city.",
         "Pillars ahead, charred but upright. Between them: the silhouette of what used to be a gathering hall.",
-        "Handprints in the soot — dozens of them, pressed flat against the stone. Someone tried to hold the wall from the inside.",
+        "Handprints in the soot \u2014 dozens of them, pressed flat against the stone. Someone tried to hold the wall from the inside.",
         "A market stall. The goods are ash. The vendor's scale is charred, but still balanced.",
-        "The ceiling shows where the fire moved — black patterns, exact, purposeful. Not random. Designed to spread exactly this far.",
+        "The ceiling shows where the fire moved \u2014 black patterns, exact, purposeful. Not random. Designed to spread exactly this far.",
         "Bones in the ash, visible only where your feet disturb the floor. They've always been there. You just hadn't noticed.",
         "A door, sealed from the inside. Cooler than the surrounding stone. The seal held through everything. Something in there didn't burn.",
         "Writing on the wall in a language that burned with everything else. The direction is clear. Someone wanted others to follow.",
@@ -64,14 +64,14 @@
     },
     "combat": {
       "opening": [
-        "The heat spikes. Not gradual — immediate. A degree that means something is here.",
+        "The heat spikes. Not gradual \u2014 immediate. A degree that means something is here.",
         "The ash falls faster. A disturbance in the air. Movement you haven't located yet.",
         "The crackle shifts pitch. Sharper. Directed. Aware of you.",
         "Your skin tightens. The temperature in this space is wrong, even for the Crypts.",
         "The orange light shifts. Something between you and its source.",
         "Ash drifts from the walls, disturbed by a vibration. Weight, moving.",
         "Fresh char on old ash. Something burning here that wasn't burning a moment ago.",
-        "Hot air against your face — not ambient. Aimed. A breath, or what passes for one here.",
+        "Hot air against your face \u2014 not ambient. Aimed. A breath, or what passes for one here.",
         "The floor is warm underfoot in a way the rest of the Crypts aren't. Recent heat. Concentrated.",
         "A sound stops. The specific absence of something you hadn't noticed until it was gone.",
         "The ash ahead is disturbed. Something moved through here moments ago, or is moving now.",
@@ -85,7 +85,7 @@
         "Hands push through the charred wall like it's cloth. Then arms. Then the rest of it.",
         "The heat-blur in the far corner solidifies. Hands moving with precise, terrible purpose. Fire follows the motion.",
         "The congregation fills the passage ahead. Dozens of faces pressed into its surface, all of them watching you.",
-        "It steps from the fire. Not through — from. The flame contracts behind it like a closing door.",
+        "It steps from the fire. Not through \u2014 from. The flame contracts behind it like a closing door.",
         "Embers on the floor ignite one by one, drawing lines between them. Something is shaping fire into a plan.",
         "It drops from above. Heavy. The ash of impact settles on your skin and it is already standing.",
         "The wall moves. The wall was always moving. The wall has been watching you since you entered.",
@@ -109,8 +109,8 @@
         "Ash preserves, in its way. You can still read what's left.",
         "The heat rendered them down to what matters. Less flesh, more record.",
         "Char and bone. The specifics are gone. The shape of what happened remains.",
-        "They burned slowly — not violently, but through long presence. The Crypts take time, but they take everything.",
-        "The ash has settled over them, filling in. A month, a decade, a century — the fire doesn't distinguish.",
+        "They burned slowly \u2014 not violently, but through long presence. The Crypts take time, but they take everything.",
+        "The ash has settled over them, filling in. A month, a decade, a century \u2014 the fire doesn't distinguish.",
         "Preserved by heat the way cold preserves elsewhere. Dried. Fixed. Still legible.",
         "Fire collapses things. They're smaller now than they were.",
         "What remains has a quality of patience. Like they've been waiting for someone to find them.",
@@ -119,12 +119,12 @@
       ],
       "discoveryBeats": [
         "A scorch pattern on the floor, circular. Someone stood in one place for a long time.",
-        "The ash here is disturbed — a wide area, the pattern of someone who moved back and forth and finally stopped.",
+        "The ash here is disturbed \u2014 a wide area, the pattern of someone who moved back and forth and finally stopped.",
         "The smell changes. Char gives way to something specific. Recent. Close.",
         "Something in the ash ahead. An object. Flask, blade, something that was carried. Its owner is here.",
         "The ash is compressed in the shape of a person.",
         "Footprints in the ash. Leading in. None leading out.",
-        "The heat in this section of passage is different — a small gap in the warmth, where something blocked it.",
+        "The heat in this section of passage is different \u2014 a small gap in the warmth, where something blocked it.",
         "Writing on the wall. You see the letters before you see what was holding the stylus.",
         "A shadow that doesn't belong to anything standing.",
         "The ambient crackle has a gap here. A quiet spot. The fire moves around what's left of them."
@@ -133,7 +133,7 @@
     "cache": {
       "locationLines": [
         "A stone alcove, sealed with material that didn't burn. Inside: cool air and what someone left behind.",
-        "A firebreak in the wall — the ash stops here, and the supplies don't.",
+        "A firebreak in the wall \u2014 the ash stops here, and the supplies don't.",
         "A sealed container on a stone shelf. The shelf is intact. The container unmarked. Everything else burned.",
         "A door that held. The mechanism still works. The room beyond smells like nothing on fire.",
         "A priest's stockroom, deliberately fireproof. They needed it functional. The contents survived.",
@@ -155,9 +155,9 @@
     "exit": {
       "opening": [
         "The heat drops. Sudden. Noticeable. Something ahead is different.",
-        "Cooler air from somewhere above — it reaches you before you find the stairs.",
+        "Cooler air from somewhere above \u2014 it reaches you before you find the stairs.",
         "The ash thins underfoot. Stone beneath it. Actual stone, not compacted centuries.",
-        "A crack of light ahead — not orange, not ember-red. Something else entirely.",
+        "A crack of light ahead \u2014 not orange, not ember-red. Something else entirely.",
         "The crackle recedes behind you with each step. Deliberate. Fading.",
         "The orange haze clears at a point you can see. Beyond it: different dark. Better dark.",
         "Your lungs take a full breath. You hadn't realized they'd stopped.",
@@ -212,71 +212,138 @@
     }
   },
   "bestiary": {
-    "shared": ["Ash Children", "Flickering Shades", "Bone Weavers"],
+    "shared": [
+      "Ash Children",
+      "Flickering Shades",
+      "Bone Weavers"
+    ],
     "local": [
       {
         "name": "Ember Husks",
         "tier": 1,
-        "health": { "min": 35, "max": 55 },
-        "behaviors": ["AGGRESSIVE", "STALKING"],
+        "health": {
+          "min": 35,
+          "max": 55
+        },
+        "behaviors": [
+          "AGGRESSIVE",
+          "STALKING"
+        ],
         "description": "Charred corpses still moving. They trail smoke from gaps in their skin. Slow. Relentless. They collapse into burning ash clouds on death.",
-        "emoji": "💀"
+        "emoji": "\ud83d\udc80",
+        "artUrl": "/creatures/ember-husks.webp"
       },
       {
         "name": "Cinder Priests",
         "tier": 1,
-        "health": { "min": 40, "max": 60 },
-        "behaviors": ["ERRATIC", "RETREATING", "CHARGING"],
+        "health": {
+          "min": 40,
+          "max": 60
+        },
+        "behaviors": [
+          "ERRATIC",
+          "RETREATING",
+          "CHARGING"
+        ],
         "description": "They designed the rituals. They lit the first fires. They're still here, still praying, still feeding flames that have burned for centuries. Enemies near them hit harder.",
-        "emoji": "🙏"
+        "emoji": "\ud83d\ude4f",
+        "artUrl": "/creatures/cinder-priests.webp"
       },
       {
         "name": "The Scorched",
         "tier": 1,
-        "health": { "min": 45, "max": 65 },
-        "behaviors": ["CHARGING", "AGGRESSIVE"],
+        "health": {
+          "min": 45,
+          "max": 65
+        },
+        "behaviors": [
+          "CHARGING",
+          "AGGRESSIVE"
+        ],
         "description": "Warriors mid-charge when the fire took them. They didn't stop. Pure aggression, no defense, no retreat. They apply burn on contact. They do not stop.",
-        "emoji": "🔥"
+        "emoji": "\ud83d\udd25",
+        "artUrl": "/creatures/the-scorched.webp"
       },
       {
         "name": "Flame Weavers",
         "tier": 1,
-        "health": { "min": 35, "max": 55 },
-        "behaviors": ["ERRATIC", "HUNTING", "RETREATING"],
-        "description": "They shaped fire before the end. They still do. Suggestions of people — heat-blur and orange light and hands moving with terrible purpose. They don't get close. They don't need to.",
-        "emoji": "🌀"
+        "health": {
+          "min": 35,
+          "max": 55
+        },
+        "behaviors": [
+          "ERRATIC",
+          "HUNTING",
+          "RETREATING"
+        ],
+        "description": "They shaped fire before the end. They still do. Suggestions of people \u2014 heat-blur and orange light and hands moving with terrible purpose. They don't get close. They don't need to.",
+        "emoji": "\ud83c\udf00",
+        "artUrl": "/creatures/flame-weavers.webp"
       },
       {
         "name": "Ashen Congregation",
         "tier": 2,
-        "health": { "min": 80, "max": 110 },
-        "behaviors": ["AGGRESSIVE", "CHARGING", "STALKING"],
-        "description": "The city's civilian dead, fused by centuries of heat. Individual faces press against the surface — a hand, a mouth. They were separate people. The fire made them one.",
-        "emoji": "👥"
+        "health": {
+          "min": 80,
+          "max": 110
+        },
+        "behaviors": [
+          "AGGRESSIVE",
+          "CHARGING",
+          "STALKING"
+        ],
+        "description": "The city's civilian dead, fused by centuries of heat. Individual faces press against the surface \u2014 a hand, a mouth. They were separate people. The fire made them one.",
+        "emoji": "\ud83d\udc65",
+        "artUrl": "/creatures/ashen-congregation.webp"
       },
       {
         "name": "The Scorched Veteran",
         "tier": 2,
-        "health": { "min": 70, "max": 95 },
-        "behaviors": ["CHARGING", "AGGRESSIVE", "ERRATIC"],
+        "health": {
+          "min": 70,
+          "max": 95
+        },
+        "behaviors": [
+          "CHARGING",
+          "AGGRESSIVE",
+          "ERRATIC"
+        ],
         "description": "What the Scorched become after burning long enough to accumulate mass. Larger. Faster. Multiple burn stacks per hit. The same behavior, amplified until it leaves footprints in stone.",
-        "emoji": "🔥"
+        "emoji": "\ud83d\udd25",
+        "artUrl": "/creatures/the-scorched.webp"
       },
       {
         "name": "Senior Flame Weaver",
         "tier": 2,
-        "health": { "min": 65, "max": 85 },
-        "behaviors": ["HUNTING", "DEFENSIVE", "ERRATIC"],
+        "health": {
+          "min": 65,
+          "max": 85
+        },
+        "behaviors": [
+          "HUNTING",
+          "DEFENSIVE",
+          "ERRATIC"
+        ],
         "description": "The senior practitioners. They sealed themselves in living flame deliberately. Centuries have made their craft vast and precise. They build the room into a furnace. They watch before acting.",
-        "emoji": "🌀"
+        "emoji": "\ud83c\udf00",
+        "artUrl": "/creatures/flame-weavers.webp"
       },
       {
         "name": "The Pyre Keeper",
         "tier": 3,
-        "health": { "min": 180, "max": 220 },
-        "behaviors": ["CHARGING", "AGGRESSIVE", "DEFENSIVE", "ERRATIC"],
+        "health": {
+          "min": 180,
+          "max": 220
+        },
+        "behaviors": [
+          "CHARGING",
+          "AGGRESSIVE",
+          "DEFENSIVE",
+          "ERRATIC"
+        ],
         "description": "A figure made of accumulated fire. The city's final ritual fused its consciousness with the collective flame. It has been burning through the same thoughts for centuries. It doesn't want to fight. It wants company. It doesn't understand the difference.",
-        "emoji": "🔥"
+        "emoji": "\ud83d\udd25",
+        "artUrl": "/creatures/the-pyre-keeper.webp"
       }
     ]
   },
@@ -284,37 +351,83 @@
     {
       "name": "THE OUTER RUINS",
       "tier": 1,
-      "roomRange": [1, 4],
+      "roomRange": [
+        1,
+        4
+      ],
       "description": "The city's edge. Still standing. Still burning."
     },
     {
       "name": "THE BURNING HEART",
       "tier": 2,
-      "roomRange": [5, 8],
+      "roomRange": [
+        5,
+        8
+      ],
       "description": "The center. Where the fire started. Where it was meant to."
     },
     {
       "name": "THE PYRE",
       "tier": 3,
-      "roomRange": [9, 12],
+      "roomRange": [
+        9,
+        12
+      ],
       "description": "The source. The fire that never went out."
     }
   ],
   "dungeonLayout": {
     "totalRooms": 12,
     "structure": [
-      { "type": "explore", "template": "descent" },
-      { "type": "combat", "template": "husk-field" },
-      { "type": "combat", "template": "priest-ritual" },
-      { "type": "corpse", "template": "hesitator" },
-      { "type": "explore", "template": "ruins" },
-      { "type": "combat", "template": "weaver-den" },
-      { "type": "cache", "template": "sealed-alcove" },
-      { "type": "combat", "template": "congregation-press" },
-      { "type": "explore", "template": "ashfield" },
-      { "type": "combat", "template": "scorched-charge" },
-      { "type": "corpse", "template": "fighter" },
-      { "type": "combat", "template": "pyre-chamber", "boss": true }
+      {
+        "type": "explore",
+        "template": "descent"
+      },
+      {
+        "type": "combat",
+        "template": "husk-field"
+      },
+      {
+        "type": "combat",
+        "template": "priest-ritual"
+      },
+      {
+        "type": "corpse",
+        "template": "hesitator"
+      },
+      {
+        "type": "explore",
+        "template": "ruins"
+      },
+      {
+        "type": "combat",
+        "template": "weaver-den"
+      },
+      {
+        "type": "cache",
+        "template": "sealed-alcove"
+      },
+      {
+        "type": "combat",
+        "template": "congregation-press"
+      },
+      {
+        "type": "explore",
+        "template": "ashfield"
+      },
+      {
+        "type": "combat",
+        "template": "scorched-charge"
+      },
+      {
+        "type": "corpse",
+        "template": "fighter"
+      },
+      {
+        "type": "combat",
+        "template": "pyre-chamber",
+        "boss": true
+      }
     ]
   },
   "boss": "The Pyre Keeper",
