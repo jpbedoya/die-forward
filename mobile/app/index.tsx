@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { View, Text, Pressable, Platform, StyleSheet, AppState } from 'react-native';
-import { useFocusEffect } from 'expo-router';
+import { View, Text, Pressable, Platform, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import { BlurView } from 'expo-blur';
@@ -14,7 +13,6 @@ import { dlog, exportDebugLogs } from '../lib/debug-log';
 function AnimatedDescendButton() {
   const { playSFX } = useAudio();
   const [frame, setFrame] = useState(0);
-  const [focused, setFocused] = useState(true);
   
   const leftFrames = [
     '░░▒▒▓▓', '░░░▒▒▓', '░░░░▒▒', '░░░░░▒',
@@ -26,20 +24,11 @@ function AnimatedDescendButton() {
     '░░░░░░', '░░░░░▒', '░░░░▒▓', '░░░▒▓▓',
     '░░▒▓▓▓', '░▒▓▓▓▓',
   ];
-
-  // Pause animation when screen is not focused — avoids JS thread churn during nav
-  useFocusEffect(
-    useCallback(() => {
-      setFocused(true);
-      return () => setFocused(false);
-    }, [])
-  );
   
   useEffect(() => {
-    if (!focused) return;
     const interval = setInterval(() => setFrame(f => (f + 1) % leftFrames.length), 120);
     return () => clearInterval(interval);
-  }, [focused]);
+  }, []);
   
   return (
     <Pressable 
@@ -310,12 +299,16 @@ export default function HomeScreen() {
       <View className="flex-row items-center justify-between px-3 py-[10px]">
         <View className="flex-row items-center gap-1 -ml-3">
           {settings.showLeaderboardLink && (
-            <Pressable onPress={() => router.push('/leaderboard')} className="py-2 px-3 active:opacity-70">
-              <Text className="text-amber font-mono text-xs tracking-wider">◈ RANKS</Text>
+            <Pressable onPress={() => router.push('/leaderboard')} style={{ paddingVertical: 8, paddingHorizontal: 12 }}>
+              {({ pressed }) => (
+                <Text style={{ fontFamily: 'monospace', fontSize: 12, letterSpacing: 1, color: pressed ? '#fff' : '#f59e0b', backgroundColor: pressed ? 'rgba(245,158,11,0.15)' : 'transparent' }}>◈ RANKS</Text>
+              )}
             </Pressable>
           )}
-          <Pressable onPress={() => router.push('/bestiary')} className="py-2 px-3 active:opacity-70">
-            <Text className="text-amber font-mono text-xs tracking-wider">◈ BESTIARY</Text>
+          <Pressable onPress={() => router.push('/bestiary')} style={{ paddingVertical: 8, paddingHorizontal: 12 }}>
+            {({ pressed }) => (
+              <Text style={{ fontFamily: 'monospace', fontSize: 12, letterSpacing: 1, color: pressed ? '#fff' : '#f59e0b', backgroundColor: pressed ? 'rgba(245,158,11,0.15)' : 'transparent' }}>◈ BESTIARY</Text>
+            )}
           </Pressable>
         </View>
         <View className="items-end">

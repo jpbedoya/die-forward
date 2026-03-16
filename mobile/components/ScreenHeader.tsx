@@ -28,7 +28,15 @@ export function ScreenHeader({
       hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
       style={{ paddingVertical: 6, paddingHorizontal: 8 }}
     >
-      <Text style={{ fontFamily: 'monospace', fontSize: 12, color: '#78716c' }}>[HOME]</Text>
+      {({ pressed }) => (
+        <Text style={{
+          fontFamily: 'monospace',
+          fontSize: 12,
+          color: pressed ? '#f59e0b' : '#78716c',
+        }}>
+          [HOME]
+        </Text>
+      )}
     </Pressable>
   ) : left ?? <View style={{ minWidth: 56 }} />;
 
