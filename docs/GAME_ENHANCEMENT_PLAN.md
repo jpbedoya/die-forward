@@ -2,7 +2,7 @@
 
 *Deep design review and actionable roadmap for evolving Die Forward from hackathon prototype to a retainable, monetizable game.*
 
-*Last updated: 2026-03-13*
+*Last updated: 2026-03-15*
 
 ---
 
@@ -373,13 +373,13 @@ Forces trade-offs. When you find a 5th item, you must drop one. "Do I keep the T
 
 ## 5. IMPLEMENTATION PLAN
 
-### Phase 1: Wire Up the Content Engine (Weeks 1-4)
+### Phase 1: Wire Up the Content Engine (Weeks 1-4) ✅ COMPLETE
 
-The highest-impact work is connecting existing content to the game. Everything below builds on authored content that already exists.
+All Phase 1 tasks are done as of 2026-03-15. The zone system is fully wired, all 5 zones active, explore options live, inventory depth added, milestones tracking, and modifiers rolling on every run.
 
 ---
 
-#### TASK 1.1 — Zone-Aware Content Loader
+#### TASK 1.1 — Zone-Aware Content Loader ✅
 **Files:** `lib/content.ts` (rewrite core), new `lib/zone-loader.ts`
 **Effort:** 2-3 days
 **Impact:** Unlocks all 5 zones' content
@@ -410,7 +410,7 @@ lib/zone-loader.ts (new)
 
 ---
 
-#### TASK 1.2 — Surface Explore Room Options  
+#### TASK 1.2 — Surface Explore Room Options ✅
 **Files:** `app/play.tsx` (modify `getOptions()`)
 **Effort:** 1 day
 **Impact:** Doubles decision density — every room becomes a choice
@@ -452,7 +452,7 @@ Options are categorized (cautious/aggressive/investigative/retreat). Map them:
 
 ---
 
-#### TASK 1.3 — Zone Bestiary Integration
+#### TASK 1.3 — Zone Bestiary Integration ✅
 **Files:** `lib/content.ts` BESTIARY, `lib/zone-loader.ts`
 **Effort:** 1-2 days
 **Impact:** Zone-specific creatures make each zone feel distinct
@@ -475,7 +475,7 @@ Merge zone-local creatures into the bestiary. When generating a dungeon for a zo
 
 ---
 
-#### TASK 1.4 — Death Milestones
+#### TASK 1.4 — Death Milestones ✅
 **Files:** `lib/instant.ts` (player schema), new `lib/milestones.ts`, `app/death.tsx`
 **Effort:** 1-2 days
 **Impact:** Every run feels productive. Death = progression
@@ -515,7 +515,7 @@ unlockedBorders?: string[];   // All unlocked
 
 ---
 
-#### TASK 1.5 — Run Modifiers
+#### TASK 1.5 — Run Modifiers ✅
 **Files:** New `lib/modifiers.ts`, `lib/GameContext.tsx`, `app/stake.tsx` or new pre-run screen
 **Effort:** 1-2 days  
 **Impact:** Massive run variety from minimal code
@@ -576,7 +576,7 @@ function rollModifier(rng: SeededRng): RunModifier { ... }
 
 ---
 
-#### TASK 1.6 — Inventory Limit + Item Rarity
+#### TASK 1.6 — Inventory Limit + Item Rarity ✅
 **Files:** `lib/content.ts` (ITEM_DETAILS), `app/play.tsx`, `lib/GameContext.tsx`
 **Effort:** 1-2 days
 **Impact:** Forces meaningful choices in loot rooms
@@ -633,9 +633,9 @@ When finding a 5th item, show a modal:
 
 ---
 
-### Phase 2: Retention Systems (Weeks 5-8)
+### Phase 2: Retention Systems (Weeks 5-8) ← CURRENT PHASE
 
-#### TASK 2.1 — Enable Ashen Crypts (First New Zone)
+#### TASK 2.1 — Enable Ashen Crypts (First New Zone) ← START HERE
 **Files:** Zone loader (from 1.1), combat system for BURN mechanic
 **Effort:** 3-4 days
 **Impact:** First new zone — major content expansion
@@ -850,7 +850,7 @@ Everything starts with the zone loader. It's the foundation that unlocks everyth
 
 | Phase | Tasks | Estimated Days | What it Unlocks |
 |-------|-------|---------------|-----------------|
-| **Phase 1** | 1.1-1.6 | 8-12 days | Zone content live, room choices, milestones, modifiers, inventory depth |
+| **Phase 1** | 1.1-1.6 | 8-12 days | Zone content live, room choices, milestones, modifiers, inventory depth | ✅ DONE (Mar 15) |
 | **Phase 2** | 2.1-2.5 | 10-13 days | Ashen Crypts, daily challenges, bestiary mastery, economy, streaks |
 | **Phase 3** | 3.1-3.5 | 10-14 days | 3 more zones, shop, difficulty scaling, spectating |
 | **Total** | 16 tasks | ~28-39 days | 5 playable zones, full progression, economy, retention systems |
