@@ -16,7 +16,7 @@ import { MiniPlayer } from '../components/MiniPlayer';
 import { AudioToggle } from '../components/AudioToggle';
 import { CRTOverlay } from '../components/CRTOverlay';
 import { CreatureModal, ItemModal } from '../components/CryptModal';
-import { useAudio } from '../lib/audio';
+import { useAudio, getZoneAmbient, getZoneBossSFX } from '../lib/audio';
 import { useGameSettings, DEFAULT_GAME_SETTINGS } from '../lib/instant';
 import {
   getCreatureForRoom,
@@ -119,8 +119,9 @@ export default function CombatScreen() {
 
   // Initialize combat
   useEffect(() => {
-    playAmbient('ambient-combat');
-    
+    // Zone-specific combat ambient
+    playAmbient(getZoneAmbient(game.zoneId, 'combat'));
+
     // Use the enemy passed from play screen, or fallback to random
     const enemyName = params.enemy;
     let roomCreature: CreatureInfo | null = null;
@@ -147,8 +148,11 @@ export default function CombatScreen() {
     const intent = game.rng ? getCreatureIntentSeeded(roomCreature.name, game.rng) : getCreatureIntent(roomCreature.name);
     setEnemyIntent(intent);
     setIntentEffects(getIntentEffects(intent.type));
-    
-    playSFX('enemy-growl');
+
+    // Zone-specific boss intro or generic growl
+    const isBoss = roomCreature.tier === 3;
+    const bossSFX = getZoneBossSFX(game.zoneId);
+    playSFX(isBoss ? bossSFX.intro : 'enemy-growl');
   }, [roomNumber, params.enemy]);
 
   // Build combat options with settings-driven costs

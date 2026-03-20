@@ -8,7 +8,7 @@ import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
-import { useAudio } from '../lib/audio';
+import { useAudio, getZoneAmbient, useAtmosphericTriggers } from '../lib/audio';
 import { useCorpsesForRoom, discoverCorpse, recordTip, useGameSettings, useCurrentPlayer, Corpse } from '../lib/instant';
 import { ProgressBar } from '../components/ProgressBar';
 import { GameMenu, MenuButton } from '../components/GameMenu';
@@ -85,10 +85,13 @@ export default function PlayScreen() {
   const { corpses: nearbyCorpses } = useCorpsesForRoom(depth.name, roomNumber);
   const realCorpse = nearbyCorpses?.[0] || null;
 
-  // Play ambient when entering
+  // Play zone-specific ambient when entering
   useEffect(() => {
-    playAmbient('ambient-explore');
-  }, []);
+    playAmbient(getZoneAmbient(game.zoneId, 'explore'));
+  }, [game.zoneId]);
+
+  // Atmospheric trigger SFX — random world sounds during exploration
+  useAtmosphericTriggers(game.zoneId, true);
 
   // Redirect if no session (delay to ensure layout is mounted)
   useEffect(() => {

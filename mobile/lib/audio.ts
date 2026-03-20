@@ -43,12 +43,21 @@ async function loadNativeAudioModule() {
 }
 
 export type SoundId = 
-  // Ambient loops
+  // Ambient loops — generic
   | 'ambient-explore'
   | 'ambient-combat'
   | 'ambient-title'
   | 'ambient-death'
   | 'ambient-victory'
+  // Ambient loops — zone-specific
+  | 'zone-living-tomb-explore'
+  | 'zone-living-tomb-combat'
+  | 'zone-frozen-gallery-explore'
+  | 'zone-frozen-gallery-combat'
+  | 'zone-ashen-crypts-explore'
+  | 'zone-ashen-crypts-combat'
+  | 'zone-void-beyond-explore'
+  | 'zone-void-beyond-combat'
   // Combat SFX
   | 'sword-slash'
   | 'blunt-hit'
@@ -64,6 +73,15 @@ export type SoundId =
   | 'critical-hit'
   | 'parry-clang'
   | 'attack-miss'
+  // Zone combat SFX
+  | 'zone-living-tomb-boss-intro'
+  | 'zone-living-tomb-boss-roar'
+  | 'zone-frozen-gallery-boss-intro'
+  | 'zone-frozen-gallery-boss-roar'
+  | 'zone-ashen-crypts-boss-intro'
+  | 'zone-ashen-crypts-boss-roar'
+  | 'zone-void-beyond-boss-intro'
+  | 'zone-void-beyond-boss-roar'
   // Player SFX
   | 'player-death'
   | 'victory'
@@ -84,6 +102,75 @@ export type SoundId =
   | 'eerie-whispers'
   | 'stone-grinding'
   | 'drip-echo'
+  // Atmospheric triggers — universal
+  | 'water-drop-single'
+  | 'distant-splash'
+  | 'distant-growl-far'
+  | 'something-moves'
+  | 'far-rumble'
+  | 'whispers-word'
+  | 'drip-pool-echo'
+  | 'distant-scream'
+  // Atmospheric triggers — Living Tomb
+  | 'tomb-heartbeat'
+  | 'tomb-breathing'
+  | 'tomb-drip-warm'
+  | 'tomb-growth'
+  | 'tomb-peristalsis'
+  | 'distant-pulse'
+  // Atmospheric triggers — Frozen Gallery
+  | 'glacier-groan'
+  | 'ice-crack'
+  | 'cold-wind-tunnel'
+  | 'ice-settle'
+  | 'wraith-presence'
+  // Atmospheric triggers — Ashen Crypts
+  | 'embers-crackle'
+  | 'ash-fall'
+  | 'distant-fire'
+  | 'bone-crumble'
+  // Atmospheric triggers — Void Beyond
+  | 'void-static'
+  | 'bleed-through'
+  | 'void-silence'
+  | 'reality-shift'
+  | 'your-voice-wrong'
+  // Mechanic SFX — Living Tomb
+  | 'infection-gain'
+  | 'infection-purge'
+  | 'item-consumed'
+  | 'crawler-skitter'
+  | 'crawler-inject'
+  | 'crawler-death'
+  | 'incorporated-reach'
+  | 'incorporated-death'
+  | 'bloom-drift'
+  | 'spore-burst'
+  | 'guardian-breathe'
+  | 'guardian-seal'
+  // Mechanic SFX — Frozen Gallery
+  | 'chill-gain'
+  | 'freeze-trigger'
+  | 'thermal-flask'
+  | 'temperature-drop'
+  | 'preserved-creak'
+  | 'preserved-arrest'
+  | 'sentinel-move'
+  | 'sentinel-death'
+  | 'shattered-scrape'
+  | 'shattered-split'
+  // Mechanic SFX — Ashen Crypts
+  | 'burn-gain'
+  | 'burn-tick'
+  | 'ember-flask'
+  | 'fire-whoosh'
+  | 'stone-crack'
+  // Mechanic SFX — Void Beyond
+  | 'flux-trigger'
+  | 'echo-double-appear'
+  | 'void-creature-move'
+  | 'dimensional-tear'
+  | 'clarity-restore'
   // Rewards SFX
   | 'tip-chime'
   | 'loot-discover'
@@ -100,13 +187,24 @@ export type SoundId =
 // Audio files hosted on production web server (must use www to avoid redirect)
 const AUDIO_BASE_URL = 'https://www.dieforward.com/audio';
 
+const ZONE_BASE = `${AUDIO_BASE_URL}/zones`;
+
 const SOUND_PATHS: Record<SoundId, string> = {
-  // Ambient
+  // Ambient — generic
   'ambient-explore': `${AUDIO_BASE_URL}/ambient-explore.mp3`,
   'ambient-combat': `${AUDIO_BASE_URL}/ambient-combat.mp3`,
   'ambient-title': `${AUDIO_BASE_URL}/ambient-title.mp3`,
   'ambient-death': `${AUDIO_BASE_URL}/ambient-death.mp3`,
   'ambient-victory': `${AUDIO_BASE_URL}/ambient-victory.mp3`,
+  // Ambient — zone-specific
+  'zone-living-tomb-explore': `${ZONE_BASE}/living-tomb/ambient-explore.mp3`,
+  'zone-living-tomb-combat': `${ZONE_BASE}/living-tomb/ambient-combat.mp3`,
+  'zone-frozen-gallery-explore': `${ZONE_BASE}/frozen-gallery/ambient-explore.mp3`,
+  'zone-frozen-gallery-combat': `${ZONE_BASE}/frozen-gallery/ambient-combat.mp3`,
+  'zone-ashen-crypts-explore': `${ZONE_BASE}/ashen-crypts/ambient-explore.mp3`,
+  'zone-ashen-crypts-combat': `${ZONE_BASE}/ashen-crypts/ambient-combat.mp3`,
+  'zone-void-beyond-explore': `${ZONE_BASE}/void-beyond/ambient-explore.mp3`,
+  'zone-void-beyond-combat': `${ZONE_BASE}/void-beyond/ambient-combat.mp3`,
   // Combat
   'sword-slash': `${AUDIO_BASE_URL}/sword-slash.mp3`,
   'blunt-hit': `${AUDIO_BASE_URL}/blunt-hit.mp3`,
@@ -142,6 +240,84 @@ const SOUND_PATHS: Record<SoundId, string> = {
   'eerie-whispers': `${AUDIO_BASE_URL}/eerie-whispers.mp3`,
   'stone-grinding': `${AUDIO_BASE_URL}/stone-grinding.mp3`,
   'drip-echo': `${AUDIO_BASE_URL}/drip-echo.mp3`,
+  // Atmospheric triggers — universal
+  'water-drop-single': `${AUDIO_BASE_URL}/water-drop-single.mp3`,
+  'distant-splash': `${ZONE_BASE}/atmospheric/distant-splash.mp3`,
+  'distant-growl-far': `${ZONE_BASE}/atmospheric/distant-growl-far.mp3`,
+  'something-moves': `${ZONE_BASE}/atmospheric/something-moves.mp3`,
+  'far-rumble': `${ZONE_BASE}/atmospheric/far-rumble.mp3`,
+  'whispers-word': `${ZONE_BASE}/atmospheric/whispers-word.mp3`,
+  'drip-pool-echo': `${ZONE_BASE}/atmospheric/drip-pool-echo.mp3`,
+  'distant-scream': `${ZONE_BASE}/atmospheric/distant-scream.mp3`,
+  // Atmospheric triggers — Living Tomb
+  'tomb-heartbeat': `${ZONE_BASE}/living-tomb/tomb-heartbeat.mp3`,
+  'tomb-breathing': `${ZONE_BASE}/living-tomb/tomb-breathing.mp3`,
+  'tomb-drip-warm': `${ZONE_BASE}/living-tomb/wet-drip.mp3`,
+  'tomb-growth': `${ZONE_BASE}/living-tomb/tomb-growth.mp3`,
+  'tomb-peristalsis': `${ZONE_BASE}/living-tomb/tomb-peristalsis.mp3`,
+  'distant-pulse': `${ZONE_BASE}/living-tomb/distant-pulse.mp3`,
+  // Atmospheric triggers — Frozen Gallery
+  'glacier-groan': `${ZONE_BASE}/frozen-gallery/glacier-groan.mp3`,
+  'ice-crack': `${ZONE_BASE}/frozen-gallery/ice-crack.mp3`,
+  'cold-wind-tunnel': `${ZONE_BASE}/frozen-gallery/wind-tunnel.mp3`,
+  'ice-settle': `${ZONE_BASE}/frozen-gallery/deep-silence.mp3`,
+  'wraith-presence': `${ZONE_BASE}/frozen-gallery/wraith-presence.mp3`,
+  // Atmospheric triggers — Ashen Crypts
+  'embers-crackle': `${ZONE_BASE}/ashen-crypts/fire-crackle.mp3`,
+  'ash-fall': `${ZONE_BASE}/ashen-crypts/ash-fall.mp3`,
+  'distant-fire': `${ZONE_BASE}/ashen-crypts/distant-roar.mp3`,
+  'bone-crumble': `${ZONE_BASE}/ashen-crypts/bone-crumble.mp3`,
+  // Atmospheric triggers — Void Beyond
+  'void-static': `${ZONE_BASE}/void-beyond/void-static.mp3`,
+  'bleed-through': `${ZONE_BASE}/void-beyond/bleed-through.mp3`,
+  'void-silence': `${ZONE_BASE}/void-beyond/silence-wrong.mp3`,
+  'reality-shift': `${ZONE_BASE}/void-beyond/reality-shift.mp3`,
+  'your-voice-wrong': `${ZONE_BASE}/void-beyond/your-voice-wrong.mp3`,
+  // Zone boss combat SFX
+  'zone-living-tomb-boss-intro': `${ZONE_BASE}/living-tomb/boss-intro.mp3`,
+  'zone-living-tomb-boss-roar': `${ZONE_BASE}/living-tomb/boss-roar.mp3`,
+  'zone-frozen-gallery-boss-intro': `${ZONE_BASE}/frozen-gallery/boss-intro.mp3`,
+  'zone-frozen-gallery-boss-roar': `${ZONE_BASE}/frozen-gallery/boss-roar.mp3`,
+  'zone-ashen-crypts-boss-intro': `${ZONE_BASE}/ashen-crypts/boss-intro.mp3`,
+  'zone-ashen-crypts-boss-roar': `${ZONE_BASE}/ashen-crypts/boss-roar.mp3`,
+  'zone-void-beyond-boss-intro': `${ZONE_BASE}/void-beyond/boss-intro.mp3`,
+  'zone-void-beyond-boss-roar': `${ZONE_BASE}/void-beyond/boss-roar.mp3`,
+  // Mechanic SFX — Living Tomb
+  'infection-gain': `${ZONE_BASE}/living-tomb/infection-gain.mp3`,
+  'infection-purge': `${ZONE_BASE}/living-tomb/infection-purge.mp3`,
+  'item-consumed': `${ZONE_BASE}/living-tomb/item-consumed.mp3`,
+  'crawler-skitter': `${ZONE_BASE}/living-tomb/crawler-skitter.mp3`,
+  'crawler-inject': `${ZONE_BASE}/living-tomb/crawler-inject.mp3`,
+  'crawler-death': `${ZONE_BASE}/living-tomb/crawler-death.mp3`,
+  'incorporated-reach': `${ZONE_BASE}/living-tomb/incorporated-reach.mp3`,
+  'incorporated-death': `${ZONE_BASE}/living-tomb/incorporated-death.mp3`,
+  'bloom-drift': `${ZONE_BASE}/living-tomb/bloom-drift.mp3`,
+  'spore-burst': `${ZONE_BASE}/living-tomb/spore-burst.mp3`,
+  'guardian-breathe': `${ZONE_BASE}/living-tomb/guardian-breathe.mp3`,
+  'guardian-seal': `${ZONE_BASE}/living-tomb/guardian-seal.mp3`,
+  // Mechanic SFX — Frozen Gallery
+  'chill-gain': `${ZONE_BASE}/frozen-gallery/chill-gain.mp3`,
+  'freeze-trigger': `${ZONE_BASE}/frozen-gallery/freeze-trigger.mp3`,
+  'thermal-flask': `${ZONE_BASE}/frozen-gallery/thermal-flask.mp3`,
+  'temperature-drop': `${ZONE_BASE}/frozen-gallery/temperature-drop.mp3`,
+  'preserved-creak': `${ZONE_BASE}/frozen-gallery/preserved-creak.mp3`,
+  'preserved-arrest': `${ZONE_BASE}/frozen-gallery/preserved-arrest.mp3`,
+  'sentinel-move': `${ZONE_BASE}/frozen-gallery/sentinel-move.mp3`,
+  'sentinel-death': `${ZONE_BASE}/frozen-gallery/sentinel-death.mp3`,
+  'shattered-scrape': `${ZONE_BASE}/frozen-gallery/shattered-scrape.mp3`,
+  'shattered-split': `${ZONE_BASE}/frozen-gallery/shattered-split.mp3`,
+  // Mechanic SFX — Ashen Crypts
+  'burn-gain': `${ZONE_BASE}/ashen-crypts/burn-gain.mp3`,
+  'burn-tick': `${ZONE_BASE}/ashen-crypts/burn-tick.mp3`,
+  'ember-flask': `${ZONE_BASE}/ashen-crypts/ember-flask.mp3`,
+  'fire-whoosh': `${ZONE_BASE}/ashen-crypts/fire-whoosh.mp3`,
+  'stone-crack': `${ZONE_BASE}/ashen-crypts/stone-crack.mp3`,
+  // Mechanic SFX — Void Beyond
+  'flux-trigger': `${ZONE_BASE}/void-beyond/flux-trigger.mp3`,
+  'echo-double-appear': `${ZONE_BASE}/void-beyond/echo-double-appear.mp3`,
+  'void-creature-move': `${ZONE_BASE}/void-beyond/void-creature-move.mp3`,
+  'dimensional-tear': `${ZONE_BASE}/void-beyond/dimensional-tear.mp3`,
+  'clarity-restore': `${ZONE_BASE}/void-beyond/clarity-restore.mp3`,
   // Rewards
   'tip-chime': `${AUDIO_BASE_URL}/tip-chime.mp3`,
   'loot-discover': `${AUDIO_BASE_URL}/loot-discover.mp3`,
@@ -747,4 +923,106 @@ export function useAudio() {
     setAmbientVolume,
     unlock,
   };
+}
+
+// =============================================================================
+// Zone Audio Helpers
+// =============================================================================
+
+/** Map a zoneId + screen to the appropriate ambient SoundId */
+export function getZoneAmbient(zoneId: string, screen: 'explore' | 'combat'): SoundId {
+  const map: Record<string, { explore: SoundId; combat: SoundId }> = {
+    'living-tomb':    { explore: 'zone-living-tomb-explore',    combat: 'zone-living-tomb-combat' },
+    'frozen-gallery': { explore: 'zone-frozen-gallery-explore', combat: 'zone-frozen-gallery-combat' },
+    'ashen-crypts':   { explore: 'zone-ashen-crypts-explore',   combat: 'zone-ashen-crypts-combat' },
+    'void-beyond':    { explore: 'zone-void-beyond-explore',    combat: 'zone-void-beyond-combat' },
+  };
+  return map[zoneId]?.[screen] ?? (screen === 'explore' ? 'ambient-explore' : 'ambient-combat');
+}
+
+/** Map a zoneId to zone-specific boss-intro / boss-roar SoundIds */
+export function getZoneBossSFX(zoneId: string): { intro: SoundId; roar: SoundId } {
+  const map: Record<string, { intro: SoundId; roar: SoundId }> = {
+    'living-tomb':    { intro: 'zone-living-tomb-boss-intro',    roar: 'zone-living-tomb-boss-roar' },
+    'frozen-gallery': { intro: 'zone-frozen-gallery-boss-intro', roar: 'zone-frozen-gallery-boss-roar' },
+    'ashen-crypts':   { intro: 'zone-ashen-crypts-boss-intro',   roar: 'zone-ashen-crypts-boss-roar' },
+    'void-beyond':    { intro: 'zone-void-beyond-boss-intro',    roar: 'zone-void-beyond-boss-roar' },
+  };
+  return map[zoneId] ?? { intro: 'boss-intro', roar: 'boss-roar' };
+}
+
+// =============================================================================
+// Atmospheric Triggers Hook
+// =============================================================================
+
+// Zone-specific atmospheric sound pools (fired on random timer during exploration)
+const ZONE_ATMOSPHERIC: Record<string, SoundId[]> = {
+  'sunken-crypt': [
+    'water-drop-single', 'distant-splash', 'drip-pool-echo',
+    'something-moves', 'far-rumble', 'eerie-whispers',
+  ],
+  'living-tomb': [
+    'tomb-heartbeat', 'tomb-breathing', 'tomb-drip-warm',
+    'tomb-growth', 'tomb-peristalsis', 'distant-pulse',
+  ],
+  'frozen-gallery': [
+    'glacier-groan', 'ice-crack', 'cold-wind-tunnel',
+    'ice-settle', 'wraith-presence',
+  ],
+  'ashen-crypts': [
+    'embers-crackle', 'ash-fall', 'distant-fire', 'bone-crumble',
+  ],
+  'void-beyond': [
+    'void-static', 'bleed-through', 'void-silence',
+    'reality-shift', 'your-voice-wrong',
+  ],
+};
+
+// Rare sounds that can fire in any zone (low probability)
+const RARE_ATMOSPHERIC: SoundId[] = [
+  'distant-growl-far', 'far-rumble', 'distant-scream', 'whispers-word',
+];
+
+const TRIGGER_MIN_MS = 20_000; // 20s minimum between triggers
+const TRIGGER_MAX_MS = 45_000; // 45s maximum between triggers
+const RARE_CHANCE = 0.15;       // 15% chance to pick from rare pool instead
+
+function pickRandom<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+/**
+ * Hook that fires random atmospheric SFX during exploration.
+ * Call in the explore screen component. Pass `active=false` to pause (e.g. during combat).
+ */
+export function useAtmosphericTriggers(zoneId: string, active: boolean = true) {
+  const { playSFX, masterEnabled } = useAudio();
+
+  useEffect(() => {
+    if (!active || !masterEnabled) return;
+
+    const pool = ZONE_ATMOSPHERIC[zoneId] ?? ZONE_ATMOSPHERIC['sunken-crypt'];
+
+    let timeoutId: ReturnType<typeof setTimeout>;
+
+    const scheduleNext = () => {
+      const delay = TRIGGER_MIN_MS + Math.random() * (TRIGGER_MAX_MS - TRIGGER_MIN_MS);
+      timeoutId = setTimeout(() => {
+        const useRare = Math.random() < RARE_CHANCE;
+        const sound = useRare ? pickRandom(RARE_ATMOSPHERIC) : pickRandom(pool);
+        playSFX(sound);
+        scheduleNext();
+      }, delay);
+    };
+
+    // Initial delay before first trigger (don't fire immediately on mount)
+    const initialDelay = TRIGGER_MIN_MS + Math.random() * 10_000;
+    timeoutId = setTimeout(() => {
+      const sound = pickRandom(pool);
+      playSFX(sound);
+      scheduleNext();
+    }, initialDelay);
+
+    return () => clearTimeout(timeoutId);
+  }, [zoneId, active, masterEnabled, playSFX]);
 }
