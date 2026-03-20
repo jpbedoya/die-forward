@@ -991,6 +991,94 @@ function pickRandom<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+// =============================================================================
+// Creature SFX Mapping
+// =============================================================================
+
+interface CreatureSFX {
+  idle: SoundId;       // plays on enemy turn / intent reveal
+  attack: SoundId;     // plays when enemy hits player
+  death: SoundId;      // plays when enemy dies
+}
+
+const CREATURE_SFX: Record<string, CreatureSFX> = {
+  // Living Tomb
+  'Mycelium Crawlers': { idle: 'crawler-skitter', attack: 'crawler-inject', death: 'crawler-death' },
+  'The Incorporated':  { idle: 'incorporated-reach', attack: 'incorporated-reach', death: 'incorporated-death' },
+  'Membrane Guardian': { idle: 'guardian-breathe', attack: 'guardian-seal', death: 'spore-burst' },
+  'The Bloom':         { idle: 'bloom-drift', attack: 'infection-gain', death: 'spore-burst' },
+  'The Root':          { idle: 'tomb-heartbeat', attack: 'tomb-peristalsis', death: 'tomb-growth' },
+  // Frozen Gallery
+  'The Preserved':         { idle: 'preserved-creak', attack: 'preserved-creak', death: 'preserved-arrest' },
+  'Ice Wraiths':           { idle: 'wraith-presence', attack: 'chill-gain', death: 'freeze-trigger' },
+  'Frost Sentinels':       { idle: 'sentinel-move', attack: 'temperature-drop', death: 'sentinel-death' },
+  'The Shattered':         { idle: 'shattered-scrape', attack: 'shattered-split', death: 'ice-crack' },
+  'The Glacial Sovereign': { idle: 'glacier-groan', attack: 'temperature-drop', death: 'sentinel-death' },
+  // Ashen Crypts
+  'Ember Husks':        { idle: 'embers-crackle', attack: 'burn-gain', death: 'ash-fall' },
+  'Cinder Priests':     { idle: 'embers-crackle', attack: 'fire-whoosh', death: 'ash-fall' },
+  'The Scorched':       { idle: 'distant-fire', attack: 'burn-gain', death: 'bone-crumble' },
+  'Flame Weavers':      { idle: 'fire-whoosh', attack: 'burn-tick', death: 'ash-fall' },
+  'Ashen Congregation': { idle: 'embers-crackle', attack: 'burn-gain', death: 'ash-fall' },
+  'The Scorched Veteran': { idle: 'distant-fire', attack: 'fire-whoosh', death: 'bone-crumble' },
+  'Senior Flame Weaver':  { idle: 'fire-whoosh', attack: 'burn-tick', death: 'ash-fall' },
+  'The Pyre Keeper':      { idle: 'zone-ashen-crypts-boss-intro', attack: 'zone-ashen-crypts-boss-roar', death: 'stone-crack' },
+  // Void Beyond
+  'Probability Shade': { idle: 'void-creature-move', attack: 'flux-trigger', death: 'void-static' },
+  'Echo Double':       { idle: 'echo-double-appear', attack: 'dimensional-tear', death: 'clarity-restore' },
+  'Void Architect':    { idle: 'void-static', attack: 'reality-shift', death: 'bleed-through' },
+  'The Unanchored':    { idle: 'bleed-through', attack: 'dimensional-tear', death: 'void-static' },
+  'The Unwritten':     { idle: 'zone-void-beyond-boss-intro', attack: 'zone-void-beyond-boss-roar', death: 'clarity-restore' },
+};
+
+/** Get creature-specific SFX, falling back to generic sounds */
+export function getCreatureSFX(creatureName: string): CreatureSFX {
+  return CREATURE_SFX[creatureName] ?? {
+    idle: 'enemy-growl',
+    attack: 'damage-taken',
+    death: 'enemy-death',
+  };
+}
+
+// =============================================================================
+// Zone Mechanic SFX Helpers
+// =============================================================================
+
+/**
+ * Call when a mechanic stack is gained (infection/chill/burn).
+ * Pass the zone's mechanic type and the playSFX function.
+ */
+export function playMechanicGainSFX(mechanic: string | null, playSFX: (id: SoundId) => void) {
+  switch (mechanic) {
+    case 'INFECTION': playSFX('infection-gain'); break;
+    case 'CHILL':     playSFX('chill-gain'); break;
+    case 'BURN':      playSFX('burn-gain'); break;
+    case 'FLUX':      playSFX('flux-trigger'); break;
+  }
+}
+
+/**
+ * Call when a mechanic stack is purged / item used to cleanse.
+ */
+export function playMechanicPurgeSFX(mechanic: string | null, playSFX: (id: SoundId) => void) {
+  switch (mechanic) {
+    case 'INFECTION': playSFX('infection-purge'); break;
+    case 'CHILL':     playSFX('thermal-flask'); break;
+    case 'BURN':      playSFX('ember-flask'); break;
+    case 'FLUX':      playSFX('clarity-restore'); break;
+  }
+}
+
+/**
+ * Call on per-turn mechanic damage tick.
+ */
+export function playMechanicTickSFX(mechanic: string | null, playSFX: (id: SoundId) => void) {
+  switch (mechanic) {
+    case 'BURN':      playSFX('burn-tick'); break;
+    case 'INFECTION': playSFX('infection-gain'); break;
+  }
+}
+
 /**
  * Hook that fires random atmospheric SFX during exploration.
  * Call in the explore screen component. Pass `active=false` to pause (e.g. during combat).

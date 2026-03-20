@@ -16,7 +16,7 @@ import { MiniPlayer } from '../components/MiniPlayer';
 import { AudioToggle } from '../components/AudioToggle';
 import { CRTOverlay } from '../components/CRTOverlay';
 import { CreatureModal, ItemModal } from '../components/CryptModal';
-import { useAudio, getZoneAmbient, getZoneBossSFX } from '../lib/audio';
+import { useAudio, getZoneAmbient, getZoneBossSFX, getCreatureSFX } from '../lib/audio';
 import { useGameSettings, DEFAULT_GAME_SETTINGS } from '../lib/instant';
 import {
   getCreatureForRoom,
@@ -312,6 +312,12 @@ export default function CombatScreen() {
     setPlayerDmgTaken(playerDmg);
     setNarrative(actionNarrative);
     
+    // Creature attack sound when player takes damage
+    if (playerDmg > 0) {
+      const creatureSFX = getCreatureSFX(creature?.name || '');
+      playSFX(creatureSFX.attack);
+    }
+
     // Screen shake + haptics on damage
     if (playerDmg > 0) {
       const intensity = playerDmg >= 20 ? 'heavy' : playerDmg >= 10 ? 'medium' : 'light';
@@ -360,7 +366,8 @@ export default function CombatScreen() {
     }
     
     if (newEnemyHealth <= 0) {
-      playSFX('enemy-death');
+      const creatureSFX = getCreatureSFX(creature?.name || '');
+      playSFX(creatureSFX.death);
       if (Platform.OS !== 'web') {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
@@ -413,6 +420,10 @@ export default function CombatScreen() {
       setPhase('choose');
       setIsFirstTurn(false);
       game.setStamina(Math.min(settings.staminaPool, game.stamina + game.getModifiedStaminaRegen(settings.staminaRegen)));
+
+      // Creature idle sound on new intent (enemy is "doing something")
+      const creatureSFX = getCreatureSFX(creature?.name || '');
+      playSFX(creatureSFX.idle);
     }, 1500);
   };
 
