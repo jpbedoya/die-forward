@@ -6,6 +6,16 @@ import Link from 'next/link';
 // Disable regen in production (set NEXT_PUBLIC_DISABLE_AUDIO_REGEN=true in Vercel)
 const REGEN_DISABLED = process.env.NEXT_PUBLIC_DISABLE_AUDIO_REGEN === 'true';
 
+// Sound IDs added in the 2026-03-19 SFX expansion — shown with NEW badge
+const NEW_SOUND_IDS = new Set([
+  // Library — atmospheric triggers
+  'water-drop-single', 'distant-splash', 'distant-growl-far', 'something-moves',
+  'far-rumble', 'whispers-word', 'drip-pool-echo', 'distant-scream',
+]);
+
+// Zone sounds are ALL new (entire zones tab is new), tracked by zone id
+const NEW_ZONES = new Set(['ashen-crypts', 'frozen-gallery', 'living-tomb', 'void-beyond', 'atmospheric']);
+
 interface SoundPreset {
   id: string;
   name: string;
@@ -949,6 +959,9 @@ export default function AudioTestPage() {
                       <div className="flex-1 min-w-0">
                         <div className="text-[var(--text-primary)] text-sm flex items-center gap-2">
                           {preset.name}
+                          {NEW_SOUND_IDS.has(preset.id) && (
+                            <span className="px-1 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-[var(--amber-bright)] text-black leading-none">NEW</span>
+                          )}
                           <span className="text-[var(--text-dim)] text-[10px]">{preset.duration}s</span>
                           {sound && <span className="text-[var(--green)] text-[10px]">{Math.round(sound.size / 1024)}KB</span>}
                         </div>
@@ -1061,8 +1074,11 @@ export default function AudioTestPage() {
                 >
                   <span className="mr-1">{zone.emoji}</span>
                   {zone.name}
+                  {NEW_ZONES.has(zone.id) && (
+                    <span className="ml-2 px-1 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-[var(--amber-bright)] text-black leading-none align-middle">NEW</span>
+                  )}
                   {zoneGeneratedCount > 0 && (
-                    <span className="ml-2 text-[10px] opacity-60">({zoneGeneratedCount}/{zone.sounds.length})</span>
+                    <span className="ml-1 text-[10px] opacity-60">({zoneGeneratedCount}/{zone.sounds.length})</span>
                   )}
                 </button>
               );
@@ -1118,8 +1134,11 @@ export default function AudioTestPage() {
                   style={{ border: `1px solid ${activeZone.accentColor}22` }}
                 >
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm flex items-center gap-2" style={{ color: activeZone.textColor }}>
+                    <div className="text-sm flex items-center gap-2 flex-wrap" style={{ color: activeZone.textColor }}>
                       {sound.name}
+                      {NEW_ZONES.has(activeZone.id) && (
+                        <span className="px-1 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-[var(--amber-bright)] text-black leading-none">NEW</span>
+                      )}
                       <span className="text-[var(--text-dim)] text-[10px]">{sound.duration}s</span>
                       <span className="text-[var(--text-dim)] text-[10px] font-mono">{sound.id}</span>
                       {generatedSound && (
