@@ -32,8 +32,11 @@ export async function OPTIONS() {
 
 // Pool wallet keypair (loaded from env)
 function getPoolKeypair(): Keypair {
-  const secretKey = JSON.parse(process.env.POOL_WALLET_SECRET || '[]');
-  return Keypair.fromSecretKey(Uint8Array.from(secretKey));
+  const secretKeyStr = process.env.POOL_WALLET_SECRET;
+  if (!secretKeyStr) {
+    throw new Error('POOL_WALLET_SECRET not set — cannot process victory payouts');
+  }
+  return Keypair.fromSecretKey(Uint8Array.from(JSON.parse(secretKeyStr)));
 }
 
 // Solana connection
@@ -83,15 +86,18 @@ export async function POST(request: NextRequest) {
       }, { status: 403, headers: corsHeaders });
     }
 
+    // ── Load game settings ────────────────────────────────────────────────────
+    const settingsResult = await db.query({ gameSettings: {} }).catch(() => null);
+    const gameSettings = settingsResult?.gameSettings?.[0] as Record<string, unknown> | undefined;
+
     // Calculate reward (stake back + bonus from pool)
-    // For now: return stake + 50% bonus (simple formula)
     const stakeAmount = session.stakeAmount || 0;
-    const bonus = stakeAmount * 0.5; // 50% bonus for clearing
+    const victoryBonusPercent = (gameSettings?.victoryBonusPercent as number) ?? 50;
+    const bonus = stakeAmount * (victoryBonusPercent / 100);
     const totalReward = stakeAmount + bonus;
 
     // ── MagicBlock settlement gate ────────────────────────────────────────────
-    const settingsResult = await db.query({ gameSettings: {} }).catch(() => null);
-    const mbEnabled = (settingsResult?.gameSettings?.[0] as Record<string, unknown>)?.enableMagicBlock === true;
+    const mbEnabled = gameSettings?.enableMagicBlock === true;
     const erRunId = (session as Record<string, unknown>).erRunId as string | undefined;
 
     if (mbEnabled && erRunId) {

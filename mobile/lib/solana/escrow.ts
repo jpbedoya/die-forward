@@ -67,9 +67,7 @@ export function hexToSessionId(hex: string): Uint8Array {
  */
 export function generateSessionId(): { hex: string; bytes: Uint8Array } {
   const bytes = new Uint8Array(32);
-  for (let i = 0; i < 32; i++) {
-    bytes[i] = Math.floor(Math.random() * 256);
-  }
+  crypto.getRandomValues(bytes);
   const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
   return { hex, bytes };
 }
@@ -103,9 +101,10 @@ export function buildStakeInstruction(
   
   // Instruction data: discriminator (8) + amount (8 bytes LE) + session_id (32 bytes)
   // Note: Anchor serializes in order of function parameters
-  const data = Buffer.alloc(8 + 8 + 32);
+  // Use Uint8Array + DataView instead of Buffer (not available in React Native)
+  const data = new Uint8Array(8 + 8 + 32);
   data.set(STAKE_DISCRIMINATOR, 0);
-  data.writeBigUInt64LE(amountLamports, 8);
+  new DataView(data.buffer).setBigUint64(8, amountLamports, true); // little-endian
   data.set(sessionId, 16);
   
   // Account order from Anchor: game_pool, session, treasury, player, system_program
@@ -135,7 +134,7 @@ export function buildRecordDeathInstruction(
   const sessionPda = deriveSessionPDA(player, sessionId);
   
   // data: discriminator (8) + death_hash (32)
-  const data = Buffer.alloc(8 + 32);
+  const data = new Uint8Array(8 + 32);
   data.set(RECORD_DEATH_DISCRIMINATOR, 0);
   data.set(deathHash, 8);
   
@@ -163,7 +162,7 @@ export function buildClaimVictoryInstruction(
   const sessionPda = deriveSessionPDA(player, sessionId);
   
   // data: discriminator only (no args)
-  const data = Buffer.alloc(8);
+  const data = new Uint8Array(8);
   data.set(CLAIM_VICTORY_DISCRIMINATOR, 0);
   
   // Account order: game_pool, session, player, authority

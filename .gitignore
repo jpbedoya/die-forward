@@ -46,3 +46,6 @@ video/*.mp4
 
 # Anchor/Rust build artifacts
 anchor-program/target/
+
+# code review docs (local only)
+docs/CODE_REVIEW_*.md
