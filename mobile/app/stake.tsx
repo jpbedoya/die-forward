@@ -43,10 +43,34 @@ export default function StakeScreen() {
   const [showNicknameEdit, setShowNicknameEdit] = useState(false);
   const [showLinkWallet, setShowLinkWallet] = useState(false);
   const [pendingRun, setPendingRun] = useState<{ stake: number; emptyHanded: boolean; zoneId: string } | null>(null);
+  const [freeRunStatus, setFreeRunStatus] = useState<'idle' | 'error'>('idle');
 
   useEffect(() => {
     playAmbient('ambient-title');
   }, []);
+
+  // Resume pendingRun when nickname becomes available (handles returning guests
+  // whose nickname syncs async after signInEmptyHanded, so showNicknameModal
+  // never fires but pendingRun is stuck waiting).
+  useEffect(() => {
+    if (!pendingRun || game.showNicknameModal) return;
+    if (!game.isAuthenticated) return;
+    if (!game.nickname) return; // still waiting for syncNickname
+
+    const run = pendingRun;
+    setPendingRun(null);
+    game.startGame(run.stake, run.emptyHanded, run.zoneId, player?.totalDeaths)
+      .then(() => {
+        playSFX('depth-descend');
+        router.push('/play');
+      })
+      .catch((err) => {
+        console.error('Failed to start pending game:', err);
+        setFreeRunStatus('error');
+        playSFX('error-buzz');
+        setTimeout(() => setFreeRunStatus('idle'), 2000);
+      });
+  }, [pendingRun, game.isAuthenticated, game.nickname, game.showNicknameModal]);
 
   const flashWalletStatus = (status: 'cancelled' | 'error') => {
     setWalletStatus(status);
@@ -181,7 +205,9 @@ export default function StakeScreen() {
         }
       } else {
         console.error('Failed to start game:', err);
+        setFreeRunStatus('error');
         playSFX('error-buzz');
+        setTimeout(() => setFreeRunStatus('idle'), 2000);
       }
     } finally {
       setStaking(false);
@@ -340,12 +366,14 @@ Offer it. Lose it on death. Escape and claim more.
               </Pressable>
 
               <Pressable
-                className="border border-crypt-border-light py-4 items-center active:border-amber"
+                className={`border py-4 items-center ${freeRunStatus === 'error' ? 'border-blood' : 'border-crypt-border-light active:border-amber'}`}
                 onPress={() => handleStake(true)}
                 disabled={staking}
               >
                 {staking ? (
                   <AsciiLoader variant="pulse" color="#a8a29e" />
+                ) : freeRunStatus === 'error' ? (
+                  <Text className="text-blood font-mono">FAILED — TAP TO RETRY</Text>
                 ) : (
                   <Text className="text-bone-muted font-mono">EMPTY-HANDED</Text>
                 )}
@@ -386,12 +414,14 @@ Offer it. Lose it on death. Escape and claim more.
               )}
 
               <Pressable
-                className="border border-crypt-border-light py-4 items-center active:border-amber"
+                className={`border py-4 items-center ${freeRunStatus === 'error' ? 'border-blood' : 'border-crypt-border-light active:border-amber'}`}
                 onPress={() => handleStake(true)}
                 disabled={staking}
               >
                 {stakingMode === 'free' ? (
                   <AsciiLoader variant="pulse" color="#a8a29e" />
+                ) : freeRunStatus === 'error' ? (
+                  <Text className="text-blood font-mono">FAILED — TAP TO RETRY</Text>
                 ) : (
                   <Text className="text-bone-muted font-mono">EMPTY-HANDED</Text>
                 )}
