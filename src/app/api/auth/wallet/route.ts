@@ -1,22 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { init } from '@instantdb/admin';
+import { db } from '@/lib/db';
 import * as nacl from 'tweetnacl';
 import bs58 from 'bs58';
 // Tapestry profile sync moved to /api/player/sync-profile (called when nickname is set)
-
-// Lazy init to ensure env vars are available
-let db: ReturnType<typeof init> | null = null;
-function getDb() {
-  if (!db) {
-    const appId = process.env.NEXT_PUBLIC_INSTANT_APP_ID;
-    const adminToken = process.env.INSTANT_ADMIN_KEY;
-    if (!appId || !adminToken) {
-      throw new Error('Missing InstantDB configuration');
-    }
-    db = init({ appId, adminToken });
-  }
-  return db;
-}
 
 // CORS headers for cross-origin requests
 const corsHeaders = {
@@ -110,11 +96,11 @@ export async function POST(req: NextRequest) {
 
     // Create InstantDB auth token (email-based custom auth)
     // Instant `id` must be UUID; use deterministic wallet email instead.
-    const db = getDb();
+    // db imported from @/lib/db
     const token = await db.auth.createToken({ email: `${walletAddress}@wallet.dieforward.com` });
 
     // Check if player record exists
-    const result = await getDb().query({
+    const result = await db.query({
       players: { $: { where: { authId: walletAddress }, limit: 1 } },
     });
 

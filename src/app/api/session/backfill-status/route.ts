@@ -1,13 +1,9 @@
 import { NextResponse } from 'next/server';
-import { init, tx } from '@instantdb/admin';
+import { tx } from '@instantdb/admin';
+import { db } from '@/lib/db';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { BorshAccountsCoder } from '@coral-xyz/anchor';
 import RunRecordIdl from '@/idl/run_record.json';
-
-const db = init({
-  appId: process.env.NEXT_PUBLIC_INSTANT_APP_ID!,
-  adminToken: process.env.INSTANT_ADMIN_KEY!,
-});
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',

@@ -1,14 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { init, tx, id } from '@instantdb/admin';
+import { tx, id } from '@instantdb/admin';
+import { db } from '@/lib/db';
 import { hashDeathData, recordDeathOnChain, recordDeathInEscrow } from '@/lib/onchain';
 import { postDeath } from '@/lib/tapestry';
 import { commitErRun } from '@/lib/magicblock';
-
-// Initialize InstantDB Admin client
-const db = init({
-  appId: process.env.NEXT_PUBLIC_INSTANT_APP_ID!,
-  adminToken: process.env.INSTANT_ADMIN_KEY!,
-});
 
 // Demo mode flag - skip on-chain recording
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
@@ -34,7 +29,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid session token' }, { status: 400, headers: corsHeaders });
     }
 
-    if (typeof room !== 'number' || room < 1 || room > 13) {
+    if (typeof room !== 'number' || room < 1) {
       return NextResponse.json({ error: 'Invalid room number' }, { status: 400, headers: corsHeaders });
     }
 
@@ -60,6 +55,12 @@ export async function POST(request: NextRequest) {
     }
 
     const session = sessions[0];
+
+    // Validate room upper bound against session's actual maxRooms
+    const maxRooms = (session as Record<string, unknown>).maxRooms as number || 13;
+    if (room > maxRooms) {
+      return NextResponse.json({ error: 'Invalid room number' }, { status: 400, headers: corsHeaders });
+    }
 
     // Create death and corpse records
     const deathId = id();

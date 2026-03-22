@@ -1,14 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { init, tx, id } from '@instantdb/admin';
+import { tx, id } from '@instantdb/admin';
+import { db } from '@/lib/db';
 import { startErRun, requestErVrfSeed, getErVrfSeed } from '@/lib/magicblock';
 import { loadZone } from '@/lib/content';
 import crypto from 'crypto';
-
-// Initialize InstantDB Admin client
-const db = init({
-  appId: process.env.NEXT_PUBLIC_INSTANT_APP_ID!,
-  adminToken: process.env.INSTANT_ADMIN_KEY!,
-});
 
 // Valid stake amounts (0 = free play)
 const MIN_STAKE = 0;

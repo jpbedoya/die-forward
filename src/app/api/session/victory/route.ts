@@ -1,23 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { init, tx, id } from '@instantdb/admin';
+import { tx, id } from '@instantdb/admin';
+import { db } from '@/lib/db';
 import { postVictory } from '@/lib/tapestry';
 import { commitErRun } from '@/lib/magicblock';
-import { 
-  Connection, 
-  Keypair, 
-  PublicKey, 
-  Transaction, 
+import {
+  Connection,
+  Keypair,
+  PublicKey,
+  Transaction,
   SystemProgram,
   LAMPORTS_PER_SOL,
   sendAndConfirmTransaction,
 } from '@solana/web3.js';
 import { processVictoryPayout } from '@/lib/onchain';
-
-// Initialize InstantDB Admin client
-const db = init({
-  appId: process.env.NEXT_PUBLIC_INSTANT_APP_ID!,
-  adminToken: process.env.INSTANT_ADMIN_KEY!,
-});
 
 // CORS headers for unified codebase
 const corsHeaders = {

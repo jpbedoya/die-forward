@@ -431,7 +431,7 @@ export function getCreatureForRoom(roomNumber: number): CreatureInfo {
   return pick(creaturesOfTier);
 }
 
-// Get creature health
+/** @deprecated Use getCreatureHealthSeeded() for deterministic staked runs */
 export function getCreatureHealth(name: string): number {
   const info = BESTIARY[name];
   if (!info) return 65;
@@ -473,7 +473,7 @@ export interface IntentEffects {
   description: string;
 }
 
-export function getIntentEffects(intentType: IntentType): IntentEffects {
+export function getIntentEffects(intentType: IntentType, rng?: SeededRng): IntentEffects {
   switch (intentType) {
     case 'AGGRESSIVE':
       return { damageDealtMod: 1.0, damageTakenMod: 1.0, fleeMod: 0, isCharging: false, description: 'Attacking normally' };
@@ -485,9 +485,10 @@ export function getIntentEffects(intentType: IntentType): IntentEffects {
       return { damageDealtMod: 1.0, damageTakenMod: 1.0, fleeMod: -0.3, isCharging: false, description: 'Watching you — harder to escape' };
     case 'HUNTING':
       return { damageDealtMod: 1.3, damageTakenMod: 1.0, fleeMod: -0.2, isCharging: false, description: 'Hunting — deals bonus damage' };
-    case 'ERRATIC':
-      const erraticMod = 0.5 + Math.random() * 1.5;
+    case 'ERRATIC': {
+      const erraticMod = 0.5 + (rng ? rng.random() : Math.random()) * 1.5;
       return { damageDealtMod: erraticMod, damageTakenMod: 1.0, fleeMod: 0.1, isCharging: false, description: 'Unpredictable — damage varies' };
+    }
     case 'RETREATING':
       return { damageDealtMod: 0.5, damageTakenMod: 1.2, fleeMod: 0.3, isCharging: false, description: 'Retreating — easier to escape' };
     default:

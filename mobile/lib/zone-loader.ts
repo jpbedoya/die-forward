@@ -214,6 +214,8 @@ export function getZoneRoom(
  *   80% — zone-local creatures of matching tier
  *   20% — shared creature names (global BESTIARY lookup) of any tier
  *         falling back to zone-local if no shared creatures exist
+ *
+ * @deprecated Use getZoneCreatureSeeded() for deterministic staked runs
  */
 export function getZoneCreature(
   zone: ZoneData,

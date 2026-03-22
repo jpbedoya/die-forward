@@ -5,6 +5,7 @@ import { dlog } from './debug-log';
 
 import { generateRandomDungeon, generateDungeon, DungeonRoom, getItemDetails, rollRandomItem } from './content';
 import { getMilestonePerks } from './milestones';
+import { isWalletCancellation } from './wallet-utils';
 
 // Pending item when inventory is full — includes full item details for the swap UI
 export interface PendingInventoryItem {
@@ -586,19 +587,11 @@ export function GameProvider({
         throw err;
       }
       // Don't show error for user rejections / cancellations
-      const errMsg = err instanceof Error ? err.message : String(err);
-      const isCancellation =
-        errMsg === 'WALLET_CANCELLED' ||
-        errMsg.includes('User rejected') ||
-        errMsg.includes('cancelled') ||
-        errMsg.includes('Cancelled') ||
-        errMsg.includes('CancellationException') ||
-        errMsg.includes('user rejected') ||
-        errMsg.includes('ACTION_CANCELLED');
-      if (isCancellation) {
+      if (isWalletCancellation(err)) {
         updateState({ loading: false });
         throw Object.assign(new Error('WALLET_CANCELLED'), { isCancellation: true });
       }
+      const errMsg = err instanceof Error ? err.message : String(err);
       updateState({
         loading: false,
         error: errMsg || 'Failed to connect wallet',
@@ -625,19 +618,11 @@ export function GameProvider({
         updateState({ loading: false });
       }
     } catch (err) {
-      const errMsg = err instanceof Error ? err.message : String(err);
-      const isCancellation =
-        errMsg === 'WALLET_CANCELLED' ||
-        errMsg.includes('User rejected') ||
-        errMsg.includes('cancelled') ||
-        errMsg.includes('Cancelled') ||
-        errMsg.includes('CancellationException') ||
-        errMsg.includes('user rejected') ||
-        errMsg.includes('ACTION_CANCELLED');
-      if (isCancellation) {
+      if (isWalletCancellation(err)) {
         updateState({ loading: false });
         throw Object.assign(new Error('WALLET_CANCELLED'), { isCancellation: true });
       }
+      const errMsg = err instanceof Error ? err.message : String(err);
       updateState({
         loading: false,
         error: errMsg || 'Failed to connect wallet',
@@ -798,19 +783,11 @@ export function GameProvider({
       });
     } catch (err) {
       dlog.error('Stake', 'startGame failed', err);
-      const errMsg = err instanceof Error ? err.message : String(err);
-      const isCancellation =
-        errMsg === 'WALLET_CANCELLED' ||
-        errMsg.includes('CancellationException') ||
-        errMsg.includes('User rejected') ||
-        errMsg.includes('cancelled') ||
-        errMsg.includes('Cancelled') ||
-        errMsg.includes('ACTION_CANCELLED') ||
-        errMsg.includes('user rejected');
-      if (isCancellation) {
+      if (isWalletCancellation(err)) {
         updateState({ loading: false });
         throw Object.assign(new Error('WALLET_CANCELLED'), { isCancellation: true });
       }
+      const errMsg = err instanceof Error ? err.message : String(err);
       updateState({
         loading: false,
         error: errMsg || 'Failed to start game',

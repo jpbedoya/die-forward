@@ -4,7 +4,7 @@ import { init, tx, id } from '@instantdb/react';
 // App ID should be set in environment variables
 const APP_ID = process.env.NEXT_PUBLIC_INSTANT_APP_ID!;
 
-// Schema types
+// Schema types — keep in sync with mobile/lib/instant.ts
 export interface Death {
   id: string;
   walletAddress: string;
@@ -16,6 +16,10 @@ export interface Death {
   inventory: string[]; // JSON serialized
   deathHash?: string; // SHA256 hash for verification
   onChainSignature?: string; // Solana tx signature
+  nowPlayingTitle?: string; // Audius track title at time of death
+  nowPlayingArtist?: string; // Audius artist name
+  tapestryContentId?: string; // Tapestry social post ID
+  likeCount?: number; // Tapestry likes
   createdAt: number;
 }
 
@@ -38,7 +42,10 @@ export interface Corpse {
 
 export interface Player {
   id: string;
-  walletAddress: string;
+  authId?: string; // Auth identifier (wallet address or guest UUID)
+  authType?: 'wallet' | 'guest' | 'email'; // Authentication method
+  walletAddress?: string; // Optional — guests may not have one
+  email?: string; // For future email auth
   nickname: string;
   totalDeaths: number;
   totalClears: number;
@@ -46,9 +53,15 @@ export interface Player {
   totalLost: number;
   totalTipsReceived: number;
   totalTipsSent: number;
-  highestRoom: number;      // Deepest room reached
+  totalLikesReceived?: number; // Tapestry likes on death posts
+  highestRoom: number; // Deepest room reached
   createdAt: number;
   lastPlayedAt: number;
+  activeTitle?: string; // Milestone cosmetic title
+  activeBorder?: string; // Milestone cosmetic border
+  unlockedTitles?: string[]; // All unlocked titles
+  unlockedBorders?: string[]; // All unlocked borders
+  clearedZones?: string[]; // Zones the player has cleared
 }
 
 // Initialize the database

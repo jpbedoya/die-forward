@@ -12,6 +12,7 @@ import { CRTOverlay } from '../components/CRTOverlay';
 import { NicknameModal } from '../components/NicknameModal';
 import { LinkWalletModal } from '../components/LinkWalletModal';
 import { AsciiLoader } from '../components/AsciiLoader';
+import { isWalletCancellation } from '../lib/wallet-utils';
 
 const STAKE_OPTIONS = [0.01, 0.05, 0.1, 0.25];
 
@@ -99,17 +100,10 @@ export default function StakeScreen() {
       }
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : String(err);
-      const isCancellation =
-        errMsg === 'WALLET_CANCELLED' ||
-        errMsg.includes('User rejected') ||
-        errMsg.includes('cancelled') ||
-        errMsg.includes('Cancelled') ||
-        errMsg.includes('ACTION_CANCELLED');
-
       if (errMsg === 'MULTIPLE_WALLETS') {
         setWalletStatus('idle');
         setShowWalletPicker(true);
-      } else if (isCancellation) {
+      } else if (isWalletCancellation(err)) {
         flashWalletStatus('cancelled');
       } else {
         flashWalletStatus('error');
@@ -132,14 +126,7 @@ export default function StakeScreen() {
         setShowLinkWallet(true);
       }
     } catch (err) {
-      const errMsg = err instanceof Error ? err.message : String(err);
-      const isCancellation =
-        errMsg === 'WALLET_CANCELLED' ||
-        errMsg.includes('User rejected') ||
-        errMsg.includes('cancelled') ||
-        errMsg.includes('Cancelled') ||
-        errMsg.includes('ACTION_CANCELLED');
-      if (isCancellation) {
+      if (isWalletCancellation(err)) {
         flashWalletStatus('cancelled');
       } else {
         flashWalletStatus('error');
@@ -189,15 +176,7 @@ export default function StakeScreen() {
       router.push('/play');
     } catch (err) {
       if (!emptyHanded) {
-        const errMsg = err instanceof Error ? err.message : String(err);
-        const isCancellation =
-          errMsg === 'WALLET_CANCELLED' ||
-          errMsg.includes('User rejected') ||
-          errMsg.includes('cancelled') ||
-          errMsg.includes('Cancelled') ||
-          errMsg.includes('ACTION_CANCELLED');
-
-        if (isCancellation) {
+        if (isWalletCancellation(err)) {
           flashSealStatus('cancelled');
         } else {
           console.error('Failed to start game:', err);
