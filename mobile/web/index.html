@@ -53,6 +53,10 @@
       background-color: #0d0d0d;
       overflow: hidden;
     }
+    /* iOS Safari fix: divs need cursor:pointer to fire click/touch events */
+    [role="button"], button {
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
