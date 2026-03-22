@@ -422,25 +422,25 @@ export function GameProvider({
           updateState({ nickname: localNickname });
         }
 
-        // Sync guest record with DB (no nickname override)
-        const result = await getOrCreatePlayerByAuth(
-          state.authId,
+        // Show nickname modal immediately based on local state — don't wait for DB.
+        // DB write can fail silently on Safari (InstantDB WebSocket issues), so
+        // decouple the prompt from the DB sync.
+        if (!alreadyPrompted && !localNickname) {
+          updateState({ showNicknameModal: true });
+        }
+
+        // Sync guest record with DB in background (best-effort, non-blocking)
+        getOrCreatePlayerByAuth(
+          state.authId!,
           'guest',
           undefined,
           localNickname || undefined,
-        );
-
-        if (cancelled) return;
-
-        if (result) {
-          const { isNew } = result;
-          updateState({ isNewUser: isNew });
-
-          // Prompt if new guest with no local name
-          if (!alreadyPrompted && !localNickname) {
-            updateState({ showNicknameModal: true });
-          }
-        }
+        ).then((result) => {
+          if (cancelled || !result) return;
+          updateState({ isNewUser: result.isNew });
+        }).catch((err) => {
+          console.warn('[syncNickname] DB sync failed (non-fatal):', err);
+        });
       }
     };
 

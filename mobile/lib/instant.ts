@@ -1,6 +1,15 @@
 import { init, tx, id } from '@instantdb/react-native';
 import { useMemo } from 'react';
 
+// Default names pool for new guest players
+const DEFAULT_GUEST_NAMES = [
+  'Wanderer', 'AshenpilgriM', 'HollowSeeker', 'Saltborn', 'Cairnwalker',
+  'TheForsaken', 'MurkDelver', 'Bonepath', 'Driftborn',
+];
+function getRandomGuestName(): string {
+  return DEFAULT_GUEST_NAMES[Math.floor(Math.random() * DEFAULT_GUEST_NAMES.length)];
+}
+
 // App ID - same as web version
 // Fallback to production ID if env var missing (for Vercel builds before env is set)
 const APP_ID = process.env.EXPO_PUBLIC_INSTANT_APP_ID || '0700b913-585c-4de8-abdf-0bc81a0f5920';
@@ -279,7 +288,7 @@ export async function getOrCreatePlayerByAuth(
     const playerId = id();
     const defaultNickname = walletAddress
       ? walletAddress.slice(0, 4) + '...' + walletAddress.slice(-4)
-      : 'Wanderer';
+      : getRandomGuestName();
 
     const newPlayer: Omit<Player, 'id'> = {
       authId,
@@ -431,7 +440,7 @@ export function useLeaderboard(limit = 10) {
       if ((p.highestRoom || 0) === 0) return false;
       // Exclude default/unnamed players
       const nick = (p.nickname || '').trim();
-      if (!nick || nick === 'Wanderer') return false;
+      if (!nick || DEFAULT_GUEST_NAMES.includes(nick)) return false;
       // Exclude wallet-address-style nicknames like "AB12...XY78"
       if (/^[A-Za-z0-9]{4}\.\.\./.test(nick)) return false;
       return true;
@@ -487,7 +496,7 @@ export function useDeathFeed(limit = 10) {
   const nameByWallet: Record<string, string> = {};
   const nameByAuthId: Record<string, string> = {};
   for (const p of players) {
-    const name = p.nickname && p.nickname !== 'Wanderer' ? p.nickname : null;
+    const name = p.nickname && !DEFAULT_GUEST_NAMES.includes(p.nickname) ? p.nickname : null;
     if (name && p.walletAddress) nameByWallet[p.walletAddress] = name;
     if (name && p.authId) nameByAuthId[p.authId] = name;
   }
