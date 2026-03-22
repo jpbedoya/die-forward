@@ -44,6 +44,7 @@ export default function StakeScreen() {
   const [showLinkWallet, setShowLinkWallet] = useState(false);
   const [pendingRun, setPendingRun] = useState<{ stake: number; emptyHanded: boolean; zoneId: string } | null>(null);
   const [freeRunStatus, setFreeRunStatus] = useState<'idle' | 'error'>('idle');
+  const [debugMsg, setDebugMsg] = useState<string | null>(null);
 
   useEffect(() => {
     playAmbient('ambient-title');
@@ -163,7 +164,11 @@ export default function StakeScreen() {
         // Empty-handed should NEVER force wallet users back into guest mode.
         // Only establish guest auth if the player is not authenticated yet.
         if (!game.isAuthenticated) {
+          setDebugMsg('signing in...');
           await game.signInEmptyHanded();
+          setDebugMsg('signed in ✓');
+        } else {
+          setDebugMsg('already auth ✓');
         }
       } else {
         if (!game.walletConnected) {
@@ -177,12 +182,15 @@ export default function StakeScreen() {
 
       // If new user needs to set a nickname, pause here — modal onSubmit will resume
       if (!game.nickname) {
+        setDebugMsg('waiting for nickname...');
         setPendingRun({ stake: selectedStake, emptyHanded, zoneId });
         setStaking(false);
         return;
       }
 
+      setDebugMsg('starting game...');
       await game.startGame(selectedStake, emptyHanded, zoneId, player?.totalDeaths);
+      setDebugMsg(null);
       if (!emptyHanded) setSealStatus('idle');
       playSFX('depth-descend');
       router.push('/play');
@@ -204,10 +212,12 @@ export default function StakeScreen() {
           playSFX('error-buzz');
         }
       } else {
+        const errMsg = err instanceof Error ? err.message : String(err);
         console.error('Failed to start game:', err);
+        setDebugMsg(`ERR: ${errMsg}`);
         setFreeRunStatus('error');
         playSFX('error-buzz');
-        setTimeout(() => setFreeRunStatus('idle'), 2000);
+        setTimeout(() => { setFreeRunStatus('idle'); setDebugMsg(null); }, 5000);
       }
     } finally {
       setStaking(false);
@@ -336,6 +346,13 @@ Offer it. Lose it on death. Escape and claim more.
             </View>
           )}
         </View>
+
+        {/* Debug overlay — remove before release */}
+        {debugMsg && (
+          <View className="mb-2 px-3 py-2 bg-black/80 border border-amber/50">
+            <Text className="text-amber text-xs font-mono">{debugMsg}</Text>
+          </View>
+        )}
 
         {/* Action buttons */}
         <View className="gap-3 mb-4">
