@@ -49,9 +49,8 @@ export default function StakeScreen() {
     playAmbient('ambient-title');
   }, []);
 
-  // Resume pendingRun when nickname becomes available (handles returning guests
-  // whose nickname syncs async after signInEmptyHanded, so showNicknameModal
-  // never fires but pendingRun is stuck waiting).
+  // Resume pendingRun after nickname is set (either via modal submission
+  // or async sync for returning users who already have one).
   useEffect(() => {
     if (!pendingRun || game.showNicknameModal) return;
     if (!game.isAuthenticated) return;
@@ -164,7 +163,6 @@ export default function StakeScreen() {
         // Only establish guest auth if the player is not authenticated yet.
         if (!game.isAuthenticated) {
           await game.signInEmptyHanded();
-        } else {
         }
       } else {
         if (!game.walletConnected) {
@@ -176,10 +174,10 @@ export default function StakeScreen() {
         }
       }
 
-      // For wallet users, pause for nickname since it needs signing.
-      // For empty-handed guests, just start — startGame defaults to "Wanderer"
-      // and the nickname modal will appear as an overlay post-auth if needed.
-      if (!emptyHanded && !game.nickname) {
+      // Pause for nickname if the user doesn't have one yet.
+      // syncNickname in GameContext will show the modal from local state
+      // (no DB round-trip required), and pendingRun resumes after submission.
+      if (!game.nickname) {
         setPendingRun({ stake: selectedStake, emptyHanded, zoneId });
         setStaking(false);
         return;
