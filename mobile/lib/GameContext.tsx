@@ -21,7 +21,7 @@ export interface PendingInventoryItem {
 import { useUnifiedWallet, type Address } from './wallet/unified';
 import { GAME_POOL_PDA, buildStakeInstruction, generateSessionId } from './solana/escrow';
 import { Transaction, LAMPORTS_PER_SOL } from '@solana/web3.js';
-import { getOrCreatePlayerByAuth, updatePlayerNicknameByAuth, useGameSettings } from './instant';
+import { getOrCreatePlayerByAuth, updatePlayerNicknameByAuth, useGameSettings, updateHighestRoom } from './instant';
 import { signInWithWallet, signInAsGuest, signOut, linkWalletToGuest, getStoredAuthState, restoreInstantDBSession, type AuthState } from './auth';
 import { createRunRng, generateRandomSeed, type SeededRng } from './seeded-random';
 import { rollModifier, type RunModifier } from './modifiers';
@@ -824,9 +824,17 @@ export function GameProvider({
       console.warn('[advance] Backend sync failed:', err);
       // Don't block on backend errors - client-side state is authoritative for mobile
     });
+
+    // Persist highest room reached for zone unlock progression (fire-and-forget)
+    // updateHighestRoom only writes if nextRoom exceeds current stored value
+    if (state.authId) {
+      updateHighestRoom(state.authId, nextRoom).catch((err) => {
+        console.warn('[advance] Failed to update highest room:', err);
+      });
+    }
     
     return true;
-  }, [state.sessionToken, state.currentRoom, state.stamina, state.dungeon?.length, settings.staminaPool, state.currentModifier, updateState]);
+  }, [state.sessionToken, state.currentRoom, state.stamina, state.dungeon?.length, settings.staminaPool, state.currentModifier, state.authId, updateState]);
 
   const recordDeathAction = useCallback(async (finalMessage: string, killedBy?: string, nowPlaying?: { title: string; artist: string }) => {
     if (!state.sessionToken) return;

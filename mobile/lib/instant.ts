@@ -358,12 +358,12 @@ export async function updatePlayerNickname(walletAddress: string, nickname: stri
 }
 
 // Update highest room reached
-export async function updateHighestRoom(walletAddress: string, room: number): Promise<void> {
+export async function updateHighestRoom(authId: string, room: number): Promise<void> {
   try {
     const result = await db.queryOnce({
       players: {
         $: {
-          where: { walletAddress },
+          where: { authId },
           limit: 1,
         },
       },
