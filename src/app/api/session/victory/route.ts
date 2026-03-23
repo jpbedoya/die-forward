@@ -226,13 +226,9 @@ export async function POST(request: NextRequest) {
         const currentHighest = (player as Record<string, unknown>).highestRoom as number || 0;
         const clearedRoom = session.currentRoom || 12; // Full dungeon clear = actual room reached
 
-        // Parse existing zonesCleared (stored as JSON string)
-        const zonesClearedRaw = (player as Record<string, unknown>).zonesCleared as string || '[]';
-        let existingZonesCleared: string[] = [];
-        try {
-          existingZonesCleared = JSON.parse(zonesClearedRaw);
-          if (!Array.isArray(existingZonesCleared)) existingZonesCleared = [];
-        } catch { existingZonesCleared = []; }
+        // Read existing clearedZones (stored as array, matching mobile schema)
+        const existingCleared = (player as Record<string, unknown>).clearedZones;
+        const existingZonesCleared: string[] = Array.isArray(existingCleared) ? existingCleared : [];
         const zoneId = (session as Record<string, unknown>).zoneId as string || 'sunken-crypt';
         const newZonesCleared = existingZonesCleared.includes(zoneId)
           ? existingZonesCleared
@@ -245,7 +241,7 @@ export async function POST(request: NextRequest) {
             highestRoom: Math.max(currentHighest, clearedRoom), // Track deepest room reached
             lastPlayedAt: Date.now(),
             totalRuns: ((player as Record<string, unknown>).totalRuns as number || 0) + 1,
-            zonesCleared: JSON.stringify(newZonesCleared),
+            clearedZones: newZonesCleared,
           }),
         ]);
       }

@@ -1,10 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { init } from '@instantdb/admin';
-
-const db = init({
-  appId: process.env.NEXT_PUBLIC_INSTANT_APP_ID!,
-  adminToken: process.env.INSTANT_ADMIN_KEY!,
-});
+import { db } from '@/lib/db';
 
 export async function GET(request: NextRequest) {
   const walletAddress = request.nextUrl.searchParams.get('walletAddress');
@@ -50,32 +45,24 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const totalRuns = (player.totalRuns as number) || 0;
+    const highestRoom = (player.highestRoom as number) || 0;
+    const clearedZones: string[] = Array.isArray(player.clearedZones) ? player.clearedZones as string[] : [];
 
-    // zonesCleared stored as JSON string
-    const zonesClearedRaw = (player.zonesCleared as string) || '[]';
-    let zonesCleared: string[] = [];
-    try {
-      zonesCleared = JSON.parse(zonesClearedRaw);
-      if (!Array.isArray(zonesCleared)) zonesCleared = [];
-    } catch {
-      zonesCleared = [];
+    // Unlock gates based on player progression
+    const unlockedZones: string[] = ['sunken-crypt'];
+
+    // Tier 2 zones: reach room 8+ in any run
+    if (highestRoom >= 8) {
+      unlockedZones.push('ashen-crypts', 'frozen-gallery', 'living-tomb');
     }
 
-    // DEV MODE: all zones unlocked for testing
-    const unlockedZones: string[] = ['sunken-crypt', 'ashen-crypts', 'frozen-gallery', 'living-tomb', 'void-beyond'];
-
-    // TODO: re-enable unlock gates before launch
-    // const unlockedZones: string[] = ['sunken-crypt'];
-    // if (totalRuns >= 1) {
-    //   unlockedZones.push('ashen-crypts', 'frozen-gallery', 'living-tomb');
-    // }
-    // if (new Set(zonesCleared).size >= 3) {
-    //   unlockedZones.push('void-beyond');
-    // }
+    // Void Beyond: clear 3 different zones
+    if (new Set(clearedZones).size >= 3) {
+      unlockedZones.push('void-beyond');
+    }
 
     return NextResponse.json(
-      { unlockedZones, totalRuns, zonesCleared },
+      { unlockedZones, highestRoom, zonesCleared: clearedZones },
     );
   } catch (error) {
     console.error('Failed to get unlock status:', error);
