@@ -310,6 +310,11 @@ export default function HomeScreen() {
               <Text style={{ fontFamily: 'monospace', fontSize: 12, letterSpacing: 1, color: pressed ? '#fff' : '#f59e0b', backgroundColor: pressed ? 'rgba(245,158,11,0.15)' : 'transparent' }}>◈ BESTIARY</Text>
             )}
           </Pressable>
+          <Pressable onPress={() => router.push('/codex')} style={{ paddingVertical: 8, paddingHorizontal: 12 }}>
+            {({ pressed }) => (
+              <Text style={{ fontFamily: 'monospace', fontSize: 12, letterSpacing: 1, color: pressed ? '#fff' : '#f59e0b', backgroundColor: pressed ? 'rgba(245,158,11,0.15)' : 'transparent' }}>◈ THE CODEX</Text>
+            )}
+          </Pressable>
         </View>
         <View className="items-end">
           <AudioToggle ambientTrack="ambient-title" inline onSettingsPress={() => setAudioSettingsOpen(true)} />
