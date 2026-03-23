@@ -296,33 +296,34 @@ export default function HomeScreen() {
       <CRTOverlay />
       
       {/* Header */}
-      <View className="flex-row items-center justify-between px-3 py-[10px]">
-        <View className="flex-row items-center gap-1 -ml-3">
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, paddingVertical: 10 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, flexShrink: 1, marginLeft: -12 }}>
           {settings.showLeaderboardLink && (
-            <Pressable onPress={() => router.push('/leaderboard')} style={{ paddingVertical: 8, paddingHorizontal: 12 }}>
+            <Pressable onPress={() => router.push('/leaderboard')} style={{ paddingVertical: 8, paddingHorizontal: 10 }}>
               {({ pressed }) => (
-                <Text style={{ fontFamily: 'monospace', fontSize: 12, letterSpacing: 1, color: pressed ? '#fff' : '#f59e0b', backgroundColor: pressed ? 'rgba(245,158,11,0.15)' : 'transparent' }}>◈ RANKS</Text>
+                <Text style={{ fontFamily: 'monospace', fontSize: 11, letterSpacing: 1, color: pressed ? '#fff' : '#f59e0b', backgroundColor: pressed ? 'rgba(245,158,11,0.15)' : 'transparent' }}>◈ RANKS</Text>
               )}
             </Pressable>
           )}
-          <Pressable onPress={() => router.push('/bestiary')} style={{ paddingVertical: 8, paddingHorizontal: 12 }}>
+          <Pressable onPress={() => router.push('/bestiary')} style={{ paddingVertical: 8, paddingHorizontal: 10 }}>
             {({ pressed }) => (
-              <Text style={{ fontFamily: 'monospace', fontSize: 12, letterSpacing: 1, color: pressed ? '#fff' : '#f59e0b', backgroundColor: pressed ? 'rgba(245,158,11,0.15)' : 'transparent' }}>◈ BESTIARY</Text>
+              <Text style={{ fontFamily: 'monospace', fontSize: 11, letterSpacing: 1, color: pressed ? '#fff' : '#f59e0b', backgroundColor: pressed ? 'rgba(245,158,11,0.15)' : 'transparent' }}>◈ BESTIARY</Text>
             )}
           </Pressable>
-          <Pressable onPress={() => router.push('/codex')} style={{ paddingVertical: 8, paddingHorizontal: 12 }}>
+          <Pressable onPress={() => router.push('/codex')} style={{ paddingVertical: 8, paddingHorizontal: 10 }}>
             {({ pressed }) => (
-              <Text style={{ fontFamily: 'monospace', fontSize: 12, letterSpacing: 1, color: pressed ? '#fff' : '#f59e0b', backgroundColor: pressed ? 'rgba(245,158,11,0.15)' : 'transparent' }}>◈ THE CODEX</Text>
+              <Text style={{ fontFamily: 'monospace', fontSize: 11, letterSpacing: 1, color: pressed ? '#fff' : '#f59e0b', backgroundColor: pressed ? 'rgba(245,158,11,0.15)' : 'transparent' }}>◈ CODEX</Text>
             )}
           </Pressable>
         </View>
-        <View className="items-end">
+        <View style={{ alignItems: 'flex-end', flexShrink: 0 }}>
           <AudioToggle ambientTrack="ambient-title" inline onSettingsPress={() => setAudioSettingsOpen(true)} />
           <Pressable 
             onPress={() => setAudioSettingsOpen(true)} 
-            className="mt-1 active:opacity-70"
+            style={{ marginTop: 4, opacity: 1 }}
+            hitSlop={4}
           >
-            <View className="flex-row items-center px-2 py-1 rounded-full gap-1" style={{ backgroundColor: 'rgba(168, 85, 247, 0.15)', borderWidth: 1, borderColor: 'rgba(168, 85, 247, 0.3)' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 999, gap: 4, backgroundColor: 'rgba(168, 85, 247, 0.15)', borderWidth: 1, borderColor: 'rgba(168, 85, 247, 0.3)' }}>
               <AudiusLogo width={60} height={12} color="#a855f7" />
               <Text style={{ fontFamily: 'monospace', fontSize: 10, fontWeight: '700', color: '#a855f7', letterSpacing: 0.5 }}>SOUNDTRACK</Text>
             </View>
