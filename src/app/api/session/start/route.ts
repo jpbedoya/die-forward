@@ -9,17 +9,6 @@ import crypto from 'crypto';
 const MIN_STAKE = 0;
 const MAX_STAKE = 1; // 1 SOL max
 
-// CORS headers for unified codebase (web + mobile)
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
-
-export async function OPTIONS() {
-  return NextResponse.json({}, { headers: corsHeaders });
-}
-
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -73,8 +62,8 @@ export async function POST(request: NextRequest) {
           if (requested) {
             // Poll briefly for callback completion. If it doesn't arrive in time,
             // keep legacy seed so gameplay never blocks.
-            for (let i = 0; i < 8; i++) {
-              await new Promise((resolve) => setTimeout(resolve, 800));
+            for (let i = 0; i < 4; i++) {
+              await new Promise((resolve) => setTimeout(resolve, 500));
               const vrf = await getErVrfSeed(erRunId);
               if (vrf.ready && vrf.seedHex) {
                 seed = vrf.seedHex;
@@ -82,6 +71,9 @@ export async function POST(request: NextRequest) {
                 console.log('[MagicBlock] VRF seed ready for session:', sessionId);
                 break;
               }
+            }
+            if (seedSource !== 'vrf') {
+              console.warn('[MagicBlock] VRF seed not ready after 2s, using legacy seed');
             }
           }
         }
@@ -131,10 +123,10 @@ export async function POST(request: NextRequest) {
       seed, // Client uses this for deterministic randomness
       seedSource,
       enableVrf: vrfEnabled && !!erRunId,
-    }, { headers: corsHeaders });
+    });
 
   } catch (error) {
     console.error('Failed to start session:', error);
-    return NextResponse.json({ error: 'Failed to start session' }, { status: 500, headers: corsHeaders });
+    return NextResponse.json({ error: 'Failed to start session' }, { status: 500 });
   }
 }

@@ -3,18 +3,7 @@ import { init, tx } from '@instantdb/admin';
 import * as nacl from 'tweetnacl';
 import bs58 from 'bs58';
 
-// CORS headers for cross-origin requests
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-};
-
 // Handle preflight requests
-export async function OPTIONS() {
-  return NextResponse.json({}, { headers: corsHeaders });
-}
-
 interface Player {
   id: string;
   authId?: string;
@@ -87,46 +76,40 @@ export async function POST(req: NextRequest) {
 
     if (!guestAuthId || !walletAddress || !signature || !message) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400, headers: corsHeaders }
+        { error: 'Missing required fields' }, { status: 400 }
       );
     }
 
     // Verify the guest ID format
     if (!guestAuthId.startsWith('guest-')) {
       return NextResponse.json(
-        { error: 'Invalid guest ID' },
-        { status: 400, headers: corsHeaders }
+        { error: 'Invalid guest ID' }, { status: 400 }
       );
     }
 
     // Verify wallet signature challenge format + nonce freshness
     if (!message.includes('Link wallet to Die Forward')) {
       return NextResponse.json(
-        { error: 'Invalid message format' },
-        { status: 400, headers: corsHeaders }
+        { error: 'Invalid message format' }, { status: 400 }
       );
     }
 
     if (!isFreshNonceMessage(message)) {
       return NextResponse.json(
-        { error: 'Missing or expired nonce, please try again' },
-        { status: 401, headers: corsHeaders }
+        { error: 'Missing or expired nonce, please try again' }, { status: 401 }
       );
     }
 
     if (signature === 'SKIP_VERIFICATION') {
       return NextResponse.json(
-        { error: 'Unsigned wallet linking is not allowed' },
-        { status: 401, headers: corsHeaders }
+        { error: 'Unsigned wallet linking is not allowed' }, { status: 401 }
       );
     }
 
     const isValid = verifySignature(walletAddress, signature, message);
     if (!isValid) {
       return NextResponse.json(
-        { error: 'Invalid signature' },
-        { status: 401, headers: corsHeaders }
+        { error: 'Invalid signature' }, { status: 401 }
       );
     }
 
@@ -138,8 +121,7 @@ export async function POST(req: NextRequest) {
 
     if (!guestPlayer) {
       return NextResponse.json(
-        { error: 'Guest account not found' },
-        { status: 404, headers: corsHeaders }
+        { error: 'Guest account not found' }, { status: 404 }
       );
     }
 
@@ -198,12 +180,11 @@ export async function POST(req: NextRequest) {
       walletAddress,
       merged,
       playerId: finalPlayerId,
-    }, { headers: corsHeaders });
+    });
   } catch (error) {
     console.error('[Auth] Link wallet error:', error);
     return NextResponse.json(
-      { error: 'Failed to link wallet' },
-      { status: 500, headers: corsHeaders }
+      { error: 'Failed to link wallet' }, { status: 500 }
     );
   }
 }

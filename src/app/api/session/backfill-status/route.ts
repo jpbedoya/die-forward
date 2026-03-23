@@ -5,17 +5,7 @@ import { Connection, PublicKey } from '@solana/web3.js';
 import { BorshAccountsCoder } from '@coral-xyz/anchor';
 import RunRecordIdl from '@/idl/run_record.json';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
-
 const RPC_URL = process.env.NEXT_PUBLIC_SOLANA_RPC || 'https://api.devnet.solana.com';
-
-export async function OPTIONS() {
-  return NextResponse.json({}, { headers: corsHeaders });
-}
 
 function statusKey(status: any): number {
   if (typeof status === 'number') return status;
@@ -94,9 +84,9 @@ export async function POST() {
       updatedDead,
       updatedCompleted,
       totalUpdated: ops.length,
-    }, { headers: corsHeaders });
+    });
   } catch (error) {
     console.error('[backfill-status] failed:', error);
-    return NextResponse.json({ error: 'Backfill failed' }, { status: 500, headers: corsHeaders });
+    return NextResponse.json({ error: 'Backfill failed' }, { status: 500 });
   }
 }

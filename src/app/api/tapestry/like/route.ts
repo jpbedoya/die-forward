@@ -7,22 +7,12 @@ const db = init({
   adminToken: process.env.INSTANT_ADMIN_KEY!,
 });
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
-
-export async function OPTIONS() {
-  return NextResponse.json({}, { headers: corsHeaders });
-}
-
 export async function POST(request: NextRequest) {
   try {
     const { deathId, walletAddress } = await request.json();
 
     if (!deathId || !walletAddress) {
-      return NextResponse.json({ error: 'deathId and walletAddress required' }, { status: 400, headers: corsHeaders });
+      return NextResponse.json({ error: 'deathId and walletAddress required' }, { status: 400 });
     }
 
     // Get the death record
@@ -31,7 +21,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!deaths || deaths.length === 0) {
-      return NextResponse.json({ error: 'Death not found' }, { status: 404, headers: corsHeaders });
+      return NextResponse.json({ error: 'Death not found' }, { status: 404 });
     }
 
     const death = deaths[0] as Record<string, unknown>;
@@ -68,10 +58,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       likeCount: currentCount + 1,
-    }, { headers: corsHeaders });
+    });
 
   } catch (error) {
     console.error('Failed to like death:', error);
-    return NextResponse.json({ error: 'Failed to like' }, { status: 500, headers: corsHeaders });
+    return NextResponse.json({ error: 'Failed to like' }, { status: 500 });
   }
 }

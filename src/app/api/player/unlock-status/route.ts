@@ -6,16 +6,6 @@ const db = init({
   adminToken: process.env.INSTANT_ADMIN_KEY!,
 });
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
-
-export async function OPTIONS() {
-  return NextResponse.json({}, { headers: corsHeaders });
-}
-
 export async function GET(request: NextRequest) {
   const walletAddress = request.nextUrl.searchParams.get('walletAddress');
 
@@ -23,7 +13,6 @@ export async function GET(request: NextRequest) {
   if (!walletAddress) {
     return NextResponse.json(
       { unlockedZones: ['sunken-crypt'], totalRuns: 0, zonesCleared: [] },
-      { headers: corsHeaders },
     );
   }
 
@@ -31,7 +20,6 @@ export async function GET(request: NextRequest) {
   if (walletAddress.startsWith('guest-') || walletAddress.startsWith('anon-')) {
     return NextResponse.json(
       { unlockedZones: ['sunken-crypt'], totalRuns: 0, zonesCleared: [] },
-      { headers: corsHeaders },
     );
   }
 
@@ -59,7 +47,6 @@ export async function GET(request: NextRequest) {
     if (!player) {
       return NextResponse.json(
         { unlockedZones: ['sunken-crypt'], totalRuns: 0, zonesCleared: [] },
-        { headers: corsHeaders },
       );
     }
 
@@ -89,14 +76,12 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(
       { unlockedZones, totalRuns, zonesCleared },
-      { headers: corsHeaders },
     );
   } catch (error) {
     console.error('Failed to get unlock status:', error);
     // Safe fallback — never crash the zone select screen
     return NextResponse.json(
       { unlockedZones: ['sunken-crypt'], totalRuns: 0, zonesCleared: [] },
-      { headers: corsHeaders },
     );
   }
 }

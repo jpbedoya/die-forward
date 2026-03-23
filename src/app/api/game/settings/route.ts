@@ -6,18 +6,8 @@ const db = init({
   adminToken: process.env.INSTANT_ADMIN_KEY!,
 });
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
-
 // DEV: all zones enabled by default until explicitly set in admin
 const DEFAULT_ENABLED_ZONES = ['sunken-crypt', 'ashen-crypts', 'frozen-gallery', 'living-tomb', 'void-beyond'];
-
-export async function OPTIONS() {
-  return NextResponse.json({}, { headers: corsHeaders });
-}
 
 export async function GET() {
   try {
@@ -35,12 +25,11 @@ export async function GET() {
       enabledZones.unshift('sunken-crypt');
     }
 
-    return NextResponse.json({ enabledZones }, { headers: corsHeaders });
+    return NextResponse.json({ enabledZones });
   } catch (err) {
     console.error('[game/settings] Failed to load settings:', err);
     return NextResponse.json(
       { enabledZones: DEFAULT_ENABLED_ZONES },
-      { headers: corsHeaders },
     );
   }
 }

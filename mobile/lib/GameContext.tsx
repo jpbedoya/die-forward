@@ -917,27 +917,22 @@ export function GameProvider({
   }, [updateState]);
 
   const applyVoidbladeEffect = useCallback((): number => {
-    let dmg = 0;
-    setState(prev => {
-      if (!prev.inventory.some(item => item.name === 'Voidblade')) return prev;
-      dmg = 5;
-      return { ...prev, health: Math.max(0, prev.health - 5) };
-    });
-    return dmg;
-  }, []);
+    if (!state.inventory.some(item => item.name === 'Voidblade')) return 0;
+    setState(prev => ({ ...prev, health: Math.max(0, prev.health - 5) }));
+    return 5;
+  }, [state.inventory]);
 
   const checkDeathSave = useCallback((): { saved: boolean; message: string | null } => {
-    let result = { saved: false, message: null as string | null };
-    setState(prev => {
-      if (prev.health > 0) return prev;
-      const mantleIndex = prev.inventory.findIndex(item => item.name === "Death's Mantle");
-      if (mantleIndex === -1) return prev;
-      result = { saved: true, message: "Death's Mantle shatters — you survive with 1 HP!" };
-      const newInventory = prev.inventory.filter((_, i) => i !== mantleIndex);
-      return { ...prev, health: 1, inventory: newInventory };
-    });
-    return result;
-  }, []);
+    if (state.health > 0) return { saved: false, message: null };
+    const mantleIndex = state.inventory.findIndex(item => item.name === "Death's Mantle");
+    if (mantleIndex === -1) return { saved: false, message: null };
+    setState(prev => ({
+      ...prev,
+      health: 1,
+      inventory: prev.inventory.filter((_, i) => i !== mantleIndex),
+    }));
+    return { saved: true, message: "Death's Mantle shatters — you survive with 1 HP!" };
+  }, [state.health, state.inventory]);
 
   const incrementItemsFound = useCallback(() => {
     setState(prev => ({ ...prev, itemsFound: (prev.itemsFound || 0) + 1 }));

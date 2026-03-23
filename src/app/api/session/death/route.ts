@@ -8,17 +8,6 @@ import { commitErRun } from '@/lib/magicblock';
 // Demo mode flag - skip on-chain recording
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
 
-// CORS headers for unified codebase
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
-
-export async function OPTIONS() {
-  return NextResponse.json({}, { headers: corsHeaders });
-}
-
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -26,15 +15,15 @@ export async function POST(request: NextRequest) {
 
     // Validate inputs
     if (!sessionToken || typeof sessionToken !== 'string') {
-      return NextResponse.json({ error: 'Invalid session token' }, { status: 400, headers: corsHeaders });
+      return NextResponse.json({ error: 'Invalid session token' }, { status: 400 });
     }
 
     if (typeof room !== 'number' || room < 1) {
-      return NextResponse.json({ error: 'Invalid room number' }, { status: 400, headers: corsHeaders });
+      return NextResponse.json({ error: 'Invalid room number' }, { status: 400 });
     }
 
     if (!finalMessage || typeof finalMessage !== 'string' || finalMessage.length > 50) {
-      return NextResponse.json({ error: 'Invalid final message' }, { status: 400, headers: corsHeaders });
+      return NextResponse.json({ error: 'Invalid final message' }, { status: 400 });
     }
 
     // Find the session by token
@@ -51,7 +40,7 @@ export async function POST(request: NextRequest) {
 
     const sessions = result?.sessions || [];
     if (sessions.length === 0) {
-      return NextResponse.json({ error: 'Invalid or expired session' }, { status: 403, headers: corsHeaders });
+      return NextResponse.json({ error: 'Invalid or expired session' }, { status: 403 });
     }
 
     const session = sessions[0];
@@ -59,7 +48,7 @@ export async function POST(request: NextRequest) {
     // Validate room upper bound against session's actual maxRooms
     const maxRooms = (session as Record<string, unknown>).maxRooms as number || 13;
     if (room > maxRooms) {
-      return NextResponse.json({ error: 'Invalid room number' }, { status: 400, headers: corsHeaders });
+      return NextResponse.json({ error: 'Invalid room number' }, { status: 400 });
     }
 
     // Create death and corpse records
@@ -266,10 +255,10 @@ export async function POST(request: NextRequest) {
       deathId,
       corpseId,
       deathHash, // For verification
-    }, { headers: corsHeaders });
+    });
 
   } catch (error) {
     console.error('Failed to record death:', error);
-    return NextResponse.json({ error: 'Failed to record death' }, { status: 500, headers: corsHeaders });
+    return NextResponse.json({ error: 'Failed to record death' }, { status: 500 });
   }
 }

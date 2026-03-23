@@ -15,18 +15,7 @@ function getDb() {
   return db;
 }
 
-// CORS headers for cross-origin requests
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-};
-
 // Handle preflight requests
-export async function OPTIONS() {
-  return NextResponse.json({}, { headers: corsHeaders });
-}
-
 /**
  * POST /api/auth/guest
  * 
@@ -47,7 +36,7 @@ export async function POST(req: NextRequest) {
         token,
         guestId: existingGuestId,
         isNewUser: false,
-      }, { headers: corsHeaders });
+      });
     }
 
     // Create a new guest session
@@ -60,13 +49,12 @@ export async function POST(req: NextRequest) {
       token,
       guestId,
       isNewUser: true,
-    }, { headers: corsHeaders });
+    });
   } catch (error) {
     console.error('[Auth] Guest auth error:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
-      { error: `Failed to create guest session: ${errorMessage}` },
-      { status: 500, headers: corsHeaders }
+      { error: `Failed to create guest session: ${errorMessage}` }, { status: 500 }
     );
   }
 }

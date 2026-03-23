@@ -486,8 +486,9 @@ export function useDeathFeed(limit = 10) {
   });
 
   // Phase 2: player names — arrives later, upgrades names progressively
+  // Limit to recent players to avoid fetching the entire table
   const { data: playerData } = db.useQuery({
-    players: {},
+    players: { $: { limit: 200, order: { serverCreatedAt: 'desc' } } },
   });
 
   // Build lookup maps: walletAddress → nickname, authId → nickname

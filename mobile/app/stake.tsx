@@ -50,6 +50,13 @@ export default function StakeScreen() {
     playAmbient('ambient-title');
   }, []);
 
+  const resumePendingRun = async (run: { stake: number; emptyHanded: boolean; zoneId: string }) => {
+    setPendingRun(null);
+    await game.startGame(run.stake, run.emptyHanded, run.zoneId, player?.totalDeaths);
+    playSFX('depth-descend');
+    router.push('/play');
+  };
+
   // Resume pendingRun after nickname is set (either via modal submission
   // or async sync for returning users who already have one).
   useEffect(() => {
@@ -57,19 +64,12 @@ export default function StakeScreen() {
     if (!game.isAuthenticated) return;
     if (!game.nickname) return; // still waiting for syncNickname
 
-    const run = pendingRun;
-    setPendingRun(null);
-    game.startGame(run.stake, run.emptyHanded, run.zoneId, player?.totalDeaths)
-      .then(() => {
-        playSFX('depth-descend');
-        router.push('/play');
-      })
-      .catch((err) => {
-        console.error('Failed to start pending game:', err);
-        setFreeRunStatus('error');
-        playSFX('error-buzz');
-        setTimeout(() => setFreeRunStatus('idle'), 2000);
-      });
+    resumePendingRun(pendingRun).catch((err) => {
+      console.error('Failed to start pending game:', err);
+      setFreeRunStatus('error');
+      playSFX('error-buzz');
+      setTimeout(() => setFreeRunStatus('idle'), 2000);
+    });
   }, [pendingRun, game.isAuthenticated, game.nickname, game.showNicknameModal]);
 
   const flashWalletStatus = (status: 'cancelled' | 'error') => {
@@ -455,23 +455,11 @@ Offer it. Lose it on death. Escape and claim more.
         visible={game.showNicknameModal}
         onSubmit={async (name) => {
           await game.setNickname(name);
-          if (pendingRun) {
-            const { stake, emptyHanded, zoneId: pZoneId } = pendingRun;
-            setPendingRun(null);
-            await game.startGame(stake, emptyHanded, pZoneId, player?.totalDeaths);
-            playSFX('depth-descend');
-            router.push('/play');
-          }
+          if (pendingRun) await resumePendingRun(pendingRun);
         }}
         onSkip={async () => {
           game.dismissNicknameModal();
-          if (pendingRun) {
-            const { stake, emptyHanded, zoneId: pZoneId } = pendingRun;
-            setPendingRun(null);
-            await game.startGame(stake, emptyHanded, pZoneId, player?.totalDeaths);
-            playSFX('depth-descend');
-            router.push('/play');
-          }
+          if (pendingRun) await resumePendingRun(pendingRun);
         }}
       />
 

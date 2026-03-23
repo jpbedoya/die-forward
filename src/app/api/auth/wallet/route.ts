@@ -4,18 +4,7 @@ import * as nacl from 'tweetnacl';
 import bs58 from 'bs58';
 // Tapestry profile sync moved to /api/player/sync-profile (called when nickname is set)
 
-// CORS headers for cross-origin requests
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-};
-
 // Handle preflight requests
-export async function OPTIONS() {
-  return NextResponse.json({}, { headers: corsHeaders });
-}
-
 /**
  * Verify a Solana wallet signature
  */
@@ -58,39 +47,34 @@ export async function POST(req: NextRequest) {
 
     if (!walletAddress || !signature || !message) {
       return NextResponse.json(
-        { error: 'Missing required fields: walletAddress, signature, message' },
-        { status: 400, headers: corsHeaders }
+        { error: 'Missing required fields: walletAddress, signature, message' }, { status: 400 }
       );
     }
 
     // Validate message format (must include expected challenge text + fresh nonce)
     if (!message.includes('Sign in to Die Forward')) {
       return NextResponse.json(
-        { error: 'Invalid message format' },
-        { status: 400, headers: corsHeaders }
+        { error: 'Invalid message format' }, { status: 400 }
       );
     }
 
     if (!isFreshNonceMessage(message)) {
       return NextResponse.json(
-        { error: 'Missing or expired nonce, please try again' },
-        { status: 401, headers: corsHeaders }
+        { error: 'Missing or expired nonce, please try again' }, { status: 401 }
       );
     }
 
     // Never allow signature bypass in any environment.
     if (signature === 'SKIP_VERIFICATION') {
       return NextResponse.json(
-        { error: 'Unsigned authentication is not allowed' },
-        { status: 401, headers: corsHeaders }
+        { error: 'Unsigned authentication is not allowed' }, { status: 401 }
       );
     }
 
     const isValid = verifySignature(walletAddress, signature, message);
     if (!isValid) {
       return NextResponse.json(
-        { error: 'Invalid signature' },
-        { status: 401, headers: corsHeaders }
+        { error: 'Invalid signature' }, { status: 401 }
       );
     }
 
@@ -114,12 +98,11 @@ export async function POST(req: NextRequest) {
       token,
       walletAddress,
       isNewUser,
-    }, { headers: corsHeaders });
+    });
   } catch (error) {
     console.error('[Auth] Wallet auth error:', error);
     return NextResponse.json(
-      { error: 'Authentication failed' },
-      { status: 500, headers: corsHeaders }
+      { error: 'Authentication failed' }, { status: 500 }
     );
   }
 }

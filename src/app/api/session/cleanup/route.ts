@@ -2,19 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { tx } from '@instantdb/admin';
 import { db } from '@/lib/db';
 
-// CORS headers
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
-
 // Stale session threshold: 1 hour
 const STALE_THRESHOLD_MS = 60 * 60 * 1000;
-
-export async function OPTIONS() {
-  return NextResponse.json({}, { headers: corsHeaders });
-}
 
 /**
  * Cleanup stale active sessions
@@ -58,7 +47,7 @@ export async function POST(_request: NextRequest) {
         cleaned: 0,
         deadMarked: 0,
         victoriesMarked: 0,
-      }, { headers: corsHeaders });
+      });
     }
 
     const victoryCandidates = staleSessions.filter((s: any) => {
@@ -111,13 +100,12 @@ export async function POST(_request: NextRequest) {
       deadMarked: deathCandidates.length,
       victoriesMarked: victoryCandidates.length,
       sessionIds: staleSessions.map((s: any) => s.id),
-    }, { headers: corsHeaders });
+    });
 
   } catch (error) {
     console.error('Failed to cleanup sessions:', error);
     return NextResponse.json(
-      { error: 'Failed to cleanup sessions' }, 
-      { status: 500, headers: corsHeaders }
+      { error: 'Failed to cleanup sessions' }, { status: 500 }
     );
   }
 }

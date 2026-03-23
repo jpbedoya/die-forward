@@ -1,16 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { upsertProfile, updateProfileUsername } from '@/lib/tapestry';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-};
-
-export async function OPTIONS() {
-  return NextResponse.json({}, { headers: corsHeaders });
-}
-
 /**
  * POST /api/player/sync-profile
  *
@@ -26,8 +16,7 @@ export async function POST(request: NextRequest) {
 
     if (!walletAddress || !nickname?.trim()) {
       return NextResponse.json(
-        { error: 'walletAddress and nickname are required' },
-        { status: 400, headers: corsHeaders },
+        { error: 'walletAddress and nickname are required' }, { status: 400 },
       );
     }
 
@@ -36,10 +25,10 @@ export async function POST(request: NextRequest) {
     await upsertProfile(walletAddress, nickname.trim());
     await updateProfileUsername(walletAddress, nickname.trim());
 
-    return NextResponse.json({ ok: true }, { headers: corsHeaders });
+    return NextResponse.json({ ok: true });
   } catch (err) {
     // Non-fatal — Tapestry sync should never break the game
     console.warn('[Tapestry] sync-profile error (non-fatal):', err);
-    return NextResponse.json({ ok: false }, { headers: corsHeaders });
+    return NextResponse.json({ ok: false });
   }
 }

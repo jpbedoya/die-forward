@@ -14,17 +14,6 @@ import {
 } from '@solana/web3.js';
 import { processVictoryPayout } from '@/lib/onchain';
 
-// CORS headers for unified codebase
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
-
-export async function OPTIONS() {
-  return NextResponse.json({}, { headers: corsHeaders });
-}
-
 // Pool wallet keypair (loaded from env)
 function getPoolKeypair(): Keypair {
   const secretKeyStr = process.env.POOL_WALLET_SECRET;
@@ -47,7 +36,7 @@ export async function POST(request: NextRequest) {
 
     // Validate inputs
     if (!sessionToken || typeof sessionToken !== 'string') {
-      return NextResponse.json({ error: 'Invalid session token' }, { status: 400, headers: corsHeaders });
+      return NextResponse.json({ error: 'Invalid session token' }, { status: 400 });
     }
 
     // Find the session by token
@@ -64,7 +53,7 @@ export async function POST(request: NextRequest) {
 
     const sessions = result?.sessions || [];
     if (sessions.length === 0) {
-      return NextResponse.json({ error: 'Invalid or expired session' }, { status: 403, headers: corsHeaders });
+      return NextResponse.json({ error: 'Invalid or expired session' }, { status: 403 });
     }
 
     const session = sessions[0];
@@ -78,7 +67,7 @@ export async function POST(request: NextRequest) {
         error: 'Dungeon not completed',
         currentRoom,
         required: maxRooms,
-      }, { status: 403, headers: corsHeaders });
+      }, { status: 403 });
     }
 
     // ── Load game settings ────────────────────────────────────────────────────
@@ -130,7 +119,7 @@ export async function POST(request: NextRequest) {
         reward: 0,
         payoutStatus: 'free_mode',
         message: session.isAgent ? 'Agent free mode - no staking' : 'Demo mode - no real payout',
-      }, { headers: corsHeaders });
+      });
     }
 
     // Get pool wallet
@@ -159,7 +148,7 @@ export async function POST(request: NextRequest) {
           reward: totalReward,
           payoutStatus: 'pending',
           message: 'Victory recorded! Escrow payout failed - manual intervention needed.',
-        }, { headers: corsHeaders });
+        });
       }
       
       signature = escrowSig;
@@ -187,7 +176,7 @@ export async function POST(request: NextRequest) {
           reward: totalReward,
           payoutStatus: 'pending', // Will need manual payout
           message: 'Victory recorded! Payout pending (pool needs funding).',
-        }, { headers: corsHeaders });
+        });
       }
 
       // Create and send payout transaction
@@ -291,10 +280,10 @@ export async function POST(request: NextRequest) {
       reward: totalReward,
       payoutStatus: 'paid',
       txSignature: signature,
-    }, { headers: corsHeaders });
+    });
 
   } catch (error) {
     console.error('Failed to process victory:', error);
-    return NextResponse.json({ error: 'Failed to process victory' }, { status: 500, headers: corsHeaders });
+    return NextResponse.json({ error: 'Failed to process victory' }, { status: 500 });
   }
 }
