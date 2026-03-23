@@ -318,21 +318,21 @@ export default function HomeScreen() {
         </View>
         <View style={{ alignItems: 'flex-end', flexShrink: 0 }}>
           <AudioToggle ambientTrack="ambient-title" inline onSettingsPress={() => setAudioSettingsOpen(true)} />
-          <Pressable 
-            onPress={() => setAudioSettingsOpen(true)} 
-            style={{ marginTop: 4, opacity: 1 }}
-            hitSlop={4}
-          >
+        </View>
+      </View>
+      <AudioSettingsModal visible={audioSettingsOpen} onClose={() => setAudioSettingsOpen(false)} />
+
+      <View className="flex-1 px-4" style={Platform.OS === 'web' ? { paddingBottom: 20 } : undefined}>
+
+        {/* PROMO AREA — top-right, below header. Swap content here for promotions/partnerships. */}
+        <View style={{ alignItems: 'flex-end', marginBottom: 4 }}>
+          <Pressable onPress={() => setAudioSettingsOpen(true)} hitSlop={4}>
             <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 999, gap: 4, backgroundColor: 'rgba(168, 85, 247, 0.15)', borderWidth: 1, borderColor: 'rgba(168, 85, 247, 0.3)' }}>
               <AudiusLogo width={60} height={12} color="#a855f7" />
               <Text style={{ fontFamily: 'monospace', fontSize: 10, fontWeight: '700', color: '#a855f7', letterSpacing: 0.5 }}>SOUNDTRACK</Text>
             </View>
           </Pressable>
         </View>
-      </View>
-      <AudioSettingsModal visible={audioSettingsOpen} onClose={() => setAudioSettingsOpen(false)} />
-
-      <View className="flex-1 px-4" style={Platform.OS === 'web' ? { paddingBottom: 20 } : undefined}>
         
         <View className="flex-[3]" />
 
