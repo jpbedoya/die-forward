@@ -121,13 +121,21 @@ export function useAuth() {
 // Get player by current auth
 export function useCurrentPlayer() {
   const { user, isLoading: authLoading } = db.useAuth();
+
+  // Derive the authId that was stored in the player record.
+  // Tokens are created with email = "<authId>@wallet.dieforward.com" or
+  // "<guestId>@guest.dieforward.com", so strip the domain suffix to get
+  // the original authId that getOrCreatePlayerByAuth stored.
+  const authId = user?.email
+    ? user.email.replace(/@(wallet|guest)\.dieforward\.com$/, '')
+    : null;
   
   const { data, isLoading: playerLoading, error } = db.useQuery(
-    user?.id
+    authId
       ? {
           players: {
             $: {
-              where: { authId: user.id },
+              where: { authId },
               limit: 1,
             },
           },
