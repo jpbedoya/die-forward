@@ -42,7 +42,7 @@ function AnimatedDescendButton() {
   );
 }
 
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDeathFeed, useGameSettings } from '../lib/instant';
 import { useGame } from '../lib/GameContext';
 import { DieForwardLogoImage } from '../components/DieForwardLogoImage';
@@ -225,6 +225,7 @@ function EchoSheet({
 
 // ─── Home Screen ──────────────────────────────────────────────────────────────
 export default function HomeScreen() {
+  const insets = useSafeAreaInsets();
   const [showAllSheet, setShowAllSheet] = useState(false);
   const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
   const [cachedPreviewDeaths, setCachedPreviewDeaths] = useState<any[]>([]);
@@ -292,11 +293,11 @@ export default function HomeScreen() {
 
   return (
     <CryptBackground screen="home">
-    <SafeAreaView className="flex-1" edges={['top', 'left', 'right', 'bottom']}>
+    <SafeAreaView className="flex-1" edges={['left', 'right', 'bottom']}>
       <CRTOverlay />
       
       {/* Header */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, paddingVertical: 10 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, paddingTop: insets.top + 10, paddingBottom: 10 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, flexShrink: 1, marginLeft: -12 }}>
           {settings.showLeaderboardLink && (
             <Pressable onPress={() => router.push('/leaderboard')} style={{ paddingVertical: 8, paddingHorizontal: 10 }}>

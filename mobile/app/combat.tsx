@@ -6,7 +6,7 @@ import { AsciiLoader } from '../components/AsciiLoader';
 import { CryptBackground } from '../components/CryptBackground';
 import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
 import { updatePlayerClearedZone } from '../lib/instant';
 import { API_BASE } from '../lib/api';
@@ -63,6 +63,7 @@ function HealthBar({ current, max, color = 'red' }: { current: number; max: numb
 }
 
 export default function CombatScreen() {
+  const insets = useSafeAreaInsets();
   const game = useGame();
   const { playSFX, playAmbient } = useAudio();
   const { settings } = useGameSettings();
@@ -442,12 +443,12 @@ export default function CombatScreen() {
 
   return (
     <CryptBackground screen="combat" style={containerStyle}>
-      <SafeAreaView style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: 'transparent' }} edges={['top', 'bottom']}>
+      <SafeAreaView style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: 'transparent' }} edges={['bottom']}>
         <Animated.View 
           style={{ transform: [{ translateX: shakeAnim }], flex: 1, display: 'flex', flexDirection: 'column' }}
         >
           {/* Header */}
-          <View className="flex-row items-center justify-between px-3 py-2 border-b border-amber/30" style={{ flexShrink: 0 }}>
+          <View className="flex-row items-center justify-between px-3 border-b border-amber/30" style={{ flexShrink: 0, paddingTop: insets.top + 8, paddingBottom: 8 }}>
             <View className="flex-row items-center gap-2">
               <MenuButton onPress={() => setMenuOpen(true)} />
               <Text className="text-amber text-xs font-mono">◈ {depth.name}</Text>

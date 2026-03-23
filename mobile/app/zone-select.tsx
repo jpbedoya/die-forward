@@ -370,7 +370,7 @@ export default function ZoneSelectScreen() {
 
   return (
     <CryptBackground screen="stake">
-      <SafeAreaView className="flex-1">
+      <SafeAreaView className="flex-1" edges={['left', 'right', 'bottom']}>
         <ScreenHeader
           showHome
           title="◈ CHOOSE YOUR DESCENT"

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { View, Text, Pressable, ScrollView, Modal } from 'react-native';
 import { CryptBackground } from '../components/CryptBackground';
 import { router, useLocalSearchParams } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
 import { useAudio } from '../lib/audio';
 import { useGameSettings, useCurrentPlayer } from '../lib/instant';
@@ -26,6 +26,7 @@ const ZONE_META: Record<string, { name: string; emoji: string; accentColor: stri
 };
 
 export default function StakeScreen() {
+  const insets = useSafeAreaInsets();
   const game = useGame();
   const { playSFX, playAmbient } = useAudio();
   const { settings } = useGameSettings();
@@ -201,9 +202,9 @@ export default function StakeScreen() {
 
   return (
     <CryptBackground screen="stake">
-    <SafeAreaView className="flex-1">
+    <SafeAreaView className="flex-1" edges={['left', 'right', 'bottom']}>
       {/* Header */}
-      <View className="relative flex-row items-center justify-between px-4 py-3 border-b border-crypt-border">
+      <View className="relative flex-row items-center justify-between px-4 border-b border-crypt-border" style={{ paddingTop: insets.top + 12, paddingBottom: 12 }}>
         {/* Back to zone selector */}
         <Pressable
           onPress={() => router.replace('/zone-select')}

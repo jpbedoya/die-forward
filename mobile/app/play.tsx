@@ -6,7 +6,7 @@ import { AsciiLoader } from '../components/AsciiLoader';
 import { CryptBackground } from '../components/CryptBackground';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
 import { useAudio, getZoneAmbient, useAtmosphericTriggers } from '../lib/audio';
 import { useCorpsesForRoom, discoverCorpse, recordTip, useGameSettings, useCurrentPlayer, Corpse } from '../lib/instant';
@@ -31,6 +31,7 @@ function HealthBar({ current, max }: { current: number; max: number }) {
 }
 
 export default function PlayScreen() {
+  const insets = useSafeAreaInsets();
   const game = useGame();
   const wallet = useUnifiedWallet();
   const { playSFX, playAmbient } = useAudio();
@@ -420,9 +421,9 @@ export default function PlayScreen() {
 
   return (
     <CryptBackground screen="play" style={containerStyle}>
-      <SafeAreaView style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: 'transparent' }} edges={['top', 'bottom']}>
+      <SafeAreaView style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: 'transparent' }} edges={['bottom']}>
         {/* Header */}
-        <View className="flex-row items-center justify-between px-3 py-2 border-b border-amber/30" style={{ flexShrink: 0 }}>
+        <View className="flex-row items-center justify-between px-3 border-b border-amber/30" style={{ flexShrink: 0, paddingTop: insets.top + 8, paddingBottom: 8 }}>
           <View className="flex-row items-center gap-2">
             <MenuButton onPress={() => setMenuOpen(true)} />
           </View>

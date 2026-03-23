@@ -17,7 +17,7 @@ export default function LeaderboardScreen() {
   const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
 
   return (
-    <SafeAreaView className="flex-1 bg-crypt-bg">
+    <SafeAreaView className="flex-1 bg-crypt-bg" edges={['left', 'right', 'bottom']}>
       <ScreenHeader
         showHome
         title="◈ RANKS"

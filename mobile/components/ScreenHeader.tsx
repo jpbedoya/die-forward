@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface ScreenHeaderProps {
   title?: string;
@@ -22,6 +23,7 @@ export function ScreenHeader({
   border = true,
   showHome = false,
 }: ScreenHeaderProps) {
+  const insets = useSafeAreaInsets();
   const leftContent = showHome ? (
     <Pressable
       onPress={() => router.replace('/')}
@@ -49,7 +51,8 @@ export function ScreenHeader({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingHorizontal: H_PAD,
-        paddingVertical: V_PAD,
+        paddingTop: insets.top + V_PAD,
+        paddingBottom: V_PAD,
         borderBottomWidth: border ? 1 : 0,
         borderColor: BORDER_COLOR,
       }}

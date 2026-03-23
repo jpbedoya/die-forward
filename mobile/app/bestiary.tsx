@@ -413,7 +413,7 @@ export default function BestiaryScreen() {
 
   return (
     <CryptBackground screen="home">
-      <SafeAreaView style={{ flex: 1 }} edges={['top', 'left', 'right', 'bottom']}>
+      <SafeAreaView style={{ flex: 1 }} edges={['left', 'right', 'bottom']}>
         <CRTOverlay />
 
         <ScreenHeader

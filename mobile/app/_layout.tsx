@@ -10,7 +10,7 @@ import '../global.css';
 import React, { useEffect, useState, useCallback } from 'react';
 import { Stack, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { View, Text, ScrollView, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -255,7 +255,7 @@ export default function RootLayout() {
   // UnifiedWalletProvider stays inside the main branch (splash must stay outside it for MWA stability).
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider style={{ backgroundColor: '#0d0d0d' }}>
+      <SafeAreaProvider initialMetrics={initialWindowMetrics} style={{ backgroundColor: '#0d0d0d' }}>
         <WebFrame>
           <StatusBar style="light" />
           {!migrationDone || showSplash ? (

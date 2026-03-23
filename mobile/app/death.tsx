@@ -3,7 +3,7 @@ import { View, Text, Pressable, TextInput, ScrollView, Modal, Animated, Platform
 import { AsciiLoader } from '../components/AsciiLoader';
 import { CryptBackground } from '../components/CryptBackground';
 import { router, useLocalSearchParams } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { useGame } from '../lib/GameContext';
 import { useAudio } from '../lib/audio';
@@ -17,6 +17,7 @@ import { useCurrentPlayer, applyMilestoneCosmetics } from '../lib/instant';
 import { getNewMilestone, getMilestoneTypeLabel, type Milestone } from '../lib/milestones';
 
 export default function DeathScreen() {
+  const insets = useSafeAreaInsets();
   const game = useGame();
   const { playSFX, playAmbient } = useAudio();
   const { viewShotRef, webRef, captureAndShare } = useShareCard();
@@ -291,9 +292,9 @@ export default function DeathScreen() {
 
   return (
     <CryptBackground screen="death">
-    <SafeAreaView className="flex-1">
+    <SafeAreaView className="flex-1" edges={['left', 'right', 'bottom']}>
       {/* Header with audio toggle */}
-      <View className="flex-row items-center justify-end px-3 py-[10px]">
+      <View className="flex-row items-center justify-end px-3" style={{ paddingTop: insets.top + 10, paddingBottom: 10 }}>
         <AudioToggle ambientTrack="ambient-death" inline onSettingsPress={() => setAudioSettingsOpen(true)} />
       </View>
 

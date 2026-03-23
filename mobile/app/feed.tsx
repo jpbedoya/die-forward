@@ -1,7 +1,7 @@
 import { View, Text, ScrollView, Pressable, ActivityIndicator, RefreshControl } from 'react-native';
 import { CryptBackground } from '../components/CryptBackground';
 import { router } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDeathFeed, usePoolStats, Death } from '../lib/instant';
 import { getDepthForRoom } from '../lib/content';
 import { useState } from 'react';
@@ -65,6 +65,7 @@ function DeathEntry({ death }: { death: Death }) {
 }
 
 export default function FeedScreen() {
+  const insets = useSafeAreaInsets();
   const { deaths, isLoading } = useDeathFeed(30);
   const { totalDeaths, totalStaked, isLoading: statsLoading } = usePoolStats();
   const [refreshing, setRefreshing] = useState(false);
@@ -77,9 +78,9 @@ export default function FeedScreen() {
 
   return (
     <CryptBackground screen="feed">
-    <SafeAreaView className="flex-1">
+    <SafeAreaView className="flex-1" edges={['left', 'right', 'bottom']}>
       {/* Header */}
-      <View className="flex-row items-center justify-between px-3 py-3 border-b border-amber/30">
+      <View className="flex-row items-center justify-between px-3 border-b border-amber/30" style={{ paddingTop: insets.top + 12, paddingBottom: 12 }}>
         <Pressable onPress={() => router.back()}>
           <Text className="text-bone-muted text-sm font-mono">[← BACK]</Text>
         </Pressable>

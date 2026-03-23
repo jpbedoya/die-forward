@@ -3,7 +3,7 @@ import { View, Text, Pressable, ScrollView, Modal, Animated, Platform, TextStyle
 import { AsciiLoader } from '../components/AsciiLoader';
 import { CryptBackground } from '../components/CryptBackground';
 import { router } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { useGame } from '../lib/GameContext';
 import { useAudio } from '../lib/audio';
@@ -61,6 +61,7 @@ const ESCAPED_ASCII = `
 ███████ ███████  ██████ ██   ██ ██      ███████ ██████  `;
 
 export default function VictoryScreen() {
+  const insets = useSafeAreaInsets();
   const game = useGame();
   const { playSFX, playAmbient, ready: audioReady } = useAudio();
   const { settings } = useGameSettings();
@@ -256,9 +257,9 @@ export default function VictoryScreen() {
 
   return (
     <CryptBackground screen="victory">
-    <SafeAreaView className="flex-1">
+    <SafeAreaView className="flex-1" edges={['left', 'right', 'bottom']}>
       {/* Header with audio toggle */}
-      <View className="flex-row items-center justify-end px-3 py-[10px]">
+      <View className="flex-row items-center justify-end px-3" style={{ paddingTop: insets.top + 10, paddingBottom: 10 }}>
         <AudioToggle ambientTrack="ambient-victory" inline onSettingsPress={() => setAudioSettingsOpen(true)} />
       </View>
 
