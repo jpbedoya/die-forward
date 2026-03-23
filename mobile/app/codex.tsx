@@ -511,6 +511,7 @@ export default function CodexScreen() {
         <AudioSettingsModal visible={audioSettingsOpen} onClose={() => setAudioSettingsOpen(false)} />
 
         {/* Tab bar */}
+        <View>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -542,6 +543,7 @@ export default function CodexScreen() {
             );
           })}
         </ScrollView>
+        </View>
 
         {/* Content */}
         <View style={{ flex: 1 }}>
