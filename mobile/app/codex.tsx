@@ -544,13 +544,15 @@ export default function CodexScreen() {
         </ScrollView>
 
         {/* Content */}
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 14, paddingBottom: 40 }}
-          key={activeTab}
-        >
-          <SectionContent />
-        </ScrollView>
+        <View style={{ flex: 1 }}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: 14, paddingBottom: 40 }}
+            key={activeTab}
+          >
+            <SectionContent />
+          </ScrollView>
+        </View>
       </SafeAreaView>
     </CryptBackground>
   );
