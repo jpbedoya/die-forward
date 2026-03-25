@@ -45,9 +45,11 @@ function AnimatedDescendButton() {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDeathFeed, useGameSettings } from '../lib/instant';
 import { useGame } from '../lib/GameContext';
+import { usePlayer } from '../lib/instant';
 import { DieForwardLogoImage } from '../components/DieForwardLogoImage';
 import { AudioToggle } from '../components/AudioToggle';
 import { AudioSettingsModal } from '../components/AudioSettingsModal';
+import { NicknameModal } from '../components/NicknameModal';
 import { AudiusLogo } from '../components/AudiusLogo';
 import { CRTOverlay } from '../components/CRTOverlay';
 import * as api from '../lib/api';
@@ -231,9 +233,11 @@ export default function HomeScreen() {
   const [cachedPreviewDeaths, setCachedPreviewDeaths] = useState<any[]>([]);
 
   const game = useGame();
+  const { player: walletPlayer } = usePlayer(game.walletAddress);
   const { deaths: recentDeaths, isLoading: feedLoading } = useDeathFeed(50);
-  const { playAmbient, ready: audioReady } = useAudio();
+  const { playAmbient, playSFX, ready: audioReady } = useAudio();
   const { settings } = useGameSettings();
+  const [walletConnecting, setWalletConnecting] = useState(false);
 
   useEffect(() => {
     dlog('Home', 'HomeScreen mounted');
@@ -287,6 +291,24 @@ export default function HomeScreen() {
     : recentDeaths
   ).slice(0, 5);
 
+  const handleWalletConnect = useCallback(async () => {
+    if (game.walletConnected) return;
+    playSFX('ui-click');
+    setWalletConnecting(true);
+    try {
+      await game.connect();
+    } catch {
+      // user cancelled or error — ignore
+    } finally {
+      setWalletConnecting(false);
+    }
+  }, [game.walletConnected, game.connect, playSFX]);
+
+  // Display name: nickname > truncated wallet > null
+  const displayName = game.nickname
+    || walletPlayer?.nickname
+    || (game.walletAddress ? `${game.walletAddress.slice(0, 4)}...${game.walletAddress.slice(-4)}` : null);
+
   const openSheet = useCallback(() => {
     setShowAllSheet(true);
   }, []);
@@ -296,32 +318,85 @@ export default function HomeScreen() {
     <SafeAreaView className="flex-1" edges={['left', 'right', 'bottom']}>
       <CRTOverlay />
       
-      {/* Header */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, paddingTop: insets.top + 10, paddingBottom: 10 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, flexShrink: 1, marginLeft: -12 }}>
-          {settings.showLeaderboardLink && (
-            <Pressable onPress={() => router.push('/leaderboard')} style={{ paddingVertical: 8, paddingHorizontal: 10 }}>
+      {/* Header row 1: Identity pill (left) + Audio toggle (right) */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, paddingTop: insets.top + 10, paddingBottom: 4 }}>
+        <View style={{ flexShrink: 0 }}>
+          {game.walletConnected && displayName ? (
+            <View style={{
+              flexDirection: 'row', alignItems: 'center',
+              paddingHorizontal: 10, paddingVertical: 5,
+              borderRadius: 999,
+              backgroundColor: 'rgba(245, 158, 11, 0.12)',
+              borderWidth: 1, borderColor: 'rgba(245, 158, 11, 0.3)',
+              gap: 5,
+            }}>
+              <Text style={{ fontSize: 12 }}>💀</Text>
+              <Text style={{
+                fontFamily: 'monospace', fontSize: 11, fontWeight: '700',
+                color: '#f59e0b', letterSpacing: 0.5,
+                maxWidth: 120,
+              }} numberOfLines={1}>
+                {displayName}
+              </Text>
+            </View>
+          ) : (
+            <Pressable onPress={handleWalletConnect} disabled={walletConnecting}>
               {({ pressed }) => (
-                <Text style={{ fontFamily: 'monospace', fontSize: 11, letterSpacing: 1, color: pressed ? '#fff' : '#f59e0b', backgroundColor: pressed ? 'rgba(245,158,11,0.15)' : 'transparent' }}>◈ RANKS</Text>
+                <View style={{
+                  flexDirection: 'row', alignItems: 'center',
+                  paddingHorizontal: 10, paddingVertical: 5,
+                  borderRadius: 999,
+                  backgroundColor: pressed ? 'rgba(245, 158, 11, 0.2)' : 'rgba(245, 158, 11, 0.08)',
+                  borderWidth: 1, borderColor: pressed ? 'rgba(245, 158, 11, 0.5)' : 'rgba(245, 158, 11, 0.25)',
+                  gap: 5,
+                  opacity: walletConnecting ? 0.5 : 1,
+                }}>
+                  <Text style={{ fontSize: 12 }}>👛</Text>
+                  <Text style={{
+                    fontFamily: 'monospace', fontSize: 10, fontWeight: '700',
+                    color: '#f59e0b', letterSpacing: 0.5,
+                  }}>
+                    {walletConnecting ? 'CONNECTING...' : 'CONNECT'}
+                  </Text>
+                </View>
               )}
             </Pressable>
           )}
-          <Pressable onPress={() => router.push('/bestiary')} style={{ paddingVertical: 8, paddingHorizontal: 10 }}>
-            {({ pressed }) => (
-              <Text style={{ fontFamily: 'monospace', fontSize: 11, letterSpacing: 1, color: pressed ? '#fff' : '#f59e0b', backgroundColor: pressed ? 'rgba(245,158,11,0.15)' : 'transparent' }}>◈ BESTIARY</Text>
-            )}
-          </Pressable>
-          <Pressable onPress={() => router.push('/codex')} style={{ paddingVertical: 8, paddingHorizontal: 10 }}>
-            {({ pressed }) => (
-              <Text style={{ fontFamily: 'monospace', fontSize: 11, letterSpacing: 1, color: pressed ? '#fff' : '#f59e0b', backgroundColor: pressed ? 'rgba(245,158,11,0.15)' : 'transparent' }}>◈ CODEX</Text>
-            )}
-          </Pressable>
         </View>
         <View style={{ alignItems: 'flex-end', flexShrink: 0 }}>
           <AudioToggle ambientTrack="ambient-title" inline onSettingsPress={() => setAudioSettingsOpen(true)} />
         </View>
       </View>
+
+      {/* Header row 2: Nav links (left) */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingBottom: 6 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, flexShrink: 1, marginLeft: -12 }}>
+          {settings.showLeaderboardLink && (
+            <Pressable onPress={() => router.push('/leaderboard')} style={{ paddingVertical: 6, paddingHorizontal: 10 }}>
+              {({ pressed }) => (
+                <Text style={{ fontFamily: 'monospace', fontSize: 11, letterSpacing: 1, color: pressed ? '#fff' : '#f59e0b', backgroundColor: pressed ? 'rgba(245,158,11,0.15)' : 'transparent' }}>◈ RANKS</Text>
+              )}
+            </Pressable>
+          )}
+          <Pressable onPress={() => router.push('/bestiary')} style={{ paddingVertical: 6, paddingHorizontal: 10 }}>
+            {({ pressed }) => (
+              <Text style={{ fontFamily: 'monospace', fontSize: 11, letterSpacing: 1, color: pressed ? '#fff' : '#f59e0b', backgroundColor: pressed ? 'rgba(245,158,11,0.15)' : 'transparent' }}>◈ BESTIARY</Text>
+            )}
+          </Pressable>
+          <Pressable onPress={() => router.push('/codex')} style={{ paddingVertical: 6, paddingHorizontal: 10 }}>
+            {({ pressed }) => (
+              <Text style={{ fontFamily: 'monospace', fontSize: 11, letterSpacing: 1, color: pressed ? '#fff' : '#f59e0b', backgroundColor: pressed ? 'rgba(245,158,11,0.15)' : 'transparent' }}>◈ CODEX</Text>
+            )}
+          </Pressable>
+        </View>
+      </View>
+
       <AudioSettingsModal visible={audioSettingsOpen} onClose={() => setAudioSettingsOpen(false)} />
+      <NicknameModal
+        visible={game.showNicknameModal}
+        onSubmit={(name) => game.setNickname(name)}
+        onSkip={() => game.dismissNicknameModal()}
+      />
 
       <View className="flex-1 px-4" style={Platform.OS === 'web' ? { paddingBottom: 20 } : undefined}>
 

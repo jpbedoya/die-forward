@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -6,6 +6,8 @@ import { CryptBackground } from '../components/CryptBackground';
 import { CRTOverlay } from '../components/CRTOverlay';
 import { AudioToggle } from '../components/AudioToggle';
 import { AudioSettingsModal } from '../components/AudioSettingsModal';
+import { ItemModal, CreatureModal } from '../components/CryptModal';
+import { getItemDetails, getCreatureInfo, ItemDetails, CreatureInfo } from '../lib/content';
 import { useAudio } from '../lib/audio';
 
 // ─── Tab definitions ──────────────────────────────────────────────────────────
@@ -162,6 +164,8 @@ function CombatSection() {
 }
 
 function ItemsSection() {
+  const [selectedItem, setSelectedItem] = useState<ItemDetails | null>(null);
+
   const items = [
     { cat: 'WEAPONS', entries: [
       { name: 'Rusty Blade', emoji: '⚔️', rarity: 'common', effect: '+20% damage' },
@@ -193,8 +197,19 @@ function ItemsSection() {
     ]},
   ];
 
+  const handleItemPress = useCallback((name: string) => {
+    const details = getItemDetails(name);
+    if (details) setSelectedItem(details);
+  }, []);
+
   return (
     <View>
+      <ItemModal
+        visible={!!selectedItem}
+        onClose={() => setSelectedItem(null)}
+        item={selectedItem}
+      />
+
       <SectionTitle>INVENTORY</SectionTitle>
       <Card>
         <Row label="Slots" value="4 maximum" />
@@ -215,14 +230,24 @@ function ItemsSection() {
         <View key={group.cat}>
           <SectionTitle>{group.cat}</SectionTitle>
           {group.entries.map((item) => (
-            <Card key={item.name}>
+            <Pressable
+              key={item.name}
+              onPress={() => handleItemPress(item.name)}
+              style={({ pressed }) => ({
+                backgroundColor: pressed ? 'rgba(245,158,11,0.08)' : C.cardBg,
+                borderWidth: 1,
+                borderColor: pressed ? C.amber : C.cardBorder,
+                padding: 14,
+                marginBottom: 10,
+              })}
+            >
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                 <Text style={{ fontSize: 16 }}>{item.emoji}</Text>
                 <Text style={{ fontFamily: 'monospace', fontSize: 12, color: RARITY_COLOR[item.rarity] || C.bone, flex: 1 }}>{item.name}</Text>
                 <Badge text={item.rarity.toUpperCase()} color={RARITY_COLOR[item.rarity] || C.boneDark} />
               </View>
               <Body>{item.effect}</Body>
-            </Card>
+            </Pressable>
           ))}
         </View>
       ))}
@@ -287,46 +312,72 @@ function ZonesSection() {
 }
 
 function CreaturesSection() {
+  const [selectedCreature, setSelectedCreature] = useState<CreatureInfo | null>(null);
+
   const tiers = [
     { tier: 1, label: 'TIER 1 — THE UPPER DEPTHS', color: C.boneDark, creatures: [
-      { name: 'The Drowned 🧟', hp: '45-65', behavior: 'Aggressive, Erratic' },
-      { name: 'Pale Crawler 🕷️', hp: '35-50', behavior: 'Stalking, Hunting' },
-      { name: 'The Hollow 👤', hp: '40-55', behavior: 'Stalking, Charging' },
-      { name: 'Bloated One 🫧', hp: '55-75', behavior: 'Aggressive, Charging' },
-      { name: 'Flickering Shade 👻', hp: '30-45', behavior: 'Erratic, Retreating' },
-      { name: 'The Hunched 🐺', hp: '50-70', behavior: 'Hunting, Aggressive' },
-      { name: 'Tideborn 🌊', hp: '60-80', behavior: 'Charging, Defensive' },
+      { name: 'The Drowned', emoji: '🧟', hp: '45-65', behavior: 'Aggressive, Erratic' },
+      { name: 'Pale Crawler', emoji: '🕷️', hp: '35-50', behavior: 'Stalking, Hunting' },
+      { name: 'The Hollow', emoji: '👤', hp: '40-55', behavior: 'Stalking, Charging' },
+      { name: 'Bloated One', emoji: '🫧', hp: '55-75', behavior: 'Aggressive, Charging' },
+      { name: 'Flickering Shade', emoji: '👻', hp: '30-45', behavior: 'Erratic, Retreating' },
+      { name: 'The Hunched', emoji: '🐺', hp: '50-70', behavior: 'Hunting, Aggressive' },
+      { name: 'Tideborn', emoji: '🌊', hp: '60-80', behavior: 'Charging, Defensive' },
     ]},
     { tier: 2, label: 'TIER 2 — THE FLOODED HALLS', color: C.amber, creatures: [
-      { name: 'Hollow Clergy 🧙', hp: '70-90', behavior: 'Charging, Defensive' },
-      { name: 'The Bound ⛓️', hp: '80-100', behavior: 'Hunting, Charging' },
-      { name: 'Forgotten Guardian 🗿', hp: '90-110', behavior: 'Defensive, Charging' },
-      { name: 'The Weeping 😢', hp: '60-80', behavior: 'Stalking, Erratic' },
-      { name: 'Carrion Knight ⚔️', hp: '85-105', behavior: 'Aggressive, Defensive' },
-      { name: 'The Congregation 👥', hp: '100-130', behavior: 'Aggressive, Charging' },
+      { name: 'Hollow Clergy', emoji: '🧙', hp: '70-90', behavior: 'Charging, Defensive' },
+      { name: 'The Bound', emoji: '⛓️', hp: '80-100', behavior: 'Hunting, Charging' },
+      { name: 'Forgotten Guardian', emoji: '🗿', hp: '90-110', behavior: 'Defensive, Charging' },
+      { name: 'The Weeping', emoji: '😢', hp: '60-80', behavior: 'Stalking, Erratic' },
+      { name: 'Carrion Knight', emoji: '⚔️', hp: '85-105', behavior: 'Aggressive, Defensive' },
+      { name: 'The Congregation', emoji: '👥', hp: '100-130', behavior: 'Aggressive, Charging' },
     ]},
     { tier: 3, label: 'TIER 3 — THE ABYSS', color: C.blood, creatures: [
-      { name: 'The Unnamed ❓', hp: '120-150', behavior: 'Erratic, Stalking' },
-      { name: 'Mother of Tides 🌊', hp: '130-160', behavior: 'Charging, Aggressive' },
-      { name: 'The Keeper 👁️', hp: '180-220', behavior: 'Charging, Aggressive, Defensive' },
+      { name: 'The Unnamed', emoji: '❓', hp: '120-150', behavior: 'Erratic, Stalking' },
+      { name: 'Mother of Tides', emoji: '🌊', hp: '130-160', behavior: 'Charging, Aggressive' },
+      { name: 'The Keeper', emoji: '👁️', hp: '180-220', behavior: 'Charging, Aggressive, Defensive' },
     ]},
   ];
 
+  const handleCreaturePress = useCallback((name: string) => {
+    const info = getCreatureInfo(name);
+    if (info) setSelectedCreature(info);
+  }, []);
+
   return (
     <View>
+      <CreatureModal
+        visible={!!selectedCreature}
+        onClose={() => setSelectedCreature(null)}
+        creature={selectedCreature}
+      />
+
       <Body>Creatures grow stronger in the deep. Tier 2 deal 1.5x damage. Tier 3 deal 2x.</Body>
       <Divider />
       {tiers.map((t) => (
         <View key={t.tier}>
           <SectionTitle>{t.label}</SectionTitle>
           {t.creatures.map((c) => (
-            <Card key={c.name}>
+            <Pressable
+              key={c.name}
+              onPress={() => handleCreaturePress(c.name)}
+              style={({ pressed }) => ({
+                backgroundColor: pressed ? 'rgba(245,158,11,0.08)' : C.cardBg,
+                borderWidth: 1,
+                borderColor: pressed ? t.color : C.cardBorder,
+                padding: 14,
+                marginBottom: 10,
+              })}
+            >
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 3 }}>
-                <Text style={{ fontFamily: 'monospace', fontSize: 12, color: t.color }}>{c.name}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flex: 1 }}>
+                  <Text style={{ fontSize: 14 }}>{c.emoji}</Text>
+                  <Text style={{ fontFamily: 'monospace', fontSize: 12, color: t.color }}>{c.name}</Text>
+                </View>
                 <Text style={{ fontFamily: 'monospace', fontSize: 10, color: C.blood }}>{c.hp} HP</Text>
               </View>
               <Body>{c.behavior}</Body>
-            </Card>
+            </Pressable>
           ))}
           <Divider />
         </View>
@@ -470,7 +521,7 @@ function WisdomSection() {
 
 // ─── Tab content map ──────────────────────────────────────────────────────────
 
-const SECTION_MAP: Record<TabId, () => JSX.Element> = {
+const SECTION_MAP: Record<TabId, () => React.ReactElement> = {
   combat: CombatSection,
   items: ItemsSection,
   zones: ZonesSection,

@@ -9,7 +9,7 @@ import { AudioSettingsModal } from '../components/AudioSettingsModal';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { CRTOverlay } from '../components/CRTOverlay';
 import { useGame } from '../lib/GameContext';
-import { useCurrentPlayer, Player } from '../lib/instant';
+import { useCurrentPlayer, usePlayer, Player } from '../lib/instant';
 import { API_BASE } from '../lib/api';
 
 // Determine if a player has unlocked a zone through progression
@@ -311,7 +311,15 @@ function VoidBeyondCard({
 export default function ZoneSelectScreen() {
   const { playSFX, playAmbient } = useAudio();
   const game = useGame();
-  const { player } = useCurrentPlayer();
+  // useCurrentPlayer queries by auth session (may be guest with no progression).
+  // usePlayer queries by stored wallet address (has real progression data).
+  // Use whichever has higher highestRoom so zones unlock correctly even before
+  // the wallet reconnects in the current session.
+  const { player: authPlayer } = useCurrentPlayer();
+  const { player: walletPlayer } = usePlayer(game.walletAddress);
+  const player = (walletPlayer?.highestRoom ?? 0) >= (authPlayer?.highestRoom ?? 0)
+    ? walletPlayer ?? authPlayer
+    : authPlayer ?? walletPlayer;
   const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
   const [selectedZoneId, setSelectedZoneId] = useState('sunken-crypt');
   const { width: screenWidth } = useWindowDimensions();
