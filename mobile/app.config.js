@@ -8,7 +8,7 @@ try {
   // Not a git repo or git not available — fall back to 'dev'
 }
 
-const BASE_VERSION = '1.4.2';
+const BASE_VERSION = '1.4.3';
 const VERSION = `${BASE_VERSION}.${commitHash}`;
 
 module.exports = {
@@ -37,7 +37,7 @@ module.exports = {
       },
       edgeToEdgeEnabled: true,
       package: "com.dieforward.app",
-      versionCode: 2,  // Increment manually for store releases only
+      versionCode: 143,  // Increment manually for store releases only
     },
     web: {
       bundler: "metro",
