@@ -26,13 +26,50 @@ Expo mobile app running on web (React Native Web), iOS, and Android with full fe
 
 ## Local Android Build
 
+### One-time toolchain setup
+
+Local builds need a JDK and the Android SDK. On macOS via Homebrew (no sudo required):
+
 ```bash
-export ANDROID_HOME=/opt/homebrew/share/android-commandlinetools
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home
-cd mobile/android
-./gradlew assembleRelease
-# APK: app/build/outputs/apk/release/app-release.apk
-# Cached build: ~30s | First build: ~8min
+# JDK 17
+brew install openjdk@17
+
+# Android command-line tools (sdkmanager, adb, etc.)
+brew install --cask android-commandlinetools
+
+# Env vars — append to ~/.zshrc so every new terminal has them
+export JAVA_HOME="/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home"
+export ANDROID_HOME="/opt/homebrew/share/android-commandlinetools"
+export PATH="$JAVA_HOME/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
+
+# Accept licenses + install SDK packages
+yes | sdkmanager --licenses
+sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0" \
+  "ndk;27.1.12297006" "cmake;3.22.1"
+```
+
+> `openjdk@17` is used instead of the Temurin cask because it installs without sudo. Either works — just point `JAVA_HOME` at whichever JDK 17 you have.
+
+### Building
+
+```bash
+cd mobile
+npm install                                   # first time / after dependency changes
+npx expo prebuild --platform android --clean   # regenerates the gitignored android/ dir
+npm run build:android:local                    # → debug APK
+```
+
+`npm run build:android:local` runs `cd android && ./gradlew assembleDebug`. Re-run `expo prebuild` only when native config or config plugins change — otherwise the build script alone is enough.
+
+- **Debug APK:** `mobile/android/app/build/outputs/apk/debug/app-arm64-v8a-debug.apk`
+- **Release APK:** `cd android && ./gradlew assembleRelease` → `app/build/outputs/apk/release/app-release.apk` (requires `mobile/keystores/release.keystore`, gitignored — the `with-release-signing` plugin wires it in)
+- Builds are arm64-only (`with-arm64-only` config plugin).
+- Cached build: ~10s | First build: ~7min (compiles native/NDK code).
+
+### Build + install to a connected device
+
+```bash
+cd mobile && npm run android   # expo run:android — requires a device/emulator
 ```
 
 ## Environment Variables

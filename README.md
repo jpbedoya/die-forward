@@ -386,6 +386,18 @@ npx expo start --web
 npx expo start --android
 ```
 
+### Local Android Build (APK)
+
+To build a standalone APK locally — not just the dev server:
+
+```bash
+cd mobile
+npx expo prebuild --platform android --clean   # first time / when native config changes
+npm run build:android:local                    # → debug APK
+```
+
+See [`mobile/BUILD_NOTES.md`](mobile/BUILD_NOTES.md#local-android-build) for the one-time JDK + Android SDK toolchain setup.
+
 ### Environment Variables
 
 ```bash
