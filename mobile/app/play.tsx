@@ -3,6 +3,7 @@ import { View, Text, Pressable, ScrollView, Alert, Platform, ViewStyle, Image, M
 import { getCreatureAsset, getCreatureAssetByName } from '../lib/creatureAssets';
 import { Icons } from '../lib/iconAssets';
 import { AsciiLoader } from '../components/AsciiLoader';
+import { TypewriterText } from '../components/TypewriterText';
 import { CryptBackground } from '../components/CryptBackground';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
@@ -48,6 +49,8 @@ export default function PlayScreen() {
   const [lastFoundItem, setLastFoundItem] = useState<{ name: string; emoji: string } | null>(null);
   const [selectedCreature, setSelectedCreature] = useState<CreatureInfo | null>(null);
   const [modifierExpanded, setModifierExpanded] = useState(false);
+  const [narrativeDone, setNarrativeDone] = useState(false);
+  const [skipNarrative, setSkipNarrative] = useState(false);
 
   // Handle tipping a corpse
   const handleTip = async (corpse: Corpse) => {
@@ -91,6 +94,12 @@ export default function PlayScreen() {
     playAmbient(getZoneAmbient(game.zoneId, 'explore'));
   }, [game.zoneId]);
 
+  // Reset narrative streaming state when entering a new room
+  useEffect(() => {
+    setNarrativeDone(false);
+    setSkipNarrative(false);
+  }, [currentRoom]);
+
   // Atmospheric trigger SFX — random world sounds during exploration
   useAtmosphericTriggers(game.zoneId, true);
 
@@ -115,7 +124,27 @@ export default function PlayScreen() {
 
   const renderNarrative = () => {
     const text = getNarrative();
-    return <Text className="text-bone text-base font-mono leading-6 mb-4">{text}</Text>;
+    if (!settings.enableRoomTextStreaming) {
+      return <Text className="text-bone text-base font-mono leading-6 mb-4">{text}</Text>;
+    }
+    return (
+      <Pressable
+        className="mb-4"
+        onPress={() => { setSkipNarrative(true); setNarrativeDone(true); }}
+      >
+        <TypewriterText
+          key={currentRoom}
+          text={text}
+          speedMs={settings.roomTextStreamSpeedMs}
+          skip={skipNarrative}
+          className="text-bone text-base font-mono leading-6"
+          onComplete={() => setNarrativeDone(true)}
+        />
+        {!narrativeDone && (
+          <Text className="text-bone-dark text-[10px] font-mono mt-1">[tap to skip]</Text>
+        )}
+      </Pressable>
+    );
   };
 
   const handleAction = async (action: string) => {
@@ -413,6 +442,9 @@ export default function PlayScreen() {
   }
 
   const options = getOptions();
+  // Hide the action options until the room narrative has finished streaming.
+  // message/showCorpse are post-action states where the narrative already showed.
+  const optionsVisible = !settings.enableRoomTextStreaming || narrativeDone || !!message || showCorpse;
 
   // Use dvh for mobile web, fallback to 100% for native
   const containerStyle = (Platform.OS === 'web'
@@ -598,7 +630,8 @@ export default function PlayScreen() {
           </View>
         )}
 
-        {/* Divider */}
+        {/* Divider + options — hidden until the room narrative finishes streaming */}
+        {optionsVisible && (<>
         <Text className="text-crypt-border-light text-xs font-mono text-center mb-4">────────────────────────</Text>
 
         {/* Options */}
@@ -655,6 +688,7 @@ export default function PlayScreen() {
             );
           })
         )}
+        </>)}
       </ScrollView>
 
       {/* Footer */}

@@ -578,6 +578,9 @@ export interface GameSettings {
   victoryBonusPercent: number;
   // UI settings
   showLeaderboardLink: boolean;    // Show leaderboard link on title screen
+  // Storytelling settings
+  enableRoomTextStreaming: boolean; // Reveal room narrative character-by-character
+  roomTextStreamSpeedMs: number;    // Base delay per character (ms)
 }
 
 // Default settings (fallback if not set in DB)
@@ -606,6 +609,8 @@ export const DEFAULT_GAME_SETTINGS: Omit<GameSettings, 'id'> = {
   erraticDamageMax: 1.3,
   victoryBonusPercent: 50,
   showLeaderboardLink: true,
+  enableRoomTextStreaming: false,
+  roomTextStreamSpeedMs: 28,
 };
 
 // Hook to get game settings (from admin panel)
@@ -646,6 +651,8 @@ export function useGameSettings() {
     erraticDamageMax: dbSettings?.erraticDamageMax ?? DEFAULT_GAME_SETTINGS.erraticDamageMax,
     victoryBonusPercent: dbSettings?.victoryBonusPercent ?? DEFAULT_GAME_SETTINGS.victoryBonusPercent,
     showLeaderboardLink: dbSettings?.showLeaderboardLink ?? DEFAULT_GAME_SETTINGS.showLeaderboardLink,
+    enableRoomTextStreaming: dbSettings?.enableRoomTextStreaming ?? DEFAULT_GAME_SETTINGS.enableRoomTextStreaming,
+    roomTextStreamSpeedMs: dbSettings?.roomTextStreamSpeedMs ?? DEFAULT_GAME_SETTINGS.roomTextStreamSpeedMs,
   }), [dbSettings]);
 
   return { settings, isLoading, error };

@@ -54,6 +54,8 @@ interface GameSettings {
   braceBaseDamageMin: number;
   braceBaseDamageMax: number;
   erraticDamageMax: number;
+  enableRoomTextStreaming: boolean;
+  roomTextStreamSpeedMs: number;
 }
 
 interface Playlist {
@@ -94,6 +96,8 @@ const DEFAULT_SETTINGS: Omit<GameSettings, 'id'> = {
   braceBaseDamageMin: 6,
   braceBaseDamageMax: 12,
   erraticDamageMax: 1.3,
+  enableRoomTextStreaming: false,
+  roomTextStreamSpeedMs: 28,
 };
 
 type Tab = 'dashboard' | 'settings' | 'zones' | 'bestiary' | 'content' | 'music' | 'deaths' | 'corpses';
@@ -298,6 +302,8 @@ function SettingsTab() {
     braceBaseDamageMin: settings?.braceBaseDamageMin ?? DEFAULT_SETTINGS.braceBaseDamageMin,
     braceBaseDamageMax: settings?.braceBaseDamageMax ?? DEFAULT_SETTINGS.braceBaseDamageMax,
     erraticDamageMax: settings?.erraticDamageMax ?? DEFAULT_SETTINGS.erraticDamageMax,
+    enableRoomTextStreaming: settings?.enableRoomTextStreaming ?? DEFAULT_SETTINGS.enableRoomTextStreaming,
+    roomTextStreamSpeedMs: settings?.roomTextStreamSpeedMs ?? DEFAULT_SETTINGS.roomTextStreamSpeedMs,
   } as GameSettings;
 
   return (
@@ -347,6 +353,22 @@ function SettingsTab() {
           value={cs.enableVRF && cs.enableMagicBlock}
           disabled={!cs.enableMagicBlock}
           onChange={(v) => saveSettings({ enableVRF: v })}
+        />
+      </SettingsSection>
+      <SettingsSection title="📖 Storytelling">
+        <SettingToggle
+          label="Stream Room Text"
+          description="Reveal dungeon room narrative character-by-character (typewriter effect)."
+          value={cs.enableRoomTextStreaming}
+          onChange={(v) => saveSettings({ enableRoomTextStreaming: v })}
+        />
+        <SettingSlider
+          label="Text Stream Speed (ms/char)"
+          value={cs.roomTextStreamSpeedMs}
+          min={5}
+          max={80}
+          step={1}
+          onChange={(v) => saveSettings({ roomTextStreamSpeedMs: v })}
         />
       </SettingsSection>
     </div>

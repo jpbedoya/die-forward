@@ -1,1 +1,0 @@
-- [codebase_review_2026-03.md](codebase_review_2026-03.md) — Critical security, architecture, and correctness patterns from full codebase review
