@@ -3,6 +3,7 @@ import { View, Text, Pressable, ScrollView, Animated, Platform, ViewStyle, Image
 import { getCreatureAsset, getCreatureAssetByName } from '../lib/creatureAssets';
 import { Icons, COMBAT_ACTION_ICONS } from '../lib/iconAssets';
 import { AsciiLoader } from '../components/AsciiLoader';
+import { TypewriterText } from '../components/TypewriterText';
 import { CryptBackground } from '../components/CryptBackground';
 import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -507,7 +508,16 @@ export default function CombatScreen() {
           <View className="bg-amber/10 border-2 border-amber mb-4">
             {/* Narrative text */}
             <View className="p-4 pb-3">
-              <Text className="text-amber-light text-sm font-mono">{narrative}</Text>
+              {settings.enableRoomTextStreaming ? (
+                <TypewriterText
+                  key={narrative}
+                  text={narrative}
+                  speedMs={settings.roomTextStreamSpeedMs}
+                  className="text-amber-light text-sm font-mono"
+                />
+              ) : (
+                <Text className="text-amber-light text-sm font-mono">{narrative}</Text>
+              )}
             </View>
             
             {/* Damage summary - separated, bigger, centered */}
