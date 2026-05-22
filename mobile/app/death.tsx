@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { View, Text, Pressable, TextInput, ScrollView, Modal, Animated, Platform, TextStyle, Alert } from 'react-native';
 import { AsciiLoader } from '../components/AsciiLoader';
+import { TypewriterText } from '../components/TypewriterText';
 import { CryptBackground } from '../components/CryptBackground';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,7 +14,7 @@ import { useAudius } from '../lib/AudiusContext';
 import { AudioSettingsModal } from '../components/AudioSettingsModal';
 import { AudioToggle } from '../components/AudioToggle';
 import { CRTOverlay } from '../components/CRTOverlay';
-import { useCurrentPlayer, applyMilestoneCosmetics } from '../lib/instant';
+import { useCurrentPlayer, applyMilestoneCosmetics, useGameSettings } from '../lib/instant';
 import { getNewMilestone, getMilestoneTypeLabel, type Milestone } from '../lib/milestones';
 
 export default function DeathScreen() {
@@ -23,6 +24,7 @@ export default function DeathScreen() {
   const { viewShotRef, webRef, captureAndShare } = useShareCard();
   const { currentTrack, musicSource } = useAudius();
   const { player } = useCurrentPlayer();
+  const { settings } = useGameSettings();
   const params = useLocalSearchParams<{ killedBy?: string }>();
 
   // Milestone unlock check — computed once when player data arrives
@@ -341,9 +343,17 @@ export default function DeathScreen() {
 
         {/* Death Moment */}
         <View className="mb-6">
-          <Text className="text-bone text-base font-mono italic leading-6 text-center">
-            "{deathMoment}"
-          </Text>
+          {settings.enableRoomTextStreaming ? (
+            <TypewriterText
+              text={`"${deathMoment}"`}
+              speedMs={settings.roomTextStreamSpeedMs}
+              className="text-bone text-base font-mono italic leading-6 text-center"
+            />
+          ) : (
+            <Text className="text-bone text-base font-mono italic leading-6 text-center">
+              "{deathMoment}"
+            </Text>
+          )}
         </View>
 
         {/* Milestone Unlock Banner */}
