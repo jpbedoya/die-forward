@@ -37,6 +37,7 @@ import {
   IntentEffects,
   CreatureInfo,
 } from '../lib/content';
+import { calculateCombatDamage } from '../lib/combat-math';
 
 type CombatPhase = 'choose' | 'resolve' | 'victory' | 'death';
 
@@ -162,22 +163,22 @@ export default function CombatScreen() {
     cost: o.id === 'strike' ? settings.strikeCost : o.id === 'brace' ? game.getModifiedBraceCost(0) : 1,
   }));
 
-  // Calculate damage using admin settings
+  // Calculate damage using admin settings — pure math lives in combat-math.ts
   const calculateDamage = (base: number, isPlayerAttacking: boolean) => {
-    const tier = depth.tier;
-    const tierMult = tier === 3 ? settings.tier3Multiplier : tier === 2 ? settings.tier2Multiplier : 1.0;
     const itemEffects = getItemEffects(game.inventory);
-    // Cap ERRATIC intent damage to erraticDamageMax
-    const cappedDealtMod = enemyIntent.type === 'ERRATIC'
-      ? Math.min(intentEffects.damageDealtMod, settings.erraticDamageMax)
-      : intentEffects.damageDealtMod;
-
-    if (isPlayerAttacking) {
-      return Math.round(base * (1 + itemEffects.damageBonus + game.getModifiedDamageBonus()) * intentEffects.damageTakenMod);
-    } else {
-      const chargeMult = wasCharging ? settings.chargePunishment : 1.0;
-      return Math.round(base * tierMult * cappedDealtMod * (1 - itemEffects.defenseBonus) * chargeMult);
-    }
+    return calculateCombatDamage({
+      base,
+      isPlayerAttacking,
+      tier: depth.tier,
+      enemyIsErratic: enemyIntent.type === 'ERRATIC',
+      intentDamageDealtMod: intentEffects.damageDealtMod,
+      intentDamageTakenMod: intentEffects.damageTakenMod,
+      itemDamageBonus: itemEffects.damageBonus,
+      itemDefenseBonus: itemEffects.defenseBonus,
+      modifierDamageBonus: game.getModifiedDamageBonus(),
+      wasCharging,
+      settings,
+    });
   };
   
   // Get base damage range from settings (uses seeded RNG for verifiable randomness)
