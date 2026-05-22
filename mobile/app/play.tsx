@@ -508,8 +508,10 @@ export default function PlayScreen() {
         {/* Narrative */}
         {renderNarrative()}
 
-        {/* Corpse discovery - show fallen player in purple BEFORE looting */}
-        {room.type === 'corpse' && realCorpse && !showCorpse && (
+        {/* Corpse discovery - show fallen player in purple BEFORE looting.
+            Gated on optionsVisible so the fallen player and their final words
+            are revealed only once the room narrative finishes streaming. */}
+        {optionsVisible && room.type === 'corpse' && realCorpse && !showCorpse && (
           <View className="bg-crypt-surface border-l-2 border-ethereal p-4 mb-4">
             <Text className="text-ethereal text-base font-mono font-bold mb-2">
               💀 @{realCorpse.playerName}
@@ -525,8 +527,8 @@ export default function PlayScreen() {
           </View>
         )}
 
-        {/* Fallback corpse message when no real corpse data */}
-        {room.type === 'corpse' && !realCorpse && !showCorpse && (
+        {/* Fallback corpse message when no real corpse data — also gated. */}
+        {optionsVisible && room.type === 'corpse' && !realCorpse && !showCorpse && (
           <View className="bg-crypt-surface border-l-2 border-ethereal p-4 mb-4">
             <Text className="text-ethereal text-sm font-mono">
               💀 An unknown wanderer lies here, their story lost to the depths.
@@ -534,8 +536,10 @@ export default function PlayScreen() {
           </View>
         )}
 
-        {/* Enemy preview for combat rooms — tap to inspect */}
-        {room.type === 'combat' && room.content?.enemy && (() => {
+        {/* Enemy preview for combat rooms — tap to inspect.
+            Gated on optionsVisible so the monster is revealed only once the
+            room narrative finishes streaming, same as the action options. */}
+        {optionsVisible && room.type === 'combat' && room.content?.enemy && (() => {
           const c = getCreatureInfo(room.content.enemy);
           const asset = c
             ? (c.artUrl ? getCreatureAsset(c.artUrl) : getCreatureAssetByName(c.name))
