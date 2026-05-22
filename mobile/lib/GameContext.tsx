@@ -5,6 +5,7 @@ import { dlog } from './debug-log';
 
 import { generateRandomDungeon, generateDungeon, DungeonRoom, getItemDetails, rollRandomItem } from './content';
 import { getMilestonePerks } from './milestones';
+import { maxHpForModifier, computeHealAmount, deathSaveOutcome, voidbladeDamage } from './combat-math';
 import { isWalletCancellation } from './wallet-utils';
 
 // Pending item when inventory is full — includes full item details for the swap UI
@@ -925,19 +926,20 @@ export function GameProvider({
   }, [updateState]);
 
   const applyVoidbladeEffect = useCallback((): number => {
-    if (!state.inventory.some(item => item.name === 'Voidblade')) return 0;
-    setState(prev => ({ ...prev, health: Math.max(0, prev.health - 5) }));
-    return 5;
+    const dmg = voidbladeDamage(state.inventory);
+    if (dmg > 0) {
+      setState(prev => ({ ...prev, health: Math.max(0, prev.health - dmg) }));
+    }
+    return dmg;
   }, [state.inventory]);
 
   const checkDeathSave = useCallback((): { saved: boolean; message: string | null } => {
-    if (state.health > 0) return { saved: false, message: null };
-    const mantleIndex = state.inventory.findIndex(item => item.name === "Death's Mantle");
-    if (mantleIndex === -1) return { saved: false, message: null };
+    const outcome = deathSaveOutcome(state.health, state.inventory);
+    if (!outcome.saved) return { saved: false, message: null };
     setState(prev => ({
       ...prev,
       health: 1,
-      inventory: prev.inventory.filter((_, i) => i !== mantleIndex),
+      inventory: prev.inventory.filter((_, i) => i !== outcome.mantleIndex),
     }));
     return { saved: true, message: "Death's Mantle shatters — you survive with 1 HP!" };
   }, [state.health, state.inventory]);
@@ -992,18 +994,15 @@ export function GameProvider({
 
   // Fix 2 (Revy): centralize healing so modifier penalty and HP cap apply everywhere
   const getMaxHp = useCallback((): number => {
-    return state.currentModifier?.id === 'glass-cannon' ? 60 : 100;
+    return maxHpForModifier(state.currentModifier);
   }, [state.currentModifier]);
 
   const applyHealing = useCallback((baseAmount: number): number => {
-    const multiplier = 1 - (state.currentModifier?.healingPenalty ?? 0);
-    const modified = Math.round(baseAmount * multiplier);
-    const maxHp = state.currentModifier?.id === 'glass-cannon' ? 60 : 100;
     let actual = 0;
     setState(prev => {
-      const newHp = Math.min(maxHp, prev.health + modified);
-      actual = newHp - prev.health;
-      return { ...prev, health: newHp };
+      const { newHealth, healed } = computeHealAmount(baseAmount, state.currentModifier, prev.health);
+      actual = healed;
+      return { ...prev, health: newHealth };
     });
     return actual;
   }, [state.currentModifier]);

@@ -13,6 +13,7 @@ import {
   sendAndConfirmTransaction,
 } from '@solana/web3.js';
 import { processVictoryPayout } from '@/lib/onchain';
+import { computeVictoryReward } from '@/lib/payout';
 
 // Pool wallet keypair (loaded from env)
 function getPoolKeypair(): Keypair {
@@ -77,8 +78,7 @@ export async function POST(request: NextRequest) {
     // Calculate reward (stake back + bonus from pool)
     const stakeAmount = session.stakeAmount || 0;
     const victoryBonusPercent = (gameSettings?.victoryBonusPercent as number) ?? 50;
-    const bonus = stakeAmount * (victoryBonusPercent / 100);
-    const totalReward = stakeAmount + bonus;
+    const { totalReward } = computeVictoryReward(stakeAmount, victoryBonusPercent);
 
     // ── MagicBlock settlement gate ────────────────────────────────────────────
     const mbEnabled = gameSettings?.enableMagicBlock === true;
