@@ -38,6 +38,19 @@ import {
   CreatureInfo,
 } from '../lib/content';
 import { calculateCombatDamage } from '../lib/combat-math';
+import {
+  getZoneMechanic,
+  resolveTurnStart,
+  applyStatusOnHit,
+  isStaminaRegenBlocked,
+  infectionDamageMultiplier,
+  infectionShouldDropItem,
+  isFreezeImmune,
+  rollFlux,
+  clarityDepleted,
+  clearStatus,
+  restoreClarity,
+} from '../lib/zone-mechanics';
 
 type CombatPhase = 'choose' | 'resolve' | 'victory' | 'death';
 
@@ -88,6 +101,7 @@ export default function CombatScreen() {
   const [selectedItem, setSelectedItem] = useState<{ id: string; name: string; emoji: string } | null>(null);
   const [artLoadFailed, setArtLoadFailed] = useState(false);
   const [isFirstTurn, setIsFirstTurn] = useState(true);
+  const [enemyFrozen, setEnemyFrozen] = useState(false);
   
   // Screen shake animation
   const shakeAnim = useRef(new Animated.Value(0)).current;
@@ -118,6 +132,7 @@ export default function CombatScreen() {
 
   const roomNumber = parseInt(params.roomNum || '1', 10);
   const depth = getDepthForRoom(roomNumber);
+  const mechanic = getZoneMechanic(game.zoneId);
 
   // Initialize combat
   useEffect(() => {
@@ -162,6 +177,10 @@ export default function CombatScreen() {
     ...o,
     cost: o.id === 'strike' ? settings.strikeCost : o.id === 'brace' ? game.getModifiedBraceCost(0) : 1,
   }));
+  // Void Beyond — at zero clarity, an option that isn't real slips into the list.
+  if (clarityDepleted(mechanic, game.zoneStatus)) {
+    COMBAT_OPTIONS.push({ id: 'void-fake', text: 'Step toward the light', emoji: '✨', desc: 'A way out', cost: 0 });
+  }
 
   // Calculate damage using admin settings — pure math lives in combat-math.ts
   const calculateDamage = (base: number, isPlayerAttacking: boolean) => {
@@ -194,20 +213,32 @@ export default function CombatScreen() {
 
   // Handle combat action
   const handleAction = (action: string) => {
+    // Void Beyond — a fake option injected at zero clarity; it resolves to nothing.
+    if (action === 'void-fake') {
+      setNarrative('You reach for it — but it was never there. Or it was. You are no longer sure.');
+      return;
+    }
+
     const option = COMBAT_OPTIONS.find(o => o.id === action);
     if (!option) return;
-    
+
     // Check stamina
     if (option.cost > game.stamina) {
       playSFX('error-buzz');
       return;
     }
-    
+
     // Spend stamina
     if (option.cost > 0) {
       game.setStamina(game.stamina - option.cost);
     }
-    
+
+    // Zone status — start-of-turn tick (burn damage, chill decay).
+    let status = game.zoneStatus;
+    const tick = resolveTurnStart(mechanic, status);
+    status = tick.state;
+    const tickDamage = tick.damage;
+
     let playerDmg = 0;
     let enemyDmg = 0;
     let fleeSuccess = false;
@@ -304,15 +335,36 @@ export default function CombatScreen() {
       }
     }
     
-    // Apply damage
+    // ── Zone status — infection damage penalty, freeze, on-hit application ──
+    enemyDmg = Math.round(enemyDmg * infectionDamageMultiplier(status));
+    if (enemyFrozen && playerDmg > 0) {
+      playerDmg = 0;
+      actionNarrative += ' The frozen creature strains against the ice — it cannot strike.';
+    }
+    if (enemyFrozen) setEnemyFrozen(false);
+    if (playerDmg > 0) {
+      const ashVeil = getItemEffects(game.inventory).ashVeil ?? false;
+      status = applyStatusOnHit(mechanic, status, creature?.tier === 3, false, ashVeil);
+      // INFECTION — crossing 3 stacks costs a random inventory item, once.
+      if (infectionShouldDropItem(status) && game.inventory.length > 0) {
+        const victim = game.inventory[Math.floor((game.rng ? game.rng.random() : Math.random()) * game.inventory.length)];
+        game.removeFromInventory(victim.id);
+        status = { ...status, infectionItemDropped: true };
+        actionNarrative += ` The infection spreads — your ${victim.name} rots away.`;
+      }
+    }
+    game.setZoneStatus(status);
+    const totalPlayerDmg = playerDmg + tickDamage;
+
+    // Apply damage (action damage + start-of-turn burn tick)
     const newEnemyHealth = Math.max(0, enemyHealth - enemyDmg);
-    const newPlayerHealth = Math.max(0, game.health - playerDmg);
-    
+    const newPlayerHealth = Math.max(0, game.health - totalPlayerDmg);
+
     setEnemyHealth(newEnemyHealth);
     setEnemyDmgTaken(enemyDmg);
     game.setHealth(newPlayerHealth);
-    setPlayerDmgTaken(playerDmg);
-    setNarrative(actionNarrative);
+    setPlayerDmgTaken(totalPlayerDmg);
+    setNarrative(tick.narrative ? `${tick.narrative} ${actionNarrative}` : actionNarrative);
     
     // Creature attack sound when player takes damage
     if (playerDmg > 0) {
@@ -414,14 +466,22 @@ export default function CombatScreen() {
       }
 
       // Fix 1 (Revy): use seeded RNG for deterministic intent sequence per seed
-      const newIntent = game.rng
+      let newIntent = game.rng
         ? getCreatureIntentSeeded(creature?.name || 'The Drowned', game.rng)
         : getCreatureIntent(creature?.name || 'The Drowned');
+      // Void Beyond FLUX — the intent can shift again before the next turn.
+      if (mechanic === 'FLUX' && rollFlux(game.rng)) {
+        newIntent = game.rng
+          ? getCreatureIntentSeeded(creature?.name || 'The Drowned', game.rng)
+          : getCreatureIntent(creature?.name || 'The Drowned');
+        setNarrative(prev => `${prev} The creature's intent flickers — unreadable.`);
+      }
       setEnemyIntent(newIntent);
       setIntentEffects(getIntentEffects(newIntent.type));
       setPhase('choose');
       setIsFirstTurn(false);
-      game.setStamina(Math.min(settings.staminaPool, game.stamina + game.getModifiedStaminaRegen(settings.staminaRegen)));
+      const regen = isStaminaRegenBlocked(mechanic, status) ? 0 : game.getModifiedStaminaRegen(settings.staminaRegen);
+      game.setStamina(Math.min(settings.staminaPool, game.stamina + regen));
 
       // Creature idle sound on new intent (enemy is "doing something")
       const creatureSFX = getCreatureSFX(creature?.name || '');
@@ -566,11 +626,15 @@ export default function CombatScreen() {
                   >
                     <View className="flex-row items-center justify-between">
                       <View className="flex-row items-center">
-                        <Image
-                          source={COMBAT_ACTION_ICONS[option.id]}
-                          style={{ width: 28, height: 28, marginRight: 8, opacity: canUse ? 1 : 0.4 }}
-                          resizeMode="contain"
-                        />
+                        {COMBAT_ACTION_ICONS[option.id] ? (
+                          <Image
+                            source={COMBAT_ACTION_ICONS[option.id]}
+                            style={{ width: 28, height: 28, marginRight: 8, opacity: canUse ? 1 : 0.4 }}
+                            resizeMode="contain"
+                          />
+                        ) : (
+                          <Text style={{ fontSize: 22, marginRight: 8 }}>{option.emoji}</Text>
+                        )}
                         <Text className={`font-mono font-bold ${canUse ? 'text-bone' : 'text-bone-dark'}`}>
                           {option.text}
                         </Text>
@@ -613,7 +677,25 @@ export default function CombatScreen() {
                 </Text>
               </View>
             </View>
-            
+
+            {/* Zone status badges */}
+            {mechanic !== 'NONE' && (
+              <View className="flex-row items-center gap-3 mb-2">
+                {game.zoneStatus.burn > 0 && (
+                  <Text className="text-amber text-xs font-mono">🔥 Burn {game.zoneStatus.burn}</Text>
+                )}
+                {game.zoneStatus.chill > 0 && (
+                  <Text className="text-blue-400 text-xs font-mono">❄️ Chill {game.zoneStatus.chill}</Text>
+                )}
+                {game.zoneStatus.infection > 0 && (
+                  <Text className="text-victory text-xs font-mono">☣️ Infection {game.zoneStatus.infection}</Text>
+                )}
+                {mechanic === 'FLUX' && (
+                  <Text className="text-ethereal text-xs font-mono">👁️ Clarity {game.zoneStatus.clarity}</Text>
+                )}
+              </View>
+            )}
+
             {/* Inventory */}
             <View className="flex-row items-center">
               <Text className="text-bone-dark text-xs font-mono mr-2">ITEMS</Text>
@@ -668,6 +750,30 @@ export default function CombatScreen() {
                 playSFX('loot-discover');
               } else if (name === 'Bone Dust') {
                 setNarrative('The dust swirls. Your senses sharpen — you feel the creature\'s next move.');
+                playSFX('ui-click');
+              } else if (name === 'Ember Flask') {
+                game.setZoneStatus(clearStatus(game.zoneStatus, 'burn'));
+                setNarrative('The flask drinks the heat. The burning stops.');
+                playSFX('heal');
+              } else if (name === 'Thermal Flask') {
+                game.setZoneStatus(clearStatus(game.zoneStatus, 'chill'));
+                setNarrative('Warmth floods back. The cold retreats.');
+                playSFX('heal');
+              } else if (name === 'Cleansing Salts') {
+                game.setZoneStatus(clearStatus(game.zoneStatus, 'infection'));
+                setNarrative('The salts draw the rot out through the skin. It is not painless.');
+                playSFX('heal');
+              } else if (name === 'Clarity Shard') {
+                game.setZoneStatus(restoreClarity(game.zoneStatus));
+                setNarrative('The shard steadies your mind. Reality settles, briefly.');
+                playSFX('ui-click');
+              } else if (name === 'Frost Shard') {
+                if (creature && isFreezeImmune(creature.name)) {
+                  setNarrative(`The cold finds no purchase — ${creature.name} does not feel it.`);
+                } else {
+                  setEnemyFrozen(true);
+                  setNarrative('The shard shatters against the enemy. It seizes, locked in ice.');
+                }
                 playSFX('ui-click');
               }
               game.removeFromInventory(selectedItem.id);

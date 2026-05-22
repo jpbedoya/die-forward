@@ -18,6 +18,7 @@ import { AudioToggle } from '../components/AudioToggle';
 import { CRTOverlay } from '../components/CRTOverlay';
 import { getDepthForRoom, DungeonRoom, getItemDetails, getCreatureInfo, CreatureInfo, rollRandomItem, getItemEffects } from '../lib/content';
 import { getMilestonePerks } from '../lib/milestones';
+import { getZoneMechanic } from '../lib/zone-mechanics';
 import { useUnifiedWallet, type Address } from '../lib/wallet/unified';
 import { ItemModal, CreatureModal } from '../components/CryptModal';
 
@@ -84,6 +85,7 @@ export default function PlayScreen() {
   const room = dungeon[currentRoom] as DungeonRoom | undefined;
   const roomNumber = currentRoom + 1;
   const depth = getDepthForRoom(roomNumber);
+  const mechanic = getZoneMechanic(game.zoneId);
 
   // Fetch real corpses from InstantDB
   const { corpses: nearbyCorpses } = useCorpsesForRoom(depth.name, roomNumber);
@@ -169,7 +171,7 @@ export default function PlayScreen() {
             // Fix 8: exclude Soulstone until 50-death milestone
             const perks = getMilestonePerks(player?.totalDeaths ?? 0);
             const excludes = perks.soulstoneUnlocked ? [] : ['Soulstone'];
-            const itemName = rollRandomItem(rngFn, undefined, excludes);
+            const itemName = rollRandomItem(rngFn, undefined, excludes, game.zoneId);
             const itemDetails = getItemDetails(itemName);
             const newItem = {
               id: Date.now().toString(),
@@ -331,7 +333,7 @@ export default function PlayScreen() {
               // Fix 8: exclude Soulstone until 50-death milestone
               const lootPerks = getMilestonePerks(player?.totalDeaths ?? 0);
               const lootExcludes = lootPerks.soulstoneUnlocked ? [] : ['Soulstone'];
-              const itemName = rollRandomItem(rngFn, undefined, lootExcludes);
+              const itemName = rollRandomItem(rngFn, undefined, lootExcludes, game.zoneId);
               const itemDetails = getItemDetails(itemName);
               const loot = { name: itemName, emoji: itemDetails?.emoji || '❓' };
               
@@ -718,6 +720,25 @@ export default function PlayScreen() {
             </Text>
           </View>
         </View>
+
+        {/* Zone status badges */}
+        {mechanic !== 'NONE' &&
+          (game.zoneStatus.burn > 0 || game.zoneStatus.chill > 0 || game.zoneStatus.infection > 0 || mechanic === 'FLUX') && (
+          <View className="flex-row items-center gap-3 mb-2">
+            {game.zoneStatus.burn > 0 && (
+              <Text className="text-amber text-xs font-mono">🔥 Burn {game.zoneStatus.burn}</Text>
+            )}
+            {game.zoneStatus.chill > 0 && (
+              <Text className="text-blue-400 text-xs font-mono">❄️ Chill {game.zoneStatus.chill}</Text>
+            )}
+            {game.zoneStatus.infection > 0 && (
+              <Text className="text-victory text-xs font-mono">☣️ Infection {game.zoneStatus.infection}</Text>
+            )}
+            {mechanic === 'FLUX' && (
+              <Text className="text-ethereal text-xs font-mono">👁️ Clarity {game.zoneStatus.clarity}</Text>
+            )}
+          </View>
+        )}
 
         {/* Inventory - clickable items */}
         <View className="flex-row items-center">
