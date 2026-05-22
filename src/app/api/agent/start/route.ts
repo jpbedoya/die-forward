@@ -10,6 +10,9 @@ import {
   ZonePackage,
   RoomVariation,
 } from '@/lib/content';
+import { RUN_MODIFIERS } from '@/lib/modifiers';
+import { initZoneStatus } from '@/lib/zone-mechanics';
+import { pickCombatSettings } from '@/lib/agent-combat';
 
 // Initialize InstantDB Admin client
 const db = init({
@@ -243,6 +246,19 @@ export async function POST(request: NextRequest) {
     // Zone display name from zone metadata
     const zoneName = zone.meta.name;
 
+    // ── Snapshot combat settings + roll a run modifier ───────────────────────
+    // The agent run resolves combat with the same rules as the mobile game.
+    // Settings are read once and frozen onto the session so the whole run is
+    // consistent (no per-action DB query); a run modifier is rolled per run.
+    const settingsResult = await db.query({ gameSettings: {} }).catch(() => null);
+    const rawSettings = (settingsResult?.gameSettings?.[0] as Record<string, unknown>) || {};
+    const combatSettings = pickCombatSettings(rawSettings);
+    const modifier = RUN_MODIFIERS[Math.floor(Math.random() * RUN_MODIFIERS.length)];
+
+    const startHealth = modifier.startingHP ?? 100;
+    const startStamina = modifier.startingStamina ?? combatSettings.staminaPool;
+    const zoneStatus = initZoneStatus();
+
     // Starting inventory
     const inventory = [
       { id: 'torch', name: 'Torch', emoji: '🔦' },
@@ -263,15 +279,26 @@ export async function POST(request: NextRequest) {
         stakeAmount,
         currentRoom: 1,
         totalRooms,
-        health: 100,
-        maxHealth: 100,
-        stamina: 3,
+        health: startHealth,
+        maxHealth: startHealth,
+        stamina: startStamina,
         inventory: JSON.stringify(inventory),
         dungeon: JSON.stringify(dungeon),
         status: 'active',
         isAgent: true,
         agentName,
         stakeMode,
+        // Consolidated combat state — read by /api/agent/action.
+        runModifier: JSON.stringify(modifier),
+        gameSettings: JSON.stringify(combatSettings),
+        zoneStatus: JSON.stringify(zoneStatus),
+        burnStacks: 0,
+        chillStacks: 0,
+        clarity: zoneStatus.clarity,
+        enemyHealth: 0,
+        enemyFrozen: false,
+        wasCharging: false,
+        visitedRooms: JSON.stringify([]),
         createdAt: Date.now(),
       }),
     ]);
@@ -282,22 +309,28 @@ export async function POST(request: NextRequest) {
       phase: firstRoom.type === 'combat' ? 'combat' : 'explore',
       room: 1,
       totalRooms,
-      health: 100,
-      maxHealth: 100,
-      stamina: 3,
+      health: startHealth,
+      maxHealth: startHealth,
+      stamina: startStamina,
       inventory: inventory.map(i => i.name),
       narrative: firstRoom.content?.narrative || 'You descend into darkness...',
       options: (firstRoom.content?.options || ['Continue']).map((opt, i) => ({
         id: String(i + 1),
         text: opt,
       })),
-      enemy: firstRoom.enemy ? {
-        name: firstRoom.enemy.name,
-        health: 80 + Math.floor(Math.random() * 40),
-        maxHealth: 80 + Math.floor(Math.random() * 40),
-        intent: 'AGGRESSIVE',
-        tier: 2,
-      } : null,
+      status: {
+        burn: zoneStatus.burn,
+        chill: zoneStatus.chill,
+        infection: zoneStatus.infection,
+        clarity: zoneStatus.clarity,
+      },
+      modifier: {
+        id: modifier.id,
+        name: modifier.name,
+        emoji: modifier.emoji,
+        description: modifier.description,
+      },
+      enemy: null,
     };
 
     return NextResponse.json({

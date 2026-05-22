@@ -51,6 +51,16 @@ function toPublicKey(address: Address): PublicKey {
 }
 
 /**
+ * web3.js types `TransactionInstruction.data` as `Buffer`, but React Native has
+ * no global Buffer — the instruction builders here use `Uint8Array`, which
+ * web3.js accepts at runtime. This cast bridges the type gap without pulling in
+ * a runtime Buffer polyfill.
+ */
+function asInstructionData(bytes: Uint8Array): Buffer {
+  return bytes as unknown as Buffer;
+}
+
+/**
  * Convert hex string to session ID bytes (32 bytes)
  */
 export function hexToSessionId(hex: string): Uint8Array {
@@ -117,7 +127,7 @@ export function buildStakeInstruction(
       { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
     ],
     programId: PROGRAM_ID_PUBKEY,
-    data,
+    data: asInstructionData(data),
   });
 }
 
@@ -146,7 +156,7 @@ export function buildRecordDeathInstruction(
       { pubkey: toPublicKey(authority), isSigner: true, isWritable: false },
     ],
     programId: PROGRAM_ID_PUBKEY,
-    data,
+    data: asInstructionData(data),
   });
 }
 
@@ -174,7 +184,7 @@ export function buildClaimVictoryInstruction(
       { pubkey: toPublicKey(authority), isSigner: true, isWritable: false },
     ],
     programId: PROGRAM_ID_PUBKEY,
-    data,
+    data: asInstructionData(data),
   });
 }
 

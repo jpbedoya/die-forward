@@ -1,5 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { init } from '@instantdb/admin';
+import { getCreatureTier } from '@/lib/content';
+import { getZoneMechanic } from '@/lib/zone-mechanics';
+import {
+  readSessionSettings,
+  readSessionModifier,
+  readSessionZoneStatus,
+  statusSummary,
+  buildCombatOptions,
+} from '@/lib/agent-combat';
 
 const db = init({
   appId: process.env.NEXT_PUBLIC_INSTANT_APP_ID!,
@@ -28,8 +37,14 @@ export async function GET(request: NextRequest) {
 
     const session = sessions[0] as any;
     const dungeon = JSON.parse(session.dungeon || '[]');
-    const inventory = JSON.parse(session.inventory || '[]');
+    const inventory = JSON.parse(session.inventory || '[]') as { name: string }[];
     const room = dungeon[session.currentRoom - 1];
+
+    const zoneId: string = session.zoneId || 'sunken-crypt';
+    const mechanic = getZoneMechanic(zoneId);
+    const settings = readSessionSettings(session);
+    const modifier = readSessionModifier(session);
+    const zoneStatus = readSessionZoneStatus(session);
 
     // Determine phase
     let phase = 'explore';
@@ -44,26 +59,25 @@ export async function GET(request: NextRequest) {
       health: session.health,
       maxHealth: session.maxHealth,
       stamina: session.stamina,
-      inventory: inventory.map((i: any) => i.name),
+      inventory: inventory.map(i => i.name),
       narrative: room?.content?.narrative || '',
-      status: session.status,
+      status: statusSummary(zoneStatus),
+      modifier: modifier
+        ? { id: modifier.id, name: modifier.name, emoji: modifier.emoji, description: modifier.description }
+        : null,
+      sessionStatus: session.status,
     };
 
     // Add options based on phase
     if (phase === 'combat') {
-      state.options = [
-        { id: 'strike', text: '⚔️ Strike' },
-        { id: 'dodge', text: '💨 Dodge' },
-        { id: 'brace', text: '🛡️ Brace' },
-        ...(inventory.some((i: any) => i.name === 'Herbs') ? [{ id: 'herbs', text: '🌿 Herbs' }] : []),
-        { id: 'flee', text: '🏃 Flee' },
-      ];
+      state.options = buildCombatOptions(inventory, settings, modifier, mechanic, zoneStatus);
+      const enemyName: string = room?.enemy?.name || 'Unknown Horror';
       state.enemy = {
-        name: room?.enemy?.name,
+        name: enemyName,
         health: session.enemyHealth,
         maxHealth: room?.enemy?.maxHealth || 100,
         intent: session.enemyIntent || 'AGGRESSIVE',
-        tier: room?.enemy?.tier || 2,
+        tier: getCreatureTier(enemyName, zoneId),
         wasCharging: session.wasCharging || false,
       };
     } else if (phase === 'explore') {

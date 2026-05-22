@@ -12,7 +12,10 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform, Share, Alert } from 'react-native';
-import * as FileSystem from 'expo-file-system';
+// Use the legacy entrypoint: Expo SDK 54's expo-file-system replaced this API
+// with File/Directory/Paths. The main export drops `documentDirectory` and the
+// remaining functions throw at runtime — `expo-file-system/legacy` still works.
+import * as FileSystem from 'expo-file-system/legacy';
 
 const STORAGE_KEY = 'die-forward-debug-logs';
 const MAX_ENTRIES = 500;
