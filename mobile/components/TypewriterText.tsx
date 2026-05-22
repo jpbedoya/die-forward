@@ -101,9 +101,15 @@ export function TypewriterText({
     };
   }, [visibleCount, text, speedMs, skip, reducedMotion]);
 
+  // The not-yet-revealed text is rendered transparent so the block occupies
+  // its full final size from the first frame — no layout jump as it streams,
+  // and the parent's tap-to-skip target covers the whole text area immediately.
   return (
     <Text className={className} style={style}>
       {text.slice(0, visibleCount)}
+      {visibleCount < text.length && (
+        <Text style={{ opacity: 0 }}>{text.slice(visibleCount)}</Text>
+      )}
     </Text>
   );
 }

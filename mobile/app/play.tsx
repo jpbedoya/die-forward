@@ -52,6 +52,7 @@ export default function PlayScreen() {
   const [modifierExpanded, setModifierExpanded] = useState(false);
   const [narrativeDone, setNarrativeDone] = useState(false);
   const [skipNarrative, setSkipNarrative] = useState(false);
+  const [streamRoom, setStreamRoom] = useState(game.currentRoom || 0);
 
   // Handle tipping a corpse
   const handleTip = async (corpse: Corpse) => {
@@ -87,6 +88,15 @@ export default function PlayScreen() {
   const depth = getDepthForRoom(roomNumber);
   const mechanic = getZoneMechanic(game.zoneId);
 
+  // Reset narrative streaming state synchronously when entering a new room.
+  // An effect runs one render too late — the stale skip flag would make the
+  // new room's TypewriterText complete instantly and leave the options hidden.
+  if (streamRoom !== currentRoom) {
+    setStreamRoom(currentRoom);
+    setNarrativeDone(false);
+    setSkipNarrative(false);
+  }
+
   // Fetch real corpses from InstantDB
   const { corpses: nearbyCorpses } = useCorpsesForRoom(depth.name, roomNumber);
   const realCorpse = nearbyCorpses?.[0] || null;
@@ -95,12 +105,6 @@ export default function PlayScreen() {
   useEffect(() => {
     playAmbient(getZoneAmbient(game.zoneId, 'explore'));
   }, [game.zoneId]);
-
-  // Reset narrative streaming state when entering a new room
-  useEffect(() => {
-    setNarrativeDone(false);
-    setSkipNarrative(false);
-  }, [currentRoom]);
 
   // Atmospheric trigger SFX — random world sounds during exploration
   useAtmosphericTriggers(game.zoneId, true);
