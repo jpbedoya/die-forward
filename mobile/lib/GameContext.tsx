@@ -6,6 +6,7 @@ import { dlog } from './debug-log';
 import { generateRandomDungeon, generateDungeon, DungeonRoom, getItemDetails, rollRandomItem } from './content';
 import { getMilestonePerks } from './milestones';
 import { maxHpForModifier, computeHealAmount, deathSaveOutcome, voidbladeDamage } from './combat-math';
+import { initZoneStatus, type ZoneStatusState } from './zone-mechanics';
 import { isWalletCancellation } from './wallet-utils';
 
 // Pending item when inventory is full — includes full item details for the swap UI
@@ -75,6 +76,7 @@ interface GameState {
   itemsFound: number;
   seed: string | null;  // RNG seed for verifiable randomness
   currentModifier: RunModifier | null;  // Run modifier rolled at game start
+  zoneStatus: ZoneStatusState;          // Per-zone combat status effects (burn/chill/infection/clarity)
   
   // UI state
   loading: boolean;
@@ -114,6 +116,7 @@ interface GameContextType extends GameState {
   // State helpers
   setHealth: (health: number) => void;
   setStamina: (stamina: number) => void;
+  setZoneStatus: (status: ZoneStatusState) => void;
   addToInventory: (item: { id: string; name: string; emoji: string }) => void;
   removeFromInventory: (itemId: string) => void;
   itemsFound: number;
@@ -181,6 +184,7 @@ const initialState: GameState = {
   dungeon: [],
   seed: null,
   currentModifier: null,
+  zoneStatus: initZoneStatus(),
   loading: false,
   error: null,
   authInitialized: false,
@@ -780,6 +784,7 @@ export function GameProvider({
         dungeon,
         seed,
         currentModifier: modifier,
+        zoneStatus: initZoneStatus(),
         loading: false,
       });
     } catch (err) {
@@ -888,6 +893,10 @@ export function GameProvider({
 
   const setStamina = useCallback((stamina: number) => {
     updateState({ stamina });
+  }, [updateState]);
+
+  const setZoneStatus = useCallback((status: ZoneStatusState) => {
+    updateState({ zoneStatus: status });
   }, [updateState]);
 
   const addToInventory = useCallback((item: { id: string; name: string; emoji: string }) => {
@@ -1033,6 +1042,7 @@ export function GameProvider({
     // State helpers
     setHealth,
     setStamina,
+    setZoneStatus,
     addToInventory,
     removeFromInventory,
     itemsFound: state.itemsFound || 0,
@@ -1063,7 +1073,7 @@ export function GameProvider({
     connect, connectTo, disconnect, refreshBalance,
     setNicknameAction, dismissNicknameModal,
     startGame, advance, recordDeathAction, claimVictoryAction,
-    setHealth, setStamina, addToInventory, removeFromInventory,
+    setHealth, setStamina, setZoneStatus, addToInventory, removeFromInventory,
     incrementItemsFound, clearError, rng,
     swapItem, dismissPendingItem, applyVoidbladeEffect, checkDeathSave,
     getModifiedDamageBonus, getModifiedHealMultiplier, getModifiedStaminaRegen,

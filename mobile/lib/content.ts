@@ -503,6 +503,7 @@ export interface ItemEffects {
   fleeBonus: number;
   corpseBonus?: number;   // Extra chance to find loot in corpse/cache rooms
   voidSaltBonus?: boolean; // +40% damage vs aquatic enemies when true
+  ashVeil?: boolean;       // Caps incoming BURN to 1 stack per hit when true
 }
 
 export function getItemEffects(inventory: {name: string}[]): ItemEffects {
@@ -533,6 +534,9 @@ export function getItemEffects(inventory: {name: string}[]): ItemEffects {
         break;
       case 'Void Salt':
         effects.voidSaltBonus = true;
+        break;
+      case 'Ash Veil':
+        effects.ashVeil = true;
         break;
       case 'Pale Coin':
         effects.fleeBonus += 0.10;
@@ -736,6 +740,56 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     rarity: 'legendary',
     type: 'weapon',
   },
+
+  // Zone-mechanic items
+  'Ember Flask': {
+    name: 'Ember Flask',
+    emoji: '🫙',
+    description: 'A vial of black water from before the fires. It drinks heat.',
+    effect: 'Clears all burn stacks',
+    type: 'consumable',
+    rarity: 'uncommon',
+  },
+  'Ash Veil': {
+    name: 'Ash Veil',
+    emoji: '🧣',
+    description: 'Cloth woven from cooled cinders. The flames hesitate to touch their own.',
+    effect: 'Incoming burn is capped to 1 stack per hit',
+    type: 'artifact',
+    rarity: 'rare',
+  },
+  'Frost Shard': {
+    name: 'Frost Shard',
+    emoji: '🧊',
+    description: 'A splinter of eternal ice. Hurl it, and the cold does the rest.',
+    effect: 'Freezes an enemy — it skips its next turn',
+    type: 'consumable',
+    rarity: 'uncommon',
+  },
+  'Thermal Flask': {
+    name: 'Thermal Flask',
+    emoji: '☕',
+    description: 'Still warm, somehow, after all this time. Warmth is mercy down here.',
+    effect: 'Clears all chill stacks',
+    type: 'consumable',
+    rarity: 'uncommon',
+  },
+  'Clarity Shard': {
+    name: 'Clarity Shard',
+    emoji: '🔹',
+    description: 'A fragment that remembers what is real. Hold it, and so do you.',
+    effect: 'Restores 1 clarity',
+    type: 'consumable',
+    rarity: 'uncommon',
+  },
+  'Cleansing Salts': {
+    name: 'Cleansing Salts',
+    emoji: '🧴',
+    description: 'Coarse white grains that draw the rot out through the skin. It is not painless.',
+    effect: 'Clears all infection stacks',
+    type: 'consumable',
+    rarity: 'uncommon',
+  },
 };
 
 // Get item details by name
@@ -745,6 +799,14 @@ export function getItemDetails(name: string): ItemDetails | undefined {
 
 // Rarity tier order for comparison
 const RARITY_ORDER: Record<string, number> = { common: 0, uncommon: 1, rare: 2, legendary: 3 };
+
+// Each mechanic zone's cure item — biased to drop within that zone (see rollRandomItem).
+const ZONE_CURE_BY_ID: Record<string, string> = {
+  'ashen-crypts': 'Ember Flask',
+  'frozen-gallery': 'Thermal Flask',
+  'living-tomb': 'Cleansing Salts',
+  'void-beyond': 'Clarity Shard',
+};
 
 /**
  * Pick a random item name using weighted rarity distribution.
@@ -756,8 +818,16 @@ export function rollRandomItem(
   rng: () => number,
   minRarity?: 'common' | 'uncommon' | 'rare' | 'legendary',
   excludeItems?: string[],
+  zoneId?: string,
 ): string {
   const minTier = minRarity ? (RARITY_ORDER[minRarity] ?? 0) : 0;
+
+  // Zone-aware: a chance to drop the local zone's cure item so mitigation is
+  // reachable where it matters.
+  if (zoneId) {
+    const cure = ZONE_CURE_BY_ID[zoneId];
+    if (cure && !excludeItems?.includes(cure) && rng() < 0.3) return cure;
+  }
   const weights: Record<string, number> = { common: 55, uncommon: 30, rare: 12, legendary: 3 };
 
   // Group eligible items by rarity, excluding specified items
