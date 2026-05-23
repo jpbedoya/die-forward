@@ -22,7 +22,7 @@ No automated testing configured. Recommend: **Next.js Jest** for web routes (add
 
 ## Build & Run
 
-**Install:** `npm install`. **Dev:** Web: `npm run dev` (localhost:3000); Mobile: `cd mobile && npm run start`, then `w`/`a`/`i`. **Build:** `npm run build` (web), `npm run build:web` (mobile export), `npm run build:android`/`build:ios` (EAS). **Lint:** `npm run lint`. **Env:** Copy `.env.example` to `.env.local`, populate: NEXT_PUBLIC_INSTANT_APP_ID, INSTANT_ADMIN_KEY, MAGICBLOCK credentials, Solana RPC. **Package manager:** npm.
+**Install:** `npm install`. **Dev:** Web: `npm run dev` (localhost:3000); Mobile: `cd mobile && npm run start`, then `w`/`a`/`i`. **Build:** `npm run build` (web), `npm run build:web` (mobile export), `npm run build:android`/`build:ios` (EAS). **Local Android APK:** `cd mobile && npm run build:android:local` — flags `--prod` (release/signed/R8), `--metro` (live-reload), `--publish` (GitHub prerelease at `dev-<version>`); output `mobile/dist/`. See `mobile/BUILD_NOTES.md` and `mobile/docs/signing-secrets.md`. **Lint:** `npm run lint`. **Env:** Copy `.env.example` to `.env.local` at the repo root (web: `NEXT_PUBLIC_INSTANT_APP_ID`, `INSTANT_ADMIN_KEY`, MAGICBLOCK credentials, Solana RPC) and `mobile/.env.local` (mobile: `EXPO_PUBLIC_INSTANT_APP_ID` required, `EXPO_PUBLIC_SOLANA_RPC` / `EXPO_PUBLIC_API_URL` optional — inlined into the JS bundle at build time). **Package manager:** npm.
 
 ## Critical Paths
 

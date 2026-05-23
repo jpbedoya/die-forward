@@ -1,8 +1,6 @@
 # Die Forward — Mobile Build Notes
 
-## Current Build: Feb 21, 2026
-
-Expo mobile app running on web (React Native Web), iOS, and Android with full feature parity.
+Expo mobile app running on web (React Native Web), iOS, and Android with full feature parity. Build infrastructure last updated 2026-05-23.
 
 ---
 
@@ -54,17 +52,64 @@ sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0" \
 
 ```bash
 cd mobile
-npm install                                   # first time / after dependency changes
-npx expo prebuild --platform android --clean   # regenerates the gitignored android/ dir
-npm run build:android:local                    # → debug APK
+npm install                                        # first time / after dependency changes
+npx expo prebuild --platform android --clean       # regenerates the gitignored android/ dir
+                                                   #   (only when native config / plugins change)
+npm run build:android:local                        # → standalone DEBUG APK
 ```
 
-`npm run build:android:local` runs `cd android && ./gradlew assembleDebug`. Re-run `expo prebuild` only when native config or config plugins change — otherwise the build script alone is enough.
+The build is driven by `mobile/scripts/build-android-local.cjs`. It stamps the version (BASE_VERSION + git short SHA), syncs Android's native `versionName` in `build.gradle`, resolves `JAVA_HOME` / `ANDROID_HOME` automatically, preflights required `EXPO_PUBLIC_*` env vars, and copies the APK to `mobile/dist/<name>-<version>[.suffix].apk`.
 
-- **Debug APK:** `mobile/android/app/build/outputs/apk/debug/app-arm64-v8a-debug.apk`
-- **Release APK:** `cd android && ./gradlew assembleRelease` → `app/build/outputs/apk/release/app-release.apk` (requires `mobile/keystores/release.keystore`, gitignored — the `with-release-signing` plugin wires it in)
-- Builds are arm64-only (`with-arm64-only` config plugin).
-- Cached build: ~10s | First build: ~7min (compiles native/NDK code).
+Three mutually exclusive build modes:
+
+| Flag | Mode | When to use |
+|------|------|-------------|
+| _(none)_ | **Standalone debug** — JS bundled, debug-signed, no Metro needed | Ad-hoc sharing, quick iteration on a phone |
+| `--metro` | **Metro-served debug** — live-reload (needs `expo start` running) | Local dev iteration |
+| `--prod` | **Release** — `assembleRelease`, R8-minified, release-keystore signed | Production-quality APK to share or ship |
+
+And an independent, combinable flag:
+
+| Flag | Effect |
+|------|--------|
+| `--publish` | After the build, publish a GitHub prerelease at `dev-<version>` with the APK attached (uses `gh release create`, or `upload --clobber` if the tag exists) |
+
+```bash
+npm run build:android:local                        # debug standalone (default)
+npm run build:android:local -- --metro             # live-reload dev build
+npm run build:android:local -- --prod              # release APK
+npm run build:android:local -- --prod --publish    # release + GH release
+```
+
+**Output:**
+- Debug: `mobile/dist/<name>-<version>.apk` (~78 MB)
+- Release: `mobile/dist/<name>-<version>-release.apk` (~40 MB — half the size, R8 stripped debug symbols + minified dex)
+- Gradle's raw output is at `android/app/build/outputs/apk/{debug,release}/app-arm64-v8a-{debug,release}.apk` (arm64-only via the `with-arm64-only` config plugin).
+- Cached debug build: ~30s; warm release build: ~30s; cold/clean build: ~6–7 min.
+
+### Release signing (one-time setup)
+
+Release builds (`--prod`) need a keystore. The build script reads credentials from `mobile/android/keystores/.env`, which is gitignored. Generate one:
+
+```bash
+keytool -genkeypair -v \
+  -keystore mobile/android/keystores/release.keystore \
+  -alias die-forward -keyalg RSA -keysize 2048 -validity 10000
+```
+
+Then create `mobile/android/keystores/.env`:
+
+```env
+ANDROID_KEYSTORE_PASSWORD=<storepass>
+ANDROID_KEY_PASSWORD=<storepass>     # must equal the storepass — PKCS12 quirk, see note below
+ANDROID_KEY_ALIAS=die-forward
+```
+
+**PKCS12 quirk:** modern JDK keystores are PKCS12 by default, which does *not* support separate store and key passwords — `keytool` silently ignores `-keypass` at creation. So `ANDROID_KEY_PASSWORD` in `.env` must be the same value as `ANDROID_KEYSTORE_PASSWORD`. Gradle will fail with "Get Key failed: Given final block not properly padded" if they differ.
+
+> **Back up `release.keystore` + `.env` outside the repo** (1Password, secure cloud storage, etc.). Losing them means you can't ship updates to already-installed users without forcing an uninstall first, and you can't re-sign with the same identity if/when this hits the Play Store.
+
+For cloud/CI release signing via EAS, see [`mobile/docs/signing-secrets.md`](docs/signing-secrets.md).
 
 ### Build + install to a connected device
 
@@ -74,12 +119,16 @@ cd mobile && npm run android   # expo run:android — requires a device/emulator
 
 ## Environment Variables
 
+The mobile app reads env vars from `mobile/.env.local` (gitignored). Expo inlines anything prefixed `EXPO_PUBLIC_` into the JS bundle at bundle time — there's no runtime injection mechanism. The build script preflights required ones and errors fast if they're missing.
+
 ```env
-# mobile/.env
-EXPO_PUBLIC_INSTANT_APP_ID=84f04877-bcc3-4b09-89df-f6ef498d21f5
-EXPO_PUBLIC_SOLANA_RPC=https://api.devnet.solana.com
-EXPO_PUBLIC_API_BASE_URL=https://dieforward.com
+# mobile/.env.local
+EXPO_PUBLIC_INSTANT_APP_ID=<your-instantdb-app-id>   # required — same value as root .env.local's NEXT_PUBLIC_INSTANT_APP_ID
+EXPO_PUBLIC_SOLANA_RPC=https://api.devnet.solana.com # optional (defaults to devnet)
+EXPO_PUBLIC_API_URL=https://www.dieforward.com       # optional (defaults to production URL)
 ```
+
+See `mobile/.env.example` for the canonical template.
 
 ---
 
@@ -205,6 +254,8 @@ Imported in `_layout.tsx` before anything else:
 - `rpc-websockets` — exports warning (harmless, falls back to file resolution)
 - `@noble/hashes/crypto.js` — exports warning (harmless)
 - Gradle deprecation warnings for 9.0 compatibility (non-blocking)
+- The react gradle plugin doesn't declare `.env` files as inputs to `createBundle{Debug,Release}JsAndAssets` — an env-only change would otherwise reuse a stale cached JS bundle with the old inlined values. The build script busts the bundle outputs before every non-Metro build so what's in `.env` always matches what's in the APK. (~20s cost on a warm build.)
+- `expo-file-system` v19 (SDK 54) dropped `documentDirectory` and most of the legacy function API from its main export. The remaining stubs type-check but throw at runtime ("This method will throw in runtime" per the deprecation notice). Files needing the old API import from `expo-file-system/legacy` instead.
 
 ---
 

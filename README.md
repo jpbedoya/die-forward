@@ -392,11 +392,13 @@ To build a standalone APK locally — not just the dev server:
 
 ```bash
 cd mobile
-npx expo prebuild --platform android --clean   # first time / when native config changes
-npm run build:android:local                    # → debug APK
+npx expo prebuild --platform android --clean        # first time / when native config changes
+npm run build:android:local                         # standalone debug APK (~78 MB)
+npm run build:android:local -- --prod               # release APK (~40 MB, R8-minified, signed)
+npm run build:android:local -- --prod --publish     # release + GitHub release at dev-<version>
 ```
 
-See [`mobile/BUILD_NOTES.md`](mobile/BUILD_NOTES.md#local-android-build) for the one-time JDK + Android SDK toolchain setup.
+Output lands in `mobile/dist/<name>-<version>[-release].apk`. See [`mobile/BUILD_NOTES.md`](mobile/BUILD_NOTES.md#local-android-build) for the one-time JDK + Android SDK toolchain setup and the release keystore.
 
 ### Environment Variables
 
