@@ -3,45 +3,58 @@
 :root {
   /* ══════════════════════════════════════════
      DIE FORWARD — COLOR THEME
+     ──────────────────────────────────────────
+     Aligned with the mobile palette (mobile/lib/theme.js) so both platforms
+     share one design system. See /design for the live token reference.
+
+     Greyscale shifted from neutral (#666/#888/#bbb/#e0) to mobile's warm
+     bone/stone tones — better thematic match for the crypt setting, and
+     --text-muted/--text-dim now both pass WCAG AA (the prior --text-dim
+     value of #666 was at 3.45:1, sub-AA for body text). --text-faint is
+     the new decorative-only tier (sub-AA, for // COMING SOON style labels).
+
+     Accent hexes (amber/red/purple/blue/green) are unchanged — they were
+     already identical on both sides.
      ══════════════════════════════════════════ */
-  
-  /* Backgrounds */
-  --bg-base: #0a0a0a;
-  --bg-surface: #111111;
-  --bg-elevated: #1a1a1a;
-  
+
+  /* Backgrounds (crypt.*) */
+  --bg-base: #0d0d0d;        /* App background */
+  --bg-surface: #1c1917;     /* Raised surfaces — cards, modals, sheets */
+  --bg-elevated: #221e1c;    /* Highest tier — popovers, menus */
+
   /* Borders */
-  --border-dim: #222222;
-  --border-default: #333333;
-  --border-bright: #444444;
-  
-  /* Text hierarchy */
-  --text-primary: #e0e0e0;    /* Main content */
-  --text-secondary: #bbbbbb;  /* Secondary info */
-  --text-muted: #888888;      /* Labels, hints */
-  --text-dim: #666666;        /* Disabled, subtle */
-  
+  --border-dim: #292524;     /* Default border (crypt.border) */
+  --border-default: #44403c; /* Raised border (crypt.border-light) */
+  --border-bright: #5c5854;  /* Highest contrast border */
+
+  /* Text hierarchy (bone.*) — see /design */
+  --text-primary: #e7e5e4;   /* bone        — headlines, primary narrative   (~18:1 AAA) */
+  --text-secondary: #a8a29e; /* bone.muted  — body copy, instructions       (~7.9:1 AAA) */
+  --text-muted: #8e8780;     /* bone.dark   — secondary body, labels         (~5.0:1  AA) */
+  --text-dim: #8e8780;       /* same as --text-muted; preserved name for legacy refs */
+  --text-faint: #5c5854;     /* bone.faint  — decorative only (sub-AA, intentional) */
+
   /* Accent: Amber (gold, treasure, UI highlights) */
   --amber-bright: #fbbf24;
   --amber: #f59e0b;
   --amber-dim: #b45309;
-  
-  /* Health: Red */
+
+  /* Health: Red (blood.*) */
   --red-bright: #f87171;
   --red: #ef4444;
   --red-dim: #991b1b;
-  
-  /* Stamina: Blue */
+
+  /* Stamina: Blue (web-only — mobile uses palette.blue equivalent inline) */
   --blue-bright: #60a5fa;
   --blue: #3b82f6;
   --blue-dim: #1e3a8a;
-  
-  /* Corpse/Ghost: Purple */
+
+  /* Corpse/Ghost: Purple (ethereal.*) */
   --purple-bright: #c084fc;
   --purple: #a855f7;
   --purple-dim: #581c87;
-  
-  /* Success: Green */
+
+  /* Success: Green (victory.*) */
   --green-bright: #4ade80;
   --green: #22c55e;
   --green-dim: #166534;
@@ -122,6 +135,7 @@ body::before {
 .text-secondary { color: var(--text-secondary); }
 .text-muted { color: var(--text-muted); }
 .text-dim { color: var(--text-dim); }
+.text-faint { color: var(--text-faint); }
 
 /* Accents */
 .text-amber { color: var(--amber); }

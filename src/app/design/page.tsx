@@ -260,11 +260,13 @@ export default function DesignPage() {
             ◈ DESIGN SYSTEM
           </h1>
           <p className="font-mono text-sm leading-relaxed" style={{ color: palette.bone.muted }}>
-            The mobile app&apos;s palette and the rules around it. Tokens live in{' '}
-            <code style={{ color: palette.amber.DEFAULT }}>mobile/lib/theme.js</code> — the single
-            source of truth for both the Tailwind config (className styling) and the React
-            Native inline-style escape hatch. Don&apos;t hand-pick hex strings in components;
-            import the token.
+            The Die Forward palette and the rules around it — shared across both the mobile app
+            and the website. Tokens live in{' '}
+            <code style={{ color: palette.amber.DEFAULT }}>mobile/lib/theme.js</code>; the
+            website mirrors them in{' '}
+            <code style={{ color: palette.amber.DEFAULT }}>src/app/globals.css</code> as CSS
+            variables (<code>--text-primary</code>, <code>--bg-base</code>, …). Don&apos;t
+            hand-pick hex strings in components; use the token.
           </p>
           <p
             className="mt-3 font-mono text-xs leading-relaxed"
