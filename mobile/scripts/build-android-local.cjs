@@ -1,33 +1,47 @@
 #!/usr/bin/env node
 /**
- * Local Android debug build with versioned, name-stamped APK output.
+ * Local Android build with versioned, name-stamped APK output.
  *
- * Produces a SELF-CONTAINED APK by default — the JS bundle is embedded, so the
- * installed app runs without a Metro dev server. Drop the file in chat / a
- * release / a USB drive and anyone with an arm64 Android phone can install
- * and play. Pass `--metro` for the legacy Metro-served debug build.
+ * Three build modes (mutually exclusive):
+ *   default          → self-contained DEBUG APK (debug-signed, JS bundled,
+ *                      unminified). Quickest to build, biggest file. Best for
+ *                      iteration and ad-hoc sharing.
+ *   --metro          → Metro-served debug APK. Live-reload, needs `expo start`
+ *                      running. Use during dev.
+ *   --prod           → RELEASE APK (release-signed via mobile/android/keystores, JS
+ *                      bundled, R8-minified). Smaller, production-quality.
+ *                      Requires mobile/android/keystores/release.keystore + .env.
  *
- * Usage (from `mobile/`):
- *   npm run build:android:local              # standalone debug APK
- *   npm run build:android:local -- --release # also publish a GitHub prerelease
- *   npm run build:android:local -- --metro   # Metro-served (live-reload) APK
+ * Optional, combinable:
+ *   --publish        → after the build, publish a GitHub prerelease at
+ *                      `dev-<version>` with the APK attached. Asset is
+ *                      re-uploaded with --clobber if the tag already exists.
  *
  * Single source of truth for the version is `mobile/app.config.js`
- * (BASE_VERSION + git short SHA = e.g. "1.4.4.986827f"). This script:
- *   1. Reads that computed version + the app name from app.config.js.
- *   2. Syncs Android's native `versionName` in build.gradle to match.
- *   3. Resolves JAVA_HOME / ANDROID_HOME from known locations if the calling
- *      shell didn't set them (so the build works in any shell — CI, an editor
- *      task runner, an agent sandbox — not just an interactive zsh that has
- *      sourced ~/.zshrc; see memory/android-build-setup.md).
- *   4. Injects a one-time `standaloneBuild` toggle into the gradle `react {}`
- *      block (idempotent, marker-guarded) so `assembleDebug -PstandaloneBuild=true`
- *      bundles the JS instead of pointing at Metro.
- *   5. Runs gradle.
- *   6. Copies the APK to `mobile/dist/<name>-<version>.apk`.
- *   7. (with --release) publishes a GitHub prerelease at `dev-<version>` with
- *      the APK attached. If the release already exists, the asset is re-
- *      uploaded with --clobber.
+ * (BASE_VERSION + git short SHA = e.g. "1.4.4.986827f").
+ *
+ * Usage (from `mobile/`):
+ *   npm run build:android:local                        # standalone debug
+ *   npm run build:android:local -- --metro             # live-reload (dev)
+ *   npm run build:android:local -- --prod              # release APK
+ *   npm run build:android:local -- --prod --publish    # release + GH publish
+ *
+ * Pipeline:
+ *   1. Read version + name from app.config.js.
+ *   2. Sync Android-native versionName in build.gradle to match.
+ *   3. Resolve JAVA_HOME / ANDROID_HOME from known locations if the calling
+ *      shell hasn't sourced ~/.zshrc (CI / editor task runners / agent sandboxes).
+ *   4. Preflight required EXPO_PUBLIC_* env vars (catches "missing .env" before
+ *      it becomes a confusing on-device runtime crash).
+ *   5. Inject a one-time `standaloneBuild` toggle into the gradle `react { }`
+ *      block (idempotent, marker-guarded) so debug builds can opt into bundling.
+ *   6. For --prod: load mobile/android/keystores/.env into the build env so gradle's
+ *      release signingConfig finds ANDROID_KEYSTORE_PASSWORD / KEY_PASSWORD.
+ *   7. Bust the cached JS bundle outputs (the react gradle plugin doesn't track
+ *      .env files as inputs, so an env-only change would otherwise be silent).
+ *   8. Run `./gradlew assembleDebug` or `assembleRelease` accordingly.
+ *   9. Copy the APK to mobile/dist/<name>-<version>[-release].apk.
+ *  10. (--publish) publish to GitHub.
  */
 
 const { execFileSync } = require('node:child_process');
@@ -40,8 +54,10 @@ const repoRoot = resolve(mobileRoot, '..');
 
 // ── Flags ────────────────────────────────────────────────────────────────────
 const args = new Set(process.argv.slice(2));
-const STANDALONE = !args.has('--metro'); // self-contained APK is the default
-const PUBLISH = args.has('--release');
+const PROD = args.has('--prod');
+const METRO = args.has('--metro') && !PROD; // --prod always bundles
+const STANDALONE = !METRO;                  // self-contained APK is the default
+const PUBLISH = args.has('--publish');
 
 // ── Toolchain resolution ─────────────────────────────────────────────────────
 // The interactive zsh has JAVA_HOME / ANDROID_HOME via ~/.zshrc. A non-login
@@ -112,12 +128,7 @@ const buildEnv = {
   PATH: `${javaHome}/bin:${process.env.PATH || ''}`,
 };
 
-// ── Env preflight ────────────────────────────────────────────────────────────
-// Expo inlines EXPO_PUBLIC_* env vars into the JS bundle at build time. If a
-// required one isn't reachable (via process.env or an Expo-loaded dotenv file),
-// the runtime guard in lib/instant.ts throws on launch — confusing to debug
-// once the APK is already on a phone. Catch it here instead.
-
+// ── Dotenv helpers ───────────────────────────────────────────────────────────
 function readDotenv(filePath) {
   if (!existsSync(filePath)) return {};
   return Object.fromEntries(
@@ -132,6 +143,11 @@ function readDotenv(filePath) {
   );
 }
 
+// ── Env preflight ────────────────────────────────────────────────────────────
+// Expo inlines EXPO_PUBLIC_* env vars into the JS bundle at build time. If a
+// required one isn't reachable (via process.env or an Expo-loaded dotenv file),
+// the runtime guard in lib/instant.ts throws on launch — confusing to debug
+// once the APK is already on a phone. Catch it here instead.
 const REQUIRED_PUBLIC_ENV = ['EXPO_PUBLIC_INSTANT_APP_ID'];
 const dotenvVars = new Set();
 for (const name of ['.env.development.local', '.env.local', '.env.development', '.env']) {
@@ -148,8 +164,37 @@ if (missingEnv.length) {
   process.exit(1);
 }
 
+// ── Release keystore (--prod only) ───────────────────────────────────────────
+// build.gradle's release signingConfig reads ANDROID_KEYSTORE_PASSWORD /
+// ANDROID_KEY_PASSWORD / ANDROID_KEY_ALIAS from the env. Load them from
+// mobile/android/keystores/.env (gitignored) so the build script is the single
+// entrypoint — no need to remember to `source` anything first.
+if (PROD) {
+  const keystorePath = join(mobileRoot, 'android/keystores/release.keystore');
+  const keystoreEnvPath = join(mobileRoot, 'android/keystores/.env');
+  if (!existsSync(keystorePath)) {
+    console.error(
+      `✗ Release build needs ${keystorePath}.\n` +
+      `  Generate one with:\n` +
+      `    keytool -genkeypair -v -keystore mobile/android/keystores/release.keystore \\\n` +
+      `      -alias die-forward -keyalg RSA -keysize 2048 -validity 10000\n` +
+      `  Then put the storepass / keypass into mobile/android/keystores/.env as\n` +
+      `  ANDROID_KEYSTORE_PASSWORD / ANDROID_KEY_PASSWORD.`,
+    );
+    process.exit(1);
+  }
+  const ksEnv = readDotenv(keystoreEnvPath);
+  for (const k of ['ANDROID_KEYSTORE_PASSWORD', 'ANDROID_KEY_PASSWORD']) {
+    if (!buildEnv[k] && ksEnv[k]) buildEnv[k] = ksEnv[k];
+    if (!buildEnv[k]) {
+      console.error(`✗ Release build needs ${k}. Add it to ${keystoreEnvPath} (or export it before running).`);
+      process.exit(1);
+    }
+  }
+  if (ksEnv.ANDROID_KEY_ALIAS) buildEnv.ANDROID_KEY_ALIAS = buildEnv.ANDROID_KEY_ALIAS || ksEnv.ANDROID_KEY_ALIAS;
+}
+
 // ── Version sync + build.gradle edits ────────────────────────────────────────
-// Pull the version + name from app.config.js — the same values Expo uses.
 const config = require(join(mobileRoot, 'app.config.js'));
 const version = config.expo.version;                                  // e.g. "1.4.4.986827f"
 const appName = config.expo.name.toLowerCase().replace(/\s+/g, '-');  // "die-forward"
@@ -164,9 +209,8 @@ const originalBuildGradle = buildGradle;
 buildGradle = buildGradle.replace(/versionName\s+"[^"]*"/, `versionName "${version}"`);
 
 // Inject the standalone-build toggle into the `react { }` block — once,
-// idempotently, marker-guarded. Lets us pick standalone vs Metro per build:
-//   `./gradlew assembleDebug -PstandaloneBuild=true`  → JS bundled into APK
-//   `./gradlew assembleDebug`                          → Metro-served (live-reload)
+// idempotently, marker-guarded. With it, `assembleDebug -PstandaloneBuild=true`
+// bundles the JS instead of pointing at Metro. (Release variants always bundle.)
 const STANDALONE_MARKER = '// [standalone-build-toggle]';
 if (!buildGradle.includes(STANDALONE_MARKER)) {
   const snippet =
@@ -177,31 +221,35 @@ if (!buildGradle.includes(STANDALONE_MARKER)) {
   buildGradle = buildGradle.replace(/^react\s*\{/m, `react {${snippet}`);
 }
 
-if (buildGradle === originalBuildGradle) {
-  console.warn(`[build-android-local] No changes needed in ${buildGradlePath}.`);
-} else {
-  writeFileSync(buildGradlePath, buildGradle);
-}
+if (buildGradle !== originalBuildGradle) writeFileSync(buildGradlePath, buildGradle);
 
 // ── Build ────────────────────────────────────────────────────────────────────
 // EXPO_PUBLIC_* env vars are inlined into the JS bundle at bundle time. Gradle
 // doesn't track .env files as inputs to the bundle task, so an env-only change
 // would otherwise reuse a stale cached bundle. Wipe the bundle outputs before
-// every standalone build so the value the APK ships with always matches the
-// .env on disk. (Tiny cost — ~20s extra on a warm build.)
-if (STANDALONE) {
+// every standalone-or-release build so the value the APK ships with always
+// matches the .env on disk. (Tiny cost — ~20s extra on a warm build.)
+const buildVariant = PROD ? 'release' : 'debug';
+if (STANDALONE || PROD) {
   for (const p of [
-    'android/app/build/generated/assets/createBundleDebugJsAndAssets',
-    'android/app/build/intermediates/assets/debug/mergeDebugAssets',
-    'android/app/build/intermediates/merged_assets/debug/mergeDebugAssets/out',
+    `android/app/build/generated/assets/createBundle${PROD ? 'Release' : 'Debug'}JsAndAssets`,
+    `android/app/build/intermediates/assets/${buildVariant}/mergeDebugAssets`,
+    `android/app/build/intermediates/merged_assets/${buildVariant}/merge${PROD ? 'Release' : 'Debug'}Assets/out`,
   ]) {
     rmSync(join(mobileRoot, p), { recursive: true, force: true });
   }
 }
 
-console.log(`\n▶ Building ${appName} ${version} (${STANDALONE ? 'standalone' : 'Metro-served'})\n`);
-const gradleArgs = ['assembleDebug'];
-if (STANDALONE) gradleArgs.push('-PstandaloneBuild=true');
+const mode = PROD ? 'release (signed, minified)' : (STANDALONE ? 'debug standalone' : 'debug Metro-served');
+console.log(`\n▶ Building ${appName} ${version} — ${mode}\n`);
+const gradleTask = PROD ? 'assembleRelease' : 'assembleDebug';
+const gradleArgs = [gradleTask];
+if (STANDALONE && !PROD) gradleArgs.push('-PstandaloneBuild=true');
+if (PROD) {
+  // R8 minification gives the biggest size win for release builds. Resource
+  // shrinking left off for now — it occasionally strips RN-loaded drawables.
+  gradleArgs.push('-Pandroid.enableMinifyInReleaseBuilds=true');
+}
 // execFileSync (not exec/spawn with shell) — no command-string interpolation.
 execFileSync('./gradlew', gradleArgs, {
   cwd: join(mobileRoot, 'android'),
@@ -209,12 +257,13 @@ execFileSync('./gradlew', gradleArgs, {
   env: buildEnv,
 });
 
-// The arm64-only splits config produces a single APK; copy it under the
-// versioned name so old builds aren't overwritten and the filename is shareable.
-const apkSrc = join(mobileRoot, 'android/app/build/outputs/apk/debug/app-arm64-v8a-debug.apk');
+// The arm64-only splits config produces a single APK per variant; copy it
+// under a versioned, mode-tagged name so debug + release APKs can coexist.
+const apkSrc = join(mobileRoot,
+  `android/app/build/outputs/apk/${buildVariant}/app-arm64-v8a-${buildVariant}.apk`);
 const distDir = join(mobileRoot, 'dist');
 mkdirSync(distDir, { recursive: true });
-const apkDest = join(distDir, `${appName}-${version}.apk`);
+const apkDest = join(distDir, PROD ? `${appName}-${version}-release.apk` : `${appName}-${version}.apk`);
 copyFileSync(apkSrc, apkDest);
 
 const apkBytes = statSync(apkDest).size;
@@ -226,19 +275,20 @@ console.log(`\n✓ ${apkDest}  (${apkMB} MB, sha256 ${apkSha.slice(0, 12)}…)\n
 // ── Publish (optional) ───────────────────────────────────────────────────────
 if (PUBLISH) {
   const tag = `dev-${version}`;
-  const title = `dev ${version}`;
+  const title = `dev ${version}${PROD ? ' (release)' : ''}`;
   const branch = (() => {
     try { return execFileSync('git', ['rev-parse', '--abbrev-ref', 'HEAD'], { cwd: repoRoot, encoding: 'utf8' }).trim(); }
     catch { return 'main'; }
   })();
+  const flavor = PROD ? 'RELEASE — signed + R8-minified' : 'DEBUG — JS bundled, no Metro required';
   const notes =
-    `Local debug build off \`${branch}\` @ ${version.split('.').pop()}.\n` +
+    `Local build off \`${branch}\` @ ${version.split('.').pop()}.\n` +
     `\n` +
-    `- arm64-v8a APK, ${apkMB} MB${STANDALONE ? ' — self-contained (JS bundled, no Metro required)' : ''}\n` +
+    `- arm64-v8a APK, ${apkMB} MB — ${flavor}\n` +
     `- versionName \`${version}\`\n` +
     `- SHA-256: \`${apkSha}\`\n` +
     `\n` +
-    `Built with \`npm run build:android:local${PUBLISH ? ' -- --release' : ''}\`.`;
+    `Built with \`npm run build:android:local${PROD ? ' -- --prod --publish' : ' -- --publish'}\`.`;
 
   console.log(`▶ Publishing GitHub release ${tag}\n`);
   try {
