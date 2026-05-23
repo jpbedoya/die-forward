@@ -3,6 +3,7 @@ import { View, Text, Pressable, Animated, Platform } from 'react-native';
 import { CryptBackground } from './CryptBackground';
 import { CRTOverlay } from './CRTOverlay';
 import { DieForwardLogoImage } from './DieForwardLogoImage';
+import { palette } from '../lib/theme';
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -70,7 +71,7 @@ export function SplashScreen({ onComplete, onTap }: SplashScreenProps) {
           >
             <DieForwardLogoImage variant="vertical" size="large" showGlow glowColor="#f59e0b" />
             <Text style={{ 
-              color: '#57534e', 
+              color: palette.bone.dark, 
               fontSize: 12, 
               fontFamily: 'monospace', 
               marginTop: 32 

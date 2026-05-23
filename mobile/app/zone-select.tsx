@@ -11,6 +11,7 @@ import { CRTOverlay } from '../components/CRTOverlay';
 import { useGame } from '../lib/GameContext';
 import { useCurrentPlayer, usePlayer, Player } from '../lib/instant';
 import { API_BASE } from '../lib/api';
+import { palette } from '../lib/theme';
 
 // Determine if a player has unlocked a zone through progression
 function isZoneUnlocked(zoneId: string, player: Player | undefined): boolean {
@@ -95,7 +96,7 @@ function DifficultyDots({ difficulty, accentColor }: { difficulty: number; accen
   return (
     <View style={{ flexDirection: 'row', gap: 4, marginTop: 8 }}>
       {Array.from({ length: 3 }).map((_, i) => (
-        <Text key={i} style={{ fontSize: 10, color: i < difficulty ? accentColor : '#555' }}>
+        <Text key={i} style={{ fontSize: 10, color: i < difficulty ? accentColor : palette.bone.dark }}>
           {i < difficulty ? '●' : '○'}
         </Text>
       ))}
@@ -117,7 +118,7 @@ function GridZoneCard({
   playerLocked?: boolean;
 }) {
   const enabled = enabledProp ?? zone.enabled;
-  const borderColor = isSelected ? zone.accentColor : '#2a2a2a';
+  const borderColor = isSelected ? zone.accentColor : palette.crypt.border;
   const bgColor = isSelected ? zone.bgColor + '40' : zone.bgColor + '1a';
 
   // Admin disabled — "COMING SOON"
@@ -128,7 +129,7 @@ function GridZoneCard({
           style={{
             flex: 1,
             borderWidth: 1,
-            borderColor: '#2a2a2a',
+            borderColor: palette.crypt.border,
             borderLeftWidth: 3,
             borderLeftColor: zone.accentColor,
             backgroundColor: zone.bgColor + '1a',
@@ -138,14 +139,14 @@ function GridZoneCard({
           <Text style={{ fontFamily: 'monospace', fontSize: 10, color: zone.accentColor, letterSpacing: 1, marginBottom: 6 }}>
             [ {zone.element} ]
           </Text>
-          <Text style={{ fontFamily: 'monospace', fontWeight: 'bold', fontSize: 13, color: '#a8a29e', lineHeight: 18, marginBottom: 4 }}>
+          <Text style={{ fontFamily: 'monospace', fontWeight: 'bold', fontSize: 13, color: palette.bone.muted, lineHeight: 18, marginBottom: 4 }}>
             {zone.name}
           </Text>
-          <Text style={{ fontFamily: 'monospace', fontSize: 9, color: '#6b6b6b', marginBottom: 6, lineHeight: 13 }}>
+          <Text style={{ fontFamily: 'monospace', fontSize: 9, color: palette.bone.dark, marginBottom: 6, lineHeight: 13 }}>
             {zone.tagline}
           </Text>
           <DifficultyDots difficulty={zone.difficulty} accentColor={zone.accentColor} />
-          <Text style={{ fontFamily: 'monospace', fontSize: 9, color: '#555', marginTop: 8, letterSpacing: 0.5 }}>
+          <Text style={{ fontFamily: 'monospace', fontSize: 9, color: palette.bone.dark, marginTop: 8, letterSpacing: 0.5 }}>
             // COMING SOON
           </Text>
         </View>
@@ -161,7 +162,7 @@ function GridZoneCard({
           style={{
             flex: 1,
             borderWidth: 1,
-            borderColor: '#3a3a3a',
+            borderColor: palette.crypt['border-light'],
             borderLeftWidth: 3,
             borderLeftColor: zone.accentColor,
             backgroundColor: zone.bgColor + '1a',
@@ -171,14 +172,14 @@ function GridZoneCard({
           <Text style={{ fontFamily: 'monospace', fontSize: 10, color: zone.accentColor, letterSpacing: 1, marginBottom: 6 }}>
             [ {zone.element} ]
           </Text>
-          <Text style={{ fontFamily: 'monospace', fontWeight: 'bold', fontSize: 13, color: '#a8a29e', lineHeight: 18, marginBottom: 4 }}>
+          <Text style={{ fontFamily: 'monospace', fontWeight: 'bold', fontSize: 13, color: palette.bone.muted, lineHeight: 18, marginBottom: 4 }}>
             🔒 {zone.name}
           </Text>
-          <Text style={{ fontFamily: 'monospace', fontSize: 9, color: '#6b6b6b', marginBottom: 6, lineHeight: 13 }}>
+          <Text style={{ fontFamily: 'monospace', fontSize: 9, color: palette.bone.dark, marginBottom: 6, lineHeight: 13 }}>
             {zone.tagline}
           </Text>
           <DifficultyDots difficulty={zone.difficulty} accentColor={zone.accentColor} />
-          <Text style={{ fontFamily: 'monospace', fontSize: 9, color: '#666', marginTop: 8, letterSpacing: 0.5 }}>
+          <Text style={{ fontFamily: 'monospace', fontSize: 9, color: palette.bone.dark, marginTop: 8, letterSpacing: 0.5 }}>
             // Reach room 8 to unlock
           </Text>
         </View>
@@ -202,10 +203,10 @@ function GridZoneCard({
         <Text style={{ fontFamily: 'monospace', fontSize: 10, color: zone.accentColor, letterSpacing: 1, marginBottom: 6 }}>
           [ {zone.element} ]
         </Text>
-        <Text style={{ fontFamily: 'monospace', fontWeight: 'bold', fontSize: 13, color: isSelected ? zone.accentColor : '#a8a29e', lineHeight: 18, marginBottom: 4 }}>
+        <Text style={{ fontFamily: 'monospace', fontWeight: 'bold', fontSize: 13, color: isSelected ? zone.accentColor : palette.bone.muted, lineHeight: 18, marginBottom: 4 }}>
           {zone.name}
         </Text>
-        <Text style={{ fontFamily: 'monospace', fontSize: 9, color: '#6b6b6b', marginTop: 6, lineHeight: 13 }}>
+        <Text style={{ fontFamily: 'monospace', fontSize: 9, color: palette.bone.dark, marginTop: 6, lineHeight: 13 }}>
           {zone.tagline}
         </Text>
         <DifficultyDots difficulty={zone.difficulty} accentColor={zone.accentColor} />
@@ -228,7 +229,7 @@ function VoidBeyondCard({
   playerLocked?: boolean;
 }) {
   const enabled = enabledProp ?? zone.enabled;
-  const borderColor = isSelected ? zone.accentColor : '#2a2a2a';
+  const borderColor = isSelected ? zone.accentColor : palette.crypt.border;
   const bgColor = isSelected ? zone.bgColor + '40' : zone.bgColor + '1a';
 
   const inner = (
@@ -259,7 +260,7 @@ function VoidBeyondCard({
           fontFamily: 'monospace',
           fontWeight: 'bold',
           fontSize: 15,
-          color: isSelected ? zone.accentColor : '#a8a29e',
+          color: isSelected ? zone.accentColor : palette.bone.muted,
           letterSpacing: 1,
           marginBottom: 4,
         }}
@@ -270,7 +271,7 @@ function VoidBeyondCard({
         style={{
           fontFamily: 'monospace',
           fontSize: 11,
-          color: '#6b6b6b',
+          color: palette.bone.dark,
           fontStyle: 'italic',
           marginBottom: 8,
         }}
@@ -280,15 +281,15 @@ function VoidBeyondCard({
       <DifficultyDots difficulty={zone.difficulty} accentColor={zone.accentColor} />
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
         {enabled && playerLocked ? (
-          <Text style={{ fontFamily: 'monospace', fontSize: 9, color: '#666', letterSpacing: 0.5 }}>
+          <Text style={{ fontFamily: 'monospace', fontSize: 9, color: palette.bone.dark, letterSpacing: 0.5 }}>
             🔒 Clear 3 zones to unlock
           </Text>
         ) : (
           <>
-            <Text style={{ fontFamily: 'monospace', fontSize: 9, color: '#555', letterSpacing: 0.5 }}>
+            <Text style={{ fontFamily: 'monospace', fontSize: 9, color: palette.bone.dark, letterSpacing: 0.5 }}>
               // COMING SOON
             </Text>
-            <Text style={{ fontFamily: 'monospace', fontSize: 9, color: '#3a2a4a', letterSpacing: 1 }}>
+            <Text style={{ fontFamily: 'monospace', fontSize: 9, color: palette.bone.faint, letterSpacing: 1 }}>
               // UNLOCKS AFTER 3 CLEARED ZONES
             </Text>
           </>
@@ -431,7 +432,7 @@ export default function ZoneSelectScreen() {
             style={{
               fontFamily: 'monospace',
               fontSize: 10,
-              color: '#555',
+              color: palette.bone.dark,
               textAlign: 'center',
               marginBottom: 8,
               letterSpacing: 0.5,
@@ -448,7 +449,7 @@ export default function ZoneSelectScreen() {
               style={{
                 fontFamily: 'monospace',
                 fontWeight: 'bold',
-                color: '#0a0a0a',
+                color: palette.crypt.bg,
                 letterSpacing: 2,
                 fontSize: 13,
               }}

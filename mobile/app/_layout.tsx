@@ -23,6 +23,7 @@ import { SplashScreen } from '../components/SplashScreen';
 import { getAudioManager } from '../lib/audio';
 import { db } from '../lib/instant';
 import { dlog, scheduleAutoExport } from '../lib/debug-log';
+import { palette } from '../lib/theme';
 
 const APP_VERSION_KEY = 'APP_BUILD_VERSION';
 // Use only BASE_VERSION (without commit hash) for migration gating
@@ -169,7 +170,7 @@ class ErrorBoundary extends React.Component<
           <Text style={{ color: '#d4b896', fontSize: 20, fontWeight: 'bold', marginBottom: 8, fontFamily: 'monospace', letterSpacing: 2 }}>
             SOMETHING BROKE
           </Text>
-          <Text style={{ color: '#666', fontSize: 12, marginBottom: 24, fontFamily: 'monospace', textAlign: 'center' }}>
+          <Text style={{ color: palette.bone.dark, fontSize: 12, marginBottom: 24, fontFamily: 'monospace', textAlign: 'center' }}>
             The depths claim all eventually.
           </Text>
           

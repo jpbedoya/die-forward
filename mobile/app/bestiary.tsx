@@ -13,11 +13,12 @@ import { listZoneIds, loadZone } from '../lib/zone-loader';
 import { getCreatureAsset, getCreatureAssetByName } from '../lib/creatureAssets';
 import { CRTOverlay } from '../components/CRTOverlay';
 import { CryptBackground } from '../components/CryptBackground';
+import { palette } from '../lib/theme';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const TIER_CONFIG = {
-  1: { label: 'TIER I',   color: '#78716c', border: '#2a2520', bg: 'rgba(42,37,32,0.6)' },
+  1: { label: 'TIER I',   color: palette.bone.dark, border: '#2a2520', bg: 'rgba(42,37,32,0.6)' },
   2: { label: 'TIER II',  color: '#c47a3a', border: '#5a3a1a', bg: 'rgba(90,58,26,0.3)' },
   3: { label: 'TIER III', color: '#c84040', border: '#5a1a1a', bg: 'rgba(90,26,26,0.3)' },
 } as const;
@@ -171,7 +172,7 @@ function CreatureCard({ creature, onPress, cardWidth }: {
           ♥ {creature.health.min}–{creature.health.max}
         </Text>
         <Text
-          style={{ fontFamily: 'monospace', fontSize: 10, color: '#78716c', fontStyle: 'italic', lineHeight: 14, marginBottom: 8 }}
+          style={{ fontFamily: 'monospace', fontSize: 10, color: palette.bone.dark, fontStyle: 'italic', lineHeight: 14, marginBottom: 8 }}
           numberOfLines={2}
         >
           {creature.description}
@@ -280,7 +281,7 @@ function CreatureDetailModal({ creature, onClose }: {
                   hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
                   style={{ padding: 8, marginTop: -4, marginRight: -4 }}
                 >
-                  <Text style={{ fontFamily: 'monospace', fontSize: 16, color: '#57534e' }}>[×]</Text>
+                  <Text style={{ fontFamily: 'monospace', fontSize: 16, color: palette.bone.dark }}>[×]</Text>
                 </Pressable>
               </View>
 
@@ -294,7 +295,7 @@ function CreatureDetailModal({ creature, onClose }: {
 
               {/* Behaviors */}
               <Text style={{
-                fontFamily: 'monospace', fontSize: 10, color: '#57534e',
+                fontFamily: 'monospace', fontSize: 10, color: palette.bone.dark,
                 letterSpacing: 2, marginBottom: 8,
               }}>
                 BEHAVIORS
@@ -387,7 +388,7 @@ export default function BestiaryScreen() {
             paddingVertical: 5,
           }}
         >
-          <Text style={{ fontFamily: 'monospace', fontSize: 10, color: filterZone ? '#78716c' : '#a78bfa' }}>ALL ZONES</Text>
+          <Text style={{ fontFamily: 'monospace', fontSize: 10, color: filterZone ? palette.bone.dark : '#a78bfa' }}>ALL ZONES</Text>
         </Pressable>
         {ZONES.map((z) => {
           const active = filterZone === z.id;
@@ -403,7 +404,7 @@ export default function BestiaryScreen() {
                 paddingVertical: 5,
               }}
             >
-              <Text style={{ fontFamily: 'monospace', fontSize: 10, color: active ? '#a78bfa' : '#78716c' }}>{z.name.toUpperCase()}</Text>
+              <Text style={{ fontFamily: 'monospace', fontSize: 10, color: active ? '#a78bfa' : palette.bone.dark }}>{z.name.toUpperCase()}</Text>
             </Pressable>
           );
         })}

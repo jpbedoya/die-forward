@@ -21,6 +21,7 @@ import { getMilestonePerks } from '../lib/milestones';
 import { getZoneMechanic } from '../lib/zone-mechanics';
 import { useUnifiedWallet, type Address } from '../lib/wallet/unified';
 import { ItemModal, CreatureModal } from '../components/CryptModal';
+import { palette } from '../lib/theme';
 
 function HealthBar({ current, max }: { current: number; max: number }) {
   const filled = Math.round((current / max) * 8);
@@ -816,7 +817,7 @@ export default function PlayScreen() {
 
             {/* Swap options */}
             <View style={{ padding: 12 }}>
-              <Text style={{ color: '#6b7280', fontFamily: 'monospace', fontSize: 10, textAlign: 'center', letterSpacing: 2, marginBottom: 8 }}>
+              <Text style={{ color: palette.bone.dark, fontFamily: 'monospace', fontSize: 10, textAlign: 'center', letterSpacing: 2, marginBottom: 8 }}>
                 ── SWAP FOR ──
               </Text>
               {game.inventory.map((item, idx) => {
@@ -842,12 +843,12 @@ export default function PlayScreen() {
                     <View style={{ flex: 1 }}>
                       <Text style={{ color: '#e5e0d0', fontFamily: 'monospace', fontSize: 12 }}>{item.name}</Text>
                       {details?.rarity && (
-                        <Text style={{ color: '#6b7280', fontFamily: 'monospace', fontSize: 10 }}>
+                        <Text style={{ color: palette.bone.dark, fontFamily: 'monospace', fontSize: 10 }}>
                           {details.rarity}
                         </Text>
                       )}
                     </View>
-                    <Text style={{ color: '#6b7280', fontFamily: 'monospace', fontSize: 10 }}>SWAP ▶</Text>
+                    <Text style={{ color: palette.bone.dark, fontFamily: 'monospace', fontSize: 10 }}>SWAP ▶</Text>
                   </Pressable>
                 );
               })}
