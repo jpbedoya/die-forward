@@ -32,7 +32,7 @@
 
 const { execFileSync } = require('node:child_process');
 const { createHash } = require('node:crypto');
-const { copyFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } = require('node:fs');
+const { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } = require('node:fs');
 const { join, resolve } = require('node:path');
 
 const mobileRoot = resolve(__dirname, '..');
@@ -112,6 +112,42 @@ const buildEnv = {
   PATH: `${javaHome}/bin:${process.env.PATH || ''}`,
 };
 
+// ── Env preflight ────────────────────────────────────────────────────────────
+// Expo inlines EXPO_PUBLIC_* env vars into the JS bundle at build time. If a
+// required one isn't reachable (via process.env or an Expo-loaded dotenv file),
+// the runtime guard in lib/instant.ts throws on launch — confusing to debug
+// once the APK is already on a phone. Catch it here instead.
+
+function readDotenv(filePath) {
+  if (!existsSync(filePath)) return {};
+  return Object.fromEntries(
+    readFileSync(filePath, 'utf8').split(/\r?\n/)
+      .map(l => l.trim())
+      .filter(l => l && !l.startsWith('#'))
+      .map(l => {
+        const i = l.indexOf('=');
+        return i < 0 ? null : [l.slice(0, i).trim(), l.slice(i + 1).trim().replace(/^["']|["']$/g, '')];
+      })
+      .filter(Boolean),
+  );
+}
+
+const REQUIRED_PUBLIC_ENV = ['EXPO_PUBLIC_INSTANT_APP_ID'];
+const dotenvVars = new Set();
+for (const name of ['.env.development.local', '.env.local', '.env.development', '.env']) {
+  Object.keys(readDotenv(join(mobileRoot, name))).forEach(k => dotenvVars.add(k));
+}
+const missingEnv = REQUIRED_PUBLIC_ENV.filter(k => !process.env[k] && !dotenvVars.has(k));
+if (missingEnv.length) {
+  console.error(
+    `✗ Missing required env vars: ${missingEnv.join(', ')}\n` +
+    `  Expo inlines EXPO_PUBLIC_* into the JS bundle at build time. Without\n` +
+    `  them the app throws on launch ("...is required - check .env file").\n` +
+    `  Fix: create ${join(mobileRoot, '.env.local')} (see mobile/.env.example).`,
+  );
+  process.exit(1);
+}
+
 // ── Version sync + build.gradle edits ────────────────────────────────────────
 // Pull the version + name from app.config.js — the same values Expo uses.
 const config = require(join(mobileRoot, 'app.config.js'));
@@ -148,6 +184,21 @@ if (buildGradle === originalBuildGradle) {
 }
 
 // ── Build ────────────────────────────────────────────────────────────────────
+// EXPO_PUBLIC_* env vars are inlined into the JS bundle at bundle time. Gradle
+// doesn't track .env files as inputs to the bundle task, so an env-only change
+// would otherwise reuse a stale cached bundle. Wipe the bundle outputs before
+// every standalone build so the value the APK ships with always matches the
+// .env on disk. (Tiny cost — ~20s extra on a warm build.)
+if (STANDALONE) {
+  for (const p of [
+    'android/app/build/generated/assets/createBundleDebugJsAndAssets',
+    'android/app/build/intermediates/assets/debug/mergeDebugAssets',
+    'android/app/build/intermediates/merged_assets/debug/mergeDebugAssets/out',
+  ]) {
+    rmSync(join(mobileRoot, p), { recursive: true, force: true });
+  }
+}
+
 console.log(`\n▶ Building ${appName} ${version} (${STANDALONE ? 'standalone' : 'Metro-served'})\n`);
 const gradleArgs = ['assembleDebug'];
 if (STANDALONE) gradleArgs.push('-PstandaloneBuild=true');
