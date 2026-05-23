@@ -8,7 +8,7 @@ try {
   // Not a git repo or git not available — fall back to 'dev'
 }
 
-const BASE_VERSION = '1.4.3';
+const BASE_VERSION = '1.4.4';
 const VERSION = `${BASE_VERSION}.${commitHash}`;
 
 module.exports = {
