@@ -14,6 +14,12 @@ import { getCreatureAsset, getCreatureAssetByName } from '../lib/creatureAssets'
 import { CRTOverlay } from '../components/CRTOverlay';
 import { CryptBackground } from '../components/CryptBackground';
 import { palette } from '../lib/theme';
+import { useCurrentPlayer } from '../lib/instant';
+import {
+  type CreatureMastery,
+  type CreatureMasteryEntry,
+  computeAggregate,
+} from '../lib/bestiary-mastery';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -101,12 +107,15 @@ function buildBestiary(): BestiaryCreature[] {
 
 // ─── Creature Card ────────────────────────────────────────────────────────────
 
-function CreatureCard({ creature, onPress, cardWidth }: {
+function CreatureCard({ creature, onPress, cardWidth, mastery }: {
   creature: BestiaryCreature;
   onPress: () => void;
   cardWidth: number;
+  /** Mastery counters for this creature, undefined if never encountered. */
+  mastery?: CreatureMasteryEntry;
 }) {
   const tier = TIER_CONFIG[creature.tier];
+  const discovered = (mastery?.encounters ?? 0) > 0;
   const asset = creature.artUrl
     ? getCreatureAsset(creature.artUrl)
     : getCreatureAssetByName(creature.name);
@@ -130,7 +139,7 @@ function CreatureCard({ creature, onPress, cardWidth }: {
         {asset ? (
           <Image
             source={asset}
-            style={{ width: cardWidth, height: Math.min(artHeight, 240) }}
+            style={{ width: cardWidth, height: Math.min(artHeight, 240), opacity: discovered ? 1 : 0.35 }}
             resizeMode="cover"
           />
         ) : (
@@ -138,6 +147,7 @@ function CreatureCard({ creature, onPress, cardWidth }: {
             width: cardWidth, height: Math.min(artHeight, 240),
             backgroundColor: '#130f0c',
             alignItems: 'center', justifyContent: 'center',
+            opacity: discovered ? 1 : 0.35,
           }}>
             <Text style={{ fontSize: 52 }}>{creature.emoji}</Text>
           </View>
@@ -153,6 +163,31 @@ function CreatureCard({ creature, onPress, cardWidth }: {
             {tier.label}
           </Text>
         </View>
+        {/* Mastery badge overlay — top-right corner */}
+        {discovered ? (
+          <View style={{
+            position: 'absolute', top: 6, right: 6,
+            backgroundColor: 'rgba(13,13,13,0.85)',
+            borderWidth: 1, borderColor: palette.crypt.border,
+            paddingHorizontal: 5, paddingVertical: 2,
+          }}>
+            <Text style={{ fontFamily: 'monospace', fontSize: 9, color: palette.bone.muted, letterSpacing: 0.5 }}>
+              ⚔ {mastery?.encounters ?? 0}
+              {(mastery?.defeats ?? 0) > 0 ? ` · 🗡 ${mastery!.defeats}` : ''}
+            </Text>
+          </View>
+        ) : (
+          <View style={{
+            position: 'absolute', top: 6, right: 6,
+            backgroundColor: 'rgba(13,13,13,0.85)',
+            borderWidth: 1, borderColor: palette.crypt.border,
+            paddingHorizontal: 6, paddingVertical: 2,
+          }}>
+            <Text style={{ fontFamily: 'monospace', fontSize: 10, color: palette.bone.faint, letterSpacing: 1 }}>
+              ?
+            </Text>
+          </View>
+        )}
       </View>
 
       {/* Info */}
@@ -192,9 +227,10 @@ function CreatureCard({ creature, onPress, cardWidth }: {
 
 // ─── Detail Modal ─────────────────────────────────────────────────────────────
 
-function CreatureDetailModal({ creature, onClose }: {
+function CreatureDetailModal({ creature, onClose, mastery }: {
   creature: BestiaryCreature | null;
   onClose: () => void;
+  mastery?: CreatureMasteryEntry;
 }) {
   if (!creature) return null;
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
@@ -307,6 +343,29 @@ function CreatureDetailModal({ creature, onClose }: {
                   </View>
                 ))}
               </View>
+
+              {/* Mastery */}
+              <Text style={{
+                fontFamily: 'monospace', fontSize: 10, color: palette.bone.dark,
+                letterSpacing: 2, marginTop: 18, marginBottom: 8,
+              }}>
+                MASTERY
+              </Text>
+              {mastery ? (
+                <View style={{ gap: 4 }}>
+                  <Text style={{ fontFamily: 'monospace', fontSize: 12, color: palette.bone.muted }}>
+                    Encountered <Text style={{ color: palette.amber.DEFAULT }}>{mastery.encounters}</Text> · Defeated <Text style={{ color: palette.victory.DEFAULT }}>{mastery.defeats}</Text>
+                    {mastery.killedByCount > 0 && <> · Killed you <Text style={{ color: palette.blood.DEFAULT }}>{mastery.killedByCount}</Text></>}
+                  </Text>
+                  <Text style={{ fontFamily: 'monospace', fontSize: 10, color: palette.bone.dark }}>
+                    First seen {new Date(mastery.firstSeenAt).toLocaleDateString()} · Last seen {new Date(mastery.lastSeenAt).toLocaleDateString()}
+                  </Text>
+                </View>
+              ) : (
+                <Text style={{ fontFamily: 'monospace', fontSize: 11, color: palette.bone.dark, fontStyle: 'italic' }}>
+                  Not yet encountered.
+                </Text>
+              )}
             </View>
           </ScrollView>
         </Pressable>
@@ -323,9 +382,19 @@ export default function BestiaryScreen() {
   const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
   const [filterTier, setFilterTier] = useState<1 | 2 | 3 | null>(null);
   const [filterZone, setFilterZone] = useState<string | null>(null);
+  const [filterMastery, setFilterMastery] = useState<'encountered' | 'undefeated' | null>(null);
 
   // Build once after the screen mounts — avoids blocking JS thread during navigation
   const CREATURES = useMemo(() => buildBestiary(), []);
+
+  // Player mastery — undefined while loading, empty object once we have the
+  // player. Aggregate (X discovered / Y mastered / Z total) is derived.
+  const { player } = useCurrentPlayer();
+  const mastery: CreatureMastery | undefined = player?.creatureMastery;
+  const aggregate = useMemo(
+    () => computeAggregate(mastery, CREATURES.map(c => c.name)),
+    [mastery, CREATURES],
+  );
 
   const COLS = 2;
   const GUTTER = 12;
@@ -338,7 +407,12 @@ export default function BestiaryScreen() {
   const filteredCreatures = CREATURES.filter((c) => {
     const tierMatch = filterTier ? c.tier === filterTier : true;
     const zoneMatch = filterZone ? c.zones.includes(filterZone) : true;
-    return tierMatch && zoneMatch;
+    const entry = mastery?.[c.name];
+    const masteryMatch =
+      filterMastery === 'encountered' ? (entry?.encounters ?? 0) > 0
+      : filterMastery === 'undefeated' ? (entry?.defeats ?? 0) === 0
+      : true;
+    return tierMatch && zoneMatch && masteryMatch;
   });
 
   const renderItem = useCallback(({ item, index }: { item: BestiaryCreature; index: number }) => (
@@ -347,12 +421,51 @@ export default function BestiaryScreen() {
         creature={item}
         onPress={() => setSelected(item)}
         cardWidth={cardWidth}
+        mastery={mastery?.[item.name]}
       />
     </View>
-  ), [cardWidth]);
+  ), [cardWidth, mastery]);
 
   const renderHeader = useCallback(() => (
     <View style={{ marginBottom: 16 }}>
+      {/* Aggregate mastery strip */}
+      <View style={{ alignItems: 'center', paddingVertical: 4 }}>
+        <Text style={{ fontFamily: 'monospace', fontSize: 11, color: palette.bone.muted, letterSpacing: 1 }}>
+          Discovered <Text style={{ color: palette.amber.DEFAULT }}>{aggregate.discoveredCount}</Text>
+          <Text style={{ color: palette.bone.dark }}>/{aggregate.totalCount}</Text>
+          {'   ·   '}
+          Mastered <Text style={{ color: palette.victory.DEFAULT }}>{aggregate.masteredCount}</Text>
+          <Text style={{ color: palette.bone.dark }}>/{aggregate.totalCount}</Text>
+        </Text>
+      </View>
+
+      {/* Mastery filter pills */}
+      <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 8, paddingTop: 8, paddingBottom: 4 }}>
+        {([
+          { key: null,           label: 'ALL' },
+          { key: 'encountered',  label: 'ENCOUNTERED' },
+          { key: 'undefeated',   label: 'UNDEFEATED' },
+        ] as const).map((m) => {
+          const active = filterMastery === m.key;
+          return (
+            <Pressable
+              key={m.label}
+              onPress={() => setFilterMastery(m.key as 'encountered' | 'undefeated' | null)}
+              style={{
+                borderWidth: 1,
+                borderColor: active ? palette.amber.DEFAULT : palette.crypt.border,
+                backgroundColor: active ? 'rgba(245,158,11,0.15)' : 'transparent',
+                paddingHorizontal: 10, paddingVertical: 5,
+              }}
+            >
+              <Text style={{ fontFamily: 'monospace', fontSize: 10, color: active ? palette.amber.DEFAULT : palette.bone.dark, letterSpacing: 1 }}>
+                {m.label}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+
       {/* Tier filter buttons */}
       <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 8, paddingVertical: 8 }}>
         {([1, 2, 3] as const).map((t) => {
@@ -410,7 +523,7 @@ export default function BestiaryScreen() {
         })}
       </ScrollView>
     </View>
-  ), [filterTier, filterZone]);
+  ), [filterTier, filterZone, filterMastery, aggregate]);
 
   return (
     <CryptBackground screen="home">
@@ -433,13 +546,17 @@ export default function BestiaryScreen() {
           numColumns={COLS}
           ListHeaderComponent={renderHeader}
           contentContainerStyle={{ padding: H_PAD, paddingTop: 12 }}
-          key={`${filterTier ?? 'all'}-${filterZone ?? 'all'}`}
+          key={`${filterTier ?? 'all'}-${filterZone ?? 'all'}-${filterMastery ?? 'all'}`}
           showsVerticalScrollIndicator={false}
           columnWrapperStyle={{ justifyContent: 'flex-start' }}
         />
 
         {/* Detail Modal */}
-        <CreatureDetailModal creature={selected} onClose={() => setSelected(null)} />
+        <CreatureDetailModal
+          creature={selected}
+          onClose={() => setSelected(null)}
+          mastery={selected ? mastery?.[selected.name] : undefined}
+        />
       </SafeAreaView>
     </CryptBackground>
   );
