@@ -16,9 +16,11 @@
  * Same public API for both, same speedMs feel. See the git log around
  * 12bd590 → d116ef0 for the journey.
  *
- * Punctuation pauses (the previous 8×/4× multipliers on .,;:—…) are gone by
- * design — the streaming is linear. Layer in withSequence on the native side
- * and a custom delay table on the web side if we want them back.
+ * Punctuation pacing: a small dramatic pause after sentence-end (4× speedMs)
+ * and clause-break (2× speedMs) punctuation. Both surfaces compute the same
+ * pause table — native chains them via withSequence on the UI thread, web
+ * picks the right delay per char in JS. Earlier 8×/4× felt theatrical; the
+ * softer 4×/2× still reads as deliberate without dragging.
  */
 
 import { useEffect, useRef, useState } from 'react';
@@ -28,10 +30,42 @@ import Animated, {
   useSharedValue,
   useAnimatedProps,
   withTiming,
+  withSequence,
+  withDelay,
   runOnJS,
 } from 'react-native-reanimated';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
+
+// Punctuation pacing — multipliers applied to speedMs as a *pause* after the
+// character is revealed. Order matters: sentence-end checked first so '?' /
+// '!' / '.' don't fall through to clause-break.
+const SENTENCE_END = new Set(['.', '!', '?', '…']);
+const CLAUSE_BREAK = new Set([',', ';', ':', '—']);
+const SENTENCE_PAUSE_MULT = 4;
+const CLAUSE_PAUSE_MULT = 2;
+
+function pauseMultiplierFor(ch: string): number {
+  if (SENTENCE_END.has(ch)) return SENTENCE_PAUSE_MULT;
+  if (CLAUSE_BREAK.has(ch)) return CLAUSE_PAUSE_MULT;
+  return 0;
+}
+
+/**
+ * Cumulative reveal time per character index, accounting for the pauses
+ * added after each punctuation character. Used by both surfaces — native
+ * needs it for haptic scheduling (UI-thread animation handles its own
+ * pacing); web uses it directly for the per-char setTimeout delays.
+ */
+function buildRevealTimeline(text: string, speedMs: number): number[] {
+  const times = new Array<number>(text.length + 1);
+  times[0] = 0;
+  for (let i = 0; i < text.length; i++) {
+    const pause = pauseMultiplierFor(text[i]) * speedMs;
+    times[i + 1] = times[i] + speedMs + pause;
+  }
+  return times;
+}
 
 interface TypewriterTextProps {
   /** Full text to reveal */
@@ -83,18 +117,51 @@ function TypewriterTextNative({
     }
 
     progress.value = 0;
-    progress.value = withTiming(
-      text.length,
-      { duration: text.length * speedMs },
-      (finished) => {
-        if (finished) runOnJS(fireComplete)();
-      },
-    );
 
-    // Per-word haptic on native — scheduled JS-side at i*speedMs for each
-    // space character. Drift vs. the UI-thread animation is fine; haptics
-    // are tactile flavour, not synchronised cues.
+    // Build a sequence of (advance segment) + (pause after punctuation) pairs.
+    // Each segment animates progress linearly through the next stretch of
+    // non-punctuated characters; the pause holds progress steady at the
+    // segment's end value for the multiplied delay.
+    const animations: ReturnType<typeof withTiming>[] = [];
+    let segStart = 0;
+    for (let i = 0; i < text.length; i++) {
+      const mult = pauseMultiplierFor(text[i]);
+      if (mult === 0) continue;
+      const segEnd = i + 1; // inclusive of the punctuation char
+      const segLen = segEnd - segStart;
+      if (segLen > 0) {
+        animations.push(withTiming(segEnd, { duration: segLen * speedMs }));
+      }
+      // Hold at segEnd for the pause. withDelay around a zero-duration timing
+      // is the Reanimated idiom for a pure pause inside a sequence.
+      animations.push(withDelay(mult * speedMs, withTiming(segEnd, { duration: 0 })));
+      segStart = segEnd;
+    }
+    if (segStart < text.length) {
+      animations.push(withTiming(text.length, { duration: (text.length - segStart) * speedMs }));
+    }
+
+    if (animations.length === 1) {
+      // No punctuation at all — single withTiming with callback.
+      progress.value = withTiming(text.length, { duration: text.length * speedMs }, (finished) => {
+        if (finished) runOnJS(fireComplete)();
+      });
+    } else {
+      // withSequence returns AnimatableValue (a descriptor) but the sharedValue
+      // assignment is typed as `number`; in practice Reanimated assigns the
+      // descriptor at runtime. Cast to bypass the strict typing.
+      progress.value = withSequence(...animations) as unknown as number;
+      // The final-animation callback path on withSequence isn't reliable
+      // across Reanimated versions; schedule completion via the same
+      // timeline we computed for haptics.
+    }
+
+    // Reveal-time table — drives haptics on word boundaries AND the
+    // completion fire-time (so it stays aligned with the actual animation
+    // even when punctuation pauses stretch the total).
+    const timeline = buildRevealTimeline(text, speedMs);
     const timers: ReturnType<typeof setTimeout>[] = [];
+
     for (let i = 0; i < text.length; i++) {
       if (text[i] === ' ') {
         timers.push(
@@ -104,10 +171,12 @@ function TypewriterTextNative({
             } catch {
               /* haptic unavailable — ignore */
             }
-          }, i * speedMs),
+          }, timeline[i]),
         );
       }
     }
+    timers.push(setTimeout(fireComplete, timeline[text.length]));
+
     return () => {
       timers.forEach(clearTimeout);
     };
@@ -180,7 +249,12 @@ function TypewriterTextWeb({
       fireComplete();
       return;
     }
-    const t = setTimeout(() => setVisibleCount((c) => c + 1), speedMs);
+
+    // Delay for the next reveal is base speedMs + any pause owed to the
+    // character we just revealed (text[visibleCount - 1]).
+    const justRevealed = visibleCount > 0 ? text[visibleCount - 1] : '';
+    const delay = speedMs * (1 + pauseMultiplierFor(justRevealed));
+    const t = setTimeout(() => setVisibleCount((c) => c + 1), delay);
     return () => clearTimeout(t);
   }, [visibleCount, text, speedMs, skip]);
 
