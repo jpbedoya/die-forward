@@ -44,7 +44,12 @@
   --red: #ef4444;
   --red-dim: #991b1b;
 
-  /* Stamina: Blue (web-only — mobile uses palette.blue equivalent inline) */
+  /* Stamina (stamina.*) — promoted from Tailwind's default blue scale into a
+     semantic token in mobile/lib/theme.js. The --blue-* aliases stay for any
+     legacy refs; new code should use --stamina-*. */
+  --stamina-bright: #60a5fa;
+  --stamina: #3b82f6;
+  --stamina-dim: #1e3a8a;
   --blue-bright: #60a5fa;
   --blue: #3b82f6;
   --blue-dim: #1e3a8a;

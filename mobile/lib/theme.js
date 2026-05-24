@@ -56,6 +56,11 @@ const palette = {
     DEFAULT: '#22c55e',             // success / healing
     light: '#4ade80',
   },
+  stamina: {
+    DEFAULT: '#3b82f6',             // stamina pips / chill stacks
+    light: '#60a5fa',                // = Tailwind blue-400 (the value mobile was inline-using)
+    dark: '#1e3a8a',
+  },
 };
 
 module.exports = { palette };

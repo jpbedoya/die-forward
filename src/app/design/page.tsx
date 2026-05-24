@@ -227,7 +227,7 @@ function StatusBadges() {
   return (
     <div className="flex flex-wrap gap-2">
       <Badge label="🔥 BURN 3" color={palette.amber.DEFAULT} />
-      <Badge label="❄️ CHILL 2" color={palette.ethereal.light} />
+      <Badge label="❄️ CHILL 2" color={palette.stamina.light} />
       <Badge label="☣️ INFECTION 4" color={palette.victory.DEFAULT} />
       <Badge label="👁️ CLARITY 1" color={palette.ethereal.DEFAULT} />
       <Badge label="† DEAD" color={palette.blood.DEFAULT} />
@@ -390,7 +390,22 @@ export default function DesignPage() {
           <Swatch
             token="ethereal.light"
             hex={palette.ethereal.light}
-            note="Highlighted ethereal — CHILL stacks, etc."
+            note="Highlighted ethereal — fake-options at zero clarity, FLUX highlights."
+          />
+          <Swatch
+            token="stamina (pips / chill)"
+            hex={palette.stamina.DEFAULT}
+            note="Stamina pip count, CHILL stack indicators, [1⚡] tertiary action buttons."
+          />
+          <Swatch
+            token="stamina.light"
+            hex={palette.stamina.light}
+            note="Brighter stamina — the actual stamina readout in the footer."
+          />
+          <Swatch
+            token="stamina.dark"
+            hex={palette.stamina.dark}
+            note="Deep stamina — borders + filled backgrounds for stamina-themed UI."
           />
         </div>
 

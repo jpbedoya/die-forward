@@ -652,7 +652,7 @@ export default function CombatScreen() {
                       {option.cost > 0 && (
                         <View className="flex-row items-center">
                           <Image source={Icons.stamina} style={{ width: 20, height: 20, marginRight: 2, alignSelf: "center" }} resizeMode="contain" />
-                          <Text className="text-blue-400 text-xs font-mono">{option.cost}</Text>
+                          <Text className="text-stamina-light text-xs font-mono">{option.cost}</Text>
                         </View>
                       )}
                     </View>
@@ -676,7 +676,7 @@ export default function CombatScreen() {
               </View>
               <View className="flex-row items-center gap-2">
                 <Image source={Icons.stamina} style={{ width: 24, height: 24, alignSelf: "center" }} resizeMode="contain" />
-                <Text className="text-blue-400 font-mono">
+                <Text className="text-stamina-light font-mono">
                   {'◆'.repeat(game.stamina)}{'◇'.repeat(Math.max(0, settings.staminaPool - game.stamina))}
                 </Text>
               </View>
@@ -695,7 +695,7 @@ export default function CombatScreen() {
                   <Text className="text-amber text-xs font-mono">🔥 Burn {game.zoneStatus.burn}</Text>
                 )}
                 {game.zoneStatus.chill > 0 && (
-                  <Text className="text-blue-400 text-xs font-mono">❄️ Chill {game.zoneStatus.chill}</Text>
+                  <Text className="text-stamina-light text-xs font-mono">❄️ Chill {game.zoneStatus.chill}</Text>
                 )}
                 {game.zoneStatus.infection > 0 && (
                   <Text className="text-victory text-xs font-mono">☣️ Infection {game.zoneStatus.infection}</Text>

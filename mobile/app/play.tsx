@@ -672,7 +672,7 @@ export default function PlayScreen() {
             return (
               <Pressable
                 key={option.id}
-                className={`bg-crypt-surface border-l-2 py-4 px-3 mb-2 ${isRisk ? 'border-blood/60 active:border-blood active:bg-blood/5' : isTertiary ? 'border-blue-700/60 active:border-blue-500 active:bg-blue-900/10' : 'border-crypt-border-light active:border-amber active:bg-amber/5'} ${processing ? 'opacity-50' : ''}`}
+                className={`bg-crypt-surface border-l-2 py-4 px-3 mb-2 ${isRisk ? 'border-blood/60 active:border-blood active:bg-blood/5' : isTertiary ? 'border-stamina-dark/60 active:border-stamina active:bg-stamina-dark/10' : 'border-crypt-border-light active:border-amber active:bg-amber/5'} ${processing ? 'opacity-50' : ''}`}
                 onPress={() => handleAction(option.action)}
                 disabled={processing}
               >
@@ -688,7 +688,7 @@ export default function PlayScreen() {
                     <Text className="text-bone text-sm font-mono flex-1">{option.text}</Text>
                   </View>
                   {tag && (
-                    <Text className={`text-xs font-mono ml-2 ${isRisk ? 'text-blood' : isTertiary ? 'text-blue-400' : 'text-amber'}`}>
+                    <Text className={`text-xs font-mono ml-2 ${isRisk ? 'text-blood' : isTertiary ? 'text-stamina-light' : 'text-amber'}`}>
                       {tag}
                     </Text>
                   )}
@@ -712,7 +712,7 @@ export default function PlayScreen() {
           </View>
           <View className="flex-row items-center gap-2">
             <Image source={Icons.stamina} style={{ width: 24, height: 24, alignSelf: "center" }} resizeMode="contain" />
-            <Text className="text-blue-400 font-mono">
+            <Text className="text-stamina-light font-mono">
               {'◆'.repeat(game.stamina)}{'◇'.repeat(Math.max(0, settings.staminaPool - game.stamina))}
             </Text>
           </View>
@@ -732,7 +732,7 @@ export default function PlayScreen() {
               <Text className="text-amber text-xs font-mono">🔥 Burn {game.zoneStatus.burn}</Text>
             )}
             {game.zoneStatus.chill > 0 && (
-              <Text className="text-blue-400 text-xs font-mono">❄️ Chill {game.zoneStatus.chill}</Text>
+              <Text className="text-stamina-light text-xs font-mono">❄️ Chill {game.zoneStatus.chill}</Text>
             )}
             {game.zoneStatus.infection > 0 && (
               <Text className="text-victory text-xs font-mono">☣️ Infection {game.zoneStatus.infection}</Text>

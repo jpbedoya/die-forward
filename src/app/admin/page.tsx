@@ -1429,7 +1429,7 @@ function CorpsesTab() {
 
   const getZoneColor = (zone: string) => {
     if (zone?.includes('Upper')) return 'var(--amber)';
-    if (zone?.includes('Flooded')) return '#60a5fa';
+    if (zone?.includes('Flooded')) return 'var(--stamina-bright)';
     if (zone?.includes('Abyss')) return 'var(--purple)';
     return 'var(--text-dim)';
   };
