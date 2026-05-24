@@ -9,7 +9,7 @@
  * so each character can have its own delay.
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Text, View, Platform, TextStyle } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
@@ -124,13 +124,25 @@ export function TypewriterText({
   // inner span didn't suppress the tail. Lifting the placeholder OUT of the
   // streaming Text — into a sibling absolute-positioned View — sidesteps the
   // span-flattening entirely.
-  return (
-    <View style={{ position: 'relative' }}>
-      {/* Invisible placeholder — reserves the final size. */}
+  //
+  // The placeholder's content doesn't change during a stream — only the
+  // *streaming* Text needs to re-render per tick. Memoising the placeholder
+  // element so React reuses the exact same VDOM node across every visibleCount
+  // change cuts the per-tick native work roughly in half (web didn't care,
+  // but Android's per-Text bridge cost made every tick stretch beyond the
+  // configured speedMs and the whole stream felt slower than on web).
+  const placeholder = useMemo(
+    () => (
       <Text className={className} style={[style, { color: 'transparent' }]}>
         {text}
       </Text>
-      {/* Streaming text — same className/style, layered on top. */}
+    ),
+    [className, style, text],
+  );
+
+  return (
+    <View style={{ position: 'relative' }}>
+      {placeholder}
       <Text
         className={className}
         style={[style, { position: 'absolute', left: 0, top: 0, right: 0 }]}
