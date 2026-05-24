@@ -1,5 +1,12 @@
 import { init, tx, id } from '@instantdb/react-native';
 import { useMemo } from 'react';
+import {
+  type CreatureMastery,
+  recordEncounter,
+  recordDefeat,
+  recordKilledBy,
+  getNewMasteryUnlocks,
+} from './bestiary-mastery';
 
 // Default names pool for new guest players
 const DEFAULT_GUEST_NAMES = [
@@ -76,6 +83,10 @@ export interface Player {
   unlockedBorders?: string[];
   // Zone progression — IDs of zones where the boss was defeated
   clearedZones?: string[];
+  // Bestiary mastery — per-creature counters keyed by creature name.
+  // Stored natively by InstantDB (same pattern as clearedZones). See
+  // mobile/lib/bestiary-mastery.ts for the shape + helpers + thresholds.
+  creatureMastery?: CreatureMastery;
 }
 
 // Persist title/border milestone unlocks in player profile (idempotent).
@@ -162,13 +173,17 @@ export async function recordDeath(data: {
   stakeAmount: number;
   finalMessage: string;
   inventory: { name: string; emoji: string }[];
+  /** Creature that killed the player; 'Unknown' when not in combat (e.g. burn tick on explore). */
+  killedBy?: string;
 }) {
   const deathId = id();
   const corpseId = id();
-  
-  const lootItem = data.inventory.length > 0 
+
+  const lootItem = data.inventory.length > 0
     ? data.inventory[Math.floor(Math.random() * data.inventory.length)]
     : { name: 'Nothing', emoji: '💀' };
+
+  const killedBy = data.killedBy || 'Unknown';
 
   await db.transact([
     tx.deaths[deathId].update({
@@ -178,6 +193,7 @@ export async function recordDeath(data: {
       room: data.room,
       stakeAmount: data.stakeAmount,
       finalMessage: data.finalMessage,
+      killedBy,
       inventory: JSON.stringify(data.inventory),
       createdAt: Date.now(),
     }),
@@ -188,6 +204,7 @@ export async function recordDeath(data: {
       playerName: data.playerName,
       walletAddress: data.walletAddress,
       finalMessage: data.finalMessage,
+      killedBy,
       loot: lootItem.name,
       lootEmoji: lootItem.emoji,
       discovered: false,
@@ -198,6 +215,52 @@ export async function recordDeath(data: {
   ]);
 
   return { deathId, corpseId };
+}
+
+/**
+ * Bestiary mastery updates. Reads the current `creatureMastery` snapshot off
+ * the player, applies one of encounter / defeat / killed-by, then writes the
+ * new map back AND any newly-crossed milestone cosmetics in a single
+ * transaction. Idempotent against re-runs (the unlock-diff returns [] if no
+ * threshold was crossed by this call) so concurrent encounters in quick
+ * succession won't double-unlock.
+ *
+ * `allCreatureNames` is the universe for the aggregate calculation —
+ * typically `Object.keys(BESTIARY)`. The caller passes it so this module
+ * stays free of a circular dep with content.ts.
+ */
+export async function recordCreatureUpdate(
+  player: Pick<Player, 'id' | 'activeTitle' | 'activeBorder' | 'unlockedTitles' | 'unlockedBorders' | 'creatureMastery'>,
+  creature: string,
+  kind: 'encounter' | 'defeat' | 'killedBy',
+  allCreatureNames: string[],
+): Promise<void> {
+  const prev = player.creatureMastery;
+  const next =
+    kind === 'encounter' ? recordEncounter(prev, creature)
+    : kind === 'defeat'  ? recordDefeat(prev, creature)
+                          : recordKilledBy(prev, creature);
+
+  const unlocks = getNewMasteryUnlocks(prev, next, allCreatureNames);
+
+  // Build a single transactional update — mastery map + any cosmetic unlocks.
+  const updates: Partial<Player> = { creatureMastery: next };
+
+  const titleUnlocks = unlocks.filter(u => u.type === 'title').map(u => u.value);
+  const borderUnlocks = unlocks.filter(u => u.type === 'border').map(u => u.value);
+
+  if (titleUnlocks.length > 0) {
+    const merged = Array.from(new Set([...(player.unlockedTitles || []), ...titleUnlocks]));
+    updates.unlockedTitles = merged;
+    if (!player.activeTitle) updates.activeTitle = titleUnlocks[0];
+  }
+  if (borderUnlocks.length > 0) {
+    const merged = Array.from(new Set([...(player.unlockedBorders || []), ...borderUnlocks]));
+    updates.unlockedBorders = merged;
+    if (!player.activeBorder) updates.activeBorder = borderUnlocks[0];
+  }
+
+  await db.transact([tx.players[player.id].update(updates)]);
 }
 
 // Mark corpse as discovered

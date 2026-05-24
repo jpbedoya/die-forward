@@ -9,7 +9,7 @@ import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
-import { updatePlayerClearedZone } from '../lib/instant';
+import { updatePlayerClearedZone, useCurrentPlayer, recordCreatureUpdate } from '../lib/instant';
 import { API_BASE } from '../lib/api';
 import { ProgressBar } from '../components/ProgressBar';
 import { GameMenu, MenuButton } from '../components/GameMenu';
@@ -20,6 +20,7 @@ import { CreatureModal, ItemModal } from '../components/CryptModal';
 import { useAudio, getZoneAmbient, getZoneBossSFX, getCreatureSFX } from '../lib/audio';
 import { useGameSettings, DEFAULT_GAME_SETTINGS } from '../lib/instant';
 import {
+  BESTIARY,
   getCreatureForRoom,
   getCreatureInfo,
   getCreatureHealth,
@@ -77,11 +78,16 @@ function HealthBar({ current, max, color = 'red' }: { current: number; max: numb
   );
 }
 
+// All creature names — the universe the aggregate mastery % is computed
+// against. Static at module load; no need to recompute per render.
+const ALL_CREATURE_NAMES = Object.keys(BESTIARY);
+
 export default function CombatScreen() {
   const insets = useSafeAreaInsets();
   const game = useGame();
   const { playSFX, playAmbient } = useAudio();
   const { settings } = useGameSettings();
+  const { player } = useCurrentPlayer();
   const params = useLocalSearchParams<{ enemy?: string; roomNum?: string }>();
   
   const [phase, setPhase] = useState<CombatPhase>('choose');
@@ -156,6 +162,17 @@ export default function CombatScreen() {
     
     setCreature(roomCreature);
     setArtLoadFailed(false);
+
+    // Bestiary mastery — encounter telemetry. Fire-and-forget; mastery
+    // updates the player record off the main flow and surfaces any newly
+    // crossed cosmetic unlocks via the same path death milestones use.
+    // `player` may briefly be undefined on the very first render before
+    // useCurrentPlayer resolves; in that case we skip — the next combat
+    // will catch up.
+    if (player) {
+      recordCreatureUpdate(player, roomCreature.name, 'encounter', ALL_CREATURE_NAMES)
+        .catch(err => console.warn('[combat] mastery encounter write failed:', err));
+    }
     
     // Fix 1 (Revy): use seeded RNG for deterministic creature HP per seed
     const hp = game.rng ? getCreatureHealthSeeded(roomCreature.name, game.rng) : getCreatureHealth(roomCreature.name);
@@ -432,6 +449,12 @@ export default function CombatScreen() {
         updatePlayerClearedZone(game.authId, game.zoneId).catch(err =>
           console.warn('[combat] Failed to record zone clear:', err)
         );
+      }
+      // Bestiary mastery — defeat telemetry. Same fire-and-forget pattern as
+      // the encounter write at mount time.
+      if (player && creature) {
+        recordCreatureUpdate(player, creature.name, 'defeat', ALL_CREATURE_NAMES)
+          .catch(err => console.warn('[combat] mastery defeat write failed:', err));
       }
       setPhase('victory');
       setTimeout(() => {

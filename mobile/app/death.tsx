@@ -8,13 +8,13 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import * as Haptics from 'expo-haptics';
 import { useGame } from '../lib/GameContext';
 import { useAudio } from '../lib/audio';
-import { getDeathMoment, getFinalWordsIntro, getDepthForRoom } from '../lib/content';
+import { BESTIARY, getDeathMoment, getFinalWordsIntro, getDepthForRoom } from '../lib/content';
 import { DeathCard, ShareCardCapture, useShareCard } from '../lib/shareCard';
 import { useAudius } from '../lib/AudiusContext';
 import { AudioSettingsModal } from '../components/AudioSettingsModal';
 import { AudioToggle } from '../components/AudioToggle';
 import { CRTOverlay } from '../components/CRTOverlay';
-import { useCurrentPlayer, applyMilestoneCosmetics, useGameSettings } from '../lib/instant';
+import { useCurrentPlayer, applyMilestoneCosmetics, useGameSettings, recordCreatureUpdate } from '../lib/instant';
 import { getNewMilestone, getMilestoneTypeLabel, type Milestone } from '../lib/milestones';
 
 export default function DeathScreen() {
@@ -145,6 +145,15 @@ export default function DeathScreen() {
           : undefined,
       );
       setDeathRecorded(true);
+
+      // Bestiary mastery — `killedByCount` increment. Only when we have a
+      // concrete creature name (params.killedBy is unset for some non-combat
+      // deaths like burn-tick-on-explore, in which case there's nothing to
+      // attribute). Fire-and-forget; failures don't block the death flow.
+      if (player && params.killedBy && BESTIARY[params.killedBy]) {
+        recordCreatureUpdate(player, params.killedBy, 'killedBy', Object.keys(BESTIARY))
+          .catch(err => console.warn('[Death] mastery killedBy write failed:', err));
+      }
     } catch (e) {
       console.error('[Death] Record failed:', e);
       // Mark as recorded anyway to prevent repeated failures
