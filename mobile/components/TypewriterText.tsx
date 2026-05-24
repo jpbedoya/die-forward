@@ -1,33 +1,28 @@
 /**
- * TypewriterText — reveals text character-by-character on the UI thread.
+ * TypewriterText — reveals text character-by-character.
  *
- * Uses react-native-reanimated to animate a sharedValue 0 → text.length over
- * text.length * speedMs ms, and an animated TextInput whose `text` prop is
- * driven by the shared value sliced into the source string. The slice runs
- * inside a worklet on the UI thread — no React re-renders, no bridge crossing
- * per character — so per-character cost is essentially free on native and the
- * web/native speeds match for the same speedMs.
+ * Platform-branched implementation because the two surfaces have very different
+ * cost models for animating text content:
  *
- * Why TextInput rather than Text: Reanimated can animate TextInput.text via
- * useAnimatedProps without React re-rendering. <Animated.Text> doesn't have
- * an animatable text-content prop. The TextInput is non-editable + caret-
- * hidden, styled to look identical to Text.
+ *   Native (iOS/Android)  → Reanimated worklet drives a TextInput's `text` prop
+ *                           on the UI thread. No React re-render per character,
+ *                           no bridge crossing — text reveal runs at native
+ *                           frame rate regardless of how busy the JS thread is.
  *
- * The previous implementation used setState + setTimeout per character. It
- * worked on web but stretched per-tick on native because every increment
- * crossed RN's bridge to update a native TextView, plus Android's <Text>
- * flattens nested <Text> children into one SpannableString which broke the
- * placeholder/streaming split. See git log around 425cc4a + f81c08e for the
- * journey to this rewrite.
+ *   Web                   → Plain useState + setTimeout. DOM updates are cheap
+ *                           and the Reanimated TextInput.text trick is a
+ *                           native-only hack (no equivalent on react-native-web).
  *
- * Punctuation pauses (the previous 8×/4× multipliers on `.,;:—…`) are gone
- * by design — withTiming runs linearly. The slider in admin controls the
- * one global per-character rate. If we want dramatic pauses back, layer them
- * in with withSequence per text segment.
+ * Same public API for both, same speedMs feel. See the git log around
+ * 12bd590 → d116ef0 for the journey.
+ *
+ * Punctuation pauses (the previous 8×/4× multipliers on .,;:—…) are gone by
+ * design — the streaming is linear. Layer in withSequence on the native side
+ * and a custom delay table on the web side if we want them back.
  */
 
-import { useEffect, useRef } from 'react';
-import { TextInput, Platform, TextStyle } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Text, TextInput, Platform, TextStyle } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import Animated, {
   useSharedValue,
@@ -45,15 +40,25 @@ interface TypewriterTextProps {
   speedMs: number;
   /** When true, immediately reveal the entire text */
   skip?: boolean;
-  /** className passed through to the underlying TextInput (NativeWind) */
+  /** className passed through (NativeWind) */
   className?: string;
   /** Extra style passed through */
   style?: TextStyle;
-  /** Called once when the text is fully revealed (or on skip) */
+  /** Called once when fully revealed (or on skip) */
   onComplete?: () => void;
 }
 
-export function TypewriterText({
+export function TypewriterText(props: TypewriterTextProps) {
+  // Branch at the top so the worklet hook + the state hook never co-exist
+  // in the same component instance (would violate the rules of hooks if a
+  // single component conditionally invoked one or the other based on
+  // Platform).
+  if (Platform.OS === 'web') return <TypewriterTextWeb {...props} />;
+  return <TypewriterTextNative {...props} />;
+}
+
+// ── Native ──────────────────────────────────────────────────────────────────
+function TypewriterTextNative({
   text,
   speedMs,
   skip = false,
@@ -63,8 +68,6 @@ export function TypewriterText({
 }: TypewriterTextProps) {
   const progress = useSharedValue(0);
 
-  // Keep the latest onComplete in a ref so a parent re-render mid-stream
-  // doesn't change the effect's deps and restart the animation.
   const onCompleteRef = useRef(onComplete);
   useEffect(() => {
     onCompleteRef.current = onComplete;
@@ -88,23 +91,21 @@ export function TypewriterText({
       },
     );
 
-    // Per-word haptic on native. Lives on the JS thread — haptic native
-    // calls don't make sense from a worklet. Each timer fires once at the
-    // expected reveal time for that space; small drift is fine.
+    // Per-word haptic on native — scheduled JS-side at i*speedMs for each
+    // space character. Drift vs. the UI-thread animation is fine; haptics
+    // are tactile flavour, not synchronised cues.
     const timers: ReturnType<typeof setTimeout>[] = [];
-    if (Platform.OS !== 'web') {
-      for (let i = 0; i < text.length; i++) {
-        if (text[i] === ' ') {
-          timers.push(
-            setTimeout(() => {
-              try {
-                Haptics.selectionAsync().catch(() => {});
-              } catch {
-                /* haptic unavailable — ignore */
-              }
-            }, i * speedMs),
-          );
-        }
+    for (let i = 0; i < text.length; i++) {
+      if (text[i] === ' ') {
+        timers.push(
+          setTimeout(() => {
+            try {
+              Haptics.selectionAsync().catch(() => {});
+            } catch {
+              /* haptic unavailable — ignore */
+            }
+          }, i * speedMs),
+        );
       }
     }
     return () => {
@@ -112,12 +113,8 @@ export function TypewriterText({
     };
   }, [text, speedMs, skip, progress]);
 
-  // Worklet — runs on the UI thread every animation frame. `text` is closed
-  // over from the JS side via the deps array; Reanimated copies the new
-  // value into the worklet closure when text changes.
-  // `text` isn't in Reanimated's typed animatedProps for TextInput, but the
-  // runtime path accepts it — cast to bypass the typing. This is the canonical
-  // pattern from the Reanimated docs for animating text content.
+  // Worklet — runs on the UI thread every frame. text is closed over from JS;
+  // Reanimated copies the new value into the worklet closure when text changes.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const animatedProps = useAnimatedProps(() => ({
     text: text.slice(0, Math.floor(progress.value)),
@@ -131,8 +128,6 @@ export function TypewriterText({
       caretHidden
       selectTextOnFocus={false}
       underlineColorAndroid="transparent"
-      // defaultValue paints something on first frame before the worklet has
-      // a chance to apply; without it, Android can show a brief flash.
       defaultValue={skip ? text : ''}
       animatedProps={animatedProps}
       className={className}
@@ -143,5 +138,62 @@ export function TypewriterText({
         style as TextStyle,
       ]}
     />
+  );
+}
+
+// ── Web ─────────────────────────────────────────────────────────────────────
+function TypewriterTextWeb({
+  text,
+  speedMs,
+  skip = false,
+  className,
+  style,
+  onComplete,
+}: TypewriterTextProps) {
+  const [visibleCount, setVisibleCount] = useState(0);
+  const onCompleteRef = useRef(onComplete);
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  });
+  const completedRef = useRef(false);
+
+  // Restart whenever the text changes.
+  useEffect(() => {
+    completedRef.current = false;
+    setVisibleCount(0);
+  }, [text]);
+
+  useEffect(() => {
+    const fireComplete = () => {
+      if (!completedRef.current) {
+        completedRef.current = true;
+        onCompleteRef.current?.();
+      }
+    };
+
+    if (skip || text.length === 0) {
+      setVisibleCount(text.length);
+      fireComplete();
+      return;
+    }
+    if (visibleCount >= text.length) {
+      fireComplete();
+      return;
+    }
+    const t = setTimeout(() => setVisibleCount((c) => c + 1), speedMs);
+    return () => clearTimeout(t);
+  }, [visibleCount, text, speedMs, skip]);
+
+  // On web the nested-opacity placeholder works fine (React DOM honours span
+  // styles on inline children) — it's the Android-only Text-flattening that
+  // broke this approach on native. Keeps layout from jumping as the streamed
+  // text grows.
+  return (
+    <Text className={className} style={style}>
+      {text.slice(0, visibleCount)}
+      {visibleCount < text.length && (
+        <Text style={{ opacity: 0 }}>{text.slice(visibleCount)}</Text>
+      )}
+    </Text>
   );
 }
