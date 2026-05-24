@@ -910,6 +910,17 @@ export default function PlayScreen() {
         }}
       />
 
+      {/* Full-screen skip target — covers the screen during narrative streaming
+          so "tap to skip" lands wherever the player taps, not only on the
+          narrative text. Removed the moment the narrative completes so the
+          header / action options / inventory etc. become tappable again. */}
+      {settings.enableRoomTextStreaming && !narrativeDone && (
+        <Pressable
+          onPress={() => { setSkipNarrative(true); setNarrativeDone(true); }}
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 50 }}
+        />
+      )}
+
       {/* Creature Detail Modal */}
       <CreatureModal
         visible={!!selectedCreature}
