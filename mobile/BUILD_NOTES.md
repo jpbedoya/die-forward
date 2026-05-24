@@ -111,6 +111,22 @@ ANDROID_KEY_ALIAS=die-forward
 
 For cloud/CI release signing via EAS, see [`mobile/docs/signing-secrets.md`](docs/signing-secrets.md).
 
+### Web deploy → `play.dieforward.com`
+
+The same React Native code that ships in the APK also serves `play.dieforward.com`. The `mobile/` directory is its own Vercel project (`mobile/vercel.json`):
+
+```json
+{
+  "buildCommand": "npm run build:web",
+  "outputDirectory": "dist",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
+```
+
+So `npm run build:web` (= `expo export --platform web`) produces `mobile/dist/`, and Vercel serves it as an SPA. Pushes to `main` redeploy both projects automatically — landing on `dieforward.com`, mobile-as-web on `play.dieforward.com`. The mobile redeploy is the slow one (`expo export` takes ~2–3 min).
+
+Practical implication: a JSX change in `mobile/app/play.tsx` ships to both surfaces. Some libraries are native-only and need platform-branching (`Platform.OS === 'web'`) — see the design notes in `mobile/components/TypewriterText.tsx` for the canonical example.
+
 ### Build + install to a connected device
 
 ```bash
