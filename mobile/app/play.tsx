@@ -553,29 +553,31 @@ export default function PlayScreen() {
             : null;
           return (
             <Pressable
-              className="bg-crypt-surface border border-blood/30 p-4 mb-4 active:border-blood active:bg-blood/10"
+              className="bg-crypt-surface border border-blood/30 p-3 mb-4 active:border-blood active:bg-blood/10"
               onPress={() => {
                 if (c) { playSFX('ui-click'); setSelectedCreature(c); }
               }}
             >
-              {/* Vertical layout — creature art is the centrepiece. Image is
-                  3× the previous thumbnail (168×216) so a side-by-side row
-                  would crowd; stack image-on-top, text below. */}
-              <View className="items-center">
+              <View className="flex-row items-center gap-3">
+                {/* Creature art — 3× the original thumbnail (168×216), no
+                    image-level border (the surrounding card border carries
+                    the framing). */}
                 {asset ? (
                   <Image
                     source={asset}
-                    style={{ width: 168, height: 216, borderRadius: 12, borderWidth: 1, borderColor: 'rgba(180,30,30,0.35)' }}
+                    style={{ width: 168, height: 216, borderRadius: 8 }}
                     resizeMode="cover"
                   />
                 ) : (
-                  <View style={{ width: 168, height: 216, borderRadius: 12, borderWidth: 1, borderColor: 'rgba(180,30,30,0.35)', alignItems: 'center', justifyContent: 'center' }}>
+                  <View style={{ width: 168, height: 216, borderRadius: 8, alignItems: 'center', justifyContent: 'center' }}>
                     <Text style={{ fontSize: 96 }}>{room.content.enemyEmoji || '👁️'}</Text>
                   </View>
                 )}
-                <Text className="text-blood-light text-base font-mono font-bold mt-3">{room.content.enemy}</Text>
-                <Text className="text-blood-dark text-xs font-mono mt-1">blocks your path...</Text>
-                <Text className="text-bone-muted text-xs font-mono mt-2">[tap to inspect]</Text>
+                <View className="flex-1">
+                  <Text className="text-blood-light text-sm font-mono font-bold mb-1">{room.content.enemy}</Text>
+                  <Text className="text-blood-dark text-xs font-mono">blocks your path...</Text>
+                  <Text className="text-bone-muted text-xs font-mono mt-1">[tap to inspect]</Text>
+                </View>
               </View>
             </Pressable>
           );
