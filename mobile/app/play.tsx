@@ -553,15 +553,12 @@ export default function PlayScreen() {
             : null;
           return (
             <Pressable
-              className="bg-crypt-surface border border-blood/30 p-3 mb-4 active:border-blood active:bg-blood/10"
+              className="mb-4"
               onPress={() => {
                 if (c) { playSFX('ui-click'); setSelectedCreature(c); }
               }}
             >
               <View className="flex-row items-center gap-3">
-                {/* Creature art — 3× the original thumbnail (168×216), no
-                    image-level border (the surrounding card border carries
-                    the framing). */}
                 {asset ? (
                   <Image
                     source={asset}
