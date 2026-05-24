@@ -1,17 +1,42 @@
 /**
- * TypewriterText — reveals text character-by-character for a storytelling feel.
+ * TypewriterText — reveals text character-by-character on the UI thread.
  *
- * Used for dungeon room narrative when the `enableRoomTextStreaming` admin flag is on.
- * Pacing varies per character: longer pauses after punctuation. Fires a light haptic
- * on word boundaries (native only). The `skip` prop jumps straight to the full text.
+ * Uses react-native-reanimated to animate a sharedValue 0 → text.length over
+ * text.length * speedMs ms, and an animated TextInput whose `text` prop is
+ * driven by the shared value sliced into the source string. The slice runs
+ * inside a worklet on the UI thread — no React re-renders, no bridge crossing
+ * per character — so per-character cost is essentially free on native and the
+ * web/native speeds match for the same speedMs.
  *
- * Modeled on the timer-driven pattern in AsciiLoader.tsx, but uses a chained setTimeout
- * so each character can have its own delay.
+ * Why TextInput rather than Text: Reanimated can animate TextInput.text via
+ * useAnimatedProps without React re-rendering. <Animated.Text> doesn't have
+ * an animatable text-content prop. The TextInput is non-editable + caret-
+ * hidden, styled to look identical to Text.
+ *
+ * The previous implementation used setState + setTimeout per character. It
+ * worked on web but stretched per-tick on native because every increment
+ * crossed RN's bridge to update a native TextView, plus Android's <Text>
+ * flattens nested <Text> children into one SpannableString which broke the
+ * placeholder/streaming split. See git log around 425cc4a + f81c08e for the
+ * journey to this rewrite.
+ *
+ * Punctuation pauses (the previous 8×/4× multipliers on `.,;:—…`) are gone
+ * by design — withTiming runs linearly. The slider in admin controls the
+ * one global per-character rate. If we want dramatic pauses back, layer them
+ * in with withSequence per text segment.
  */
 
-import { useState, useEffect, useRef, useMemo } from 'react';
-import { Text, View, Platform, TextStyle } from 'react-native';
+import { useEffect, useRef } from 'react';
+import { TextInput, Platform, TextStyle } from 'react-native';
 import * as Haptics from 'expo-haptics';
+import Animated, {
+  useSharedValue,
+  useAnimatedProps,
+  withTiming,
+  runOnJS,
+} from 'react-native-reanimated';
+
+const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
 interface TypewriterTextProps {
   /** Full text to reveal */
@@ -20,17 +45,13 @@ interface TypewriterTextProps {
   speedMs: number;
   /** When true, immediately reveal the entire text */
   skip?: boolean;
-  /** className passed through to the inner <Text> (NativeWind) */
+  /** className passed through to the underlying TextInput (NativeWind) */
   className?: string;
-  /** Extra style passed to the inner <Text> */
+  /** Extra style passed through */
   style?: TextStyle;
-  /** Called once — when the full text is revealed (or on skip) */
+  /** Called once when the text is fully revealed (or on skip) */
   onComplete?: () => void;
 }
-
-// Per-character delay multipliers for dramatic pacing.
-const SENTENCE_END = new Set(['.', '!', '?', '…']);
-const CLAUSE_BREAK = new Set([',', ';', ':', '—']);
 
 export function TypewriterText({
   text,
@@ -40,115 +61,87 @@ export function TypewriterText({
   style,
   onComplete,
 }: TypewriterTextProps) {
-  const [visibleCount, setVisibleCount] = useState(0);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const completedRef = useRef(false);
+  const progress = useSharedValue(0);
 
   // Keep the latest onComplete in a ref so a parent re-render mid-stream
-  // doesn't change the streaming effect's dependencies.
+  // doesn't change the effect's deps and restart the animation.
   const onCompleteRef = useRef(onComplete);
   useEffect(() => {
     onCompleteRef.current = onComplete;
   });
 
-  // Reduced-motion (web only): reveal instantly.
-  const reducedMotion =
-    Platform.OS === 'web' &&
-    typeof window !== 'undefined' &&
-    typeof window.matchMedia === 'function' &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // Restart whenever the text changes.
   useEffect(() => {
-    completedRef.current = false;
-    setVisibleCount(0);
-  }, [text]);
+    const fireComplete = () => onCompleteRef.current?.();
 
-  useEffect(() => {
-    const fireComplete = () => {
-      if (!completedRef.current) {
-        completedRef.current = true;
-        onCompleteRef.current?.();
-      }
-    };
-
-    if (skip || reducedMotion) {
-      setVisibleCount(text.length);
-      fireComplete();
-      return;
-    }
-    if (visibleCount >= text.length) {
+    if (skip || text.length === 0) {
+      progress.value = text.length;
       fireComplete();
       return;
     }
 
-    // Delay is based on the character we just revealed.
-    const justRevealed = text[visibleCount - 1] ?? '';
-    let delay = speedMs;
-    if (SENTENCE_END.has(justRevealed)) delay = speedMs * 8;
-    else if (CLAUSE_BREAK.has(justRevealed)) delay = speedMs * 4;
+    progress.value = 0;
+    progress.value = withTiming(
+      text.length,
+      { duration: text.length * speedMs },
+      (finished) => {
+        if (finished) runOnJS(fireComplete)();
+      },
+    );
 
-    timerRef.current = setTimeout(() => {
-      // Light haptic on word boundaries (native only). Wrapped in try/catch
-      // because the haptic native module can throw synchronously in some
-      // release builds (Hermes + R8 hide the binding) — and a thrown error
-      // here would abort the setTimeout callback BEFORE setVisibleCount runs,
-      // halting streaming at the first space character. Belt-and-braces:
-      // the .catch handles async rejections; the try/catch handles sync ones.
-      if (Platform.OS !== 'web' && text[visibleCount] === ' ') {
-        try {
-          Haptics.selectionAsync().catch(() => {});
-        } catch {
-          /* haptic unavailable — streaming continues */
+    // Per-word haptic on native. Lives on the JS thread — haptic native
+    // calls don't make sense from a worklet. Each timer fires once at the
+    // expected reveal time for that space; small drift is fine.
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    if (Platform.OS !== 'web') {
+      for (let i = 0; i < text.length; i++) {
+        if (text[i] === ' ') {
+          timers.push(
+            setTimeout(() => {
+              try {
+                Haptics.selectionAsync().catch(() => {});
+              } catch {
+                /* haptic unavailable — ignore */
+              }
+            }, i * speedMs),
+          );
         }
       }
-      setVisibleCount((c) => c + 1);
-    }, delay);
-
+    }
     return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
+      timers.forEach(clearTimeout);
     };
-  }, [visibleCount, text, speedMs, skip, reducedMotion]);
+  }, [text, speedMs, skip, progress]);
 
-  // Render the streamed substring + an invisible full-text placeholder layered
-  // underneath. The placeholder reserves the final layout from the first frame
-  // (no jump as the streamed text grows), while the visible Text only contains
-  // what's been revealed so far.
-  //
-  // Previous attempt — a nested <Text style={{ opacity: 0 }}> tail inside the
-  // same parent Text — produced the right pixels on Web (React DOM honours
-  // span styles) but broke on Android. Android's native TextView flattens
-  // nested <Text> into a single SpannableString, and once that string's
-  // content is materialised, mid-update style changes on inner spans appear
-  // not to invalidate the rendered view. Even color: 'transparent' on the
-  // inner span didn't suppress the tail. Lifting the placeholder OUT of the
-  // streaming Text — into a sibling absolute-positioned View — sidesteps the
-  // span-flattening entirely.
-  //
-  // The placeholder's content doesn't change during a stream — only the
-  // *streaming* Text needs to re-render per tick. Memoising the placeholder
-  // element so React reuses the exact same VDOM node across every visibleCount
-  // change cuts the per-tick native work roughly in half (web didn't care,
-  // but Android's per-Text bridge cost made every tick stretch beyond the
-  // configured speedMs and the whole stream felt slower than on web).
-  const placeholder = useMemo(
-    () => (
-      <Text className={className} style={[style, { color: 'transparent' }]}>
-        {text}
-      </Text>
-    ),
-    [className, style, text],
-  );
+  // Worklet — runs on the UI thread every animation frame. `text` is closed
+  // over from the JS side via the deps array; Reanimated copies the new
+  // value into the worklet closure when text changes.
+  // `text` isn't in Reanimated's typed animatedProps for TextInput, but the
+  // runtime path accepts it — cast to bypass the typing. This is the canonical
+  // pattern from the Reanimated docs for animating text content.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const animatedProps = useAnimatedProps(() => ({
+    text: text.slice(0, Math.floor(progress.value)),
+  } as any), [text]);
 
   return (
-    <View style={{ position: 'relative' }}>
-      {placeholder}
-      <Text
-        className={className}
-        style={[style, { position: 'absolute', left: 0, top: 0, right: 0 }]}
-      >
-        {text.slice(0, visibleCount)}
-      </Text>
-    </View>
+    <AnimatedTextInput
+      editable={false}
+      multiline
+      scrollEnabled={false}
+      caretHidden
+      selectTextOnFocus={false}
+      underlineColorAndroid="transparent"
+      // defaultValue paints something on first frame before the worklet has
+      // a chance to apply; without it, Android can show a brief flash.
+      defaultValue={skip ? text : ''}
+      animatedProps={animatedProps}
+      className={className}
+      style={[
+        // Neutralise TextInput's default chrome so it visually matches <Text>.
+        { padding: 0, margin: 0, borderWidth: 0 },
+        Platform.OS === 'android' ? { includeFontPadding: false } : null,
+        style as TextStyle,
+      ]}
+    />
   );
 }
