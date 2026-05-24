@@ -10,11 +10,12 @@ One palette, two platforms, three places it shows up.
 // mobile/lib/theme.js
 const palette = {
   crypt:    { bg, surface, border, 'border-light' },
-  amber:    { DEFAULT, light, dark },
-  bone:     { DEFAULT, muted, dark, faint },
-  blood:    { DEFAULT, light, dark },
-  ethereal: { DEFAULT, light },
-  victory:  { DEFAULT, light },
+  amber:    { DEFAULT, light, dark },             // CTAs, active highlights
+  bone:     { DEFAULT, muted, dark, faint },      // text hierarchy
+  blood:    { DEFAULT, light, dark },             // damage, death, errors
+  ethereal: { DEFAULT, light },                   // void / mystical
+  victory:  { DEFAULT, light },                   // success / healing / infection
+  stamina:  { DEFAULT, light, dark },             // stamina pips, chill stacks, [1⚡] intel
 };
 ```
 
@@ -27,7 +28,8 @@ const palette = {
 **Web (`src/`)** — `src/app/globals.css` mirrors the palette into CSS variables so existing pages keep using `var(--text-muted)` etc. without rewriting:
 - `--bg-base`, `--bg-surface`, `--bg-elevated` ← `crypt.bg`, `crypt.surface`, +1
 - `--text-primary` / `-secondary` / `-muted` / `-dim` / `-faint` ← bone tiers
-- Accent colours (`--amber`, `--red`, `--purple`, `--green`) are identical hexes on both sides; the divergence is only in greyscale + surface tones.
+- Accent colours (`--amber`, `--red`, `--purple`, `--green`, `--stamina`) are identical hexes on both sides; the divergence is only in greyscale + surface tones.
+- `--stamina` (and `-bright` / `-dim`) replaces what used to be unused `--blue-*` CSS vars and Tailwind's default `blue-400` on mobile. The `--blue-*` aliases stay for any legacy refs; new code should use `--stamina-*`.
 
 **Live reference** — [`/design`](https://dieforward.com/design) (or [`src/app/design/page.tsx`](../src/app/design/page.tsx)). Renders every token with its WCAG contrast ratio computed against `crypt.bg`, plus do/don't rules and composite UI examples. Imports `palette` from the same `mobile/lib/theme.js` so the page never drifts.
 
