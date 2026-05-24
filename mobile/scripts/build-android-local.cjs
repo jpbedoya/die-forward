@@ -246,9 +246,15 @@ const gradleTask = PROD ? 'assembleRelease' : 'assembleDebug';
 const gradleArgs = [gradleTask];
 if (STANDALONE && !PROD) gradleArgs.push('-PstandaloneBuild=true');
 if (PROD) {
-  // R8 minification gives the biggest size win for release builds. Resource
-  // shrinking left off for now — it occasionally strips RN-loaded drawables.
+  // R8 minification + resource shrinking together cut release APK size
+  // substantially. Resource shrinking strips drawables/strings R8 proves
+  // unused. RN dynamic-require assets (creature art by name, audio by
+  // string ID, etc.) need to be reachable from a static `require()` graph
+  // for R8 to see them — verified in mobile/lib/creatureAssets.ts and
+  // mobile/lib/audio.ts; both use static maps. If a tester sees missing
+  // assets in a --prod APK, that's the first place to look.
   gradleArgs.push('-Pandroid.enableMinifyInReleaseBuilds=true');
+  gradleArgs.push('-Pandroid.enableShrinkResourcesInReleaseBuilds=true');
 }
 // execFileSync (not exec/spawn with shell) — no command-string interpolation.
 execFileSync('./gradlew', gradleArgs, {
