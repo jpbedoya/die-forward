@@ -2,10 +2,15 @@
 import { useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { router } from 'expo-router';
+import Constants from 'expo-constants';
 import { useGame } from '../lib/GameContext';
 import { DieForwardLogoImage } from './DieForwardLogoImage';
 import { CryptModal } from './CryptModal';
 import { AudioSettingsSection } from './AudioSettingsSection';
+
+// Version string built from BASE_VERSION + git short SHA in app.config.js.
+// `?? 'dev'` covers the unlikely case the manifest can't be read at runtime.
+const APP_VERSION = Constants.expoConfig?.version ?? 'dev';
 
 interface GameMenuProps {
   isOpen: boolean;
@@ -107,6 +112,12 @@ export function GameMenu({ isOpen, onClose }: GameMenuProps) {
           </View>
         </View>
       )}
+
+      {/* Version — bottom-right, subdued. Pulled from expo-constants which
+          reads app.config.js's computed version (BASE + git short SHA). */}
+      <Text className="text-bone-faint text-[10px] font-mono text-right mt-1">
+        v{APP_VERSION}
+      </Text>
 
     </CryptModal>
   );
