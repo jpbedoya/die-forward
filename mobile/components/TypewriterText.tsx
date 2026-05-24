@@ -10,7 +10,7 @@
  */
 
 import { useState, useEffect, useRef } from 'react';
-import { Text, Platform, TextStyle } from 'react-native';
+import { Text, View, Platform, TextStyle } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
 interface TypewriterTextProps {
@@ -89,9 +89,18 @@ export function TypewriterText({
     else if (CLAUSE_BREAK.has(justRevealed)) delay = speedMs * 4;
 
     timerRef.current = setTimeout(() => {
-      // Light haptic on word boundaries (native only).
+      // Light haptic on word boundaries (native only). Wrapped in try/catch
+      // because the haptic native module can throw synchronously in some
+      // release builds (Hermes + R8 hide the binding) — and a thrown error
+      // here would abort the setTimeout callback BEFORE setVisibleCount runs,
+      // halting streaming at the first space character. Belt-and-braces:
+      // the .catch handles async rejections; the try/catch handles sync ones.
       if (Platform.OS !== 'web' && text[visibleCount] === ' ') {
-        Haptics.selectionAsync().catch(() => {});
+        try {
+          Haptics.selectionAsync().catch(() => {});
+        } catch {
+          /* haptic unavailable — streaming continues */
+        }
       }
       setVisibleCount((c) => c + 1);
     }, delay);
@@ -101,15 +110,33 @@ export function TypewriterText({
     };
   }, [visibleCount, text, speedMs, skip, reducedMotion]);
 
-  // The not-yet-revealed text is rendered transparent so the block occupies
-  // its full final size from the first frame — no layout jump as it streams,
-  // and the parent's tap-to-skip target covers the whole text area immediately.
+  // Render the streamed substring + an invisible full-text placeholder layered
+  // underneath. The placeholder reserves the final layout from the first frame
+  // (no jump as the streamed text grows), while the visible Text only contains
+  // what's been revealed so far.
+  //
+  // Previous attempt — a nested <Text style={{ opacity: 0 }}> tail inside the
+  // same parent Text — produced the right pixels on Web (React DOM honours
+  // span styles) but broke on Android. Android's native TextView flattens
+  // nested <Text> into a single SpannableString, and once that string's
+  // content is materialised, mid-update style changes on inner spans appear
+  // not to invalidate the rendered view. Even color: 'transparent' on the
+  // inner span didn't suppress the tail. Lifting the placeholder OUT of the
+  // streaming Text — into a sibling absolute-positioned View — sidesteps the
+  // span-flattening entirely.
   return (
-    <Text className={className} style={style}>
-      {text.slice(0, visibleCount)}
-      {visibleCount < text.length && (
-        <Text style={{ opacity: 0 }}>{text.slice(visibleCount)}</Text>
-      )}
-    </Text>
+    <View style={{ position: 'relative' }}>
+      {/* Invisible placeholder — reserves the final size. */}
+      <Text className={className} style={[style, { color: 'transparent' }]}>
+        {text}
+      </Text>
+      {/* Streaming text — same className/style, layered on top. */}
+      <Text
+        className={className}
+        style={[style, { position: 'absolute', left: 0, top: 0, right: 0 }]}
+      >
+        {text.slice(0, visibleCount)}
+      </Text>
+    </View>
   );
 }
