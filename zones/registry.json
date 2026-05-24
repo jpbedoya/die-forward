@@ -37,7 +37,7 @@
         },
         "unlockRequirement": "Complete one run"
       },
-      "enabled": false
+      "enabled": true
     },
     {
       "id": "frozen-gallery",

@@ -48,7 +48,7 @@ const ZONES = [
     accentColor: '#ff6b2b',
     bgColor: '#1a0800',
     ambientTrack: 'ambient-explore',
-    enabled: false,
+    enabled: true,
   },
   {
     id: 'frozen-gallery',
