@@ -288,12 +288,12 @@ function CreatureDetailModal({ creature, onClose, mastery, onPrev, onNext }: {
       .onEnd((e) => {
         if (e.translationX < -80) {
           onNextRef.current();
-          translateX.value = withSpring(0, { damping: 22, stiffness: 280 });
+          translateX.value = withSpring(0, { damping: 40, stiffness: 300, overshootClamping: true });
         } else if (e.translationX > 80) {
           onPrevRef.current();
-          translateX.value = withSpring(0, { damping: 22, stiffness: 280 });
+          translateX.value = withSpring(0, { damping: 40, stiffness: 300, overshootClamping: true });
         } else {
-          translateX.value = withSpring(0, { damping: 18, stiffness: 300, velocity: e.velocityX });
+          translateX.value = withSpring(0, { damping: 32, stiffness: 300, velocity: e.velocityX });
         }
       }),
     [],
