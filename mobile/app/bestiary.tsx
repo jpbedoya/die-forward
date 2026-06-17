@@ -1,8 +1,9 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import {
   View, Text, Pressable, FlatList, Image, Modal, ScrollView,
-  PanResponder, useWindowDimensions,
+  useWindowDimensions,
 } from 'react-native';
+import { GestureDetector, Gesture, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AudioToggle } from '../components/AudioToggle';
@@ -227,34 +228,39 @@ function CreatureCard({ creature, onPress, cardWidth, mastery }: {
 
 // ─── Detail Modal ─────────────────────────────────────────────────────────────
 
-function CreatureDetailModal({ creature, onClose, mastery, currentIndex, total, onPrev, onNext }: {
+function CreatureDetailModal({ creature, onClose, mastery, onPrev, onNext }: {
   creature: BestiaryCreature | null;
   onClose: () => void;
   mastery?: CreatureMasteryEntry;
-  currentIndex: number;
-  total: number;
   onPrev: () => void;
   onNext: () => void;
 }) {
-  if (!creature) return null;
+  // All hooks must run unconditionally — early return is AFTER hooks.
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
 
-  // Keep callback refs fresh so the PanResponder (created once) sees latest values.
+  // Stable refs so the gesture (created once, empty deps) always calls the latest callbacks.
   const onPrevRef = useRef(onPrev);
   const onNextRef = useRef(onNext);
   useEffect(() => { onPrevRef.current = onPrev; }, [onPrev]);
   useEffect(() => { onNextRef.current = onNext; }, [onNext]);
 
-  const panResponder = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: (_, { dx, dy }) =>
-        Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 15,
-      onPanResponderRelease: (_, { dx }) => {
-        if (dx < -50) onNextRef.current();
-        else if (dx > 50) onPrevRef.current();
-      },
-    })
-  ).current;
+  // Gesture.Pan coordinates with the native ScrollView gesture recognizer via
+  // activeOffsetX / failOffsetY — PanResponder cannot reliably do this on native.
+  // .runOnJS(true) keeps callbacks on the JS thread (no worklet/runOnJS needed).
+  const swipeGesture = useMemo(() =>
+    Gesture.Pan()
+      .activeOffsetX([-20, 20])
+      .failOffsetY([-25, 25])
+      .runOnJS(true)
+      .onEnd((e) => {
+        if (e.translationX < -50) onNextRef.current();
+        else if (e.translationX > 50) onPrevRef.current();
+      }),
+    [],
+  );
+
+  if (!creature) return null;
+
   const tier = TIER_CONFIG[creature.tier];
   const asset = creature.artUrl
     ? getCreatureAsset(creature.artUrl)
@@ -270,6 +276,7 @@ function CreatureDetailModal({ creature, onClose, mastery, currentIndex, total, 
 
   return (
     <Modal visible transparent animationType="fade" onRequestClose={onClose}>
+      <GestureHandlerRootView style={{ flex: 1 }}>
       <Pressable
         style={{
           flex: 1,
@@ -280,18 +287,20 @@ function CreatureDetailModal({ creature, onClose, mastery, currentIndex, total, 
         }}
         onPress={onClose}
       >
-        <Pressable
-          onPress={(e) => e.stopPropagation()}
-          {...panResponder.panHandlers}
-          style={{
-            backgroundColor: '#0d0b09',
-            borderWidth: 1,
-            borderColor: '#2a2520',
-            width: '100%',
-            maxWidth: 400,
-            maxHeight: screenHeight * 0.90,
-          }}
-        >
+        <GestureDetector gesture={swipeGesture}>
+          {/* onStartShouldSetResponder stops taps inside the modal from bubbling
+              to the backdrop Pressable (which would call onClose). */}
+          <View
+            onStartShouldSetResponder={() => true}
+            style={{
+              backgroundColor: '#0d0b09',
+              borderWidth: 1,
+              borderColor: '#2a2520',
+              width: '100%',
+              maxWidth: 400,
+              maxHeight: screenHeight * 0.90,
+            }}
+          >
           <ScrollView bounces={false} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 16 }}>
             {/* Art — anchored to top, clips at bottom — head always visible */}
             {asset ? (
@@ -391,24 +400,10 @@ function CreatureDetailModal({ creature, onClose, mastery, currentIndex, total, 
             </View>
           </ScrollView>
 
-          {/* Arrow navigation */}
-          <View style={{
-            flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-            paddingHorizontal: 12, paddingVertical: 8,
-            borderTopWidth: 1, borderTopColor: '#2a2520',
-          }}>
-            <Pressable onPress={onPrev} hitSlop={12} style={{ padding: 8 }}>
-              <Text style={{ fontFamily: 'monospace', fontSize: 18, color: palette.bone.dark }}>[‹]</Text>
-            </Pressable>
-            <Text style={{ fontFamily: 'monospace', fontSize: 10, color: palette.bone.faint, letterSpacing: 1 }}>
-              {currentIndex + 1} / {total}
-            </Text>
-            <Pressable onPress={onNext} hitSlop={12} style={{ padding: 8 }}>
-              <Text style={{ fontFamily: 'monospace', fontSize: 18, color: palette.bone.dark }}>[›]</Text>
-            </Pressable>
           </View>
-        </Pressable>
+        </GestureDetector>
       </Pressable>
+      </GestureHandlerRootView>
     </Modal>
   );
 }
@@ -607,8 +602,6 @@ export default function BestiaryScreen() {
           creature={selectedCreature}
           onClose={() => setSelectedIndex(null)}
           mastery={selectedCreature ? mastery?.[selectedCreature.name] : undefined}
-          currentIndex={selectedIndex ?? 0}
-          total={filteredCreatures.length}
           onPrev={handlePrev}
           onNext={handleNext}
         />
