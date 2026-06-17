@@ -231,6 +231,53 @@ if (!buildGradle.includes(STANDALONE_MARKER)) {
   buildGradle = buildGradle.replace(/^react\s*\{/m, `react {${snippet}`);
 }
 
+// Inject a release signingConfig block that reads credentials from env vars.
+// The keystore lives at android/keystores/release.keystore; relative to
+// android/app/build.gradle that resolves to ../keystores/release.keystore.
+// Idempotent — marker-guarded. expo prebuild --clean wipes the file, so this
+// ensures the signing setup survives prebuild cycles without manual re-editing.
+const SIGNING_MARKER = '// [release-signing-config]';
+if (!buildGradle.includes(SIGNING_MARKER)) {
+  const releaseBlock =
+    `\n        ${SIGNING_MARKER}\n` +
+    `        release {\n` +
+    `            storeFile file("../keystores/release.keystore")\n` +
+    `            storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD") ?: ""\n` +
+    `            keyAlias System.getenv("ANDROID_KEY_ALIAS") ?: "die-forward"\n` +
+    `            keyPassword System.getenv("ANDROID_KEY_PASSWORD") ?: ""\n` +
+    `        }`;
+  buildGradle = buildGradle.replace(
+    /(keyPassword 'android'\n\s+\})\n(\s+\})/,
+    `$1${releaseBlock}\n$2`,
+  );
+}
+// Make the release buildType use signingConfigs.release (not debug, which is
+// expo prebuild's default for both).
+buildGradle = buildGradle.replace(
+  /(buildTypes[\s\S]*?release\s*\{[\s\S]*?)signingConfig signingConfigs\.debug/,
+  '$1signingConfig signingConfigs.release',
+);
+
+// Inject arm64-only ABI splits — drops ~44MB of x86/armeabi-v7a native libs.
+// expo prebuild --clean doesn't generate this block, so we inject it once.
+const ABI_MARKER = '// [arm64-abi-splits]';
+if (!buildGradle.includes(ABI_MARKER)) {
+  const splitsBlock =
+    `\n    ${ABI_MARKER}\n` +
+    `    splits {\n` +
+    `        abi {\n` +
+    `            enable true\n` +
+    `            reset()\n` +
+    `            include 'arm64-v8a'\n` +
+    `            universalApk false\n` +
+    `        }\n` +
+    `    }\n`;
+  buildGradle = buildGradle.replace(
+    /(\n\s*buildTypes\s*\{)/,
+    `${splitsBlock}$1`,
+  );
+}
+
 if (buildGradle !== originalBuildGradle) writeFileSync(buildGradlePath, buildGradle);
 
 // ── Build ────────────────────────────────────────────────────────────────────
