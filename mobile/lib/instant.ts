@@ -562,28 +562,35 @@ export function useDeathFeed(limit = 10) {
     players: { $: { limit: 200, order: { serverCreatedAt: 'desc' } } },
   });
 
-  // Build lookup maps: walletAddress → nickname, authId → nickname
-  const players = (playerData?.players || []) as unknown as Player[];
-  const nameByWallet: Record<string, string> = {};
-  const nameByAuthId: Record<string, string> = {};
-  for (const p of players) {
-    const name = p.nickname && !DEFAULT_GUEST_NAMES.includes(p.nickname) ? p.nickname : null;
-    if (name && p.walletAddress) nameByWallet[p.walletAddress] = name;
-    if (name && p.authId) nameByAuthId[p.authId] = name;
-  }
+  // Memoize the derived list so its reference is STABLE across renders when the
+  // underlying query data hasn't changed. Without this, `deaths` was a fresh array
+  // every render, and any consumer effect with `[deaths]` in its deps (e.g. the
+  // home screen's echoes-cache effect) fired on every render → setState → re-render
+  // → new array → loop. That self-sustaining loop pinned the JS thread.
+  const deaths = useMemo(() => {
+    // Build lookup maps: walletAddress → nickname, authId → nickname
+    const players = (playerData?.players || []) as unknown as Player[];
+    const nameByWallet: Record<string, string> = {};
+    const nameByAuthId: Record<string, string> = {};
+    for (const p of players) {
+      const name = p.nickname && !DEFAULT_GUEST_NAMES.includes(p.nickname) ? p.nickname : null;
+      if (name && p.walletAddress) nameByWallet[p.walletAddress] = name;
+      if (name && p.authId) nameByAuthId[p.authId] = name;
+    }
 
-  const deaths = [...(deathData?.deaths || [])]
-    .map((d) => {
-      const raw = d as unknown as Death;
-      // Resolve current name: wallet lookup → authId lookup → stored playerName
-      const currentName =
-        nameByWallet[raw.walletAddress] ||
-        nameByAuthId[raw.walletAddress] || // guests: death.walletAddress = their authId
-        raw.playerName;
-      return { ...raw, playerName: currentName };
-    })
-    .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
-    .slice(0, limit);
+    return [...(deathData?.deaths || [])]
+      .map((d) => {
+        const raw = d as unknown as Death;
+        // Resolve current name: wallet lookup → authId lookup → stored playerName
+        const currentName =
+          nameByWallet[raw.walletAddress] ||
+          nameByAuthId[raw.walletAddress] || // guests: death.walletAddress = their authId
+          raw.playerName;
+        return { ...raw, playerName: currentName };
+      })
+      .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+      .slice(0, limit);
+  }, [deathData, playerData, limit]);
 
   // isLoading only depends on deaths — players upgrade names progressively
   return { deaths, isLoading: deathsLoading, error: deathsError };

@@ -24,9 +24,17 @@ export function ScreenHeader({
   showHome = false,
 }: ScreenHeaderProps) {
   const insets = useSafeAreaInsets();
+  // Pop back to the existing root Home rather than mounting a fresh one.
+  // router.replace('/') swapped the current screen for a NEW Home while leaving the
+  // original mounted underneath — every trip remounted Home (a visible stall) and
+  // stacked another Home instance. dismissAll() reveals the live root Home instantly.
+  const goHome = () => {
+    if (router.canDismiss()) router.dismissAll();
+    else router.replace('/');
+  };
   const leftContent = showHome ? (
     <Pressable
-      onPress={() => router.replace('/')}
+      onPress={goHome}
       hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
       style={{ paddingVertical: 6, paddingHorizontal: 8 }}
     >

@@ -5,7 +5,7 @@ import Constants from 'expo-constants';
 import { BlurView } from 'expo-blur';
 import BottomSheet, { BottomSheetScrollView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { CryptBackground } from '../components/CryptBackground';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useAudio } from '../lib/audio';
 import { dlog, exportDebugLogs } from '../lib/debug-log';
 
@@ -25,15 +25,21 @@ function AnimatedDescendButton() {
     '░░▒▓▓▓', '░▒▓▓▓▓',
   ];
   
-  useEffect(() => {
-    const interval = setInterval(() => setFrame(f => (f + 1) % leftFrames.length), 120);
-    return () => clearInterval(interval);
-  }, []);
+  // Only animate while the home screen is focused. expo-router keeps backgrounded
+  // screens mounted in the stack, so a plain useEffect interval would keep ticking
+  // (and re-rendering) on every leaked/stacked HomeScreen forever. useFocusEffect
+  // starts the timer on focus and clears it on blur.
+  useFocusEffect(
+    useCallback(() => {
+      const interval = setInterval(() => setFrame(f => (f + 1) % leftFrames.length), 120);
+      return () => clearInterval(interval);
+    }, []),
+  );
   
   return (
     <Pressable 
       className="flex-row items-center py-3 active:opacity-80"
-      onPress={() => { playSFX('depth-descend'); router.push('/zone-select'); }}
+      onPress={() => { router.push('/zone-select'); playSFX('depth-descend'); }}
     >
       <Text className="text-amber font-mono text-sm">{leftFrames[frame]}</Text>
       <Text className="text-amber text-lg font-bold font-mono tracking-widest mx-2">DESCEND</Text>
