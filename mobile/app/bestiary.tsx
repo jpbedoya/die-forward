@@ -244,15 +244,19 @@ function CreatureDetailModal({ creature, onClose, mastery, onPrev, onNext }: {
   // Stable refs so the gesture (created once, empty deps) always calls the latest callbacks.
   const onPrevRef = useRef(onPrev);
   const onNextRef = useRef(onNext);
+  const onCloseRef = useRef(onClose);
   useEffect(() => { onPrevRef.current = onPrev; }, [onPrev]);
   useEffect(() => { onNextRef.current = onNext; }, [onNext]);
+  useEffect(() => { onCloseRef.current = onClose; }, [onClose]);
 
-  // Physical card drag — shared value drives both position and tilt.
+  // Physical card drag — shared values drive position and tilt.
   const translateX = useSharedValue(0);
+  const translateY = useSharedValue(0);
 
   // Reset card to center whenever the displayed creature changes.
   useEffect(() => {
     translateX.value = withSpring(0, { damping: 22, stiffness: 280 });
+    translateY.value = withSpring(0, { damping: 22, stiffness: 280 });
   }, [creature?.name]);
 
   const cardStyle = useAnimatedStyle(() => {
@@ -265,13 +269,13 @@ function CreatureDetailModal({ creature, onClose, mastery, onPrev, onNext }: {
     return {
       transform: [
         { translateX: translateX.value },
+        { translateY: translateY.value },
         { rotate: `${rotate}deg` },
       ],
     };
   });
 
-  // .runOnJS(true) keeps all handlers on the JS thread — no worklet complexity needed.
-  // onUpdate tracks the finger; onEnd navigates or springs back.
+  // Horizontal swipe → navigate prev/next.
   const swipeGesture = useMemo(() =>
     Gesture.Pan()
       .activeOffsetX([-15, 15])
@@ -288,11 +292,38 @@ function CreatureDetailModal({ creature, onClose, mastery, onPrev, onNext }: {
           onPrevRef.current();
           translateX.value = withSpring(0, { damping: 22, stiffness: 280 });
         } else {
-          // Spring back with the gesture's throw velocity for a natural bounce.
           translateX.value = withSpring(0, { damping: 18, stiffness: 300, velocity: e.velocityX });
         }
       }),
     [],
+  );
+
+  // Swipe up → dismiss. Downward drag resists with a rubber-band factor.
+  const dismissGesture = useMemo(() =>
+    Gesture.Pan()
+      .activeOffsetY([-15, 15])
+      .failOffsetX([-25, 25])
+      .runOnJS(true)
+      .onUpdate((e) => {
+        translateY.value = e.translationY < 0
+          ? e.translationY
+          : e.translationY * 0.12;
+      })
+      .onEnd((e) => {
+        if (e.translationY < -80) {
+          onCloseRef.current();
+          translateY.value = withSpring(0, { damping: 22, stiffness: 280 });
+        } else {
+          translateY.value = withSpring(0, { damping: 18, stiffness: 300, velocity: e.velocityY });
+        }
+      }),
+    [],
+  );
+
+  // Race: whichever direction the user commits to first wins.
+  const composedGesture = useMemo(
+    () => Gesture.Race(swipeGesture, dismissGesture),
+    [swipeGesture, dismissGesture],
   );
 
   if (!creature) return null;
@@ -323,7 +354,7 @@ function CreatureDetailModal({ creature, onClose, mastery, onPrev, onNext }: {
         }}
         onPress={onClose}
       >
-        <GestureDetector gesture={swipeGesture}>
+        <GestureDetector gesture={composedGesture}>
           {/* onStartShouldSetResponder stops taps inside the modal from bubbling
               to the backdrop Pressable (which would call onClose). */}
           <Animated.View
