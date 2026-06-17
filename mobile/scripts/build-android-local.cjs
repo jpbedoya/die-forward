@@ -16,15 +16,19 @@
  *   --publish        → after the build, publish a GitHub prerelease at
  *                      `dev-<version>` with the APK attached. Asset is
  *                      re-uploaded with --clobber if the tag already exists.
+ *   --telegram       → zip the APK and send it to a Telegram chat via bot API.
+ *                      Requires TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID in
+ *                      mobile/android/keystores/.env.
  *
  * Single source of truth for the version is `mobile/app.config.js`
  * (BASE_VERSION + git short SHA = e.g. "1.4.4.986827f").
  *
  * Usage (from `mobile/`):
- *   npm run build:android:local                        # standalone debug
- *   npm run build:android:local -- --metro             # live-reload (dev)
- *   npm run build:android:local -- --prod              # release APK
- *   npm run build:android:local -- --prod --publish    # release + GH publish
+ *   npm run build:android:local                          # standalone debug
+ *   npm run build:android:local -- --metro               # live-reload (dev)
+ *   npm run build:android:local -- --prod                # release APK
+ *   npm run build:android:local -- --prod --publish      # release + GH publish
+ *   npm run build:android:local -- --prod --telegram     # release + Telegram
  *
  * Pipeline:
  *   1. Read version + name from app.config.js.
@@ -41,7 +45,8 @@
  *      .env files as inputs, so an env-only change would otherwise be silent).
  *   8. Run `./gradlew assembleDebug` or `assembleRelease` accordingly.
  *   9. Copy the APK to mobile/dist/<name>-<version>[-release].apk.
- *  10. (--publish) publish to GitHub.
+ *  10. (--telegram) zip and send to Telegram.
+ *  11. (--publish) publish to GitHub.
  */
 
 const { execFileSync } = require('node:child_process');
@@ -58,6 +63,7 @@ const PROD = args.has('--prod');
 const METRO = args.has('--metro') && !PROD; // --prod always bundles
 const STANDALONE = !METRO;                  // self-contained APK is the default
 const PUBLISH = args.has('--publish');
+const TELEGRAM = args.has('--telegram');
 
 // ── Toolchain resolution ─────────────────────────────────────────────────────
 // The interactive zsh has JAVA_HOME / ANDROID_HOME via ~/.zshrc. A non-login
@@ -164,6 +170,12 @@ if (missingEnv.length) {
   process.exit(1);
 }
 
+// ── Keystore env (read always — used for signing creds and Telegram tokens) ──
+const keystoreEnvPath = join(mobileRoot, 'android/keystores/.env');
+const ksEnv = readDotenv(keystoreEnvPath);
+const TG_TOKEN = process.env.TELEGRAM_BOT_TOKEN || ksEnv.TELEGRAM_BOT_TOKEN || '';
+const TG_CHAT  = process.env.TELEGRAM_CHAT_ID   || ksEnv.TELEGRAM_CHAT_ID   || '';
+
 // ── Release keystore (--prod only) ───────────────────────────────────────────
 // build.gradle's release signingConfig reads ANDROID_KEYSTORE_PASSWORD /
 // ANDROID_KEY_PASSWORD / ANDROID_KEY_ALIAS from the env. Load them from
@@ -171,7 +183,6 @@ if (missingEnv.length) {
 // entrypoint — no need to remember to `source` anything first.
 if (PROD) {
   const keystorePath = join(mobileRoot, 'android/keystores/release.keystore');
-  const keystoreEnvPath = join(mobileRoot, 'android/keystores/.env');
   if (!existsSync(keystorePath)) {
     console.error(
       `✗ Release build needs ${keystorePath}.\n` +
@@ -183,7 +194,6 @@ if (PROD) {
     );
     process.exit(1);
   }
-  const ksEnv = readDotenv(keystoreEnvPath);
   for (const k of ['ANDROID_KEYSTORE_PASSWORD', 'ANDROID_KEY_PASSWORD']) {
     if (!buildEnv[k] && ksEnv[k]) buildEnv[k] = ksEnv[k];
     if (!buildEnv[k]) {
@@ -277,6 +287,41 @@ const apkMB = (apkBytes / (1024 * 1024)).toFixed(1);
 const apkSha = createHash('sha256').update(readFileSync(apkDest)).digest('hex');
 
 console.log(`\n✓ ${apkDest}  (${apkMB} MB, sha256 ${apkSha.slice(0, 12)}…)\n`);
+
+// ── Telegram (--telegram) ─────────────────────────────────────────────────────
+if (TELEGRAM) {
+  if (!TG_TOKEN) {
+    console.error('✗ TELEGRAM_BOT_TOKEN not set. Add it to mobile/android/keystores/.env.');
+    process.exit(1);
+  }
+  if (!TG_CHAT) {
+    console.error('✗ TELEGRAM_CHAT_ID not set. Add it to mobile/android/keystores/.env.');
+    process.exit(1);
+  }
+
+  // Zip the APK — Telegram renames bare .apk files on some clients
+  const zipDest = apkDest.replace(/\.apk$/, '.apk.zip');
+  console.log(`▶ Zipping APK → ${zipDest}`);
+  execFileSync('zip', ['-j', zipDest, apkDest], { stdio: 'inherit' });
+
+  const zipMB = (statSync(zipDest).size / (1024 * 1024)).toFixed(1);
+  console.log(`▶ Sending to Telegram chat ${TG_CHAT} (${zipMB} MB)…`);
+
+  const caption =
+    `💀 *Die Forward* \`${version}\`\n` +
+    `${PROD ? 'release (signed, minified)' : 'debug standalone'}\n` +
+    `sha256: \`${apkSha.slice(0, 12)}…\``;
+  execFileSync('curl', [
+    '-s',
+    '-F', `chat_id=${TG_CHAT}`,
+    '-F', `document=@${zipDest}`,
+    '-F', `caption=${caption}`,
+    '-F', 'parse_mode=Markdown',
+    `https://api.telegram.org/bot${TG_TOKEN}/sendDocument`,
+  ], { stdio: 'inherit' });
+
+  console.log(`\n✓ Sent to Telegram\n`);
+}
 
 // ── Publish (optional) ───────────────────────────────────────────────────────
 if (PUBLISH) {

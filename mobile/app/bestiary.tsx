@@ -1,7 +1,7 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import {
   View, Text, Pressable, FlatList, Image, Modal, ScrollView,
-  useWindowDimensions,
+  PanResponder, useWindowDimensions,
 } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -227,13 +227,34 @@ function CreatureCard({ creature, onPress, cardWidth, mastery }: {
 
 // ─── Detail Modal ─────────────────────────────────────────────────────────────
 
-function CreatureDetailModal({ creature, onClose, mastery }: {
+function CreatureDetailModal({ creature, onClose, mastery, currentIndex, total, onPrev, onNext }: {
   creature: BestiaryCreature | null;
   onClose: () => void;
   mastery?: CreatureMasteryEntry;
+  currentIndex: number;
+  total: number;
+  onPrev: () => void;
+  onNext: () => void;
 }) {
   if (!creature) return null;
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+
+  // Keep callback refs fresh so the PanResponder (created once) sees latest values.
+  const onPrevRef = useRef(onPrev);
+  const onNextRef = useRef(onNext);
+  useEffect(() => { onPrevRef.current = onPrev; }, [onPrev]);
+  useEffect(() => { onNextRef.current = onNext; }, [onNext]);
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, { dx, dy }) =>
+        Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 15,
+      onPanResponderRelease: (_, { dx }) => {
+        if (dx < -50) onNextRef.current();
+        else if (dx > 50) onPrevRef.current();
+      },
+    })
+  ).current;
   const tier = TIER_CONFIG[creature.tier];
   const asset = creature.artUrl
     ? getCreatureAsset(creature.artUrl)
@@ -261,6 +282,7 @@ function CreatureDetailModal({ creature, onClose, mastery }: {
       >
         <Pressable
           onPress={(e) => e.stopPropagation()}
+          {...panResponder.panHandlers}
           style={{
             backgroundColor: '#0d0b09',
             borderWidth: 1,
@@ -276,8 +298,8 @@ function CreatureDetailModal({ creature, onClose, mastery }: {
               <View style={{ width: '100%', height: imageHeight, overflow: 'hidden' }}>
                 <Image
                   source={asset}
-                  style={{ width: '100%', height: undefined, aspectRatio: 341 / 512 }}
-                  resizeMode="cover"
+                  style={{ width: modalWidth, height: naturalImageHeight }}
+                  resizeMode="stretch"
                 />
               </View>
             ) : (
@@ -368,6 +390,23 @@ function CreatureDetailModal({ creature, onClose, mastery }: {
               )}
             </View>
           </ScrollView>
+
+          {/* Arrow navigation */}
+          <View style={{
+            flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+            paddingHorizontal: 12, paddingVertical: 8,
+            borderTopWidth: 1, borderTopColor: '#2a2520',
+          }}>
+            <Pressable onPress={onPrev} hitSlop={12} style={{ padding: 8 }}>
+              <Text style={{ fontFamily: 'monospace', fontSize: 18, color: palette.bone.dark }}>[‹]</Text>
+            </Pressable>
+            <Text style={{ fontFamily: 'monospace', fontSize: 10, color: palette.bone.faint, letterSpacing: 1 }}>
+              {currentIndex + 1} / {total}
+            </Text>
+            <Pressable onPress={onNext} hitSlop={12} style={{ padding: 8 }}>
+              <Text style={{ fontFamily: 'monospace', fontSize: 18, color: palette.bone.dark }}>[›]</Text>
+            </Pressable>
+          </View>
         </Pressable>
       </Pressable>
     </Modal>
@@ -378,7 +417,7 @@ function CreatureDetailModal({ creature, onClose, mastery }: {
 
 export default function BestiaryScreen() {
   const { width } = useWindowDimensions();
-  const [selected, setSelected] = useState<BestiaryCreature | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
   const [filterTier, setFilterTier] = useState<1 | 2 | 3 | null>(null);
   const [filterZone, setFilterZone] = useState<string | null>(null);
@@ -404,7 +443,7 @@ export default function BestiaryScreen() {
   const effectiveWidth = Math.min(width, 430);
   const cardWidth = Math.floor((effectiveWidth - H_PAD * 2 - GUTTER) / COLS);
 
-  const filteredCreatures = CREATURES.filter((c) => {
+  const filteredCreatures = useMemo(() => CREATURES.filter((c) => {
     const tierMatch = filterTier ? c.tier === filterTier : true;
     const zoneMatch = filterZone ? c.zones.includes(filterZone) : true;
     const entry = mastery?.[c.name];
@@ -413,13 +452,25 @@ export default function BestiaryScreen() {
       : filterMastery === 'undefeated' ? (entry?.defeats ?? 0) === 0
       : true;
     return tierMatch && zoneMatch && masteryMatch;
-  });
+  }), [CREATURES, filterTier, filterZone, filterMastery, mastery]);
+
+  const selectedCreature = selectedIndex !== null ? filteredCreatures[selectedIndex] ?? null : null;
+
+  const handlePrev = useCallback(() => {
+    if (selectedIndex === null || filteredCreatures.length === 0) return;
+    setSelectedIndex((selectedIndex - 1 + filteredCreatures.length) % filteredCreatures.length);
+  }, [selectedIndex, filteredCreatures.length]);
+
+  const handleNext = useCallback(() => {
+    if (selectedIndex === null || filteredCreatures.length === 0) return;
+    setSelectedIndex((selectedIndex + 1) % filteredCreatures.length);
+  }, [selectedIndex, filteredCreatures.length]);
 
   const renderItem = useCallback(({ item, index }: { item: BestiaryCreature; index: number }) => (
     <View style={{ marginLeft: index % COLS === 0 ? 0 : GUTTER }}>
       <CreatureCard
         creature={item}
-        onPress={() => setSelected(item)}
+        onPress={() => setSelectedIndex(index)}
         cardWidth={cardWidth}
         mastery={mastery?.[item.name]}
       />
@@ -553,9 +604,13 @@ export default function BestiaryScreen() {
 
         {/* Detail Modal */}
         <CreatureDetailModal
-          creature={selected}
-          onClose={() => setSelected(null)}
-          mastery={selected ? mastery?.[selected.name] : undefined}
+          creature={selectedCreature}
+          onClose={() => setSelectedIndex(null)}
+          mastery={selectedCreature ? mastery?.[selectedCreature.name] : undefined}
+          currentIndex={selectedIndex ?? 0}
+          total={filteredCreatures.length}
+          onPrev={handlePrev}
+          onNext={handleNext}
         />
       </SafeAreaView>
     </CryptBackground>
