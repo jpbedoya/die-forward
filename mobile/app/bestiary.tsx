@@ -4,7 +4,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import Animated, {
-  useSharedValue, useAnimatedStyle, withSpring, interpolate, Extrapolation,
+  useSharedValue, useAnimatedStyle, withSpring, withTiming, interpolate, Extrapolation,
 } from 'react-native-reanimated';
 import { GestureDetector, Gesture, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { router } from 'expo-router';
@@ -253,10 +253,11 @@ function CreatureDetailModal({ creature, onClose, mastery, onPrev, onNext }: {
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
 
-  // Reset card to center whenever the displayed creature changes.
+  // Reset card to center when switching creatures. Guard on falsy so the
+  // dismiss fly-off isn't cancelled when the modal closes (creature → null).
   useEffect(() => {
-    translateX.value = withSpring(0, { damping: 22, stiffness: 280 });
-    translateY.value = withSpring(0, { damping: 22, stiffness: 280 });
+    if (!creature?.name) return;
+    translateY.value = 0; // instant — card appears at center when opened
   }, [creature?.name]);
 
   const cardStyle = useAnimatedStyle(() => {
@@ -311,8 +312,8 @@ function CreatureDetailModal({ creature, onClose, mastery, onPrev, onNext }: {
       })
       .onEnd((e) => {
         if (e.translationY < -80) {
+          translateY.value = withTiming(-900, { duration: 260 });
           onCloseRef.current();
-          translateY.value = withSpring(0, { damping: 22, stiffness: 280 });
         } else {
           translateY.value = withSpring(0, { damping: 18, stiffness: 300, velocity: e.velocityY });
         }
