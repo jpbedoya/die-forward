@@ -143,7 +143,7 @@ function CreatureCard({ creature, onPress, cardWidth, mastery }: {
         {asset ? (
           <Image
             source={asset}
-            style={{ width: cardWidth, height: Math.min(artHeight, 240), opacity: discovered ? 1 : 0.35 }}
+            style={{ width: cardWidth, height: Math.min(artHeight, 240), opacity: discovered ? 1 : 0.6 }}
             resizeMode="cover"
           />
         ) : (
@@ -151,7 +151,7 @@ function CreatureCard({ creature, onPress, cardWidth, mastery }: {
             width: cardWidth, height: Math.min(artHeight, 240),
             backgroundColor: '#130f0c',
             alignItems: 'center', justifyContent: 'center',
-            opacity: discovered ? 1 : 0.35,
+            opacity: discovered ? 1 : 0.6,
           }}>
             <Text style={{ fontSize: 52 }}>{creature.emoji}</Text>
           </View>
