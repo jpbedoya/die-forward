@@ -3,6 +3,9 @@ import {
   View, Text, Pressable, FlatList, Image, Modal, ScrollView,
   useWindowDimensions,
 } from 'react-native';
+import Animated, {
+  useSharedValue, useAnimatedStyle, withSpring, interpolate, Extrapolation,
+} from 'react-native-reanimated';
 import { GestureDetector, Gesture, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -244,17 +247,50 @@ function CreatureDetailModal({ creature, onClose, mastery, onPrev, onNext }: {
   useEffect(() => { onPrevRef.current = onPrev; }, [onPrev]);
   useEffect(() => { onNextRef.current = onNext; }, [onNext]);
 
-  // Gesture.Pan coordinates with the native ScrollView gesture recognizer via
-  // activeOffsetX / failOffsetY — PanResponder cannot reliably do this on native.
-  // .runOnJS(true) keeps callbacks on the JS thread (no worklet/runOnJS needed).
+  // Physical card drag — shared value drives both position and tilt.
+  const translateX = useSharedValue(0);
+
+  // Reset card to center whenever the displayed creature changes.
+  useEffect(() => {
+    translateX.value = withSpring(0, { damping: 22, stiffness: 280 });
+  }, [creature?.name]);
+
+  const cardStyle = useAnimatedStyle(() => {
+    const rotate = interpolate(
+      translateX.value,
+      [-280, 0, 280],
+      [-7, 0, 7],
+      Extrapolation.CLAMP,
+    );
+    return {
+      transform: [
+        { translateX: translateX.value },
+        { rotate: `${rotate}deg` },
+      ],
+    };
+  });
+
+  // .runOnJS(true) keeps all handlers on the JS thread — no worklet complexity needed.
+  // onUpdate tracks the finger; onEnd navigates or springs back.
   const swipeGesture = useMemo(() =>
     Gesture.Pan()
-      .activeOffsetX([-20, 20])
+      .activeOffsetX([-15, 15])
       .failOffsetY([-25, 25])
       .runOnJS(true)
+      .onUpdate((e) => {
+        translateX.value = e.translationX;
+      })
       .onEnd((e) => {
-        if (e.translationX < -50) onNextRef.current();
-        else if (e.translationX > 50) onPrevRef.current();
+        if (e.translationX < -80) {
+          onNextRef.current();
+          translateX.value = withSpring(0, { damping: 22, stiffness: 280 });
+        } else if (e.translationX > 80) {
+          onPrevRef.current();
+          translateX.value = withSpring(0, { damping: 22, stiffness: 280 });
+        } else {
+          // Spring back with the gesture's throw velocity for a natural bounce.
+          translateX.value = withSpring(0, { damping: 18, stiffness: 300, velocity: e.velocityX });
+        }
       }),
     [],
   );
@@ -290,16 +326,16 @@ function CreatureDetailModal({ creature, onClose, mastery, onPrev, onNext }: {
         <GestureDetector gesture={swipeGesture}>
           {/* onStartShouldSetResponder stops taps inside the modal from bubbling
               to the backdrop Pressable (which would call onClose). */}
-          <View
+          <Animated.View
             onStartShouldSetResponder={() => true}
-            style={{
+            style={[{
               backgroundColor: '#0d0b09',
               borderWidth: 1,
               borderColor: '#2a2520',
               width: '100%',
               maxWidth: 400,
               maxHeight: screenHeight * 0.90,
-            }}
+            }, cardStyle]}
           >
           <ScrollView bounces={false} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 16 }}>
             {/* Art — anchored to top, clips at bottom — head always visible */}
@@ -400,7 +436,7 @@ function CreatureDetailModal({ creature, onClose, mastery, onPrev, onNext }: {
             </View>
           </ScrollView>
 
-          </View>
+          </Animated.View>
         </GestureDetector>
       </Pressable>
       </GestureHandlerRootView>
