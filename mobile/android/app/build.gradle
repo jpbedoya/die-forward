@@ -9,6 +9,11 @@ def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
  * By default you don't need to apply any configuration, just uncomment the lines you need.
  */
 react {
+    // [standalone-build-toggle]
+    if (findProperty('standaloneBuild') == 'true') {
+        debuggableVariants = []
+    }
+
     entryFile = file(["node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute"].execute(null, rootDir).text.trim())
     reactNativeDir = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
     hermesCommand = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/sdks/hermesc/%OS-BIN%/hermesc"
@@ -92,8 +97,8 @@ android {
         applicationId 'com.dieforward.app'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2
-        versionName "1.2.0.f68f104"
+        versionCode 143
+        versionName "1.4.4.d3cbb2f"
 
         buildConfigField "String", "REACT_NATIVE_RELEASE_LEVEL", "\"${findProperty('reactNativeReleaseLevel') ?: 'stable'}\""
     }
@@ -120,6 +125,16 @@ android {
             universalApk false
         }
     }
+    // [arm64-abi-splits]
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'arm64-v8a'
+            universalApk false
+        }
+    }
+
 
     buildTypes {
         debug {
@@ -141,6 +156,10 @@ android {
         jniLibs {
             def enableLegacyPackaging = findProperty('expo.useLegacyPackaging') ?: 'false'
             useLegacyPackaging enableLegacyPackaging.toBoolean()
+            // react-native-reanimated 4.x and react-native-worklets each bundle their
+            // own copy of libworklets.so (built from the same worklets source, peer
+            // version-aligned), which collides in mergeReleaseNativeLibs. Pick one.
+            pickFirsts += ['**/libworklets.so']
         }
     }
     androidResources {
