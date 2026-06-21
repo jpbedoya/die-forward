@@ -24,7 +24,7 @@ import { useUnifiedWallet, type Address } from './wallet/unified';
 import { GAME_POOL_PDA, buildStakeInstruction, generateSessionId } from './solana/escrow';
 import { Transaction, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { getOrCreatePlayerByAuth, updatePlayerNicknameByAuth, useGameSettings, updateHighestRoom } from './instant';
-import { signInWithWallet, signInAsGuest, signOut, linkWalletToGuest, getStoredAuthState, restoreInstantDBSession, type AuthState } from './auth';
+import { signInWithWallet, signInAsGuest, signInAsGuestLocal, signOut, linkWalletToGuest, getStoredAuthState, restoreInstantDBSession, type AuthState } from './auth';
 import { createRunRng, generateRandomSeed, type SeededRng } from './seeded-random';
 import { rollModifier, type RunModifier } from './modifiers';
 
@@ -230,6 +230,11 @@ export function GameProvider({
   // Serialize wallet auth (connect/verify) so connect handler and effect fallback
   // can't trigger duplicate signature prompts.
   const walletAuthInFlightRef = useRef(false);
+
+  // Tracks whether the last network attempt revealed the device to be offline.
+  // Lets the empty-handed start path skip a redundant second timeout (guest auth
+  // already failed → session start will too). Reset on any successful call.
+  const offlineRef = useRef(false);
 
   const runWalletAuth = useCallback(async (address: string, source: 'connect' | 'effect' | 'manual') => {
     if (walletAuthInFlightRef.current) {
@@ -514,7 +519,18 @@ export function GameProvider({
 
     updateState({ loading: true, error: null });
     try {
-      const authState = await signInAsGuest();
+      let authState: AuthState;
+      try {
+        authState = await signInAsGuest();
+        offlineRef.current = false;
+      } catch (err) {
+        // Offline empty-handed: fall back to a local guest identity so the run
+        // can still start. Any non-offline error still surfaces normally.
+        if (!api.isOfflineError(err)) throw err;
+        dlog.warn('Auth', 'guest sign-in offline — using local guest identity');
+        offlineRef.current = true;
+        authState = await signInAsGuestLocal();
+      }
 
       updateState({
         isAuthenticated: true,
@@ -719,16 +735,44 @@ export function GameProvider({
         dlog('Stake', `stake tx sent: ${signature}`);
       }
 
-      // Start session with backend
-      // Pass authId separately for proper player tracking (guests + wallet users)
-      const session = await api.startSession(
-        (activeWalletAddress || state.walletAddress || playerIdentifier), // walletAddress for on-chain stuff
-        emptyHanded ? 0 : amount,  // Empty handed runs have 0 stake
-        stakeTxSignature,
-        state.authId || playerIdentifier, // authId for player record lookup
+      // Start session with backend.
+      // Empty-handed runs can start fully offline: if the backend is unreachable
+      // we mint a local session and play client-authoritatively (death/score sync
+      // is best-effort and simply skipped — see isOfflineSession guards below).
+      // Staked runs always require the server, so they keep throwing on failure.
+      const buildLocalSession = (): api.StartSessionResponse => ({
+        success: true,
+        sessionToken: api.OFFLINE_SESSION_PREFIX + generateRandomSeed().slice(0, 32),
+        zone: zoneId || 'sunken-crypt',
         zoneId,
-      );
-      
+        seed: generateRandomSeed(),
+        seedSource: 'legacy',
+      });
+
+      let session: api.StartSessionResponse;
+      if (emptyHanded && offlineRef.current) {
+        // Guest auth already detected offline this flow — skip the redundant timeout.
+        dlog.warn('Stake', 'starting empty-handed run offline (cached offline state)');
+        session = buildLocalSession();
+      } else {
+        try {
+          // Pass authId separately for proper player tracking (guests + wallet users)
+          session = await api.startSession(
+            (activeWalletAddress || state.walletAddress || playerIdentifier), // walletAddress for on-chain stuff
+            emptyHanded ? 0 : amount,  // Empty handed runs have 0 stake
+            stakeTxSignature,
+            state.authId || playerIdentifier, // authId for player record lookup
+            zoneId,
+          );
+          offlineRef.current = false;
+        } catch (err) {
+          if (!emptyHanded || !api.isOfflineError(err)) throw err;
+          dlog.warn('Stake', 'session start offline — starting empty-handed run locally');
+          offlineRef.current = true;
+          session = buildLocalSession();
+        }
+      }
+
       // Defensive: ensure we got a session token and seed
       if (!session || !session.sessionToken) {
         throw new Error('Invalid session response from server');
@@ -824,12 +868,15 @@ export function GameProvider({
     });
     
     // Notify backend - send CURRENT room (1-indexed for server)
-    // Client is 0-indexed, server is 1-indexed
+    // Client is 0-indexed, server is 1-indexed. Offline runs have no server
+    // session, so skip the sync entirely (client state is authoritative).
     const serverRoom = currentRoom + 1;
-    api.advanceRoom(state.sessionToken, serverRoom).catch((err) => {
-      console.warn('[advance] Backend sync failed:', err);
-      // Don't block on backend errors - client-side state is authoritative for mobile
-    });
+    if (!api.isOfflineSession(state.sessionToken)) {
+      api.advanceRoom(state.sessionToken, serverRoom).catch((err) => {
+        console.warn('[advance] Backend sync failed:', err);
+        // Don't block on backend errors - client-side state is authoritative for mobile
+      });
+    }
 
     // Persist highest room reached for zone unlock progression (fire-and-forget)
     // updateHighestRoom only writes if nextRoom exceeds current stored value
@@ -844,7 +891,10 @@ export function GameProvider({
 
   const recordDeathAction = useCallback(async (finalMessage: string, killedBy?: string, nowPlaying?: { title: string; artist: string }) => {
     if (!state.sessionToken) return;
-    
+    // Offline empty-handed run: no server session exists to record against.
+    // Best-effort sync is skipped so no spurious "Failed to record death" toast.
+    if (api.isOfflineSession(state.sessionToken)) return;
+
     updateState({ loading: true });
     try {
       const room = (state.currentRoom || 0) + 1; // Room is 1-indexed for display
@@ -873,7 +923,9 @@ export function GameProvider({
 
   const claimVictoryAction = useCallback(async () => {
     if (!state.sessionToken) return;
-    
+    // Offline empty-handed run: no server session / no reward to claim.
+    if (api.isOfflineSession(state.sessionToken)) return;
+
     updateState({ loading: true });
     try {
       await api.claimVictory(state.sessionToken);

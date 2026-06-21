@@ -11,6 +11,29 @@ import bs58 from 'bs58';
 const AUTH_STORAGE_KEY = 'die-forward-auth';
 const GUEST_ID_KEY = 'die-forward-guest-id';
 
+// Same connectivity-loss timeout used by the API client, so offline guest
+// sign-in falls back promptly instead of hanging on a dead connection.
+async function fetchWithTimeout(
+  input: string,
+  init: RequestInit,
+  timeoutMs = 5000,
+): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(input, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// Random hex id, mirroring the crypto.getRandomValues pattern in seeded-random.ts.
+function randomHex(byteLength = 16): string {
+  const bytes = new Uint8Array(byteLength);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 // API base URL - use web app for API routes
 const API_BASE = process.env.EXPO_PUBLIC_API_URL || 'https://www.dieforward.com';
 
@@ -86,7 +109,7 @@ export async function signInAsGuest(): Promise<AuthState> {
   const existingGuestId = await AsyncStorage.getItem(GUEST_ID_KEY);
   
   // Request guest token from backend
-  const response = await fetch(`${API_BASE}/api/auth/guest`, {
+  const response = await fetchWithTimeout(`${API_BASE}/api/auth/guest`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ existingGuestId }),
@@ -113,6 +136,34 @@ export async function signInAsGuest(): Promise<AuthState> {
     walletAddress: null,
     isNewUser,
     customToken: token,
+  };
+  await AsyncStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authState));
+
+  return authState;
+}
+
+/**
+ * Sign in as a guest with no network — used as an offline fallback for
+ * empty-handed runs when /api/auth/guest is unreachable.
+ *
+ * Reuses any previously stored guest id; otherwise mints a local one. There is
+ * no InstantDB session (no customToken), so backend-synced features are
+ * unavailable for the offline session — gameplay is fully client-authoritative.
+ */
+export async function signInAsGuestLocal(): Promise<AuthState> {
+  let guestId = await AsyncStorage.getItem(GUEST_ID_KEY);
+  if (!guestId) {
+    guestId = `guest-offline-${randomHex()}`;
+    await AsyncStorage.setItem(GUEST_ID_KEY, guestId);
+  }
+
+  const authState: AuthState = {
+    isAuthenticated: true,
+    authId: guestId,
+    authType: 'guest',
+    walletAddress: null,
+    isNewUser: true,
+    // No customToken — offline, so there is no InstantDB session to restore.
   };
   await AsyncStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authState));
 

@@ -24,6 +24,40 @@ function getApiBase(): string {
 
 export const API_BASE = getApiBase();
 
+// Offline support for empty-handed runs.
+// When the network is unreachable, an empty-handed run starts with a locally
+// minted session token instead of a server-issued one. These helpers let the
+// rest of the app detect that situation and skip best-effort backend syncs.
+export const OFFLINE_SESSION_PREFIX = 'offline-';
+
+export function isOfflineSession(token: string | null | undefined): boolean {
+  return !!token && token.startsWith(OFFLINE_SESSION_PREFIX);
+}
+
+// Treat connectivity loss / hung requests as "offline". A non-ok HTTP response
+// (server reachable but rejecting) is NOT offline — it still surfaces normally.
+export function isOfflineError(err: unknown): boolean {
+  if (!err) return false;
+  const e = err as { name?: string; message?: string };
+  return e.name === 'AbortError' || /network request failed/i.test(e.message || '');
+}
+
+// Run a fetch with an abort-based timeout so a hung/captive-portal connection
+// rejects (as an offline error) instead of blocking the run start indefinitely.
+async function fetchWithTimeout(
+  input: string,
+  init: RequestInit,
+  timeoutMs = 5000,
+): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(input, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 export interface GameSession {
   sessionToken: string;
   walletAddress: string;
@@ -80,7 +114,7 @@ export async function startSession(
   authId?: string,
   zoneId?: string,
 ): Promise<StartSessionResponse> {
-  const response = await fetch(`${API_BASE}/api/session/start`, {
+  const response = await fetchWithTimeout(`${API_BASE}/api/session/start`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
