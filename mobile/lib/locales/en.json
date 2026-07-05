@@ -28,5 +28,10 @@
   "rule.honor.telegraph": "It will not break. It will not flee.",
   "rule.dormant.telegraph": "It sleeps. The depths do not wake from sleep.",
   "rule.drain.telegraph": "Sorrow seeps into your bones. Each struggle costs the last of you.",
-  "rule.chant.telegraph": "The voice rises when silence falls. Listen and it will drown you."
+  "rule.chant.telegraph": "The voice rises when silence falls. Listen and it will drown you.",
+  "rule.rupture.burst": "It bursts as it dies — the bloat finds you anyway.",
+  "rule.reform.rise": "The water remembers its shape. It rises again.",
+  "rule.multiply.join": "Another hand reaches from the wall to join the fight.",
+  "rule.flee.blocked": "It will not let you leave.",
+  "rule.pounce.strike": "It was already moving. The blow lands before you can raise your guard."
 }

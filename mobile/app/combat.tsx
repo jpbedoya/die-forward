@@ -54,6 +54,19 @@ import {
   clearStatus,
   restoreClarity,
 } from '../lib/zone-mechanics';
+import {
+  initialRuleState,
+  onPlayerStrike,
+  onEnemyHitLanded,
+  onDeathBlow,
+  onTurnEnd,
+  fleeBlocked,
+  itemUseTriggersAttack,
+  honorFilteredIntent,
+  CombatRuleState,
+} from '../lib/creature-rules';
+import { recordDefeat } from '../lib/bestiary-mastery';
+import { t } from '../lib/i18n';
 
 type CombatPhase = 'choose' | 'resolve' | 'victory' | 'death';
 
@@ -111,6 +124,14 @@ export default function CombatScreen() {
   const [isFirstTurn, setIsFirstTurn] = useState(true);
   const [enemyFrozen, setEnemyFrozen] = useState(false);
   
+  // Signature-rule engine state (Task 8) — one CombatRuleState per fight,
+  // reset whenever a new creature enters combat. `pendingChantBonusRef` is
+  // separate from CombatRuleState because it's consumed on the FOLLOWING
+  // turn's enemy base damage, not the turn it was computed on.
+  const ruleStateRef = useRef<CombatRuleState>(initialRuleState());
+  const pendingChantBonusRef = useRef(0);
+  const fleeAttemptedRef = useRef(false);
+
   // Screen shake animation
   const shakeAnim = useRef(new Animated.Value(0)).current;
   
@@ -164,6 +185,11 @@ export default function CombatScreen() {
     setCreature(roomCreature);
     setArtLoadFailed(false);
 
+    // Signature-rule engine — fresh state for this fight.
+    ruleStateRef.current = initialRuleState();
+    pendingChantBonusRef.current = 0;
+    fleeAttemptedRef.current = false;
+
     // Bestiary mastery — encounter telemetry. Fire-and-forget; mastery
     // updates the player record off the main flow and surfaces any newly
     // crossed cosmetic unlocks via the same path death milestones use.
@@ -181,9 +207,20 @@ export default function CombatScreen() {
     setEnemyMaxHealth(hp);
     
     // Fix 1 (Revy): use seeded RNG for deterministic initial intent per seed
-    const intent = game.rng ? getCreatureIntentSeeded(roomCreature.name, game.rng) : getCreatureIntent(roomCreature.name);
+    // Honor creatures never roll ERRATIC — reroll once if that's what came up.
+    const rawIntent = game.rng ? getCreatureIntentSeeded(roomCreature.name, game.rng) : getCreatureIntent(roomCreature.name);
+    const intent = honorFilteredIntent(roomCreature.signature, rawIntent, () =>
+      game.rng ? getCreatureIntentSeeded(roomCreature.name, game.rng) : getCreatureIntent(roomCreature.name)
+    );
     setEnemyIntent(intent);
     setIntentEffects(getIntentEffects(intent.type));
+
+    // Signature-rule telegraph — shown as the combat intro line.
+    if (roomCreature.signature) {
+      setNarrative(t(`rule.${roomCreature.signature.id}.telegraph`));
+    } else {
+      setNarrative('');
+    }
 
     // Zone-specific boss intro or generic growl
     const isBoss = roomCreature.tier === 3;
@@ -192,13 +229,15 @@ export default function CombatScreen() {
   }, [roomNumber, params.enemy]);
 
   // Build combat options with settings-driven costs
+  const fleeGated = fleeBlocked(creature?.signature, ruleStateRef.current);
   const COMBAT_OPTIONS = BASE_COMBAT_OPTIONS.map(o => ({
     ...o,
     cost: o.id === 'strike' ? settings.strikeCost : o.id === 'brace' ? game.getModifiedBraceCost(0) : 1,
+    disabled: o.id === 'flee' && fleeGated,
   }));
   // Void Beyond — at zero clarity, an option that isn't real slips into the list.
   if (clarityDepleted(mechanic, game.zoneStatus)) {
-    COMBAT_OPTIONS.push({ id: 'void-fake', text: 'Step toward the light', emoji: '✨', desc: 'A way out', cost: 0 });
+    COMBAT_OPTIONS.push({ id: 'void-fake', text: 'Step toward the light', emoji: '✨', desc: 'A way out', cost: 0, disabled: false });
   }
 
   // Calculate damage using admin settings — pure math lives in combat-math.ts
@@ -243,15 +282,29 @@ export default function CombatScreen() {
     const option = COMBAT_OPTIONS.find(o => o.id === action);
     if (!option) return;
 
+    // Signature rule: flee gate (e.g. dormant Forgotten Guardian from turn 2 on).
+    if (action === 'flee' && fleeBlocked(creature?.signature, ruleStateRef.current)) {
+      playSFX('error-buzz');
+      setNarrative(t('rule.flee.blocked'));
+      return;
+    }
+    if (action === 'flee') {
+      fleeAttemptedRef.current = true;
+    }
+
     // Check stamina
     if (option.cost > game.stamina) {
       playSFX('error-buzz');
       return;
     }
 
-    // Spend stamina
+    // Spend stamina. Tracked in a local var (not just via game.setStamina) so
+    // a same-tick signature-rule stamina drain (see `drain`) below can chain
+    // off the post-cost value instead of the stale `game.stamina` closure.
+    let staminaAfterCost = game.stamina;
     if (option.cost > 0) {
-      game.setStamina(game.stamina - option.cost);
+      staminaAfterCost -= option.cost;
+      game.setStamina(staminaAfterCost);
     }
 
     // Zone status — start-of-turn tick (burn damage, chill decay).
@@ -264,12 +317,18 @@ export default function CombatScreen() {
     let enemyDmg = 0;
     let fleeSuccess = false;
     let actionNarrative = '';
-    
+    // Signature rule: `dodge`-into-counter is the one death-blow finish that
+    // rupture doesn't punish (see onDeathBlow's lastActionWasDodgeCounter).
+    let dodgeCounterLanded = false;
+    // Signature rule: chant's bonus was computed by the PREVIOUS turn's
+    // onTurnEnd and feeds this turn's enemy base damage, before calculateDamage.
+    const chantBonus = pendingChantBonusRef.current;
+
     switch (action) {
       case 'strike': {
         // Player damage uses settings range; enemy counter scales by enemyCounterMultiplier
         const basePlayerHit = getBaseDamage();
-        const baseEnemyHit = Math.floor(getBaseDamage() * settings.enemyCounterMultiplier);
+        const baseEnemyHit = Math.floor(getBaseDamage() * settings.enemyCounterMultiplier) + chantBonus;
         playerDmg = calculateDamage(baseEnemyHit, false);
         // Bonus damage for striking AGGRESSIVE/HUNTING correctly
         const strikeIntentBonus = (enemyIntent.type === 'AGGRESSIVE' || enemyIntent.type === 'HUNTING')
@@ -288,6 +347,15 @@ export default function CombatScreen() {
           actionNarrative = getStrikeNarration('mutual');
           playSFX(enemyDmg >= 25 ? 'critical-hit' : 'sword-slash');
         }
+
+        // Signature rule: blink evades the creature's first strike taken —
+        // the player's blow passes through empty air, dealing no damage.
+        const strikeResult = onPlayerStrike(creature?.signature, ruleStateRef.current);
+        ruleStateRef.current = strikeResult.state;
+        if (strikeResult.evaded) {
+          enemyDmg = 0;
+          actionNarrative = t('rule.blink.evade');
+        }
         break;
       }
       case 'dodge': {
@@ -300,11 +368,12 @@ export default function CombatScreen() {
             const counterBase = game.rng ? game.rng.range(8, 14) : 8 + Math.floor(Math.random() * 7);
             enemyDmg = Math.round(counterBase * settings.intentCounterBonus);
             actionNarrative = getDodgeNarration('counter');
+            dodgeCounterLanded = true;
           } else {
             actionNarrative = getDodgeNarration('success');
           }
         } else {
-          const dodgeDmgBase = game.rng ? game.rng.range(5, 9) : 5 + Math.floor(Math.random() * 5);
+          const dodgeDmgBase = (game.rng ? game.rng.range(5, 9) : 5 + Math.floor(Math.random() * 5)) + chantBonus;
           playerDmg = calculateDamage(dodgeDmgBase, false);
           actionNarrative = getDodgeNarration('close');
         }
@@ -314,7 +383,7 @@ export default function CombatScreen() {
         playSFX('brace-impact');
         const brMin = settings.braceBaseDamageMin;
         const brMax = settings.braceBaseDamageMax;
-        const baseDmg = game.rng ? game.rng.range(brMin, brMax) : brMin + Math.floor(Math.random() * (brMax - brMin + 1));
+        const baseDmg = (game.rng ? game.rng.range(brMin, brMax) : brMin + Math.floor(Math.random() * (brMax - brMin + 1))) + chantBonus;
         playerDmg = game.modifierBraceNegatesAll() ? 0 : Math.round(calculateDamage(baseDmg, false) * (1 - settings.braceReduction));
         actionNarrative = getBraceNarration('success');
         break;
@@ -325,7 +394,7 @@ export default function CombatScreen() {
         const fleeChance = Math.min(0.9, Math.max(0.1, settings.fleeChanceBase + intentEffects.fleeMod + itemEffects.fleeBonus));
         const cleanRatio = settings.fleeCleanRatio;
         const roll = game.rng ? game.rng.random() : Math.random();
-        
+
         if (roll < fleeChance * cleanRatio) {
           // Clean escape
           fleeSuccess = true;
@@ -333,7 +402,7 @@ export default function CombatScreen() {
         } else if (roll < fleeChance) {
           // Escaped but took damage
           fleeSuccess = true;
-          const fleeDmgBase = game.rng ? game.rng.range(5, 12) : 5 + Math.floor(Math.random() * 8);
+          const fleeDmgBase = (game.rng ? game.rng.range(5, 12) : 5 + Math.floor(Math.random() * 8)) + chantBonus;
           const fleeDmgRaw = calculateDamage(fleeDmgBase, false);
           playerDmg = itemEffects.fleeDamageHalved ? Math.ceil(fleeDmgRaw / 2) : fleeDmgRaw;
           actionNarrative = getFleeNarration('hurt');
@@ -345,7 +414,7 @@ export default function CombatScreen() {
         } else {
           // Failed to escape
           fleeSuccess = false;
-          const failDmgBase = game.rng ? game.rng.range(8, 19) : 8 + Math.floor(Math.random() * 12);
+          const failDmgBase = (game.rng ? game.rng.range(8, 19) : 8 + Math.floor(Math.random() * 12)) + chantBonus;
           const failDmgRaw = calculateDamage(failDmgBase, false);
           playerDmg = itemEffects.fleeDamageHalved ? Math.ceil(failDmgRaw / 2) : failDmgRaw;
           actionNarrative = getFleeNarration('fail');
@@ -359,7 +428,15 @@ export default function CombatScreen() {
         break;
       }
     }
-    
+
+    // Signature rule: dormant (Forgotten Guardian) skips turn 1 entirely —
+    // not modeled in the engine itself (it has no combat-damage inputs), so
+    // it's gated here: on turn 1 the creature lands no counter/attack damage.
+    // The telegraph shown at combat start already explains why.
+    if (creature?.signature?.id === 'dormant' && isFirstTurn) {
+      playerDmg = 0;
+    }
+
     // ── Zone status — infection damage penalty, freeze, on-hit application ──
     enemyDmg = Math.round(enemyDmg * infectionDamageMultiplier(status));
     if (enemyFrozen && playerDmg > 0) {
@@ -383,10 +460,71 @@ export default function CombatScreen() {
       }
     }
     game.setZoneStatus(status);
-    const totalPlayerDmg = playerDmg + tickDamage;
 
-    // Apply damage (action damage + start-of-turn burn tick)
-    const newEnemyHealth = Math.max(0, enemyHealth - enemyDmg);
+    // Signature rule: onEnemyHitLanded — the enemy's attack landing on the
+    // player (playerDmg > 0, post zone-effects) heals it (absorb) and/or
+    // drains player stamina (drain).
+    let ruleEnemyHeal = 0;
+    if (playerDmg > 0 && creature?.signature) {
+      const hit = onEnemyHitLanded(creature.signature, ruleStateRef.current, enemyMaxHealth);
+      ruleEnemyHeal = hit.healEnemy;
+      if (hit.staminaDrain > 0) {
+        staminaAfterCost = Math.max(0, staminaAfterCost - hit.staminaDrain);
+        game.setStamina(staminaAfterCost);
+      }
+    }
+
+    // Signature rule: onTurnEnd — call AFTER onPlayerStrike (already invoked
+    // above in the 'strike' case, per the engine's chant-stacking contract)
+    // so `struckLastTurn` reflects this turn's action before we roll forward.
+    // `addAttacker` (multiply) contributes one extra enemy strike THIS turn;
+    // `chantBonusDamage` is banked for the NEXT turn's enemy base damage.
+    const turnEnd = onTurnEnd(creature?.signature, ruleStateRef.current);
+    ruleStateRef.current = turnEnd.state;
+    pendingChantBonusRef.current = turnEnd.chantBonusDamage;
+    let extraAttackerDmg = 0;
+    if (turnEnd.addAttacker) {
+      const extraBase = getBaseDamage();
+      extraAttackerDmg = calculateDamage(extraBase, false);
+      actionNarrative = `${actionNarrative} ${t('rule.multiply.join')}`.trim();
+    }
+
+    const totalPlayerDmgPreDeathBlow = playerDmg + tickDamage + extraAttackerDmg;
+
+    // Apply damage (action damage + start-of-turn burn tick + any extra attacker)
+    let newEnemyHealth = Math.max(0, enemyHealth - enemyDmg);
+    if (ruleEnemyHeal > 0) {
+      newEnemyHealth = Math.min(enemyMaxHealth, newEnemyHealth + ruleEnemyHeal);
+    }
+
+    // Signature rule: onDeathBlow — checked the instant the enemy would hit
+    // 0 HP, before the outcome branches below. Reform overrides the death
+    // (enemy rises back to reformToHp and the fight continues); rupture adds
+    // a burst of damage to the player on top of this turn's damage, unless
+    // the killing blow was a dodge-counter.
+    let extraPlayerDmgFromDeathBlow = 0;
+    if (newEnemyHealth <= 0 && creature?.signature) {
+      const blow = onDeathBlow(creature.signature, ruleStateRef.current, {
+        lastActionWasDodgeCounter: dodgeCounterLanded,
+        playerHasVoidOrAsh: game.inventory.some(item => {
+          const tags = getItemDetails(item.name)?.elementTags ?? [];
+          return tags.includes('VOID') || tags.includes('ASH');
+        }),
+        enemyMaxHp: enemyMaxHealth,
+      });
+      if (blow.reformToHp > 0) {
+        newEnemyHealth = blow.reformToHp;
+        // The engine can't flip reformUsed itself (Task 8 contract) — Task 10
+        // owns setting it once a nonzero reformToHp has actually been applied.
+        ruleStateRef.current = { ...ruleStateRef.current, reformUsed: true };
+        actionNarrative = `${actionNarrative} ${t('rule.reform.rise')}`.trim();
+      } else if (blow.ruptureDamage > 0) {
+        extraPlayerDmgFromDeathBlow = blow.ruptureDamage;
+        actionNarrative = `${actionNarrative} ${t('rule.rupture.burst')}`.trim();
+      }
+    }
+
+    const totalPlayerDmg = totalPlayerDmgPreDeathBlow + extraPlayerDmgFromDeathBlow;
     const newPlayerHealth = Math.max(0, game.health - totalPlayerDmg);
 
     setEnemyHealth(newEnemyHealth);
@@ -394,7 +532,7 @@ export default function CombatScreen() {
     game.setHealth(newPlayerHealth);
     setPlayerDmgTaken(totalPlayerDmg);
     setNarrative(tick.narrative ? `${tick.narrative} ${actionNarrative}` : actionNarrative);
-    
+
     // Creature attack sound when player takes damage
     if (playerDmg > 0) {
       const creatureSFX = getCreatureSFX(creature?.name || '');
@@ -463,8 +601,21 @@ export default function CombatScreen() {
       }
       // Bestiary mastery — defeat telemetry. Same fire-and-forget pattern as
       // the encounter write at mount time.
+      //
+      // Signature rule: honor (Carrion Knight) grants bonus mastery on a win
+      // with no flee attempt anywhere in the fight. Rather than dispatch a
+      // second async recordCreatureUpdate (which would race the first write
+      // and read the same stale `player.creatureMastery` snapshot, losing
+      // the bonus), the bonus defeat increment is applied locally and once
+      // — via the same pure `recordDefeat` helper recordCreatureUpdate uses
+      // internally — before the single transactional write, so the write
+      // lands with defeats +2 instead of +1.
       if (player && creature) {
-        recordCreatureUpdate(player, creature.name, 'defeat', ALL_CREATURE_NAMES)
+        const honorBonus = creature.signature?.id === 'honor' && !fleeAttemptedRef.current;
+        const playerForWrite = honorBonus
+          ? { ...player, creatureMastery: recordDefeat(player.creatureMastery, creature.name) }
+          : player;
+        recordCreatureUpdate(playerForWrite, creature.name, 'defeat', ALL_CREATURE_NAMES)
           .catch(err => console.warn('[combat] mastery defeat write failed:', err));
       }
       setPhase('victory');
@@ -501,14 +652,15 @@ export default function CombatScreen() {
       }
 
       // Fix 1 (Revy): use seeded RNG for deterministic intent sequence per seed
-      let newIntent = game.rng
-        ? getCreatureIntentSeeded(creature?.name || 'The Drowned', game.rng)
-        : getCreatureIntent(creature?.name || 'The Drowned');
-      // Void Beyond FLUX — the intent can shift again before the next turn.
-      if (mechanic === 'FLUX' && rollFlux(game.rng)) {
-        newIntent = game.rng
+      // Honor creatures (Carrion Knight) never roll ERRATIC — reroll once.
+      const rollIntent = () =>
+        game.rng
           ? getCreatureIntentSeeded(creature?.name || 'The Drowned', game.rng)
           : getCreatureIntent(creature?.name || 'The Drowned');
+      let newIntent = honorFilteredIntent(creature?.signature, rollIntent(), rollIntent);
+      // Void Beyond FLUX — the intent can shift again before the next turn.
+      if (mechanic === 'FLUX' && rollFlux(game.rng)) {
+        newIntent = honorFilteredIntent(creature?.signature, rollIntent(), rollIntent);
         setNarrative(prev => `${prev} The creature's intent flickers — unreadable.`);
       }
       setEnemyIntent(newIntent);
@@ -657,7 +809,7 @@ export default function CombatScreen() {
             <Text className="text-bone-dark text-xs font-mono tracking-widest mb-3">▼ CHOOSE ACTION</Text>
             <View className="flex-row flex-wrap justify-between">
               {COMBAT_OPTIONS.map((option) => {
-                const canUse = game.stamina >= option.cost;
+                const canUse = game.stamina >= option.cost && !option.disabled;
                 return (
                   <Pressable
                     key={option.id}
@@ -820,6 +972,34 @@ export default function CombatScreen() {
                 }
                 playSFX('ui-click');
               }
+
+              // Signature rule: pounce (The Hunched) — using any item in
+              // combat is an opening the creature takes immediately.
+              if (creature?.signature && itemUseTriggersAttack(creature.signature)) {
+                const pounceBase = game.rng ? game.rng.range(8, 14) : 8 + Math.floor(Math.random() * 7);
+                const pounceDmg = calculateDamage(pounceBase, false);
+                if (pounceDmg > 0) {
+                  const healthAfterPounce = Math.max(0, game.health - pounceDmg);
+                  game.setHealth(healthAfterPounce);
+                  setPlayerDmgTaken(pounceDmg);
+                  setNarrative(prev => `${prev} ${t('rule.pounce.strike')}`.trim());
+                  triggerShake(pounceDmg >= 20 ? 'heavy' : pounceDmg >= 10 ? 'medium' : 'light');
+                  if (healthAfterPounce <= 0) {
+                    const save = game.checkDeathSave();
+                    if (save.saved) {
+                      setNarrative(save.message || "Death's Mantle shatters — you survive with 1 HP!");
+                    } else {
+                      playSFX('player-death');
+                      triggerShake('heavy');
+                      setPhase('death');
+                      setTimeout(() => {
+                        router.replace({ pathname: '/death', params: { killedBy: creature.name } });
+                      }, 2000);
+                    }
+                  }
+                }
+              }
+
               game.removeFromInventory(selectedItem.id);
             }}
           />

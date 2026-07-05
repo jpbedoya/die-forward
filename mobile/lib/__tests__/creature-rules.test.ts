@@ -6,6 +6,7 @@ import {
   onTurnEnd,
   fleeBlocked,
   itemUseTriggersAttack,
+  honorFilteredIntent,
   CombatRuleState,
 } from '../creature-rules';
 
@@ -177,6 +178,36 @@ describe('honor', () => {
     expect(onTurnEnd({ id: 'honor' }, s).addAttacker).toBe(false);
     expect(fleeBlocked({ id: 'honor' }, s)).toBe(false);
     expect(itemUseTriggersAttack({ id: 'honor' })).toBe(false);
+  });
+});
+
+describe('honorFilteredIntent', () => {
+  it('rerolls once when honor rolls ERRATIC', () => {
+    const reroll = jest.fn(() => ({ type: 'AGGRESSIVE' }));
+    const result = honorFilteredIntent({ id: 'honor' }, { type: 'ERRATIC' }, reroll);
+    expect(result).toEqual({ type: 'AGGRESSIVE' });
+    expect(reroll).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not reroll a second time even if the reroll is also ERRATIC', () => {
+    const reroll = jest.fn(() => ({ type: 'ERRATIC' }));
+    const result = honorFilteredIntent({ id: 'honor' }, { type: 'ERRATIC' }, reroll);
+    expect(result).toEqual({ type: 'ERRATIC' });
+    expect(reroll).toHaveBeenCalledTimes(1);
+  });
+
+  it('leaves non-ERRATIC intents alone', () => {
+    const reroll = jest.fn();
+    const result = honorFilteredIntent({ id: 'honor' }, { type: 'AGGRESSIVE' }, reroll);
+    expect(result).toEqual({ type: 'AGGRESSIVE' });
+    expect(reroll).not.toHaveBeenCalled();
+  });
+
+  it('does not reroll for other rules or no rule', () => {
+    const reroll = jest.fn();
+    expect(honorFilteredIntent({ id: 'chant' }, { type: 'ERRATIC' }, reroll)).toEqual({ type: 'ERRATIC' });
+    expect(honorFilteredIntent(undefined, { type: 'ERRATIC' }, reroll)).toEqual({ type: 'ERRATIC' });
+    expect(reroll).not.toHaveBeenCalled();
   });
 });
 

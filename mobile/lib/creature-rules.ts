@@ -127,3 +127,23 @@ export function fleeBlocked(rule: SignatureRule | undefined, s: CombatRuleState)
 export function itemUseTriggersAttack(rule: SignatureRule | undefined): boolean {
   return rule?.id === 'pounce';
 }
+
+/**
+ * `honor` creatures never roll ERRATIC intent. Wraps an already-rolled intent:
+ * if it's `honor` and the roll came up ERRATIC, ask the caller to reroll
+ * once (the caller supplies the reroll so this stays RNG-agnostic — combat.tsx
+ * passes a closure over its seeded RNG). Any other rule/intent passes through
+ * unchanged, and the reroll happens at most once (no retry loop) even if the
+ * second roll is also ERRATIC, so combat.tsx's seeded RNG advances by a fixed,
+ * deterministic amount.
+ */
+export function honorFilteredIntent<T extends { type: string }>(
+  rule: SignatureRule | undefined,
+  intent: T,
+  reroll: () => T
+): T {
+  if (rule?.id === 'honor' && intent.type === 'ERRATIC') {
+    return reroll();
+  }
+  return intent;
+}
