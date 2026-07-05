@@ -275,9 +275,11 @@ export default function CombatScreen() {
         const strikeIntentBonus = (enemyIntent.type === 'AGGRESSIVE' || enemyIntent.type === 'HUNTING')
           ? settings.intentCounterBonus : 1.0;
         enemyDmg = Math.round(calculateDamage(basePlayerHit, true) * strikeIntentBonus);
-        
-        // Critical hit chance from settings
-        const isCritical = game.rng ? game.rng.chance(settings.criticalChance) : Math.random() < settings.criticalChance;
+
+        // Critical hit chance from settings — twin-fangs synergy adds critBonus
+        const strikeItemEffects = getItemEffects(game.inventory);
+        const criticalChance = settings.criticalChance + (strikeItemEffects.critBonus ?? 0);
+        const isCritical = game.rng ? game.rng.chance(criticalChance) : Math.random() < criticalChance;
         if (isCritical) {
           enemyDmg = Math.round(enemyDmg * settings.criticalMultiplier);
           actionNarrative = getStrikeNarration('success');
@@ -332,7 +334,8 @@ export default function CombatScreen() {
           // Escaped but took damage
           fleeSuccess = true;
           const fleeDmgBase = game.rng ? game.rng.range(5, 12) : 5 + Math.floor(Math.random() * 8);
-          playerDmg = calculateDamage(fleeDmgBase, false);
+          const fleeDmgRaw = calculateDamage(fleeDmgBase, false);
+          playerDmg = itemEffects.fleeDamageHalved ? Math.ceil(fleeDmgRaw / 2) : fleeDmgRaw;
           actionNarrative = getFleeNarration('hurt');
           triggerShake('light');
           // Light haptic for getting clipped while fleeing
@@ -343,7 +346,8 @@ export default function CombatScreen() {
           // Failed to escape
           fleeSuccess = false;
           const failDmgBase = game.rng ? game.rng.range(8, 19) : 8 + Math.floor(Math.random() * 12);
-          playerDmg = calculateDamage(failDmgBase, false);
+          const failDmgRaw = calculateDamage(failDmgBase, false);
+          playerDmg = itemEffects.fleeDamageHalved ? Math.ceil(failDmgRaw / 2) : failDmgRaw;
           actionNarrative = getFleeNarration('fail');
           playSFX('flee-fail');
           triggerShake('medium');
@@ -364,8 +368,12 @@ export default function CombatScreen() {
     }
     if (enemyFrozen) setEnemyFrozen(false);
     if (playerDmg > 0) {
-      const ashVeil = getItemEffects(game.inventory).ashVeil ?? false;
-      status = applyStatusOnHit(mechanic, status, creature?.tier === 3, false, ashVeil);
+      const hitItemEffects = getItemEffects(game.inventory);
+      const ashVeil = hitItemEffects.ashVeil ?? false;
+      const burnImmune = mechanic === 'BURN' && (hitItemEffects.burnImmune ?? false);
+      if (!burnImmune) {
+        status = applyStatusOnHit(mechanic, status, creature?.tier === 3, false, ashVeil);
+      }
       // INFECTION — crossing 3 stacks costs a random inventory item, once.
       if (infectionShouldDropItem(status) && game.inventory.length > 0) {
         const victim = game.inventory[Math.floor((game.rng ? game.rng.random() : Math.random()) * game.inventory.length)];

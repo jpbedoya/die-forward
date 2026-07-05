@@ -225,12 +225,16 @@ export default function PlayScreen() {
         }
 
         case 'explore-tertiary': {
-          if (game.stamina < 1) {
+          const peekItemEffects = getItemEffects(game.inventory);
+          const peekCost = peekItemEffects.peekFree ? 0 : 1;
+          if (peekCost > game.stamina) {
             setMessage('Not enough stamina.');
             break;
           }
           playSFX('footstep');
-          game.setStamina(game.stamina - 1);
+          if (peekCost > 0) {
+            game.setStamina(game.stamina - peekCost);
+          }
           // Intel: peek at the next room
           const nextRoomIndex = currentRoom + 1;
           const nextRoom = dungeon[nextRoomIndex] as DungeonRoom | undefined;

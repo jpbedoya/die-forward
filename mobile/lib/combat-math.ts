@@ -7,6 +7,7 @@
  */
 
 import type { RunModifier } from './modifiers';
+import type { ItemEffects } from './content';
 
 /** Damage-related game settings consumed by calculateCombatDamage. */
 export interface CombatDamageSettings {
@@ -97,15 +98,17 @@ export function computeHealAmount(
 export function deathSaveOutcome(
   health: number,
   inventory: { name: string }[],
-): { saved: boolean; mantleIndex: number } {
-  if (health > 0) return { saved: false, mantleIndex: -1 };
+  effects: ItemEffects,
+): { saved: boolean; mantleIndex: number; healTo: number } {
+  if (health > 0) return { saved: false, mantleIndex: -1, healTo: 0 };
   const mantleIndex = inventory.findIndex(item => item.name === "Death's Mantle");
   return mantleIndex === -1
-    ? { saved: false, mantleIndex: -1 }
-    : { saved: true, mantleIndex };
+    ? { saved: false, mantleIndex: -1, healTo: 0 }
+    : { saved: true, mantleIndex, healTo: effects.mantleHealTo ?? 1 };
 }
 
-/** Per-turn self-damage from carrying a Voidblade (5 HP), else 0. */
-export function voidbladeDamage(inventory: { name: string }[]): number {
+/** Per-turn self-damage from carrying a Voidblade (5 HP), else 0 (hungering-edge zeroes it). */
+export function voidbladeDamage(inventory: { name: string }[], effects: ItemEffects): number {
+  if (effects.voidbladeSelfDamageZero) return 0;
   return inventory.some(item => item.name === 'Voidblade') ? 5 : 0;
 }

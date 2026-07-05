@@ -7,6 +7,7 @@ import {
   type CombatDamageInput,
 } from '../combat-math';
 import { RUN_MODIFIERS } from '../modifiers';
+import { getItemEffects } from '../content';
 
 const bloodPact = RUN_MODIFIERS.find(m => m.id === 'blood-pact')!;
 const glassCannon = RUN_MODIFIERS.find(m => m.id === 'glass-cannon')!;
@@ -130,25 +131,44 @@ describe('computeHealAmount', () => {
 
 describe('deathSaveOutcome', () => {
   it('does not trigger while the player is alive', () => {
-    expect(deathSaveOutcome(50, [{ name: "Death's Mantle" }])).toEqual({ saved: false, mantleIndex: -1 });
+    const inv = [{ name: "Death's Mantle" }];
+    expect(deathSaveOutcome(50, inv, getItemEffects(inv))).toEqual({ saved: false, mantleIndex: -1, healTo: 0 });
   });
 
   it('does not save a lethal blow with no Death’s Mantle', () => {
-    expect(deathSaveOutcome(0, [{ name: 'Torch' }])).toEqual({ saved: false, mantleIndex: -1 });
+    const inv = [{ name: 'Torch' }];
+    expect(deathSaveOutcome(0, inv, getItemEffects(inv))).toEqual({ saved: false, mantleIndex: -1, healTo: 0 });
   });
 
   it('saves a lethal blow and points at the Death’s Mantle to consume', () => {
     const inv = [{ name: 'Torch' }, { name: "Death's Mantle" }, { name: 'Dagger' }];
-    expect(deathSaveOutcome(-5, inv)).toEqual({ saved: true, mantleIndex: 1 });
+    expect(deathSaveOutcome(-5, inv, getItemEffects(inv))).toEqual({ saved: true, mantleIndex: 1, healTo: 1 });
+  });
+
+  it('mantle heals to 25 with last-breath-pact', () => {
+    const inv = [{ name: "Death's Mantle" }, { name: 'Soulstone' }];
+    const out = deathSaveOutcome(-3, inv, getItemEffects(inv));
+    expect(out.saved).toBe(true);
+    expect(out.healTo).toBe(25);
+  });
+
+  it('mantle heals to 1 without the pact', () => {
+    const inv = [{ name: "Death's Mantle" }];
+    expect(deathSaveOutcome(-3, inv, getItemEffects(inv)).healTo).toBe(1);
   });
 });
 
 describe('voidbladeDamage', () => {
   it('deals 5 self-damage when a Voidblade is carried', () => {
-    expect(voidbladeDamage([{ name: 'Voidblade' }])).toBe(5);
+    const inv = [{ name: 'Voidblade' }];
+    expect(voidbladeDamage(inv, getItemEffects(inv))).toBe(5);
   });
   it('deals nothing without a Voidblade', () => {
-    expect(voidbladeDamage([{ name: 'Dagger' }])).toBe(0);
-    expect(voidbladeDamage([])).toBe(0);
+    expect(voidbladeDamage([{ name: 'Dagger' }], getItemEffects([{ name: 'Dagger' }]))).toBe(0);
+    expect(voidbladeDamage([], getItemEffects([]))).toBe(0);
+  });
+  it('voidblade self-damage is 0 with hungering-edge', () => {
+    const inv = [{ name: 'Voidblade' }, { name: 'Soulstone' }];
+    expect(voidbladeDamage(inv, getItemEffects(inv))).toBe(0);
   });
 });

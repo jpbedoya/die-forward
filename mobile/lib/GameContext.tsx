@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as api from './api';
 import { dlog } from './debug-log';
 
-import { generateRandomDungeon, generateDungeon, DungeonRoom, getItemDetails, rollRandomItem } from './content';
+import { generateRandomDungeon, generateDungeon, DungeonRoom, getItemDetails, rollRandomItem, getItemEffects } from './content';
 import { getMilestonePerks } from './milestones';
 import { maxHpForModifier, computeHealAmount, deathSaveOutcome, voidbladeDamage } from './combat-math';
 import { initZoneStatus, type ZoneStatusState } from './zone-mechanics';
@@ -990,7 +990,7 @@ export function GameProvider({
   }, [updateState]);
 
   const applyVoidbladeEffect = useCallback((): number => {
-    const dmg = voidbladeDamage(state.inventory);
+    const dmg = voidbladeDamage(state.inventory, getItemEffects(state.inventory));
     if (dmg > 0) {
       setState(prev => ({ ...prev, health: Math.max(0, prev.health - dmg) }));
     }
@@ -998,14 +998,19 @@ export function GameProvider({
   }, [state.inventory]);
 
   const checkDeathSave = useCallback((): { saved: boolean; message: string | null } => {
-    const outcome = deathSaveOutcome(state.health, state.inventory);
+    const outcome = deathSaveOutcome(state.health, state.inventory, getItemEffects(state.inventory));
     if (!outcome.saved) return { saved: false, message: null };
     setState(prev => ({
       ...prev,
-      health: 1,
+      health: outcome.healTo,
       inventory: prev.inventory.filter((_, i) => i !== outcome.mantleIndex),
     }));
-    return { saved: true, message: "Death's Mantle shatters — you survive with 1 HP!" };
+    return {
+      saved: true,
+      message: outcome.healTo > 1
+        ? `Death's Mantle shatters — the pact holds, you survive with ${outcome.healTo} HP!`
+        : "Death's Mantle shatters — you survive with 1 HP!",
+    };
   }, [state.health, state.inventory]);
 
   const incrementItemsFound = useCallback(() => {
