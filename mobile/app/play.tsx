@@ -231,9 +231,9 @@ export default function PlayScreen() {
             // (prev.health > 0) sees the correct (fatal) value.
             game.setHealth(newHp);
             if (newHp <= 0) {
-              const save = game.checkDeathSave();
+              const save = game.checkDeathSave(newHp);
               if (save.saved) {
-                setMessage(save.message || "Death's Mantle shatters — you survive with 1 HP!");
+                setMessage(save.message ?? t('item.mantle.save'));
               } else {
                 playSFX('player-death');
                 router.replace({ pathname: '/death', params: { killedBy: 'The darkness' } });
@@ -306,9 +306,9 @@ export default function PlayScreen() {
           game.setHealth(newHealth);
 
           if (newHealth <= 0) {
-            const save = game.checkDeathSave();
+            const save = game.checkDeathSave(newHealth);
             if (save.saved) {
-              setMessage(save.message || "Death's Mantle shatters — you survive with 1 HP!");
+              setMessage(save.message ?? t('item.mantle.save'));
               playSFX('flee-fail');
               break;
             }
@@ -930,7 +930,7 @@ export default function PlayScreen() {
             setMessage(`You apply the herbs. +${healed} HP.`);
             playSFX('heal');
           } else if (name === 'Pale Rations') {
-            game.setStamina(Math.min(settings.staminaPool, game.stamina + 1));
+            game.adjustStamina(1);
             setMessage('You eat quickly. Stamina restored.');
             playSFX('loot-discover');
           } else if (name === 'Bone Dust') {

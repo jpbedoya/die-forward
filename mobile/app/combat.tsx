@@ -133,6 +133,9 @@ export default function CombatScreen() {
   const ruleStateRef = useRef<CombatRuleState>(initialRuleState());
   const pendingChantBonusRef = useRef(0);
   const fleeAttemptedRef = useRef(false);
+  // multiply — the "another hand joins" line only fires the FIRST time an
+  // extra attacker is added; every recurring turn after uses a shorter line.
+  const multiplyAnnouncedRef = useRef(false);
 
   // Screen shake animation
   const shakeAnim = useRef(new Animated.Value(0)).current;
@@ -191,6 +194,7 @@ export default function CombatScreen() {
     ruleStateRef.current = initialRuleState();
     pendingChantBonusRef.current = 0;
     fleeAttemptedRef.current = false;
+    multiplyAnnouncedRef.current = false;
     // Reset per-fight combat state too, so dormant's turn-1 skip (gated on
     // isFirstTurn) and Frost Shard's freeze status can't leak in from a
     // previous creature if this screen instance is ever reused.
@@ -324,14 +328,19 @@ export default function CombatScreen() {
     let playerDmg = 0;
     let enemyDmg = 0;
     let heartstoneTriggered = false;
-    // Heartstone — "Warm when death is near." Detected from the pre-bonus
-    // hit, then that SAME hit is recomputed with the one-turn defense bonus.
-    // Shared across every enemy-damage path (strike counter, dodge-fail,
-    // brace, flee-hurt/flee-fail) so the trigger + recompute stay in sync.
-    const applyHeartstone = (baseHit: number) => {
-      const preHit = calculateDamage(baseHit, false);
-      const triggered = heartstoneWarning(game.health, preHit, game.getMaxHp(), game.inventory);
-      return { dmg: triggered ? calculateDamage(baseHit, false, 0.10) : preHit, triggered };
+    // Heartstone — "Warm when death is near." The warning must reflect the
+    // damage that will ACTUALLY be applied on this path, so each path passes
+    // its post-mitigation transform (`post`: brace reduction, flee halving)
+    // via which the final number is derived. We compute the final hit WITHOUT
+    // the stone first, test the threshold crossing against THAT, and only if
+    // it triggers do we recompute the same hit with the one-turn +0.10
+    // defense and re-run it through the same post-processing.
+    // Note: the flat chant addend (Fix 5) and the frozen/dormant zeroing are
+    // applied outside this helper — see the post-switch block below.
+    const applyHeartstone = (baseHit: number, post: (raw: number) => number = (d) => d) => {
+      const finalNoStone = post(calculateDamage(baseHit, false));
+      const triggered = heartstoneWarning(game.health, finalNoStone, game.getMaxHp(), game.inventory);
+      return { dmg: triggered ? post(calculateDamage(baseHit, false, 0.10)) : finalNoStone, triggered };
     };
     let fleeSuccess = false;
     let actionNarrative = '';
@@ -346,7 +355,7 @@ export default function CombatScreen() {
       case 'strike': {
         // Player damage uses settings range; enemy counter scales by enemyCounterMultiplier
         const basePlayerHit = getBaseDamage();
-        const baseEnemyHit = Math.floor(getBaseDamage() * settings.enemyCounterMultiplier) + chantBonus;
+        const baseEnemyHit = Math.floor(getBaseDamage() * settings.enemyCounterMultiplier);
         const strikeHeartstone = applyHeartstone(baseEnemyHit);
         heartstoneTriggered = strikeHeartstone.triggered;
         playerDmg = strikeHeartstone.dmg;
@@ -393,7 +402,7 @@ export default function CombatScreen() {
             actionNarrative = getDodgeNarration('success');
           }
         } else {
-          const dodgeDmgBase = (game.rng ? game.rng.range(5, 9) : 5 + Math.floor(Math.random() * 5)) + chantBonus;
+          const dodgeDmgBase = (game.rng ? game.rng.range(5, 9) : 5 + Math.floor(Math.random() * 5));
           const dodgeHeartstone = applyHeartstone(dodgeDmgBase);
           heartstoneTriggered = dodgeHeartstone.triggered;
           playerDmg = dodgeHeartstone.dmg;
@@ -405,13 +414,14 @@ export default function CombatScreen() {
         playSFX('brace-impact');
         const brMin = settings.braceBaseDamageMin;
         const brMax = settings.braceBaseDamageMax;
-        const baseDmg = (game.rng ? game.rng.range(brMin, brMax) : brMin + Math.floor(Math.random() * (brMax - brMin + 1))) + chantBonus;
+        const baseDmg = (game.rng ? game.rng.range(brMin, brMax) : brMin + Math.floor(Math.random() * (brMax - brMin + 1)));
         if (game.modifierBraceNegatesAll()) {
           playerDmg = 0;
         } else {
-          const braceHeartstone = applyHeartstone(baseDmg);
+          // Heartstone evaluates the POST-reduction hit — that's what lands.
+          const braceHeartstone = applyHeartstone(baseDmg, (d) => Math.round(d * (1 - settings.braceReduction)));
           heartstoneTriggered = braceHeartstone.triggered;
-          playerDmg = Math.round(braceHeartstone.dmg * (1 - settings.braceReduction));
+          playerDmg = braceHeartstone.dmg;
         }
         actionNarrative = getBraceNarration('success');
         break;
@@ -430,11 +440,12 @@ export default function CombatScreen() {
         } else if (roll < fleeChance) {
           // Escaped but took damage
           fleeSuccess = true;
-          const fleeDmgBase = (game.rng ? game.rng.range(5, 12) : 5 + Math.floor(Math.random() * 8)) + chantBonus;
-          const fleeHeartstone = applyHeartstone(fleeDmgBase);
+          const fleeDmgBase = (game.rng ? game.rng.range(5, 12) : 5 + Math.floor(Math.random() * 8));
+          // Heartstone evaluates the POST-halving hit (beggar's-grace flee).
+          const fleeHalve = (d: number) => itemEffects.fleeDamageHalved ? Math.ceil(d / 2) : d;
+          const fleeHeartstone = applyHeartstone(fleeDmgBase, fleeHalve);
           heartstoneTriggered = fleeHeartstone.triggered;
-          const fleeDmgRaw = fleeHeartstone.dmg;
-          playerDmg = itemEffects.fleeDamageHalved ? Math.ceil(fleeDmgRaw / 2) : fleeDmgRaw;
+          playerDmg = fleeHeartstone.dmg;
           actionNarrative = getFleeNarration('hurt');
           triggerShake('light');
           // Light haptic for getting clipped while fleeing
@@ -444,11 +455,12 @@ export default function CombatScreen() {
         } else {
           // Failed to escape
           fleeSuccess = false;
-          const failDmgBase = (game.rng ? game.rng.range(8, 19) : 8 + Math.floor(Math.random() * 12)) + chantBonus;
-          const failHeartstone = applyHeartstone(failDmgBase);
+          const failDmgBase = (game.rng ? game.rng.range(8, 19) : 8 + Math.floor(Math.random() * 12));
+          // Heartstone evaluates the POST-halving hit (beggar's-grace flee).
+          const failHalve = (d: number) => itemEffects.fleeDamageHalved ? Math.ceil(d / 2) : d;
+          const failHeartstone = applyHeartstone(failDmgBase, failHalve);
           heartstoneTriggered = failHeartstone.triggered;
-          const failDmgRaw = failHeartstone.dmg;
-          playerDmg = itemEffects.fleeDamageHalved ? Math.ceil(failDmgRaw / 2) : failDmgRaw;
+          playerDmg = failHeartstone.dmg;
           actionNarrative = getFleeNarration('fail');
           playSFX('flee-fail');
           triggerShake('medium');
@@ -476,6 +488,17 @@ export default function CombatScreen() {
       actionNarrative += ' The frozen creature strains against the ice — it cannot strike.';
     }
     if (enemyFrozen) setEnemyFrozen(false);
+
+    // Heartstone's warning is scoped to a blow that actually lands — if the
+    // hit was zeroed above (dormant turn-1 skip, frozen creature), the stone
+    // never warmed, so clear the trigger flag.
+    if (playerDmg <= 0) heartstoneTriggered = false;
+    // Chant (Fix 5): a FLAT post-multiplier addend — applied after every
+    // tier/charge multiplier and after mitigation, and only when the
+    // creature's blow actually lands damage on the player this turn. (The
+    // banked bonus is computed by the previous turn's onTurnEnd.)
+    if (playerDmg > 0 && chantBonus > 0) playerDmg += chantBonus;
+
     if (playerDmg > 0) {
       const hitItemEffects = getItemEffects(game.inventory);
       const ashVeil = hitItemEffects.ashVeil ?? false;
@@ -515,10 +538,16 @@ export default function CombatScreen() {
     ruleStateRef.current = turnEnd.state;
     pendingChantBonusRef.current = turnEnd.chantBonusDamage;
     let extraAttackerDmg = 0;
-    if (turnEnd.addAttacker) {
+    // multiply — the extra attacker joins from turn N on. A SUCCESSFUL flee
+    // clears the room before the extra hand can strike, so it deals no damage
+    // (and gets no line). The "another hand joins" line shows only the FIRST
+    // time; every recurring turn after uses the shorter reminder line.
+    if (turnEnd.addAttacker && !fleeSuccess) {
       const extraBase = getBaseDamage();
       extraAttackerDmg = calculateDamage(extraBase, false);
-      actionNarrative = `${actionNarrative} ${t('rule.multiply.join')}`.trim();
+      const joinLine = multiplyAnnouncedRef.current ? t('rule.multiply.strike') : t('rule.multiply.join');
+      multiplyAnnouncedRef.current = true;
+      actionNarrative = `${actionNarrative} ${joinLine}`.trim();
     }
 
     const totalPlayerDmgPreDeathBlow = playerDmg + tickDamage + extraAttackerDmg;
@@ -591,10 +620,10 @@ export default function CombatScreen() {
     // IMPORTANT: death check must come before flee success.
     // Edge case: player can "successfully flee" but still die from flee damage.
     if (newPlayerHealth <= 0) {
-      const save = game.checkDeathSave();
+      const save = game.checkDeathSave(newPlayerHealth);
       if (save.saved) {
         // Death's Mantle triggered — show save message and let combat continue
-        setNarrative(save.message || "Death's Mantle shatters — you survive with 1 HP!");
+        setNarrative(save.message ?? t('item.mantle.save'));
       } else {
         playSFX('player-death');
         triggerShake('heavy');
@@ -664,7 +693,7 @@ export default function CombatScreen() {
       if (voidDmg > 0) {
         // newPlayerHealth is captured from closure (reflects post-action health)
         if (newPlayerHealth - voidDmg <= 0) {
-          const save = game.checkDeathSave();
+          const save = game.checkDeathSave(newPlayerHealth - voidDmg);
           if (!save.saved) {
             playSFX('player-death');
             setPhase('death');
@@ -673,7 +702,7 @@ export default function CombatScreen() {
             }, 2000);
             return;
           }
-          setNarrative(save.message || "Death's Mantle shatters — you survive with 1 HP!");
+          setNarrative(save.message ?? t('item.mantle.save'));
         } else {
           setNarrative(`Voidblade burns — ${voidDmg} damage!`);
         }
@@ -696,7 +725,11 @@ export default function CombatScreen() {
       setPhase('choose');
       setIsFirstTurn(false);
       const regen = isStaminaRegenBlocked(mechanic, status) ? 0 : game.getModifiedStaminaRegen(settings.staminaRegen);
-      game.setStamina(Math.min(settings.staminaPool, game.stamina + regen));
+      // Functional update — the drain (-cost, and any signature stamina drain)
+      // applied earlier this tick lives in state, not this stale closure's
+      // `game.stamina`. Adding regen relative to the current value composes
+      // with it instead of clobbering it. Cap/floor handled inside.
+      game.adjustStamina(regen);
 
       // Creature idle sound on new intent (enemy is "doing something")
       const creatureSFX = getCreatureSFX(creature?.name || '');
@@ -979,7 +1012,7 @@ export default function CombatScreen() {
                 setNarrative(`You quickly apply the herbs. Wounds close. +${healed} HP.`);
                 playSFX('heal');
               } else if (name === 'Pale Rations') {
-                game.setStamina(Math.min(settings.staminaPool, game.stamina + settings.staminaRegen));
+                game.adjustStamina(settings.staminaRegen);
                 setNarrative('You eat quickly. Strength returns to your legs.');
                 playSFX('loot-discover');
               } else if (name === 'Bone Dust') {
@@ -1027,9 +1060,9 @@ export default function CombatScreen() {
                   setNarrative(prev => `${prev} ${t('rule.pounce.strike')}`.trim());
                   triggerShake(pounceDmg >= 20 ? 'heavy' : pounceDmg >= 10 ? 'medium' : 'light');
                   if (healthAfterPounce <= 0) {
-                    const save = game.checkDeathSave();
+                    const save = game.checkDeathSave(healthAfterPounce);
                     if (save.saved) {
-                      setNarrative(save.message || "Death's Mantle shatters — you survive with 1 HP!");
+                      setNarrative(save.message ?? t('item.mantle.save'));
                     } else {
                       playSFX('player-death');
                       triggerShake('heavy');

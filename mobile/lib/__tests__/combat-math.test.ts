@@ -97,6 +97,36 @@ describe('calculateCombatDamage — enemy attacking', () => {
   });
 });
 
+// Design ruling (Fix 5): chant is a FLAT post-multiplier addend. combat.tsx
+// computes the enemy's hit via calculateCombatDamage() and then does
+// `playerDmg += chantBonus` — the bonus is NOT fed into the base, so tier and
+// charge multipliers must never scale it. These tests pin that contract at the
+// math boundary the screen relies on.
+describe('chant flat post-multiplier semantics', () => {
+  const CHANT = 5;
+  // The applied hit the way combat.tsx builds it: multiplied hit, then + chant.
+  const flatApplied = (over: Partial<CombatDamageInput>) =>
+    calculateCombatDamage(input(over)) + CHANT;
+  // The OLD (incorrect) behavior: chant folded into the base before scaling.
+  const baseFolded = (over: Partial<CombatDamageInput>) =>
+    calculateCombatDamage(input({ ...over, base: (over.base ?? 20) + CHANT }));
+
+  it('adds exactly the flat bonus regardless of tier', () => {
+    expect(flatApplied({ tier: 1 })).toBe(20 + CHANT);
+    expect(flatApplied({ tier: 3 })).toBe(40 + CHANT); // 40 from tier, +5 flat — NOT 45*2
+  });
+
+  it('adds exactly the flat bonus regardless of charge punishment', () => {
+    expect(flatApplied({ wasCharging: true })).toBe(40 + CHANT); // 40 charged, +5 flat
+  });
+
+  it('differs from folding the bonus into the base on a scaled hit', () => {
+    // tier 3: flat = 40 + 5 = 45; base-folded = (20+5)*2 = 50 → they must differ.
+    expect(flatApplied({ tier: 3 })).not.toBe(baseFolded({ tier: 3 }));
+    expect(baseFolded({ tier: 3 })).toBe(50);
+  });
+});
+
 describe('maxHpForModifier', () => {
   it('is 60 for Glass Cannon', () => {
     expect(maxHpForModifier(glassCannon)).toBe(60);

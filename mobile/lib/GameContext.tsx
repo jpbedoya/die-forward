@@ -8,6 +8,7 @@ import { getMilestonePerks } from './milestones';
 import { maxHpForModifier, computeHealAmount, computeDamageAmount, deathSaveOutcome, voidbladeDamage } from './combat-math';
 import { initZoneStatus, type ZoneStatusState } from './zone-mechanics';
 import { isWalletCancellation } from './wallet-utils';
+import { t } from './i18n';
 
 // Pending item when inventory is full — includes full item details for the swap UI
 export interface PendingInventoryItem {
@@ -119,6 +120,14 @@ interface GameContextType extends GameState {
   // State helpers
   setHealth: (health: number) => void;
   setStamina: (stamina: number) => void;
+  /**
+   * Adjust stamina relative to the CURRENT value via a functional state
+   * update (not the render-closure `stamina`), floored at 0 and capped at
+   * `settings.staminaPool`. Use this for regen/drain writes so a same-tick
+   * cost applied via `setStamina` earlier in the tick isn't clobbered by a
+   * stale-closure absolute write. Returns the resulting stamina.
+   */
+  adjustStamina: (delta: number) => number;
   setZoneStatus: (status: ZoneStatusState) => void;
   addToInventory: (item: { id: string; name: string; emoji: string }) => void;
   removeFromInventory: (itemId: string) => void;
@@ -134,8 +143,14 @@ interface GameContextType extends GameState {
   // Item effect helpers
   /** Apply Voidblade's per-turn 5 damage if present. Returns damage dealt (0 if not present). */
   applyVoidbladeEffect: () => number;
-  /** Check for Death's Mantle death save when HP <= 0. Returns {saved, message}. */
-  checkDeathSave: () => { saved: boolean; message: string | null };
+  /**
+   * Check for Death's Mantle death save when HP <= 0. Pass the freshly
+   * computed post-damage health explicitly — the provider's `state.health`
+   * is the last-render value and, at every call site, the fatal damage was
+   * written in the same tick, so reading it here would see pre-damage
+   * (positive) health and never fire the save. Returns {saved, message}.
+   */
+  checkDeathSave: (currentHealth: number) => { saved: boolean; message: string | null };
   
   // RNG for verifiable randomness
   rng: SeededRng | null;
@@ -959,6 +974,15 @@ export function GameProvider({
     updateState({ stamina });
   }, [updateState]);
 
+  const adjustStamina = useCallback((delta: number): number => {
+    let result = 0;
+    setState(prev => {
+      result = Math.max(0, Math.min(settings.staminaPool, prev.stamina + delta));
+      return { ...prev, stamina: result };
+    });
+    return result;
+  }, [settings.staminaPool]);
+
   const setZoneStatus = useCallback((status: ZoneStatusState) => {
     updateState({ zoneStatus: status });
   }, [updateState]);
@@ -1006,9 +1030,11 @@ export function GameProvider({
     return dmg;
   }, [state.inventory]);
 
-  const checkDeathSave = useCallback((): { saved: boolean; message: string | null } => {
-    const outcome = deathSaveOutcome(state.health, state.inventory, getItemEffects(state.inventory));
+  const checkDeathSave = useCallback((currentHealth: number): { saved: boolean; message: string | null } => {
+    const outcome = deathSaveOutcome(currentHealth, state.inventory, getItemEffects(state.inventory));
     if (!outcome.saved) return { saved: false, message: null };
+    // Heal to `healTo` via a functional update to a fixed value — this does
+    // not race with a same-tick damage write (it sets an absolute target).
     setState(prev => ({
       ...prev,
       health: outcome.healTo,
@@ -1016,11 +1042,9 @@ export function GameProvider({
     }));
     return {
       saved: true,
-      message: outcome.healTo > 1
-        ? `Death's Mantle shatters — the pact holds, you survive with ${outcome.healTo} HP!`
-        : "Death's Mantle shatters — you survive with 1 HP!",
+      message: outcome.healTo > 1 ? t('item.mantle.saveStrong') : t('item.mantle.save'),
     };
-  }, [state.health, state.inventory]);
+  }, [state.inventory]);
 
   const incrementItemsFound = useCallback(() => {
     setState(prev => ({ ...prev, itemsFound: (prev.itemsFound || 0) + 1 }));
@@ -1125,6 +1149,7 @@ export function GameProvider({
     // State helpers
     setHealth,
     setStamina,
+    adjustStamina,
     setZoneStatus,
     addToInventory,
     removeFromInventory,
@@ -1157,7 +1182,7 @@ export function GameProvider({
     connect, connectTo, disconnect, refreshBalance,
     setNicknameAction, dismissNicknameModal,
     startGame, advance, recordDeathAction, claimVictoryAction,
-    setHealth, setStamina, setZoneStatus, addToInventory, removeFromInventory,
+    setHealth, setStamina, adjustStamina, setZoneStatus, addToInventory, removeFromInventory,
     incrementItemsFound, clearError, rng,
     swapItem, dismissPendingItem, applyVoidbladeEffect, checkDeathSave,
     getModifiedDamageBonus, getModifiedHealMultiplier, getModifiedStaminaRegen,

@@ -32,6 +32,9 @@
   "rule.rupture.burst": "It bursts as it dies — the bloat finds you anyway.",
   "rule.reform.rise": "The water remembers its shape. It rises again.",
   "rule.multiply.join": "Another hand reaches from the wall to join the fight.",
+  "rule.multiply.strike": "The hands are still coming.",
+  "item.mantle.save": "The mantle drinks the blow. You still stand.",
+  "item.mantle.saveStrong": "The mantle drinks deep. Death loosens its grip.",
   "rule.flee.blocked": "It will not let you leave.",
   "rule.pounce.strike": "It was already moving. The blow lands before you can raise your guard.",
   "item.heartstone.warning": "The stone burns warm against your chest."
