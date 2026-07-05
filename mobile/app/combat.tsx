@@ -324,6 +324,15 @@ export default function CombatScreen() {
     let playerDmg = 0;
     let enemyDmg = 0;
     let heartstoneTriggered = false;
+    // Heartstone — "Warm when death is near." Detected from the pre-bonus
+    // hit, then that SAME hit is recomputed with the one-turn defense bonus.
+    // Shared across every enemy-damage path (strike counter, dodge-fail,
+    // brace, flee-hurt/flee-fail) so the trigger + recompute stay in sync.
+    const applyHeartstone = (baseHit: number) => {
+      const preHit = calculateDamage(baseHit, false);
+      const triggered = heartstoneWarning(game.health, preHit, game.getMaxHp(), game.inventory);
+      return { dmg: triggered ? calculateDamage(baseHit, false, 0.10) : preHit, triggered };
+    };
     let fleeSuccess = false;
     let actionNarrative = '';
     // Signature rule: `dodge`-into-counter is the one death-blow finish that
@@ -338,11 +347,9 @@ export default function CombatScreen() {
         // Player damage uses settings range; enemy counter scales by enemyCounterMultiplier
         const basePlayerHit = getBaseDamage();
         const baseEnemyHit = Math.floor(getBaseDamage() * settings.enemyCounterMultiplier) + chantBonus;
-        const preHeartstoneHit = calculateDamage(baseEnemyHit, false);
-        // Heartstone — "Warm when death is near." Detected from the pre-bonus
-        // hit, then this SAME hit is recomputed with the one-turn defense bonus.
-        heartstoneTriggered = heartstoneWarning(game.health, preHeartstoneHit, game.getMaxHp(), game.inventory);
-        playerDmg = heartstoneTriggered ? calculateDamage(baseEnemyHit, false, 0.10) : preHeartstoneHit;
+        const strikeHeartstone = applyHeartstone(baseEnemyHit);
+        heartstoneTriggered = strikeHeartstone.triggered;
+        playerDmg = strikeHeartstone.dmg;
         // Bonus damage for striking AGGRESSIVE/HUNTING correctly
         const strikeIntentBonus = (enemyIntent.type === 'AGGRESSIVE' || enemyIntent.type === 'HUNTING')
           ? settings.intentCounterBonus : 1.0;
@@ -387,7 +394,9 @@ export default function CombatScreen() {
           }
         } else {
           const dodgeDmgBase = (game.rng ? game.rng.range(5, 9) : 5 + Math.floor(Math.random() * 5)) + chantBonus;
-          playerDmg = calculateDamage(dodgeDmgBase, false);
+          const dodgeHeartstone = applyHeartstone(dodgeDmgBase);
+          heartstoneTriggered = dodgeHeartstone.triggered;
+          playerDmg = dodgeHeartstone.dmg;
           actionNarrative = getDodgeNarration('close');
         }
         break;
@@ -397,7 +406,13 @@ export default function CombatScreen() {
         const brMin = settings.braceBaseDamageMin;
         const brMax = settings.braceBaseDamageMax;
         const baseDmg = (game.rng ? game.rng.range(brMin, brMax) : brMin + Math.floor(Math.random() * (brMax - brMin + 1))) + chantBonus;
-        playerDmg = game.modifierBraceNegatesAll() ? 0 : Math.round(calculateDamage(baseDmg, false) * (1 - settings.braceReduction));
+        if (game.modifierBraceNegatesAll()) {
+          playerDmg = 0;
+        } else {
+          const braceHeartstone = applyHeartstone(baseDmg);
+          heartstoneTriggered = braceHeartstone.triggered;
+          playerDmg = Math.round(braceHeartstone.dmg * (1 - settings.braceReduction));
+        }
         actionNarrative = getBraceNarration('success');
         break;
       }
@@ -416,7 +431,9 @@ export default function CombatScreen() {
           // Escaped but took damage
           fleeSuccess = true;
           const fleeDmgBase = (game.rng ? game.rng.range(5, 12) : 5 + Math.floor(Math.random() * 8)) + chantBonus;
-          const fleeDmgRaw = calculateDamage(fleeDmgBase, false);
+          const fleeHeartstone = applyHeartstone(fleeDmgBase);
+          heartstoneTriggered = fleeHeartstone.triggered;
+          const fleeDmgRaw = fleeHeartstone.dmg;
           playerDmg = itemEffects.fleeDamageHalved ? Math.ceil(fleeDmgRaw / 2) : fleeDmgRaw;
           actionNarrative = getFleeNarration('hurt');
           triggerShake('light');
@@ -428,7 +445,9 @@ export default function CombatScreen() {
           // Failed to escape
           fleeSuccess = false;
           const failDmgBase = (game.rng ? game.rng.range(8, 19) : 8 + Math.floor(Math.random() * 12)) + chantBonus;
-          const failDmgRaw = calculateDamage(failDmgBase, false);
+          const failHeartstone = applyHeartstone(failDmgBase);
+          heartstoneTriggered = failHeartstone.triggered;
+          const failDmgRaw = failHeartstone.dmg;
           playerDmg = itemEffects.fleeDamageHalved ? Math.ceil(failDmgRaw / 2) : failDmgRaw;
           actionNarrative = getFleeNarration('fail');
           playSFX('flee-fail');
