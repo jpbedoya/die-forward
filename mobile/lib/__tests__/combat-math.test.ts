@@ -25,6 +25,7 @@ function input(overrides: Partial<CombatDamageInput> = {}): CombatDamageInput {
     itemDamageBonus: 0,
     itemDefenseBonus: 0,
     modifierDamageBonus: 0,
+    tagDamageBonus: 0,
     wasCharging: false,
     settings: SETTINGS,
     ...overrides,
@@ -52,6 +53,12 @@ describe('calculateCombatDamage — player attacking', () => {
     expect(
       calculateCombatDamage(input({ isPlayerAttacking: true, tier: 3, itemDefenseBonus: 0.5, wasCharging: true })),
     ).toBe(20);
+  });
+
+  it('tagDamageBonus multiplies player damage', () => {
+    const base = calculateCombatDamage(input({ isPlayerAttacking: true, tagDamageBonus: 0 }));
+    const boosted = calculateCombatDamage(input({ isPlayerAttacking: true, tagDamageBonus: 0.4 }));
+    expect(boosted).toBe(Math.round(base * 1.4));
   });
 });
 

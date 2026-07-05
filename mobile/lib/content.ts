@@ -162,6 +162,8 @@ export interface DungeonRoom {
   boss?: boolean;
 }
 
+export type CreatureTag = 'aquatic' | 'bone' | 'spectral' | 'flesh' | 'construct' | 'sonic';
+
 // Creature bestiary with stats and info
 export interface CreatureInfo {
   name: string;
@@ -171,6 +173,7 @@ export interface CreatureInfo {
   description: string;
   emoji: string;
   artUrl?: string;
+  tags?: CreatureTag[];
 }
 
 export const BESTIARY: Record<string, CreatureInfo> = {
@@ -183,6 +186,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     description: 'Waterlogged husks animated by the underworld\'s hunger.',
     emoji: '🧟',
     artUrl: '/creatures/the-drowned.webp',
+    tags: ['aquatic', 'flesh'],
   },
   'Pale Crawler': {
     name: 'Pale Crawler',
@@ -192,6 +196,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     description: 'Too many limbs. They cling to walls and ceilings.',
     emoji: '🕷️',
     artUrl: '/creatures/pale-crawler.webp',
+    tags: ['flesh'],
   },
   'The Hollow': {
     name: 'The Hollow',
@@ -201,6 +206,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     description: 'No face, no features. Just shadow.',
     emoji: '👤',
     artUrl: '/creatures/the-hollow.webp',
+    tags: ['spectral'],
   },
   'Bloated One': {
     name: 'Bloated One',
@@ -210,6 +216,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     description: 'Corpses swollen with dark water.',
     emoji: '🫧',
     artUrl: '/creatures/the-bloated.webp',
+    tags: ['aquatic', 'flesh'],
   },
   'Flickering Shade': {
     name: 'Flickering Shade',
@@ -219,6 +226,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     description: 'Afterimages of the dead.',
     emoji: '👻',
     artUrl: '/creatures/flickering-shade.webp',
+    tags: ['spectral'],
   },
   'The Hunched': {
     name: 'The Hunched',
@@ -228,6 +236,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     description: 'Bent figures that move on all fours.',
     emoji: '🐺',
     artUrl: '/creatures/the-hunched.webp',
+    tags: ['flesh'],
   },
   'Tideborn': {
     name: 'Tideborn',
@@ -237,6 +246,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     description: 'Creatures of living water. They rise from puddles, take form, then collapse.',
     emoji: '🌊',
     artUrl: '/creatures/tideborn.webp',
+    tags: ['aquatic'],
   },
   'Bone Weavers': {
     name: 'Bone Weavers',
@@ -246,6 +256,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     description: 'Skeletal hands that emerge from walls and floors. Just hands.',
     emoji: '🦴',
     artUrl: '/creatures/bone-weavers.webp',
+    tags: ['bone'],
   },
   'Ash Children': {
     name: 'Ash Children',
@@ -255,6 +266,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     description: 'Small. Gray. They don\'t attack — they suffocate.',
     emoji: '👶',
     artUrl: '/creatures/ash-children.webp',
+    tags: ['flesh'],
   },
   'Echo Husks': {
     name: 'Echo Husks',
@@ -264,6 +276,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     description: 'They repeat the last words of the dead. Over and over.',
     emoji: '🗣️',
     artUrl: '/creatures/echo-husks.webp',
+    tags: ['spectral', 'flesh'],
   },
 
   // Tier 2 - Uncommon Threats
@@ -275,6 +288,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     description: 'Priests of a nameless god.',
     emoji: '🧙',
     artUrl: '/creatures/hollow-clergy.webp',
+    tags: ['spectral'],
   },
   'The Bound': {
     name: 'The Bound',
@@ -284,6 +298,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     description: 'Souls wrapped in chains of regret.',
     emoji: '⛓️',
     artUrl: '/creatures/the-bound.webp',
+    tags: ['spectral'],
   },
   'Forgotten Guardian': {
     name: 'Forgotten Guardian',
@@ -293,6 +308,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     description: 'Stone sentinels animated by old magic.',
     emoji: '🗿',
     artUrl: '/creatures/forgotten-guardian.webp',
+    tags: ['construct'],
   },
   'The Weeping': {
     name: 'The Weeping',
@@ -302,6 +318,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     description: 'Spirits of grief. Their touch brings sorrow so deep it wounds.',
     emoji: '😢',
     artUrl: '/creatures/the-weeping.webp',
+    tags: ['spectral'],
   },
   'Carrion Knight': {
     name: 'Carrion Knight',
@@ -311,6 +328,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     description: 'Warriors who refused to stop fighting.',
     emoji: '⚔️',
     artUrl: '/creatures/carrion-knight.webp',
+    tags: ['bone'],
   },
   'Pale Oracle': {
     name: 'Pale Oracle',
@@ -320,6 +338,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     description: 'Eyeless seers who speak truths you don\'t want to hear.',
     emoji: '🔮',
     artUrl: '/creatures/pale-oracle.webp',
+    tags: ['spectral'],
   },
   'The Congregation': {
     name: 'The Congregation',
@@ -329,6 +348,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     description: 'Pilgrims fused at the edges, moving as one.',
     emoji: '👥',
     artUrl: '/creatures/the-congregation.webp',
+    tags: ['flesh'],
   },
   'Pale Crawler Swarm': {
     name: 'Pale Crawler Swarm',
@@ -338,6 +358,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     description: 'One wouldn\'t be a threat. But there isn\'t one.',
     emoji: '🕷️',
     artUrl: '/creatures/pale-crawler-swarm.webp',
+    tags: ['flesh'],
   },
 
   // Tier 3 - Rare Terrors / Bosses
@@ -349,6 +370,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     description: 'You cannot see it clearly. Your mind refuses.',
     emoji: '❓',
     artUrl: '/creatures/the-unnamed.webp',
+    tags: ['spectral'],
   },
   'Mother of Tides': {
     name: 'Mother of Tides',
@@ -358,6 +380,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     description: 'The water itself, given will. Everything that drowns belongs to her.',
     emoji: '🌊',
     artUrl: '/creatures/mother-of-tides.webp',
+    tags: ['aquatic'],
   },
   'The Keeper': {
     name: 'The Keeper',
@@ -367,6 +390,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     description: 'Guardian of the exit. None have passed.',
     emoji: '👁️',
     artUrl: '/creatures/the-keeper.webp',
+    tags: ['construct'],
   },
 };
 
@@ -504,6 +528,7 @@ export interface ItemEffects {
   corpseBonus?: number;   // Extra chance to find loot in corpse/cache rooms
   voidSaltBonus?: boolean; // +40% damage vs aquatic enemies when true
   ashVeil?: boolean;       // Caps incoming BURN to 1 stack per hit when true
+  tagDamageBonuses?: Partial<Record<CreatureTag, number>>; // filled by synergies (Task 5)
 }
 
 export function getItemEffects(inventory: {name: string}[]): ItemEffects {
@@ -544,6 +569,16 @@ export function getItemEffects(inventory: {name: string}[]): ItemEffects {
     }
   }
   return effects;
+}
+
+/** Damage bonus from item effects that key off creature tags (Void Salt, synergies). */
+export function getTagDamageBonus(effects: ItemEffects, creatureTags: CreatureTag[] = []): number {
+  let bonus = 0;
+  if (effects.voidSaltBonus && creatureTags.includes('aquatic')) bonus += 0.4;
+  for (const [tag, b] of Object.entries(effects.tagDamageBonuses ?? {})) {
+    if (creatureTags.includes(tag as CreatureTag)) bonus += b;
+  }
+  return bonus;
 }
 
 // Item descriptions from the Content Bible

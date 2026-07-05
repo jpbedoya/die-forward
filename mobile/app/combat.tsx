@@ -29,6 +29,7 @@ import {
   getCreatureIntentSeeded,
   getIntentEffects,
   getItemEffects,
+  getTagDamageBonus,
   getItemDetails,
   getDepthForRoom,
   getStrikeNarration,
@@ -203,6 +204,7 @@ export default function CombatScreen() {
   // Calculate damage using admin settings — pure math lives in combat-math.ts
   const calculateDamage = (base: number, isPlayerAttacking: boolean) => {
     const itemEffects = getItemEffects(game.inventory);
+    const creatureTags = creature?.tags ?? [];
     return calculateCombatDamage({
       base,
       isPlayerAttacking,
@@ -213,6 +215,7 @@ export default function CombatScreen() {
       itemDamageBonus: itemEffects.damageBonus,
       itemDefenseBonus: itemEffects.defenseBonus,
       modifierDamageBonus: game.getModifiedDamageBonus(),
+      tagDamageBonus: isPlayerAttacking ? getTagDamageBonus(itemEffects, creatureTags) : 0,
       wasCharging,
       settings,
     });

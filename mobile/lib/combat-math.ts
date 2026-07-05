@@ -35,6 +35,8 @@ export interface CombatDamageInput {
   itemDefenseBonus: number;
   /** Run-modifier damage bonus (fraction). */
   modifierDamageBonus: number;
+  /** Bonus damage (fraction) from tag-keyed item effects, e.g. Void Salt vs aquatic. */
+  tagDamageBonus: number;
   /** Whether the enemy was CHARGING last turn (charge punishment applies). */
   wasCharging: boolean;
   settings: CombatDamageSettings;
@@ -51,11 +53,11 @@ export function calculateCombatDamage(input: CombatDamageInput): number {
   const {
     base, isPlayerAttacking, tier, enemyIsErratic,
     intentDamageDealtMod, intentDamageTakenMod,
-    itemDamageBonus, itemDefenseBonus, modifierDamageBonus, wasCharging, settings,
+    itemDamageBonus, itemDefenseBonus, modifierDamageBonus, tagDamageBonus = 0, wasCharging, settings,
   } = input;
 
   if (isPlayerAttacking) {
-    return Math.round(base * (1 + itemDamageBonus + modifierDamageBonus) * intentDamageTakenMod);
+    return Math.round(base * (1 + itemDamageBonus + modifierDamageBonus + tagDamageBonus) * intentDamageTakenMod);
   }
 
   const tierMult = tier === 3 ? settings.tier3Multiplier : tier === 2 ? settings.tier2Multiplier : 1.0;
