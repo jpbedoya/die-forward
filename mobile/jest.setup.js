@@ -11,7 +11,6 @@ if (!process.env.EXPO_PUBLIC_API_URL) {
 
 // Suppress console errors that might occur during module loading
 const originalError = console.error;
-const originalWarn = console.warn;
 
 beforeAll(() => {
   console.error = jest.fn((...args) => {
@@ -25,5 +24,4 @@ beforeAll(() => {
 
 afterAll(() => {
   console.error = originalError;
-  console.warn = originalWarn;
 });
