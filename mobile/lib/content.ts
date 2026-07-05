@@ -582,6 +582,8 @@ export function getTagDamageBonus(effects: ItemEffects, creatureTags: CreatureTa
 }
 
 // Item descriptions from the Content Bible
+export type ElementTag = 'WATER' | 'BONE' | 'VOID' | 'ASH' | 'FLAME' | 'ECHO' | 'PILGRIM';
+
 export interface ItemDetails {
   name: string;
   emoji: string;
@@ -590,6 +592,7 @@ export interface ItemDetails {
   type: 'consumable' | 'weapon' | 'artifact';
   artUrl?: string;
   rarity?: 'common' | 'uncommon' | 'rare' | 'legendary';
+  elementTags?: ElementTag[];
 }
 
 export const ITEM_DETAILS: Record<string, ItemDetails> = {
@@ -620,6 +623,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     type: 'consumable',
     rarity: 'common',
     artUrl: '/items/bone-dust.webp',
+    elementTags: ['BONE'],
   },
   'Void Salt': {
     name: 'Void Salt',
@@ -629,6 +633,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     type: 'consumable',
     rarity: 'uncommon',
     artUrl: '/items/void-salt.webp',
+    elementTags: ['VOID', 'WATER'],
   },
   'Poison Vial': {
     name: 'Poison Vial',
@@ -638,6 +643,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     type: 'consumable',
     rarity: 'rare',
     artUrl: '/items/poison-vial.webp',
+    elementTags: ['WATER'],
   },
   
   // Weapons
@@ -649,6 +655,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     type: 'weapon',
     rarity: 'common',
     artUrl: '/items/rusty-blade.webp',
+    elementTags: ['PILGRIM'],
   },
   'Dagger': {
     name: 'Dagger',
@@ -658,6 +665,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     type: 'weapon',
     rarity: 'uncommon',
     artUrl: '/items/dagger.webp',
+    elementTags: ['PILGRIM'],
   },
   'Bone Hook': {
     name: 'Bone Hook',
@@ -667,6 +675,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     type: 'weapon',
     rarity: 'uncommon',
     artUrl: '/items/bone-hook.webp',
+    elementTags: ['BONE'],
   },
   'Shield': {
     name: 'Shield',
@@ -676,6 +685,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     type: 'weapon',
     rarity: 'uncommon',
     artUrl: '/items/shield.webp',
+    elementTags: ['PILGRIM'],
   },
   'Tattered Shield': {
     name: 'Tattered Shield',
@@ -685,6 +695,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     type: 'weapon',
     rarity: 'common',
     artUrl: '/items/tattered-shield.webp',
+    elementTags: ['PILGRIM'],
   },
   'Cloak': {
     name: 'Cloak',
@@ -694,6 +705,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     type: 'weapon',
     rarity: 'uncommon',
     artUrl: '/items/cloak.webp',
+    elementTags: ['ECHO'],
   },
   
   // Artifacts
@@ -705,6 +717,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     type: 'artifact',
     rarity: 'uncommon',
     artUrl: '/items/torch.webp',
+    elementTags: ['FLAME'],
   },
   'Bone Charm': {
     name: 'Bone Charm',
@@ -714,6 +727,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     type: 'artifact',
     rarity: 'uncommon',
     artUrl: '/items/bone-charm.webp',
+    elementTags: ['BONE', 'ECHO'],
   },
   'Ancient Scroll': {
     name: 'Ancient Scroll',
@@ -723,6 +737,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     type: 'artifact',
     rarity: 'rare',
     artUrl: '/items/ancient-scroll.webp',
+    elementTags: ['PILGRIM', 'ECHO'],
   },
   'Eye of the Hollow': {
     name: 'Eye of the Hollow',
@@ -732,6 +747,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     type: 'artifact',
     rarity: 'rare',
     artUrl: '/items/eye-of-the-hollow.webp',
+    elementTags: ['VOID', 'ECHO'],
   },
   'Heartstone': {
     name: 'Heartstone',
@@ -741,6 +757,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     type: 'artifact',
     rarity: 'legendary',
     artUrl: '/items/heartstone.webp',
+    elementTags: ['ECHO'],
   },
   'Pale Coin': {
     name: 'Pale Coin',
@@ -750,6 +767,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     type: 'artifact',
     rarity: 'common',
     artUrl: '/items/pale-coin.webp',
+    elementTags: ['PILGRIM'],
   },
   'Soulstone': {
     name: 'Soulstone',
@@ -758,6 +776,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     effect: '+10% to all stats',
     rarity: 'rare',
     type: 'artifact',
+    elementTags: ['VOID', 'ECHO'],
   },
   "Death's Mantle": {
     name: "Death's Mantle",
@@ -766,6 +785,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     effect: 'Survive one lethal hit with 1 HP (consumed)',
     rarity: 'legendary',
     type: 'artifact',
+    elementTags: ['VOID'],
   },
   'Voidblade': {
     name: 'Voidblade',
@@ -774,6 +794,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     effect: '+50% damage, take 5 damage per turn',
     rarity: 'legendary',
     type: 'weapon',
+    elementTags: ['VOID'],
   },
 
   // Zone-mechanic items
@@ -784,6 +805,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     effect: 'Clears all burn stacks',
     type: 'consumable',
     rarity: 'uncommon',
+    elementTags: ['FLAME'],
   },
   'Ash Veil': {
     name: 'Ash Veil',
@@ -792,6 +814,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     effect: 'Incoming burn is capped to 1 stack per hit',
     type: 'artifact',
     rarity: 'rare',
+    elementTags: ['ASH'],
   },
   'Frost Shard': {
     name: 'Frost Shard',
@@ -800,6 +823,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     effect: 'Freezes an enemy — it skips its next turn',
     type: 'consumable',
     rarity: 'uncommon',
+    elementTags: ['WATER'],
   },
   'Thermal Flask': {
     name: 'Thermal Flask',
@@ -808,6 +832,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     effect: 'Clears all chill stacks',
     type: 'consumable',
     rarity: 'uncommon',
+    elementTags: ['FLAME'],
   },
   'Clarity Shard': {
     name: 'Clarity Shard',
@@ -816,6 +841,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     effect: 'Restores 1 clarity',
     type: 'consumable',
     rarity: 'uncommon',
+    elementTags: ['ECHO'],
   },
   'Cleansing Salts': {
     name: 'Cleansing Salts',
@@ -824,6 +850,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     effect: 'Clears all infection stacks',
     type: 'consumable',
     rarity: 'uncommon',
+    elementTags: ['WATER', 'ASH'],
   },
 };
 
