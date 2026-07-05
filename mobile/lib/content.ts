@@ -655,6 +655,15 @@ export function getActiveSynergies(inventory: { name: string }[]): Synergy[] {
   return SYNERGIES.filter((s) => s.items.every((item) => names.has(item)));
 }
 
+/** Synergies newly active in `after` inventory that were not active in `before` (by id). */
+export function newlyFormedSynergies(
+  before: { name: string }[],
+  after: { name: string }[]
+): Synergy[] {
+  const beforeIds = new Set(getActiveSynergies(before).map((s) => s.id));
+  return getActiveSynergies(after).filter((s) => !beforeIds.has(s.id));
+}
+
 /** Damage bonus from item effects that key off creature tags (Void Salt, synergies). */
 export function getTagDamageBonus(effects: ItemEffects, creatureTags: CreatureTag[] = []): number {
   let bonus = 0;

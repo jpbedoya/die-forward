@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { View, Text, Pressable, ScrollView, Alert, Platform, ViewStyle, Image, Modal } from 'react-native';
 import { getCreatureAsset, getCreatureAssetByName } from '../lib/creatureAssets';
 import { Icons } from '../lib/iconAssets';
@@ -16,7 +16,8 @@ import { GameMenu, MenuButton } from '../components/GameMenu';
 import { MiniPlayer } from '../components/MiniPlayer';
 import { AudioToggle } from '../components/AudioToggle';
 import { CRTOverlay } from '../components/CRTOverlay';
-import { getDepthForRoom, DungeonRoom, getItemDetails, getCreatureInfo, CreatureInfo, rollRandomItem, getItemEffects } from '../lib/content';
+import { getDepthForRoom, DungeonRoom, getItemDetails, getCreatureInfo, CreatureInfo, rollRandomItem, getItemEffects, newlyFormedSynergies } from '../lib/content';
+import { t } from '../lib/i18n';
 import { getMilestonePerks } from '../lib/milestones';
 import { getZoneMechanic } from '../lib/zone-mechanics';
 import { useUnifiedWallet, type Address } from '../lib/wallet/unified';
@@ -49,6 +50,7 @@ export default function PlayScreen() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<{ name: string; emoji: string } | null>(null);
   const [lastFoundItem, setLastFoundItem] = useState<{ name: string; emoji: string } | null>(null);
+  const [synergyMessage, setSynergyMessage] = useState<string | null>(null);
   const [selectedCreature, setSelectedCreature] = useState<CreatureInfo | null>(null);
   const [modifierExpanded, setModifierExpanded] = useState(false);
   const [narrativeDone, setNarrativeDone] = useState(false);
@@ -110,6 +112,25 @@ export default function PlayScreen() {
   // Atmospheric trigger SFX — random world sounds during exploration
   useAtmosphericTriggers(game.zoneId, true);
 
+  // Synergy discovery — single hook watching game.inventory (the sole state
+  // touched by addToInventory/swapItem, the choke point for every pickup path:
+  // risky-explore find, corpse loot, cache/random loot). Whenever the array
+  // changes, diff active synergies before vs. after and surface a discovery
+  // line if a new pact just formed.
+  const prevInventoryRef = useRef(game.inventory);
+  useEffect(() => {
+    const formed = newlyFormedSynergies(prevInventoryRef.current, game.inventory);
+    prevInventoryRef.current = game.inventory;
+    if (formed.length === 0) return;
+    const lines = formed.map((s) =>
+      t('synergy.formed', {
+        name: t(`synergy.${s.id}.name`),
+        flavor: t(`synergy.${s.id}.flavor`),
+      })
+    );
+    setSynergyMessage(lines.join('\n'));
+  }, [game.inventory]);
+
   // Redirect if no session (delay to ensure layout is mounted)
   useEffect(() => {
     if (!game.sessionToken && dungeon.length === 0) {
@@ -158,6 +179,7 @@ export default function PlayScreen() {
     if (processing) return;
     setProcessing(true);
     setMessage(null);
+    setSynergyMessage(null);
 
     try {
       switch (action) {
@@ -369,6 +391,7 @@ export default function PlayScreen() {
           setShowCorpse(false);
           setLootedCorpse(null);
           setMessage(null);
+          setSynergyMessage(null);
           await game.advance();
           break;
         }
@@ -390,6 +413,7 @@ export default function PlayScreen() {
         case 'continue':
           await game.advance();
           setMessage(null);
+          setSynergyMessage(null);
           break;
       }
     } finally {
@@ -604,6 +628,13 @@ export default function PlayScreen() {
               <Text className="text-amber-light text-sm font-mono">✦ {message}</Text>
             </View>
           )
+        )}
+
+        {/* Synergy discovery — appended amber banner when a new pact forms on pickup */}
+        {synergyMessage && (
+          <View className="bg-amber/20 border-2 border-amber p-4 mb-4">
+            <Text className="text-amber-light text-sm font-mono">✦ {synergyMessage}</Text>
+          </View>
         )}
 
         {/* Corpse card */}

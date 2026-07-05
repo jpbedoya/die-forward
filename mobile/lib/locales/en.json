@@ -16,5 +16,6 @@
   "synergy.twin-fangs.name": "Twin Fangs",
   "synergy.twin-fangs.flavor": "One cut to open. One to finish.",
   "synergy.beggars-grace.name": "Beggar's Grace",
-  "synergy.beggars-grace.flavor": "Nothing worth taking. Nothing worth chasing."
+  "synergy.beggars-grace.flavor": "Nothing worth taking. Nothing worth chasing.",
+  "synergy.formed": "{name} — {flavor}"
 }
