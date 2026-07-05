@@ -126,3 +126,20 @@ export function voidbladeDamage(inventory: { name: string }[], effects: ItemEffe
   if (effects.voidbladeSelfDamageZero) return 0;
   return inventory.some(item => item.name === 'Voidblade') ? 5 : 0;
 }
+
+/**
+ * Bible: "Warm when death is near." True only when the player carries a
+ * Heartstone AND this incoming hit would cross health from >= 20% of maxHp
+ * down to < 20% of maxHp — a threshold crossing, not an already-below state.
+ */
+export function heartstoneWarning(
+  healthBefore: number,
+  incomingDamage: number,
+  maxHp: number,
+  inventory: { name: string }[],
+): boolean {
+  if (!inventory.some(item => item.name === 'Heartstone')) return false;
+  const threshold = 0.2 * maxHp;
+  const healthAfter = healthBefore - incomingDamage;
+  return healthBefore >= threshold && healthAfter < threshold;
+}

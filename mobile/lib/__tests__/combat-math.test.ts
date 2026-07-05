@@ -5,6 +5,7 @@ import {
   computeDamageAmount,
   deathSaveOutcome,
   voidbladeDamage,
+  heartstoneWarning,
   type CombatDamageInput,
 } from '../combat-math';
 import { RUN_MODIFIERS } from '../modifiers';
@@ -189,5 +190,29 @@ describe('voidbladeDamage', () => {
   it('voidblade self-damage is 0 with hungering-edge', () => {
     const inv = [{ name: 'Voidblade' }, { name: 'Soulstone' }];
     expect(voidbladeDamage(inv, getItemEffects(inv))).toBe(0);
+  });
+});
+
+describe('heartstoneWarning', () => {
+  it('heartstone warns when a hit would cross below 20% max HP', () => {
+    const inv = [{ name: 'Heartstone' }];
+    expect(heartstoneWarning(30, 15, 100, inv)).toBe(true);   // 30 -> 15 crosses 20
+    expect(heartstoneWarning(80, 15, 100, inv)).toBe(false);
+    expect(heartstoneWarning(30, 15, 100, [])).toBe(false);
+  });
+
+  it('does not warn when health is already below 20% (no new crossing)', () => {
+    const inv = [{ name: 'Heartstone' }];
+    expect(heartstoneWarning(15, 5, 100, inv)).toBe(false);
+  });
+
+  it('does not warn when the hit does not cross the threshold', () => {
+    const inv = [{ name: 'Heartstone' }];
+    expect(heartstoneWarning(30, 5, 100, inv)).toBe(false); // 30 -> 25, still above 20
+  });
+
+  it('does not warn when the hit lands exactly on the 20% boundary (not below)', () => {
+    const inv = [{ name: 'Heartstone' }];
+    expect(heartstoneWarning(25, 5, 100, inv)).toBe(false); // 25 -> 20, not below 20
   });
 });

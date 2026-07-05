@@ -40,7 +40,7 @@ import {
   IntentEffects,
   CreatureInfo,
 } from '../lib/content';
-import { calculateCombatDamage } from '../lib/combat-math';
+import { calculateCombatDamage, heartstoneWarning } from '../lib/combat-math';
 import {
   getZoneMechanic,
   resolveTurnStart,
@@ -122,6 +122,9 @@ export default function CombatScreen() {
   const [artLoadFailed, setArtLoadFailed] = useState(false);
   const [isFirstTurn, setIsFirstTurn] = useState(true);
   const [enemyFrozen, setEnemyFrozen] = useState(false);
+  // Heartstone — "Warm when death is near." Set true for the turn the
+  // player's counter-hit crosses below 20% max HP while carrying one.
+  const [heartstoneActive, setHeartstoneActive] = useState(false);
   
   // Signature-rule engine state (Task 8) — one CombatRuleState per fight,
   // reset whenever a new creature enters combat. `pendingChantBonusRef` is
@@ -245,7 +248,8 @@ export default function CombatScreen() {
   }
 
   // Calculate damage using admin settings — pure math lives in combat-math.ts
-  const calculateDamage = (base: number, isPlayerAttacking: boolean) => {
+  // extraDefenseBonus: one-turn-only bonus (e.g. Heartstone's +0.10 the hit it warns on).
+  const calculateDamage = (base: number, isPlayerAttacking: boolean, extraDefenseBonus: number = 0) => {
     const itemEffects = getItemEffects(game.inventory);
     const creatureTags = creature?.tags ?? [];
     return calculateCombatDamage({
@@ -256,7 +260,7 @@ export default function CombatScreen() {
       intentDamageDealtMod: intentEffects.damageDealtMod,
       intentDamageTakenMod: intentEffects.damageTakenMod,
       itemDamageBonus: itemEffects.damageBonus,
-      itemDefenseBonus: itemEffects.defenseBonus,
+      itemDefenseBonus: itemEffects.defenseBonus + extraDefenseBonus,
       modifierDamageBonus: game.getModifiedDamageBonus(),
       tagDamageBonus: isPlayerAttacking ? getTagDamageBonus(itemEffects, creatureTags) : 0,
       wasCharging,
@@ -319,6 +323,7 @@ export default function CombatScreen() {
 
     let playerDmg = 0;
     let enemyDmg = 0;
+    let heartstoneTriggered = false;
     let fleeSuccess = false;
     let actionNarrative = '';
     // Signature rule: `dodge`-into-counter is the one death-blow finish that
@@ -333,7 +338,11 @@ export default function CombatScreen() {
         // Player damage uses settings range; enemy counter scales by enemyCounterMultiplier
         const basePlayerHit = getBaseDamage();
         const baseEnemyHit = Math.floor(getBaseDamage() * settings.enemyCounterMultiplier) + chantBonus;
-        playerDmg = calculateDamage(baseEnemyHit, false);
+        const preHeartstoneHit = calculateDamage(baseEnemyHit, false);
+        // Heartstone — "Warm when death is near." Detected from the pre-bonus
+        // hit, then this SAME hit is recomputed with the one-turn defense bonus.
+        heartstoneTriggered = heartstoneWarning(game.health, preHeartstoneHit, game.getMaxHp(), game.inventory);
+        playerDmg = heartstoneTriggered ? calculateDamage(baseEnemyHit, false, 0.10) : preHeartstoneHit;
         // Bonus damage for striking AGGRESSIVE/HUNTING correctly
         const strikeIntentBonus = (enemyIntent.type === 'AGGRESSIVE' || enemyIntent.type === 'HUNTING')
           ? settings.intentCounterBonus : 1.0;
@@ -535,6 +544,7 @@ export default function CombatScreen() {
     setEnemyDmgTaken(enemyDmg);
     game.setHealth(newPlayerHealth);
     setPlayerDmgTaken(totalPlayerDmg);
+    setHeartstoneActive(heartstoneTriggered);
     setNarrative(tick.narrative ? `${tick.narrative} ${actionNarrative}` : actionNarrative);
 
     // Creature attack sound when player takes damage
@@ -780,6 +790,13 @@ export default function CombatScreen() {
                 )}
               </View>
             )}
+            {heartstoneActive && (
+              <View className="border-t border-amber/30 py-3">
+                <Text className="text-blood text-sm font-mono font-bold text-center">
+                  {t('item.heartstone.warning')}
+                </Text>
+              </View>
+            )}
           </View>
         )}
 
@@ -932,6 +949,9 @@ export default function CombatScreen() {
             } : null}
             onUse={() => {
               if (!selectedItem) return;
+              // Heartstone's warning is scoped to the hit that triggered it —
+              // using an item ends that turn's warning display.
+              setHeartstoneActive(false);
               const name = selectedItem.name;
               if (name === 'Herbs') {
                 const baseHeal = game.rng ? game.rng.range(25, 40) : Math.floor(Math.random() * 15) + 25; // 25-40 HP

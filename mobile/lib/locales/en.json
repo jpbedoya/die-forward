@@ -33,5 +33,6 @@
   "rule.reform.rise": "The water remembers its shape. It rises again.",
   "rule.multiply.join": "Another hand reaches from the wall to join the fight.",
   "rule.flee.blocked": "It will not let you leave.",
-  "rule.pounce.strike": "It was already moving. The blow lands before you can raise your guard."
+  "rule.pounce.strike": "It was already moving. The blow lands before you can raise your guard.",
+  "item.heartstone.warning": "The stone burns warm against your chest."
 }
