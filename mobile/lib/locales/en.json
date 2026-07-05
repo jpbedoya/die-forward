@@ -1,4 +1,20 @@
 {
   "test.greeting": "The depths watch, {name}.",
-  "combat.synergy.discovered": "An {name} is struck."
+  "combat.synergy.discovered": "An {name} is struck.",
+  "synergy.ossuary-pact.name": "Ossuary Pact",
+  "synergy.ossuary-pact.flavor": "The charm hums against the hook. The bones answer.",
+  "synergy.grave-tide.name": "Grave Tide",
+  "synergy.grave-tide.flavor": "Salt and frost. The water remembers what it drowned.",
+  "synergy.last-breath-pact.name": "Last Breath Pact",
+  "synergy.last-breath-pact.flavor": "The mantle drinks from the stone. Death loosens its grip.",
+  "synergy.hungering-edge.name": "Hungering Edge",
+  "synergy.hungering-edge.flavor": "The blade feeds elsewhere now.",
+  "synergy.ashen-ward.name": "Ashen Ward",
+  "synergy.ashen-ward.flavor": "Ash coats the ember. Fire forgets your name.",
+  "synergy.pilgrims-clarity.name": "Pilgrim's Clarity",
+  "synergy.pilgrims-clarity.flavor": "The scroll reads itself. The way ahead thins.",
+  "synergy.twin-fangs.name": "Twin Fangs",
+  "synergy.twin-fangs.flavor": "One cut to open. One to finish.",
+  "synergy.beggars-grace.name": "Beggar's Grace",
+  "synergy.beggars-grace.flavor": "Nothing worth taking. Nothing worth chasing."
 }

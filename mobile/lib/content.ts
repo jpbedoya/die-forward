@@ -529,6 +529,12 @@ export interface ItemEffects {
   voidSaltBonus?: boolean; // +40% damage vs aquatic enemies when true
   ashVeil?: boolean;       // Caps incoming BURN to 1 stack per hit when true
   tagDamageBonuses?: Partial<Record<CreatureTag, number>>; // filled by synergies (Task 5)
+  mantleHealTo?: number;          // last-breath-pact: Mantle revive heals to this HP instead of 1
+  voidbladeSelfDamageZero?: boolean; // hungering-edge: Voidblade self-damage becomes 0
+  burnImmune?: boolean;           // ashen-ward: fully immune to BURN
+  peekFree?: boolean;             // pilgrims-clarity: tertiary peek costs 0 stamina
+  critBonus?: number;             // twin-fangs: added to base crit chance
+  fleeDamageHalved?: boolean;     // beggars-grace: damage taken while fleeing is halved
 }
 
 export function getItemEffects(inventory: {name: string}[]): ItemEffects {
@@ -568,7 +574,85 @@ export function getItemEffects(inventory: {name: string}[]): ItemEffects {
         break;
     }
   }
+  for (const s of getActiveSynergies(inventory)) effects = s.apply(effects);
   return effects;
+}
+
+// Item synergies — pairs of items that unlock a bonus effect when both are carried.
+export interface Synergy {
+  id: string;                     // 'ossuary-pact'
+  name: string;                   // i18n key: synergy.<id>.name
+  items: [string, string];        // exact ITEM_DETAILS keys
+  apply: (effects: ItemEffects) => ItemEffects;
+}
+
+export const SYNERGIES: Synergy[] = [
+  {
+    id: 'ossuary-pact',
+    name: 'synergy.ossuary-pact.name',
+    items: ['Bone Hook', 'Bone Charm'],
+    apply: (effects) => {
+      const tagDamageBonuses = { ...(effects.tagDamageBonuses ?? {}) };
+      tagDamageBonuses.bone = (tagDamageBonuses.bone ?? 0) + 0.30;
+      return { ...effects, tagDamageBonuses };
+    },
+  },
+  {
+    id: 'grave-tide',
+    name: 'synergy.grave-tide.name',
+    items: ['Void Salt', 'Frost Shard'],
+    apply: (effects) => {
+      const tagDamageBonuses = { ...(effects.tagDamageBonuses ?? {}) };
+      tagDamageBonuses.aquatic = (tagDamageBonuses.aquatic ?? 0) + 0.20;
+      return { ...effects, tagDamageBonuses };
+    },
+  },
+  {
+    id: 'last-breath-pact',
+    name: 'synergy.last-breath-pact.name',
+    items: ["Death's Mantle", 'Soulstone'],
+    apply: (effects) => ({ ...effects, mantleHealTo: 25 }),
+  },
+  {
+    id: 'hungering-edge',
+    name: 'synergy.hungering-edge.name',
+    items: ['Voidblade', 'Soulstone'],
+    apply: (effects) => ({ ...effects, voidbladeSelfDamageZero: true }),
+  },
+  {
+    id: 'ashen-ward',
+    name: 'synergy.ashen-ward.name',
+    items: ['Ember Flask', 'Ash Veil'],
+    apply: (effects) => ({ ...effects, burnImmune: true }),
+  },
+  {
+    id: 'pilgrims-clarity',
+    name: 'synergy.pilgrims-clarity.name',
+    items: ['Ancient Scroll', 'Clarity Shard'],
+    apply: (effects) => ({ ...effects, peekFree: true }),
+  },
+  {
+    id: 'twin-fangs',
+    name: 'synergy.twin-fangs.name',
+    items: ['Dagger', 'Poison Vial'],
+    apply: (effects) => ({ ...effects, critBonus: (effects.critBonus ?? 0) + 0.10 }),
+  },
+  {
+    id: 'beggars-grace',
+    name: 'synergy.beggars-grace.name',
+    items: ['Cloak', 'Tattered Shield'],
+    apply: (effects) => ({
+      ...effects,
+      fleeBonus: effects.fleeBonus + 0.20,
+      fleeDamageHalved: true,
+    }),
+  },
+];
+
+/** Returns the synergies whose both required items are present (by distinct name) in inventory. */
+export function getActiveSynergies(inventory: { name: string }[]): Synergy[] {
+  const names = new Set(inventory.map((i) => i.name));
+  return SYNERGIES.filter((s) => s.items.every((item) => names.has(item)));
 }
 
 /** Damage bonus from item effects that key off creature tags (Void Salt, synergies). */
