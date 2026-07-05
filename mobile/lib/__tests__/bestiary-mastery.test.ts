@@ -127,6 +127,21 @@ describe('getNewMasteryUnlocks — per-creature', () => {
     expect(borders).toContain('the-drowned-themed');
   });
 
+  it('a +2 defeat increment (honor signature bonus) crosses the 5-defeat threshold in one call', () => {
+    // Regression for the honor mastery pre-bump bug: prev=4 -> next=6 via a
+    // single recordDefeat(..., increment=2) call must still report the
+    // 5-defeat unlock, exactly like two separate +1 calls would — the fix
+    // must not skip thresholds landed on mid-increment.
+    let prev: CreatureMastery = emptyMastery();
+    for (let i = 0; i < 4; i++) prev = recordDefeat(prev, 'Carrion Knight', i);
+    expect(prev['Carrion Knight'].defeats).toBe(4);
+    const next = recordDefeat(prev, 'Carrion Knight', 100, 2);
+    expect(next['Carrion Knight'].defeats).toBe(6);
+    const unlocks = getNewMasteryUnlocks(prev, next, ['Carrion Knight']);
+    const titles = unlocks.filter(u => u.type === 'title').map(u => u.value);
+    expect(titles).toContain('Carrion Knight Slayer');
+  });
+
   it('per-creature unlock is scoped to that creature only', () => {
     let prev: CreatureMastery = emptyMastery();
     for (let i = 0; i < 4; i++) prev = recordDefeat(prev, 'Ember Husks', i);

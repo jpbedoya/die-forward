@@ -74,9 +74,10 @@ export function recordDefeat(
   mastery: CreatureMastery | undefined,
   creature: string,
   now: number = Date.now(),
+  increment: number = 1,
 ): CreatureMastery {
   const prev = mastery?.[creature];
-  return upsert(mastery, creature, { defeats: (prev?.defeats ?? 0) + 1 }, now);
+  return upsert(mastery, creature, { defeats: (prev?.defeats ?? 0) + increment }, now);
 }
 
 export function recordKilledBy(

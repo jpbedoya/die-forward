@@ -2,6 +2,7 @@ import {
   calculateCombatDamage,
   maxHpForModifier,
   computeHealAmount,
+  computeDamageAmount,
   deathSaveOutcome,
   voidbladeDamage,
   type CombatDamageInput,
@@ -126,6 +127,24 @@ describe('computeHealAmount', () => {
 
   it('heals nothing when already at full health', () => {
     expect(computeHealAmount(30, null, 100)).toEqual({ newHealth: 100, healed: 0 });
+  });
+});
+
+describe('computeDamageAmount', () => {
+  it('subtracts damage from current health', () => {
+    expect(computeDamageAmount(10, 35)).toEqual({ newHealth: 25 });
+  });
+
+  it('floors at 0 instead of going negative', () => {
+    expect(computeDamageAmount(50, 30)).toEqual({ newHealth: 0 });
+  });
+
+  it('is computed relative to the passed-in current health, not any prior value', () => {
+    // Regression for the pounce bug: a prior functional heal (e.g. Herbs,
+    // 5 -> 35) must already be reflected in `currentHealth` here — this
+    // function has no notion of a stale render-closure value to discard.
+    const healedHealth = 35; // simulates the result of a prior applyHealing
+    expect(computeDamageAmount(10, healedHealth)).toEqual({ newHealth: 25 });
   });
 });
 

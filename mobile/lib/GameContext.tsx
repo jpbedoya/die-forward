@@ -5,7 +5,7 @@ import { dlog } from './debug-log';
 
 import { generateRandomDungeon, generateDungeon, DungeonRoom, getItemDetails, rollRandomItem, getItemEffects } from './content';
 import { getMilestonePerks } from './milestones';
-import { maxHpForModifier, computeHealAmount, deathSaveOutcome, voidbladeDamage } from './combat-math';
+import { maxHpForModifier, computeHealAmount, computeDamageAmount, deathSaveOutcome, voidbladeDamage } from './combat-math';
 import { initZoneStatus, type ZoneStatusState } from './zone-mechanics';
 import { isWalletCancellation } from './wallet-utils';
 
@@ -162,6 +162,15 @@ interface GameContextType extends GameState {
   getMaxHp: () => number;
   /** Apply healing with modifier penalty and HP cap. Returns actual HP gained. */
   applyHealing: (baseAmount: number) => number;
+  /**
+   * Apply damage relative to the CURRENT health via a functional state
+   * update (not the render-closure `health` value), floored at 0. Returns
+   * the resulting health so callers can immediately act on it (e.g. a
+   * death check) without waiting for a re-render. Use this instead of
+   * `setHealth(health - amount)` any time another functional update (like
+   * `applyHealing`) may have landed earlier in the same tick.
+   */
+  applyDamage: (amount: number) => number;
 }
 
 const initialState: GameState = {
@@ -1076,6 +1085,20 @@ export function GameProvider({
     return actual;
   }, [state.currentModifier]);
 
+  // Mirrors applyHealing: functional update against prev.health (not the
+  // stale render-closure `state.health`) so damage applied later in the
+  // same tick — e.g. pounce's free hit right after a Herbs heal — composes
+  // correctly instead of clobbering an earlier same-tick update.
+  const applyDamage = useCallback((amount: number): number => {
+    let resultHealth = 0;
+    setState(prev => {
+      const { newHealth } = computeDamageAmount(amount, prev.health);
+      resultHealth = newHealth;
+      return { ...prev, health: newHealth };
+    });
+    return resultHealth;
+  }, []);
+
   // Memoize context value — prevents cascading re-renders to all useGame()
   // consumers when useGameSettings re-evaluates after signInWithToken.
   // Most action callbacks are stable (useCallback), so this memo is effective.
@@ -1127,6 +1150,7 @@ export function GameProvider({
     modifierHidesFirstIntent,
     getMaxHp,
     applyHealing,
+    applyDamage,
   }), [
     state, unifiedWallet.connectors,
     signInWithWalletAction, signInEmptyHandedAction, linkWalletAction,
@@ -1138,7 +1162,7 @@ export function GameProvider({
     swapItem, dismissPendingItem, applyVoidbladeEffect, checkDeathSave,
     getModifiedDamageBonus, getModifiedHealMultiplier, getModifiedStaminaRegen,
     getModifiedBraceCost, modifierBraceNegatesAll, getModifiedCorpseChance,
-    modifierHidesFirstIntent, getMaxHp, applyHealing,
+    modifierHidesFirstIntent, getMaxHp, applyHealing, applyDamage,
   ]);
 
   return (

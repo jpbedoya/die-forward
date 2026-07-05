@@ -65,7 +65,6 @@ import {
   honorFilteredIntent,
   CombatRuleState,
 } from '../lib/creature-rules';
-import { recordDefeat } from '../lib/bestiary-mastery';
 import { t } from '../lib/i18n';
 
 type CombatPhase = 'choose' | 'resolve' | 'victory' | 'death';
@@ -189,6 +188,11 @@ export default function CombatScreen() {
     ruleStateRef.current = initialRuleState();
     pendingChantBonusRef.current = 0;
     fleeAttemptedRef.current = false;
+    // Reset per-fight combat state too, so dormant's turn-1 skip (gated on
+    // isFirstTurn) and Frost Shard's freeze status can't leak in from a
+    // previous creature if this screen instance is ever reused.
+    setIsFirstTurn(true);
+    setEnemyFrozen(false);
 
     // Bestiary mastery — encounter telemetry. Fire-and-forget; mastery
     // updates the player record off the main flow and surfaces any newly
@@ -603,19 +607,14 @@ export default function CombatScreen() {
       // the encounter write at mount time.
       //
       // Signature rule: honor (Carrion Knight) grants bonus mastery on a win
-      // with no flee attempt anywhere in the fight. Rather than dispatch a
-      // second async recordCreatureUpdate (which would race the first write
-      // and read the same stale `player.creatureMastery` snapshot, losing
-      // the bonus), the bonus defeat increment is applied locally and once
-      // — via the same pure `recordDefeat` helper recordCreatureUpdate uses
-      // internally — before the single transactional write, so the write
-      // lands with defeats +2 instead of +1.
+      // with no flee attempt anywhere in the fight. Passed as
+      // `defeatIncrement: 2` on the single transactional write so
+      // recordCreatureUpdate diffs unlocks against the TRUE stored prev
+      // (not a caller-side pre-bumped snapshot, which would silently drop
+      // any threshold crossed by the pre-bump itself).
       if (player && creature) {
         const honorBonus = creature.signature?.id === 'honor' && !fleeAttemptedRef.current;
-        const playerForWrite = honorBonus
-          ? { ...player, creatureMastery: recordDefeat(player.creatureMastery, creature.name) }
-          : player;
-        recordCreatureUpdate(playerForWrite, creature.name, 'defeat', ALL_CREATURE_NAMES)
+        recordCreatureUpdate(player, creature.name, 'defeat', ALL_CREATURE_NAMES, honorBonus ? 2 : 1)
           .catch(err => console.warn('[combat] mastery defeat write failed:', err));
       }
       setPhase('victory');
@@ -979,8 +978,12 @@ export default function CombatScreen() {
                 const pounceBase = game.rng ? game.rng.range(8, 14) : 8 + Math.floor(Math.random() * 7);
                 const pounceDmg = calculateDamage(pounceBase, false);
                 if (pounceDmg > 0) {
-                  const healthAfterPounce = Math.max(0, game.health - pounceDmg);
-                  game.setHealth(healthAfterPounce);
+                  // Apply relative to CURRENT health (functional update), not
+                  // the stale `game.health` render closure — Herbs' applyHealing
+                  // may have already landed a functional update earlier in this
+                  // same handler, and an absolute write here would silently
+                  // discard it.
+                  const healthAfterPounce = game.applyDamage(pounceDmg);
                   setPlayerDmgTaken(pounceDmg);
                   setNarrative(prev => `${prev} ${t('rule.pounce.strike')}`.trim());
                   triggerShake(pounceDmg >= 20 ? 'heavy' : pounceDmg >= 10 ? 'medium' : 'light');
@@ -991,6 +994,9 @@ export default function CombatScreen() {
                     } else {
                       playSFX('player-death');
                       triggerShake('heavy');
+                      if (Platform.OS !== 'web') {
+                        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+                      }
                       setPhase('death');
                       setTimeout(() => {
                         router.replace({ pathname: '/death', params: { killedBy: creature.name } });

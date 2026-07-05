@@ -91,6 +91,20 @@ export function computeHealAmount(
 }
 
 /**
+ * Compute the result of applying damage, floored at 0. Mirrors
+ * GameContext.applyDamage() — used so damage that lands mid-tick (e.g. a
+ * signature-rule free hit fired right after a functional heal update) is
+ * always computed relative to the CURRENT health, never a stale render
+ * closure.
+ */
+export function computeDamageAmount(
+  amount: number,
+  currentHealth: number,
+): { newHealth: number } {
+  return { newHealth: Math.max(0, currentHealth - amount) };
+}
+
+/**
  * Decide whether a lethal blow is cancelled by a Death's Mantle.
  * Mirrors GameContext.checkDeathSave(): only triggers at health <= 0, and
  * identifies the first Death's Mantle in the inventory to consume.

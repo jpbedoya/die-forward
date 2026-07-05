@@ -228,17 +228,28 @@ export async function recordDeath(data: {
  * `allCreatureNames` is the universe for the aggregate calculation —
  * typically `Object.keys(BESTIARY)`. The caller passes it so this module
  * stays free of a circular dep with content.ts.
+ *
+ * `defeatIncrement` (only meaningful for `kind === 'defeat'`) lets a single
+ * write count for more than one defeat — e.g. the honor (Carrion Knight)
+ * signature rule's flee-free bonus. It must go through this one call rather
+ * than a caller-side pre-bump of `player.creatureMastery` followed by a
+ * normal +1 call: pre-bumping would diff unlocks against an already-bumped
+ * `prev`, silently dropping any threshold crossed by the pre-bump itself
+ * (e.g. prev=4 -> pre-bumped to 5 -> this call's own diff sees prev=5,
+ * next=6, and never reports the 5-defeat unlock). Passing the full
+ * increment here keeps `prev` the TRUE stored value for the diff.
  */
 export async function recordCreatureUpdate(
   player: Pick<Player, 'id' | 'activeTitle' | 'activeBorder' | 'unlockedTitles' | 'unlockedBorders' | 'creatureMastery'>,
   creature: string,
   kind: 'encounter' | 'defeat' | 'killedBy',
   allCreatureNames: string[],
+  defeatIncrement: 1 | 2 = 1,
 ): Promise<void> {
   const prev = player.creatureMastery;
   const next =
     kind === 'encounter' ? recordEncounter(prev, creature)
-    : kind === 'defeat'  ? recordDefeat(prev, creature)
+    : kind === 'defeat'  ? recordDefeat(prev, creature, Date.now(), defeatIncrement)
                           : recordKilledBy(prev, creature);
 
   const unlocks = getNewMasteryUnlocks(prev, next, allCreatureNames);
