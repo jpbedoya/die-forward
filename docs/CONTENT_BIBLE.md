@@ -93,6 +93,8 @@ Escape to victory.
 
 ## Bestiary
 
+Ten of the creatures below now carry a mechanical signature rule (rupture, reform, multiply, blink, pounce, absorb, honor, dormant, drain, chant) that telegraphs at the start of combat — the writing below is the flavor the mechanic is built to justify, not a separate layer.
+
 ---
 
 ### Tier 1 — Common Horrors
@@ -468,14 +470,31 @@ Enemies telegraph their next action through visible intent. Players read the int
 
 ---
 
+### Synergies
+
+Item and tag combinations that click into place mid-run — a quiet confirmation that two things were always meant to be carried together. Eight pacts are live:
+
+- **Ossuary Pact** — *"The charm hums against the hook. The bones answer."*
+- **Grave Tide** — *"Salt and frost. The water remembers what it drowned."*
+- **Last Breath Pact** — *"The mantle drinks from the stone. Death loosens its grip."*
+- **Hungering Edge** — *"The blade feeds elsewhere now."*
+- **Ashen Ward** — *"Ash coats the ember. Fire forgets your name."*
+- **Pilgrim's Clarity** — *"The scroll reads itself. The way ahead thins."*
+- **Twin Fangs** — *"One cut to open. One to finish."*
+- **Beggar's Grace** — *"Nothing worth taking. Nothing worth chasing."*
+
+`mobile/lib/locales/en.json` is canonical for these names and flavor lines — update there first if they ever change.
+
+---
+
 ### Loot Tiers
 
 | Tier | Drop Rate | Examples |
 |------|-----------|----------|
-| Common | 60% | Herbs, Pale Rations, Rusted Blade |
+| Common | 55% | Herbs, Pale Rations, Rusted Blade |
 | Uncommon | 30% | Bone Dust, Void Salt, Bone Hook |
-| Rare | 8% | Tooth of the Deep, Eye of the Hollow |
-| Legendary | 2% | Pilgrim's Last Breath, Architect's Nail |
+| Rare | 12% | Tooth of the Deep, Eye of the Hollow |
+| Legendary | 3% | Pilgrim's Last Breath, Architect's Nail |
 
 ---
 

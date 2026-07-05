@@ -288,18 +288,18 @@ Inconsistencies found in the July 2026 review, with dispositions. Items marked *
 
 | # | Inconsistency | Disposition |
 |---|---|---|
-| 1 | Void Salt aquatic bonus never fires (no creature tags) | **[this project]** §5 creature tags |
-| 2 | Heartstone / Bone Dust / Pale Coin / Eye of the Hollow are flavor-only stubs | **[this project]** §5 real effects; Pale Coin → currency (§9) |
+| 1 | Void Salt aquatic bonus never fires (no creature tags) | **[this project]** §5 creature tags — **done (phase 1, July 2026):** tags live on all 21 global BESTIARY entries; Void Salt bonus fires |
+| 2 | Heartstone / Bone Dust / Pale Coin / Eye of the Hollow are flavor-only stubs | **[this project]** §5 real effects; Pale Coin → currency (§9) — **partial (phase 1, July 2026):** Heartstone effect live (one-hit +10% defense warning across all four damage paths); Bone Dust, Pale Coin, and Eye of the Hollow map-related effects deferred to phase 2 |
 | 3 | Bible NPCs absent from game | **[this project]** §3.1/§4.1 NPC rooms |
-| 4 | Creatures mechanically identical despite authored behaviors | **[this project]** §6 signature rules |
+| 4 | Creatures mechanically identical despite authored behaviors | **[this project]** §6 signature rules — **done (phase 1, July 2026):** 10 signature rules live (rupture/reform/multiply/blink/pounce/absorb/honor/dormant/drain/chant) with telegraph lines; Echo Husks deferred to phase 4 (community layer), Throat Singer deferred to phase 2 (zone-local) |
 | 5 | "Rooms move" lore vs fixed corridors | **[this project]** §3–4 |
-| 6 | **Bug:** default stamina initializes 3, `settings.staminaPool` is 4 | **[this project]** fix in phase 1; canon = 4 unless playtest says otherwise |
-| 7 | Loot tiers: bible 60/30/8/2 vs code 55/30/12/3 | **[bible rev]** code values are live-tuned; bible adopts them |
+| 6 | **Bug:** default stamina initializes 3, `settings.staminaPool` is 4 | **[this project]** fix in phase 1; canon = 4 unless playtest says otherwise — **done (phase 1, July 2026)** |
+| 7 | Loot tiers: bible 60/30/8/2 vs code 55/30/12/3 | **[bible rev]** code values are live-tuned; bible adopts them — **done (phase 1, July 2026):** bible table updated to 55/30/12/3 |
 | 8 | The Architect encounter unimplemented; Architect's Nail effect meaningless | **[this project — partial]** §3.2 visitations + corpses-in-walls; the living Architect encounter (rare, any room after the third, escape-only) is a **[follow-up]** flagship feature and the Nail's effect activates with it |
-| 9 | Bible lists Herbs as a first-class combat action; code treats items as situational | **[this project]** healing-item use becomes an explicit combat action (bible-canon); The Hunched's pounce rule (§6) makes it a real decision |
+| 9 | Bible lists Herbs as a first-class combat action; code treats items as situational | **[this project]** healing-item use becomes an explicit combat action (bible-canon); The Hunched's pounce rule (§6) makes it a real decision — **done (phase 1, July 2026)** |
 | 10 | Bible still describes the 9-room "Threshold of the Unnamed" hackathon zone, predating the 5-zone system | **[bible rev]** revision pass alongside phase 2 map authoring: zone chapters, DAG structure, NPC placement rules — bible must remain source of truth |
-| 11 | Weapon type identities (reach/fast/heavy/lifesteal) are flat stat sticks | **[this project — partial]** synergies restore some identity; full weapon-type combat differences are **[follow-up]** |
-| 12 | Cache rooms are free +30 HP vs "nothing is truly safe here" | **[this project]** cache nodes get a small seeded twist (rare mimic/tainted-supplies variant) so the bible's promise holds |
+| 11 | Weapon type identities (reach/fast/heavy/lifesteal) are flat stat sticks | **[this project — partial]** synergies restore some identity; full weapon-type combat differences are **[follow-up]** — **partial (phase 1, July 2026):** 8 synergies live |
+| 12 | Cache rooms are free +30 HP vs "nothing is truly safe here" | **[this project]** cache nodes get a small seeded twist (rare mimic/tainted-supplies variant) so the bible's promise holds — **not in phase 1 (July 2026):** cache twist deferred, still open |
 
 ## Appendix D — Run-structure benchmarks
 

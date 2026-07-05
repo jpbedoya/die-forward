@@ -18,7 +18,7 @@ Die Forward is a **social roguelite on Solana** (Phase 1 complete, Feb-Mar 2026)
 
 ## Testing
 
-No automated testing configured. Recommend: **Next.js Jest** for web routes (add jest.config.js with Next.js preset), **Metro + Jest** for mobile (Expo preset). Test file convention: co-locate as `*.test.ts(x)` or use `__tests__/` folders. Add scripts: `"test": "jest"`, `"test:watch": "jest --watch"`. Coverage baseline: 60% minimum for critical paths (auth, staking, death records).
+Jest is configured at both the root (`jest.config.js`, web) and in `mobile/` (`mobile/jest.config.js`, jest-expo preset). Mobile tests live in `mobile/lib/__tests__/` — 16 suites / 204 tests covering combat math, creature/item tags, synergies, signature rules, milestones, modifiers, dungeon generation, i18n, and more. Run mobile tests: `cd mobile && npm test`. Run web tests: `npm test` from the repo root. Test file convention: `*.test.ts(x)` co-located in `__tests__/` folders.
 
 ## Build & Run
 
