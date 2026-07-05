@@ -17,5 +17,16 @@
   "synergy.twin-fangs.flavor": "One cut to open. One to finish.",
   "synergy.beggars-grace.name": "Beggar's Grace",
   "synergy.beggars-grace.flavor": "Nothing worth taking. Nothing worth chasing.",
-  "synergy.formed": "{name} — {flavor}"
+  "synergy.formed": "{name} — {flavor}",
+  "rule.rupture.telegraph": "Something moves beneath its skin. It will not die quietly.",
+  "rule.reform.telegraph": "Water finds the cracks. It will rise again.",
+  "rule.multiply.telegraph": "Hands reach from the walls. More come with the dawn.",
+  "rule.blink.telegraph": "It is elsewhere.",
+  "rule.blink.evade": "It is elsewhere.",
+  "rule.pounce.telegraph": "It hunts your carelessness.",
+  "rule.absorb.telegraph": "Your wounds feed it. The more you strike, the stronger it grows.",
+  "rule.honor.telegraph": "It will not break. It will not flee.",
+  "rule.dormant.telegraph": "It sleeps. The depths do not wake from sleep.",
+  "rule.drain.telegraph": "Sorrow seeps into your bones. Each struggle costs the last of you.",
+  "rule.chant.telegraph": "The voice rises when silence falls. Listen and it will drown you."
 }

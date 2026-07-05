@@ -15,3 +15,16 @@ describe('creature tags', () => {
     expect(getTagDamageBonus(effects, ['bone'])).toBe(0);
   });
 });
+
+describe('creature signatures', () => {
+  it('at least 8 BESTIARY creatures carry a signature', () => {
+    const creaturesWithSignatures = Object.values(BESTIARY).filter(c => c.signature);
+    expect(creaturesWithSignatures.length).toBeGreaterThanOrEqual(8);
+  });
+  it('Bloated One has rupture signature', () => {
+    expect(BESTIARY['Bloated One'].signature?.id).toBe('rupture');
+  });
+  it('Flickering Shade has blink signature', () => {
+    expect(BESTIARY['Flickering Shade'].signature?.id).toBe('blink');
+  });
+});

@@ -2,6 +2,7 @@
 
 import { loadZone, getZoneRoom, getZoneCreatureSeeded, getZoneBoss, getZoneDepth } from './zone-loader';
 import { createRunRng, generateRandomSeed, type SeededRng } from './seeded-random';
+import type { SignatureRule } from './creature-rules';
 
 import exploreRooms from '../content/explore-rooms.json';
 import combatRooms from '../content/combat-rooms.json';
@@ -174,6 +175,7 @@ export interface CreatureInfo {
   emoji: string;
   artUrl?: string;
   tags?: CreatureTag[];
+  signature?: SignatureRule;
 }
 
 export const BESTIARY: Record<string, CreatureInfo> = {
@@ -217,6 +219,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     emoji: '🫧',
     artUrl: '/creatures/the-bloated.webp',
     tags: ['aquatic', 'flesh'],
+    signature: { id: 'rupture' },
   },
   'Flickering Shade': {
     name: 'Flickering Shade',
@@ -227,6 +230,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     emoji: '👻',
     artUrl: '/creatures/flickering-shade.webp',
     tags: ['spectral'],
+    signature: { id: 'blink' },
   },
   'The Hunched': {
     name: 'The Hunched',
@@ -237,6 +241,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     emoji: '🐺',
     artUrl: '/creatures/the-hunched.webp',
     tags: ['flesh'],
+    signature: { id: 'pounce' },
   },
   'Tideborn': {
     name: 'Tideborn',
@@ -247,6 +252,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     emoji: '🌊',
     artUrl: '/creatures/tideborn.webp',
     tags: ['aquatic'],
+    signature: { id: 'reform' },
   },
   'Bone Weavers': {
     name: 'Bone Weavers',
@@ -257,6 +263,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     emoji: '🦴',
     artUrl: '/creatures/bone-weavers.webp',
     tags: ['bone'],
+    signature: { id: 'multiply', param: { turn: 4 } },
   },
   'Ash Children': {
     name: 'Ash Children',
@@ -289,6 +296,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     emoji: '🧙',
     artUrl: '/creatures/hollow-clergy.webp',
     tags: ['spectral'],
+    signature: { id: 'chant', param: { ramp: 4 } },
   },
   'The Bound': {
     name: 'The Bound',
@@ -309,6 +317,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     emoji: '🗿',
     artUrl: '/creatures/forgotten-guardian.webp',
     tags: ['construct'],
+    signature: { id: 'dormant' },
   },
   'The Weeping': {
     name: 'The Weeping',
@@ -319,6 +328,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     emoji: '😢',
     artUrl: '/creatures/the-weeping.webp',
     tags: ['spectral'],
+    signature: { id: 'drain' },
   },
   'Carrion Knight': {
     name: 'Carrion Knight',
@@ -329,6 +339,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     emoji: '⚔️',
     artUrl: '/creatures/carrion-knight.webp',
     tags: ['bone'],
+    signature: { id: 'honor' },
   },
   'Pale Oracle': {
     name: 'Pale Oracle',
@@ -349,6 +360,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     emoji: '👥',
     artUrl: '/creatures/the-congregation.webp',
     tags: ['flesh'],
+    signature: { id: 'absorb', param: { heal: 8 } },
   },
   'Pale Crawler Swarm': {
     name: 'Pale Crawler Swarm',
