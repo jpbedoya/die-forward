@@ -1,9 +1,16 @@
 module.exports = function (api) {
-  api.cache(true);
+  // For Jest tests, use React's default JSX transform (no nativewind)
+  const isJest = process.env.NODE_ENV === 'test';
+
+  api.cache(!isJest); // Cache for non-test builds
+
   return {
     presets: [
-      ["babel-preset-expo", { jsxImportSource: "nativewind" }],
-      "nativewind/babel",
+      [
+        "babel-preset-expo",
+        isJest ? {} : { jsxImportSource: "nativewind" }
+      ],
+      ...(isJest ? [] : ["nativewind/babel"]),
     ],
   };
 };

@@ -30,6 +30,9 @@ import { rollModifier, type RunModifier } from './modifiers';
 
 const INVENTORY_MAX = 4;
 
+/** Canon starting/regen-cap stamina. Must match DEFAULT_GAME_SETTINGS.staminaPool. */
+export const STARTING_STAMINA = 4;
+
 const NICKNAME_STORAGE_KEY = 'die-forward-nickname';
 const NICKNAME_PROMPTED_KEY = 'die-forward-nickname-prompted';
 const GUEST_PROGRESS_KEY = 'die-forward-guest-progress';
@@ -177,7 +180,7 @@ const initialState: GameState = {
   zoneId: 'sunken-crypt',
   currentRoom: 0,
   health: 100,
-  stamina: 3,
+  stamina: STARTING_STAMINA,
   inventory: [],
   pendingItem: null,
   itemsFound: 0,
@@ -795,7 +798,7 @@ export function GameProvider({
 
       // Apply modifier starting overrides, factoring in milestone perks
       const startingHP = modifier.startingHP ?? (perks.bonusHp ? 110 : 100);
-      const startingStamina = modifier.startingStamina ?? 3;
+      const startingStamina = modifier.startingStamina ?? STARTING_STAMINA;
 
       // Starting item perk (250 deaths): give a random item at run start
       let initialInventory: { id: string; name: string; emoji: string }[] = [];
