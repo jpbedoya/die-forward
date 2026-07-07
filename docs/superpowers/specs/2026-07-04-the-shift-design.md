@@ -54,14 +54,16 @@ The tight loop: shift happens → dispatch reaches you (push if allowed, home sc
 
 ## 3. The Shift (world state)
 
-### 3.1 Daily seeded layer (offline-capable)
+### 3.1 Daily seeded layer (offline for Unbound; server-committed for staked)
 
-Derived **deterministically** from `hash(dateUTC + zoneId)`. No server required — offline empty-handed runs compute the identical shift locally. Controls:
+Derived **deterministically** from `hash(dateUTC + zoneId)`. The world shifts at 00:00 UTC globally (dispatch *delivery* is local-morning, §8 — it describes the already-live shift). Controls:
 
 - **Map edges:** which connections between map nodes are open/closed today (see §4).
 - **Rare NPC room:** which one of the bible NPCs appears in the zone today and at which node (Ferryman, Cartographer, Collector, Mourner, Whisper Keeper, Echo of a Victor — one per zone per day, some days none).
 - **Modifier pool:** which 2–3 of the 6 run modifiers are on offer today (see §7).
 - **Side-door state:** which item-gated side chambers are open, sealed, or shift-only today.
+
+**Trust boundary (red-team A1 — load-bearing):** *staked runs are never offline.* Blood-Bound and Coin-Bound runs receive a **server/VRF-committed `runSeed` and server-stamped date** at stake time (MagicBlock VRF exists for this); client-asserted dates and client-chosen seeds are rejected for anything with economic outcomes. Unbound runs stay fully offline/client-side — but are **firewalled**: no leaderboard writes, no currency grants, and no community-aggregation input without a server run receipt. The daily layer is public and pre-solvable by design (acceptable for Unbound); staked runs additionally mix a server-side per-run secret so the *run instance* is not pre-solvable. Assume the content is datamined day one (all synergies/rules/gates are public): difficulty and economy are tuned to **solved** play, and no single element tag may be a universal counter.
 
 ### 3.2 Community layer (online, additive)
 
@@ -71,6 +73,10 @@ A nightly aggregation job (web API cron over InstantDB death data, per zone, tra
 - **Mass-death rooms:** map nodes where ≥10 players died yesterday (tunable, admin-configurable like `victoryBonusPercent`) gain a **curse statue** (bible: Dark-Souls-style death marker) — a visible warning plus a small ambient effect (e.g., +1 corpse spawn chance in adjacent nodes).
 - **Architect visitation:** the single deadliest node (past threshold) shows corpses **built into the walls** — environmental storytelling in room narration, naming real fallen players' nicknames/final words where available. The Architect's Nail artifact becomes relevant here.
 - **Echo Husk material:** Echo Husks (see §6) draw their repeated phrases from real recent final words in the zone.
+
+**Aggregation integrity (A5):** the nightly job ingests **server-receipted deaths only**, counts distinct plausible accounts (not raw rows), uses medians over sums, and applies per-account caps + age minimums — the community layer must be bot-steerable by nobody. Tips count only with a verified on-chain transfer.
+
+**UGC moderation gate (A2 — ships before any rebroadcast feature):** any player-authored text surfaced to *other* players (Echo Husk phrases, Architect-wall names/final words, corpse final words in shared surfaces) passes profanity/URL filtering, carries a report button, and is trust-weighted (account age / staked history). No filter, no rebroadcast — this is a store-review-level requirement, not polish.
 
 ### 3.3 Data & code touchpoints
 
@@ -84,18 +90,19 @@ A nightly aggregation job (web API cron over InstantDB death data, per zone, tra
 
 ### 4.1 Structure
 
-Each zone's fixed 12-room script becomes a **DAG of ~30–35 authored nodes**:
+Each zone's fixed 12-room script becomes a **DAG of ~30–35 nodes** — but the authoring budget is **~12 signature nodes per zone** (NPC rooms, set-pieces, gated side chambers) plus **~15 shared, tagged "transit" beats** recombined and vocabulary-reskinned per zone (water/ash/bone). Authored density goes where it's noticed — branch points and destinations — not uniformly across 35 nodes (fun-skeptic F4: 35 bespoke nodes × 5 zones × 6 locales is the phase that silently becomes six months).
 
-- **3 depth tiers** (unchanged: rooms 1–4 / 5–8 / 9–12 danger scaling), each tier a band of the map.
+- **3 depth tiers** (unchanged danger scaling), each tier a band of the map. **Every node carries an authored `depth` field** — tier comes from the node, never from traversal position.
+- **Canonical depth projection (feasibility constraint, load-bearing):** `room` is a monotonic integer welded from the UI through server validation to the on-chain `u8` (`final_room`), and `highestRoom` drives zone unlocks + the leaderboard. The DAG must *project* to that integer: `highestRoom` is redefined as **max node-depth reached**, and `ProgressBar`/`maxRooms`/on-chain writes all consume the projection. The anchor program is not modified. Death/Corpse records gain a **node id** field; corpse adjacency re-keys on node/depth-tier instead of `room ± 1`.
 - **2–3 main-path nodes per depth step**; the player always moves downward, choosing among connected next nodes. A run traverses **~13–16 nodes** — under half the map. Session length stays 5–10 minutes.
 - **Side chambers:** dead-end detour nodes off the main path (alcove, offering site, survivor's stash, sealed door). Cost: a room's worth of time plus a risk roll or resource (HP/stamina/item). Reward: loot, lore, NPC access. Some are **item-gated** (Drowned Scripture deciphers the inscription door; Pale Coin buys the Ferryman's crossing; Eye of the Hollow reveals hidden ones) — finally giving the flavor-only artifacts real jobs.
 - **Daily edges:** the seeded shift opens/closes a subset of connections and side doors each day. The same zone yields visibly different route options across days; two runs on the same day can still diverge by choice.
 
 ### 4.2 Presentation
 
-- Path choice happens at the end of each room in the existing choice-button UI — no new map screen required for v1. Choices are **foreshadowed in bible voice** using the existing Crossroads sensory template: *"Left breathes cold air. Right echoes with distant water. Center shows drag marks."* Each hint truthfully signals the node type/risk ahead.
-- The stamina **peek** action gains value: it reveals the concrete room type behind one door.
-- An optional minimal ASCII map (nodes visited / current depth) on the pause/inventory surface — nice-to-have, not v1-blocking.
+- Path choice happens at the end of each room in the existing choice-button UI — no live map screen required for v1.
+- **Hint contract (F2 — binding):** every branch hint is **dual-signal** — one sensory clue in bible voice *plus* one legible risk/reward tag the player can read cold: *"Right — distant water. (A cache, but the air is wrong.)"* Flavor alone previews nothing and makes the choice a coin flip; a hint must let the player trade a known reward against a known risk. The stamina **peek** then has a real job: it upgrades a hint into a certainty.
+- **Comparison surface (F1 — v1-BLOCKING, promoted):** a post-run **path trail** on the death/victory screen — nodes visited plus branches declined. This is the minimum surface that makes yesterday≠today *felt* ("that door was open yesterday"); without it the daily shift is real in data and invisible in play. Cheap: the traversal data already exists. A live ASCII map remains a later nice-to-have.
 
 ### 4.3 Benchmarks — what comparable games do (research)
 
@@ -150,10 +157,13 @@ Implement the bible's already-written behavior lists as **one signature mechanic
 
 Design intent: reading the *creature*, not just the intent icon, becomes the skill. Rules interact with synergies (VOID/ASH counters, reveal effects) to make builds matter.
 
-## 7. Modifier Choice
+**Player-side verb — Bait (F3, phase 2):** the rules ship (phase 1) but most resolve to "Strike, but time it" with the current 4-button vocabulary. Phase 2 adds one action: **Bait** (1⚡) — provoke the enemy's signature behavior early, on the player's terms (draw the pounce before healing, trigger the charge into a prepared dodge, force the reform while holding VOID). One button; makes ~6 of the rules bloom from memorized gotchas into set-up counters. Balance guard: no reveal-stack (Oracle + Ossuary Pact + modifier) may fully automate intent-reading (A6).
 
-- The daily shift selects **2–3 of the 6 modifiers** as today's pool. At the stake screen the player **picks one** (empty-handed runs included). Presented in-fiction: *"The depths make an offer."*
-- Doubles perceived variety at near-zero content cost and adds a strategic pre-run decision that interacts with today's map/apex threat.
+## 7. Modifier Choice & Session Escalator
+
+- The daily shift selects **2–3 modifiers** as today's pool. At the stake screen the player **picks one** (empty-handed runs included). Presented in-fiction: *"The depths make an offer."*
+- **Anti-solve (F5, load-bearing):** modifiers **interact with today's apex threat and map state**, so the best pick changes daily instead of being ranked once by the community (a static 6-pool is solved in 48 hours). Grow the pool toward ~10 over phases 2–3 (a modifier is cheap content). For staked runs, the pool is revealed only **after** stake commit (A6) so seed-knowledge can't cherry-pick counter days.
+- **Within-session escalator (F8):** the daily shift alone rewards an 8-minute login, not a session. Two levers make run 2 *today* hotter than run 1: the **apex bounty is a within-day chase** (reaching it needs depth + the right build — a failed attempt begs an immediate retry), and an optional **session ante** — each consecutive same-session run nudges modifier intensity and coin multiplier up.
 
 ## 8. Dispatches & Notifications
 
@@ -164,7 +174,9 @@ Design intent: reading the *creature*, not just the intent icon, becomes the ski
 Surfaces, identical content:
 1. **Home screen panel** — "THE DEPTHS HAVE SHIFTED" block above the death feed. Always present. Tapping routes to zone select with shift details.
 2. **Zone select** — per-zone shift lines (today's NPC, apex threat, opened doors).
-3. **Push notification** — at most **one per day**, the same dispatch text, via `expo-notifications` + a server-side send at each user's local morning. Plus one rare personal push: *"The Architect has built your corpse into the walls of the Ashen Crypts."* (only when true).
+3. **Push notification** — at most **one per day**, the same dispatch text, via `expo-notifications` + a server-side send at each user's local morning (requires `Player.pushToken` + `Player.timezone` schema fields and an hourly fan-out cron — greenfield; see §13). Plus one rare personal push: *"The Architect has built your corpse into the walls of the Ashen Crypts."* (only when true, and only after A2 moderation).
+
+**Scarcity rule (F7):** 1/day is a **cap, not a floor**. The banner dispatch fires only on personally consequential days (your bounty, your corpse, a door you tried now open); most days get a one-line ambient or silence. A dispatch that fires daily becomes wallpaper in two weeks — the fatigue failure Lifeline's own history warns about. The Cartographer gets 2–3 rotating registers (warning / lament / invitation) so the voice has weather.
 
 **Permission is diegetic and optional:** after the player's first death, the Cartographer appears once: *"The passages move. I can send word when they do — if you wish."* Decline = never asked again in-fiction (settings toggle remains). **Nothing is gated on permission**; deniers read the identical dispatch on the home screen. Expected: many/most players deny — the loop must be fully alive in-app, and it is, because the panel (not the push) is the primary surface.
 
@@ -186,6 +198,9 @@ Market research (spec Appendix A; brainstorm doc Part 4) splits our markets thre
 - Same Toll screen, same ritual framing, same bonus structure — a coin-bound death and a blood-bound death read identically in the feed except for the seal color. The coin rung *is* the tutorial for the blood rung.
 - The Pale Coin artifact in `ITEM_DETAILS` folds into this: found coins become currency pickups; its "passage" effect becomes literal (Ferryman payment).
 - Balance guard: coin income tuned so a stake is meaningfully scarce (roughly: an average run earns ~1/3 of a respectable stake) — losing must sting or the ritual teaches nothing.
+- **Anti-mint rules (A4):** depth income is **concave and clear-weighted** (most value on escape, little on bail-outs) and server-gated for online accounts, with per-day caps; first-clears and milestone grants go through a **server unlock ledger**. The Coin-Bound bonus is **funded strictly from the burned-stake pool** — population-net-negative, never minted. Offline Unbound runs earn no shareable currency (trust boundary, §3.1).
+- **The Binding Streak (F6 — what makes coin loss sting):** consecutive Coin-Bound escapes build a visible **seal tier** on the player's feed badge and corpse; a Coin-Bound death resets it to zero. Coins alone re-earn in ~3 runs — refungible, no tension; the streak is non-refungible, social, and public. This is the emotion that actually rehearses Blood-Bound: losing the thing you were showing off.
+- **Payout canon (A3, resolves an ambiguity):** escape pays **stake × 1.5 total** (the original offering back plus a 50% bonus) on both staked rungs — breakeven clear rate ≈ 63% against the pool. Publish the number; add a **pool circuit-breaker** (bonus % and stake caps auto-tighten if the trailing clear rate exceeds a configured threshold in `gameSettings`).
 
 The fiction holds across all rungs: *"The underworld accepts lesser offerings. It prefers souls."*
 
@@ -223,9 +238,15 @@ Scope note: this section sets direction and constraints; altar multi-token and t
 
 Off The Grid's "game-first, hide-the-chain" is the proven web3 pattern — but its chain layer was cosmetic item trading. Ours is the emotional core of the fiction (the stake *is* the binding; death *feeds* the depths). Fully hiding it forfeits the one mechanic no mainstream competitor can copy, and crypto-native markets (Tier C) choose this game *because* of it. Progressive disclosure keeps the Off The Grid virtue (the game stands alone; most players may never bind) while letting the stake remain the fiction's spine for those who opt in. It is player choice — made after the game has proven it's worth playing.
 
-## 10. Localization & i18n (day-one requirement)
+## 10. Localization & i18n
 
-- **All player-facing strings centralized** from the start of this project — narrative templates, dispatch lines, synergy names, enemy-rule text, UI labels — keyed and pulled through one i18n layer (no inline literals in screens/content code). English ships first; the architecture must make JA/KO/zh-TW/VI drops content-only work.
+**Status after phase 1 (honest):** the *mechanism* exists (`lib/i18n.ts` + `en.json`, all new strings keyed — enforced going forward), but the pre-existing surface is untouched: **~277 inline literals across the 14 screens** plus **~3,619 lines of narrative prose in `lib/zones/*.json`** content packs, whose fragment-concatenation architecture fights a flat key/value catalog.
+
+**Two-track strategy (decided):**
+1. **Screen strings → catalog extraction pass.** A dedicated phase-2 task migrates the ~277 screen literals into `en.json` keys. Mechanical; converges because the surface is enumerable and new literals are banned.
+2. **Content packs → per-locale pack files.** Zone prose localizes as whole translated packs (`sunken-crypt.ja.json` …), with `zone-loader` selecting by locale and falling back to English per-pack. This preserves the fragment-assembly architecture, gives translators full narrative context, and keeps locale drops content-only. Key-referencing packs (re-architecting the content engine) was considered and rejected as invasive. **Consequence:** all phase-2 DAG node prose is authored in the pack format from day one, so it inherits localization for free.
+
+- **All NEW player-facing strings centralized** — keyed through `t()` (screens) or authored in packs (narrative); inline literals are a review-blocking defect.
 - **Dispatch/narrative rendering must be template-safe for localization:** variable substitution (creature names, depths, player nicknames) via named placeholders, no English-word-order concatenation.
 - Bible tone rules apply per-locale (translators get the Content Bible's voice section as part of the loc kit).
 - Priority order per market tiers: `ja`, `ko`, `zh-TW` (revenue) → `vi` (crypto-native reach) → `pt-BR`, `es`.
@@ -246,9 +267,9 @@ Off The Grid's "game-first, hide-the-chain" is the proven web3 pattern — but i
 ## 13. Phasing (build order)
 
 1. **Foundations:** item/creature tags + synergies + stub-item effects; enemy signature rules. (Pure content/combat — no structural risk, immediately felt.)
-2. **Map:** zone DAG authoring (Sunken Crypt first, then Ashen), traversal UI, side chambers, item gates.
-3. **Shift:** seeded layer + modifier choice + home/zone-select surfaces.
-4. **Community layer + dispatches:** aggregation job, apex/curse/Architect, `renderDispatch`, notifications last.
+2. **Map:** node/edge zone schema with authored `depth` per node + the canonical depth projection (highestRoom/maxRooms/on-chain `final_room` all consume it); DAG authoring per the 12-signature + 15-transit budget (Sunken Crypt first, then Ashen); traversal UI with the dual-signal hint contract; **post-run path-trail screen (v1-blocking)**; side chambers, item gates; **Bait verb**; node-id fields on Death/Corpse; screen-string extraction pass (§10 track 1); bible revision.
+3. **Shift:** seeded layer (UTC boundary) + modifier choice with apex interaction + home/zone-select surfaces; Coin-Bound + Binding Streak + posture switch; **server-authority carve-out for staked runs (VRF-committed seed + date, run receipts)** — prerequisite for any real-money posture.
+4. **Community layer + dispatches:** server-receipted aggregation job (distinct-account medians, caps), apex/curse/Architect, **UGC moderation gate before any rebroadcast**, `renderDispatch` with scarcity rule, notifications last (push-token + timezone schema, hourly fan-out cron, EAS rebuild).
 
 Cross-cutting from phase 1: the i18n string layer (§10) — every new string lands keyed, and existing touched strings migrate as we go. Pale Coins land in phase 2 (earn sources are map content: side chambers, bounties, depth rewards; the Ferryman/Collector sinks are map NPCs), with Coin-Bound staking at the Toll in phase 3 alongside the posture switch (remote-config + UI gating, no on-chain change).
 
@@ -304,3 +325,36 @@ Inconsistencies found in the July 2026 review, with dispositions. Items marked *
 ## Appendix D — Run-structure benchmarks
 
 See table in §4.3. Headline: successful run-based games show players **30–50% of the authored space per run** and protect a clean session length; Die Forward moves from 100%-seen corridors to ~45% of a 30–35 node DAG with a 13–16 node traversal, keeping 5–10 minute sessions.
+
+## Appendix E — Red-team findings & proposed amendments (July 2026, pre-phase-2)
+
+Three adversarial reviews ran after phase 1: exploit/economy red-team, technical feasibility audit vs the live codebase, and a fun-skeptic design pass. Full reports in session records; consolidated here. **Status: ADOPTED (owner sign-off July 2026) — all items below are folded into the spec body (§3, §4, §6, §7, §8, §9, §10, §13); this appendix remains as the findings record.**
+
+### E.1 Security/economy (from red-team; root cause: client-authoritative writes)
+
+Confirmed in code: deaths/corpses/tips/mastery are direct client InstantDB writes with client-supplied fields. The spec inherited that trust model into staking and the community layer. Amendments:
+
+- ⬜ **A1 — Server-authority carve-out (supersedes parts of §3.1):** *staked runs are never offline.* Blood-Bound and Coin-Bound runs get a server/VRF-committed `runSeed` and server-stamped date at stake time (MagicBlock VRF exists for exactly this). Unbound stays client-side/offline — but is firewalled from leaderboards, currency grants, and community aggregation unless carrying a server run receipt.
+- ⬜ **A2 — UGC moderation before re-broadcast (blocks §3.2 Echo Husks/Architect walls):** any player-authored text (final words, nicknames) surfaced to *other* players passes profanity/URL filtering + report button + trust-weighting (account age/stake). Store-pull-level risk without it.
+- ⬜ **A3 — Pin the payout math:** the spec says "150%" and "+50%" inconsistently. Canon to declare: escape pays **stake × 1.5 total** (net +50%) — breakeven clear rate ≈ 63% (verify against live `victoryBonusPercent` semantics). Publish the breakeven; add a **pool circuit-breaker** (dynamic bonus or stake caps when trailing clear rate exceeds threshold).
+- ⬜ **A4 — Pale Coin anti-mint:** depth income becomes concave and clear-weighted (most on escape, little on bail), server-gated for online accounts, per-day caps; Coin-Bound bonus funded strictly from burned-stake pool (population-net-negative), never minted. First-clears/milestones go through a server unlock ledger.
+- ⬜ **A5 — Community-layer robustness:** aggregate over server-receipted deaths only; distinct-account counts and medians, not raw sums; per-account caps. Verified tips only (on-chain transfer before DB write).
+- ⬜ **A6 — Assume a solved game:** content ships client-side, so all synergies/rules/gates are public day 1. Tune difficulty/economy to solved play; no single element (e.g. ASH) may be a universal counter; modifier pool revealed only after stake commit for staked runs.
+
+### E.2 Fun/legibility (from design-skeptic; theme: systems real in data, invisible in play)
+
+- ⬜ **F1 — Comparison surface is v1-blocking (amends §4.2):** post-death "path taken + branches declined" trail screen. Without it the daily shift is unobservable and §3's premise fails.
+- ⬜ **F2 — Choice/hint contract (amends §4.2):** every branch hint = one sensory clue + one legible risk/reward tag; peek upgrades hint→certainty. Flavor-only hints are coin flips.
+- ⬜ **F3 — One new player verb (amends §6 scope):** a Bait/Feint action so enemy signature rules have answers beyond "Strike, but time it." Smallest addition that makes ~6 rules bloom.
+- ⬜ **F4 — Authoring budget (amends §4.1):** ~12 signature nodes per zone + ~15 shared tagged transit beats recombined per zone — not 35 bespoke nodes × 5 zones × 6 locales.
+- ⬜ **F5 — Modifier pool anti-solve (amends §7):** modifiers interact with today's apex/map so the best pick changes daily; grow pool toward ~10.
+- ⬜ **F6 — Binding streak (amends §9.0):** consecutive Coin-Bound escapes build a visible seal tier; a coin-bound death resets it. Makes soft-currency loss non-refungible (coins alone re-earn in ~3 runs = no sting).
+- ⬜ **F7 — Dispatch scarcity (amends §8):** 1/day is a cap, not a floor. Banner dispatches only on personally consequential days; most days ambient or silent; 2-3 rotating registers.
+- ⬜ **F8 — Within-session escalator:** apex bounty as a within-day chase + optional per-session ante so runs 2-3 today are hotter, not staler.
+
+### E.3 Feasibility corrections (from codebase audit)
+
+- **`room` is a monotonic integer welded UI→server→on-chain `u8` (`final_room`),** and `highestRoom` drives zone unlocks + leaderboard. Phase 2 rule: DAG nodes carry an authored `depth`; `highestRoom` is redefined as max-depth-reached; the graph projects to canonical integer depth for all existing consumers (anchor program untouched). Corpse adjacency (`room ±1`) re-keys on node ID / depth tier — schema field needed on Death/Corpse.
+- **i18n reality check (amends §10):** phase 1 keyed new strings only; the true surface is ~277 inline screen literals + 3,619 lines of zone-pack prose whose fragment-assembly fights the flat catalog. **Decision needed before authoring any phase-2 prose:** per-locale zone JSONs vs key-referencing packs. An explicit extraction pass is required; "migrate as we go" will not converge.
+- **Notifications are greenfield + timezone contradiction:** no expo-notifications, no push token/timezone on Player, native EAS rebuild required, and "local morning" delivery needs an hourly fan-out cron. Also: §3.1's UTC shift boundary vs §8's local-morning dispatch is unreconciled — decide the boundary (recommend: world shifts at 00:00 UTC globally; dispatch delivered at local morning describing the already-live shift).
+- **Cheaper than specced:** seeded-RNG substrate, death schema for aggregation, Vercel cron pattern (`/api/session/cleanup` exists), and `gameSettings` tunables are all in place — shift computation + community aggregation cores are medium, not large.
