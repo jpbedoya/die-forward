@@ -1,0 +1,321 @@
+{
+  "type": "corpse",
+  "zone": "THRESHOLD OF THE UNNAMED",
+  "rooms": [
+    {
+      "template": "fresh",
+      "variations": [
+        {
+          "id": "fresh_1",
+          "narrative": "血還沒乾。他們片刻之前倒在這裡——或許是多年之前。在下面，時間會說謊。他們的手仍伸向牆壁，牆上刻著字：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "fresh_2",
+          "narrative": "還有餘溫。你能看見最後一口氣仍在冷空氣裡凝成白霧。他們差一點就成功了。差一點。他們倉促刻下的遺言：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "fresh_3",
+          "narrative": "你知道這不是很久以前的事，因為你還聞得到恐懼。尖銳。帶著鐵鏽味。他們的留言還很新，石粉仍從字跡間簌簌落下：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "fresh_4",
+          "narrative": "他們的火炬還燃著。就有這麼新。你走近時火焰搖曳，彷彿在向你致意。他們的字句在將熄的光裡發亮：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "fresh_5",
+          "narrative": "漣漪還未平息。他們剛剛倒下。你恰好錯過了他們——或者他們恰好錯過了你。無論如何，這留言是寫給下一個到來的人的：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "old",
+      "variations": [
+        {
+          "id": "old_1",
+          "narrative": "如今幾乎與牆融為一體。水已收走了他們的大半。但刻在石上的字仍在，如悲傷般耐心：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "old_2",
+          "narrative": "骨頭。如今只剩骨頭。被時間與水排成某種近乎安詳的形狀。他們的留言已然風化，卻仍留存：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "old_3",
+          "narrative": "冥府消化他們已有些時日。剩下的與其說是軀體，不如說是記憶。但記憶在這裡不滅。他們的字句長存：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "old_4",
+          "narrative": "苔蘚如今爬上了他們。冥府已接納這具軀體為自身的一部分。唯有刻下的留言仍在抗拒同化：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "old_5",
+          "narrative": "他們在這裡多久了？久到成了擺設。成了地標。顯然有其他倖存者路過，卻無人移動他們。他們的警告依然立著：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "peaceful",
+      "variations": [
+        {
+          "id": "peaceful_1",
+          "narrative": "他們讓自己舒服地安頓下來。物品收拾得整整齊齊。面朝著那道永遠到不了的出口。他們的留言謹慎，深思熟慮：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "peaceful_2",
+          "narrative": "沒有掙扎。沒有暴力。他們只是坐下，認定到此為止。這份坦然幾乎令人羨慕。他們的字句平靜：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "peaceful_3",
+          "narrative": "他們雙手交疊而死。閉著眼。與自己選擇的結局和解。他們的留言讀來像告別，不像警告：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "peaceful_4",
+          "narrative": "一小堆火，早已冷透。一頓飯，吃了一半。他們在這裡歇息。再沒有醒來。有時冥府也會仁慈。他們最後的念頭：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "peaceful_5",
+          "narrative": "他們在微笑。不知怎麼地。經歷了那一切之後。他們的軀體是一堂關於放手的課。這留言寫給他們自己，也寫給你：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "heroic",
+      "variations": [
+        {
+          "id": "heroic_1",
+          "narrative": "那生物倒在他們身旁。他們殺了它。它殺了他們。公平的交換嗎？他們的刀還插在它的顱骨裡。他們的留言簡短，帶著滿足：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "heroic_2",
+          "narrative": "他們在這裡守住了防線。就在這裡。你看得出戰鬥的痕跡——牆上的刀痕，黑色的膿血，他們殺掉的東西的屍體。這墓誌銘是掙來的：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "heroic_3",
+          "narrative": "三隻生物死在他們周圍。他們走得不安靜。走得不輕鬆。他們是戰鬥著走的，被團團圍住，拖上多少算多少。他們的豪語：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "heroic_4",
+          "narrative": "他們為救人而死。你看得見第二串腳印，朝遠處延伸。因為這個人，另一個人活了下來。他們的遺澤：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "heroic_5",
+          "narrative": "站著。他們站著死去。武器高舉。面對一個明知打不贏的東西。他們照樣面對了。他們的不屈刻進石中：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "disturbing",
+      "variations": [
+        {
+          "id": "disturbing_1",
+          "narrative": "他們不是戰死的。是等死的。背靠著牆坐著，雙手交疊，耐心十足。彷彿早就知道。他們身旁的留言：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "disturbing_2",
+          "narrative": "這具軀體有什麼不對。比例。姿勢。那抹微笑。他們像被擺過。被安排過。出自某個不懂人形的東西之手。他們的字句：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "disturbing_3",
+          "narrative": "他們面朝牆壁。額頭抵著石面。抓撓牆壁，直到手指磨盡。留言是鑿進岩石的，不是劃的。鑿得很深。上面寫著：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "disturbing_4",
+          "narrative": "沒有傷口。沒有痕跡。沒有明顯的死因。他們只是……停了。神情困惑，彷彿還在思索那道難題。他們的留言戛然而止：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "disturbing_5",
+          "narrative": "他們站著。死了，卻站著。睜著眼。望著你方才走來的那條通道。他們是不是一直都在看？他們的留言也一同凝視著：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "group",
+      "variations": [
+        {
+          "id": "group_1",
+          "narrative": "三個人。最後時刻相互依偎。無論來的是什麼，他們一同面對。只有一個人來得及寫。這些字屬於所有人：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "group_2",
+          "narrative": "一圈屍體。面朝外。背靠背，直到最後。他們信任彼此。他們一同死去。一個聲音替所有人說話：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "group_3",
+          "narrative": "兩個人。牽著手。至今仍是。殺死他們的東西沒能將他們分開。他們共同的留言：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "group_4",
+          "narrative": "一堆。只能用這個字。有人先死了，其餘的人沒有離開。他們把自己疊了上去。最底下那位寫了些什麼：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "group_5",
+          "narrative": "他們以隊形死去。像士兵。像信徒。像一群知道什麼將至、決定一同面對的人。他們共同的遺言：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "trapped",
+      "variations": [
+        {
+          "id": "trapped_1",
+          "narrative": "坍塌把他們封在裡面。碎石上滿是抓痕。他們試了很久。然後停了。他們在黑暗中寫下的留言：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "trapped_2",
+          "narrative": "被鎖在裡面。門從這一側打不開。關上門時，他們並不知道。門上的痕跡道盡了一切。他們的字劃在門的底部：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "trapped_3",
+          "narrative": "水漲了上來。你看得見水停下的那道印——就在他們頭頂上方。他們爬到了能爬的最高處。不夠高。留言就在水線上：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "trapped_4",
+          "narrative": "鎖鏈。他們被鏈在這裡。誰鏈的？某個要他們等待的東西。要他們思考。要他們寫下最後一件事：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "trapped_5",
+          "narrative": "一口深坑。四壁光滑。無路可出。他們在下面撐得比你想像的更久。久到足以刻下這些字：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "posed",
+      "variations": [
+        {
+          "id": "posed_1",
+          "narrative": "有人擺弄過這具屍骸。把它撐起來。把臉轉向入口。轉向你。這留言不是他們的——是別的東西寫的：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "posed_2",
+          "narrative": "他們跪著。低著頭。雙手合十。一場對祈禱的拙劣模仿，出自某個旁觀過人類禮拜的東西之手。他們身旁的字句並非禱文：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "posed_3",
+          "narrative": "砌進了牆裡。字面意義上的。他們的軀體如今是建築的一部分。構築者來過。只有一隻手是自由的，指向刻下的字：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "posed_4",
+          "narrative": "他們坐在餐桌前。面前有一頓飯。有同伴——其他屍骸，被擺成赴宴賓客的模樣。一場可怖的戲仿。他們的席位卡上寫著：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "posed_5",
+          "narrative": "被陳列著。像藝術品。被小心地、刻意地掛上牆。一個人的展廳。他們下方的說明牌寫著：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "legendary",
+      "variations": [
+        {
+          "id": "legendary_1",
+          "narrative": "你聽說過這一位。人人都聽說過。他們走得比先前任何人都遠。他們的屍骸成了地標。他們的字句被抄錄、被流傳：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "legendary_2",
+          "narrative": "那位有名的。供品環繞著他們——其他旅人的饋贈，致上的敬意。他們差一點就成功了。他們的留言成了一句禱詞：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "legendary_3",
+          "narrative": "你從故事裡認出了他們。比你想像的矮小。更像個人。他們的傳說比軀體更龐大。他們的字句樸素得出奇：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "legendary_4",
+          "narrative": "一處朝聖地。有人專程前來，只為看看這位偉大者倒下的地方。花朵在他們腳邊腐爛。留言被無數手指摩挲得模糊：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "legendary_5",
+          "narrative": "史上賭注最高的一次下行。最大的損失。最勇敢的嘗試。他們的失敗教會了後人如何成功。他們留下的不只是字句：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    }
+  ]
+}
