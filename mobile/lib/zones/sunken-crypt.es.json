@@ -1,0 +1,1917 @@
+{
+  "id": "sunken-crypt",
+  "version": "1.0.0",
+  "meta": {
+    "name": "THE SUNKEN CRYPT",
+    "tagline": "El primer descenso. Nada aquí está vivo.",
+    "element": "water",
+    "difficulty": 1,
+    "colors": {
+      "primary": "#1e3a5f",
+      "accent": "#4a9eff",
+      "text": "#a8d4ff"
+    },
+    "mechanic": null,
+    "unlockRequirement": null,
+    "emoji": "🌊"
+  },
+  "lore": "Escaleras antiguas, talladas por manos olvidadas, bajan hacia salas inundadas donde la frontera entre la vida y la muerte se vuelve delgada. El agua recuerda a todos los que se ahogaron.",
+  "rooms": {
+    "explore": [
+      {
+        "template": "corridor",
+        "variations": [
+          {
+            "id": "corridor_1",
+            "narrative": "El agua gotea en algún punto más adelante. El pasaje se estrecha, las paredes resbalan con algo que no es del todo agua. Tu antorcha empuja la oscuridad. La oscuridad empuja de vuelta.",
+            "options": [
+              "Sigue adelante",
+              "Examina las paredes"
+            ]
+          },
+          {
+            "id": "corridor_2",
+            "narrative": "El corredor se curva. No puedes ver lo que hay tras la esquina, pero lo oyes — un sonido húmedo, rítmico. ¿Respiración? ¿Goteo? Algo distinto por completo.",
+            "options": [
+              "Dobla la esquina",
+              "Escucha con atención primero"
+            ]
+          },
+          {
+            "id": "corridor_3",
+            "narrative": "Marcas de arañazos recorren ambas paredes. Algo fue arrastrado por aquí. Hace poco. Las marcas llevan hacia lo hondo. El único camino también.",
+            "options": [
+              "Sigue las marcas",
+              "Avanza con cautela"
+            ]
+          },
+          {
+            "id": "corridor_4",
+            "narrative": "La piedra aquí es más vieja. Pulida por incontables pies a lo largo de incontables años. No eres el primero en recorrer este camino. Los huesos del rincón sugieren que podrías estar entre los últimos.",
+            "options": [
+              "Continúa",
+              "Examina los huesos"
+            ]
+          },
+          {
+            "id": "corridor_5",
+            "narrative": "Tus pasos resuenan mal. Demasiados ecos. Como si alguien caminara a tu lado, medio paso atrás. No miras hacia atrás. Sabes que no debes.",
+            "options": [
+              "Sigue avanzando",
+              "Detente y voltea"
+            ]
+          }
+        ]
+      },
+      {
+        "template": "chamber",
+        "variations": [
+          {
+            "id": "chamber_1",
+            "narrative": "Un espacio inmenso se abre ante ti. Los pilares suben hacia la sombra, sus remates perdidos en la oscuridad. Esto se construyó para congregaciones. Ahora solo congrega silencio. Y a ti.",
+            "options": [
+              "Cruza la cámara",
+              "Mantente cerca de las paredes"
+            ]
+          },
+          {
+            "id": "chamber_2",
+            "narrative": "El techo se desvanece en lo negro. Las paredes están demasiado separadas. Esta sala es más grande de lo que debería — más grande de lo que el templo de arriba podría contener. Aquí abajo la geometría miente.",
+            "options": [
+              "Cruza deprisa",
+              "Registra el perímetro"
+            ]
+          },
+          {
+            "id": "chamber_3",
+            "narrative": "El agua cubre el suelo, quieta como vidrio negro. La cámara se extiende en todas direcciones. En su centro, algo se alza del agua. ¿Un altar? ¿Un trono? Desde aquí no puedes saberlo.",
+            "options": [
+              "Vadea hacia el centro",
+              "Rodea por el borde"
+            ]
+          },
+          {
+            "id": "chamber_4",
+            "narrative": "Bancas rotas recorren la sala. Una congregación se sentó aquí una vez, escuchando sermones en lenguas anteriores a las palabras. El púlpito está vacío. Algo observa desde detrás de él.",
+            "options": [
+              "Acércate al púlpito",
+              "Vete deprisa"
+            ]
+          },
+          {
+            "id": "chamber_5",
+            "narrative": "La cámara zumba. Una frecuencia que sientes en los dientes, en los huesos, en los pensamientos. Las paredes están talladas con patrones que duele seguir. No los sigas.",
+            "options": [
+              "Atraviesa como puedas",
+              "Cierra los ojos y avanza al tacto"
+            ]
+          }
+        ]
+      },
+      {
+        "template": "descent",
+        "variations": [
+          {
+            "id": "descent_1",
+            "narrative": "Las escaleras bajan en espiral. Y bajan. Y bajan. Pierdes la cuenta después de los primeros cien peldaños. El aire se vuelve más pesado con cada paso. Más cálido. Equivocado.",
+            "options": [
+              "Sigue descendiendo",
+              "Descansa en las escaleras"
+            ]
+          },
+          {
+            "id": "descent_2",
+            "narrative": "Un pozo cae hacia la oscuridad. Hay asideros tallados en la piedra — pulidos por incontables manos antes que las tuyas. Algunos están manchados. No pienses en por qué.",
+            "options": [
+              "Baja escalando",
+              "Busca otro camino"
+            ]
+          },
+          {
+            "id": "descent_3",
+            "narrative": "El suelo cede en una pendiente suave. Húmeda. Resbalosa. Desciendes, lo elijas o no. La inclinación se acentúa. El control es una ilusión.",
+            "options": [
+              "Deslízate con cuidado",
+              "Intenta afirmarte"
+            ]
+          },
+          {
+            "id": "descent_4",
+            "narrative": "Peldaños de piedra, cada uno más bajo que el anterior. Las proporciones están mal — hechas para algo de piernas más largas, o quizá para que los humanos tropiecen. Tropiezas.",
+            "options": [
+              "Recupera el equilibrio y continúa",
+              "Ve despacio"
+            ]
+          },
+          {
+            "id": "descent_5",
+            "narrative": "El camino cae por una grieta en el suelo. Abajo, el agua reluce. ¿Qué tan profunda? La luz de la antorcha no alcanza el fondo. Nada lo alcanza.",
+            "options": [
+              "Desciende por la grieta",
+              "Suelta algo para medir la profundidad"
+            ]
+          }
+        ]
+      },
+      {
+        "template": "flooded",
+        "variations": [
+          {
+            "id": "flooded_1",
+            "narrative": "Agua hasta las rodillas. Negra. Fría. Tus pies encuentran escalones sumergidos que no puedes ver. Algo roza tu pierna. Escombros, probablemente. Probablemente.",
+            "options": [
+              "Vadea hacia adelante",
+              "Avanza pegado a la pared"
+            ]
+          },
+          {
+            "id": "flooded_2",
+            "narrative": "El pasaje está medio ahogado. El agua te llega al pecho si caminas, al cuello si vadeas por el centro. Ambas opciones son terribles.",
+            "options": [
+              "Mantente en lo bajo, junto a las paredes",
+              "Nada por el centro profundo"
+            ]
+          },
+          {
+            "id": "flooded_3",
+            "narrative": "El agua sube cuando entras. Tobillo. Rodilla. Muslo. No está entrando — solo... sube. Como si la sala misma estuviera tragando. Muévete rápido.",
+            "options": [
+              "Cruza a toda prisa",
+              "Busca terreno más alto"
+            ]
+          },
+          {
+            "id": "flooded_4",
+            "narrative": "Aquí flotan cuerpos. Boca abajo. Meciéndose apenas. No son frescos, pero tampoco viejos. El agua los conserva. El agua lo conserva todo.",
+            "options": [
+              "Nada más allá de ellos",
+              "Revisa si alguno es un jugador reciente"
+            ]
+          },
+          {
+            "id": "flooded_5",
+            "narrative": "El agua brilla. Apenas. Una fosforescencia enfermiza que no ilumina nada salvo a sí misma. Cosas se mueven bajo la superficie. Intentas no mirarlas directamente.",
+            "options": [
+              "Vadea deprisa",
+              "Espera y observa los movimientos"
+            ]
+          }
+        ]
+      },
+      {
+        "template": "shrine",
+        "variations": [
+          {
+            "id": "shrine_1",
+            "narrative": "Un altar a algo olvidado. El rostro del ídolo fue raspado, pero sientes que observa de todos modos. Las ofrendas se pudren a su base. Algunas son frescas.",
+            "options": [
+              "Haz una ofrenda",
+              "Pasa sin reconocerlo"
+            ]
+          },
+          {
+            "id": "shrine_2",
+            "narrative": "Aquí arden velas. ¿Quién las enciende? La cera se ha encharcado en formas — rostros, manos, cosas que podrían ser palabras en un idioma de goteos. Las llamas no titilan.",
+            "options": [
+              "Examina las velas",
+              "No toques nada"
+            ]
+          },
+          {
+            "id": "shrine_3",
+            "narrative": "Una rueda de oraciones, trabada por el óxido. Las plegarias talladas en ella están gastadas, ilegibles. Mejor así, quizá. Alguien intentó girarla hace poco — el óxido está raspado.",
+            "options": [
+              "Intenta girarla",
+              "Déjala en paz"
+            ]
+          },
+          {
+            "id": "shrine_4",
+            "narrative": "El santuario es al agua misma. Un estanque, perfectamente circular, perfectamente quieto. Tu reflejo te devuelve la mirada. Parpadea cuando tú no lo haces.",
+            "options": [
+              "Aparta la vista",
+              "Sostenle la mirada"
+            ]
+          },
+          {
+            "id": "shrine_5",
+            "narrative": "Los nombres cubren cada superficie. Tallados, rayados, quemados en la piedra. Miles de nombres. Peregrinos que vinieron antes. Un espacio en blanco espera, como aguardando el tuyo.",
+            "options": [
+              "Añade tu nombre",
+              "No dejes rastro"
+            ]
+          }
+        ]
+      },
+      {
+        "template": "crossroads",
+        "variations": [
+          {
+            "id": "crossroads_1",
+            "narrative": "Tres caminos divergen. El de la izquierda exhala aire frío y susurros. El de la derecha resuena con agua lejana. El del centro muestra marcas de arrastre que entran. Ninguno sale.",
+            "options": [
+              "Toma el camino de la izquierda",
+              "Toma el camino de la derecha",
+              "Sigue por el centro"
+            ]
+          },
+          {
+            "id": "crossroads_2",
+            "narrative": "El pasaje se divide. Alguien marcó las paredes — flechas rayadas, direcciones desesperadas. Las flechas se contradicen entre sí. Alguien se perdió aquí. Muchos álguienes.",
+            "options": [
+              "Sigue el camino más gastado",
+              "Elige la vía sin marcar"
+            ]
+          },
+          {
+            "id": "crossroads_3",
+            "narrative": "Un nudo de corredores, cinco en total. Tu antorcha capta movimiento en dos de ellos. Nada en los otros tres — pero la nada podría ser peor.",
+            "options": [
+              "Hacia el movimiento",
+              "Lejos de él"
+            ]
+          },
+          {
+            "id": "crossroads_4",
+            "narrative": "Arriba o abajo. Las únicas opciones. Subir es más duro — las escaleras están rotas, desmoronándose. Bajar es más fácil. Bajar siempre es más fácil aquí.",
+            "options": [
+              "Sube",
+              "Desciende más"
+            ]
+          },
+          {
+            "id": "crossroads_5",
+            "narrative": "Dos pasajes idénticos. Mismas dimensiones. Misma oscuridad. Misma sensación de algo mal. Uno lleva más hondo. Otro lleva a la muerte. Podrían ser lo mismo.",
+            "options": [
+              "Toma el pasaje de la izquierda",
+              "Toma el pasaje de la derecha"
+            ]
+          }
+        ]
+      },
+      {
+        "template": "collapse",
+        "variations": [
+          {
+            "id": "collapse_1",
+            "narrative": "Las grietas tejen el techo. El polvo cae en hilos. Este lugar quiere venirse abajo. Lo oyes deliberar — gimiendo, asentándose, decidiendo. Muévete. Ahora.",
+            "options": [
+              "Corre a través",
+              "Avanza con cuidado"
+            ]
+          },
+          {
+            "id": "collapse_2",
+            "narrative": "La mitad del pasaje es escombro. La otra mitad es paciencia — esperando volverse escombro. Puedes ver hasta el otro lado. El hueco es estrecho. El tiempo, más estrecho aún.",
+            "options": [
+              "Escúrrete rápido",
+              "Prueba la estabilidad primero"
+            ]
+          },
+          {
+            "id": "collapse_3",
+            "narrative": "El suelo se inclina. No mucho, pero lo suficiente. El agua se acumula en un lado. Las grietas se extienden desde donde estás parado. Cada paso es una negociación con la gravedad.",
+            "options": [
+              "Muévete a terreno estable",
+              "Quédate muy quieto"
+            ]
+          },
+          {
+            "id": "collapse_4",
+            "narrative": "Alguien provocó un derrumbe aquí. Puedes ver dónde estaba parado cuando cayó todo. Puedes ver dónde dejó de estar parado. No te pares ahí.",
+            "options": [
+              "Busca otra ruta",
+              "Trepa sobre los escombros"
+            ]
+          },
+          {
+            "id": "collapse_5",
+            "narrative": "Las paredes están combadas hacia adentro. Presión desde alguna parte. ¿El templo de arriba? ¿El peso del agua? ¿La lenta compresión del inframundo digiriéndose a sí mismo? ¿Importa? Muévete.",
+            "options": [
+              "Apresúrate a cruzar",
+              "Apuntala las paredes como puedas"
+            ]
+          }
+        ]
+      },
+      {
+        "template": "graveyard",
+        "variations": [
+          {
+            "id": "graveyard_1",
+            "narrative": "Huesos. Ordenados por tipo — cráneos aquí, costillas allá, fémures apilados como leña. Alguien organizó esto. Hace poco. Hay huecos en el arreglo. Espacios que esperan.",
+            "options": [
+              "Busca entre los huesos",
+              "Pasa deprisa"
+            ]
+          },
+          {
+            "id": "graveyard_2",
+            "narrative": "Tumbas recorren ambas paredes, apiladas de a tres. Algunas están selladas. Algunas, abiertas. Algunas se están abriendo, despacio, desde adentro. No tienes tiempo de mirar.",
+            "options": [
+              "Camina por el centro",
+              "Corre"
+            ]
+          },
+          {
+            "id": "graveyard_3",
+            "narrative": "Una fosa de cuerpos. Los viejos, al fondo. Los más frescos, hacia arriba. La fosa aún no está llena. Es paciente. Sabe que vienen más.",
+            "options": [
+              "Rodea la fosa",
+              "Busca rostros conocidos"
+            ]
+          },
+          {
+            "id": "graveyard_4",
+            "narrative": "Lápidas conmemorativas, agrietadas y gastadas. Nombres en lenguas que no reconoces. Fechas anteriores a los calendarios. Estos muertos son más viejos que la historia. Recuerdan de todos modos.",
+            "options": [
+              "Lee las lápidas",
+              "No te demores"
+            ]
+          },
+          {
+            "id": "graveyard_5",
+            "narrative": "Aquí los muertos están posados. De pie. Sentados. Arrodillados. Congelados en sus últimos momentos, conservados por la oscuridad. Una galería de finales. La entrada es gratis. Salir cuesta más.",
+            "options": [
+              "Estudia las poses",
+              "Mantén la vista al frente"
+            ]
+          }
+        ]
+      },
+      {
+        "template": "witness",
+        "variations": [
+          {
+            "id": "witness_1",
+            "narrative": "Las paredes están chamuscadas en un patrón. Circular. Preciso. En el centro, la piedra se fundió y volvió a formarse. Lo que estuvo aquí ya no está. Esperas que ya no esté.",
+            "options": [
+              "Examina las marcas de quemadura",
+              "Vete de inmediato"
+            ]
+          },
+          {
+            "id": "witness_2",
+            "narrative": "Marcas de garras cubren cada superficie — suelo, paredes, techo. Surcos profundos en piedra sólida. Algo intentaba escapar. O algo intentaba entrar.",
+            "options": [
+              "Estudia las marcas",
+              "No pienses en ello"
+            ]
+          },
+          {
+            "id": "witness_3",
+            "narrative": "Un círculo perfecto de piedra intacta en una sala de caos. El círculo está limpio. Todo lo que queda fuera está destruido. Tú estás parado fuera del círculo.",
+            "options": [
+              "Entra al círculo",
+              "Quédate fuera"
+            ]
+          },
+          {
+            "id": "witness_4",
+            "narrative": "Algo ocurrió aquí. El aire aún sabe a gritos. Las piedras están tibias — más de lo que deberían. Estás parado en las secuelas de algo terrible.",
+            "options": [
+              "Busca pistas",
+              "Sal rápido"
+            ]
+          },
+          {
+            "id": "witness_5",
+            "narrative": "Huellas de manos. Cientos. Impresas en las paredes, el suelo, el techo. Todas se estiran en la misma dirección. Hacia la puerta por la que acabas de entrar.",
+            "options": [
+              "Sigue hacia donde apuntan",
+              "Ve en la dirección contraria"
+            ]
+          }
+        ]
+      },
+      {
+        "template": "threshold",
+        "variations": [
+          {
+            "id": "threshold_1",
+            "narrative": "El umbral que tienes delante es más viejo que las paredes que lo rodean. Más allá, el aire sabe distinto — cobre y sal. Los arañazos del marco apuntan hacia atrás. Alguien intentó salir arañando.",
+            "options": [
+              "Cruza el umbral",
+              "Duda"
+            ]
+          },
+          {
+            "id": "threshold_2",
+            "narrative": "Una frontera. Puedes sentirla — la presión del aire cambia, los sonidos se desplazan, tus pensamientos se dispersan un instante. Estás por entrar a otro lugar. Un lugar más hondo.",
+            "options": [
+              "Atraviesa",
+              "Ármate de valor primero"
+            ]
+          },
+          {
+            "id": "threshold_3",
+            "narrative": "El pasaje termina en una cortina de agua que cae desde algún punto arriba. Más allá, oscuridad. El agua es fría. La oscuridad, más fría. Atravesar es el único camino.",
+            "options": [
+              "Empuja a través del agua",
+              "Busca otro camino"
+            ]
+          },
+          {
+            "id": "threshold_4",
+            "narrative": "Una puerta de hueso. Hueso de verdad — costillares entretejidos, cráneos por bisagras. Se abre cuando te acercas. Te estaba esperando a ti, específicamente.",
+            "options": [
+              "Entra",
+              "Rechaza la invitación"
+            ]
+          },
+          {
+            "id": "threshold_5",
+            "narrative": "La luz de tu antorcha se detiene en este punto. No ilumina lo que hay más allá — la oscuridad ahí es absoluta, hambrienta. Tendrás que caminar a ciegas por un rato.",
+            "options": [
+              "Entra en la oscuridad",
+              "Busca otra fuente de luz"
+            ]
+          }
+        ]
+      }
+    ],
+    "combat": [
+      {
+        "template": "ambush",
+        "variations": [
+          {
+            "id": "ambush_1",
+            "narrative": "La sala parece vacía. Agua quieta, aire quieto. Entonces lo ves — la superficie ondulando donde nada se movió. Alzándose. Esperaba debajo.",
+            "enemy": "The Drowned"
+          },
+          {
+            "id": "ambush_2",
+            "narrative": "Lo oyes medio segundo antes de verlo. Chasquidos húmedos sobre la piedra. Encima de ti. Aferrado al techo. Cayendo. Ahora.",
+            "enemy": "Pale Crawler"
+          },
+          {
+            "id": "ambush_3",
+            "narrative": "Tu sombra se mueve mal. Lo notas demasiado tarde — el Hueco ya está dentro de tu silueta, alcanzando a través de ella, alcanzándote a ti.",
+            "enemy": "The Hollow"
+          },
+          {
+            "id": "ambush_4",
+            "narrative": "El cuerpo que pasaste por encima no está muerto. Te agarra el tobillo. Su presa es más fuerte de lo que nada podrido debería ser. Su boca se abre. No sale sonido alguno.",
+            "enemy": "Bloated One"
+          },
+          {
+            "id": "ambush_5",
+            "narrative": "Un parpadeo al borde de tu visión. Volteas. Nada. Vuelves la vista. Está ahí. Justo ahí. Siempre estuvo justo ahí.",
+            "enemy": "Flickering Shade"
+          }
+        ]
+      },
+      {
+        "template": "confrontation",
+        "variations": [
+          {
+            "id": "confrontation_1",
+            "narrative": "Se yergue en tu camino. Esperando. Su cabeza sigue tu movimiento con hambre paciente. No hay forma de rodearlo. Solo de atravesarlo.",
+            "enemy": "The Drowned"
+          },
+          {
+            "id": "confrontation_2",
+            "narrative": "La cosa bloquea la puerta. No ha atacado. No se ha movido. Solo está... ahí. Evaluando. Decida lo que decida, no te va a gustar.",
+            "enemy": "Forgotten Guardian"
+          },
+          {
+            "id": "confrontation_3",
+            "narrative": "Se arrodilla ante un altar, salmodiando en frecuencias que lastiman tus pensamientos. Sabe que estás aquí. El canto es para ti. Una invitación o una sentencia de muerte.",
+            "enemy": "Hollow Clergy"
+          },
+          {
+            "id": "confrontation_4",
+            "narrative": "El caballero alza una hoja oxidada en saludo. Combate honorable. A muerte. Espera que pelees bien. Quedará decepcionado de cualquier modo.",
+            "enemy": "Carrion Knight"
+          },
+          {
+            "id": "confrontation_5",
+            "narrative": "Se alza del agua, del doble de tu altura, chorreando oscuridad. Por un momento casi parece humana. Entonces abre la boca. Entonces tiene demasiadas bocas.",
+            "enemy": "Mother of Tides"
+          }
+        ]
+      },
+      {
+        "template": "territorial",
+        "variations": [
+          {
+            "id": "territorial_1",
+            "narrative": "Aquí hay huesos apilados. Dispuestos. Esto es un nido. Y acabas de despertar a lo que vive en él. No quiere matarte. Quiere que te vayas. Demasiado tarde para eso.",
+            "enemy": "Pale Crawler"
+          },
+          {
+            "id": "territorial_2",
+            "narrative": "El agua aquí es más tibia. Algo grande ha estado descansando debajo. Ese algo se alza ahora, furioso por la intrusión. Este es su estanque. Estás invadiendo.",
+            "enemy": "Tideborn"
+          },
+          {
+            "id": "territorial_3",
+            "narrative": "Las paredes están marcadas con arañazos. Territorio. La criatura emerge de una grieta que no habías notado, defendiendo el suelo que ha reclamado. Cada palmo le costó algo.",
+            "enemy": "The Hunched"
+          },
+          {
+            "id": "territorial_4",
+            "narrative": "Esto fue un santuario una vez. Ahora es una guarida. La cosa que lo tomó no adora aquí — reina. Y acabas de entrar en su corte sin invitación.",
+            "enemy": "Hollow Clergy"
+          },
+          {
+            "id": "territorial_5",
+            "narrative": "Cadenas repiquetean en la oscuridad. El Encadenado ha reclamado este pasaje. No te dejará pasar. No dejará pasar a nadie. Su soledad es agresiva.",
+            "enemy": "The Bound"
+          }
+        ]
+      },
+      {
+        "template": "pursuit",
+        "variations": [
+          {
+            "id": "pursuit_1",
+            "narrative": "Llevas tres salas oyéndolo. Más cerca cada vez. Más rápido cada vez. Correr no está funcionando. Es hora de dejar de correr.",
+            "enemy": "The Hunched"
+          },
+          {
+            "id": "pursuit_2",
+            "narrative": "Te sigue desde las escaleras. Paciente. Implacable. No puedes dejarlo atrás — conoce estos túneles. Hizo estos túneles. Planta cara y enfréntalo.",
+            "enemy": "The Bound"
+          },
+          {
+            "id": "pursuit_3",
+            "narrative": "El chapoteo a tus espaldas se detiene. Eso es peor. Significa que ya no persigue. Significa que ya está aquí.",
+            "enemy": "The Drowned"
+          },
+          {
+            "id": "pursuit_4",
+            "narrative": "Los chasquidos están justo detrás de ti ahora. Puedes sentir su respiración — si eso es respiración — en tu nuca. Voltea. Tienes que hacerlo. No quieres hacerlo.",
+            "enemy": "Pale Crawler"
+          },
+          {
+            "id": "pursuit_5",
+            "narrative": "Cada vez que miras atrás, está más cerca. Nunca se mueve mientras observas. No puedes observar para siempre. Te arden los ojos. Parpadea, y se acaba.",
+            "enemy": "The Hollow"
+          }
+        ]
+      },
+      {
+        "template": "swarm",
+        "variations": [
+          {
+            "id": "swarm_1",
+            "narrative": "Uno solo no sería una amenaza. Pero no hay uno solo. Brotan de las grietas de las paredes, de los huecos del suelo. Decenas. Vienen más. Siempre vienen más.",
+            "enemy": "Pale Crawler Swarm"
+          },
+          {
+            "id": "swarm_2",
+            "narrative": "El agua está llena de ellos. Cosas pequeñas que se aferran. Solas, no son nada. Juntas, son una corriente de dientes y hambre. El agua sube con su masa.",
+            "enemy": "Tideborn"
+          },
+          {
+            "id": "swarm_3",
+            "narrative": "Manos. Solo manos. Emergen de todas partes — suelo, paredes, techo. Aferrando, tirando, arrastrando. No hay cuerpo contra el cual pelear. Solo manos.",
+            "enemy": "Bone Weavers"
+          },
+          {
+            "id": "swarm_4",
+            "narrative": "Los Niños de Ceniza se han reunido. Antes les bastaba con mirar. Ahora quieren más. Se aprietan más cerca. El aire se enrarece. No están atacando — están asfixiando.",
+            "enemy": "Ash Children"
+          },
+          {
+            "id": "swarm_5",
+            "narrative": "Las Cáscaras de Eco se encontraron entre sí. Un coro de últimas palabras robadas, arrastrándose como uno, alcanzando como uno. 'Ayúdame ayúdame ayúdame' — la misma súplica desde una docena de gargantas arruinadas.",
+            "enemy": "Echo Husks"
+          }
+        ]
+      },
+      {
+        "template": "feeding",
+        "variations": [
+          {
+            "id": "feeding_1",
+            "narrative": "Está comiendo algo. Los sonidos son húmedos, metódicos. No te ha visto. Podrías escabullirte. Podrías golpear primero. Terminará pronto de cualquier modo.",
+            "enemy": "The Hunched"
+          },
+          {
+            "id": "feeding_2",
+            "narrative": "El Ahogado encontró un cuerpo. No está comiendo — está... absorbiendo. Creciendo. Fortaleciéndose. Cada momento que esperas, se vuelve más peligroso.",
+            "enemy": "Bloated One"
+          },
+          {
+            "id": "feeding_3",
+            "narrative": "La criatura se agacha sobre algo que solía ser una persona. Levanta la vista. Tiene la boca llena. La interrupción no parece molestarle. Parece agradecida. Más comida.",
+            "enemy": "Pale Crawler"
+          },
+          {
+            "id": "feeding_4",
+            "narrative": "Las Plañideras encontraron duelo del cual alimentarse. El cuerpo de otro jugador, sus últimas palabras aún frescas. Beben su pena. Se vuelven hacia ti. Tu pena huele más rica.",
+            "enemy": "The Weeping"
+          },
+          {
+            "id": "feeding_5",
+            "narrative": "Está sentado entre huesos, partiéndolos, bebiendo lo de adentro. Huesos viejos. Antiguos. Lleva siglos alimentándose aquí. Eres lo primero fresco en mucho tiempo.",
+            "enemy": "The Hunched"
+          }
+        ]
+      },
+      {
+        "template": "guardian",
+        "variations": [
+          {
+            "id": "guardian_1",
+            "narrative": "Se yergue ante la puerta. Siempre se ha erguido ante esta puerta. Morirá ante esta puerta. Tú también, si quieres lo que hay detrás.",
+            "enemy": "Forgotten Guardian"
+          },
+          {
+            "id": "guardian_2",
+            "narrative": "El pasaje de más allá guarda algo importante. Puedes sentirlo. También la cosa que bloquea tu camino. Fue puesta aquí. Tiene un propósito. Ese propósito eres tú.",
+            "enemy": "Carrion Knight"
+          },
+          {
+            "id": "guardian_3",
+            "narrative": "La salida está justo ahí. Veinte pasos. Entre tú y ella se alza algo que ha esperado exactamente este momento. Tu momento. Su propósito.",
+            "enemy": "Hollow Clergy"
+          },
+          {
+            "id": "guardian_4",
+            "narrative": "El alijo está justo más allá. Provisiones, armas, esperanza. La cosa que lo custodia no usa ninguna de esas cosas. Simplemente no quiere que las tengas tú.",
+            "enemy": "The Bound"
+          },
+          {
+            "id": "guardian_5",
+            "narrative": "Protege el santuario. No al dios — el dios está muerto. No las ofrendas — están podridas. Protege la idea. El recuerdo. Los protegerá de ti.",
+            "enemy": "Forgotten Guardian"
+          }
+        ]
+      },
+      {
+        "template": "arena",
+        "variations": [
+          {
+            "id": "arena_1",
+            "narrative": "La cámara es redonda. Lisa. Diseñada para esto. Sientes ojos sobre ti — ¿desde dónde? A la cosa que tienes enfrente no le importa el público. Solo tú.",
+            "enemy": "Carrion Knight"
+          },
+          {
+            "id": "arena_2",
+            "narrative": "Gradas rodean una fosa central. Asientos vacíos, pero presencia no vacía. Algo observa. Algo juzga. La criatura en la fosa aguarda tu descenso.",
+            "enemy": "The Bound"
+          },
+          {
+            "id": "arena_3",
+            "narrative": "Un anfiteatro de hueso. La acústica es perfecta — cada jadeo, cada gruñido, cada estertor resonará con belleza. La Congregación espera la función.",
+            "enemy": "The Congregation"
+          },
+          {
+            "id": "arena_4",
+            "narrative": "Hay un círculo dibujado en el suelo. Antiguo. Vinculante. Una vez que entras, no puedes salir hasta que uno de los dos deje de moverse. La cosa en el círculo nunca deja de moverse.",
+            "enemy": "Flickering Shade"
+          },
+          {
+            "id": "arena_5",
+            "narrative": "La sala se reconfigura cuando entras. Se alzan paredes. Se sellan salidas. Se crea un espacio. Un escenario. Una arena. En alguna parte, algo se divierte mucho.",
+            "enemy": "The Unnamed"
+          }
+        ]
+      },
+      {
+        "template": "wounded",
+        "variations": [
+          {
+            "id": "wounded_1",
+            "narrative": "Está sangrando. Arrastrándose. Las heridas no son tuyas — alguien más lo intentó. Alguien más falló. Te ve. Dientes al descubierto. Miedo y furia a partes iguales.",
+            "enemy": "The Drowned"
+          },
+          {
+            "id": "wounded_2",
+            "narrative": "Le falta la mitad. La otra mitad todavía funciona. Todavía caza. Reducido, pero no acabado. Ya no tiene nada que perder. Eso lo vuelve más peligroso.",
+            "enemy": "Pale Crawler"
+          },
+          {
+            "id": "wounded_3",
+            "narrative": "El Guardián está agrietado. Le faltan piezas. Otro aventurero hizo esto. ¿Dónde está ese aventurero? Muerto, probablemente. Pero lo debilitó. Termina lo que empezó.",
+            "enemy": "Forgotten Guardian"
+          },
+          {
+            "id": "wounded_4",
+            "narrative": "Cojea hacia ti. Roto, pero no vencido. Cada herida lo enfurece más. Cada dolor lo hace odiarte más. La piedad no es una opción que entienda.",
+            "enemy": "The Hunched"
+          },
+          {
+            "id": "wounded_5",
+            "narrative": "Cadenas rotas cuelgan de sus muñecas. Escapó de algo. O lo intentó. Ahora está libre, herido, confundido, y tú eres lo primero que ve. Qué suerte la tuya.",
+            "enemy": "The Bound"
+          }
+        ]
+      }
+    ],
+    "corpse": [
+      {
+        "template": "fresh",
+        "variations": [
+          {
+            "id": "fresh_1",
+            "narrative": "La sangre no se ha secado. Cayeron aquí hace momentos — o años. El tiempo miente aquí abajo. Su mano aún se estira hacia la pared, donde hay palabras rayadas:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "fresh_2",
+            "narrative": "Aún tibio. Puedes ver el último aliento todavía empañando el aire frío. Casi lo logra. Casi. Sus últimas palabras, talladas con prisa:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "fresh_3",
+            "narrative": "Sabes que no fue hace mucho porque todavía puedes oler el miedo. Punzante. Metálico. Su mensaje es fresco, el polvo de piedra aún cae de las letras:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "fresh_4",
+            "narrative": "Su antorcha todavía arde. Así de fresco. La llama vacila cuando te acercas, como reconociéndote. Sus palabras brillan en esa luz que muere:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "fresh_5",
+            "narrative": "Las ondas no se han asentado. Acaba de caer. Lo perdiste por un instante — o él te perdió a ti. De cualquier modo, su mensaje es para quien venga después:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          }
+        ]
+      },
+      {
+        "template": "old",
+        "variations": [
+          {
+            "id": "old_1",
+            "narrative": "Ya casi es parte de la pared. El agua ha reclamado la mayor parte. Pero las palabras talladas en la piedra permanecen, pacientes como el duelo:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "old_2",
+            "narrative": "Huesos. Solo huesos ya. Ordenados por el tiempo y el agua en algo casi apacible. Su mensaje se ha desgastado, pero permanece:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "old_3",
+            "narrative": "El inframundo lleva un tiempo digiriéndolo. Lo que queda es más memoria que cuerpo. Pero aquí las memorias persisten. Sus palabras perduran:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "old_4",
+            "narrative": "El musgo ya crece sobre él. El inframundo ha aceptado este cuerpo como parte de sí. Solo el mensaje tallado se resiste a la absorción:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "old_5",
+            "narrative": "¿Cuánto tiempo lleva aquí? El suficiente para volverse mueble. Un punto de referencia. Otros supervivientes claramente pasaron, pero ninguno lo movió. Su advertencia sigue en pie:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          }
+        ]
+      },
+      {
+        "template": "peaceful",
+        "variations": [
+          {
+            "id": "peaceful_1",
+            "narrative": "Se puso cómodo. Ordenó sus pertenencias con cuidado. Miró hacia la salida que nunca alcanzaría. Su mensaje es cuidadoso, meditado:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "peaceful_2",
+            "narrative": "Sin lucha. Sin violencia. Simplemente se sentó y decidió que hasta aquí era suficiente. Su aceptación es casi envidiable. Sus palabras son serenas:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "peaceful_3",
+            "narrative": "Murió con las manos cruzadas. Los ojos cerrados. En paz con un final que eligió. Su mensaje se lee como una despedida, no como una advertencia:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "peaceful_4",
+            "narrative": "Una fogata pequeña, fría hace mucho. Una comida a medio terminar. Descansó aquí. Nunca despertó. A veces el inframundo es misericordioso. Su último pensamiento:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "peaceful_5",
+            "narrative": "Está sonriendo. De algún modo. Después de todo. Su cuerpo es una lección en soltar. Su mensaje es tanto para sí mismo como para ti:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          }
+        ]
+      },
+      {
+        "template": "heroic",
+        "variations": [
+          {
+            "id": "heroic_1",
+            "narrative": "La criatura yace a su lado. Él la mató. Ella lo mató. ¿Un trato justo? Su hoja sigue clavada en el cráneo. Su mensaje es corto, satisfecho:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "heroic_2",
+            "narrative": "Sostuvo la línea. Aquí. Puedes ver dónde ocurrió la pelea — las cicatrices en las paredes, el icor negro, los cuerpos de las cosas que mató. Su epitafio está ganado:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "heroic_3",
+            "narrative": "Tres criaturas muertas a su alrededor. No se fue en silencio. No se fue fácil. Se fue peleando, rodeado, llevándose a cuantas pudo. Su jactancia:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "heroic_4",
+            "narrative": "Murió salvando a alguien. Puedes ver el segundo rastro de pisadas, alejándose. Alguien más sobrevivió gracias a este. Su legado:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "heroic_5",
+            "narrative": "De pie. Murió de pie. Con el arma en alto. Frente a algo que sabía que no podía vencer. Lo enfrentó de todos modos. Su desafío, tallado en la piedra:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          }
+        ]
+      },
+      {
+        "template": "disturbing",
+        "variations": [
+          {
+            "id": "disturbing_1",
+            "narrative": "No murió peleando. Murió esperando. Sentado contra la pared, las manos cruzadas, paciente. Como si lo supiera. El mensaje a su lado:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "disturbing_2",
+            "narrative": "Algo está mal en este cuerpo. Las proporciones. La posición. La sonrisa. Parece posado. Arreglado. Por algo que no entiende las formas humanas. Sus palabras:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "disturbing_3",
+            "narrative": "Está de cara a la pared. La frente apretada contra la piedra. La arañó hasta quedarse sin dedos. El mensaje está tallado en la roca, no rayado. Tallado hondo. Dice:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "disturbing_4",
+            "narrative": "Sin heridas. Sin marcas. Sin causa aparente. Simplemente... se detuvo. Su expresión es de confusión, todavía tratando de resolver el problema. Su mensaje se apaga a mitad de frase:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "disturbing_5",
+            "narrative": "Está de pie. Muerto, pero de pie. Los ojos abiertos. Vigilando el pasaje por el que acabas de venir. ¿Ha estado vigilando todo este tiempo? Su mensaje mira contigo:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          }
+        ]
+      },
+      {
+        "template": "group",
+        "variations": [
+          {
+            "id": "group_1",
+            "narrative": "Tres. Acurrucados juntos al final. Fuera lo que fuera lo que vino, lo enfrentaron como uno. Solo uno tuvo tiempo de escribir. Las palabras son de todos:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "group_2",
+            "narrative": "Un círculo de cuerpos. Mirando hacia afuera. Espalda contra espalda hasta el final. Confiaron unos en otros. Murieron juntos. Una voz habla por todos:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "group_3",
+            "narrative": "Dos. Tomados de la mano. Incluso ahora. Lo que los mató no los separó. Su mensaje compartido:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "group_4",
+            "narrative": "Una pila. Es la única palabra. Alguien murió primero, y los demás no se fueron. Se sumaron a la pila. El de abajo escribió algo:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "group_5",
+            "narrative": "Murieron en formación. Como soldados. Como creyentes. Como gente que sabía lo que venía y decidió enfrentarlo junta. Su última palabra colectiva:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          }
+        ]
+      },
+      {
+        "template": "trapped",
+        "variations": [
+          {
+            "id": "trapped_1",
+            "narrative": "El derrumbe lo dejó sellado adentro. Marcas de arañazos cubren los escombros. Lo intentó durante mucho tiempo. Luego se detuvo. Su mensaje, escrito en la oscuridad:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "trapped_2",
+            "narrative": "Encerrado. La puerta no se abre desde este lado. No lo sabía cuando la cerró. Las marcas en la puerta cuentan la historia. Sus palabras están rayadas abajo:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "trapped_3",
+            "narrative": "El agua subió. Puedes ver la marca donde se detuvo — justo encima de su cabeza. Trepó tan alto como pudo. No lo suficiente. Su mensaje está en la línea del agua:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "trapped_4",
+            "narrative": "Cadenas. Está encadenado aquí. ¿Quién lo encadenó? Algo que quería que esperara. Que pensara. Que escribiera una última cosa:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "trapped_5",
+            "narrative": "Una fosa. Paredes lisas. Sin salida. Sobrevivió aquí abajo más de lo que esperarías. Lo suficiente para tallar estas palabras:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          }
+        ]
+      },
+      {
+        "template": "posed",
+        "variations": [
+          {
+            "id": "posed_1",
+            "narrative": "Alguien arregló este cuerpo. Lo apoyó erguido. Volvió su rostro hacia la entrada. Hacia ti. El mensaje no es suyo — algo más lo escribió:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "posed_2",
+            "narrative": "Está arrodillado. La cabeza inclinada. Las manos juntas. Una burla de la plegaria, montada por algo que miró a los humanos adorar. Las palabras a su lado no son adoración:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "posed_3",
+            "narrative": "Incrustado en la pared. Literalmente. Su cuerpo es parte de la arquitectura ahora. El Arquitecto estuvo aquí. Solo su mano quedó libre, señalando palabras talladas:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "posed_4",
+            "narrative": "Está sentado a una mesa. Con una comida. Con compañía — otros cuerpos, dispuestos como invitados a cenar. Una parodia horrible. Su tarjeta de sitio dice:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "posed_5",
+            "narrative": "Exhibido. Como arte. Montado en la pared con cuidado, con intención. Una galería de uno solo. La placa debajo muestra:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          }
+        ]
+      },
+      {
+        "template": "legendary",
+        "variations": [
+          {
+            "id": "legendary_1",
+            "narrative": "Has oído hablar de este. Todos han oído. Llegó más lejos que nadie antes. Su cuerpo se ha vuelto un punto de referencia. Sus palabras, copiadas y compartidas:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "legendary_2",
+            "narrative": "El famoso. Ofrendas lo rodean — regalos de otros viajeros, respetos rendidos. Casi lo logra. Su mensaje se volvió plegaria:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "legendary_3",
+            "narrative": "Lo reconoces por las historias. Más pequeño de lo que imaginabas. Más humano. Su leyenda es más grande que su cuerpo. Sus palabras son sorprendentemente simples:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "legendary_4",
+            "narrative": "Un sitio de peregrinación. Otros han venido solo a ver este lugar, donde cayó el grande. Las flores se pudren a sus pies. Su mensaje está gastado de tanto ser trazado con los dedos:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "legendary_5",
+            "narrative": "La apuesta más alta de la historia. La mayor pérdida. El intento más valiente. Su fracaso enseñó a otros cómo triunfar. Su legado es más que palabras:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          }
+        ]
+      }
+    ],
+    "cache": [
+      {
+        "template": "alcove",
+        "variations": [
+          {
+            "id": "alcove_1",
+            "narrative": "Un hueco en la pared, por encima de la línea del agua. Seco. Casi cálido. Alguien dejó provisiones aquí. Quizá logró salir. Quizá solo lo dejó todo atrás."
+          },
+          {
+            "id": "alcove_2",
+            "narrative": "Una cavidad natural en la piedra. Lo bastante pequeña para pasarla por alto, lo bastante grande para esconder. Adentro: vendas, comida seca, una nota que dice 'Tómalo. No lo voy a necesitar.'"
+          },
+          {
+            "id": "alcove_3",
+            "narrative": "Detrás de una piedra suelta. Casi no revisas. Alguien quería esto oculto. Alguien que sabía que no volvería por ello."
+          },
+          {
+            "id": "alcove_4",
+            "narrative": "Un pasadizo angosto. Apretado, pero se abre a una cámara pequeña. Las provisiones están apiladas con orden. Sin polvo — alguien estuvo aquí hace poco. Alguien que se fue con prisa."
+          },
+          {
+            "id": "alcove_5",
+            "narrative": "Una alcoba marcada con el símbolo de un superviviente. La señal universal de 'suficientemente seguro'. Adentro: lo que necesitas. Afuera: todo lo demás."
+          }
+        ]
+      },
+      {
+        "template": "offering_site",
+        "variations": [
+          {
+            "id": "offering_1",
+            "narrative": "Un altar a algo sin nombre. Las ofrendas se pudren a su base — pero entre ellas, algo útil. Tomarlo se siente como aceptar un contrato."
+          },
+          {
+            "id": "offering_2",
+            "narrative": "Un santuario al agua misma. Monedas relucen bajo la superficie de un estanque. Otras cosas también — armas, hierbas, esperanza. El agua da, si estás dispuesto a alcanzar."
+          },
+          {
+            "id": "offering_3",
+            "narrative": "Los fieles dejaron dones aquí. Los fieles ya no están. Los dones permanecen. Tomarlos podría enfurecer a algo. No tomarlos parece un desperdicio."
+          },
+          {
+            "id": "offering_4",
+            "narrative": "Una estatua de algo que quizá fue adorado. A sus pies: provisiones dejadas por peregrinos. En su rostro: una sonrisa que sabe. Quiere que las tomes."
+          },
+          {
+            "id": "offering_5",
+            "narrative": "Velas rodean un pequeño botín. Las velas son frescas. ¿Quién las enciende? ¿Quién deja provisiones para extraños? No lo pienses. Solo toma lo que necesites."
+          }
+        ]
+      },
+      {
+        "template": "survivor_stash",
+        "variations": [
+          {
+            "id": "stash_1",
+            "narrative": "Marcas en la pared. ¿Contando días? Hay cientos. Quien estuvo aquí sobrevivió más de lo que parece posible. Lo dejó todo atrás. ¿Escapó, o simplemente se rindió?"
+          },
+          {
+            "id": "stash_2",
+            "narrative": "Un petate. Una fogata fría. Un diario, con la última página arrancada. Vivió aquí. ¿Cuánto tiempo? El suficiente para acumular provisiones. El suficiente para irse de pronto."
+          },
+          {
+            "id": "stash_3",
+            "narrative": "Alguien construyó una vida aquí abajo. Muebles hechos de escombros. Arte rayado en las paredes. Luego lo abandonó. Todo lo útil está empacado con cuidado, esperando."
+          },
+          {
+            "id": "stash_4",
+            "narrative": "El campamento de un superviviente. Sin cuerpo — no murió aquí. Sus provisiones están etiquetadas, organizadas, dejadas con intención. Un regalo para quien venga después."
+          },
+          {
+            "id": "stash_5",
+            "narrative": "Armas. Comida. Medicina. Apiladas contra la pared del fondo. Una nota dice: 'No pude cargar con todo. No hizo falta. Logré salir.' Esperanza en tinta."
+          }
+        ]
+      },
+      {
+        "template": "spring",
+        "variations": [
+          {
+            "id": "spring_1",
+            "narrative": "El agua brota en hilos de la piedra. Clara, no negra. Algo verde crece en sus bordes — lo único vivo que has visto. Beber se siente como esperanza. El regusto perdura."
+          },
+          {
+            "id": "spring_2",
+            "narrative": "Un estanque de agua limpia. Un milagro aquí abajo. Puedes ver el fondo. Nada se mueve. Nada acecha. Es seguro. Tiene que ser seguro. Bebe."
+          },
+          {
+            "id": "spring_3",
+            "narrative": "El vapor sube de una grieta en el suelo. Agua tibia, rica en minerales, casi agradable. El calor es ajeno después de tanto frío. Descansa aquí. Recupérate."
+          },
+          {
+            "id": "spring_4",
+            "narrative": "Un manantial subterráneo, fresco y frío. Otros acamparon aquí — puedes ver las marcas. Un lugar seguro. Tan seguro como puede serlo algo."
+          },
+          {
+            "id": "spring_5",
+            "narrative": "El agua aquí brilla tenue. Un azul suave. No es peligrosa — de algún modo lo sabes. Beberla alivia las heridas. No preguntes cómo. No preguntes por qué."
+          }
+        ]
+      },
+      {
+        "template": "abandoned_camp",
+        "variations": [
+          {
+            "id": "camp_1",
+            "narrative": "Un petate. Cenizas frías. Comida a medio comer. Se fueron rápido. Las provisiones quedan, pero también la pregunta: ¿qué hizo que alguien abandonara su único lugar seguro?"
+          },
+          {
+            "id": "camp_2",
+            "narrative": "Tiendas — en plural. Un grupo acampó aquí. Su equipo está desperdigado, con pánico. Algunos tomaron lo esencial. Algunos no tomaron nada. Lo que llegó no daba tiempo de empacar."
+          },
+          {
+            "id": "camp_3",
+            "narrative": "Todo está volcado. ¿Señales de lucha? ¿Señales de huida? Las provisiones están enterradas bajo el caos, pero están aquí. Lo que haya pasado, pasó rápido."
+          },
+          {
+            "id": "camp_4",
+            "narrative": "Un puesto de vigilancia. Alguien montaba guardia aquí. Su silla mira ahora en la dirección equivocada. Sus provisiones, intactas. Vio algo. No terminó de verlo."
+          },
+          {
+            "id": "camp_5",
+            "narrative": "A mitad de la comida. La comida sigue en los platos. Todavía... comestible, probablemente. Ni siquiera dejaron de comer antes de correr. O de ser llevados. Las provisiones no responden preguntas."
+          }
+        ]
+      },
+      {
+        "template": "armory",
+        "variations": [
+          {
+            "id": "armory_1",
+            "narrative": "Estantes de armas, picadas por la edad. Aquí se equipó un ejército una vez. ¿Para qué guerra? ¿Contra qué enemigo? Algunas hojas aún conservan filo. Sírvete."
+          },
+          {
+            "id": "armory_2",
+            "narrative": "Un alijo de armas, oculto en las paredes. Alguien se preparó para una guerra que nunca llegó. O una guerra que nunca terminó. Su preparación es tu supervivencia."
+          },
+          {
+            "id": "armory_3",
+            "narrative": "Herramientas de violencia, organizadas por tipo. El polvo es espeso. Nadie ha estado aquí en eras. Nadie salvo las cosas que no necesitan armas."
+          },
+          {
+            "id": "armory_4",
+            "narrative": "Una sala de guardia. Vacía ahora. El equipo de los guardias permanece — corroído, pero funcional. No les molestará que lo tomes prestado. Ya nada les molesta."
+          },
+          {
+            "id": "armory_5",
+            "narrative": "Armas incrustadas en la pared. ¿Trofeos? ¿Almacén? ¿Arte? La disposición es deliberada. Toma lo que te llame. Algo aquí te estaba esperando a ti, específicamente."
+          }
+        ]
+      },
+      {
+        "template": "merchant",
+        "variations": [
+          {
+            "id": "merchant_1",
+            "narrative": "Una figura en la oscuridad. Tiene provisiones. Tiene precios. Ninguno es negociable. En el inframundo, el comercio continúa. Los muertos siguen haciendo tratos."
+          },
+          {
+            "id": "merchant_2",
+            "narrative": "El Coleccionista está sentado entre reliquias. 'Nada es gratis. Todo cuesta. ¿Qué estás dispuesto a pagar?' Extiende su mercancía. Los precios no están en SOL."
+          },
+          {
+            "id": "merchant_3",
+            "narrative": "'Tú tienes cosas. Yo tengo cosas. Podemos comerciar, o podemos esperar a ver quién le quita las cosas a quién por la fuerza.' El mercader sonríe. No es una sonrisa amable."
+          },
+          {
+            "id": "merchant_4",
+            "narrative": "Se hace llamar 'facilitador'. Facilita el traslado de objetos de manos muertas a manos vivas. 'Todos ganan', dice. 'Tarde o temprano, todos son proveedores.'"
+          },
+          {
+            "id": "merchant_5",
+            "narrative": "Una tienda. Aquí abajo. Surtida con objetos de cada aventurero muerto que pasó por aquí. 'Reciclaje', lo llama el tendero. 'Sostenible.' Los precios son tus futuras posesiones."
+          }
+        ]
+      },
+      {
+        "template": "trophy_room",
+        "variations": [
+          {
+            "id": "trophy_1",
+            "narrative": "Cráneos montados en las paredes. Garras en exhibición. Alguien cazó aquí, con éxito. Sus trofeos te dicen lo que viene. Sus provisiones podrían ayudarte a sobrevivirlo."
+          },
+          {
+            "id": "trophy_2",
+            "narrative": "La guarida de un cazador. Pieles, huesos, cosas que no reconoces. Quien vivió aquí sabía sobrevivir. Sabía matar. Sus herramientas están disponibles. Su sabiduría, menos."
+          },
+          {
+            "id": "trophy_3",
+            "narrative": "Cada criatura de las profundidades, preservada y montada. Un catálogo de pesadillas. Entre ellas: provisiones para crear más trofeos. O para no convertirse en uno."
+          },
+          {
+            "id": "trophy_4",
+            "narrative": "Lo primero que ves es la cabeza del Ahogado en una pica. Luego el Reptante, clavado como un espécimen. Alguien los estudiaba. Sus notas y provisiones permanecen."
+          },
+          {
+            "id": "trophy_5",
+            "narrative": "Un monumento a la violencia. Trofeos de cien cacerías. El cazador no está. Los trofeos sugieren que rara vez se queda en un lugar. Rara vez lo necesita. Toma lo que sirva."
+          }
+        ]
+      },
+      {
+        "template": "hermit",
+        "variations": [
+          {
+            "id": "hermit_1",
+            "narrative": "Lleva años aquí. ¿Décadas? Solo. Sobreviviendo. No quiere compañía, pero compartirá lo que sabe. Y lo que ya no necesita."
+          },
+          {
+            "id": "hermit_2",
+            "narrative": "'Eres el primer visitante en... perdí la cuenta.' Los ojos del ermitaño son extraños pero no hostiles. 'Toma esto. He hecho más. Siempre hago más.'"
+          },
+          {
+            "id": "hermit_3",
+            "narrative": "Un filósofo de las profundidades. Ha aceptado su existencia aquí. '¿Provisiones? Sí, tómalas. ¿Respuestas? También tengo. Las preguntas son más difíciles.'"
+          },
+          {
+            "id": "hermit_4",
+            "narrative": "Ha olvidado su propio nombre. Recuerda cómo sobrevivir. 'Esto te ayudará. Aquello te matará. Aprendí la diferencia. Por las malas. Tú no tienes que hacerlo.'"
+          },
+          {
+            "id": "hermit_5",
+            "narrative": "'Quieres salir. Yo también lo quise, una vez.' El ermitaño señala las provisiones. 'Tómalas. Logra salir. O no. De cualquier modo, aquí estaré.'"
+          }
+        ]
+      }
+    ],
+    "exit": [
+      {
+        "template": "threshold",
+        "variations": [
+          {
+            "id": "exit_threshold_1",
+            "narrative": "Luz. Luz de verdad, no de antorcha — luz de día, filtrándose por una grieta arriba. Escalones de piedra suben. El aire huele al mundo que recuerdas. Lo lograste. Esta vez."
+          },
+          {
+            "id": "exit_threshold_2",
+            "narrative": "La salida. Real. Tangible. Después de todo, aquí está — un umbral de regreso al mundo de arriba. La oscuridad a tus espaldas parece inclinarse más cerca, reacia a soltarte."
+          },
+          {
+            "id": "exit_threshold_3",
+            "narrative": "La luz del sol toca tu rostro. Calor después del frío interminable. Las escaleras están justo ahí. La superficie está justo ahí. Cada paso se siente como un desafío. Estás desafiando algo antiguo."
+          },
+          {
+            "id": "exit_threshold_4",
+            "narrative": "El pasaje asciende. El agua retrocede. Adelante: luz, aire, vida. Atrás: todo lo demás. No mires atrás. Te lo has ganado. Tómalo."
+          },
+          {
+            "id": "exit_threshold_5",
+            "narrative": "Una puerta, antigua pero funcional. Más allá: sonido. Viento. ¿Pájaros? Los sonidos de un mundo que siguió girando mientras estabas abajo. Ábrela. Vuelve a casa."
+          }
+        ]
+      },
+      {
+        "template": "release",
+        "variations": [
+          {
+            "id": "exit_release_1",
+            "narrative": "La oscuridad retrocede tras de ti. El agua no te sigue más allá de este punto. El inframundo te suelta — no derrotado, solo... satisfecho. Por ahora."
+          },
+          {
+            "id": "exit_release_2",
+            "narrative": "Lo sientes soltarte. Una presión que no sabías que cargabas se levanta al cruzar la frontera. El inframundo te tenía. Ya no. Así de simple. Así de aterrador."
+          },
+          {
+            "id": "exit_release_3",
+            "narrative": "El frío se detiene en una línea invisible. La cruzas y sientes calor por primera vez en lo que parece años. Las profundidades te miran partir. Van a recordarlo."
+          },
+          {
+            "id": "exit_release_4",
+            "narrative": "Algo se afloja. Algo vasto, de incontables dedos, soltando su presa. Eres libre. Estabas sujeto, y ahora eres libre. No pienses en qué te sujetaba."
+          },
+          {
+            "id": "exit_release_5",
+            "narrative": "Los susurros se apagan. La presión cede. El inframundo se despega de tus pensamientos como una pesadilla que se retira. Estás subiendo. Estás saliendo. Vuelves a ser tú."
+          }
+        ]
+      },
+      {
+        "template": "earned",
+        "variations": [
+          {
+            "id": "exit_earned_1",
+            "narrative": "La puerta final. Estaba sellada. Ahora se abre. Te lo ganaste. Lo que sea que juzga en la oscuridad te ha pesado y te ha hallado suficiente. Atraviesa, superviviente."
+          },
+          {
+            "id": "exit_earned_2",
+            "narrative": "La luz inunda la cámara. Una recompensa por llegar tan lejos. El camino a la superficie se abre como un regalo — o un reconocimiento. Peleaste por esto. Es tuyo."
+          },
+          {
+            "id": "exit_earned_3",
+            "narrative": "Las puertas se separan. Mecanismos antiguos rechinan. Alguien — algo — está impresionado. Pasaste las pruebas. Sobreviviste los juicios. La salida es tu premio. Reclámalo."
+          },
+          {
+            "id": "exit_earned_4",
+            "narrative": "Un coro de silencio. El respeto de los muertos. Llegaste más lejos que la mayoría, sobreviviste lo que mata a la mayoría. La salida te honra con existir. Con dejarte pasar."
+          },
+          {
+            "id": "exit_earned_5",
+            "narrative": "El camino se abre. No regalado — ganado. Cada cuerpo que pasaste, cada criatura que sobreviviste, cada elección que hiciste condujo aquí. A esta puerta. A esta luz. A la vida."
+          }
+        ]
+      },
+      {
+        "template": "reluctant",
+        "variations": [
+          {
+            "id": "exit_reluctant_1",
+            "narrative": "La salida está aquí. La seguridad está aquí. Pero algo queda sin hacer. Alguien queda sin encontrar. Te vas, pero no del todo. Parte de ti se queda. Volverás por ella."
+          },
+          {
+            "id": "exit_reluctant_2",
+            "narrative": "Luz arriba. Oscuridad atrás. Deberías sentir alivio. En cambio te sientes... inconcluso. El inframundo tiene más que mostrar. Más que enseñar. No estás seguro de haber terminado con él."
+          },
+          {
+            "id": "exit_reluctant_3",
+            "narrative": "Puedes irte. Vas a irte. Pero dudas en el umbral. Algo llama desde las profundidades — no amenaza, sino invitación. La próxima vez, susurra. La próxima vez, baja más hondo."
+          },
+          {
+            "id": "exit_reluctant_4",
+            "narrative": "La victoria se siente hueca. Escapaste, pero dejaste cosas atrás. Cuerpos con mensajes que no leíste. Caminos que no tomaste. La salida te juzga por irte tan pronto."
+          },
+          {
+            "id": "exit_reluctant_5",
+            "narrative": "La superficie espera. Lo hondo llama. Estás partido entre la supervivencia y la curiosidad, entre la luz y los secretos aún ocultos en la sombra. Te vas. Por ahora."
+          }
+        ]
+      },
+      {
+        "template": "changed",
+        "variations": [
+          {
+            "id": "exit_changed_1",
+            "narrative": "La superficie espera arriba. ¿Pero puedes volver a ella? Has visto lo que yace debajo. Te has vuelto alguien que sabe. El mundo de arriba parece más pequeño ahora. Menos real."
+          },
+          {
+            "id": "exit_changed_2",
+            "narrative": "Subes hacia la luz. Cada paso se siente más extraño que el anterior. La persona que descendió no es la persona que asciende. Algo fue añadido. Algo fue quitado. Bienvenido de vuelta."
+          },
+          {
+            "id": "exit_changed_3",
+            "narrative": "El hogar está allá arriba. Seguridad. Normalidad. Pero ahora sabes. Has visto los cimientos del mundo. ¿Cómo puede algo sentirse normal de nuevo? ¿Cómo puede algo sentirse real?"
+          },
+          {
+            "id": "exit_changed_4",
+            "narrative": "La salida no se siente como victoria. Se siente como un intermedio. El inframundo te marcó. Te cambió. Lo llevarás para siempre. Incluso a la luz del sol. Sobre todo a la luz del sol."
+          },
+          {
+            "id": "exit_changed_5",
+            "narrative": "Emerger se siente como nacer. Doloroso. Confuso. El mundo es demasiado brillante, demasiado ruidoso, demasiado. Estabas adaptado a la oscuridad. Ahora tienes que adaptarte de vuelta. ¿Puedes?"
+          }
+        ]
+      },
+      {
+        "template": "invitation",
+        "variations": [
+          {
+            "id": "exit_invitation_1",
+            "narrative": "La puerta está abierta. La luz del sol se derrama por ella. Sin guardián, sin prueba, sin precio. Solo... permiso. Quiere que te vayas. Sabe que volverás. Siempre vuelven."
+          },
+          {
+            "id": "exit_invitation_2",
+            "narrative": "'Vuelve pronto', algo no dice pero definitivamente comunica. La salida es demasiado fácil. Demasiado acogedora. No estás escapando — te están dejando ir. Hay una diferencia."
+          },
+          {
+            "id": "exit_invitation_3",
+            "narrative": "El inframundo te sostiene la puerta. Cortés. Paciente. Ya se prepara para tu próxima visita. Sabe algo que tú no: ahora eres adicto al descenso."
+          },
+          {
+            "id": "exit_invitation_4",
+            "narrative": "Ningún obstáculo bloquea tu camino. Extraño, después de todo. Sospechoso. La salida se siente como carnada, como un señuelo. ¿Pero para qué? ¿Para cuándo? Ve, superviviente. Vuelve rico. Vuelve seguido."
+          },
+          {
+            "id": "exit_invitation_5",
+            "narrative": "Luz adelante. Libertad adelante. La oscuridad a tus espaldas no persigue — se despide con la mano. Hasta pronto, parece decir. Dejaremos la puerta sin llave."
+          }
+        ]
+      },
+      {
+        "template": "false",
+        "variations": [
+          {
+            "id": "exit_false_1",
+            "narrative": "Luz adelante. Escaleras que suben. El alivio te inunda. Entonces lo notas — las escaleras bajan. Siempre estuvieron bajando. La 'luz' sonríe con demasiados dientes."
+          },
+          {
+            "id": "exit_false_2",
+            "narrative": "La salida. Por fin. Alcanzas la puerta y tu mano la atraviesa. Ilusión. Crueldad. El camino real continúa a tus espaldas, más hondo. El inframundo ríe sin sonido."
+          },
+          {
+            "id": "exit_false_3",
+            "narrative": "Subes hacia la luz del sol. El aire se enfría. La luz se oscurece. De algún modo las escaleras que suben te llevan hacia abajo. Aquí la geometría miente. Aquí la esperanza miente."
+          },
+          {
+            "id": "exit_false_4",
+            "narrative": "'SALIDA', tallado sobre el umbral. Más allá: otra cámara. Otra elección. Otra mentira. El inframundo está poniendo a prueba tu esperanza. Torturándola. La salida real sigue adelante. Quizá."
+          },
+          {
+            "id": "exit_false_5",
+            "narrative": "La salida. Estás seguro. Estás equivocado. Atraviesas y te encuentras de nuevo en la entrada. Círculo. Bucle. Trampa. El inframundo aún no ha terminado contigo."
+          }
+        ]
+      }
+    ]
+  },
+  "bestiary": {
+    "shared": [],
+    "local": [
+      {
+        "name": "The Drowned",
+        "tier": 1,
+        "health": {
+          "min": 45,
+          "max": 65
+        },
+        "behaviors": [
+          "AGGRESSIVE",
+          "ERRATIC",
+          "DEFENSIVE"
+        ],
+        "description": "Despojos anegados, animados por el hambre del inframundo. Se mueven mal.",
+        "emoji": "🧟",
+        "artUrl": "/creatures/the-drowned.webp"
+      },
+      {
+        "name": "Pale Crawler",
+        "tier": 1,
+        "health": {
+          "min": 35,
+          "max": 50
+        },
+        "behaviors": [
+          "STALKING",
+          "AGGRESSIVE",
+          "HUNTING"
+        ],
+        "description": "Demasiadas extremidades. Se aferran a paredes y techos, y caen cuando pasas.",
+        "emoji": "🕷️",
+        "artUrl": "/creatures/pale-crawler.webp"
+      },
+      {
+        "name": "The Hollow",
+        "tier": 1,
+        "health": {
+          "min": 40,
+          "max": 55
+        },
+        "behaviors": [
+          "STALKING",
+          "ERRATIC",
+          "CHARGING"
+        ],
+        "description": "Sin rostro, sin rasgos. Solo el contorno de una persona tallado en sombra.",
+        "emoji": "👤",
+        "artUrl": "/creatures/the-hollow.webp"
+      },
+      {
+        "name": "Bloated One",
+        "tier": 1,
+        "health": {
+          "min": 55,
+          "max": 75
+        },
+        "behaviors": [
+          "AGGRESSIVE",
+          "CHARGING",
+          "ERRATIC"
+        ],
+        "description": "Cuerpos hinchados de agua oscura. Revientan al ser golpeados.",
+        "emoji": "🫧",
+        "artUrl": "/creatures/the-bloated.webp"
+      },
+      {
+        "name": "Flickering Shade",
+        "tier": 1,
+        "health": {
+          "min": 30,
+          "max": 45
+        },
+        "behaviors": [
+          "ERRATIC",
+          "STALKING",
+          "RETREATING"
+        ],
+        "description": "Imágenes residuales de los muertos. Aquí, luego allá, luego nada.",
+        "emoji": "👻",
+        "artUrl": "/creatures/flickering-shade.webp"
+      },
+      {
+        "name": "The Hunched",
+        "tier": 1,
+        "health": {
+          "min": 50,
+          "max": 70
+        },
+        "behaviors": [
+          "HUNTING",
+          "AGGRESSIVE",
+          "STALKING"
+        ],
+        "description": "Figuras dobladas que avanzan en cuatro patas, olfateando el aire. Buscan calor.",
+        "emoji": "🐺",
+        "artUrl": "/creatures/the-hunched.webp"
+      },
+      {
+        "name": "Tideborn",
+        "tier": 1,
+        "health": {
+          "min": 60,
+          "max": 80
+        },
+        "behaviors": [
+          "CHARGING",
+          "AGGRESSIVE",
+          "DEFENSIVE"
+        ],
+        "description": "Criaturas de agua viva. Se alzan de los charcos, toman forma, luego colapsan.",
+        "emoji": "🌊",
+        "artUrl": "/creatures/tideborn.webp"
+      },
+      {
+        "name": "Echo Husks",
+        "tier": 1,
+        "health": {
+          "min": 35,
+          "max": 50
+        },
+        "behaviors": [
+          "STALKING",
+          "ERRATIC",
+          "AGGRESSIVE"
+        ],
+        "description": "Repiten las últimas palabras de los muertos. Una y otra vez.",
+        "emoji": "🗣️",
+        "artUrl": "/creatures/echo-husks.webp"
+      },
+      {
+        "name": "Bone Weavers",
+        "tier": 1,
+        "health": {
+          "min": 40,
+          "max": 55
+        },
+        "behaviors": [
+          "AGGRESSIVE",
+          "CHARGING",
+          "STALKING"
+        ],
+        "description": "Manos esqueléticas que emergen de paredes y suelos. Solo manos.",
+        "emoji": "🦴",
+        "artUrl": "/creatures/bone-weavers.webp"
+      },
+      {
+        "name": "Ash Children",
+        "tier": 1,
+        "health": {
+          "min": 25,
+          "max": 40
+        },
+        "behaviors": [
+          "STALKING",
+          "DEFENSIVE",
+          "CHARGING"
+        ],
+        "description": "Pequeños. Grises. No atacan — asfixian.",
+        "emoji": "👶",
+        "artUrl": "/creatures/ash-children.webp"
+      },
+      {
+        "name": "Hollow Clergy",
+        "tier": 2,
+        "health": {
+          "min": 70,
+          "max": 90
+        },
+        "behaviors": [
+          "CHARGING",
+          "DEFENSIVE",
+          "AGGRESSIVE"
+        ],
+        "description": "Sacerdotes de un dios sin nombre. Sus plegarias son maldiciones.",
+        "emoji": "🧙",
+        "artUrl": "/creatures/hollow-clergy.webp"
+      },
+      {
+        "name": "The Bound",
+        "tier": 2,
+        "health": {
+          "min": 80,
+          "max": 100
+        },
+        "behaviors": [
+          "HUNTING",
+          "AGGRESSIVE",
+          "CHARGING"
+        ],
+        "description": "Almas envueltas en cadenas de su propio arrepentimiento. Quieren compañía.",
+        "emoji": "⛓️",
+        "artUrl": "/creatures/the-bound.webp"
+      },
+      {
+        "name": "Forgotten Guardian",
+        "tier": 2,
+        "health": {
+          "min": 90,
+          "max": 110
+        },
+        "behaviors": [
+          "DEFENSIVE",
+          "AGGRESSIVE",
+          "CHARGING"
+        ],
+        "description": "Centinelas de piedra animados por magia vieja. Recuerdan cómo matar.",
+        "emoji": "🗿",
+        "artUrl": "/creatures/forgotten-guardian.webp"
+      },
+      {
+        "name": "The Weeping",
+        "tier": 2,
+        "health": {
+          "min": 60,
+          "max": 80
+        },
+        "behaviors": [
+          "STALKING",
+          "ERRATIC",
+          "CHARGING"
+        ],
+        "description": "Espíritus del duelo. Su tacto trae una pena tan honda que hiere.",
+        "emoji": "😢",
+        "artUrl": "/creatures/the-weeping.webp"
+      },
+      {
+        "name": "Carrion Knight",
+        "tier": 2,
+        "health": {
+          "min": 85,
+          "max": 105
+        },
+        "behaviors": [
+          "AGGRESSIVE",
+          "DEFENSIVE",
+          "CHARGING"
+        ],
+        "description": "Guerreros que se negaron a dejar de pelear. Saludan antes de matar.",
+        "emoji": "⚔️",
+        "artUrl": "/creatures/carrion-knight.webp"
+      },
+      {
+        "name": "Pale Oracle",
+        "tier": 2,
+        "health": {
+          "min": 55,
+          "max": 70
+        },
+        "behaviors": [
+          "CHARGING",
+          "RETREATING",
+          "STALKING"
+        ],
+        "description": "Videntes sin ojos que dicen verdades que no quieres oír.",
+        "emoji": "🔮",
+        "artUrl": "/creatures/pale-oracle.webp"
+      },
+      {
+        "name": "The Congregation",
+        "tier": 2,
+        "health": {
+          "min": 100,
+          "max": 130
+        },
+        "behaviors": [
+          "AGGRESSIVE",
+          "CHARGING",
+          "STALKING"
+        ],
+        "description": "Peregrinos fundidos por los bordes, moviéndose como uno. Únete, susurran.",
+        "emoji": "👥",
+        "artUrl": "/creatures/the-congregation.webp"
+      },
+      {
+        "name": "Pale Crawler Swarm",
+        "tier": 2,
+        "health": {
+          "min": 75,
+          "max": 95
+        },
+        "behaviors": [
+          "AGGRESSIVE",
+          "HUNTING",
+          "CHARGING"
+        ],
+        "description": "Uno solo no sería una amenaza. Pero no hay uno solo. Decenas. Vienen más.",
+        "emoji": "🕷️",
+        "artUrl": "/creatures/pale-crawler-swarm.webp"
+      },
+      {
+        "name": "The Unnamed",
+        "tier": 3,
+        "health": {
+          "min": 120,
+          "max": 150
+        },
+        "behaviors": [
+          "ERRATIC",
+          "CHARGING",
+          "STALKING"
+        ],
+        "description": "No puedes verlo con claridad. Tu mente se niega.",
+        "emoji": "❓",
+        "artUrl": "/creatures/the-unnamed.webp"
+      },
+      {
+        "name": "Mother of Tides",
+        "tier": 3,
+        "health": {
+          "min": 130,
+          "max": 160
+        },
+        "behaviors": [
+          "CHARGING",
+          "AGGRESSIVE",
+          "DEFENSIVE"
+        ],
+        "description": "El agua misma, dotada de voluntad. Todo lo que se ahoga le pertenece.",
+        "emoji": "🌊",
+        "artUrl": "/creatures/mother-of-tides.webp"
+      },
+      {
+        "name": "The Keeper",
+        "tier": 3,
+        "health": {
+          "min": 180,
+          "max": 220
+        },
+        "behaviors": [
+          "CHARGING",
+          "AGGRESSIVE",
+          "DEFENSIVE",
+          "CHARGING"
+        ],
+        "description": "Guardián de la salida. Nadie ha pasado. Nadie pasará. Ha esperado milenios por ti.",
+        "emoji": "👁️",
+        "artUrl": "/creatures/the-keeper.webp"
+      }
+    ]
+  },
+  "depths": [
+    {
+      "name": "THE UPPER CRYPT",
+      "tier": 1,
+      "roomRange": [
+        1,
+        4
+      ],
+      "description": "La entrada. Piedra fría y agua somera."
+    },
+    {
+      "name": "THE FLOODED HALLS",
+      "tier": 2,
+      "roomRange": [
+        5,
+        8
+      ],
+      "description": "Más hondo ahora. El agua te llega al pecho."
+    },
+    {
+      "name": "THE ABYSS",
+      "tier": 3,
+      "roomRange": [
+        9,
+        12
+      ],
+      "description": "Las verdaderas profundidades. Pocos regresan de aquí."
+    }
+  ],
+  "dungeonLayout": {
+    "totalRooms": 12,
+    "structure": [
+      {
+        "type": "explore",
+        "template": "descent"
+      },
+      {
+        "type": "combat",
+        "template": "ambush"
+      },
+      {
+        "type": "corpse",
+        "template": "fresh"
+      },
+      {
+        "type": "combat",
+        "template": "confrontation"
+      },
+      {
+        "type": "explore",
+        "template": "flooded"
+      },
+      {
+        "type": "combat",
+        "template": "guardian"
+      },
+      {
+        "type": "cache",
+        "template": "alcove"
+      },
+      {
+        "type": "combat",
+        "template": "territorial"
+      },
+      {
+        "type": "explore",
+        "template": "chamber"
+      },
+      {
+        "type": "corpse",
+        "template": "heroic"
+      },
+      {
+        "type": "combat",
+        "template": "pursuit"
+      },
+      {
+        "type": "combat",
+        "template": "arena",
+        "boss": true
+      }
+    ]
+  },
+  "boss": "The Keeper",
+  "audio": {
+    "ambient": {
+      "explore": "/audio/ambient-explore.mp3",
+      "combat": "/audio/ambient-combat.mp3"
+    },
+    "sfx": {
+      "footstep": "/audio/footstep.mp3",
+      "descend": "/audio/depth-descend.mp3",
+      "environment": [
+        "/audio/water-drip.mp3",
+        "/audio/drip-echo.mp3",
+        "/audio/water-splash.mp3"
+      ],
+      "atmosphere": [
+        "/audio/eerie-whispers.mp3",
+        "/audio/stone-grinding.mp3",
+        "/audio/door-creak.mp3"
+      ],
+      "boss": {
+        "intro": "/audio/boss-intro.mp3",
+        "roar": "/audio/boss-roar.mp3"
+      }
+    }
+  }
+}

@@ -1,0 +1,1917 @@
+{
+  "id": "sunken-crypt",
+  "version": "1.0.0",
+  "meta": {
+    "name": "THE SUNKEN CRYPT",
+    "tagline": "第一次下行。此地沒有活物。",
+    "element": "water",
+    "difficulty": 1,
+    "colors": {
+      "primary": "#1e3a5f",
+      "accent": "#4a9eff",
+      "text": "#a8d4ff"
+    },
+    "mechanic": null,
+    "unlockRequirement": null,
+    "emoji": "🌊"
+  },
+  "lore": "被遺忘之手鑿出的古老石階，向下通往淹沒的殿堂。生與死的界線在此漸薄。水記得每一個溺斃於此的人。",
+  "rooms": {
+    "explore": [
+      {
+        "template": "corridor",
+        "variations": [
+          {
+            "id": "corridor_1",
+            "narrative": "前方某處有水滴落。通道漸窄，牆面滑膩，沾著某種不太像水的東西。你的火炬推開黑暗。黑暗推了回來。",
+            "options": [
+              "繼續前進",
+              "檢視牆面"
+            ]
+          },
+          {
+            "id": "corridor_2",
+            "narrative": "走廊轉彎。看不見轉角後的東西，卻聽得見——一種濕潤而規律的聲音。呼吸聲？滴水聲？或是全然不同的什麼。",
+            "options": [
+              "繞過轉角",
+              "先仔細聆聽"
+            ]
+          },
+          {
+            "id": "corridor_3",
+            "narrative": "兩側牆上滿是抓痕。有什麼被拖行經過此處。就在不久前。痕跡通向深處。唯一的路也是。",
+            "options": [
+              "循著痕跡走",
+              "謹慎前行"
+            ]
+          },
+          {
+            "id": "corridor_4",
+            "narrative": "此處的石頭更加古老。被無數年歲裡無數雙腳磨得光滑。你不是第一個走上這條路的人。角落裡的骸骨暗示，你或許會是最後幾個。",
+            "options": [
+              "繼續前進",
+              "檢視骸骨"
+            ]
+          },
+          {
+            "id": "corridor_5",
+            "narrative": "你的腳步聲回響得不對勁。回音太多。彷彿有人與你並肩而行，落後半步。你不回頭。你知道不該回頭。",
+            "options": [
+              "繼續移動",
+              "停下轉身"
+            ]
+          }
+        ]
+      },
+      {
+        "template": "chamber",
+        "variations": [
+          {
+            "id": "chamber_1",
+            "narrative": "眼前展開一片廣闊的空間。石柱升入陰影，柱頂沒入黑暗。這裡曾為聚會而建。如今它只聚集寂靜。以及你。",
+            "options": [
+              "橫越大廳",
+              "貼著牆走"
+            ]
+          },
+          {
+            "id": "chamber_2",
+            "narrative": "天花板消失在漆黑之中。牆與牆相隔太遠。這個房間大得不該——大過上方神殿所能容納。在這底下，幾何在說謊。",
+            "options": [
+              "快速穿過",
+              "搜索四周"
+            ]
+          },
+          {
+            "id": "chamber_3",
+            "narrative": "水覆蓋地面，靜止如黑色玻璃。大廳向四面八方延伸。正中央，有什麼從水中隆起。祭壇？王座？從這裡看不出來。",
+            "options": [
+              "涉水走向中央",
+              "沿邊緣繞行"
+            ]
+          },
+          {
+            "id": "chamber_4",
+            "narrative": "殘破的長椅排列在殿中。曾有會眾坐在這裡，聆聽以早於文字的語言宣講的道。講壇空著。有什麼在它後面注視。",
+            "options": [
+              "走近講壇",
+              "盡快離開"
+            ]
+          },
+          {
+            "id": "chamber_5",
+            "narrative": "大廳在嗡鳴。一種頻率，在你的牙齒、骨頭、思緒裡震動。牆上刻著的紋路，看久了會痛。別去看。",
+            "options": [
+              "硬闖過去",
+              "閉上眼靠觸覺前行"
+            ]
+          }
+        ]
+      },
+      {
+        "template": "descent",
+        "variations": [
+          {
+            "id": "descent_1",
+            "narrative": "階梯盤旋而下。再往下。再往下。過了頭一百階，你便數不清了。每走一步，空氣愈發沉重。愈發溫熱。愈發不對。",
+            "options": [
+              "繼續下行",
+              "在階梯上休息"
+            ]
+          },
+          {
+            "id": "descent_2",
+            "narrative": "一道豎井墜入黑暗。石壁上鑿有把手——被你之前無數雙手磨得光滑。有些把手上留著污漬。別去想為什麼。",
+            "options": [
+              "向下攀爬",
+              "另尋他路"
+            ]
+          },
+          {
+            "id": "descent_3",
+            "narrative": "地面化為一道緩坡。濕滑。無論你是否願意，都在往下。坡度漸陡。掌控只是幻覺。",
+            "options": [
+              "小心滑下",
+              "設法找到著力點"
+            ]
+          },
+          {
+            "id": "descent_4",
+            "narrative": "石階，一階比一階更低。比例不對——是為腿更長的東西所建，又或者，是刻意要讓人絆倒。你絆倒了。",
+            "options": [
+              "站穩後繼續",
+              "放慢腳步"
+            ]
+          },
+          {
+            "id": "descent_5",
+            "narrative": "路徑從地板的裂縫墜下。下方，水光閃爍。有多深？火炬的光照不到底。什麼都照不到。",
+            "options": [
+              "垂身而下",
+              "丟東西試探深度"
+            ]
+          }
+        ]
+      },
+      {
+        "template": "flooded",
+        "variations": [
+          {
+            "id": "flooded_1",
+            "narrative": "水淹到膝蓋。黑。冷。雙腳踩上看不見的沒水石階。有什麼擦過你的腿。大概是碎屑。大概。",
+            "options": [
+              "涉水前進",
+              "沿牆移動"
+            ]
+          },
+          {
+            "id": "flooded_2",
+            "narrative": "通道半淹在水中。走著，水及胸口；從中央涉過，水及頸項。兩個選擇都糟透了。",
+            "options": [
+              "沿牆走淺處",
+              "游過較深的中央"
+            ]
+          },
+          {
+            "id": "flooded_3",
+            "narrative": "你一進來，水便開始上漲。腳踝。膝蓋。大腿。水不是流進來的——只是在……上漲。彷彿房間本身正在吞嚥。快走。",
+            "options": [
+              "衝過去",
+              "尋找高處"
+            ]
+          },
+          {
+            "id": "flooded_4",
+            "narrative": "屍體漂浮在這裡。面朝下。輕輕浮沉。不算新，也不算舊。水保存了它們。水保存一切。",
+            "options": [
+              "游過它們",
+              "查看是否有新近的玩家"
+            ]
+          },
+          {
+            "id": "flooded_5",
+            "narrative": "水在發光。微弱。一種病態的磷光，除了自身什麼也照不亮。有東西在水面下移動。你盡量不直視它們。",
+            "options": [
+              "快速涉水而過",
+              "停下觀察那些動靜"
+            ]
+          }
+        ]
+      },
+      {
+        "template": "shrine",
+        "variations": [
+          {
+            "id": "shrine_1",
+            "narrative": "獻給某個被遺忘之物的祭壇。神像的面容已被刮去，你卻仍覺得它在注視。供品在壇腳腐爛。有些還很新鮮。",
+            "options": [
+              "獻上供品",
+              "視而不見地走過"
+            ]
+          },
+          {
+            "id": "shrine_2",
+            "narrative": "蠟燭在此燃燒。是誰點的？燭淚積成種種形狀——面孔、手掌、還有些或許是某種滴蠟文字的東西。火焰紋絲不動。",
+            "options": [
+              "檢視蠟燭",
+              "什麼都別碰"
+            ]
+          },
+          {
+            "id": "shrine_3",
+            "narrative": "一座轉經輪，鏽死在原地。刻在上面的禱文早被磨平，無法辨讀。或許是好事。最近有人試著轉動它——鏽跡被刮開了。",
+            "options": [
+              "試著轉動它",
+              "別去碰它"
+            ]
+          },
+          {
+            "id": "shrine_4",
+            "narrative": "這座神龕供奉的是水本身。一泓池水，渾圓完滿，靜止無波。你的倒影回望著你。你不眨眼時，它眨了。",
+            "options": [
+              "移開視線",
+              "與它對視到底"
+            ]
+          },
+          {
+            "id": "shrine_5",
+            "narrative": "每一寸表面都覆滿名字。鑿的、刮的、烙進石頭的。成千上萬個名字。先你而來的朝聖者。一塊空白等在那裡，彷彿在等你的名字。",
+            "options": [
+              "刻下你的名字",
+              "不留痕跡"
+            ]
+          }
+        ]
+      },
+      {
+        "template": "crossroads",
+        "variations": [
+          {
+            "id": "crossroads_1",
+            "narrative": "三條路岔開。左邊吐著冷氣與低語。右邊迴響著遠處的水聲。中間留有拖行的痕跡，通向裡面。沒有一條通向外面。",
+            "options": [
+              "走左邊的路",
+              "走右邊的路",
+              "沿中間前行"
+            ]
+          },
+          {
+            "id": "crossroads_2",
+            "narrative": "通道分岔。有人在牆上做了記號——刮出的箭頭，絕望的指示。箭頭彼此矛盾。有人在這裡迷了路。不止一個人。",
+            "options": [
+              "走磨損最重的路",
+              "選沒有記號的路"
+            ]
+          },
+          {
+            "id": "crossroads_3",
+            "narrative": "一處走廊的樞紐，共五條。火炬的光在其中兩條裡照見動靜。另外三條毫無動靜——但毫無動靜也許更糟。",
+            "options": [
+              "朝動靜走去",
+              "遠離它"
+            ]
+          },
+          {
+            "id": "crossroads_4",
+            "narrative": "向上，或向下。僅有的選擇。向上更難——階梯斷裂、剝落。向下更容易。在這裡，向下永遠更容易。",
+            "options": [
+              "向上攀爬",
+              "繼續下行"
+            ]
+          },
+          {
+            "id": "crossroads_5",
+            "narrative": "兩條一模一樣的通道。相同的尺寸。相同的黑暗。相同的違和感。一條通向深處。一條通向死亡。兩者也許是同一件事。",
+            "options": [
+              "走左邊的通道",
+              "走右邊的通道"
+            ]
+          }
+        ]
+      },
+      {
+        "template": "collapse",
+        "variations": [
+          {
+            "id": "collapse_1",
+            "narrative": "裂縫在天花板上結成蛛網。塵土成流而落。這地方想要塌下來。你聽得見它在斟酌——呻吟、沉降、下著決定。走。快。",
+            "options": [
+              "奔跑穿過",
+              "小心移動"
+            ]
+          },
+          {
+            "id": "collapse_2",
+            "narrative": "通道的一半是瓦礫。另一半是耐心——等著成為瓦礫。你能望見另一頭。縫隙很窄。時間更窄。",
+            "options": [
+              "快速鑽過",
+              "先試探穩固程度"
+            ]
+          },
+          {
+            "id": "collapse_3",
+            "narrative": "地板傾斜。不多，但夠了。水積在一側。裂縫從你站立之處蔓延開來。每一步都是與重力的談判。",
+            "options": [
+              "移向穩固的地面",
+              "保持完全不動"
+            ]
+          },
+          {
+            "id": "collapse_4",
+            "narrative": "有人在這裡引發過坍塌。你看得出塌下來時他們站在哪裡。也看得出他們不再站著的地方。別站在那裡。",
+            "options": [
+              "另尋路線",
+              "翻越瓦礫"
+            ]
+          },
+          {
+            "id": "collapse_5",
+            "narrative": "牆壁向內彎曲。來自某處的壓力。上方的神殿？水的重量？冥府消化自身的緩慢碾壓？重要嗎？走。",
+            "options": [
+              "趕緊通過",
+              "設法撐住牆壁"
+            ]
+          }
+        ]
+      },
+      {
+        "template": "graveyard",
+        "variations": [
+          {
+            "id": "graveyard_1",
+            "narrative": "骨頭。按種類分放——頭骨在這，肋骨在那，股骨堆得像柴薪。有人整理過這裡。就在最近。排列中留著空缺。等待中的位置。",
+            "options": [
+              "在骨堆中搜索",
+              "快速通過"
+            ]
+          },
+          {
+            "id": "graveyard_2",
+            "narrative": "墓穴沿兩側牆壁排列，疊了三層。有些封著。有些開著。有些正在打開，緩慢地，從裡面。你沒時間看下去。",
+            "options": [
+              "從中央走過",
+              "奔跑"
+            ]
+          },
+          {
+            "id": "graveyard_3",
+            "narrative": "一坑屍體。舊的在底層。較新的靠近頂端。坑還沒填滿。它很有耐心。它知道還會有更多人來。",
+            "options": [
+              "繞坑而行",
+              "尋找熟悉的面孔"
+            ]
+          },
+          {
+            "id": "graveyard_4",
+            "narrative": "紀念碑，龜裂而斑駁。名字以你不認識的語言寫成。日期早於曆法。這些死者比歷史更老。他們仍然記得。",
+            "options": [
+              "閱讀碑石",
+              "不要逗留"
+            ]
+          },
+          {
+            "id": "graveyard_5",
+            "narrative": "死者在此被擺出姿態。站著。坐著。跪著。凝固在最後一刻，由黑暗保存。一座終局的陳列館。入場免費。離場的代價更高。",
+            "options": [
+              "端詳那些姿態",
+              "目視前方繼續走"
+            ]
+          }
+        ]
+      },
+      {
+        "template": "witness",
+        "variations": [
+          {
+            "id": "witness_1",
+            "narrative": "牆上的灼痕排成圖案。環形。精確。中心處，石頭曾熔化又重新凝結。曾在這裡的東西已經走了。你希望它走了。",
+            "options": [
+              "檢視灼痕",
+              "立刻離開"
+            ]
+          },
+          {
+            "id": "witness_2",
+            "narrative": "爪痕覆滿每一寸表面——地板、牆壁、天花板。堅石上的深鑿。有什麼想要逃出去。或者，有什麼想要進來。",
+            "options": [
+              "研究那些痕跡",
+              "別去想它"
+            ]
+          },
+          {
+            "id": "witness_3",
+            "narrative": "一室狼藉之中，有一圈完好無損的石地。圓圈內乾乾淨淨。圓圈外的一切盡毀。你正站在圓圈外。",
+            "options": [
+              "踏入圓圈",
+              "留在外面"
+            ]
+          },
+          {
+            "id": "witness_4",
+            "narrative": "這裡發生過什麼。空氣裡還殘留著尖叫的味道。石頭是溫的——比它們該有的更溫。你正站在某件可怕之事的餘波裡。",
+            "options": [
+              "搜尋線索",
+              "趕快離開"
+            ]
+          },
+          {
+            "id": "witness_5",
+            "narrative": "手印。數以百計。按進牆壁、地板、天花板。全都伸向同一個方向。伸向你剛剛走進來的那道門。",
+            "options": [
+              "循它們所指的方向",
+              "往相反方向走"
+            ]
+          }
+        ]
+      },
+      {
+        "template": "threshold",
+        "variations": [
+          {
+            "id": "threshold_1",
+            "narrative": "前方的門洞比四周的牆更古老。門後，空氣的味道不同——銅與鹽。門框上的抓痕指向後方。有人曾試圖抓著爬出去。",
+            "options": [
+              "跨過門檻",
+              "遲疑片刻"
+            ]
+          },
+          {
+            "id": "threshold_2",
+            "narrative": "一道界線。你感覺得到——氣壓改變，聲音偏移，思緒短暫地散亂。你即將進入別的地方。更深的地方。",
+            "options": [
+              "跨步而入",
+              "先定一定神"
+            ]
+          },
+          {
+            "id": "threshold_3",
+            "narrative": "通道盡頭是一幕水簾，從上方某處落下。水簾之後，黑暗。水很冷。黑暗更冷。穿過去是唯一的路。",
+            "options": [
+              "穿過水簾",
+              "另尋路徑"
+            ]
+          },
+          {
+            "id": "threshold_4",
+            "narrative": "一道骨之門。真正的骨——肋骨交織而成，頭骨充作鉸鏈。你一走近，它便敞開。它等的正是你。",
+            "options": [
+              "進入",
+              "拒絕這份邀請"
+            ]
+          },
+          {
+            "id": "threshold_5",
+            "narrative": "火炬的光到這裡便止步了。它照不亮前方——那裡的黑暗是絕對的，飢餓的。你得盲行一段路了。",
+            "options": [
+              "走入黑暗",
+              "尋找別的光源"
+            ]
+          }
+        ]
+      }
+    ],
+    "combat": [
+      {
+        "template": "ambush",
+        "variations": [
+          {
+            "id": "ambush_1",
+            "narrative": "房間看似空無一物。靜止的水，靜止的空氣。然後你看見了——沒有東西動過的地方，水面卻起了漣漪。正在升起。它一直在下面等。",
+            "enemy": "The Drowned"
+          },
+          {
+            "id": "ambush_2",
+            "narrative": "你先聽見，半秒後才看見。石上濕黏的咔嗒聲。在你上方。攀在天花板上。正在落下。就是現在。",
+            "enemy": "Pale Crawler"
+          },
+          {
+            "id": "ambush_3",
+            "narrative": "你的影子動得不對。你發現得太遲——空洞者已在你的輪廓之內，正穿過它伸出手來，伸向你。",
+            "enemy": "The Hollow"
+          },
+          {
+            "id": "ambush_4",
+            "narrative": "你跨過的那具屍體沒有死。它抓住你的腳踝。那握力遠勝任何腐爛之物該有的力氣。它張開嘴。沒有聲音出來。",
+            "enemy": "Bloated One"
+          },
+          {
+            "id": "ambush_5",
+            "narrative": "視野邊緣一閃。你轉頭。什麼也沒有。轉回來。它在那裡。就在那裡。它一直都在那裡。",
+            "enemy": "Flickering Shade"
+          }
+        ]
+      },
+      {
+        "template": "confrontation",
+        "variations": [
+          {
+            "id": "confrontation_1",
+            "narrative": "它立在你的路上。等著。它的頭顱以耐心的飢餓追隨你的動作。無路可繞。只能穿過。",
+            "enemy": "The Drowned"
+          },
+          {
+            "id": "confrontation_2",
+            "narrative": "那東西堵住門口。它沒有攻擊。沒有移動。它只是……在那裡。評估著。無論它做出什麼決定，你都不會喜歡。",
+            "enemy": "Forgotten Guardian"
+          },
+          {
+            "id": "confrontation_3",
+            "narrative": "它跪在祭壇前，以刺痛思緒的頻率誦唱。它知道你在這裡。那誦唱是為你而唱的。一份邀請，或一紙死刑。",
+            "enemy": "Hollow Clergy"
+          },
+          {
+            "id": "confrontation_4",
+            "narrative": "騎士舉起鏽蝕的長刃行禮。堂堂正正的決鬥。至死方休。它期待你打得漂亮。無論如何它都會失望。",
+            "enemy": "Carrion Knight"
+          },
+          {
+            "id": "confrontation_5",
+            "narrative": "它自水中升起，兩倍於你的身高，滴淌著黑暗。有一瞬間，它幾乎像人。然後它張開嘴。然後它的嘴太多了。",
+            "enemy": "Mother of Tides"
+          }
+        ]
+      },
+      {
+        "template": "territorial",
+        "variations": [
+          {
+            "id": "territorial_1",
+            "narrative": "骨頭堆疊在此。經過排列。這是一個巢。而你剛剛吵醒了住在裡面的東西。它不想殺你。它想要你離開。已經來不及了。",
+            "enemy": "Pale Crawler"
+          },
+          {
+            "id": "territorial_2",
+            "narrative": "這裡的水更溫。某個龐然之物一直歇在水下。那東西正在升起，為這場闖入而憤怒。這是它的池子。你是擅入者。",
+            "enemy": "Tideborn"
+          },
+          {
+            "id": "territorial_3",
+            "narrative": "牆上滿是抓刻的記號。領地。那生物從一道你沒注意到的裂縫中現身，守衛它宣稱的土地。每一寸都曾讓它付出代價。",
+            "enemy": "The Hunched"
+          },
+          {
+            "id": "territorial_4",
+            "narrative": "這裡曾是神龕。如今是巢穴。奪走它的東西不在此膜拜——它在此統治。而你未經邀請，闖入了它的宮廷。",
+            "enemy": "Hollow Clergy"
+          },
+          {
+            "id": "territorial_5",
+            "narrative": "鎖鏈在黑暗中作響。受縛者占據了這條通道。它不會讓你過。它不會讓任何人過。它的孤獨帶著攻擊性。",
+            "enemy": "The Bound"
+          }
+        ]
+      },
+      {
+        "template": "pursuit",
+        "variations": [
+          {
+            "id": "pursuit_1",
+            "narrative": "你已經聽了它三個房間。一次比一次近。一次比一次快。逃跑沒有用。是時候停止逃跑了。",
+            "enemy": "The Hunched"
+          },
+          {
+            "id": "pursuit_2",
+            "narrative": "它從階梯處便一路尾隨。耐心。不休。你跑不過它——它熟悉這些地道。這些地道是它挖的。站定，面對它。",
+            "enemy": "The Bound"
+          },
+          {
+            "id": "pursuit_3",
+            "narrative": "身後的水聲停了。那更糟。那表示它不再追了。那表示它已經到了。",
+            "enemy": "The Drowned"
+          },
+          {
+            "id": "pursuit_4",
+            "narrative": "咔嗒聲就在你正後方。你能感覺到它的呼吸——如果那算呼吸——落在你的頸上。轉身。你必須轉。你不想轉。",
+            "enemy": "Pale Crawler"
+          },
+          {
+            "id": "pursuit_5",
+            "narrative": "每次回頭，它都更近。你注視著它時，它從不移動。你不可能永遠注視。你的眼睛在灼痛。一眨眼，一切就結束了。",
+            "enemy": "The Hollow"
+          }
+        ]
+      },
+      {
+        "template": "swarm",
+        "variations": [
+          {
+            "id": "swarm_1",
+            "narrative": "一隻不足為懼。但不是一隻。它們從牆縫、從地板的缺口湧出。數十隻。還有更多要來。永遠更多。",
+            "enemy": "Pale Crawler Swarm"
+          },
+          {
+            "id": "swarm_2",
+            "narrative": "水裡滿是它們。細小、抓攫的東西。單獨看，什麼也不是。聚在一起，便是一股由牙齒與飢餓構成的暗流。水隨著它們的數量上漲。",
+            "enemy": "Tideborn"
+          },
+          {
+            "id": "swarm_3",
+            "narrative": "手。只有手。從四面八方冒出——地板、牆壁、天花板。抓攫、拉扯、拖拽。沒有身體可與之對抗。只有手。",
+            "enemy": "Bone Weavers"
+          },
+          {
+            "id": "swarm_4",
+            "narrative": "灰燼之子聚集了。旁觀曾經足以滿足它們。如今它們想要更多。它們步步逼近。空氣愈發稀薄。它們不是在攻擊——是在窒息你。",
+            "enemy": "Ash Children"
+          },
+          {
+            "id": "swarm_5",
+            "narrative": "回聲空殼找到了彼此。一支由竊來的遺言組成的合唱，同進同退，同時伸手。「救我救我救我」——同一句哀求，出自十幾副毀壞的喉嚨。",
+            "enemy": "Echo Husks"
+          }
+        ]
+      },
+      {
+        "template": "feeding",
+        "variations": [
+          {
+            "id": "feeding_1",
+            "narrative": "它在吃東西。聲音濕黏，有條不紊。它還沒看見你。你可以悄悄溜過。也可以先發制人。無論如何，它很快就會吃完。",
+            "enemy": "The Hunched"
+          },
+          {
+            "id": "feeding_2",
+            "narrative": "溺亡者找到了一具屍骸。它不是在吃——是在……吸收。變得更大。更強。你每多等一刻，它便多一分危險。",
+            "enemy": "Bloated One"
+          },
+          {
+            "id": "feeding_3",
+            "narrative": "那生物蹲伏在某個曾經是人的東西上。它抬起頭。滿嘴食物。被打擾似乎沒讓它不快。它似乎心存感激。又來了食物。",
+            "enemy": "Pale Crawler"
+          },
+          {
+            "id": "feeding_4",
+            "narrative": "慟哭者找到了可供啜食的悲傷。另一位玩家的屍骸，遺言猶新。它啜飲他們的哀愁。它轉向你。你的哀愁聞起來更醇厚。",
+            "enemy": "The Weeping"
+          },
+          {
+            "id": "feeding_5",
+            "narrative": "它坐在骨堆之中，敲開骨頭，啜飲裡面的東西。舊骨。古老的骨。它在這裡進食了數百年。你是漫長歲月裡第一份新鮮的東西。",
+            "enemy": "The Hunched"
+          }
+        ]
+      },
+      {
+        "template": "guardian",
+        "variations": [
+          {
+            "id": "guardian_1",
+            "narrative": "它立於門前。它一直立於這扇門前。它會死在這扇門前。若你想要門後之物，你也一樣。",
+            "enemy": "Forgotten Guardian"
+          },
+          {
+            "id": "guardian_2",
+            "narrative": "前方的通道藏著重要之物。你感覺得到。擋在你路上的東西也感覺得到。它被安置在此。它有使命。那使命就是你。",
+            "enemy": "Carrion Knight"
+          },
+          {
+            "id": "guardian_3",
+            "narrative": "出口就在那裡。二十呎。你與它之間，立著一個等待此刻已久的東西。你的時刻。它的使命。",
+            "enemy": "Hollow Clergy"
+          },
+          {
+            "id": "guardian_4",
+            "narrative": "補給就在前方。物資、武器、希望。看守它的東西用不著那些。它只是不想讓你得到。",
+            "enemy": "The Bound"
+          },
+          {
+            "id": "guardian_5",
+            "narrative": "它守護著神龕。不是守護神——神已死。不是守護供品——供品已腐。它守護的是那個念想。那段記憶。它會為它們抵擋你。",
+            "enemy": "Forgotten Guardian"
+          }
+        ]
+      },
+      {
+        "template": "arena",
+        "variations": [
+          {
+            "id": "arena_1",
+            "narrative": "大廳是圓的。平滑。為此而造。你感到有目光落在身上——從哪裡來？對面的東西不在乎觀眾。它只在乎你。",
+            "enemy": "Carrion Knight"
+          },
+          {
+            "id": "arena_2",
+            "narrative": "層層看台環繞著中央的深坑。座位空著，存在感卻不空。有什麼在觀看。有什麼在評判。坑中的生物等著你下來。",
+            "enemy": "The Bound"
+          },
+          {
+            "id": "arena_3",
+            "narrative": "一座白骨的圓形劇場。音響效果完美——每一聲喘息、每一聲悶哼、每一聲臨終的咯響，都將迴盪得動聽。會眾正等著這場演出。",
+            "enemy": "The Congregation"
+          },
+          {
+            "id": "arena_4",
+            "narrative": "地上畫著一個圓。古老。具有約束之力。一旦踏入，在你們其中一方停止動作之前，誰也離不開。圓中的那東西從不停止動作。",
+            "enemy": "Flickering Shade"
+          },
+          {
+            "id": "arena_5",
+            "narrative": "你一進來，房間便開始重組。牆壁升起。出口封閉。一個空間成形了。一座舞台。一座競技場。某處，有什麼看得津津有味。",
+            "enemy": "The Unnamed"
+          }
+        ]
+      },
+      {
+        "template": "wounded",
+        "variations": [
+          {
+            "id": "wounded_1",
+            "narrative": "它在流血。拖著自己前行。傷不是你造成的——別人試過。別人失敗了。它看見你。齜著牙。恐懼與狂怒各占一半。",
+            "enemy": "The Drowned"
+          },
+          {
+            "id": "wounded_2",
+            "narrative": "它少了一半。剩下的一半仍在運作。仍在狩獵。殘缺，卻未終結。它已一無所失。這讓它更加危險。",
+            "enemy": "Pale Crawler"
+          },
+          {
+            "id": "wounded_3",
+            "narrative": "守衛已然龜裂。缺了幾塊。是另一個冒險者做的。那個冒險者在哪裡？大概死了。但他們削弱了它。完成他們開始的事。",
+            "enemy": "Forgotten Guardian"
+          },
+          {
+            "id": "wounded_4",
+            "narrative": "它一瘸一拐地朝你走來。殘破，卻未屈服。每一道傷都讓它更憤怒。每一分痛都讓它更恨你。慈悲不是它能理解的選項。",
+            "enemy": "The Hunched"
+          },
+          {
+            "id": "wounded_5",
+            "narrative": "斷裂的鎖鏈垂在它的腕上。它逃離了什麼。或者試圖逃離。如今它自由、受傷、迷惘，而你是它看見的第一個東西。真是走運。",
+            "enemy": "The Bound"
+          }
+        ]
+      }
+    ],
+    "corpse": [
+      {
+        "template": "fresh",
+        "variations": [
+          {
+            "id": "fresh_1",
+            "narrative": "血還沒乾。他們片刻之前倒在這裡——或是多年之前。在這底下，時間會說謊。他們的手仍伸向牆壁，牆上刮著字：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "fresh_2",
+            "narrative": "還有餘溫。冷空氣裡，最後一口呼出的氣仍在凝結。他們差一點就成功了。差一點。他們倉促刻下的遺言：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "fresh_3",
+            "narrative": "你知道這事剛過去不久，因為你還聞得到恐懼的氣味。尖銳。帶著金屬味。他們的留言還新，石屑仍從字跡間落下：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "fresh_4",
+            "narrative": "他們的火炬還燃著。就是這麼新。你走近時，火苗晃了一下，彷彿在向你致意。他們的字句在垂死的光裡發亮：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "fresh_5",
+            "narrative": "漣漪還沒平息。他們剛剛倒下。你剛好錯過了他們——或者他們剛好錯過了你。無論如何，他們的留言是給下一個來的人的：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          }
+        ]
+      },
+      {
+        "template": "old",
+        "variations": [
+          {
+            "id": "old_1",
+            "narrative": "幾乎與牆融為一體了。水已收走了他們大半。但鑿在石上的字仍在，如悲傷般耐心：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "old_2",
+            "narrative": "骨頭。如今只剩骨頭。被時間與水排列成某種近乎安詳的模樣。他們的留言已然風化，卻仍留存：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "old_3",
+            "narrative": "冥府消化他們已有些時日。剩下的與其說是軀體，不如說是記憶。但記憶在這裡不會消散。他們的字句長存：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "old_4",
+            "narrative": "苔蘚已在他們身上生長。冥府已接納這具軀體為自己的一部分。唯有鑿刻的留言抗拒著吸收：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "old_5",
+            "narrative": "他們在這裡多久了？久到成了擺設。成了地標。顯然有其他倖存者路過，卻無人移動他們。他們的警告依然立在那裡：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          }
+        ]
+      },
+      {
+        "template": "peaceful",
+        "variations": [
+          {
+            "id": "peaceful_1",
+            "narrative": "他們讓自己舒舒服服的。把隨身物品收拾整齊。面朝那個他們永遠到不了的出口的方向。他們的留言字斟句酌，從容不迫：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "peaceful_2",
+            "narrative": "沒有掙扎。沒有暴力。他們只是坐下來，認定走到這裡已經夠遠。這份接受幾乎令人羨慕。他們的字句平靜：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "peaceful_3",
+            "narrative": "他們雙手交疊而死。閉著眼。與自己選擇的結局和解。他們的留言讀來像道別，而非警告：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "peaceful_4",
+            "narrative": "一小堆火，早已冷透。一頓飯，吃了一半。他們在這裡歇息。再也沒有醒來。有時冥府也懷慈悲。他們最後的念頭：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "peaceful_5",
+            "narrative": "他們在微笑。不知怎地。經歷了這一切之後。這具軀體是一堂關於放手的課。他們的留言既是寫給你，也是寫給他們自己：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          }
+        ]
+      },
+      {
+        "template": "heroic",
+        "variations": [
+          {
+            "id": "heroic_1",
+            "narrative": "那生物倒在他們身旁。他們殺了它。它殺了他們。一場公平的交易？他們的刀仍插在它的頭骨裡。他們的留言簡短，帶著滿足：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "heroic_2",
+            "narrative": "他們死守了防線。就在這裡。你看得出戰鬥的痕跡——牆上的傷疤、黑色的膿血、他們殺死的東西的屍體。這篇墓誌銘是掙來的：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "heroic_3",
+            "narrative": "三具怪物的屍體圍在他們身邊。他們沒有安靜地走。沒有輕易地走。他們戰鬥著走，被圍困著走，能拖幾個就拖幾個。他們的豪語：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "heroic_4",
+            "narrative": "他們為了救人而死。你看得見第二串腳印，通向遠方。因為這個人，另一個人活了下來。他們留下的：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "heroic_5",
+            "narrative": "站著。他們站著死去。武器高舉。直面一個他們明知打不贏的東西。他們仍然直面了它。他們的不屈鑿進了石頭：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          }
+        ]
+      },
+      {
+        "template": "disturbing",
+        "variations": [
+          {
+            "id": "disturbing_1",
+            "narrative": "他們不是戰死的。是等死的。背靠著牆坐著，雙手交疊，耐心十足。彷彿早已知道。他們身旁的留言：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "disturbing_2",
+            "narrative": "這具軀體有什麼不對。比例。姿勢。那抹微笑。他們像被擺放過。被布置過。出自某個不懂人類形體的東西之手。他們的字句：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "disturbing_3",
+            "narrative": "他們面朝牆壁。額頭抵著石頭。抓挖著牆，直到手指都沒了。留言是鑿進岩石的，不是刮的。鑿得很深。上面寫著：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "disturbing_4",
+            "narrative": "沒有傷口。沒有痕跡。沒有明顯的死因。他們只是……停止了。神情困惑，彷彿還在解一道題。他們的留言戛然而止：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "disturbing_5",
+            "narrative": "他們站著。死了，卻站著。睜著眼。望著你剛剛走過的那條通道。他們是不是一直在看？他們的留言與他們一同凝視：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          }
+        ]
+      },
+      {
+        "template": "group",
+        "variations": [
+          {
+            "id": "group_1",
+            "narrative": "三個人。在終局裡相互依偎。無論來的是什麼，他們一同面對。只有一人來得及寫。這些字是為所有人寫的：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "group_2",
+            "narrative": "一圈屍體。面朝外。背靠著背，直到最後。他們信任彼此。他們一同死去。一個聲音替所有人說話：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "group_3",
+            "narrative": "兩個人。牽著手。至今仍是。殺死他們的東西沒能分開他們。他們共同的留言：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "group_4",
+            "narrative": "一堆。只能這麼形容。有人先死了，其他人卻沒有離開。他們把自己疊了上去。最底下那位寫了些什麼：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "group_5",
+            "narrative": "他們列著隊形死去。像士兵。像信徒。像一群知道將要來臨的是什麼、並決定一同面對的人。他們共同的遺言：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          }
+        ]
+      },
+      {
+        "template": "trapped",
+        "variations": [
+          {
+            "id": "trapped_1",
+            "narrative": "坍塌把他們封在了裡面。瓦礫上滿是抓痕。他們試了很久。然後停下了。他們在黑暗中寫下的留言：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "trapped_2",
+            "narrative": "被鎖在裡面。門從這一側打不開。關上門的時候，他們並不知道。門上的痕跡道出了始末。他們的字刮在門的下緣：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "trapped_3",
+            "narrative": "水漲了上來。你看得見水停下的印痕——就在他們頭頂上方。他們爬到了所能及的最高處。還不夠高。他們的留言就在水線上：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "trapped_4",
+            "narrative": "鎖鏈。他們被鎖在這裡。誰鎖的？某個想要他們等待的東西。想要他們思考。想要他們寫下最後一件事：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "trapped_5",
+            "narrative": "一口深坑。四壁光滑。無路可出。他們在下面活得比你想像的更久。久到足以鑿下這些字：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          }
+        ]
+      },
+      {
+        "template": "posed",
+        "variations": [
+          {
+            "id": "posed_1",
+            "narrative": "有誰擺弄過這具軀體。把它撐起來。把它的臉轉向入口。轉向你。留言不是他們寫的——是別的什麼寫的：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "posed_2",
+            "narrative": "他們跪著。垂著頭。雙手合十。一場對祈禱的戲仿，由某個旁觀過人類膜拜的東西布置而成。他們身旁的字句不是禱文：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "posed_3",
+            "narrative": "被砌進了牆裡。真真切切。他們的身體如今是建築的一部分。營造者來過這裡。只有一隻手還在外面，指著鑿刻的字：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "posed_4",
+            "narrative": "他們坐在餐桌旁。面前擺著一餐。還有同席者——其他屍骸，被排成晚宴賓客的模樣。一場可怖的戲仿。他們的席位牌上寫著：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "posed_5",
+            "narrative": "被陳列著。如同藝術品。被精心地、刻意地掛上牆。一座只有一件展品的陳列館。下方的說明牌寫著：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          }
+        ]
+      },
+      {
+        "template": "legendary",
+        "variations": [
+          {
+            "id": "legendary_1",
+            "narrative": "你聽說過這一位。人人都聽說過。他們走得比先前任何人都遠。他們的屍骸已成地標。他們的字句被傳抄流傳：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "legendary_2",
+            "narrative": "那位有名的。供品環繞著他們——其他旅人的贈禮，致上的敬意。他們差一點就成功了。他們的留言成了一篇禱文：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "legendary_3",
+            "narrative": "你從故事裡認出了他們。比想像中矮小。更像個凡人。他們的傳說比他們的軀體更龐大。他們的字句出奇地簡單：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "legendary_4",
+            "narrative": "一處朝聖地。有人專程前來，只為看一眼偉大者倒下的地方。花朵在他們腳邊腐爛。留言被無數手指描摹，已然磨淺：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "legendary_5",
+            "narrative": "史上賭注最高的一次下行。最慘重的損失。最勇敢的嘗試。他們的失敗教會了後人如何成功。他們留下的不止是字句：",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          }
+        ]
+      }
+    ],
+    "cache": [
+      {
+        "template": "alcove",
+        "variations": [
+          {
+            "id": "alcove_1",
+            "narrative": "牆上的一處凹穴，高過水線。乾燥。近乎溫暖。有人把補給留在了這裡。也許他們逃出去了。也許只是把一切都留下了。"
+          },
+          {
+            "id": "alcove_2",
+            "narrative": "石中一處天然的窟窿。小得容易錯過，大得足以藏物。裡面：繃帶、乾糧，還有一張字條，寫著「拿去吧。我用不上了。」"
+          },
+          {
+            "id": "alcove_3",
+            "narrative": "在一塊鬆動的石頭後面。你差點沒查看。有人想把這裡藏好。一個知道自己不會回來取的人。"
+          },
+          {
+            "id": "alcove_4",
+            "narrative": "一條窄小的爬道。侷促，卻通向一間小室。補給堆放得整整齊齊。沒有灰塵——最近有人來過。一個匆匆離去的人。"
+          },
+          {
+            "id": "alcove_5",
+            "narrative": "一處刻著倖存者符號的凹穴。那是「還算安全」的通用標記。裡面：你需要的東西。外面：其餘的一切。"
+          }
+        ]
+      },
+      {
+        "template": "offering_site",
+        "variations": [
+          {
+            "id": "offering_1",
+            "narrative": "獻給某個無名之物的祭壇。供品在壇腳腐爛——但其中混著有用的東西。取走它，像是接受了一紙契約。"
+          },
+          {
+            "id": "offering_2",
+            "narrative": "一座供奉水本身的神龕。錢幣在池水之下閃爍。還有別的——武器、藥草、希望。只要你願意伸手，水便給予。"
+          },
+          {
+            "id": "offering_3",
+            "narrative": "信徒曾在此留下贈禮。信徒已然不在。贈禮還在。取走它們可能觸怒什麼。不取走，又似乎是種浪費。"
+          },
+          {
+            "id": "offering_4",
+            "narrative": "一尊或許曾受膜拜的雕像。腳邊：朝聖者留下的補給。臉上：一抹了然的微笑。它想要你把東西拿走。"
+          },
+          {
+            "id": "offering_5",
+            "narrative": "蠟燭環繞著一小批財物。蠟燭是新點的。是誰點的？是誰為陌生人留下補給？別去想。拿走你需要的就好。"
+          }
+        ]
+      },
+      {
+        "template": "survivor_stash",
+        "variations": [
+          {
+            "id": "stash_1",
+            "narrative": "牆上的刻痕。在數日子嗎？有好幾百道。在這裡待過的人，活得比常理所能想像的更久。他們留下了一切。是逃出去了，還是索性放棄了？"
+          },
+          {
+            "id": "stash_2",
+            "narrative": "一張鋪蓋。一堆冷掉的火。一本日誌，最後一頁被撕去。他們曾在這裡生活。多久？久到攢下了補給。久到突然離去。"
+          },
+          {
+            "id": "stash_3",
+            "narrative": "有人在這底下築起了一種生活。用碎料拼成的家具。刮在牆上的圖畫。然後他們拋下了這一切。有用的東西被打包得整整齊齊，等在那裡。"
+          },
+          {
+            "id": "stash_4",
+            "narrative": "一處倖存者的營地。沒有屍體——他們不是死在這裡的。補給貼著標籤，分門別類，留得刻意。一份給後來者的贈禮。"
+          },
+          {
+            "id": "stash_5",
+            "narrative": "武器。食物。藥品。靠著遠處的牆堆放。一張字條寫著：「帶不了那麼多。也不需要。我出去了。」墨跡裡的希望。"
+          }
+        ]
+      },
+      {
+        "template": "spring",
+        "variations": [
+          {
+            "id": "spring_1",
+            "narrative": "水從石縫間涓涓流出。清澈，不是黑的。邊緣長著些綠色的東西——你見到的唯一活物。飲下它像是飲下希望。餘味久久不散。"
+          },
+          {
+            "id": "spring_2",
+            "narrative": "一泓乾淨的水。在這底下，堪稱奇蹟。你能看見池底。沒有東西在動。沒有東西潛伏。它是安全的。它必須是安全的。喝吧。"
+          },
+          {
+            "id": "spring_3",
+            "narrative": "蒸汽從地板的裂縫升起。溫水，富含礦物，近乎宜人。在漫長的寒冷之後，這股熱意顯得陌生。在此歇息。恢復。"
+          },
+          {
+            "id": "spring_4",
+            "narrative": "一眼地下泉，清冽冰涼。有人曾在此紮營——你看得見痕跡。一處安全的地方。在這裡，這已是安全的極限。"
+          },
+          {
+            "id": "spring_5",
+            "narrative": "這裡的水泛著微光。柔和的藍。它並不危險——不知為何，你就是知道。飲下它能撫平傷口。別問怎麼會。別問為什麼。"
+          }
+        ]
+      },
+      {
+        "template": "abandoned_camp",
+        "variations": [
+          {
+            "id": "camp_1",
+            "narrative": "一張鋪蓋。冷卻的灰燼。吃了一半的食物。他們走得很急。補給還在，問題也還在：是什麼讓人拋下自己唯一安全的地方？"
+          },
+          {
+            "id": "camp_2",
+            "narrative": "帳篷——不止一頂。一支隊伍曾在此紮營。他們的裝備四散，透著慌亂。有人帶走了必需品。有人什麼也沒帶。來的那個東西，不值得花時間收拾行李。"
+          },
+          {
+            "id": "camp_3",
+            "narrative": "一切都被掀翻了。掙扎的痕跡？逃亡的痕跡？補給埋在狼藉之下，但都還在。無論發生了什麼，都發生得很快。"
+          },
+          {
+            "id": "camp_4",
+            "narrative": "一處哨站。曾有人在此守望。他們的椅子如今朝著錯誤的方向。補給原封未動。他們看見了什麼。他們沒能看完。"
+          },
+          {
+            "id": "camp_5",
+            "narrative": "一餐吃到一半。食物還在盤子裡。還……能吃，大概。他們連飯都沒吃完就跑了。或是被帶走了。補給不會回答問題。"
+          }
+        ]
+      },
+      {
+        "template": "armory",
+        "variations": [
+          {
+            "id": "armory_1",
+            "narrative": "一架架武器，鏽跡斑斑。曾有一支軍隊在此武裝。為了哪場戰爭？對抗什麼敵人？有些刀刃仍鋒利。請自便。"
+          },
+          {
+            "id": "armory_2",
+            "narrative": "藏在牆裡的一批武器。有人為一場從未到來的戰爭做了準備。或者一場從未結束的戰爭。他們的準備，是你的生路。"
+          },
+          {
+            "id": "armory_3",
+            "narrative": "殺伐之具，按類擺放。灰塵很厚。許久無人來過。除了那些不需要武器的東西。"
+          },
+          {
+            "id": "armory_4",
+            "narrative": "一間守衛室。如今空了。守衛的裝備還在——鏽蝕，但能用。借用一下，他們不會介意。他們什麼都不再介意了。"
+          },
+          {
+            "id": "armory_5",
+            "narrative": "嵌在牆裡的武器。戰利品？儲藏？藝術？擺放得刻意。拿走呼喚你的那件。這裡有什麼，等的正是你。"
+          }
+        ]
+      },
+      {
+        "template": "merchant",
+        "variations": [
+          {
+            "id": "merchant_1",
+            "narrative": "黑暗中的一個身影。他們有貨。他們有價。兩者都沒有商量餘地。在冥府，買賣照舊。死者仍在交易。"
+          },
+          {
+            "id": "merchant_2",
+            "narrative": "收藏家坐在遺物之間。「沒有什麼是免費的。一切皆有代價。你願意付出什麼？」他們攤開貨品。標價不是用 SOL 計的。"
+          },
+          {
+            "id": "merchant_3",
+            "narrative": "「你有東西。我有東西。我們可以交易，也可以等著看誰用武力拿走誰的東西。」商人微笑。那不是善意的微笑。"
+          },
+          {
+            "id": "merchant_4",
+            "narrative": "他們自稱「中介」。中介物品的流轉，從死者的手到活人的手。「人人都是贏家，」他們說。「到頭來，人人都是供貨方。」"
+          },
+          {
+            "id": "merchant_5",
+            "narrative": "一間店鋪。在這底下。貨源來自每一個路過的死去冒險者。「循環利用，」店主這麼說。「永續經營。」標價是你未來的財物。"
+          }
+        ]
+      },
+      {
+        "template": "trophy_room",
+        "variations": [
+          {
+            "id": "trophy_1",
+            "narrative": "頭骨懸在牆上。利爪被陳列。有人在此狩獵，收穫頗豐。他們的戰利品告訴你前方有什麼。他們的補給或許能助你活過那些。"
+          },
+          {
+            "id": "trophy_2",
+            "narrative": "一處獵人的巢穴。毛皮、骨頭、你認不得的東西。住在這裡的人懂得如何生存。懂得如何殺戮。工具任你取用。智慧就沒那麼容易了。"
+          },
+          {
+            "id": "trophy_3",
+            "narrative": "深淵裡的每一種生物，都被製成標本陳列。一部夢魘的圖鑑。其間放著：製作更多戰利品的用具。或者，避免自己成為其中一件的用具。"
+          },
+          {
+            "id": "trophy_4",
+            "narrative": "你先看見的是插在尖樁上的溺亡者頭顱。然後是被釘住的爬行者，像一具標本。有人在研究牠們。筆記與補給都還在。"
+          },
+          {
+            "id": "trophy_5",
+            "narrative": "一座暴力的紀念碑。上百場狩獵的戰利品。獵人不在。這些戰利品說明，他們很少在一處久留。他們很少需要。拿走有用的。"
+          }
+        ]
+      },
+      {
+        "template": "hermit",
+        "variations": [
+          {
+            "id": "hermit_1",
+            "narrative": "他們在這裡待了多年。數十年？獨自一人。活著。他們不想有人作伴，卻願意分享所知。以及不再需要的東西。"
+          },
+          {
+            "id": "hermit_2",
+            "narrative": "「你是第一個訪客，自從……我數不清了。」隱士的眼神古怪，卻無敵意。「拿去吧。我又做了些。我總是在做。」"
+          },
+          {
+            "id": "hermit_3",
+            "narrative": "一位深淵的哲人。他們已接受了在此的存在。「補給？拿去吧。答案？我也有。難的是問題。」"
+          },
+          {
+            "id": "hermit_4",
+            "narrative": "他們忘了自己的名字。卻記得如何活下去。「這個能救你。那個會殺了你。我分清了兩者。用慘痛的方式。你不必如此。」"
+          },
+          {
+            "id": "hermit_5",
+            "narrative": "「你想離開。我也曾想過。」隱士指了指補給。「拿去。活著出去。或者出不去。無論如何，我都會在這裡。」"
+          }
+        ]
+      }
+    ],
+    "exit": [
+      {
+        "template": "threshold",
+        "variations": [
+          {
+            "id": "exit_threshold_1",
+            "narrative": "光。真正的光，不是火炬的光——是天光，從上方的裂縫濾落。石階向上。空氣裡有你記憶中那個世界的味道。你做到了。這一次。"
+          },
+          {
+            "id": "exit_threshold_2",
+            "narrative": "出口。真實。觸手可及。歷經一切之後，它就在這裡——一道通回地上世界的門。身後的黑暗似乎湊得更近，捨不得放手。"
+          },
+          {
+            "id": "exit_threshold_3",
+            "narrative": "陽光落在你的臉上。無盡寒冷之後的暖意。階梯就在那裡。地面就在那裡。每一步都像是違逆。你在違逆某種古老的東西。"
+          },
+          {
+            "id": "exit_threshold_4",
+            "narrative": "通道上升。水退去。前方：光、空氣、生命。身後：其餘的一切。別回頭。這是你掙來的。拿走它。"
+          },
+          {
+            "id": "exit_threshold_5",
+            "narrative": "一扇門，古老而完好。門外：聲音。風。鳥鳴？一個在你身處地底時仍照常運轉的世界的聲音。推開它。回家。"
+          }
+        ]
+      },
+      {
+        "template": "release",
+        "variations": [
+          {
+            "id": "exit_release_1",
+            "narrative": "黑暗在你身後退去。水到此為止，不再跟隨。冥府放開了你——不是被擊敗，只是……滿足了。暫時。"
+          },
+          {
+            "id": "exit_release_2",
+            "narrative": "你感覺到它鬆手了。一股你不曾察覺自己背負著的重壓，在你跨過界線時卸下。冥府曾握著你。現在不了。就這麼簡單。就這麼可怕。"
+          },
+          {
+            "id": "exit_release_3",
+            "narrative": "寒意止於一道看不見的線。你跨過去，感到了暖——彷彿隔了多年。深淵目送你離開。它們會記得。"
+          },
+          {
+            "id": "exit_release_4",
+            "narrative": "有什麼鬆開了。某個龐大之物，以數不清的手指，鬆開了它的攫握。你自由了。你曾被攥住，如今自由了。別去想攥著你的是什麼。"
+          },
+          {
+            "id": "exit_release_5",
+            "narrative": "低語漸息。重壓漸緩。冥府從你的思緒中剝離，像一場退去的夢魘。你在上升。你在離開。你又是你自己了。"
+          }
+        ]
+      },
+      {
+        "template": "earned",
+        "variations": [
+          {
+            "id": "exit_earned_1",
+            "narrative": "最後一扇門。它本是封死的。如今開啟。這是你掙來的。黑暗中執掌裁決的那位，稱量過你，認可了你。跨過去吧，倖存者。"
+          },
+          {
+            "id": "exit_earned_2",
+            "narrative": "光湧入大廳。一份給走到此處之人的獎賞。通往地面的路敞開，像一件贈禮——或一份承認。這是你搏來的。它是你的。"
+          },
+          {
+            "id": "exit_earned_3",
+            "narrative": "大門分開。古老的機關碾磨作響。某個人——某個東西——被打動了。你通過了考驗。你熬過了試煉。出路是你的獎賞。去領取它。"
+          },
+          {
+            "id": "exit_earned_4",
+            "narrative": "一支寂靜的唱詩班。死者的敬意。你走得比大多數人更遠，活過了殺死大多數人的東西。出口以存在向你致敬。以放你通過向你致敬。"
+          },
+          {
+            "id": "exit_earned_5",
+            "narrative": "路開了。不是被給予的——是掙來的。你路過的每一具屍骸、你熬過的每一頭怪物、你做出的每一個選擇，都通向這裡。這扇門。這道光。這條命。"
+          }
+        ]
+      },
+      {
+        "template": "reluctant",
+        "variations": [
+          {
+            "id": "exit_reluctant_1",
+            "narrative": "出口就在這裡。安全就在這裡。但有些事尚未完成。有些人尚未尋回。你離開了，卻不是完全地離開。一部分的你留了下來。你會回來取的。"
+          },
+          {
+            "id": "exit_reluctant_2",
+            "narrative": "上方是光。身後是暗。你本該感到解脫。卻只覺得……未竟。冥府還有更多要展示。更多要教導。你不確定自己與它了結了沒有。"
+          },
+          {
+            "id": "exit_reluctant_3",
+            "narrative": "你可以離開。你會離開。但你在門檻前遲疑了。有什麼在深處呼喚——不是威脅，是邀請。下一次，它低語。下一次，走得更深。"
+          },
+          {
+            "id": "exit_reluctant_4",
+            "narrative": "勝利感覺空洞。你逃了出來，卻留下了太多。留言未讀的屍骸。未曾踏上的路。出口在評判你，怪你走得太早。"
+          },
+          {
+            "id": "exit_reluctant_5",
+            "narrative": "地面在等。深處在喚。你被撕扯在生存與好奇之間，在光與陰影中仍藏著的祕密之間。你離開了。暫時。"
+          }
+        ]
+      },
+      {
+        "template": "changed",
+        "variations": [
+          {
+            "id": "exit_changed_1",
+            "narrative": "地面就在上方等著。但你回得去嗎？你已見過底下的東西。你已成為一個知情的人。上面的世界如今顯得更小了。更不真實了。"
+          },
+          {
+            "id": "exit_changed_2",
+            "narrative": "你朝著光攀爬。每一步都比上一步更陌生。下去的那個人，和上來的這個人，不是同一個。有什麼被加上了。有什麼被拿走了。歡迎回來。"
+          },
+          {
+            "id": "exit_changed_3",
+            "narrative": "家在上面。安全。日常。但你如今知道了。你見過這世界的地基。還有什麼能再讓你覺得日常？還有什麼能再讓你覺得真實？"
+          },
+          {
+            "id": "exit_changed_4",
+            "narrative": "出口不像勝利。像中場休息。冥府在你身上留下了印記。改變了你。你會永遠帶著它。哪怕在陽光下。尤其在陽光下。"
+          },
+          {
+            "id": "exit_changed_5",
+            "narrative": "破土而出像一場分娩。疼痛。惶惑。世界太亮，太吵，太滿。你已習慣了黑暗。現在得重新習慣回來。你做得到嗎？"
+          }
+        ]
+      },
+      {
+        "template": "invitation",
+        "variations": [
+          {
+            "id": "exit_invitation_1",
+            "narrative": "門敞開著。陽光傾瀉而入。沒有看守，沒有試煉，沒有代價。只有……許可。它想要你離開。它知道你會回來。他們總會回來。"
+          },
+          {
+            "id": "exit_invitation_2",
+            "narrative": "「早點回來，」有什麼並沒有說出口，卻明明白白地傳達了。出口太容易了。太殷勤了。你不是在逃離——是被放走。這是有分別的。"
+          },
+          {
+            "id": "exit_invitation_3",
+            "narrative": "冥府為你扶著門。彬彬有禮。耐心十足。它已經在為你的下一次到訪做準備。它知道一件你不知道的事：你已經對下行上癮了。"
+          },
+          {
+            "id": "exit_invitation_4",
+            "narrative": "沒有任何阻礙擋在你面前。經歷了這一切，這很奇怪。很可疑。出口像是誘餌，像是釣鉤。可是為了什麼？為了何時？走吧，倖存者。帶著財富回來。常回來。"
+          },
+          {
+            "id": "exit_invitation_5",
+            "narrative": "前方是光。前方是自由。身後的黑暗沒有追來——它在揮手道別。回頭見，它彷彿在說。門會為你留著，不上鎖。"
+          }
+        ]
+      },
+      {
+        "template": "false",
+        "variations": [
+          {
+            "id": "exit_false_1",
+            "narrative": "前方有光。階梯向上。解脫感湧遍全身。然後你注意到——階梯是向下的。它們一直是向下的。那道「光」咧開了嘴，牙齒太多。"
+          },
+          {
+            "id": "exit_false_2",
+            "narrative": "出口。終於。你伸手去推門，手卻穿了過去。幻象。殘忍。真正的路在你身後延續，通向更深處。冥府無聲地笑了。"
+          },
+          {
+            "id": "exit_false_3",
+            "narrative": "你朝著陽光攀爬。空氣愈來愈冷。光愈來愈暗。不知怎地，向上的階梯正把你帶向下方。在這裡，幾何會說謊。希望也會。"
+          },
+          {
+            "id": "exit_false_4",
+            "narrative": "門洞上方刻著「出口」。門後：又一間廳室。又一次抉擇。又一個謊言。冥府在試探你的希望。折磨它。真正的出口還在前面。也許。"
+          },
+          {
+            "id": "exit_false_5",
+            "narrative": "出去的路。你很確定。你錯了。你跨了過去，發現自己又回到了入口。循環。迴圈。陷阱。冥府還沒跟你玩完。"
+          }
+        ]
+      }
+    ]
+  },
+  "bestiary": {
+    "shared": [],
+    "local": [
+      {
+        "name": "The Drowned",
+        "tier": 1,
+        "health": {
+          "min": 45,
+          "max": 65
+        },
+        "behaviors": [
+          "AGGRESSIVE",
+          "ERRATIC",
+          "DEFENSIVE"
+        ],
+        "description": "被冥府的飢餓驅動的浸水空殼。牠們的動作不對勁。",
+        "emoji": "🧟",
+        "artUrl": "/creatures/the-drowned.webp"
+      },
+      {
+        "name": "Pale Crawler",
+        "tier": 1,
+        "health": {
+          "min": 35,
+          "max": 50
+        },
+        "behaviors": [
+          "STALKING",
+          "AGGRESSIVE",
+          "HUNTING"
+        ],
+        "description": "肢體太多。牠們攀附在牆壁與天花板上，等你經過時落下。",
+        "emoji": "🕷️",
+        "artUrl": "/creatures/pale-crawler.webp"
+      },
+      {
+        "name": "The Hollow",
+        "tier": 1,
+        "health": {
+          "min": 40,
+          "max": 55
+        },
+        "behaviors": [
+          "STALKING",
+          "ERRATIC",
+          "CHARGING"
+        ],
+        "description": "沒有臉，沒有五官。只是一道以陰影刻成的人形輪廓。",
+        "emoji": "👤",
+        "artUrl": "/creatures/the-hollow.webp"
+      },
+      {
+        "name": "Bloated One",
+        "tier": 1,
+        "health": {
+          "min": 55,
+          "max": 75
+        },
+        "behaviors": [
+          "AGGRESSIVE",
+          "CHARGING",
+          "ERRATIC"
+        ],
+        "description": "被黑水泡脹的屍體。受擊便會爆裂。",
+        "emoji": "🫧",
+        "artUrl": "/creatures/the-bloated.webp"
+      },
+      {
+        "name": "Flickering Shade",
+        "tier": 1,
+        "health": {
+          "min": 30,
+          "max": 45
+        },
+        "behaviors": [
+          "ERRATIC",
+          "STALKING",
+          "RETREATING"
+        ],
+        "description": "死者的殘影。在這裡，又到那裡，然後消失。",
+        "emoji": "👻",
+        "artUrl": "/creatures/flickering-shade.webp"
+      },
+      {
+        "name": "The Hunched",
+        "tier": 1,
+        "health": {
+          "min": 50,
+          "max": 70
+        },
+        "behaviors": [
+          "HUNTING",
+          "AGGRESSIVE",
+          "STALKING"
+        ],
+        "description": "佝僂的身影，四肢著地爬行，嗅著空氣。牠們追尋體溫。",
+        "emoji": "🐺",
+        "artUrl": "/creatures/the-hunched.webp"
+      },
+      {
+        "name": "Tideborn",
+        "tier": 1,
+        "health": {
+          "min": 60,
+          "max": 80
+        },
+        "behaviors": [
+          "CHARGING",
+          "AGGRESSIVE",
+          "DEFENSIVE"
+        ],
+        "description": "活水化成的生物。牠們自水窪中升起，凝聚成形，隨即潰散。",
+        "emoji": "🌊",
+        "artUrl": "/creatures/tideborn.webp"
+      },
+      {
+        "name": "Echo Husks",
+        "tier": 1,
+        "health": {
+          "min": 35,
+          "max": 50
+        },
+        "behaviors": [
+          "STALKING",
+          "ERRATIC",
+          "AGGRESSIVE"
+        ],
+        "description": "牠們複誦死者的遺言。一遍。又一遍。",
+        "emoji": "🗣️",
+        "artUrl": "/creatures/echo-husks.webp"
+      },
+      {
+        "name": "Bone Weavers",
+        "tier": 1,
+        "health": {
+          "min": 40,
+          "max": 55
+        },
+        "behaviors": [
+          "AGGRESSIVE",
+          "CHARGING",
+          "STALKING"
+        ],
+        "description": "從牆壁與地板中伸出的骷髏之手。只有手。",
+        "emoji": "🦴",
+        "artUrl": "/creatures/bone-weavers.webp"
+      },
+      {
+        "name": "Ash Children",
+        "tier": 1,
+        "health": {
+          "min": 25,
+          "max": 40
+        },
+        "behaviors": [
+          "STALKING",
+          "DEFENSIVE",
+          "CHARGING"
+        ],
+        "description": "矮小。灰暗。牠們不攻擊——牠們令人窒息。",
+        "emoji": "👶",
+        "artUrl": "/creatures/ash-children.webp"
+      },
+      {
+        "name": "Hollow Clergy",
+        "tier": 2,
+        "health": {
+          "min": 70,
+          "max": 90
+        },
+        "behaviors": [
+          "CHARGING",
+          "DEFENSIVE",
+          "AGGRESSIVE"
+        ],
+        "description": "無名之神的祭司。他們的禱文即是詛咒。",
+        "emoji": "🧙",
+        "artUrl": "/creatures/hollow-clergy.webp"
+      },
+      {
+        "name": "The Bound",
+        "tier": 2,
+        "health": {
+          "min": 80,
+          "max": 100
+        },
+        "behaviors": [
+          "HUNTING",
+          "AGGRESSIVE",
+          "CHARGING"
+        ],
+        "description": "被自身悔恨的鎖鏈纏裹的魂魄。它們想要人作伴。",
+        "emoji": "⛓️",
+        "artUrl": "/creatures/the-bound.webp"
+      },
+      {
+        "name": "Forgotten Guardian",
+        "tier": 2,
+        "health": {
+          "min": 90,
+          "max": 110
+        },
+        "behaviors": [
+          "DEFENSIVE",
+          "AGGRESSIVE",
+          "CHARGING"
+        ],
+        "description": "由古老法術驅動的石像哨兵。它們記得如何殺戮。",
+        "emoji": "🗿",
+        "artUrl": "/creatures/forgotten-guardian.webp"
+      },
+      {
+        "name": "The Weeping",
+        "tier": 2,
+        "health": {
+          "min": 60,
+          "max": 80
+        },
+        "behaviors": [
+          "STALKING",
+          "ERRATIC",
+          "CHARGING"
+        ],
+        "description": "悲慟所化的靈。它們的觸碰帶來深可見骨的哀傷。",
+        "emoji": "😢",
+        "artUrl": "/creatures/the-weeping.webp"
+      },
+      {
+        "name": "Carrion Knight",
+        "tier": 2,
+        "health": {
+          "min": 85,
+          "max": 105
+        },
+        "behaviors": [
+          "AGGRESSIVE",
+          "DEFENSIVE",
+          "CHARGING"
+        ],
+        "description": "拒絕停止戰鬥的武士。他們行禮，然後殺人。",
+        "emoji": "⚔️",
+        "artUrl": "/creatures/carrion-knight.webp"
+      },
+      {
+        "name": "Pale Oracle",
+        "tier": 2,
+        "health": {
+          "min": 55,
+          "max": 70
+        },
+        "behaviors": [
+          "CHARGING",
+          "RETREATING",
+          "STALKING"
+        ],
+        "description": "無眼的先知，說出你不想聽見的真相。",
+        "emoji": "🔮",
+        "artUrl": "/creatures/pale-oracle.webp"
+      },
+      {
+        "name": "The Congregation",
+        "tier": 2,
+        "health": {
+          "min": 100,
+          "max": 130
+        },
+        "behaviors": [
+          "AGGRESSIVE",
+          "CHARGING",
+          "STALKING"
+        ],
+        "description": "邊緣相互融合的朝聖者，如一體般移動。加入我們，它們低語。",
+        "emoji": "👥",
+        "artUrl": "/creatures/the-congregation.webp"
+      },
+      {
+        "name": "Pale Crawler Swarm",
+        "tier": 2,
+        "health": {
+          "min": 75,
+          "max": 95
+        },
+        "behaviors": [
+          "AGGRESSIVE",
+          "HUNTING",
+          "CHARGING"
+        ],
+        "description": "一隻不足為懼。但不是一隻。數十隻。還有更多要來。",
+        "emoji": "🕷️",
+        "artUrl": "/creatures/pale-crawler-swarm.webp"
+      },
+      {
+        "name": "The Unnamed",
+        "tier": 3,
+        "health": {
+          "min": 120,
+          "max": 150
+        },
+        "behaviors": [
+          "ERRATIC",
+          "CHARGING",
+          "STALKING"
+        ],
+        "description": "你無法看清它。你的心智在拒絕。",
+        "emoji": "❓",
+        "artUrl": "/creatures/the-unnamed.webp"
+      },
+      {
+        "name": "Mother of Tides",
+        "tier": 3,
+        "health": {
+          "min": 130,
+          "max": 160
+        },
+        "behaviors": [
+          "CHARGING",
+          "AGGRESSIVE",
+          "DEFENSIVE"
+        ],
+        "description": "被賦予意志的水本身。一切溺亡之物皆歸於她。",
+        "emoji": "🌊",
+        "artUrl": "/creatures/mother-of-tides.webp"
+      },
+      {
+        "name": "The Keeper",
+        "tier": 3,
+        "health": {
+          "min": 180,
+          "max": 220
+        },
+        "behaviors": [
+          "CHARGING",
+          "AGGRESSIVE",
+          "DEFENSIVE",
+          "CHARGING"
+        ],
+        "description": "出口的看守。無人通過。無人將會通過。它已為你等候千年。",
+        "emoji": "👁️",
+        "artUrl": "/creatures/the-keeper.webp"
+      }
+    ]
+  },
+  "depths": [
+    {
+      "name": "THE UPPER CRYPT",
+      "tier": 1,
+      "roomRange": [
+        1,
+        4
+      ],
+      "description": "入口處。冷石與淺水。"
+    },
+    {
+      "name": "THE FLOODED HALLS",
+      "tier": 2,
+      "roomRange": [
+        5,
+        8
+      ],
+      "description": "更深了。水漲到你的胸口。"
+    },
+    {
+      "name": "THE ABYSS",
+      "tier": 3,
+      "roomRange": [
+        9,
+        12
+      ],
+      "description": "真正的深淵。少有人從這裡歸來。"
+    }
+  ],
+  "dungeonLayout": {
+    "totalRooms": 12,
+    "structure": [
+      {
+        "type": "explore",
+        "template": "descent"
+      },
+      {
+        "type": "combat",
+        "template": "ambush"
+      },
+      {
+        "type": "corpse",
+        "template": "fresh"
+      },
+      {
+        "type": "combat",
+        "template": "confrontation"
+      },
+      {
+        "type": "explore",
+        "template": "flooded"
+      },
+      {
+        "type": "combat",
+        "template": "guardian"
+      },
+      {
+        "type": "cache",
+        "template": "alcove"
+      },
+      {
+        "type": "combat",
+        "template": "territorial"
+      },
+      {
+        "type": "explore",
+        "template": "chamber"
+      },
+      {
+        "type": "corpse",
+        "template": "heroic"
+      },
+      {
+        "type": "combat",
+        "template": "pursuit"
+      },
+      {
+        "type": "combat",
+        "template": "arena",
+        "boss": true
+      }
+    ]
+  },
+  "boss": "The Keeper",
+  "audio": {
+    "ambient": {
+      "explore": "/audio/ambient-explore.mp3",
+      "combat": "/audio/ambient-combat.mp3"
+    },
+    "sfx": {
+      "footstep": "/audio/footstep.mp3",
+      "descend": "/audio/depth-descend.mp3",
+      "environment": [
+        "/audio/water-drip.mp3",
+        "/audio/drip-echo.mp3",
+        "/audio/water-splash.mp3"
+      ],
+      "atmosphere": [
+        "/audio/eerie-whispers.mp3",
+        "/audio/stone-grinding.mp3",
+        "/audio/door-creak.mp3"
+      ],
+      "boss": {
+        "intro": "/audio/boss-intro.mp3",
+        "roar": "/audio/boss-roar.mp3"
+      }
+    }
+  }
+}

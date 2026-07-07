@@ -1,0 +1,458 @@
+{
+  "id": "ashen-crypts",
+  "version": "1.0.0",
+  "meta": {
+    "name": "THE ASHEN CRYPTS",
+    "tagline": "Một nền văn minh chọn lửa thay vì đầu hàng.",
+    "element": "fire",
+    "difficulty": 2,
+    "colors": {
+      "primary": "#3d1a00",
+      "accent": "#ff6b2b",
+      "text": "#ffb380"
+    },
+    "mechanic": "BURN",
+    "mechanicDescription": "Mỗi tầng thiêu đốt gây sát thương mỗi lượt. Tối đa 5 tầng. Giảm 1 tầng mỗi lượt. Chần chừ là chết.",
+    "unlockRequirement": "Hoàn thành một cuộc xuống sâu",
+    "emoji": "🔥"
+  },
+  "lore": "Bậc thang dẫn xuống hơi nóng. Bên dưới, một thành phố đang cháy — không phải trong thảm họa, mà trong nghi lễ, trong sự tiếp nối có chủ đích. Họ nhìn thứ trèo lên từ bên dưới và đưa ra lựa chọn: thiêu rụi tất cả. Ngọn lửa đã làm được. Ngọn lửa không bao giờ tắt.",
+  "fragments": {
+    "explore": {
+      "opening": [
+        "Hơi nóng đến trước ánh sáng. Trước cả âm thanh. Hầm Mộ Tro Tàn báo hiệu sự hiện diện của nó qua làn da ngươi.",
+        "Tro rơi. Chậm rãi, không ngừng, từ đâu đó phía trên vốn không phải bầu trời.",
+        "Mùi chạm đến ngươi trước tiên — mùi cháy khét, và bên dưới là thứ gì đó ngọt ngào lẽ ra không được phép tồn tại ở đây.",
+        "Hơi nóng khô khốc ép vào lồng ngực ngươi. Nước trong miệng ngươi bốc hơi trong vài giây.",
+        "Ánh sáng cam, ổn định và cổ xưa. Không phải đuốc. Một thứ đã cháy lâu hơn cả khi đuốc ra đời.",
+        "Không khí có vị cháy. Ngươi thở qua kẽ răng. Chẳng ích gì.",
+        "Bồ hóng phủ mọi bề mặt, dày và chồng lớp. Hàng thế kỷ tro tàn, vẫn đang rơi, vẫn đang tích tụ.",
+        "Đá tỏa hơi nóng xuyên qua đế giày ngươi. Thứ gì đang cháy bên dưới đã cháy từ rất lâu rồi.",
+        "Không khí này không có chút hơi ẩm nào. Môi ngươi nứt nẻ trước khi ngươi kịp nhận ra. Hơi nóng lấy đi mà không hỏi.",
+        "Tiếng lách tách chạm đến ngươi trước mọi thứ khác. Xa xăm. Liên tục. Không thể chối bỏ.",
+        "Tro bay khỏi tường khi ngươi di chuyển. Mỗi bước chân dấy lên một đám mây nhỏ. Sàn mềm dưới chân.",
+        "Có gì đó ngọt trong làn khói. Ngươi hít vào trước khi kịp ngăn mình lại. Ngươi hít vào lần nữa."
+      ],
+      "middle": [
+        "Những bức tường từng được chạm khắc. Vết đục còn hiện rõ dưới lớp bồ hóng. Ai đó đã xây nơi này dù biết nó sẽ cháy.",
+        "Ký hiệu trên sàn, vẫn phát sáng mờ nhạt. Nghi lễ vẫn đang vận hành. Nó đã vận hành từ trước khi ngươi ra đời.",
+        "Ngươi đang đứng giữa một con phố. Tro ngập đến đầu gối. Nhà cửa hai bên, mặt tiền còn nguyên vẹn. Nơi này từng là một thành phố.",
+        "Những cột trụ phía trước, cháy đen nhưng vẫn đứng vững. Giữa chúng: bóng dáng của thứ từng là một sảnh hội họp.",
+        "Dấu bàn tay trong lớp bồ hóng — hàng chục dấu, ép chặt vào đá. Ai đó đã cố giữ bức tường từ phía bên trong.",
+        "Một sạp chợ. Hàng hóa giờ là tro. Chiếc cân của người bán cháy đen, nhưng vẫn thăng bằng.",
+        "Trần nhà cho thấy đường lửa đã đi — những hoa văn đen, chính xác, có chủ đích. Không ngẫu nhiên. Được thiết kế để lan đúng đến đây.",
+        "Xương trong tro, chỉ lộ ra nơi bàn chân ngươi khuấy động mặt sàn. Chúng vẫn luôn ở đó. Chỉ là ngươi chưa từng để ý.",
+        "Một cánh cửa, niêm phong từ bên trong. Mát hơn khối đá xung quanh. Lớp niêm phong đã trụ vững qua tất cả. Thứ gì đó bên trong đã không cháy.",
+        "Chữ viết trên tường bằng thứ ngôn ngữ đã cháy cùng mọi thứ khác. Hướng đi thì rõ ràng. Ai đó muốn những kẻ sau đi theo.",
+        "Một bàn thờ, nguyên vẹn, được cố ý giữ lại. Ngọn lửa đi vòng quanh nó. Dù nghi lễ nào ngự trị nơi đây, sự thiêu đốt cũng kính trọng nó.",
+        "Tàn tích cháy đen của đồ đạc. Một cái bàn, một cái ghế, bóng ma của không gian gia đình giữa lòng thảm họa. Ai đó từng sống ở đây. Rồi chọn điều khác."
+      ],
+      "closing": [
+        "Tro vẫn rơi.",
+        "Thứ gì đó ở đây vẫn đang cháy.",
+        "Ngọn lửa chưa quên nơi này.",
+        "Tiếng lách tách đã gần hơn trước.",
+        "Không phải mọi hòn than ở đây đều đang nguội đi.",
+        "Phần này của thành phố không hề trống rỗng.",
+        "Nghi lễ chưa kết thúc.",
+        "Hơi nóng vẫn tiếp tục dâng lên.",
+        "Ngươi đã quấy động thứ gì đó vốn đang chờ đợi.",
+        "Đâu đó phía trước, thứ gì đó vẫn đang cầu nguyện.",
+        "Thành phố vẫn cháy. Kiên nhẫn. Có chủ đích.",
+        "Thứ gì đã chọn nơi này ắt có lý do. Lý do đó chưa hề thay đổi."
+      ]
+    },
+    "combat": {
+      "opening": [
+        "Hơi nóng vọt lên. Không từ từ — tức thì. Một mức nhiệt cho thấy có thứ gì đó ở đây.",
+        "Tro rơi nhanh hơn. Một xáo động trong không khí. Chuyển động mà ngươi chưa định vị được.",
+        "Tiếng lách tách đổi âm vực. Sắc hơn. Có hướng. Nhận biết được ngươi.",
+        "Da ngươi căng lên. Nhiệt độ trong không gian này sai lệch, kể cả với Hầm Mộ.",
+        "Ánh sáng cam dao động. Thứ gì đó chen giữa ngươi và nguồn sáng.",
+        "Tro bay khỏi tường, bị khuấy động bởi một rung chấn. Sức nặng, đang di chuyển.",
+        "Vết cháy mới trên tro cũ. Thứ gì đó đang cháy ở đây mà khoảnh khắc trước còn chưa cháy.",
+        "Luồng khí nóng phả vào mặt ngươi — không phải hơi nóng môi trường. Có chủ đích. Một hơi thở, hoặc thứ tương đương với hơi thở ở nơi này.",
+        "Sàn ấm dưới chân theo cách mà phần còn lại của Hầm Mộ không có. Hơi nóng mới. Cô đặc.",
+        "Một âm thanh ngừng lại. Sự vắng mặt cụ thể của thứ ngươi chưa từng để ý cho đến khi nó biến mất.",
+        "Lớp tro phía trước bị khuấy động. Thứ gì đó vừa đi qua đây vài khoảnh khắc trước, hoặc đang di chuyển ngay lúc này.",
+        "Một luồng căng thẳng trong không khí, như âm thanh của đám cháy trước khi nó lan rộng. Căn phòng này đang dồn về một điều gì đó."
+      ],
+      "middle": [
+        "Nó trồi lên từ đụn tro dọc bức tường. Khói tuôn ra từ những khớp xương đã không còn là khớp xương suốt hàng thế kỷ. Nó nhìn thấy ngươi.",
+        "Ba hình dạng hiện rõ dần từ màn khói mờ. Chậm rãi. Không ngừng nghỉ. Mỗi thứ kéo theo một vệt nóng như chữ ký riêng.",
+        "Nó quỳ bên đống lửa nghi lễ, quay lưng về phía ngươi. Nó biết ngươi ở đây. Tiếng tụng niệm của nó lớn dần. Căn phòng nóng dần.",
+        "Một cú lao tới. Đường thẳng. Không do dự, không cảnh báo. Nó đã di chuyển từ trước khi ngươi kịp nhận ra.",
+        "Những bàn tay xuyên qua bức tường cháy đen như xuyên qua vải. Rồi đến cánh tay. Rồi phần còn lại của nó.",
+        "Vệt nhòe hơi nóng ở góc xa đông đặc lại. Những bàn tay chuyển động với chủ đích chính xác, khủng khiếp. Lửa đi theo từng cử động.",
+        "Hội chúng lấp kín lối đi phía trước. Hàng chục gương mặt ép lên bề mặt của nó, tất cả đều đang nhìn ngươi.",
+        "Nó bước ra từ ngọn lửa. Không phải xuyên qua — mà từ trong. Ngọn lửa co lại sau lưng nó như một cánh cửa đang khép.",
+        "Những hòn than trên sàn bùng lên từng cái một, vạch thành đường nối giữa chúng. Thứ gì đó đang nhào nặn lửa thành một kế hoạch.",
+        "Nó buông mình từ trên cao. Nặng nề. Bụi tro của cú đáp còn chưa lắng xuống da ngươi mà nó đã đứng thẳng dậy.",
+        "Bức tường chuyển động. Bức tường vẫn luôn chuyển động. Bức tường đã quan sát ngươi từ lúc ngươi bước vào.",
+        "Bốn con, chậm rãi, mỗi con để lại vệt cháy sém. Những vệt ấy vẫn còn bốc khói nơi chúng đi qua."
+      ],
+      "closing": [
+        "Nó không do dự. Ngươi cũng không được phép.",
+        "Kết thúc chuyện này thật nhanh. Mỗi giây trôi qua là thêm một tầng thiêu đốt ngươi không hề muốn.",
+        "Không có đường vòng. Chỉ có đường xuyên qua.",
+        "Ngọn lửa không thương lượng.",
+        "Ra đòn trước. Hầm Mộ được dựng nên trên triết lý này.",
+        "Mỗi giây ngươi chờ đợi là mất đi thứ không lấy lại được.",
+        "Nó đã cháy suốt hàng thế kỷ. Nó có sự kiên nhẫn mà ngươi không có.",
+        "Căn phòng này không có lối ra nào ngoài con đường xuyên qua nó.",
+        "Nó đã bắt đầu di chuyển.",
+        "Chần chừ là một lựa chọn. Hầm Mộ biết rõ cái giá của nó."
+      ]
+    },
+    "corpse": {
+      "framing": [
+        "Tro lưu giữ, theo cách của nó. Ngươi vẫn đọc được những gì còn sót lại.",
+        "Hơi nóng đã rút họ xuống chỉ còn phần cốt lõi. Ít da thịt hơn, nhiều chứng tích hơn.",
+        "Than và xương. Chi tiết đã mất. Hình hài của điều đã xảy ra vẫn còn.",
+        "Họ cháy chậm — không dữ dội, mà qua sự hiện diện dai dẳng. Hầm Mộ cần thời gian, nhưng nó lấy đi tất cả.",
+        "Tro đã phủ lên họ, lấp đầy. Một tháng, một thập kỷ, một thế kỷ — ngọn lửa không phân biệt.",
+        "Được lưu giữ bởi hơi nóng như giá lạnh lưu giữ ở nơi khác. Khô quắt. Cố định. Vẫn còn đọc được.",
+        "Lửa làm mọi thứ sụp co lại. Giờ họ nhỏ hơn khi xưa.",
+        "Những gì còn lại mang một vẻ kiên nhẫn. Như thể họ vẫn chờ ai đó tìm thấy mình.",
+        "Lớp bồ hóng kể lại câu chuyện. Vết nhiệt tỏa ra từ một chuỗi sự kiện. Đọc được, nếu ngươi biết cần nhìn vào đâu.",
+        "Ngọn lửa đã giữ họ lại, theo cách của nó. Mọi thứ trong Hầm Mộ rồi cũng thuộc về ngọn lửa. Những người này thuộc về nó sớm hơn."
+      ],
+      "discoveryBeats": [
+        "Một vết cháy sém trên sàn, hình tròn. Ai đó đã đứng yên một chỗ rất lâu.",
+        "Lớp tro ở đây bị xáo trộn — một vùng rộng, dấu vết của kẻ đã đi tới đi lui rồi cuối cùng dừng hẳn.",
+        "Mùi thay đổi. Mùi cháy khét nhường chỗ cho thứ gì đó cụ thể. Mới. Gần.",
+        "Có gì đó trong lớp tro phía trước. Một vật thể. Bình, lưỡi dao, thứ gì đó từng được mang theo. Chủ nhân của nó đang ở đây.",
+        "Lớp tro bị nén xuống theo hình dáng một con người.",
+        "Dấu chân trong tro. Dẫn vào. Không có dấu nào dẫn ra.",
+        "Hơi nóng ở đoạn hành lang này khác lạ — một khoảng hụt nhỏ trong luồng ấm, nơi thứ gì đó từng chắn lại.",
+        "Chữ viết trên tường. Ngươi thấy những con chữ trước khi thấy thứ đã cầm bút khắc.",
+        "Một cái bóng không thuộc về bất cứ thứ gì còn đứng vững.",
+        "Tiếng lách tách xung quanh có một khoảng lặng ở đây. Một điểm im ắng. Ngọn lửa đi vòng quanh những gì còn lại của họ."
+      ]
+    },
+    "cache": {
+      "locationLines": [
+        "Một hốc đá, niêm phong bằng vật liệu không bén lửa. Bên trong: không khí mát và những gì ai đó để lại.",
+        "Một vành đai chặn lửa trong tường — tro dừng lại ở đây, còn đồ tiếp tế thì không.",
+        "Một hộp kín trên kệ đá. Kệ còn nguyên. Hộp không tì vết. Mọi thứ khác đều đã cháy.",
+        "Một cánh cửa đã trụ vững. Cơ cấu vẫn hoạt động. Căn phòng phía sau không có mùi của bất cứ thứ gì đang cháy.",
+        "Kho chứa của một tư tế, được cố ý làm chống lửa. Họ cần nó vận hành. Đồ bên trong đã sống sót.",
+        "Một hốc kết cấu nơi ngọn lửa đi vòng qua. Tro ở ngưỡng cửa. Tĩnh lặng bên trong.",
+        "Những kệ đá đục vào tường, phía trên vạch bồ hóng. Ai đó đặt chúng ở đây vì biết điều gì sắp đến.",
+        "Một khe hở trên tường, gần như không nhìn thấy. Phía sau: một khoảng không đã được niêm phong và vẫn còn niêm phong."
+      ],
+      "toneClosers": [
+        "Sự nhẹ nhõm này sai lệch. Quá ấm để là niềm an ủi.",
+        "Ngươi nghỉ ngơi. Ngọn lửa vẫn cháy. Trong Hầm Mộ, hai điều này không mâu thuẫn.",
+        "An toàn mang nghĩa khác ở nơi này. Nghĩa là: chưa đến lượt.",
+        "Sự yên tĩnh này là vay mượn. Ngươi đã cảm thấy nó đang cố kết thúc.",
+        "Tiếng lách tách chỉ kiên nhẫn, chứ không vắng mặt. Nó vẫn ở ngoài kia. Nó biết ngươi đang ở đâu.",
+        "Ngọn lửa biết căn phòng này ở đâu. Nó chỉ đơn giản chọn cách chờ đợi.",
+        "Thứ gì đã bảo tồn không gian này vẫn đang vận hành. Đừng hỏi cái giá của nó.",
+        "Ngươi hít thở. Không khí không còn vị cháy. Nó sẽ sớm có lại thôi."
+      ]
+    },
+    "exit": {
+      "opening": [
+        "Hơi nóng hạ xuống. Đột ngột. Rõ rệt. Thứ gì đó phía trước đã khác.",
+        "Luồng khí mát hơn từ đâu đó bên trên — nó chạm đến ngươi trước khi ngươi tìm thấy bậc thang.",
+        "Lớp tro mỏng dần dưới chân. Đá bên dưới. Đá thật sự, không phải hàng thế kỷ nén chặt.",
+        "Một khe sáng phía trước — không cam, không đỏ than. Một thứ hoàn toàn khác.",
+        "Tiếng lách tách lùi lại sau lưng ngươi theo từng bước. Dứt khoát. Nhạt dần.",
+        "Màn sương cam tan ra ở một điểm ngươi nhìn thấy được. Phía sau nó: bóng tối khác. Bóng tối dễ chịu hơn.",
+        "Phổi ngươi hít trọn một hơi. Ngươi đã không nhận ra chúng từng ngừng lại.",
+        "Nhiệt độ thay đổi. Hầm Mộ kết thúc đâu đó gần đây. Ngươi cảm nhận được ranh giới."
+      ],
+      "middle": [
+        "Ngọn lửa không theo qua khỏi điểm này. Ngươi vẫn nghe thấy nó sau lưng.",
+        "Bậc thang dẫn lên. Đá mát lạnh dưới bàn tay ngươi.",
+        "Tro dừng lại ở một vạch trên sàn. Như thể nó biết. Như thể nó đã thỏa thuận dừng ở đây.",
+        "Âm thanh của Hầm Mộ rơi lại phía sau ngươi như một cánh cửa đang khép.",
+        "Tất cả ở lại bên dưới. Ngọn lửa ở lại bên dưới. Tạm thời.",
+        "Mùi cháy khét tan đi. Ngươi ngửi thấy mùi đá chưa từng cháy.",
+        "Quầng sáng cam vẫn tiếp diễn sau lưng ngươi. Nó sẽ tiếp diễn. Nó đã tiếp diễn hàng thế kỷ.",
+        "Mỗi bước đưa ngươi xa hơn khỏi ngọn lửa. Ngọn lửa không di chuyển để ngăn ngươi."
+      ],
+      "closing": [
+        "Ngọn lửa vẫn cháy. Nó sẽ ở đây khi ngươi quay lại.",
+        "Không phải một kết thúc. Một khoảng ngừng.",
+        "Thành phố cháy vì nó đã chọn thế. Ngươi sống sót vì ngươi đã chọn thế. Ngọn lửa thấy điều này thú vị.",
+        "Tạm thời.",
+        "Chúng luôn quay lại.",
+        "Hơi nóng trên da ngươi phai dần. Ký ức về nó thì không.",
+        "Hòn than trong căn phòng sâu nhất vẫn đang cháy. Ngươi cảm thấy nó dõi theo ngươi rời đi.",
+        "Hầm Mộ nhớ mọi kẻ từng đi qua. Chúng sẽ nhớ ngươi."
+      ]
+    },
+    "options": {
+      "cautious": [
+        "Bước qua lớp tro thật cẩn thận",
+        "Bám sát bức tường mát",
+        "Đi chậm, thở khẽ",
+        "Nhìn kỹ nơi đặt chân"
+      ],
+      "aggressive": [
+        "Xông qua",
+        "Lao vào hơi nóng",
+        "Di chuyển nhanh, không dừng lại",
+        "Băng qua bằng mọi giá"
+      ],
+      "investigative": [
+        "Lục soát tàn tích cháy",
+        "Đọc lớp bồ hóng",
+        "Xem xét những gì còn lại",
+        "Nghiên cứu các vết cháy"
+      ],
+      "retreat": [
+        "Lùi khỏi hơi nóng",
+        "Tránh xa ngọn lửa",
+        "Tìm nền đất mát hơn",
+        "Chờ trong lớp tro"
+      ]
+    }
+  },
+  "bestiary": {
+    "shared": [
+      "Ash Children",
+      "Echo Husks",
+      "The Hunched",
+      "Hollow Clergy"
+    ],
+    "local": [
+      {
+        "name": "Ember Husks",
+        "tier": 1,
+        "health": {
+          "min": 35,
+          "max": 55
+        },
+        "behaviors": [
+          "AGGRESSIVE",
+          "STALKING"
+        ],
+        "description": "Những thi hài cháy đen vẫn còn cử động. Khói tuôn ra từ những kẽ hở trên da chúng. Chậm rãi. Không ngừng nghỉ. Khi chết, chúng sụp thành những đám mây tro rực cháy.",
+        "emoji": "💀",
+        "artUrl": "/creatures/ember-husks.webp"
+      },
+      {
+        "name": "Cinder Priests",
+        "tier": 1,
+        "health": {
+          "min": 40,
+          "max": 60
+        },
+        "behaviors": [
+          "ERRATIC",
+          "RETREATING",
+          "CHARGING"
+        ],
+        "description": "Họ đã thiết kế các nghi lễ. Họ đã châm những ngọn lửa đầu tiên. Họ vẫn ở đây, vẫn cầu nguyện, vẫn nuôi những ngọn lửa đã cháy suốt hàng thế kỷ. Kẻ địch gần chúng ra đòn mạnh hơn.",
+        "emoji": "🙏",
+        "artUrl": "/creatures/cinder-priests.webp"
+      },
+      {
+        "name": "The Scorched",
+        "tier": 1,
+        "health": {
+          "min": 45,
+          "max": 65
+        },
+        "behaviors": [
+          "CHARGING",
+          "AGGRESSIVE"
+        ],
+        "description": "Những chiến binh đang lao lên giữa chừng thì ngọn lửa cuốn lấy họ. Họ không dừng lại. Thuần hung hãn, không phòng thủ, không rút lui. Chúng gây thiêu đốt khi chạm vào. Chúng không dừng lại.",
+        "emoji": "🔥",
+        "artUrl": "/creatures/the-scorched.webp"
+      },
+      {
+        "name": "Flame Weavers",
+        "tier": 1,
+        "health": {
+          "min": 35,
+          "max": 55
+        },
+        "behaviors": [
+          "ERRATIC",
+          "HUNTING",
+          "RETREATING"
+        ],
+        "description": "Họ nhào nặn lửa từ trước ngày tận diệt. Họ vẫn làm thế. Những phác họa mờ nhạt của con người — vệt nhòe hơi nóng, ánh sáng cam và những bàn tay chuyển động với chủ đích khủng khiếp. Chúng không đến gần. Chúng không cần phải thế.",
+        "emoji": "🌀",
+        "artUrl": "/creatures/flame-weavers.webp"
+      },
+      {
+        "name": "Ashen Congregation",
+        "tier": 2,
+        "health": {
+          "min": 80,
+          "max": 110
+        },
+        "behaviors": [
+          "AGGRESSIVE",
+          "CHARGING",
+          "STALKING"
+        ],
+        "description": "Dân thường của thành phố đã chết, bị hàng thế kỷ hơi nóng nung chảy làm một. Từng gương mặt riêng lẻ ép lên bề mặt — một bàn tay, một cái miệng. Họ từng là những con người riêng biệt. Ngọn lửa đã biến họ thành một.",
+        "emoji": "👥",
+        "artUrl": "/creatures/ashen-congregation.webp"
+      },
+      {
+        "name": "The Scorched Veteran",
+        "tier": 2,
+        "health": {
+          "min": 70,
+          "max": 95
+        },
+        "behaviors": [
+          "CHARGING",
+          "AGGRESSIVE",
+          "ERRATIC"
+        ],
+        "description": "Thứ mà Kẻ Cháy Sém trở thành sau khi cháy đủ lâu để tích tụ khối lượng. Lớn hơn. Nhanh hơn. Nhiều tầng thiêu đốt mỗi đòn. Vẫn hành vi đó, được khuếch đại đến mức để lại dấu chân trên đá.",
+        "emoji": "🔥",
+        "artUrl": "/creatures/the-scorched.webp"
+      },
+      {
+        "name": "Senior Flame Weaver",
+        "tier": 2,
+        "health": {
+          "min": 65,
+          "max": 85
+        },
+        "behaviors": [
+          "HUNTING",
+          "DEFENSIVE",
+          "ERRATIC"
+        ],
+        "description": "Những bậc thầy lão luyện. Họ tự phong ấn mình trong ngọn lửa sống một cách có chủ đích. Hàng thế kỷ đã khiến kỹ nghệ của họ trở nên bao la và chính xác. Chúng biến căn phòng thành lò luyện. Chúng quan sát trước khi hành động.",
+        "emoji": "🌀",
+        "artUrl": "/creatures/flame-weavers.webp"
+      },
+      {
+        "name": "The Pyre Keeper",
+        "tier": 3,
+        "health": {
+          "min": 180,
+          "max": 220
+        },
+        "behaviors": [
+          "CHARGING",
+          "AGGRESSIVE",
+          "DEFENSIVE",
+          "ERRATIC"
+        ],
+        "description": "Một hình hài kết thành từ lửa tích tụ. Nghi lễ cuối cùng của thành phố đã hợp nhất ý thức của nó với ngọn lửa tập thể. Nó đã cháy qua cùng những suy nghĩ ấy suốt hàng thế kỷ. Nó không muốn chiến đấu. Nó muốn có bạn. Nó không hiểu sự khác biệt.",
+        "emoji": "🔥",
+        "artUrl": "/creatures/the-pyre-keeper.webp"
+      }
+    ]
+  },
+  "depths": [
+    {
+      "name": "THE OUTER RUINS",
+      "tier": 1,
+      "roomRange": [
+        1,
+        4
+      ],
+      "description": "Rìa thành phố. Vẫn đứng vững. Vẫn đang cháy."
+    },
+    {
+      "name": "THE BURNING HEART",
+      "tier": 2,
+      "roomRange": [
+        5,
+        8
+      ],
+      "description": "Trung tâm. Nơi ngọn lửa bắt đầu. Nơi nó được định sẵn để bắt đầu."
+    },
+    {
+      "name": "THE PYRE",
+      "tier": 3,
+      "roomRange": [
+        9,
+        12
+      ],
+      "description": "Cội nguồn. Ngọn lửa chưa bao giờ tắt."
+    }
+  ],
+  "dungeonLayout": {
+    "totalRooms": 12,
+    "structure": [
+      {
+        "type": "explore",
+        "template": "descent"
+      },
+      {
+        "type": "combat",
+        "template": "husk-field"
+      },
+      {
+        "type": "combat",
+        "template": "priest-ritual"
+      },
+      {
+        "type": "corpse",
+        "template": "hesitator"
+      },
+      {
+        "type": "explore",
+        "template": "ruins"
+      },
+      {
+        "type": "combat",
+        "template": "weaver-den"
+      },
+      {
+        "type": "cache",
+        "template": "sealed-alcove"
+      },
+      {
+        "type": "combat",
+        "template": "congregation-press"
+      },
+      {
+        "type": "explore",
+        "template": "ashfield"
+      },
+      {
+        "type": "combat",
+        "template": "scorched-charge"
+      },
+      {
+        "type": "corpse",
+        "template": "fighter"
+      },
+      {
+        "type": "combat",
+        "template": "pyre-chamber",
+        "boss": true
+      }
+    ]
+  },
+  "boss": "The Pyre Keeper",
+  "audio": {
+    "ambient": {
+      "explore": "/audio/zones/ashen-crypts/ambient-explore.mp3",
+      "combat": "/audio/zones/ashen-crypts/ambient-combat.mp3"
+    },
+    "sfx": {
+      "footstep": "/audio/zones/ashen-crypts/footstep.mp3",
+      "descend": "/audio/zones/ashen-crypts/depth-descend.mp3",
+      "environment": [
+        "/audio/zones/ashen-crypts/fire-crackle.mp3",
+        "/audio/zones/ashen-crypts/ember-pop.mp3",
+        "/audio/zones/ashen-crypts/ash-fall.mp3"
+      ],
+      "atmosphere": [
+        "/audio/zones/ashen-crypts/distant-roar.mp3",
+        "/audio/zones/ashen-crypts/stone-crack.mp3"
+      ],
+      "boss": {
+        "intro": "/audio/zones/ashen-crypts/boss-intro.mp3",
+        "roar": "/audio/zones/ashen-crypts/boss-roar.mp3"
+      }
+    }
+  }
+}

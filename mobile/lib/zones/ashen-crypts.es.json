@@ -1,0 +1,458 @@
+{
+  "id": "ashen-crypts",
+  "version": "1.0.0",
+  "meta": {
+    "name": "THE ASHEN CRYPTS",
+    "tagline": "Una civilización que eligió el fuego antes que la rendición.",
+    "element": "fire",
+    "difficulty": 2,
+    "colors": {
+      "primary": "#3d1a00",
+      "accent": "#ff6b2b",
+      "text": "#ffb380"
+    },
+    "mechanic": "BURN",
+    "mechanicDescription": "Las acumulaciones de quemadura infligen daño cada turno. Máximo 5. Decaen de a 1 por turno. Dudar mata.",
+    "unlockRequirement": "Completa un descenso",
+    "emoji": "🔥"
+  },
+  "lore": "Las escaleras descienden hacia el calor. Abajo arde una ciudad — no en catástrofe, sino en ritual, en continuación deliberada. Miraron lo que trepaba desde abajo y tomaron una decisión: quemarlo todo. El fuego funcionó. El fuego nunca se detuvo.",
+  "fragments": {
+    "explore": {
+      "opening": [
+        "Calor antes que luz. Antes que sonido. Las Criptas se anuncian a través de tu piel.",
+        "Cae ceniza. Lenta, continua, desde algún lugar arriba que no es cielo.",
+        "El olor te alcanza primero — carbón, y algo dulce por debajo que no tiene nada que hacer aquí.",
+        "Calor seco presionándote el pecho. La humedad abandona tu boca en segundos.",
+        "Luz naranja, constante y antigua. No es antorcha. Algo que lleva ardiendo desde antes de que existieran las antorchas.",
+        "El aire sabe a quemado. Respiras entre los dientes. No sirve de nada.",
+        "Hollín en cada superficie, profundo y en capas. Siglos de ceniza, todavía cayendo, todavía acumulándose.",
+        "La piedra irradia calor a través de tus botas. Lo que sea que arde abajo lleva mucho tiempo ardiendo.",
+        "No hay humedad en este aire. Tus labios se agrietan antes de que lo notes. El calor toma sin pedir.",
+        "El crepitar te alcanza antes que cualquier otra cosa. Distante. Constante. Innegable.",
+        "La ceniza se desprende de las paredes cuando te mueves. Cada paso levanta una pequeña nube. El suelo es blando bajo los pies.",
+        "Algo dulce en el humo. Lo inhalas antes de poder evitarlo. Lo inhalas otra vez."
+      ],
+      "middle": [
+        "Las paredes fueron talladas. Marcas de herramientas visibles bajo el hollín. Alguien construyó esto sabiendo que ardería.",
+        "Símbolos en el suelo, todavía con un brillo tenue. El ritual sigue en marcha. Lleva en marcha desde antes de que nacieras.",
+        "Estás de pie en una calle. Ceniza hasta las rodillas. Edificios a ambos lados, sus fachadas intactas. Esto era una ciudad.",
+        "Pilares adelante, carbonizados pero en pie. Entre ellos: la silueta de lo que fue un salón de reuniones.",
+        "Huellas de manos en el hollín — docenas, presionadas planas contra la piedra. Alguien intentó sostener la pared desde adentro.",
+        "Un puesto de mercado. La mercancía es ceniza. La balanza del vendedor está carbonizada, pero sigue equilibrada.",
+        "El techo muestra por dónde se movió el fuego — patrones negros, exactos, deliberados. No al azar. Diseñado para extenderse exactamente hasta aquí.",
+        "Huesos en la ceniza, visibles solo donde tus pies remueven el suelo. Siempre estuvieron ahí. Solo que no los habías notado.",
+        "Una puerta, sellada desde adentro. Más fría que la piedra circundante. El sello resistió todo. Algo ahí dentro no ardió.",
+        "Escritura en la pared en una lengua que ardió con todo lo demás. La dirección es clara. Alguien quería que otros la siguieran.",
+        "Un altar, intacto, preservado a propósito. El fuego lo rodeó. Sea cual sea el ritual que vive aquí, el incendio lo respeta.",
+        "Los restos carbonizados de muebles. Una mesa, una silla, el fantasma de un espacio doméstico dentro de la catástrofe. Alguien vivió aquí. Luego eligió otra cosa."
+      ],
+      "closing": [
+        "La ceniza sigue cayendo.",
+        "Algo aquí sigue ardiendo.",
+        "El fuego no ha olvidado este lugar.",
+        "El crepitar está más cerca que antes.",
+        "No todas las ascuas de aquí se están enfriando.",
+        "Esta parte de la ciudad no está vacía.",
+        "El ritual no ha terminado.",
+        "El calor sigue subiendo.",
+        "Has perturbado algo que estaba esperando.",
+        "En algún lugar adelante, algo sigue rezando.",
+        "La ciudad sigue ardiendo. Paciente. Precisa.",
+        "Lo que eligió este lugar lo eligió por una razón. La razón no ha cambiado."
+      ]
+    },
+    "combat": {
+      "opening": [
+        "El calor se dispara. No gradual — inmediato. Un grado que significa que algo está aquí.",
+        "La ceniza cae más rápido. Una perturbación en el aire. Movimiento que aún no has localizado.",
+        "El crepitar cambia de tono. Más agudo. Dirigido. Consciente de ti.",
+        "Tu piel se tensa. La temperatura de este espacio está mal, incluso para las Criptas.",
+        "La luz naranja se mueve. Algo entre tú y su fuente.",
+        "Ceniza se desprende de las paredes, perturbada por una vibración. Peso, moviéndose.",
+        "Carbón fresco sobre ceniza vieja. Algo arde aquí que no ardía hace un momento.",
+        "Aire caliente contra tu cara — no es ambiente. Está dirigido. Un aliento, o lo que pasa por uno aquí.",
+        "El suelo está tibio bajo los pies de un modo que el resto de las Criptas no lo está. Calor reciente. Concentrado.",
+        "Un sonido se detiene. La ausencia específica de algo que no habías notado hasta que desapareció.",
+        "La ceniza adelante está removida. Algo pasó por aquí hace instantes, o se está moviendo ahora.",
+        "Una carga en el aire, como suena un fuego antes de propagarse. Esta sala se está preparando para algo."
+      ],
+      "middle": [
+        "Se alza del banco de ceniza junto a la pared. Humo saliendo de articulaciones que dejaron de ser articulaciones hace siglos. Te ve.",
+        "Tres formas se definen en la bruma. Lentas. Implacables. Cada una dejando un rastro de calor como una firma.",
+        "Se arrodilla ante el fuego ritual, de espaldas a ti. Sabe que estás aquí. Su cántico se hace más fuerte. La sala se hace más caliente.",
+        "Una carga. Línea recta. Sin vacilación, sin aviso. Ya se estaba moviendo antes de que lo registraras.",
+        "Manos atraviesan la pared carbonizada como si fuera tela. Luego brazos. Luego el resto.",
+        "El calor difuso del rincón lejano se solidifica. Manos moviéndose con propósito preciso y terrible. El fuego sigue el movimiento.",
+        "La congregación llena el pasaje adelante. Docenas de rostros presionados contra su superficie, todos mirándote.",
+        "Sale del fuego. No a través — desde. La llama se contrae detrás de él como una puerta que se cierra.",
+        "Las ascuas del suelo se encienden una por una, trazando líneas entre sí. Algo está dando al fuego la forma de un plan.",
+        "Cae desde arriba. Pesado. La ceniza del impacto se asienta sobre tu piel y ya está de pie.",
+        "La pared se mueve. La pared siempre se estuvo moviendo. La pared te ha estado observando desde que entraste.",
+        "Cuatro de ellos, lentos, cada uno dejando rastros chamuscados. Los rastros todavía humean por donde han pasado."
+      ],
+      "closing": [
+        "No duda. Tú tampoco puedes.",
+        "Termina esto rápido. Cada segundo te cuesta una acumulación que no vas a querer.",
+        "No hay camino alrededor. Solo a través.",
+        "El fuego no negocia.",
+        "Golpea primero. Las Criptas se construyeron sobre esta filosofía.",
+        "Cada segundo que esperas cuesta algo que no recuperarás.",
+        "Lleva siglos ardiendo. Tiene una paciencia que tú no tienes.",
+        "La sala no tiene salidas que no pasen a través de él.",
+        "Ya se está moviendo.",
+        "Dudar es una elección. Las Criptas saben lo que cuesta."
+      ]
+    },
+    "corpse": {
+      "framing": [
+        "La ceniza preserva, a su manera. Todavía puedes leer lo que queda.",
+        "El calor los redujo a lo que importa. Menos carne, más registro.",
+        "Carbón y hueso. Los detalles se han ido. La forma de lo que ocurrió permanece.",
+        "Ardieron despacio — no con violencia, sino por larga permanencia. Las Criptas toman su tiempo, pero lo toman todo.",
+        "La ceniza se ha asentado sobre ellos, rellenando. Un mes, una década, un siglo — el fuego no distingue.",
+        "Preservados por el calor como el frío preserva en otros lugares. Secos. Fijos. Todavía legibles.",
+        "El fuego colapsa las cosas. Ahora son más pequeños de lo que eran.",
+        "Lo que queda tiene una cualidad de paciencia. Como si hubieran estado esperando a que alguien los encontrara.",
+        "El hollín cuenta la historia. Daño de calor irradiando hacia afuera desde una secuencia. Legible, si sabes qué buscar.",
+        "El fuego los guardó, a su manera. Todo en las Criptas pertenece al fuego tarde o temprano. Estos pertenecieron antes."
+      ],
+      "discoveryBeats": [
+        "Un patrón de quemadura en el suelo, circular. Alguien estuvo de pie en un mismo lugar durante mucho tiempo.",
+        "La ceniza aquí está removida — un área amplia, el patrón de alguien que fue y vino y al final se detuvo.",
+        "El olor cambia. El carbón da paso a algo específico. Reciente. Cercano.",
+        "Algo en la ceniza adelante. Un objeto. Frasco, hoja, algo que fue cargado. Su dueño está aquí.",
+        "La ceniza está comprimida con la forma de una persona.",
+        "Huellas en la ceniza. Entrando. Ninguna saliendo.",
+        "El calor en esta sección del pasaje es diferente — un pequeño hueco en la tibieza, donde algo lo bloqueó.",
+        "Escritura en la pared. Ves las letras antes de ver lo que sostenía el estilete.",
+        "Una sombra que no pertenece a nada que esté en pie.",
+        "El crepitar ambiental tiene un hueco aquí. Un punto de silencio. El fuego rodea lo que queda de ellos."
+      ]
+    },
+    "cache": {
+      "locationLines": [
+        "Un nicho de piedra, sellado con un material que no ardió. Adentro: aire fresco y lo que alguien dejó atrás.",
+        "Un cortafuego en la pared — la ceniza se detiene aquí, y las provisiones no.",
+        "Un contenedor sellado sobre una repisa de piedra. La repisa está intacta. El contenedor, sin marcas. Todo lo demás ardió.",
+        "Una puerta que resistió. El mecanismo todavía funciona. La sala del otro lado no huele a nada en llamas.",
+        "El almacén de un sacerdote, deliberadamente ignífugo. Lo necesitaban funcional. El contenido sobrevivió.",
+        "Un hueco estructural que el fuego rodeó. Ceniza en el umbral. Quietud adentro.",
+        "Repisas de piedra talladas en la pared, sobre la línea de hollín. Alguien las puso aquí sabiendo lo que venía.",
+        "Una fisura en la pared, apenas visible. Detrás: un espacio que fue sellado y permaneció sellado."
+      ],
+      "toneClosers": [
+        "El alivio está mal. Demasiado cálido para ser consuelo.",
+        "Descansas. El fuego sigue ardiendo. En las Criptas, estas cosas no se contradicen.",
+        "Seguro significa otra cosa aquí. Significa: todavía no.",
+        "El silencio es prestado. Ya puedes sentir que intenta terminar.",
+        "El crepitar es paciente, no ausente. Sigue ahí afuera. Sabe dónde estás.",
+        "El fuego sabe dónde está esta sala. Simplemente ha elegido esperar.",
+        "Lo que preservó este espacio sigue funcionando. No preguntes lo que costó.",
+        "Respiras. El aire no sabe a quemado. Pronto volverá a saber."
+      ]
+    },
+    "exit": {
+      "opening": [
+        "El calor baja. De golpe. Notable. Algo adelante es diferente.",
+        "Aire más fresco desde algún lugar arriba — te alcanza antes de que encuentres las escaleras.",
+        "La ceniza se adelgaza bajo los pies. Piedra debajo. Piedra de verdad, no siglos compactados.",
+        "Una grieta de luz adelante — no naranja, no rojo de ascua. Algo enteramente distinto.",
+        "El crepitar retrocede detrás de ti con cada paso. Deliberado. Apagándose.",
+        "La bruma naranja se despeja en un punto que alcanzas a ver. Más allá: una oscuridad diferente. Una oscuridad mejor.",
+        "Tus pulmones toman una bocanada completa. No te habías dado cuenta de que habían dejado de hacerlo.",
+        "Cambio de temperatura. Las Criptas terminan en algún lugar cercano. Puedes sentir el límite."
+      ],
+      "middle": [
+        "El fuego no sigue más allá de este punto. Todavía puedes oírlo detrás de ti.",
+        "Escalones que suben. La piedra está fría bajo tus manos.",
+        "La ceniza se detiene en una línea en el suelo. Como si supiera. Como si hubiera acordado detenerse aquí.",
+        "El sonido de las Criptas cae detrás de ti como una puerta que se cierra.",
+        "Todo se queda abajo. El fuego se queda abajo. Por ahora.",
+        "El olor a carbón se levanta. Hueles piedra que no ha ardido.",
+        "El resplandor naranja continúa detrás de ti. Continuará. Ha continuado durante siglos.",
+        "Cada paso te aleja del fuego. El fuego no se mueve para detenerte."
+      ],
+      "closing": [
+        "El fuego sigue ardiendo. Estará aquí cuando vuelvas.",
+        "No es un final. Es una pausa.",
+        "La ciudad ardió porque lo eligió. Tú sobreviviste porque lo elegiste. Al fuego esto le parece interesante.",
+        "Por ahora.",
+        "Siempre vuelven.",
+        "El calor en tu piel se desvanece. El recuerdo, no.",
+        "El ascua de la sala más profunda sigue ardiendo. La sentiste observarte al salir.",
+        "Las Criptas recuerdan a todos los que pasan. Te recordarán."
+      ]
+    },
+    "options": {
+      "cautious": [
+        "Avanza con cuidado entre la ceniza",
+        "Pégate a la pared fría",
+        "Muévete despacio, respira poco",
+        "Mira dónde pisas"
+      ],
+      "aggressive": [
+        "Ábrete paso",
+        "Carga contra el calor",
+        "Muévete rápido, no te detengas",
+        "Atraviésalo ardiendo"
+      ],
+      "investigative": [
+        "Registra los restos quemados",
+        "Lee el hollín",
+        "Examina lo que queda",
+        "Estudia los patrones de carbón"
+      ],
+      "retreat": [
+        "Retrocede del calor",
+        "Aléjate del fuego",
+        "Busca terreno más fresco",
+        "Espera en la ceniza"
+      ]
+    }
+  },
+  "bestiary": {
+    "shared": [
+      "Ash Children",
+      "Echo Husks",
+      "The Hunched",
+      "Hollow Clergy"
+    ],
+    "local": [
+      {
+        "name": "Ember Husks",
+        "tier": 1,
+        "health": {
+          "min": 35,
+          "max": 55
+        },
+        "behaviors": [
+          "AGGRESSIVE",
+          "STALKING"
+        ],
+        "description": "Cuerpos carbonizados que aún se mueven. Dejan un rastro de humo por las grietas de su piel. Lentos. Implacables. Al morir colapsan en nubes de ceniza ardiente.",
+        "emoji": "💀",
+        "artUrl": "/creatures/ember-husks.webp"
+      },
+      {
+        "name": "Cinder Priests",
+        "tier": 1,
+        "health": {
+          "min": 40,
+          "max": 60
+        },
+        "behaviors": [
+          "ERRATIC",
+          "RETREATING",
+          "CHARGING"
+        ],
+        "description": "Ellos diseñaron los rituales. Ellos encendieron los primeros fuegos. Siguen aquí, siguen rezando, siguen alimentando llamas que han ardido durante siglos. Los enemigos cercanos a ellos golpean más fuerte.",
+        "emoji": "🙏",
+        "artUrl": "/creatures/cinder-priests.webp"
+      },
+      {
+        "name": "The Scorched",
+        "tier": 1,
+        "health": {
+          "min": 45,
+          "max": 65
+        },
+        "behaviors": [
+          "CHARGING",
+          "AGGRESSIVE"
+        ],
+        "description": "Guerreros en plena carga cuando el fuego los tomó. No se detuvieron. Pura agresión, sin defensa, sin retirada. Aplican quemadura al contacto. No se detienen.",
+        "emoji": "🔥",
+        "artUrl": "/creatures/the-scorched.webp"
+      },
+      {
+        "name": "Flame Weavers",
+        "tier": 1,
+        "health": {
+          "min": 35,
+          "max": 55
+        },
+        "behaviors": [
+          "ERRATIC",
+          "HUNTING",
+          "RETREATING"
+        ],
+        "description": "Daban forma al fuego antes del final. Todavía lo hacen. Sugerencias de personas — calor difuso y luz naranja y manos que se mueven con propósito terrible. No se acercan. No lo necesitan.",
+        "emoji": "🌀",
+        "artUrl": "/creatures/flame-weavers.webp"
+      },
+      {
+        "name": "Ashen Congregation",
+        "tier": 2,
+        "health": {
+          "min": 80,
+          "max": 110
+        },
+        "behaviors": [
+          "AGGRESSIVE",
+          "CHARGING",
+          "STALKING"
+        ],
+        "description": "Los muertos civiles de la ciudad, fundidos por siglos de calor. Rostros individuales presionan contra la superficie — una mano, una boca. Eran personas separadas. El fuego los hizo uno.",
+        "emoji": "👥",
+        "artUrl": "/creatures/ashen-congregation.webp"
+      },
+      {
+        "name": "The Scorched Veteran",
+        "tier": 2,
+        "health": {
+          "min": 70,
+          "max": 95
+        },
+        "behaviors": [
+          "CHARGING",
+          "AGGRESSIVE",
+          "ERRATIC"
+        ],
+        "description": "En lo que se convierten los Calcinados tras arder lo suficiente para acumular masa. Más grande. Más rápido. Varias acumulaciones de quemadura por golpe. La misma conducta, amplificada hasta dejar huellas en la piedra.",
+        "emoji": "🔥",
+        "artUrl": "/creatures/the-scorched.webp"
+      },
+      {
+        "name": "Senior Flame Weaver",
+        "tier": 2,
+        "health": {
+          "min": 65,
+          "max": 85
+        },
+        "behaviors": [
+          "HUNTING",
+          "DEFENSIVE",
+          "ERRATIC"
+        ],
+        "description": "Los practicantes mayores. Se sellaron en llama viva deliberadamente. Los siglos han vuelto su oficio vasto y preciso. Convierten la sala en un horno. Observan antes de actuar.",
+        "emoji": "🌀",
+        "artUrl": "/creatures/flame-weavers.webp"
+      },
+      {
+        "name": "The Pyre Keeper",
+        "tier": 3,
+        "health": {
+          "min": 180,
+          "max": 220
+        },
+        "behaviors": [
+          "CHARGING",
+          "AGGRESSIVE",
+          "DEFENSIVE",
+          "ERRATIC"
+        ],
+        "description": "Una figura hecha de fuego acumulado. El ritual final de la ciudad fundió su conciencia con la llama colectiva. Lleva siglos ardiendo a través de los mismos pensamientos. No quiere pelear. Quiere compañía. No entiende la diferencia.",
+        "emoji": "🔥",
+        "artUrl": "/creatures/the-pyre-keeper.webp"
+      }
+    ]
+  },
+  "depths": [
+    {
+      "name": "THE OUTER RUINS",
+      "tier": 1,
+      "roomRange": [
+        1,
+        4
+      ],
+      "description": "El borde de la ciudad. Todavía en pie. Todavía ardiendo."
+    },
+    {
+      "name": "THE BURNING HEART",
+      "tier": 2,
+      "roomRange": [
+        5,
+        8
+      ],
+      "description": "El centro. Donde empezó el fuego. Donde debía empezar."
+    },
+    {
+      "name": "THE PYRE",
+      "tier": 3,
+      "roomRange": [
+        9,
+        12
+      ],
+      "description": "La fuente. El fuego que nunca se apagó."
+    }
+  ],
+  "dungeonLayout": {
+    "totalRooms": 12,
+    "structure": [
+      {
+        "type": "explore",
+        "template": "descent"
+      },
+      {
+        "type": "combat",
+        "template": "husk-field"
+      },
+      {
+        "type": "combat",
+        "template": "priest-ritual"
+      },
+      {
+        "type": "corpse",
+        "template": "hesitator"
+      },
+      {
+        "type": "explore",
+        "template": "ruins"
+      },
+      {
+        "type": "combat",
+        "template": "weaver-den"
+      },
+      {
+        "type": "cache",
+        "template": "sealed-alcove"
+      },
+      {
+        "type": "combat",
+        "template": "congregation-press"
+      },
+      {
+        "type": "explore",
+        "template": "ashfield"
+      },
+      {
+        "type": "combat",
+        "template": "scorched-charge"
+      },
+      {
+        "type": "corpse",
+        "template": "fighter"
+      },
+      {
+        "type": "combat",
+        "template": "pyre-chamber",
+        "boss": true
+      }
+    ]
+  },
+  "boss": "The Pyre Keeper",
+  "audio": {
+    "ambient": {
+      "explore": "/audio/zones/ashen-crypts/ambient-explore.mp3",
+      "combat": "/audio/zones/ashen-crypts/ambient-combat.mp3"
+    },
+    "sfx": {
+      "footstep": "/audio/zones/ashen-crypts/footstep.mp3",
+      "descend": "/audio/zones/ashen-crypts/depth-descend.mp3",
+      "environment": [
+        "/audio/zones/ashen-crypts/fire-crackle.mp3",
+        "/audio/zones/ashen-crypts/ember-pop.mp3",
+        "/audio/zones/ashen-crypts/ash-fall.mp3"
+      ],
+      "atmosphere": [
+        "/audio/zones/ashen-crypts/distant-roar.mp3",
+        "/audio/zones/ashen-crypts/stone-crack.mp3"
+      ],
+      "boss": {
+        "intro": "/audio/zones/ashen-crypts/boss-intro.mp3",
+        "roar": "/audio/zones/ashen-crypts/boss-roar.mp3"
+      }
+    }
+  }
+}

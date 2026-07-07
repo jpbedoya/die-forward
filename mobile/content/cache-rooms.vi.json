@@ -1,0 +1,231 @@
+{
+  "type": "cache",
+  "zone": "NGƯỠNG CỬA CỦA KẺ VÔ DANH",
+  "rooms": [
+    {
+      "template": "alcove",
+      "variations": [
+        {
+          "id": "alcove_1",
+          "narrative": "Một khe hở trên tường, cao hơn mực nước. Khô ráo. Gần như ấm áp. Ai đó để lại đồ tiếp tế ở đây. Có lẽ họ đã thoát ra. Có lẽ họ chỉ bỏ lại tất cả."
+        },
+        {
+          "id": "alcove_2",
+          "narrative": "Một hốc đá tự nhiên. Nhỏ đủ để bỏ sót, rộng đủ để ẩn nấp. Bên trong: băng gạc, lương khô, một mẩu giấy ghi 'Cứ lấy đi. Ta không cần nữa.'"
+        },
+        {
+          "id": "alcove_3",
+          "narrative": "Sau một phiến đá lỏng lẻo. Ngươi suýt nữa đã không kiểm tra. Ai đó muốn giấu thứ này. Ai đó biết rằng mình sẽ không bao giờ quay lại lấy."
+        },
+        {
+          "id": "alcove_4",
+          "narrative": "Một lối bò hẹp. Chật chội, nhưng mở ra một gian phòng nhỏ. Đồ tiếp tế xếp gọn gàng. Không có bụi — có người vừa ở đây. Người đã rời đi vội vã."
+        },
+        {
+          "id": "alcove_5",
+          "narrative": "Một hốc tường đánh dấu bằng ký hiệu của kẻ sống sót. Dấu hiệu chung cho 'đủ an toàn.' Bên trong: thứ ngươi cần. Bên ngoài: mọi thứ còn lại."
+        }
+      ]
+    },
+    {
+      "template": "offering_site",
+      "variations": [
+        {
+          "id": "offering_1",
+          "narrative": "Một bàn thờ dâng lên thứ gì đó không tên. Lễ vật mục rữa dưới chân — nhưng giữa chúng, có thứ hữu dụng. Lấy nó đi mà cảm giác như đang ký một khế ước."
+        },
+        {
+          "id": "offering_2",
+          "narrative": "Một miếu thờ chính dòng nước. Tiền xu lấp lánh dưới mặt hồ. Cả những thứ khác — vũ khí, thảo dược, hy vọng. Nước sẽ ban cho, nếu ngươi dám với tay."
+        },
+        {
+          "id": "offering_3",
+          "narrative": "Tín đồ từng để lại lễ vật nơi đây. Tín đồ đã biến mất. Lễ vật vẫn còn. Lấy chúng có thể chọc giận thứ gì đó. Không lấy thì lại như phí hoài."
+        },
+        {
+          "id": "offering_4",
+          "narrative": "Bức tượng của thứ gì đó từng được tôn thờ. Dưới chân: đồ tiếp tế do người hành hương để lại. Trên gương mặt: một nụ cười thấu suốt. Nó muốn ngươi lấy chúng."
+        },
+        {
+          "id": "offering_5",
+          "narrative": "Nến vây quanh một mớ vật phẩm nhỏ. Nến còn mới. Ai thắp chúng? Ai để lại đồ tiếp tế cho người lạ? Đừng nghĩ về điều đó. Cứ lấy thứ ngươi cần."
+        }
+      ]
+    },
+    {
+      "template": "survivor_stash",
+      "variations": [
+        {
+          "id": "stash_1",
+          "narrative": "Những vạch khắc trên tường. Đếm ngày chăng? Có hàng trăm vạch. Kẻ từng ở đây đã sống sót lâu hơn mức tưởng tượng. Họ bỏ lại tất cả. Họ đã trốn thoát, hay chỉ đơn giản là buông xuôi?"
+        },
+        {
+          "id": "stash_2",
+          "narrative": "Một tấm nệm cuộn. Một đống lửa nguội lạnh. Một cuốn nhật ký, trang cuối bị xé mất. Họ từng sống ở đây. Bao lâu? Đủ lâu để tích trữ đồ tiếp tế. Đủ lâu để đột ngột bỏ đi."
+        },
+        {
+          "id": "stash_3",
+          "narrative": "Ai đó đã dựng cả một cuộc sống dưới này. Bàn ghế ghép từ phế liệu. Hình vẽ cào lên tường. Rồi họ bỏ mặc tất cả. Mọi thứ hữu dụng được đóng gói gọn gàng, chờ đợi."
+        },
+        {
+          "id": "stash_4",
+          "narrative": "Trại của một kẻ sống sót. Không có xác — họ không chết ở đây. Đồ tiếp tế được dán nhãn, sắp xếp, để lại có chủ đích. Một món quà cho kẻ đến sau."
+        },
+        {
+          "id": "stash_5",
+          "narrative": "Vũ khí. Lương thực. Thuốc men. Chất chồng sát bức tường xa. Một mẩu giấy ghi: 'Không mang hết được. Cũng chẳng cần. Ta đã thoát ra.' Hy vọng viết bằng mực."
+        }
+      ]
+    },
+    {
+      "template": "spring",
+      "variations": [
+        {
+          "id": "spring_1",
+          "narrative": "Nước rỉ ra từ đá. Trong vắt, không đen ngòm. Thứ gì đó xanh mọc ven bờ — sinh vật sống duy nhất ngươi từng thấy. Uống vào mà như nếm hy vọng. Dư vị còn vương mãi."
+        },
+        {
+          "id": "spring_2",
+          "narrative": "Một vũng nước sạch. Phép màu dưới nơi này. Ngươi nhìn thấy tận đáy. Không gì chuyển động. Không gì rình rập. Nó an toàn. Nó phải an toàn. Uống đi."
+        },
+        {
+          "id": "spring_3",
+          "narrative": "Hơi nước bốc lên từ khe nứt dưới sàn. Nước ấm, giàu khoáng chất, gần như dễ chịu. Hơi ấm thật xa lạ sau chừng ấy giá lạnh. Nghỉ lại đây. Hồi phục."
+        },
+        {
+          "id": "spring_4",
+          "narrative": "Một mạch nước ngầm, tươi mát và lạnh. Những kẻ khác từng cắm trại nơi đây — dấu vết vẫn còn. Một chốn an toàn. An toàn hết mức có thể ở nơi này."
+        },
+        {
+          "id": "spring_5",
+          "narrative": "Nước ở đây phát sáng mờ nhạt. Một màu xanh dịu. Nó không nguy hiểm — không hiểu sao ngươi biết vậy. Uống vào, vết thương dịu lại. Đừng hỏi vì sao. Đừng hỏi thế nào."
+        }
+      ]
+    },
+    {
+      "template": "abandoned_camp",
+      "variations": [
+        {
+          "id": "camp_1",
+          "narrative": "Một tấm nệm cuộn. Tro tàn nguội lạnh. Thức ăn dở dang. Họ rời đi rất vội. Đồ tiếp tế còn nguyên, nhưng câu hỏi cũng vậy: điều gì khiến người ta bỏ lại nơi trú ẩn duy nhất của mình?"
+        },
+        {
+          "id": "camp_2",
+          "narrative": "Lều — nhiều cái. Một nhóm từng cắm trại ở đây. Đồ đạc vương vãi, hoảng loạn. Kẻ mang theo thứ thiết yếu. Kẻ chẳng mang gì. Thứ ập đến không đáng để kịp thu dọn."
+        },
+        {
+          "id": "camp_3",
+          "narrative": "Mọi thứ bị lật tung. Dấu vết vật lộn? Dấu vết tháo chạy? Đồ tiếp tế bị vùi dưới đống hỗn loạn, nhưng vẫn còn đây. Dù chuyện gì đã xảy ra, nó xảy ra rất nhanh."
+        },
+        {
+          "id": "camp_4",
+          "narrative": "Một chòi canh. Ai đó từng đứng gác nơi đây. Chiếc ghế của họ giờ quay sai hướng. Đồ tiếp tế còn nguyên vẹn. Họ đã thấy thứ gì đó. Họ chưa kịp thấy hết."
+        },
+        {
+          "id": "camp_5",
+          "narrative": "Giữa bữa ăn. Thức ăn vẫn còn trên đĩa. Vẫn... ăn được, có lẽ. Họ thậm chí không kịp ngừng ăn trước khi bỏ chạy. Hoặc bị bắt đi. Đồ tiếp tế không trả lời câu hỏi nào."
+        }
+      ]
+    },
+    {
+      "template": "armory",
+      "variations": [
+        {
+          "id": "armory_1",
+          "narrative": "Những giá vũ khí, rỗ sét theo năm tháng. Một đạo quân từng được trang bị nơi đây. Cho cuộc chiến nào? Chống lại kẻ thù nào? Vài lưỡi dao vẫn còn sắc. Cứ tự nhiên."
+        },
+        {
+          "id": "armory_2",
+          "narrative": "Một kho vũ khí, giấu trong tường. Ai đó chuẩn bị cho cuộc chiến chưa từng đến. Hoặc cuộc chiến chưa từng kết thúc. Sự chuẩn bị của họ là sự sống sót của ngươi."
+        },
+        {
+          "id": "armory_3",
+          "narrative": "Công cụ của bạo lực, xếp theo từng loại. Bụi phủ dày. Không ai đến đây đã bao đời. Không ai, ngoài những thứ không cần đến vũ khí."
+        },
+        {
+          "id": "armory_4",
+          "narrative": "Một phòng lính gác. Giờ trống rỗng. Trang bị của lính gác vẫn còn — hoen gỉ, nhưng dùng được. Họ sẽ không phiền nếu ngươi mượn. Họ chẳng còn phiền về bất cứ điều gì nữa."
+        },
+        {
+          "id": "armory_5",
+          "narrative": "Vũ khí cắm sâu vào tường. Chiến lợi phẩm? Kho chứa? Nghệ thuật? Cách sắp đặt đầy chủ ý. Lấy thứ gọi tên ngươi. Có thứ ở đây đang chờ đúng ngươi."
+        }
+      ]
+    },
+    {
+      "template": "merchant",
+      "variations": [
+        {
+          "id": "merchant_1",
+          "narrative": "Một bóng người trong bóng tối. Họ có hàng. Họ có giá. Cả hai đều không mặc cả được. Dưới âm phủ, thương mại vẫn tiếp diễn. Người chết vẫn buôn bán."
+        },
+        {
+          "id": "merchant_2",
+          "narrative": "Kẻ Sưu Tầm ngồi giữa những di vật. 'Không gì miễn phí. Mọi thứ đều có giá. Ngươi sẵn lòng trả gì?' Họ bày hàng ra. Giá không tính bằng SOL."
+        },
+        {
+          "id": "merchant_3",
+          "narrative": "'Ngươi có đồ. Ta có đồ. Ta có thể trao đổi, hoặc chờ xem ai cướp đồ của ai bằng vũ lực.' Gã thương nhân mỉm cười. Không phải một nụ cười tử tế."
+        },
+        {
+          "id": "merchant_4",
+          "narrative": "Họ tự xưng là 'kẻ trung gian.' Họ trung chuyển vật phẩm từ tay người chết sang tay người sống. 'Ai cũng có lợi,' họ nói. 'Sớm muộn gì, ai cũng thành nguồn hàng.'"
+        },
+        {
+          "id": "merchant_5",
+          "narrative": "Một cửa hàng. Dưới nơi này. Chất đầy vật phẩm từ mọi kẻ phiêu lưu đã chết khi đi ngang. 'Tái chế,' chủ tiệm gọi vậy. 'Bền vững.' Giá cả là những món đồ tương lai của ngươi."
+        }
+      ]
+    },
+    {
+      "template": "trophy_room",
+      "variations": [
+        {
+          "id": "trophy_1",
+          "narrative": "Đầu lâu treo trên tường. Móng vuốt trưng bày. Ai đó từng săn nơi đây, và thành công. Chiến lợi phẩm của họ cho ngươi biết điều gì đang chờ phía trước. Đồ tiếp tế của họ có thể giúp ngươi sống sót qua nó."
+        },
+        {
+          "id": "trophy_2",
+          "narrative": "Hang ổ của một thợ săn. Da thú, xương cốt, những thứ ngươi không nhận ra. Kẻ từng sống ở đây biết cách sinh tồn. Biết cách giết chóc. Dụng cụ của họ còn đó. Trí khôn của họ thì không."
+        },
+        {
+          "id": "trophy_3",
+          "narrative": "Mọi sinh vật của vực sâu, được bảo quản và treo lên. Một danh mục của ác mộng. Giữa chúng: đồ nghề để tạo thêm chiến lợi phẩm. Hoặc để khỏi trở thành một."
+        },
+        {
+          "id": "trophy_4",
+          "narrative": "Thứ đầu tiên ngươi thấy là đầu của Kẻ Chết Đuối cắm trên cọc. Rồi đến Kẻ Trườn, ghim như một mẫu vật. Ai đó từng nghiên cứu chúng. Ghi chép và đồ tiếp tế của họ vẫn còn."
+        },
+        {
+          "id": "trophy_5",
+          "narrative": "Một tượng đài của bạo lực. Chiến lợi phẩm từ trăm cuộc săn. Thợ săn không có ở đây. Chiến lợi phẩm cho thấy họ hiếm khi ở yên một chỗ. Họ hiếm khi cần thế. Lấy thứ gì hữu dụng."
+        }
+      ]
+    },
+    {
+      "template": "hermit",
+      "variations": [
+        {
+          "id": "hermit_1",
+          "narrative": "Họ ở đây đã nhiều năm. Nhiều thập kỷ? Một mình. Sống sót. Họ không muốn có bạn, nhưng sẽ chia sẻ điều họ biết. Và thứ họ không còn cần."
+        },
+        {
+          "id": "hermit_2",
+          "narrative": "'Ngươi là vị khách đầu tiên sau... ta đã mất đếm.' Đôi mắt của ẩn sĩ kỳ lạ nhưng không thù địch. 'Cầm lấy. Ta đã làm thêm rồi. Ta luôn làm thêm.'"
+        },
+        {
+          "id": "hermit_3",
+          "narrative": "Một triết nhân của vực sâu. Họ đã chấp nhận sự tồn tại của mình nơi đây. 'Đồ tiếp tế? Ừ, cứ lấy. Câu trả lời? Ta cũng có. Câu hỏi mới là thứ khó hơn.'"
+        },
+        {
+          "id": "hermit_4",
+          "narrative": "Họ đã quên cả tên mình. Họ vẫn nhớ cách sinh tồn. 'Cái này sẽ giúp ngươi. Cái kia sẽ giết ngươi. Ta học được sự khác biệt. Bằng cách đau đớn. Ngươi thì không cần phải thế.'"
+        },
+        {
+          "id": "hermit_5",
+          "narrative": "'Ngươi muốn rời khỏi đây. Ta cũng từng muốn thế.' Ẩn sĩ chỉ về phía đồ tiếp tế. 'Cầm lấy. Hãy thoát ra. Hoặc không. Dù thế nào, ta vẫn sẽ ở đây.'"
+        }
+      ]
+    }
+  ]
+}

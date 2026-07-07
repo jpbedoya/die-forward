@@ -1,0 +1,1917 @@
+{
+  "id": "sunken-crypt",
+  "version": "1.0.0",
+  "meta": {
+    "name": "THE SUNKEN CRYPT",
+    "tagline": "Cuộc xuống sâu đầu tiên. Nơi đây không gì còn sống.",
+    "element": "water",
+    "difficulty": 1,
+    "colors": {
+      "primary": "#1e3a5f",
+      "accent": "#4a9eff",
+      "text": "#a8d4ff"
+    },
+    "mechanic": null,
+    "unlockRequirement": null,
+    "emoji": "🌊"
+  },
+  "lore": "Những bậc thang cổ xưa do bàn tay đã bị lãng quên đục thành dẫn xuống các gian sảnh ngập nước, nơi ranh giới giữa sống và chết mỏng dần. Làn nước ghi nhớ từng kẻ đã chết đuối.",
+  "rooms": {
+    "explore": [
+      {
+        "template": "corridor",
+        "variations": [
+          {
+            "id": "corridor_1",
+            "narrative": "Nước nhỏ giọt đâu đó phía trước. Lối đi hẹp dần, vách tường trơn nhớt một thứ không hẳn là nước. Ngọn đuốc của ngươi đẩy lùi bóng tối. Bóng tối đẩy lại.",
+            "options": [
+              "Tiến lên phía trước",
+              "Xem xét vách tường"
+            ]
+          },
+          {
+            "id": "corridor_2",
+            "narrative": "Hành lang uốn khúc. Ngươi không thấy được thứ gì sau khúc quanh, nhưng nghe được nó — một âm thanh ướt át, đều nhịp. Hơi thở? Nước nhỏ giọt? Hay một thứ hoàn toàn khác.",
+            "options": [
+              "Vòng qua khúc quanh",
+              "Lắng nghe kỹ trước đã"
+            ]
+          },
+          {
+            "id": "corridor_3",
+            "narrative": "Vết cào xé hằn dọc hai bên tường. Có thứ gì đó đã bị kéo lê qua đây. Mới thôi. Những vết ấy dẫn xuống sâu hơn. Lối đi duy nhất cũng vậy.",
+            "options": [
+              "Lần theo dấu vết",
+              "Di chuyển thận trọng"
+            ]
+          },
+          {
+            "id": "corridor_4",
+            "narrative": "Đá ở đây cổ hơn. Bị mài nhẵn bởi vô số bàn chân qua vô số năm tháng. Ngươi không phải kẻ đầu tiên bước trên con đường này. Đống xương trong góc gợi ý rằng ngươi có thể nằm trong số những kẻ cuối cùng.",
+            "options": [
+              "Đi tiếp",
+              "Xem xét đống xương"
+            ]
+          },
+          {
+            "id": "corridor_5",
+            "narrative": "Tiếng bước chân của ngươi vọng lại sai lệch. Quá nhiều tiếng vọng. Như thể có ai đó bước bên cạnh, chậm hơn nửa nhịp. Ngươi không ngoái lại. Ngươi biết rõ hơn thế.",
+            "options": [
+              "Cứ đi tiếp",
+              "Dừng lại và quay đầu"
+            ]
+          }
+        ]
+      },
+      {
+        "template": "chamber",
+        "variations": [
+          {
+            "id": "chamber_1",
+            "narrative": "Một khoảng không mênh mông mở ra trước mặt. Những cột đá vươn vào bóng tối, đỉnh cột chìm khuất trong màn đêm. Nơi này được dựng cho những cuộc tụ hội. Giờ nó chỉ tụ hội sự im lặng. Và ngươi.",
+            "options": [
+              "Băng qua gian sảnh",
+              "Men theo vách tường"
+            ]
+          },
+          {
+            "id": "chamber_2",
+            "narrative": "Trần nhà tan biến vào màn đen. Các vách tường cách nhau quá xa. Căn phòng này lớn hơn mức nó nên có — lớn hơn cả ngôi đền phía trên có thể chứa đựng. Hình học dối trá dưới này.",
+            "options": [
+              "Băng qua thật nhanh",
+              "Lục soát vòng ngoài"
+            ]
+          },
+          {
+            "id": "chamber_3",
+            "narrative": "Nước phủ kín mặt sàn, tĩnh lặng như mặt kính đen. Gian sảnh trải rộng về mọi phía. Ở chính giữa, một thứ gì đó nhô lên khỏi mặt nước. Bàn thờ? Ngai vàng? Từ đây ngươi không thể nhận ra.",
+            "options": [
+              "Lội về phía trung tâm",
+              "Đi vòng theo mép nước"
+            ]
+          },
+          {
+            "id": "chamber_4",
+            "narrative": "Những hàng ghế gãy nát xếp dọc gian sảnh. Một hội chúng từng ngồi đây, lắng nghe những bài giảng bằng thứ ngôn ngữ có trước cả lời nói. Bục giảng đứng trống. Có thứ gì đó đang quan sát từ phía sau nó.",
+            "options": [
+              "Tiến lại gần bục giảng",
+              "Rời đi thật nhanh"
+            ]
+          },
+          {
+            "id": "chamber_5",
+            "narrative": "Gian sảnh ngân rung. Một tần số ngươi cảm nhận trong răng, trong xương, trong tâm trí. Vách tường chạm khắc những hoa văn khiến mắt đau nhức khi lần theo. Đừng lần theo chúng.",
+            "options": [
+              "Xuyên qua",
+              "Nhắm mắt và lần đường bằng tay"
+            ]
+          }
+        ]
+      },
+      {
+        "template": "descent",
+        "variations": [
+          {
+            "id": "descent_1",
+            "narrative": "Cầu thang xoắn ốc dẫn xuống. Xuống nữa. Xuống mãi. Ngươi mất đếm sau trăm bậc đầu tiên. Không khí nặng dần theo từng bước. Ấm hơn. Sai lệch hơn.",
+            "options": [
+              "Tiếp tục xuống sâu",
+              "Nghỉ chân trên bậc thang"
+            ]
+          },
+          {
+            "id": "descent_2",
+            "narrative": "Một giếng đứng rơi thẳng vào bóng tối. Những hốc bám tay được đục vào đá — mòn nhẵn bởi vô số bàn tay trước ngươi. Vài hốc bám loang vết ố. Đừng nghĩ vì sao.",
+            "options": [
+              "Trèo xuống",
+              "Tìm lối khác"
+            ]
+          },
+          {
+            "id": "descent_3",
+            "narrative": "Mặt sàn hóa thành con dốc thoai thoải. Ướt. Trơn trượt. Ngươi đang xuống sâu, dù muốn hay không. Độ dốc gắt dần. Sự kiểm soát chỉ là ảo tưởng.",
+            "options": [
+              "Trượt xuống cẩn thận",
+              "Cố tìm chỗ bám"
+            ]
+          },
+          {
+            "id": "descent_4",
+            "narrative": "Bậc đá, bậc sau thấp hơn bậc trước. Tỷ lệ sai lệch — được xây cho thứ gì đó chân dài hơn, hoặc cho con người vốn dĩ phải vấp ngã. Ngươi vấp ngã.",
+            "options": [
+              "Gượng dậy và đi tiếp",
+              "Bước thật chậm rãi"
+            ]
+          },
+          {
+            "id": "descent_5",
+            "narrative": "Lối đi tụt xuống qua một khe nứt trên sàn. Bên dưới, nước lấp lánh. Sâu bao nhiêu? Ánh đuốc không chạm tới đáy. Không gì chạm tới.",
+            "options": [
+              "Hạ mình chui qua",
+              "Thả thứ gì đó xuống dò độ sâu"
+            ]
+          }
+        ]
+      },
+      {
+        "template": "flooded",
+        "variations": [
+          {
+            "id": "flooded_1",
+            "narrative": "Nước ngập tới gối. Đen ngòm. Lạnh buốt. Bàn chân ngươi dò thấy những bậc thang chìm mà mắt không thấy. Có thứ gì đó lướt qua chân. Rác rưởi, có lẽ. Có lẽ.",
+            "options": [
+              "Lội tới trước",
+              "Men theo vách tường"
+            ]
+          },
+          {
+            "id": "flooded_2",
+            "narrative": "Lối đi chìm một nửa trong nước. Nước dâng tới ngực nếu ngươi bước, tới cổ nếu ngươi lội qua giữa dòng. Cả hai lựa chọn đều tệ hại.",
+            "options": [
+              "Bám chỗ nông sát tường",
+              "Bơi qua khoảng sâu ở giữa"
+            ]
+          },
+          {
+            "id": "flooded_3",
+            "narrative": "Nước dâng lên khi ngươi bước vào. Mắt cá. Đầu gối. Bắp đùi. Nước không chảy vào — nó chỉ... dâng lên. Như thể chính căn phòng đang nuốt chửng. Đi nhanh lên.",
+            "options": [
+              "Lao qua thật nhanh",
+              "Tìm chỗ đất cao hơn"
+            ]
+          },
+          {
+            "id": "flooded_4",
+            "narrative": "Xác người trôi nổi nơi đây. Úp mặt xuống. Dập dềnh khe khẽ. Không còn tươi, nhưng cũng chưa cũ. Làn nước lưu giữ họ. Làn nước lưu giữ tất cả.",
+            "options": [
+              "Bơi lướt qua họ",
+              "Xem có thi hài nào là người chơi mới không"
+            ]
+          },
+          {
+            "id": "flooded_5",
+            "narrative": "Nước phát sáng. Mờ nhạt. Một thứ lân quang bệnh hoạn chẳng soi tỏ gì ngoài chính nó. Những thứ gì đó chuyển động dưới mặt nước. Ngươi cố không nhìn thẳng vào chúng.",
+            "options": [
+              "Lội qua thật nhanh",
+              "Đứng chờ và quan sát chuyển động"
+            ]
+          }
+        ]
+      },
+      {
+        "template": "shrine",
+        "variations": [
+          {
+            "id": "shrine_1",
+            "narrative": "Một bàn thờ dâng lên thứ gì đó đã bị lãng quên. Gương mặt pho tượng bị cào xóa, nhưng ngươi vẫn cảm thấy nó đang nhìn. Lễ vật mục rữa dưới chân tượng. Vài thứ còn tươi.",
+            "options": [
+              "Dâng một lễ vật",
+              "Đi qua không thèm để mắt"
+            ]
+          },
+          {
+            "id": "shrine_2",
+            "narrative": "Nến cháy nơi đây. Ai thắp chúng? Sáp nến đọng thành hình thù — gương mặt, bàn tay, những thứ có thể là chữ trong thứ ngôn ngữ của giọt chảy. Ngọn lửa không hề lay động.",
+            "options": [
+              "Xem xét những cây nến",
+              "Đừng chạm vào bất cứ thứ gì"
+            ]
+          },
+          {
+            "id": "shrine_3",
+            "narrative": "Một bánh xe cầu nguyện, gỉ sét chết cứng. Những lời nguyện khắc trên đó đã mòn nhẵn, không đọc nổi. Có lẽ thế lại hay. Ai đó vừa thử xoay nó — vết gỉ còn trầy xước.",
+            "options": [
+              "Thử xoay bánh xe",
+              "Để yên nó"
+            ]
+          },
+          {
+            "id": "shrine_4",
+            "narrative": "Điện thờ này thờ chính nước. Một hồ nước tròn trịa hoàn hảo, tĩnh lặng hoàn hảo. Hình phản chiếu của ngươi nhìn ngược lại ngươi. Nó chớp mắt khi ngươi không chớp.",
+            "options": [
+              "Quay mặt đi",
+              "Nhìn trừng lại nó"
+            ]
+          },
+          {
+            "id": "shrine_5",
+            "narrative": "Những cái tên phủ kín mọi bề mặt. Được khắc, được cào, được đốt vào đá. Hàng ngàn cái tên. Những người hành hương đến trước. Một khoảng trống chờ sẵn, như thể đang đợi tên ngươi.",
+            "options": [
+              "Thêm tên mình vào",
+              "Không để lại dấu vết"
+            ]
+          }
+        ]
+      },
+      {
+        "template": "crossroads",
+        "variations": [
+          {
+            "id": "crossroads_1",
+            "narrative": "Ba lối rẽ tỏa ra. Bên trái thở ra hơi lạnh và tiếng thì thầm. Bên phải vọng tiếng nước xa xăm. Chính giữa hằn vết kéo lê dẫn vào trong. Không lối nào dẫn ra.",
+            "options": [
+              "Đi lối bên trái",
+              "Đi lối bên phải",
+              "Theo lối chính giữa"
+            ]
+          },
+          {
+            "id": "crossroads_2",
+            "narrative": "Lối đi tách đôi. Ai đó đã đánh dấu lên tường — những mũi tên cào vội, những chỉ dẫn tuyệt vọng. Các mũi tên mâu thuẫn nhau. Ai đó đã lạc lối nơi đây. Rất nhiều ai đó.",
+            "options": [
+              "Theo lối mòn nhất",
+              "Chọn lối không dấu vết"
+            ]
+          },
+          {
+            "id": "crossroads_3",
+            "narrative": "Một đầu mối hành lang, cả thảy năm ngả. Ánh đuốc bắt được chuyển động trong hai ngả. Ba ngả còn lại không có gì — nhưng không có gì có thể còn tệ hơn.",
+            "options": [
+              "Hướng về phía chuyển động",
+              "Tránh xa nó"
+            ]
+          },
+          {
+            "id": "crossroads_4",
+            "narrative": "Lên hoặc xuống. Chỉ có thế. Lên khó hơn — bậc thang gãy vỡ, lở dần. Xuống dễ hơn. Xuống bao giờ cũng dễ hơn ở nơi này.",
+            "options": [
+              "Trèo lên",
+              "Xuống sâu hơn nữa"
+            ]
+          },
+          {
+            "id": "crossroads_5",
+            "narrative": "Hai lối đi giống hệt nhau. Cùng kích thước. Cùng bóng tối. Cùng cảm giác sai lệch. Một lối dẫn xuống sâu. Một lối dẫn tới cái chết. Có khi chúng là một.",
+            "options": [
+              "Đi lối bên trái",
+              "Đi lối bên phải"
+            ]
+          }
+        ]
+      },
+      {
+        "template": "collapse",
+        "variations": [
+          {
+            "id": "collapse_1",
+            "narrative": "Vết nứt giăng mạng trên trần. Bụi rơi thành dòng. Nơi này muốn sụp xuống. Ngươi nghe được nó đang cân nhắc — rên rỉ, lún dần, quyết định. Đi. Ngay.",
+            "options": [
+              "Chạy xuyên qua",
+              "Di chuyển cẩn trọng"
+            ]
+          },
+          {
+            "id": "collapse_2",
+            "narrative": "Nửa lối đi là gạch vụn. Nửa còn lại là sự kiên nhẫn — đang chờ để hóa thành gạch vụn. Ngươi nhìn thấu được sang phía bên kia. Khe hở thì hẹp. Thời gian còn hẹp hơn.",
+            "options": [
+              "Lách qua thật nhanh",
+              "Thử độ vững trước đã"
+            ]
+          },
+          {
+            "id": "collapse_3",
+            "narrative": "Mặt sàn nghiêng đi. Không nhiều, nhưng đủ. Nước đọng về một phía. Vết nứt lan ra từ chỗ ngươi đứng. Mỗi bước chân là một cuộc mặc cả với trọng lực.",
+            "options": [
+              "Di chuyển tới chỗ vững",
+              "Đứng yên bất động"
+            ]
+          },
+          {
+            "id": "collapse_4",
+            "narrative": "Ai đó đã kích hoạt một vụ sập nơi đây. Ngươi thấy được chỗ họ đứng khi mọi thứ đổ xuống. Ngươi thấy được chỗ họ ngừng đứng. Đừng đứng vào đó.",
+            "options": [
+              "Tìm lối khác",
+              "Trèo qua đống đổ nát"
+            ]
+          },
+          {
+            "id": "collapse_5",
+            "narrative": "Vách tường oằn vào trong. Sức ép từ đâu đó. Ngôi đền bên trên? Sức nặng của nước? Cú nghiền chậm rãi của âm phủ đang tiêu hóa chính nó? Có quan trọng không? Đi thôi.",
+            "options": [
+              "Vượt qua gấp",
+              "Tìm cách chống đỡ vách tường"
+            ]
+          }
+        ]
+      },
+      {
+        "template": "graveyard",
+        "variations": [
+          {
+            "id": "graveyard_1",
+            "narrative": "Xương. Được phân loại — sọ chỗ này, xương sườn chỗ kia, xương đùi chất chồng như củi đốt. Ai đó đã sắp xếp chỗ này. Mới thôi. Trong cách bài trí còn những khoảng trống. Những chỗ đang chờ.",
+            "options": [
+              "Tìm kiếm giữa đống xương",
+              "Đi qua thật nhanh"
+            ]
+          },
+          {
+            "id": "graveyard_2",
+            "narrative": "Mộ huyệt xếp dọc hai vách, chồng ba tầng. Có ngôi niêm kín. Có ngôi mở toang. Có ngôi đang mở ra, chầm chậm, từ bên trong. Ngươi không có thời gian đứng xem.",
+            "options": [
+              "Đi qua chính giữa",
+              "Chạy"
+            ]
+          },
+          {
+            "id": "graveyard_3",
+            "narrative": "Một hố đầy xác người. Xác cũ, nằm dưới đáy. Xác mới hơn, gần trên miệng. Cái hố chưa đầy. Nó kiên nhẫn. Nó biết còn nhiều kẻ nữa sẽ đến.",
+            "options": [
+              "Đi vòng quanh hố",
+              "Tìm những gương mặt quen"
+            ]
+          },
+          {
+            "id": "graveyard_4",
+            "narrative": "Bia tưởng niệm, nứt vỡ và mòn vẹt. Những cái tên bằng ngôn ngữ ngươi không nhận ra. Những niên đại có trước cả lịch. Những người chết này già hơn lịch sử. Họ vẫn cứ nhớ.",
+            "options": [
+              "Đọc các bia đá",
+              "Đừng nấn ná"
+            ]
+          },
+          {
+            "id": "graveyard_5",
+            "narrative": "Người chết được tạo dáng nơi đây. Đứng. Ngồi. Quỳ. Đông cứng trong khoảnh khắc cuối cùng, được bóng tối lưu giữ. Một phòng trưng bày những kết cục. Vào cửa miễn phí. Ra về đắt hơn.",
+            "options": [
+              "Ngắm nghía các tư thế",
+              "Nhìn thẳng mà đi"
+            ]
+          }
+        ]
+      },
+      {
+        "template": "witness",
+        "variations": [
+          {
+            "id": "witness_1",
+            "narrative": "Vách tường cháy sém theo một hoa văn. Hình tròn. Chuẩn xác. Ở tâm điểm, đá đã nóng chảy rồi đông lại. Thứ gì từng ở đây đã đi rồi. Ngươi mong là nó đi rồi.",
+            "options": [
+              "Xem xét vết cháy sém",
+              "Rời đi ngay lập tức"
+            ]
+          },
+          {
+            "id": "witness_2",
+            "narrative": "Vết móng vuốt phủ kín mọi bề mặt — sàn, tường, trần. Những rãnh khoét sâu vào đá đặc. Có thứ gì đó đã cố thoát ra. Hoặc có thứ gì đó đã cố chui vào.",
+            "options": [
+              "Nghiên cứu các vết cào",
+              "Đừng nghĩ về nó"
+            ]
+          },
+          {
+            "id": "witness_3",
+            "narrative": "Một vòng tròn đá nguyên vẹn hoàn hảo giữa căn phòng hỗn loạn. Vòng tròn sạch sẽ. Mọi thứ bên ngoài nó tan hoang. Ngươi đang đứng ngoài vòng tròn.",
+            "options": [
+              "Bước vào vòng tròn",
+              "Đứng ngoài"
+            ]
+          },
+          {
+            "id": "witness_4",
+            "narrative": "Điều gì đó đã xảy ra ở đây. Không khí vẫn còn vị của tiếng thét. Đá vẫn ấm — ấm hơn mức nên có. Ngươi đang đứng giữa tàn dư của một điều khủng khiếp.",
+            "options": [
+              "Tìm kiếm manh mối",
+              "Thoát ra thật nhanh"
+            ]
+          },
+          {
+            "id": "witness_5",
+            "narrative": "Dấu bàn tay. Hàng trăm dấu. In hằn lên tường, lên sàn, lên trần. Tất cả đều vươn về cùng một hướng. Về phía cánh cửa ngươi vừa bước qua.",
+            "options": [
+              "Đi theo hướng chúng chỉ",
+              "Đi hướng ngược lại"
+            ]
+          }
+        ]
+      },
+      {
+        "template": "threshold",
+        "variations": [
+          {
+            "id": "threshold_1",
+            "narrative": "Khung cửa phía trước cổ hơn cả những bức tường quanh nó. Bên kia, không khí mang vị khác — đồng và muối. Những vết cào trên khung cửa hướng ngược ra sau. Ai đó đã cố cào đường thoát ra.",
+            "options": [
+              "Bước qua ngưỡng cửa",
+              "Chần chừ"
+            ]
+          },
+          {
+            "id": "threshold_2",
+            "narrative": "Một ranh giới. Ngươi cảm nhận được — áp suất không khí đổi thay, âm thanh dịch chuyển, tâm trí thoáng tán loạn. Ngươi sắp bước vào một nơi khác. Một nơi sâu hơn.",
+            "options": [
+              "Bước qua",
+              "Trấn tĩnh trước đã"
+            ]
+          },
+          {
+            "id": "threshold_3",
+            "narrative": "Lối đi kết thúc trước một bức màn nước, đổ xuống từ đâu đó trên cao. Bên kia màn nước, bóng tối. Nước thì lạnh. Bóng tối còn lạnh hơn. Xuyên qua là lối duy nhất.",
+            "options": [
+              "Xuyên qua màn nước",
+              "Tìm lối khác"
+            ]
+          },
+          {
+            "id": "threshold_4",
+            "narrative": "Một cánh cổng bằng xương. Xương thật — những lồng ngực đan vào nhau, những hộp sọ làm bản lề. Nó mở ra khi ngươi lại gần. Nó đã chờ đích danh ngươi.",
+            "options": [
+              "Bước vào",
+              "Khước từ lời mời"
+            ]
+          },
+          {
+            "id": "threshold_5",
+            "narrative": "Ánh đuốc của ngươi dừng lại ở điểm này. Nó không soi tỏ những gì bên kia — bóng tối nơi ấy tuyệt đối, đói khát. Ngươi sẽ phải bước đi mù lòa một quãng.",
+            "options": [
+              "Bước vào bóng tối",
+              "Tìm nguồn sáng khác"
+            ]
+          }
+        ]
+      }
+    ],
+    "combat": [
+      {
+        "template": "ambush",
+        "variations": [
+          {
+            "id": "ambush_1",
+            "narrative": "Căn phòng có vẻ trống không. Nước lặng, không khí lặng. Rồi ngươi thấy nó — mặt nước gợn sóng nơi chẳng có gì cử động. Đang trồi lên. Nó đã chờ sẵn bên dưới.",
+            "enemy": "The Drowned"
+          },
+          {
+            "id": "ambush_2",
+            "narrative": "Ngươi nghe thấy nó nửa giây trước khi thấy nó. Tiếng lách cách ướt át trên đá. Phía trên đầu. Bám trên trần. Đang lao xuống. Ngay bây giờ.",
+            "enemy": "Pale Crawler"
+          },
+          {
+            "id": "ambush_3",
+            "narrative": "Cái bóng của ngươi chuyển động sai lệch. Ngươi nhận ra quá muộn — Kẻ Rỗng đã ở trong hình bóng của ngươi, vươn xuyên qua nó, vươn tới ngươi.",
+            "enemy": "The Hollow"
+          },
+          {
+            "id": "ambush_4",
+            "narrative": "Cái xác ngươi vừa bước qua chưa chết. Nó túm lấy mắt cá chân ngươi. Cái siết của nó mạnh hơn bất cứ thứ gì mục rữa đáng lẽ phải có. Miệng nó há ra. Không một âm thanh nào thoát ra.",
+            "enemy": "Bloated One"
+          },
+          {
+            "id": "ambush_5",
+            "narrative": "Một chớp động nơi rìa tầm mắt. Ngươi quay lại. Không có gì. Quay đi. Nó ở đó. Ngay đó. Nó vẫn luôn ở ngay đó.",
+            "enemy": "Flickering Shade"
+          }
+        ]
+      },
+      {
+        "template": "confrontation",
+        "variations": [
+          {
+            "id": "confrontation_1",
+            "narrative": "Nó đứng chắn đường ngươi. Chờ đợi. Cái đầu dõi theo từng cử động của ngươi với cơn đói kiên nhẫn. Không có đường vòng. Chỉ có đường xuyên qua.",
+            "enemy": "The Drowned"
+          },
+          {
+            "id": "confrontation_2",
+            "narrative": "Thứ đó chặn trước cửa. Nó chưa tấn công. Nó chưa cử động. Nó chỉ... ở đó. Đang lượng định. Dù nó quyết định gì, ngươi cũng sẽ không thích.",
+            "enemy": "Forgotten Guardian"
+          },
+          {
+            "id": "confrontation_3",
+            "narrative": "Nó quỳ trước một bàn thờ, tụng niệm ở những tần số làm đau tâm trí ngươi. Nó biết ngươi ở đây. Bài tụng ấy dành cho ngươi. Một lời mời hoặc một bản án tử.",
+            "enemy": "Hollow Clergy"
+          },
+          {
+            "id": "confrontation_4",
+            "narrative": "Gã hiệp sĩ nâng thanh kiếm gỉ lên chào. Đấu tay đôi danh dự. Đến chết. Nó mong ngươi chiến đấu cho xứng. Đằng nào nó cũng sẽ thất vọng.",
+            "enemy": "Carrion Knight"
+          },
+          {
+            "id": "confrontation_5",
+            "narrative": "Nó trồi lên khỏi mặt nước, cao gấp đôi ngươi, rỏ ròng bóng tối. Trong một thoáng, nó gần như trông giống con người. Rồi nó há miệng. Rồi nó có quá nhiều cái miệng.",
+            "enemy": "Mother of Tides"
+          }
+        ]
+      },
+      {
+        "template": "territorial",
+        "variations": [
+          {
+            "id": "territorial_1",
+            "narrative": "Xương chất đống nơi đây. Được sắp đặt. Đây là một cái ổ. Và ngươi vừa đánh thức thứ sống trong đó. Nó không muốn giết ngươi. Nó muốn ngươi cút đi. Quá muộn rồi.",
+            "enemy": "Pale Crawler"
+          },
+          {
+            "id": "territorial_2",
+            "narrative": "Nước ở đây ấm hơn. Một thứ to lớn đã nằm nghỉ bên dưới. Thứ đó đang trồi lên, giận dữ vì bị quấy phá. Đây là hồ nước của nó. Ngươi là kẻ xâm phạm.",
+            "enemy": "Tideborn"
+          },
+          {
+            "id": "territorial_3",
+            "narrative": "Vách tường chi chít vết cào. Lãnh địa. Con vật chui ra từ một khe nứt ngươi không để ý, bảo vệ vùng đất nó đã chiếm. Từng tấc đất đều khiến nó trả giá.",
+            "enemy": "The Hunched"
+          },
+          {
+            "id": "territorial_4",
+            "narrative": "Nơi này từng là điện thờ. Giờ là hang ổ. Thứ đã chiếm lấy nó không thờ phụng ở đây — nó cai trị. Và ngươi vừa bước vào triều đình của nó mà không được mời.",
+            "enemy": "Hollow Clergy"
+          },
+          {
+            "id": "territorial_5",
+            "narrative": "Xiềng xích khua vang trong bóng tối. Kẻ Bị Trói đã chiếm lối đi này. Nó không cho ngươi qua. Nó không cho bất kỳ ai qua. Nỗi cô độc của nó mang tính hung hãn.",
+            "enemy": "The Bound"
+          }
+        ]
+      },
+      {
+        "template": "pursuit",
+        "variations": [
+          {
+            "id": "pursuit_1",
+            "narrative": "Ngươi đã nghe thấy nó suốt ba căn phòng. Mỗi lần một gần hơn. Mỗi lần một nhanh hơn. Chạy trốn không ăn thua. Đã đến lúc ngừng chạy.",
+            "enemy": "The Hunched"
+          },
+          {
+            "id": "pursuit_2",
+            "narrative": "Nó đã bám theo từ cầu thang. Kiên nhẫn. Không ngơi nghỉ. Ngươi không thể chạy nhanh hơn nó — nó thuộc những đường hầm này. Nó đã tạo ra những đường hầm này. Đứng lại mà đối mặt.",
+            "enemy": "The Bound"
+          },
+          {
+            "id": "pursuit_3",
+            "narrative": "Tiếng nước quẫy sau lưng ngươi im bặt. Thế còn tệ hơn. Nghĩa là nó không còn đuổi theo nữa. Nghĩa là nó đã ở đây rồi.",
+            "enemy": "The Drowned"
+          },
+          {
+            "id": "pursuit_4",
+            "narrative": "Tiếng lách cách giờ đã ngay sau lưng. Ngươi cảm nhận được hơi thở của nó — nếu đó là hơi thở — trên gáy mình. Quay lại đi. Ngươi buộc phải. Ngươi không hề muốn.",
+            "enemy": "Pale Crawler"
+          },
+          {
+            "id": "pursuit_5",
+            "narrative": "Mỗi lần ngươi ngoái nhìn, nó lại gần hơn. Nó không bao giờ nhúc nhích khi ngươi đang nhìn. Ngươi không thể nhìn mãi được. Mắt ngươi bỏng rát. Chớp mắt, và mọi thứ kết thúc.",
+            "enemy": "The Hollow"
+          }
+        ]
+      },
+      {
+        "template": "swarm",
+        "variations": [
+          {
+            "id": "swarm_1",
+            "narrative": "Một con thì chẳng đáng ngại. Nhưng đâu chỉ có một. Chúng tuôn ra từ khe nứt trên tường, kẽ hở dưới sàn. Hàng chục con. Còn nữa đang tới. Lúc nào cũng còn nữa.",
+            "enemy": "Pale Crawler Swarm"
+          },
+          {
+            "id": "swarm_2",
+            "narrative": "Làn nước đầy nghẹt chúng. Những thứ nhỏ bé, quờ quạng. Đơn lẻ, chúng chẳng là gì. Hợp lại, chúng là một dòng chảy của răng và cơn đói. Mặt nước dâng lên theo khối lượng của chúng.",
+            "enemy": "Tideborn"
+          },
+          {
+            "id": "swarm_3",
+            "narrative": "Bàn tay. Chỉ toàn bàn tay. Chúng trồi ra từ khắp nơi — sàn, tường, trần. Quờ quạng, níu kéo, lôi giật. Chẳng có thân thể nào để đánh. Chỉ có bàn tay.",
+            "enemy": "Bone Weavers"
+          },
+          {
+            "id": "swarm_4",
+            "narrative": "Những Đứa Trẻ Tro đã tụ về. Trước kia chúng chỉ cần đứng nhìn là đủ. Giờ chúng muốn nhiều hơn. Chúng ép sát lại. Không khí loãng dần. Chúng không tấn công — chúng bóp nghẹt.",
+            "enemy": "Ash Children"
+          },
+          {
+            "id": "swarm_5",
+            "narrative": "Đám Xác Vọng Âm đã tìm thấy nhau. Một dàn đồng ca những lời trăng trối bị đánh cắp, lê bước như một, vươn tay như một. 'Cứu ta cứu ta cứu ta' — cùng một lời van xin từ hàng chục cổ họng nát bươm.",
+            "enemy": "Echo Husks"
+          }
+        ]
+      },
+      {
+        "template": "feeding",
+        "variations": [
+          {
+            "id": "feeding_1",
+            "narrative": "Nó đang ăn thứ gì đó. Những âm thanh ướt át, đều đặn. Nó chưa thấy ngươi. Ngươi có thể lẻn qua. Ngươi có thể ra tay trước. Đằng nào nó cũng sắp ăn xong.",
+            "enemy": "The Hunched"
+          },
+          {
+            "id": "feeding_2",
+            "narrative": "Kẻ Chết Đuối đã tìm thấy một thi hài. Nó không ăn — nó đang... hấp thụ. Phình to hơn. Mạnh hơn. Mỗi khoảnh khắc ngươi chần chừ, nó lại nguy hiểm thêm.",
+            "enemy": "Bloated One"
+          },
+          {
+            "id": "feeding_3",
+            "narrative": "Con vật khom mình trên một thứ từng là con người. Nó ngẩng lên. Miệng đầy ứ. Nó chẳng có vẻ khó chịu vì bị quấy rầy. Nó có vẻ biết ơn. Thêm thức ăn.",
+            "enemy": "Pale Crawler"
+          },
+          {
+            "id": "feeding_4",
+            "narrative": "Kẻ Than Khóc đã tìm được nỗi đau để hút lấy. Thi hài của một người chơi khác, lời trăng trối còn tươi mới. Nó uống nỗi buồn của họ. Nó quay sang ngươi. Nỗi buồn của ngươi thơm đậm đà hơn.",
+            "enemy": "The Weeping"
+          },
+          {
+            "id": "feeding_5",
+            "narrative": "Nó ngồi giữa đống xương, bẻ vỡ từng khúc, hút lấy thứ bên trong. Xương cũ. Cổ xưa. Nó đã ăn ở đây hàng thế kỷ. Ngươi là món tươi đầu tiên sau một thời gian rất dài.",
+            "enemy": "The Hunched"
+          }
+        ]
+      },
+      {
+        "template": "guardian",
+        "variations": [
+          {
+            "id": "guardian_1",
+            "narrative": "Nó đứng trước cánh cửa. Nó vẫn luôn đứng trước cánh cửa này. Nó sẽ chết trước cánh cửa này. Ngươi cũng vậy, nếu ngươi muốn thứ nằm sau nó.",
+            "enemy": "Forgotten Guardian"
+          },
+          {
+            "id": "guardian_2",
+            "narrative": "Lối đi phía sau cất giữ điều gì đó quan trọng. Ngươi cảm nhận được. Thứ chắn đường ngươi cũng vậy. Nó được đặt ở đây. Nó có mục đích. Mục đích ấy là ngươi.",
+            "enemy": "Carrion Knight"
+          },
+          {
+            "id": "guardian_3",
+            "narrative": "Lối ra ngay kia. Hai mươi bước chân. Giữa ngươi và nó là một thứ đã chờ đợi đúng khoảnh khắc này. Khoảnh khắc của ngươi. Mục đích của nó.",
+            "enemy": "Hollow Clergy"
+          },
+          {
+            "id": "guardian_4",
+            "narrative": "Kho đồ ngay phía sau. Lương thực, vũ khí, hy vọng. Thứ canh giữ nó chẳng dùng gì trong số đó. Nó chỉ đơn giản không muốn ngươi có được chúng.",
+            "enemy": "The Bound"
+          },
+          {
+            "id": "guardian_5",
+            "narrative": "Nó bảo vệ điện thờ. Không phải vị thần — vị thần đã chết. Không phải lễ vật — lễ vật đã rữa. Nó bảo vệ ý niệm. Ký ức. Nó sẽ bảo vệ chúng khỏi ngươi.",
+            "enemy": "Forgotten Guardian"
+          }
+        ]
+      },
+      {
+        "template": "arena",
+        "variations": [
+          {
+            "id": "arena_1",
+            "narrative": "Gian phòng tròn trịa. Nhẵn nhụi. Được thiết kế cho việc này. Ngươi cảm thấy những ánh mắt — từ đâu? Thứ đứng đối diện chẳng bận tâm đến khán giả. Chỉ bận tâm đến ngươi.",
+            "enemy": "Carrion Knight"
+          },
+          {
+            "id": "arena_2",
+            "narrative": "Những bậc khán đài vây quanh một hố đấu trung tâm. Ghế trống, nhưng sự hiện diện thì không trống. Có thứ đang quan sát. Có thứ đang phán xét. Con vật dưới hố chờ ngươi bước xuống.",
+            "enemy": "The Bound"
+          },
+          {
+            "id": "arena_3",
+            "narrative": "Một đấu trường vòng cung bằng xương. Âm học hoàn hảo — mỗi tiếng thở dốc, mỗi tiếng gầm gừ, mỗi tiếng nấc hấp hối sẽ vọng lại tuyệt đẹp. Hội Chúng chờ xem màn trình diễn.",
+            "enemy": "The Congregation"
+          },
+          {
+            "id": "arena_4",
+            "narrative": "Một vòng tròn vẽ trên sàn. Cổ xưa. Ràng buộc. Một khi bước vào, ngươi không thể rời đi cho tới khi một trong hai ngừng cử động. Thứ trong vòng tròn không bao giờ ngừng cử động.",
+            "enemy": "Flickering Shade"
+          },
+          {
+            "id": "arena_5",
+            "narrative": "Căn phòng tự sắp xếp lại khi ngươi bước vào. Tường dựng lên. Lối ra đóng kín. Một không gian được tạo thành. Một sân khấu. Một đấu trường. Ở đâu đó, có thứ đang rất mực tiêu khiển.",
+            "enemy": "The Unnamed"
+          }
+        ]
+      },
+      {
+        "template": "wounded",
+        "variations": [
+          {
+            "id": "wounded_1",
+            "narrative": "Nó đang chảy máu. Lết mình đi. Những vết thương không phải do ngươi — có kẻ khác đã thử. Kẻ khác đã thất bại. Nó thấy ngươi. Nhe nanh. Sợ hãi và cuồng nộ ngang nhau.",
+            "enemy": "The Drowned"
+          },
+          {
+            "id": "wounded_2",
+            "narrative": "Một nửa của nó đã mất. Nửa còn lại vẫn hoạt động. Vẫn săn mồi. Suy tàn nhưng chưa tận. Nó chẳng còn gì để mất. Điều đó khiến nó nguy hiểm hơn.",
+            "enemy": "Pale Crawler"
+          },
+          {
+            "id": "wounded_3",
+            "narrative": "Hộ Vệ đã rạn nứt. Thiếu hụt từng mảng. Một kẻ phiêu lưu khác đã làm điều này. Kẻ ấy đâu rồi? Chết rồi, có lẽ. Nhưng họ đã làm nó suy yếu. Hãy kết thúc điều họ dang dở.",
+            "enemy": "Forgotten Guardian"
+          },
+          {
+            "id": "wounded_4",
+            "narrative": "Nó khập khiễng tiến về phía ngươi. Tàn phế, nhưng chưa khuất phục. Mỗi vết thương khiến nó điên tiết hơn. Mỗi cơn đau khiến nó căm ghét ngươi hơn. Lòng thương xót không phải khái niệm nó hiểu được.",
+            "enemy": "The Hunched"
+          },
+          {
+            "id": "wounded_5",
+            "narrative": "Xiềng xích đứt gãy lủng lẳng trên cổ tay nó. Nó đã thoát khỏi thứ gì đó. Hoặc đã cố. Giờ nó tự do, bị thương, hoảng loạn, và ngươi là thứ đầu tiên nó nhìn thấy. Ngươi may thật.",
+            "enemy": "The Bound"
+          }
+        ]
+      }
+    ],
+    "corpse": [
+      {
+        "template": "fresh",
+        "variations": [
+          {
+            "id": "fresh_1",
+            "narrative": "Máu còn chưa khô. Họ gục xuống đây mới đó — hoặc đã nhiều năm. Thời gian dối trá dưới này. Bàn tay họ vẫn vươn về phía bức tường, nơi những dòng chữ được cào lên:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "fresh_2",
+            "narrative": "Còn ấm. Ngươi vẫn thấy hơi thở cuối cùng đọng khói trong không khí lạnh. Họ suýt nữa thì thoát. Suýt nữa. Lời trăng trối của họ, khắc vội:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "fresh_3",
+            "narrative": "Ngươi biết chuyện chưa xảy ra lâu vì vẫn còn ngửi thấy mùi sợ hãi. Sắc lẹm. Tanh kim loại. Thông điệp của họ còn tươi mới, bụi đá vẫn rơi từ các con chữ:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "fresh_4",
+            "narrative": "Ngọn đuốc của họ vẫn cháy. Mới đến thế đấy. Ngọn lửa chao đảo khi ngươi lại gần, như thể nhận ra ngươi. Những con chữ của họ rực lên trong ánh sáng hấp hối:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "fresh_5",
+            "narrative": "Những gợn sóng còn chưa lặng. Họ vừa mới ngã xuống. Ngươi vừa hụt mất họ — hoặc họ vừa hụt mất ngươi. Dù thế nào, thông điệp này dành cho kẻ đến sau:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          }
+        ]
+      },
+      {
+        "template": "old",
+        "variations": [
+          {
+            "id": "old_1",
+            "narrative": "Giờ đã gần như hóa thành một phần bức tường. Làn nước đã chiếm lấy gần hết thân xác họ. Nhưng những con chữ khắc vào đá vẫn còn, kiên nhẫn như nỗi tiếc thương:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "old_2",
+            "narrative": "Xương. Giờ chỉ còn xương. Được thời gian và làn nước sắp đặt thành một thứ gần như thanh thản. Thông điệp của họ đã phai mòn, nhưng vẫn còn đó:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "old_3",
+            "narrative": "Âm phủ đã tiêu hóa họ được một thời gian. Những gì còn lại là ký ức nhiều hơn là thân xác. Nhưng ký ức trường tồn nơi đây. Lời của họ trụ lại:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "old_4",
+            "narrative": "Rêu giờ đã phủ lên họ. Âm phủ đã chấp nhận thân xác này thành một phần của nó. Chỉ dòng chữ khắc là cưỡng lại sự nuốt trọn:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "old_5",
+            "narrative": "Họ đã ở đây bao lâu? Đủ lâu để hóa thành đồ vật. Một cột mốc. Rõ ràng những kẻ sống sót khác từng đi ngang, nhưng không ai dời họ đi. Lời cảnh báo của họ vẫn sừng sững:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          }
+        ]
+      },
+      {
+        "template": "peaceful",
+        "variations": [
+          {
+            "id": "peaceful_1",
+            "narrative": "Họ đã tự thu xếp cho mình thật thoải mái. Sắp xếp đồ đạc gọn gàng. Quay mặt về hướng lối ra mà họ không bao giờ tới được. Thông điệp của họ cẩn trọng, chín chắn:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "peaceful_2",
+            "narrative": "Không vật lộn. Không bạo lực. Họ chỉ đơn giản ngồi xuống và quyết định rằng đến đây là đủ xa rồi. Sự chấp nhận của họ gần như đáng ganh tị. Lời của họ điềm tĩnh:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "peaceful_3",
+            "narrative": "Họ chết với hai bàn tay đan vào nhau. Mắt nhắm. Bình thản với một kết cục do chính mình chọn. Thông điệp của họ đọc như một lời từ biệt, không phải lời cảnh báo:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "peaceful_4",
+            "narrative": "Một đống lửa nhỏ, nguội từ lâu. Một bữa ăn, dở dang một nửa. Họ nghỉ chân ở đây. Họ không bao giờ tỉnh dậy. Đôi khi âm phủ cũng nhân từ. Ý nghĩ cuối cùng của họ:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "peaceful_5",
+            "narrative": "Họ đang mỉm cười. Bằng cách nào đó. Sau tất cả. Thân xác họ là một bài học về sự buông bỏ. Thông điệp của họ dành cho chính họ cũng nhiều như dành cho ngươi:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          }
+        ]
+      },
+      {
+        "template": "heroic",
+        "variations": [
+          {
+            "id": "heroic_1",
+            "narrative": "Con vật nằm cạnh họ. Họ đã giết nó. Nó đã giết họ. Một cuộc trao đổi sòng phẳng? Lưỡi kiếm của họ vẫn cắm trong sọ nó. Thông điệp của họ ngắn gọn, mãn nguyện:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "heroic_2",
+            "narrative": "Họ đã tử thủ. Tại đây. Ngươi thấy được dấu tích trận chiến — vết sẹo trên tường, thứ dịch đen, xác những thứ họ đã giết. Văn bia của họ là xứng đáng:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "heroic_3",
+            "narrative": "Ba con vật chết quanh họ. Họ không ra đi lặng lẽ. Họ không ra đi dễ dàng. Họ ra đi trong chiến đấu, giữa vòng vây, kéo theo nhiều nhất có thể. Lời ngạo nghễ của họ:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "heroic_4",
+            "narrative": "Họ chết để cứu một ai đó. Ngươi thấy được dấu chân thứ hai, dẫn ra xa. Một người khác sống sót nhờ người này. Di sản của họ:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "heroic_5",
+            "narrative": "Đứng. Họ chết trong tư thế đứng. Vũ khí giơ cao. Đối diện một thứ mà họ biết mình không thể thắng. Họ vẫn đối diện nó. Sự bất khuất của họ khắc vào đá:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          }
+        ]
+      },
+      {
+        "template": "disturbing",
+        "variations": [
+          {
+            "id": "disturbing_1",
+            "narrative": "Họ không chết trong chiến đấu. Họ chết trong chờ đợi. Ngồi tựa vào tường, tay đan vào nhau, kiên nhẫn. Như thể họ đã biết trước. Thông điệp bên cạnh họ:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "disturbing_2",
+            "narrative": "Có gì đó sai lệch ở cái xác này. Tỷ lệ thân thể. Tư thế. Nụ cười. Trông họ như bị tạo dáng. Bị sắp đặt. Bởi một thứ không hiểu hình hài con người. Lời của họ:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "disturbing_3",
+            "narrative": "Họ quay mặt vào tường. Trán áp vào đá. Đã cào cấu nó cho đến khi những ngón tay không còn. Thông điệp được khắc vào đá, không phải cào. Khắc rất sâu. Nó viết:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "disturbing_4",
+            "narrative": "Không vết thương. Không dấu tích. Không nguyên nhân rõ ràng. Họ chỉ... dừng lại. Vẻ mặt họ hoang mang, vẫn đang loay hoay giải bài toán đó. Thông điệp của họ đứt quãng:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "disturbing_5",
+            "narrative": "Họ đang đứng. Đã chết, nhưng vẫn đứng. Mắt mở trừng. Nhìn về lối đi ngươi vừa bước qua. Họ đã đứng nhìn suốt từ nãy đến giờ sao? Thông điệp của họ cũng trừng trừng nhìn theo:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          }
+        ]
+      },
+      {
+        "template": "group",
+        "variations": [
+          {
+            "id": "group_1",
+            "narrative": "Ba người. Co cụm vào nhau lúc cuối cùng. Dù thứ gì đã tới, họ đối mặt nó như một. Chỉ một người kịp viết. Những dòng chữ là cho tất cả:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "group_2",
+            "narrative": "Một vòng tròn thi thể. Mặt hướng ra ngoài. Lưng tựa lưng cho tới phút cuối. Họ tin tưởng nhau. Họ chết cùng nhau. Một giọng nói thay cho tất cả:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "group_3",
+            "narrative": "Hai người. Tay nắm chặt tay. Đến tận bây giờ. Thứ đã giết họ không chia lìa được họ. Thông điệp chung của hai người:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "group_4",
+            "narrative": "Một đống. Chỉ có thể gọi thế. Ai đó chết trước, và những người còn lại không rời đi. Họ tự xếp mình thêm vào đống ấy. Người dưới cùng đã viết gì đó:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "group_5",
+            "narrative": "Họ chết trong đội hình. Như những người lính. Như những tín đồ. Như những kẻ biết điều gì đang tới và quyết định cùng nhau đối mặt. Lời cuối chung của họ:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          }
+        ]
+      },
+      {
+        "template": "trapped",
+        "variations": [
+          {
+            "id": "trapped_1",
+            "narrative": "Vụ sập đã nhốt kín họ. Vết cào phủ khắp đống đổ nát. Họ đã cố trong một thời gian dài. Rồi họ dừng lại. Thông điệp của họ, viết trong bóng tối:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "trapped_2",
+            "narrative": "Bị nhốt. Cánh cửa không mở được từ phía bên này. Họ đã không biết điều đó khi đóng nó lại. Những vết hằn trên cửa kể lại câu chuyện. Lời của họ cào ở dưới chân cửa:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "trapped_3",
+            "narrative": "Nước đã dâng. Ngươi thấy được ngấn nước nơi nó dừng lại — ngay trên đỉnh đầu họ. Họ đã trèo cao hết mức có thể. Không đủ cao. Thông điệp của họ nằm ở ngấn nước:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "trapped_4",
+            "narrative": "Xiềng xích. Họ bị xích ở đây. Ai đã xích họ? Một thứ muốn họ chờ đợi. Suy ngẫm. Viết một điều sau cùng:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "trapped_5",
+            "narrative": "Một cái hố. Vách trơn nhẵn. Không lối thoát. Họ sống sót dưới này lâu hơn ngươi tưởng. Đủ lâu để khắc những dòng chữ này:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          }
+        ]
+      },
+      {
+        "template": "posed",
+        "variations": [
+          {
+            "id": "posed_1",
+            "narrative": "Ai đó đã sắp đặt cái xác này. Dựng nó dậy. Quay mặt nó về phía lối vào. Về phía ngươi. Thông điệp không phải của họ — một thứ khác đã viết nó:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "posed_2",
+            "narrative": "Họ đang quỳ. Đầu cúi. Hai tay chắp lại. Một trò nhại lời cầu nguyện, dàn dựng bởi thứ từng đứng nhìn con người thờ phụng. Những dòng chữ bên cạnh họ không phải lời thờ phụng:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "posed_3",
+            "narrative": "Bị xây vào tường. Theo đúng nghĩa đen. Thân xác họ giờ là một phần kiến trúc. Kiến Trúc Sư đã ở đây. Chỉ bàn tay họ còn tự do, chỉ về những con chữ được khắc:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "posed_4",
+            "narrative": "Họ đang ngồi bên bàn ăn. Với một bữa ăn. Với khách khứa — những thi hài khác, được xếp như thực khách. Một trò nhại kinh tởm. Tấm thiệp ghi chỗ của họ đề:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "posed_5",
+            "narrative": "Được trưng bày. Như một tác phẩm. Gắn lên tường một cách nắn nót, đầy chủ ý. Một phòng triển lãm chỉ một hiện vật. Tấm biển bên dưới họ ghi:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          }
+        ]
+      },
+      {
+        "template": "legendary",
+        "variations": [
+          {
+            "id": "legendary_1",
+            "narrative": "Ngươi từng nghe về người này. Ai cũng từng nghe. Họ đã đi xa hơn bất kỳ ai trước đó. Thi hài của họ đã trở thành một cột mốc. Lời của họ được chép lại, truyền tay:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "legendary_2",
+            "narrative": "Người nổi danh ấy. Lễ vật vây quanh họ — quà của những lữ khách khác, những lời kính viếng. Họ đã suýt thành công. Thông điệp của họ đã hóa thành một lời khấn:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "legendary_3",
+            "narrative": "Ngươi nhận ra họ từ những câu chuyện kể. Nhỏ bé hơn ngươi hình dung. Người hơn. Huyền thoại của họ lớn hơn thân xác họ. Lời của họ giản dị đến bất ngờ:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "legendary_4",
+            "narrative": "Một chốn hành hương. Nhiều kẻ đã đến chỉ để nhìn nơi này, nơi bậc vĩ nhân ngã xuống. Hoa mục rữa dưới chân họ. Thông điệp của họ mòn vẹt vì bao ngón tay lần theo:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          },
+          {
+            "id": "legendary_5",
+            "narrative": "Cuộc xuống sâu đặt cược lớn nhất trong lịch sử. Mất mát lớn nhất. Nỗ lực quả cảm nhất. Thất bại của họ dạy kẻ khác cách thành công. Di sản của họ vượt trên ngôn từ:",
+            "player_name": "{PLAYER}",
+            "final_message": "{MESSAGE}"
+          }
+        ]
+      }
+    ],
+    "cache": [
+      {
+        "template": "alcove",
+        "variations": [
+          {
+            "id": "alcove_1",
+            "narrative": "Một hốc tường, cao hơn mực nước. Khô ráo. Gần như ấm áp. Ai đó đã để lại đồ tiếp tế nơi đây. Có thể họ đã thoát ra. Có thể họ chỉ bỏ lại tất cả."
+          },
+          {
+            "id": "alcove_2",
+            "narrative": "Một hốc đá tự nhiên. Đủ nhỏ để bị bỏ sót, đủ lớn để cất giấu. Bên trong: băng gạc, lương khô, một mảnh giấy ghi 'Cứ lấy đi. Ta sẽ không cần nữa.'"
+          },
+          {
+            "id": "alcove_3",
+            "narrative": "Đằng sau một phiến đá lỏng lẻo. Ngươi suýt đã không kiểm tra. Ai đó muốn giấu kín thứ này. Ai đó biết mình sẽ không quay lại lấy nó."
+          },
+          {
+            "id": "alcove_4",
+            "narrative": "Một khe chui. Chật hẹp, nhưng mở ra một gian phòng nhỏ. Đồ tiếp tế xếp ngay ngắn. Không bụi bặm — có người vừa ở đây mới đây thôi. Một người đã rời đi vội vã."
+          },
+          {
+            "id": "alcove_5",
+            "narrative": "Một hốc tường đánh dấu bằng ký hiệu của kẻ sống sót. Dấu hiệu chung cho 'tạm đủ an toàn'. Bên trong: thứ ngươi cần. Bên ngoài: mọi thứ còn lại."
+          }
+        ]
+      },
+      {
+        "template": "offering_site",
+        "variations": [
+          {
+            "id": "offering_1",
+            "narrative": "Một bàn thờ dâng lên thứ gì đó vô danh. Lễ vật mục rữa dưới chân — nhưng lẫn trong đó, có thứ hữu dụng. Lấy nó đi giống như chấp nhận một khế ước."
+          },
+          {
+            "id": "offering_2",
+            "narrative": "Một điện thờ dâng lên chính nước. Những đồng xu lấp lánh dưới đáy hồ. Cả những thứ khác nữa — vũ khí, thảo dược, hy vọng. Làn nước sẽ ban tặng nếu ngươi dám vươn tay."
+          },
+          {
+            "id": "offering_3",
+            "narrative": "Các tín đồ đã để lại quà nơi đây. Các tín đồ đã đi rồi. Quà thì còn lại. Lấy chúng có thể chọc giận thứ gì đó. Không lấy thì có vẻ hoang phí."
+          },
+          {
+            "id": "offering_4",
+            "narrative": "Một pho tượng của thứ gì đó có lẽ từng được thờ phụng. Dưới chân tượng: đồ tiếp tế do người hành hương để lại. Trên gương mặt tượng: một nụ cười thấu suốt. Nó muốn ngươi lấy chúng."
+          },
+          {
+            "id": "offering_5",
+            "narrative": "Nến vây quanh một mớ của cải nhỏ. Nến còn mới. Ai thắp chúng? Ai để lại đồ tiếp tế cho người lạ? Đừng nghĩ về điều đó. Cứ lấy thứ ngươi cần."
+          }
+        ]
+      },
+      {
+        "template": "survivor_stash",
+        "variations": [
+          {
+            "id": "stash_1",
+            "narrative": "Vạch khắc trên tường. Đếm ngày? Có đến hàng trăm vạch. Kẻ từng ở đây đã sống sót lâu hơn mức tưởng như có thể. Họ bỏ lại tất cả. Họ đã trốn thoát, hay chỉ đơn giản buông xuôi?"
+          },
+          {
+            "id": "stash_2",
+            "narrative": "Một tấm đệm ngủ. Một đống lửa nguội. Một cuốn nhật ký, trang cuối bị xé đi. Họ đã sống ở đây. Bao lâu rồi? Đủ lâu để tích trữ đồ đạc. Đủ lâu để đột ngột rời đi."
+          },
+          {
+            "id": "stash_3",
+            "narrative": "Ai đó đã dựng cả một cuộc đời dưới này. Bàn ghế ghép từ phế liệu. Tranh vẽ cào lên tường. Rồi họ bỏ rơi nó. Mọi thứ hữu dụng được gói ghém ngay ngắn, chờ đợi."
+          },
+          {
+            "id": "stash_4",
+            "narrative": "Trại của một kẻ sống sót. Không có thi hài — họ không chết ở đây. Đồ tiếp tế được dán nhãn, sắp xếp, để lại có chủ đích. Một món quà cho kẻ đến sau."
+          },
+          {
+            "id": "stash_5",
+            "narrative": "Vũ khí. Lương thực. Thuốc men. Chất tựa vào bức tường cuối. Một mảnh giấy ghi: 'Không mang hết được. Cũng chẳng cần. Ta đã thoát ra.' Hy vọng viết bằng mực."
+          }
+        ]
+      },
+      {
+        "template": "spring",
+        "variations": [
+          {
+            "id": "spring_1",
+            "narrative": "Nước rỉ ra từ khe đá. Trong vắt, không đen ngòm. Thứ gì đó xanh mướt mọc ven mép nước — sinh vật sống duy nhất ngươi từng thấy nơi này. Uống vào có cảm giác như hy vọng. Dư vị còn vương mãi."
+          },
+          {
+            "id": "spring_2",
+            "narrative": "Một vũng nước sạch. Một phép màu dưới này. Ngươi nhìn thấu tận đáy. Không gì cử động. Không gì rình rập. Nó an toàn. Nó phải an toàn. Uống đi."
+          },
+          {
+            "id": "spring_3",
+            "narrative": "Hơi nước bốc lên từ một khe nứt dưới sàn. Nước ấm, giàu khoáng chất, gần như dễ chịu. Hơi ấm thật lạ lẫm sau ngần ấy giá lạnh. Nghỉ lại đây. Hồi phục."
+          },
+          {
+            "id": "spring_4",
+            "narrative": "Một mạch nước ngầm, tươi mát và lạnh. Nhiều kẻ khác từng cắm trại nơi đây — ngươi thấy được dấu vết. Một chốn an toàn. An toàn hết mức mà nơi này cho phép."
+          },
+          {
+            "id": "spring_5",
+            "narrative": "Nước ở đây phát sáng mờ mờ. Một sắc xanh dịu. Nó không nguy hiểm — bằng cách nào đó ngươi biết vậy. Uống vào xoa dịu vết thương. Đừng hỏi vì sao. Đừng hỏi bằng cách nào."
+          }
+        ]
+      },
+      {
+        "template": "abandoned_camp",
+        "variations": [
+          {
+            "id": "camp_1",
+            "narrative": "Một tấm đệm ngủ. Tro tàn nguội lạnh. Thức ăn dở dang. Họ rời đi rất vội. Đồ tiếp tế còn nguyên, nhưng câu hỏi cũng còn nguyên: điều gì khiến người ta bỏ lại chốn an toàn duy nhất của mình?"
+          },
+          {
+            "id": "camp_2",
+            "narrative": "Lều — nhiều cái. Một nhóm người từng cắm trại nơi đây. Đồ đạc của họ vương vãi, hoảng loạn. Người mang theo đồ thiết yếu. Người chẳng mang gì. Thứ đã tới không đáng để thu dọn hành lý."
+          },
+          {
+            "id": "camp_3",
+            "narrative": "Mọi thứ bị lật tung. Dấu vết vật lộn? Dấu vết tháo chạy? Đồ tiếp tế vùi dưới cảnh hỗn loạn, nhưng chúng vẫn ở đây. Dù chuyện gì đã xảy ra, nó xảy ra rất nhanh."
+          },
+          {
+            "id": "camp_4",
+            "narrative": "Một chòi canh. Ai đó từng đứng gác nơi đây. Chiếc ghế của họ giờ quay sai hướng. Đồ tiếp tế còn nguyên vẹn. Họ đã nhìn thấy điều gì đó. Họ không kịp nhìn cho trọn."
+          },
+          {
+            "id": "camp_5",
+            "narrative": "Giữa bữa ăn. Thức ăn vẫn còn trên đĩa. Vẫn... ăn được, có lẽ. Họ thậm chí không kịp ngừng ăn trước khi bỏ chạy. Hoặc bị bắt đi. Đồ tiếp tế không trả lời câu hỏi nào."
+          }
+        ]
+      },
+      {
+        "template": "armory",
+        "variations": [
+          {
+            "id": "armory_1",
+            "narrative": "Những giá vũ khí, rỗ mòn theo năm tháng. Một đạo quân từng được trang bị nơi đây. Cho cuộc chiến nào? Chống lại kẻ thù nào? Vài lưỡi kiếm vẫn còn sắc. Cứ tự nhiên."
+          },
+          {
+            "id": "armory_2",
+            "narrative": "Một kho vũ khí, giấu trong vách tường. Ai đó đã chuẩn bị cho một cuộc chiến không bao giờ tới. Hoặc một cuộc chiến không bao giờ kết thúc. Sự chuẩn bị của họ là sự sống còn của ngươi."
+          },
+          {
+            "id": "armory_3",
+            "narrative": "Những công cụ bạo lực, phân loại theo chủng loại. Bụi phủ dày. Không ai đến đây đã lâu lắm. Không ai ngoài những thứ chẳng cần đến vũ khí."
+          },
+          {
+            "id": "armory_4",
+            "narrative": "Một phòng lính gác. Giờ trống không. Trang bị của lính gác vẫn còn — han gỉ, nhưng dùng được. Họ sẽ không phiền khi ngươi mượn. Họ chẳng còn phiền lòng vì bất cứ điều gì nữa."
+          },
+          {
+            "id": "armory_5",
+            "narrative": "Vũ khí găm sâu vào tường. Chiến lợi phẩm? Kho chứa? Nghệ thuật? Cách bài trí đầy chủ ý. Hãy lấy thứ gọi tên ngươi. Có thứ ở đây đã chờ đích danh ngươi."
+          }
+        ]
+      },
+      {
+        "template": "merchant",
+        "variations": [
+          {
+            "id": "merchant_1",
+            "narrative": "Một bóng người trong bóng tối. Họ có hàng hóa. Họ có giá cả. Cả hai đều không thể mặc cả. Nơi âm phủ, thương mại vẫn tiếp diễn. Người chết vẫn buôn bán."
+          },
+          {
+            "id": "merchant_2",
+            "narrative": "Kẻ Sưu Tầm ngồi giữa đống di vật. 'Không gì miễn phí. Mọi thứ đều có giá. Ngươi sẵn lòng trả gì đây?' Họ bày hàng ra. Giá cả không tính bằng SOL."
+          },
+          {
+            "id": "merchant_3",
+            "narrative": "'Ngươi có đồ. Ta có đồ. Ta có thể trao đổi, hoặc chờ xem ai cướp đồ của ai bằng vũ lực.' Gã lái buôn mỉm cười. Đó không phải một nụ cười tử tế."
+          },
+          {
+            "id": "merchant_4",
+            "narrative": "Họ tự xưng là 'kẻ trung gian'. Họ trung gian cho việc luân chuyển đồ vật từ bàn tay người chết sang bàn tay người sống. 'Ai cũng có lợi', họ nói. 'Rồi ai cũng thành nguồn hàng cả thôi.'"
+          },
+          {
+            "id": "merchant_5",
+            "narrative": "Một cửa hiệu. Dưới tận nơi này. Chất đầy đồ vật từ mọi kẻ phiêu lưu xấu số từng đi qua. 'Tái chế', chủ hiệu gọi thế. 'Bền vững.' Giá cả là những món đồ tương lai của ngươi."
+          }
+        ]
+      },
+      {
+        "template": "trophy_room",
+        "variations": [
+          {
+            "id": "trophy_1",
+            "narrative": "Sọ treo trên tường. Móng vuốt trưng bày. Ai đó từng đi săn nơi đây, và thắng lợi. Chiến lợi phẩm của họ cho ngươi biết thứ gì đợi phía trước. Đồ tiếp tế của họ có thể giúp ngươi sống sót qua nó."
+          },
+          {
+            "id": "trophy_2",
+            "narrative": "Hang ổ của một thợ săn. Da thú, xương cốt, những thứ ngươi không nhận ra. Kẻ từng sống ở đây biết cách sinh tồn. Biết cách giết chóc. Công cụ của họ sẵn đó. Trí khôn của họ thì khó lấy hơn."
+          },
+          {
+            "id": "trophy_3",
+            "narrative": "Mọi sinh vật của vực sâu, được nhồi xác và trưng bày. Một danh mục những cơn ác mộng. Lẫn trong đó: vật dụng để tạo thêm chiến lợi phẩm. Hoặc để tránh trở thành một."
+          },
+          {
+            "id": "trophy_4",
+            "narrative": "Thứ đầu tiên ngươi thấy là đầu của Kẻ Chết Đuối cắm trên cọc. Rồi tới Kẻ Trườn, ghim như một mẫu vật. Ai đó từng nghiên cứu chúng. Ghi chép và đồ tiếp tế của họ vẫn còn."
+          },
+          {
+            "id": "trophy_5",
+            "narrative": "Một tượng đài của bạo lực. Chiến lợi phẩm của cả trăm cuộc săn. Thợ săn không có ở đây. Đống chiến lợi phẩm cho thấy họ hiếm khi ở lâu một chỗ. Họ hiếm khi cần thế. Lấy thứ gì hữu dụng đi."
+          }
+        ]
+      },
+      {
+        "template": "hermit",
+        "variations": [
+          {
+            "id": "hermit_1",
+            "narrative": "Họ đã ở đây nhiều năm. Nhiều thập kỷ? Một mình. Sinh tồn. Họ không muốn có bầu bạn, nhưng sẽ chia sẻ những gì họ biết. Và những gì họ không còn cần."
+          },
+          {
+            "id": "hermit_2",
+            "narrative": "'Ngươi là vị khách đầu tiên sau... ta đếm không nổi nữa.' Đôi mắt vị ẩn sĩ kỳ dị nhưng không thù địch. 'Cầm lấy đi. Ta đã làm thêm rồi. Ta lúc nào cũng làm thêm.'"
+          },
+          {
+            "id": "hermit_3",
+            "narrative": "Một triết nhân của vực sâu. Họ đã chấp nhận kiếp sống nơi này. 'Đồ tiếp tế? Được, cứ lấy. Câu trả lời? Ta cũng có. Câu hỏi mới là thứ khó nhằn.'"
+          },
+          {
+            "id": "hermit_4",
+            "narrative": "Họ đã quên mất tên mình. Họ vẫn nhớ cách sinh tồn. 'Thứ này sẽ giúp ngươi. Thứ kia sẽ giết ngươi. Ta học được sự khác biệt. Bằng cái giá cay đắng. Ngươi thì không cần phải thế.'"
+          },
+          {
+            "id": "hermit_5",
+            "narrative": "'Ngươi muốn rời đi. Ta cũng từng muốn thế, ngày trước.' Vị ẩn sĩ chỉ tay về đống đồ tiếp tế. 'Cầm lấy. Thoát ra ngoài. Hoặc không. Dù thế nào, ta vẫn sẽ ở đây.'"
+          }
+        ]
+      }
+    ],
+    "exit": [
+      {
+        "template": "threshold",
+        "variations": [
+          {
+            "id": "exit_threshold_1",
+            "narrative": "Ánh sáng. Ánh sáng thật, không phải ánh đuốc — ánh ngày, lọt qua một khe nứt trên cao. Bậc thang đá dẫn lên. Không khí mang mùi của thế giới ngươi còn nhớ. Ngươi đã thoát. Lần này."
+          },
+          {
+            "id": "exit_threshold_2",
+            "narrative": "Lối ra. Có thật. Chạm vào được. Sau tất cả, nó đây — một khung cửa trở về thế giới bên trên. Bóng tối sau lưng ngươi như nghiêng lại gần hơn, lưu luyến không muốn buông."
+          },
+          {
+            "id": "exit_threshold_3",
+            "narrative": "Nắng chạm lên mặt ngươi. Hơi ấm sau chuỗi giá lạnh bất tận. Bậc thang ngay kia. Mặt đất ngay kia. Mỗi bước chân là một lần thách thức. Ngươi đang thách thức một thứ rất cổ xưa."
+          },
+          {
+            "id": "exit_threshold_4",
+            "narrative": "Lối đi dâng cao dần. Nước rút xuống. Phía trước: ánh sáng, khí trời, sự sống. Phía sau: mọi thứ còn lại. Đừng ngoái nhìn. Ngươi đã giành được điều này. Nhận lấy đi."
+          },
+          {
+            "id": "exit_threshold_5",
+            "narrative": "Một cánh cửa, cổ xưa nhưng vẫn dùng được. Bên kia cửa: âm thanh. Gió. Chim chóc? Thanh âm của một thế giới vẫn quay đều trong lúc ngươi ở dưới sâu. Mở nó ra. Về nhà đi."
+          }
+        ]
+      },
+      {
+        "template": "release",
+        "variations": [
+          {
+            "id": "exit_release_1",
+            "narrative": "Bóng tối lùi lại sau lưng ngươi. Làn nước không theo qua khỏi điểm này. Âm phủ buông tha ngươi — không phải bị đánh bại, chỉ là... thỏa mãn. Tạm thời."
+          },
+          {
+            "id": "exit_release_2",
+            "narrative": "Ngươi cảm thấy nó buông tay. Một sức ép ngươi không hề hay biết mình đang mang bỗng nhẹ bẫng khi ngươi vượt qua ranh giới. Âm phủ từng nắm giữ ngươi. Giờ thì không. Đơn giản vậy. Kinh hoàng vậy."
+          },
+          {
+            "id": "exit_release_3",
+            "narrative": "Cái lạnh dừng lại ở một lằn ranh vô hình. Ngươi bước qua nó và cảm nhận hơi ấm lần đầu tiên sau quãng thời gian tưởng như hàng năm trời. Vực sâu dõi theo ngươi rời đi. Chúng sẽ nhớ."
+          },
+          {
+            "id": "exit_release_4",
+            "narrative": "Có gì đó nới lỏng. Một thứ mênh mông, với vô vàn ngón tay, đang buông dần gọng kìm. Ngươi tự do rồi. Ngươi từng bị nắm giữ, và giờ ngươi tự do. Đừng nghĩ về thứ đã nắm giữ ngươi."
+          },
+          {
+            "id": "exit_release_5",
+            "narrative": "Tiếng thì thầm nhạt dần. Sức ép dịu đi. Âm phủ bong ra khỏi tâm trí ngươi như một cơn ác mộng rút lui. Ngươi đang đi lên. Ngươi đang rời đi. Ngươi lại là chính mình."
+          }
+        ]
+      },
+      {
+        "template": "earned",
+        "variations": [
+          {
+            "id": "exit_earned_1",
+            "narrative": "Cánh cửa cuối cùng. Nó từng bị niêm phong. Giờ nó mở ra. Ngươi xứng đáng với điều này. Thứ gì phán xét trong bóng tối đã cân đo ngươi và thấy ngươi đủ nặng. Bước qua đi, kẻ sống sót."
+          },
+          {
+            "id": "exit_earned_2",
+            "narrative": "Ánh sáng tràn ngập gian phòng. Một phần thưởng cho việc đi được tới đây. Con đường lên mặt đất mở ra như một món quà — hoặc một sự thừa nhận. Ngươi đã chiến đấu vì điều này. Nó thuộc về ngươi."
+          },
+          {
+            "id": "exit_earned_3",
+            "narrative": "Cổng lớn tách ra. Những cỗ máy cổ xưa nghiến rít. Ai đó — thứ gì đó — đã bị thuyết phục. Ngươi đã vượt qua các phép thử. Ngươi đã sống sót qua thử thách. Lối ra là phần thưởng của ngươi. Nhận lấy nó."
+          },
+          {
+            "id": "exit_earned_4",
+            "narrative": "Một dàn hợp xướng của im lặng. Sự kính trọng của người chết. Ngươi đã đi xa hơn phần đông, sống sót qua thứ giết chết phần đông. Lối ra tôn vinh ngươi bằng việc tồn tại. Bằng việc để ngươi qua."
+          },
+          {
+            "id": "exit_earned_5",
+            "narrative": "Con đường mở ra. Không phải được ban cho — mà giành được. Mỗi thi hài ngươi đi qua, mỗi con vật ngươi sống sót, mỗi lựa chọn ngươi đưa ra đều dẫn đến đây. Đến cánh cửa này. Đến ánh sáng này. Đến sự sống."
+          }
+        ]
+      },
+      {
+        "template": "reluctant",
+        "variations": [
+          {
+            "id": "exit_reluctant_1",
+            "narrative": "Lối ra ở đây. Sự an toàn ở đây. Nhưng vẫn còn điều dang dở. Vẫn còn ai đó chưa tìm thấy. Ngươi rời đi, nhưng không trọn vẹn. Một phần của ngươi ở lại. Ngươi sẽ quay lại vì nó."
+          },
+          {
+            "id": "exit_reluctant_2",
+            "narrative": "Ánh sáng trên cao. Bóng tối sau lưng. Đáng lẽ ngươi phải thấy nhẹ nhõm. Thay vào đó ngươi thấy... dang dở. Âm phủ còn nhiều điều để phô bày. Nhiều điều để dạy. Ngươi không chắc mình đã xong với nó."
+          },
+          {
+            "id": "exit_reluctant_3",
+            "narrative": "Ngươi có thể rời đi. Ngươi sẽ rời đi. Nhưng ngươi chần chừ nơi ngưỡng cửa. Có tiếng gọi từ vực sâu — không phải đe dọa, mà là lời mời. Lần sau, nó thì thầm. Lần sau, xuống sâu hơn nữa."
+          },
+          {
+            "id": "exit_reluctant_4",
+            "narrative": "Chiến thắng nghe trống rỗng. Ngươi đã trốn thoát, nhưng bỏ lại nhiều thứ phía sau. Những thi hài mang thông điệp ngươi chưa đọc. Những lối đi ngươi chưa bước. Lối ra phán xét ngươi vì rời đi quá sớm."
+          },
+          {
+            "id": "exit_reluctant_5",
+            "narrative": "Mặt đất chờ đợi. Vực sâu vẫy gọi. Ngươi giằng xé giữa sinh tồn và tò mò, giữa ánh sáng và những bí mật còn ẩn trong bóng tối. Ngươi rời đi. Tạm thời."
+          }
+        ]
+      },
+      {
+        "template": "changed",
+        "variations": [
+          {
+            "id": "exit_changed_1",
+            "narrative": "Mặt đất chờ trên cao. Nhưng ngươi còn trở về với nó được không? Ngươi đã thấy những gì nằm bên dưới. Ngươi đã trở thành kẻ biết. Thế giới bên trên giờ có vẻ nhỏ bé hơn. Kém thật hơn."
+          },
+          {
+            "id": "exit_changed_2",
+            "narrative": "Ngươi trèo về phía ánh sáng. Mỗi bước một lạ lẫm hơn. Kẻ đã xuống sâu không phải là kẻ đang đi lên. Có thứ được thêm vào. Có thứ bị lấy đi. Mừng ngươi trở lại."
+          },
+          {
+            "id": "exit_changed_3",
+            "narrative": "Nhà ở trên kia. An toàn. Bình thường. Nhưng giờ ngươi đã biết. Ngươi đã thấy nền móng của thế giới. Làm sao còn thứ gì có thể bình thường được nữa? Làm sao còn thứ gì có thể thật được nữa?"
+          },
+          {
+            "id": "exit_changed_4",
+            "narrative": "Lối ra không mang cảm giác chiến thắng. Nó mang cảm giác giờ nghỉ giữa màn. Âm phủ đã đánh dấu ngươi. Biến đổi ngươi. Ngươi sẽ mang nó mãi mãi. Ngay cả dưới ánh mặt trời. Nhất là dưới ánh mặt trời."
+          },
+          {
+            "id": "exit_changed_5",
+            "narrative": "Trồi lên như một lần sinh ra. Đau đớn. Hoang mang. Thế giới quá sáng, quá ồn, quá nhiều. Ngươi đã quen với bóng tối. Giờ ngươi phải quen lại từ đầu. Ngươi làm được không?"
+          }
+        ]
+      },
+      {
+        "template": "invitation",
+        "variations": [
+          {
+            "id": "exit_invitation_1",
+            "narrative": "Cánh cửa mở toang. Nắng tràn qua. Không hộ vệ, không thử thách, không giá phải trả. Chỉ là... sự cho phép. Nó muốn ngươi rời đi. Nó biết ngươi sẽ quay lại. Bọn họ luôn quay lại."
+          },
+          {
+            "id": "exit_invitation_2",
+            "narrative": "'Sớm quay lại nhé', có thứ không nói ra nhưng truyền đạt rất rõ. Lối ra quá dễ dàng. Quá niềm nở. Ngươi không trốn thoát — ngươi đang được thả. Hai điều đó khác nhau."
+          },
+          {
+            "id": "exit_invitation_3",
+            "narrative": "Âm phủ giữ cửa cho ngươi. Lịch thiệp. Kiên nhẫn. Nó đã bắt đầu chuẩn bị cho lần viếng thăm kế tiếp. Nó biết một điều ngươi không biết: ngươi đã nghiện việc xuống sâu mất rồi."
+          },
+          {
+            "id": "exit_invitation_4",
+            "narrative": "Không chướng ngại nào chắn đường ngươi. Kỳ lạ, sau tất cả. Đáng ngờ. Lối ra như một miếng mồi, một cái bẫy nhử. Nhưng nhử cho điều gì? Cho lúc nào? Đi đi, kẻ sống sót. Quay lại với túi đầy. Quay lại cho thường."
+          },
+          {
+            "id": "exit_invitation_5",
+            "narrative": "Ánh sáng phía trước. Tự do phía trước. Bóng tối sau lưng không đuổi theo — nó vẫy tay tạm biệt. Hẹn sớm gặp lại, nó như muốn nói. Bọn ta sẽ để cửa không khóa."
+          }
+        ]
+      },
+      {
+        "template": "false",
+        "variations": [
+          {
+            "id": "exit_false_1",
+            "narrative": "Ánh sáng phía trước. Bậc thang dẫn lên. Nỗi nhẹ nhõm tràn qua ngươi. Rồi ngươi nhận ra — những bậc thang đang đi xuống. Chúng vẫn luôn đi xuống. Thứ 'ánh sáng' kia nhe ra quá nhiều răng."
+          },
+          {
+            "id": "exit_false_2",
+            "narrative": "Lối ra. Cuối cùng. Ngươi với tay tới cánh cửa và bàn tay xuyên thẳng qua. Ảo ảnh. Sự tàn nhẫn. Con đường thật tiếp tục sau lưng ngươi, sâu hơn. Âm phủ cười không thành tiếng."
+          },
+          {
+            "id": "exit_false_3",
+            "narrative": "Ngươi trèo về phía ánh nắng. Không khí lạnh dần. Ánh sáng tối dần. Không hiểu sao những bậc thang dẫn lên lại đưa ngươi xuống. Hình học dối trá nơi này. Hy vọng dối trá nơi này."
+          },
+          {
+            "id": "exit_false_4",
+            "narrative": "'LỐI RA' khắc trên khung cửa. Bên kia: một gian phòng khác. Một lựa chọn khác. Một lời dối trá khác. Âm phủ đang thử thách hy vọng của ngươi. Tra tấn nó. Lối ra thật vẫn còn ở phía trước. Có lẽ."
+          },
+          {
+            "id": "exit_false_5",
+            "narrative": "Đường ra. Ngươi chắc chắn. Ngươi nhầm rồi. Ngươi bước qua và thấy mình đứng ngay tại lối vào lần nữa. Vòng tròn. Luẩn quẩn. Cạm bẫy. Âm phủ vẫn chưa xong chuyện với ngươi."
+          }
+        ]
+      }
+    ]
+  },
+  "bestiary": {
+    "shared": [],
+    "local": [
+      {
+        "name": "The Drowned",
+        "tier": 1,
+        "health": {
+          "min": 45,
+          "max": 65
+        },
+        "behaviors": [
+          "AGGRESSIVE",
+          "ERRATIC",
+          "DEFENSIVE"
+        ],
+        "description": "Những cái xác sũng nước được cơn đói của âm phủ thổi hồn. Chúng chuyển động sai lệch.",
+        "emoji": "🧟",
+        "artUrl": "/creatures/the-drowned.webp"
+      },
+      {
+        "name": "Pale Crawler",
+        "tier": 1,
+        "health": {
+          "min": 35,
+          "max": 50
+        },
+        "behaviors": [
+          "STALKING",
+          "AGGRESSIVE",
+          "HUNTING"
+        ],
+        "description": "Quá nhiều chi. Chúng bám trên tường và trần, buông mình xuống khi ngươi đi qua.",
+        "emoji": "🕷️",
+        "artUrl": "/creatures/pale-crawler.webp"
+      },
+      {
+        "name": "The Hollow",
+        "tier": 1,
+        "health": {
+          "min": 40,
+          "max": 55
+        },
+        "behaviors": [
+          "STALKING",
+          "ERRATIC",
+          "CHARGING"
+        ],
+        "description": "Không mặt, không đường nét. Chỉ là đường viền một con người tạc từ bóng tối.",
+        "emoji": "👤",
+        "artUrl": "/creatures/the-hollow.webp"
+      },
+      {
+        "name": "Bloated One",
+        "tier": 1,
+        "health": {
+          "min": 55,
+          "max": 75
+        },
+        "behaviors": [
+          "AGGRESSIVE",
+          "CHARGING",
+          "ERRATIC"
+        ],
+        "description": "Những cái xác trương phình vì nước đen. Chúng nổ tung khi bị đánh trúng.",
+        "emoji": "🫧",
+        "artUrl": "/creatures/the-bloated.webp"
+      },
+      {
+        "name": "Flickering Shade",
+        "tier": 1,
+        "health": {
+          "min": 30,
+          "max": 45
+        },
+        "behaviors": [
+          "ERRATIC",
+          "STALKING",
+          "RETREATING"
+        ],
+        "description": "Dư ảnh của người chết. Ở đây, rồi ở kia, rồi biến mất.",
+        "emoji": "👻",
+        "artUrl": "/creatures/flickering-shade.webp"
+      },
+      {
+        "name": "The Hunched",
+        "tier": 1,
+        "health": {
+          "min": 50,
+          "max": 70
+        },
+        "behaviors": [
+          "HUNTING",
+          "AGGRESSIVE",
+          "STALKING"
+        ],
+        "description": "Những hình hài khom lưng bò bằng tứ chi, hít ngửi không khí. Chúng tìm kiếm hơi ấm.",
+        "emoji": "🐺",
+        "artUrl": "/creatures/the-hunched.webp"
+      },
+      {
+        "name": "Tideborn",
+        "tier": 1,
+        "health": {
+          "min": 60,
+          "max": 80
+        },
+        "behaviors": [
+          "CHARGING",
+          "AGGRESSIVE",
+          "DEFENSIVE"
+        ],
+        "description": "Những sinh vật bằng nước sống. Chúng trồi lên từ vũng nước, thành hình, rồi sụp đổ.",
+        "emoji": "🌊",
+        "artUrl": "/creatures/tideborn.webp"
+      },
+      {
+        "name": "Echo Husks",
+        "tier": 1,
+        "health": {
+          "min": 35,
+          "max": 50
+        },
+        "behaviors": [
+          "STALKING",
+          "ERRATIC",
+          "AGGRESSIVE"
+        ],
+        "description": "Chúng lặp lại lời trăng trối của người chết. Lặp đi lặp lại mãi.",
+        "emoji": "🗣️",
+        "artUrl": "/creatures/echo-husks.webp"
+      },
+      {
+        "name": "Bone Weavers",
+        "tier": 1,
+        "health": {
+          "min": 40,
+          "max": 55
+        },
+        "behaviors": [
+          "AGGRESSIVE",
+          "CHARGING",
+          "STALKING"
+        ],
+        "description": "Những bàn tay xương trồi ra từ tường và sàn. Chỉ toàn bàn tay.",
+        "emoji": "🦴",
+        "artUrl": "/creatures/bone-weavers.webp"
+      },
+      {
+        "name": "Ash Children",
+        "tier": 1,
+        "health": {
+          "min": 25,
+          "max": 40
+        },
+        "behaviors": [
+          "STALKING",
+          "DEFENSIVE",
+          "CHARGING"
+        ],
+        "description": "Nhỏ bé. Xám tro. Chúng không tấn công — chúng bóp nghẹt.",
+        "emoji": "👶",
+        "artUrl": "/creatures/ash-children.webp"
+      },
+      {
+        "name": "Hollow Clergy",
+        "tier": 2,
+        "health": {
+          "min": 70,
+          "max": 90
+        },
+        "behaviors": [
+          "CHARGING",
+          "DEFENSIVE",
+          "AGGRESSIVE"
+        ],
+        "description": "Tư tế của một vị thần vô danh. Lời cầu nguyện của chúng là lời nguyền rủa.",
+        "emoji": "🧙",
+        "artUrl": "/creatures/hollow-clergy.webp"
+      },
+      {
+        "name": "The Bound",
+        "tier": 2,
+        "health": {
+          "min": 80,
+          "max": 100
+        },
+        "behaviors": [
+          "HUNTING",
+          "AGGRESSIVE",
+          "CHARGING"
+        ],
+        "description": "Những linh hồn quấn trong xiềng xích của chính niềm hối tiếc. Chúng muốn có bầu bạn.",
+        "emoji": "⛓️",
+        "artUrl": "/creatures/the-bound.webp"
+      },
+      {
+        "name": "Forgotten Guardian",
+        "tier": 2,
+        "health": {
+          "min": 90,
+          "max": 110
+        },
+        "behaviors": [
+          "DEFENSIVE",
+          "AGGRESSIVE",
+          "CHARGING"
+        ],
+        "description": "Những vệ binh đá được cổ thuật thổi hồn. Chúng vẫn nhớ cách giết chóc.",
+        "emoji": "🗿",
+        "artUrl": "/creatures/forgotten-guardian.webp"
+      },
+      {
+        "name": "The Weeping",
+        "tier": 2,
+        "health": {
+          "min": 60,
+          "max": 80
+        },
+        "behaviors": [
+          "STALKING",
+          "ERRATIC",
+          "CHARGING"
+        ],
+        "description": "Những vong linh của tiếc thương. Cái chạm của chúng mang nỗi buồn sâu đến mức gây thương tích.",
+        "emoji": "😢",
+        "artUrl": "/creatures/the-weeping.webp"
+      },
+      {
+        "name": "Carrion Knight",
+        "tier": 2,
+        "health": {
+          "min": 85,
+          "max": 105
+        },
+        "behaviors": [
+          "AGGRESSIVE",
+          "DEFENSIVE",
+          "CHARGING"
+        ],
+        "description": "Những chiến binh khước từ việc ngừng chiến đấu. Chúng chào kiếm trước khi giết.",
+        "emoji": "⚔️",
+        "artUrl": "/creatures/carrion-knight.webp"
+      },
+      {
+        "name": "Pale Oracle",
+        "tier": 2,
+        "health": {
+          "min": 55,
+          "max": 70
+        },
+        "behaviors": [
+          "CHARGING",
+          "RETREATING",
+          "STALKING"
+        ],
+        "description": "Những nhà tiên tri không mắt nói ra những sự thật ngươi không muốn nghe.",
+        "emoji": "🔮",
+        "artUrl": "/creatures/pale-oracle.webp"
+      },
+      {
+        "name": "The Congregation",
+        "tier": 2,
+        "health": {
+          "min": 100,
+          "max": 130
+        },
+        "behaviors": [
+          "AGGRESSIVE",
+          "CHARGING",
+          "STALKING"
+        ],
+        "description": "Những người hành hương dính liền nơi rìa thân, di chuyển như một. Nhập bọn đi, chúng thì thầm.",
+        "emoji": "👥",
+        "artUrl": "/creatures/the-congregation.webp"
+      },
+      {
+        "name": "Pale Crawler Swarm",
+        "tier": 2,
+        "health": {
+          "min": 75,
+          "max": 95
+        },
+        "behaviors": [
+          "AGGRESSIVE",
+          "HUNTING",
+          "CHARGING"
+        ],
+        "description": "Một con thì chẳng đáng ngại. Nhưng đâu chỉ có một. Hàng chục con. Còn nữa đang tới.",
+        "emoji": "🕷️",
+        "artUrl": "/creatures/pale-crawler-swarm.webp"
+      },
+      {
+        "name": "The Unnamed",
+        "tier": 3,
+        "health": {
+          "min": 120,
+          "max": 150
+        },
+        "behaviors": [
+          "ERRATIC",
+          "CHARGING",
+          "STALKING"
+        ],
+        "description": "Ngươi không thể nhìn rõ nó. Tâm trí ngươi từ chối.",
+        "emoji": "❓",
+        "artUrl": "/creatures/the-unnamed.webp"
+      },
+      {
+        "name": "Mother of Tides",
+        "tier": 3,
+        "health": {
+          "min": 130,
+          "max": 160
+        },
+        "behaviors": [
+          "CHARGING",
+          "AGGRESSIVE",
+          "DEFENSIVE"
+        ],
+        "description": "Chính làn nước, được ban cho ý chí. Mọi thứ chết đuối đều thuộc về bà ta.",
+        "emoji": "🌊",
+        "artUrl": "/creatures/mother-of-tides.webp"
+      },
+      {
+        "name": "The Keeper",
+        "tier": 3,
+        "health": {
+          "min": 180,
+          "max": 220
+        },
+        "behaviors": [
+          "CHARGING",
+          "AGGRESSIVE",
+          "DEFENSIVE",
+          "CHARGING"
+        ],
+        "description": "Kẻ canh giữ lối ra. Chưa ai qua được. Sẽ không ai qua được. Nó đã chờ ngươi hàng thiên niên kỷ.",
+        "emoji": "👁️",
+        "artUrl": "/creatures/the-keeper.webp"
+      }
+    ]
+  },
+  "depths": [
+    {
+      "name": "THE UPPER CRYPT",
+      "tier": 1,
+      "roomRange": [
+        1,
+        4
+      ],
+      "description": "Lối vào. Đá lạnh và nước nông."
+    },
+    {
+      "name": "THE FLOODED HALLS",
+      "tier": 2,
+      "roomRange": [
+        5,
+        8
+      ],
+      "description": "Sâu hơn rồi. Nước dâng tới ngực ngươi."
+    },
+    {
+      "name": "THE ABYSS",
+      "tier": 3,
+      "roomRange": [
+        9,
+        12
+      ],
+      "description": "Vực sâu đích thực. Hiếm ai trở về từ nơi này."
+    }
+  ],
+  "dungeonLayout": {
+    "totalRooms": 12,
+    "structure": [
+      {
+        "type": "explore",
+        "template": "descent"
+      },
+      {
+        "type": "combat",
+        "template": "ambush"
+      },
+      {
+        "type": "corpse",
+        "template": "fresh"
+      },
+      {
+        "type": "combat",
+        "template": "confrontation"
+      },
+      {
+        "type": "explore",
+        "template": "flooded"
+      },
+      {
+        "type": "combat",
+        "template": "guardian"
+      },
+      {
+        "type": "cache",
+        "template": "alcove"
+      },
+      {
+        "type": "combat",
+        "template": "territorial"
+      },
+      {
+        "type": "explore",
+        "template": "chamber"
+      },
+      {
+        "type": "corpse",
+        "template": "heroic"
+      },
+      {
+        "type": "combat",
+        "template": "pursuit"
+      },
+      {
+        "type": "combat",
+        "template": "arena",
+        "boss": true
+      }
+    ]
+  },
+  "boss": "The Keeper",
+  "audio": {
+    "ambient": {
+      "explore": "/audio/ambient-explore.mp3",
+      "combat": "/audio/ambient-combat.mp3"
+    },
+    "sfx": {
+      "footstep": "/audio/footstep.mp3",
+      "descend": "/audio/depth-descend.mp3",
+      "environment": [
+        "/audio/water-drip.mp3",
+        "/audio/drip-echo.mp3",
+        "/audio/water-splash.mp3"
+      ],
+      "atmosphere": [
+        "/audio/eerie-whispers.mp3",
+        "/audio/stone-grinding.mp3",
+        "/audio/door-creak.mp3"
+      ],
+      "boss": {
+        "intro": "/audio/boss-intro.mp3",
+        "roar": "/audio/boss-roar.mp3"
+      }
+    }
+  }
+}
