@@ -1,0 +1,413 @@
+{
+  "id": "frozen-gallery",
+  "version": "1.0.0",
+  "meta": {
+    "name": "THE FROZEN GALLERY",
+    "tagline": "O tempo parou aqui. Os mortos estão perfeitamente preservados.",
+    "element": "ice",
+    "difficulty": 2,
+    "colors": {
+      "primary": "#0d1f2d",
+      "accent": "#7eceff",
+      "text": "#c8ecff"
+    },
+    "mechanic": "CHILL",
+    "mechanicDescription": "Acúmulos de frio reduzem a regeneração de vigor. Congele inimigos para pular o turno deles. Inimigos de gelo são imunes.",
+    "unlockRequirement": "Complete uma descida",
+    "emoji": "❄️"
+  },
+  "lore": "Algo exalou uma vez, bem abaixo dos lugares que têm nome, e tudo parou. As chamas ainda queimam dentro das paredes. Os mortos ainda vestem suas expressões. O que quer que tenha exalado ainda não inalou.",
+  "fragments": {
+    "explore": {
+      "opening": [
+        "O frio chega antes da luz, assentando nos seus pulmões com a paciência de algo que espera nesta passagem há muito tempo.",
+        "Sua respiração embaça e não se dispersa. O ar está parado demais para carregá-la a lugar algum. Você a observa pairar e rarear e sumir, e o silêncio se mantém.",
+        "Nada tem cheiro aqui. O frio matou tudo — qualquer podridão, qualquer mineral, qualquer coisa viva que se anunciaria em outra zona. Aqui há apenas ausência.",
+        "Seus passos ressoam e cessam. O chão de pedra está coberto por uma geada tão fina que parece um sopro estendido sobre a superfície. Você deixa pegadas atrás de si. Você é a única coisa que se move.",
+        "A Galeria é iluminada de dentro das paredes. Tochas seladas no gelo há décadas ainda queimam — âmbar, sem tremular, lançando uma luz que se estende até você e não chega quente.",
+        "O frio pressiona seu rosto como uma mão. Não empurra — apenas está presente. O tipo de frio que não pede que você ande mais rápido.",
+        "Um silêncio assim completo tem textura. Você ouve o sangue se movendo nos próprios ouvidos. Ouve o próprio coração. Ouve os pequenos sons da própria presença, que são os únicos sons que existem.",
+        "A geada nas paredes não é uma camada. É um registro — estação fria sobre estação fria, cada uma pressionando mais fundo. Dá para ver os anos em corte transversal onde o gelo rachou.",
+        "O metal grudaria nos seus dedos nus aqui. Você sabe disso sem testar. O ar carrega esse aviso no seu peso, no modo como resiste quando você respira contra ele.",
+        "Na soleira, o frio é uma parede que você precisa atravessar. Do outro lado: um silêncio mais fundo que qualquer coisa lá em cima, e a quietude particular de um lugar que não é perturbado há anos.",
+        "A luz através das paredes de gelo é âmbar e completa, como a de uma vela — mas nenhuma vela se move. Nada aqui se move. A Galeria mantém tudo exatamente como era.",
+        "A mudança de temperatura é o primeiro aviso. Não uma corrente de ar — não há correntes de ar aqui — mas um assentamento, como se o próprio ar tivesse ficado mais pesado de frio."
+      ],
+      "middle": [
+        "Uma figura está de pé junto à parede distante, de costas para você, um braço erguido como se apontasse algo no canto. Aponta há mais tempo do que você está vivo. O casaco dela ainda está bom.",
+        "A escrita na parede parou no meio da frase. O estilete jaz no chão abaixo dela, largado, não pousado. Fosse o que fosse que o estudioso escrevia, a Galeria respondeu antes do fim da frase.",
+        "Duas figuras se encaram sobre uma superfície baixa, bocas abertas, mãos estendidas — no meio da discussão, no meio da palavra, detidas no instante entre a acusação e a resposta. As expressões ainda são legíveis.",
+        "A bota de uma criança perto da passagem distante. Depois a criança — congelada contra a parede, mãos cobrindo o rosto, como se o ato de não ver pudesse ter ajudado. As mãos ainda estão perfeitas.",
+        "As tochas nas paredes seladas não lançam sombra em que você possa se esconder. Cada ângulo está iluminado. Você vê cada rosto. Nenhum deles olha para você. Você confere duas vezes.",
+        "Uma figura aqui estava em movimento quando parou. Peso à frente, braços atrás, cada linha do corpo dizendo adiante. Não foi a lugar nenhum. A Galeria é paciente quanto a isso.",
+        "A geada se acumulou nos ombros da figura na alcova — anos de acréscimo, um registro geológico de quanto tempo ela espera ali. As camadas são muito espessas.",
+        "A Galeria guarda uma sala de peregrinos preservados em plena oração, mãos erguidas, cabeças baixas, lábios entreabertos em sílabas que nunca vão terminar. A oração espera resposta há mais tempo do que existe a língua em que foi dita.",
+        "Um livro aberto sobre um púlpito de leitura, páginas viradas num capítulo sobre a história antiga da zona. O leitor ainda está aqui — sentado, um dedo sobre a página. Algo que encontrou o agradou. Está no rosto dele.",
+        "O gelo na parede distante preservou algo em perfeita nitidez: um rosto pressionado contra o lado de dentro, olhos abertos, olhando para fora. Olhando para esta sala. Olhando para o que quer que passe por aqui. Olhando para você.",
+        "Caligrafia no gelo — não riscada, mas pressionada, como se alguém tivesse escrito na superfície enquanto ainda era macia e o frio preservasse a impressão. As letras são cuidadosas. Alguém não tinha pressa.",
+        "Uma pilha de equipamento perto do centro — mochila, ferramentas, arma — e ninguém preso a eles. Quem largou isto correu. A Galeria o alcançou em outro lugar."
+      ],
+      "closing": [
+        "O frio não ameaça. Espera. Sempre foi melhor em esperar do que você.",
+        "O que quer que tenha acontecido aqui aconteceu de uma só vez. A sala guarda a evidência de um único instante. O instante seguinte está adiado há muito tempo.",
+        "A Galeria mantém seus mortos em melhor estado do que os vivos conseguem. Esse fato assenta sobre você como mais um grau de frio.",
+        "Você é a coisa mais quente desta sala por larga margem. A Galeria notou.",
+        "Atrás de você, a passagem mostra suas pegadas na geada. Nada mais perturba a superfície. Mas o frio não precisa perturbar superfícies para se mover.",
+        "Não há para onde se apressar aqui. A Galeria tem todo o tempo do mundo. As coisas que ela guarda também.",
+        "O silêncio não está vazio. Está cheio de algo que você ainda não localizou. Você segue para a próxima passagem. O silêncio segue à mesma distância.",
+        "Você deixa a sala e as figuras permanecem em suas posições, como sempre permaneceram. Não observam você partir. Não precisam.",
+        "Cada superfície aqui carrega a impressão de algo que esteve aqui antes do congelamento. A Galeria não esquece nada. Não esqueceu que você chegou.",
+        "Calor não está disponível na Galeria. Você administra uma reserva dele que está sendo gasta, aos poucos, a cada minuto que fica.",
+        "As coisas preservadas aqui morreram sem aviso. Não tiveram tempo de se preparar. Não tiveram tempo de saber. A Galeria ensina essa lição a todos que entram. Cedo ou tarde.",
+        "O frio que parou este lugar foi absoluto. Não negociou. Não avisou. A Galeria permanece como prova do que acontece quando ele decide."
+      ]
+    },
+    "combat": {
+      "opening": [
+        "A temperatura desta sala cai no momento em que você entra. Um grau, depois dois, depois algo que faz seus dedos doerem através das faixas.",
+        "A sala guarda dezenas de figuras preservadas e você sabe, sem conseguir dizer como, que a conta está errada. Uma delas não está congelada.",
+        "Sua respiração embaça e some. Então você nota: a geada no chão junto à parede distante está irregular. Algo esteve de pé ali há pouco. Algo que deslocou o gelo ao se mover.",
+        "A quietude aqui é diferente da quietude das outras salas. Não a quietude da preservação. A quietude de algo que parou de se mover porque você chegou.",
+        "O gelo estala — um único som, direcional, e depois nada. O som veio de dentro da sala, não das paredes. Não do teto. Do chão, onde algo estava deitado.",
+        "A Galeria guarda seu frio em camadas, cada sala num registro ligeiramente diferente. Esta sala é mais fria que as anteriores. Não pela profundidade. Pela presença.",
+        "As figuras preservadas junto à parede distante estão voltadas para uma direção diferente daquela em que estavam quando você passou pela janela desta sala. Você tem certeza. Quarenta segundos atrás, estavam de costas.",
+        "Algo nesta sala ainda tem calor dentro de si. Não muito. Só o bastante para perturbar o ar, para criar o leve diferencial que o frio explora. Você sente antes de ver.",
+        "A geada do teto cai num pó fino — não por assentamento, mas por deslocamento. Algo se moveu aqui há pouco. A geada ainda flutua.",
+        "O som de gelo sob compressão preenche a sala — aquela queixa profunda, estrutural, de peso mudando de lugar, de algo maciço encontrando novo equilíbrio. Então o som para. Então a primeira figura se move.",
+        "Você já entrou em salas como esta antes e as encontrou vazias. Esta sala não está vazia. A diferença está em como o silêncio se acomoda — não o silêncio da ausência, mas o silêncio da atenção.",
+        "A luz âmbar das tochas lança sombras que deveriam ser imóveis. Uma delas não é. Uma delas se moveu uma fração de segundo depois da coisa que a projetou."
+      ],
+      "middle": [
+        "O Preservado se estende na sua direção. Não ameaça — se estende. Do jeito que algo se estende para a única coisa quente numa sala muito fria. O casaco dele ainda está bom. Há um nome costurado por dentro da gola.",
+        "O Espectro de Gelo não tem rosto. Apenas a forma do querer, tomando corpo frio, pressionando o espaço entre vocês. Por onde passa, a temperatura do ar cai e não se recupera. Ele está circulando.",
+        "A Sentinela de Geada está de pé nesta soleira desde antes de a Galeria congelar. O gelo nos ombros dela é estratificado como rocha. Ela se move agora, pela primeira vez em décadas, na sua direção.",
+        "Dois dos Preservados. Três. Foram peregrinos um dia — dá para ver o que carregavam quando pararam. O gelo afrouxou o suficiente para que voltem a se mover, devagar, rumo ao calor. Rumo a você.",
+        "O Espectro atravessa a parede e a temperatura da sala cai cinco graus no tempo que você leva para se virar. Ele não está atacando. Está se alimentando. A distinção importa menos do que deveria.",
+        "O Estilhaçado se move errado — não como um corpo, mas como destroços. Quatro pedaços coordenados, depois cinco, depois mais conforme a luta continua. O chão vai se enchendo de partes de algo que já foi inteiro.",
+        "O visor da Sentinela de Geada reflete o seu rosto. Seu reflexo vira a cabeça antes de você. O gelo na armadura dela é espesso o bastante para desviar quase tudo. Não há quase aqui. Há apenas o que você tem.",
+        "Espectros de Gelo não se anunciam. Chegam como um diferencial de temperatura, um dreno súbito, um frio assentando em juntas que você não sabia estarem quentes até deixarem de estar. São dois. No mínimo.",
+        "O Preservado avançou devagar o bastante para que você quase não registrasse o movimento. Agora está perto. Carrega o frio de décadas nas juntas, nas mãos, na expressão que vestia no momento em que a Galeria o tomou.",
+        "A Sentinela de Geada estava dormente. Você chegou perto o suficiente. Agora ela se move — rangendo, lenta, cada passo um evento geológico. O gelo nas juntas não a retarda. Só a torna mais barulhenta.",
+        "O Estilhaçado congelou um dia e rachou em vez de resistir. Cada pedaço se move por conta própria, faminto em separado. Atacar o pedaço maior cria dois menores. A sala vai se enchendo de partes.",
+        "Os Preservados aqui vieram em grupos — peregrinos, estudiosos, os simplesmente perdidos. Degelam na sua direção juntos. Nenhum deles parece ter medo. Parecem pessoas que sentiram muito frio por muito tempo e só agora registraram o seu calor."
+      ],
+      "closing": [
+        "Não há caminho ao redor. Só através. O frio observa para ver como você se sai.",
+        "Ele não se apressou. Não vai se apressar. A Galeria não precisa.",
+        "A temperatura cai desde que você entrou nesta sala. Termine isto antes de perder mais do que consegue recuperar.",
+        "O que quer que fosse antes de a Galeria o tomar, agora é frio, e o frio tende ao calor.",
+        "A Sentinela foi posta aqui. Algo decidiu que esta soleira exigia guarda. Esse algo não mudou de ideia.",
+        "Os espectros circularam o bastante. Encontraram a brecha no seu calor. Estão indo na direção dela.",
+        "Os preservados não têm urgência. São pacientes há mais tempo do que você consegue medir. Serão pacientes pelo tempo que isto levar. Você não pode se dar ao luxo de igualar a paciência deles.",
+        "O frio não toma partido. Mas você é a única coisa quente nesta sala, e calor é o que tudo aqui procura.",
+        "O gelo range lá em cima. A Galeria registra o combate como um prédio registra um terremoto — reconhecimento estrutural, nada mais. Ela resistiu a coisa pior. Você é menor que coisa pior.",
+        "Imóvel. Atento. Frio."
+      ]
+    },
+    "corpse": {
+      "framing": [
+        "O frio os preservou perfeitamente. Você não consegue olhar para este corpo e ver decomposição. Só consegue ver uma pessoa que parou, no meio de tudo, em perfeito estado.",
+        "A Galeria guarda seus mortos melhor que qualquer sepultamento. O corpo aqui está mais intacto que qualquer outro que você já encontrou — mais intacto, você percebe, do que teria o direito de achar desconfortável.",
+        "A geada os cobre, mas não os esconde. O gelo é um meio, não um véu. A expressão, a posição das mãos, a direção do olhar — tudo preservado. Tudo disponível para você.",
+        "Nada se decompôs aqui. O frio proíbe. O que jaz diante de você não é a lembrança de uma pessoa — é a pessoa, detida, no meio de estar viva.",
+        "Parece que poderiam acordar. A cor no rosto não é a cor da morte, mas a cor do sono frio. Você sabe que não vão acordar. Vai continuar conferindo mesmo assim.",
+        "A Galeria os tomou com delicadeza, até onde você consegue ver. A expressão não é de dor. O frio veio rápido o bastante para que a única coisa preservada fosse o momento antes de saberem.",
+        "Décadas de congelamento não os mudaram. As roupas são as mesmas. O rosto é o mesmo. As botas ainda estão boas. Alguém, em algum lugar muito acima, vai sentir falta destas botas. Não sabe que já deveria ter começado.",
+        "Preservados tão bem que você nota qual bolso tem furo. Qual botão está frouxo. Qual bota está amarrada mais apertada que a outra. Você os conhece melhor em cinco segundos de observação do que em qualquer extensão de memória.",
+        "O frio não os levou devagar. Este foi apanhado em pleno movimento — o corpo ainda inclinado com o impulso, congelado na geometria de um passo que nunca terminou. A Galeria os pegou em trânsito.",
+        "O gelo se formou ao redor deles ao longo dos anos, incorporando-os devagar à estrutura da Galeria. Agora fazem parte da parede — um braço ainda estendido, dedos distintos, alcançando a sala como se pedisse algo que não chegou."
+      ],
+      "discoveryBeats": [
+        "Uma forma no gelo perto da parede leste. Não é formação natural. Regular demais. Ereta. A luz âmbar da tocha mostra algo lá dentro, e seus olhos se ajustam, e é um rosto.",
+        "A bota, primeiro — uma bota na passagem, de pé, como se posta ali de propósito. Depois o tornozelo acima dela. Depois o resto, dobrado contra a parede.",
+        "A névoa da sua respiração flutua e mostra algo que você perdeu na primeira olhada: uma mão estendida de uma alcova à altura do ombro. Os dedos ainda estão separados. Não estão se estendendo até você. Estão apontando.",
+        "O silêncio muda de qualidade antes que você encontre o corpo — fica mais pesado, mais deliberado. Como se a sala segurasse algo e finalmente o entregasse à sua atenção.",
+        "A geada no chão está perturbada num padrão que cessa de repente — um conjunto de pegadas entrando, parando, e depois nenhuma indicação do que aconteceu além da forma contra a parede distante.",
+        "Algo na periferia da luz da tocha. O âmbar o apanha de um jeito diferente — não a cor de pedra das paredes, mas o aspecto mais macio de tecido preservado, de algo que um dia foi vestido por alguém que o escolheu.",
+        "A escrita na parede, perto do chão, apanha você primeiro. Depois você vê o que está sentado abaixo da escrita, e entende quem a pôs ali.",
+        "Estão eretos. Sentados. Costas retas. Mãos no colo. Você quase não reconhece que é um corpo, de tão deliberadamente composta que é a postura. Alguém se arrumou antes que o frio completasse o trabalho.",
+        "Um nome, riscado no gelo à altura dos olhos. Abaixo dele: uma data. Abaixo da data: o começo de uma frase. Abaixo da frase: o resto da história, e o corpo que precisava contá-la.",
+        "Sua luz apanha algo pequeno no chão: um anel, removido e posto de lado. Pessoal. Deliberado. Uma escolha feita no fim. Depois você encontra a pessoa que a fez."
+      ]
+    },
+    "cache": {
+      "locationLines": [
+        "Uma câmara lateral selada, a porta entreaberta por décadas de movimento glacial, o interior seco e frio e exatamente como quem o deixou arrumou.",
+        "Acima da linha de geada — uma alcova rasa esculpida na pedra, fora do alcance das temperaturas mais baixas da Galeria. Alguém encontrou este ponto e entendeu o valor dele.",
+        "Uma sala que estava selada quando a Galeria congelou, selada até agora, aberta pelo peso do tempo pressionando pedra contra gelo e encontrando passagem. As provisões lá dentro estão como estavam.",
+        "Contêineres preservados no gelo, empilhados contra a parede distante — rotulados por uma mão cuidadosa e sem pressa. O conteúdo está intacto. O mesmo frio que destruiu todo o resto protegeu isto.",
+        "Uma passagem estreita acima do corredor principal, acessível por uma saliência de pedra assentada. A geometria da Galeria a criou. Alguém a encontrou. Alguém deixou coisas aqui.",
+        "A estação do Arquivista: uma bancada de gelo comprimido, coberta de papel curado pela geada, suprimentos arrumados com o cuidado de alguém que mantém esta rota há muito tempo.",
+        "Um bolsão térmico onde calor geotérmico vaza por uma fenda no chão — o gelo aqui recuou, criando um pequeno espaço alguns graus acima da constante da Galeria. Suprimentos foram deixados no calor relativo.",
+        "Atrás de uma figura que está de pé nesta alcova há tanto tempo que você quase não vê o esconderijo ao lado — a figura agora faz parte da coleção da Galeria, imóvel, de costas para aquilo que passou a morte protegendo."
+      ],
+      "toneClosers": [
+        "O frio não deixa esta sala. Segurança, na Galeria, é uma questão de grau.",
+        "Descanse aqui. A Galeria estará exatamente como você a deixou quando continuar. Ela não muda enquanto você espera. Não precisa.",
+        "Nada se move. Nada observa. E ainda assim a atenção da Galeria, que é a atenção da pedra fria e paciente, não abandona você nem aqui.",
+        "Quem deixou estes suprimentos não foi embora. Está em algum lugar da Galeria, preservado, perfeitamente intacto, esperando como todas as coisas aqui esperam.",
+        "O silêncio numa sala de suprimentos é o mesmo silêncio de todo o resto da Galeria. Os suprimentos são diferentes. O silêncio é idêntico.",
+        "Descanso é possível. Calor, não. Pegue o que ajuda e lembre que cada minuto passado aqui é um minuto que o frio tem para trabalhar no calor com que você entrou.",
+        "Seguro o bastante. A Galeria nunca levou ninguém de uma sala como esta — não que você saiba. Você sabe muito pouco sobre o que a Galeria levou ou deixou de levar.",
+        "O frio é paciente. É mais paciente quando você está parado."
+      ]
+    },
+    "exit": {
+      "opening": [
+        "Um calor na borda distante da passagem — não temperatura, exatamente, mas a memória de temperatura. A certeza da Galeria vacila aqui. O frio rareia.",
+        "Uma luz que não é âmbar. Não a luz de tocha presa nas paredes seladas da Galeria — uma luz diferente, vinda de cima, caindo por uma fenda no teto de pedra e pousando na geada sem aquecê-la.",
+        "O gelo nas paredes aqui é mais velho, o selamento completo. Mas adiante, onde a passagem dobra, a qualidade do frio muda — menos absoluta, menos paciente. A superfície está perto o bastante para complicá-lo.",
+        "Uma porta que você não esperava. Madeira, impossivelmente morna ao toque — empenada contra o frio, o veio expandido, mas firme. Do outro lado você sente: algo diferente de tudo que ficou para trás.",
+        "A geada no chão mostra algo incomum: ela para. Uma linha precisa onde a preservação absoluta da Galeria termina e algo menos certo começa. O frio ainda se sustenta ali. Só não se sustenta tão bem.",
+        "Sua respiração ainda embaça, mas agora se move — o primeiro movimento de ar que você sente desde que entrou. Uma corrente vinda de cima. A superfície pressionando o frio da Galeria e descobrindo que ele não é tão imóvel quanto era.",
+        "Estalos lá em cima — não estruturais, não o gemido da geleira, mas algo mais deliberado. Gelo se separando da pedra. A pressão da temperatura de fora abrindo caminho de cima, seguindo a falha que encontrou.",
+        "A Galeria mostra o fim do jeito que mostrou tudo: sem aviso, sem anúncio. A passagem simplesmente se abre para algo mais claro. O frio simplesmente diminui. É o suficiente."
+      ],
+      "middle": [
+        "As figuras da última sala continuam em suas posições. Você não as vê daqui, mas sabe que estão lá, ainda preservando seu instante. A Galeria guarda tudo que você viu. Vai guardar a memória da sua passagem.",
+        "O frio solta você como uma respiração presa se solta — não é o calor chegando, é a pressão partindo. Algo vasto e paciente registrou sua presença desde o momento em que entrou. Registra agora a sua partida.",
+        "Atrás de você, a Galeria continua. O Arquivista ainda registra. Os Preservados ainda avançam rumo ao calor que você deixou para trás. O gelo mais antigo ainda guarda o que o primeiro frio capturou. Você deixa tudo isso.",
+        "A passagem sobe e a temperatura sobe com ela, grau a grau, cada passo uma negociação entre a certeza da Galeria e a desordem da superfície. A Galeria não luta contra isso. Apenas segura o que segura, que é tudo lá embaixo.",
+        "Você cruza a linha da geada. O ar muda de caráter — menos absoluto, menos preservado. Agora dá para sentir cheiro de algo: pedra, mineral, a leve sugestão do que há acima. O silêncio da Galeria recua, mas não desaparece.",
+        "A saída sempre esteve aqui. A Galeria sabia dela. A Galeria sabe de tudo que existe dentro dela. Escolheu soltar você, ou você escolheu bem o bastante para merecer a soltura. De um jeito ou de outro, o caminho se abre.",
+        "O que você deixa para trás: as figuras do salão externo. A frase inacabada de um estudioso. As botas de alguém cujo nome está costurado na gola. A expressão que um estudioso vestia quando entendeu algo. Tudo ainda lá. Nada disso vai com você.",
+        "O frio não persegue você passagem acima. Não precisa. A Galeria é paciente, e coisas pacientes entendem o valor de esperar alguém voltar."
+      ],
+      "closing": [
+        "A Galeria deixa você ir. Por enquanto.",
+        "A superfície está acima de você e o frio está abaixo, e você carrega um pedaço de cada, para sempre, deste ponto em diante.",
+        "Você vai se aquecer de novo. O calor vai parecer estranho. Você aprendeu do que o frio é capaz. Esse conhecimento fica.",
+        "A Galeria está aqui há mais tempo do que você existe. Estará depois. Você é um calor breve que ela segurou por um momento e soltou. Ela não vai esquecer você. O frio não esquece nada.",
+        "A saída se fecha atrás de você — sem som, sem mecanismo, apenas o silêncio da Galeria retornando. Ela sabe onde você está. Sabe que você vai voltar.",
+        "O que quer que você esteja levando da Galeria — espólio, ferimentos, os rostos dos preservados — o frio vai junto. Confira suas juntas pela manhã. Ele fica.",
+        "Você sobreviveu. A Galeria não se surpreende. Peregrinos às vezes sobrevivem. Eles voltam.",
+        "O frio estava aqui antes de você e permanecerá depois. Você passou por ele. Ele passou por você. A troca é permanente."
+      ]
+    },
+    "options": {
+      "cautious": [
+        "Atravesse o gelo com cuidado",
+        "Contorne as figuras",
+        "Avance devagar",
+        "Cole na parede",
+        "Teste o chão primeiro"
+      ],
+      "aggressive": [
+        "Force a passagem",
+        "Rompa adiante",
+        "Abra caminho",
+        "Ande rápido, não olhe"
+      ],
+      "investigative": [
+        "Examine a figura congelada",
+        "Vasculhe os restos preservados",
+        "Estude o gelo de perto",
+        "Leia o que está preservado aqui"
+      ],
+      "retreat": [
+        "Recue do frio",
+        "Afaste-se da figura",
+        "Espere na soleira",
+        "Considere a temperatura"
+      ]
+    }
+  },
+  "bestiary": {
+    "shared": [
+      "Forgotten Guardian",
+      "The Hollow",
+      "The Weeping",
+      "The Bound"
+    ],
+    "local": [
+      {
+        "name": "The Preserved",
+        "tier": 1,
+        "health": {
+          "min": 40,
+          "max": 60
+        },
+        "behaviors": [
+          "HUNTING",
+          "AGGRESSIVE",
+          "STALKING"
+        ],
+        "description": "Peregrinos congelados, degelados apenas o bastante para se mover. Estendem-se rumo ao calor com a paciência de coisas que esperaram décadas por ele. Não lembram de nada. Movem-se porque coisas frias degelam na direção do calor.",
+        "emoji": "🧊",
+        "artUrl": "/creatures/the-preserved.webp"
+      },
+      {
+        "name": "Ice Wraiths",
+        "tier": 1,
+        "health": {
+          "min": 30,
+          "max": 45
+        },
+        "behaviors": [
+          "ERRATIC",
+          "STALKING",
+          "HUNTING"
+        ],
+        "description": "Fome com forma fria. Atravessam paredes e deixam diferenciais de temperatura para trás. O contato aplica frio. Eles não estão atacando você. Estão se alimentando.",
+        "emoji": "👁️",
+        "artUrl": "/creatures/ice-wraiths.webp"
+      },
+      {
+        "name": "Frost Sentinels",
+        "tier": 2,
+        "health": {
+          "min": 90,
+          "max": 120
+        },
+        "behaviors": [
+          "DEFENSIVE",
+          "CHARGING",
+          "AGGRESSIVE"
+        ],
+        "description": "Guardiões antigos selados em armadura comprimida de gelo. Dormentes até alguém se aproximar. Imunes a congelamento. Seus passos são eventos geológicos. Um único golpe seu derruba a temperatura do ar na sala.",
+        "emoji": "🛡️",
+        "artUrl": "/creatures/frost-sentinels.webp"
+      },
+      {
+        "name": "The Shattered",
+        "tier": 2,
+        "health": {
+          "min": 70,
+          "max": 95
+        },
+        "behaviors": [
+          "ERRATIC",
+          "AGGRESSIVE",
+          "CHARGING"
+        ],
+        "description": "Coisas congeladas que racharam em vez de resistir. Cada fragmento se move por conta própria. Ferir o todo cria mais pedaços. A sala se enche de destroços que ainda têm fome.",
+        "emoji": "🔷",
+        "artUrl": "/creatures/the-shattered.webp"
+      },
+      {
+        "name": "The Glacial Sovereign",
+        "tier": 3,
+        "health": {
+          "min": 190,
+          "max": 220
+        },
+        "behaviors": [
+          "CHARGING",
+          "AGGRESSIVE",
+          "DEFENSIVE",
+          "STALKING"
+        ],
+        "description": "A primeira coisa congelada. Estava aqui antes de a Galeria ter nome, antes de o primeiro peregrino descer. Move-se com a certeza do tempo geológico. Cada golpe derruba a temperatura da sala. Espera por calor desde antes de você existir. Imune a congelamento.",
+        "emoji": "❄️",
+        "artUrl": "/creatures/the-glacial-sovereign.webp"
+      }
+    ]
+  },
+  "depths": [
+    {
+      "name": "THE OUTER GALLERY",
+      "tier": 1,
+      "roomRange": [
+        1,
+        4
+      ],
+      "description": "Os salões de entrada. Figuras congeladas em boas-vindas."
+    },
+    {
+      "name": "THE COLLECTION",
+      "tier": 2,
+      "roomRange": [
+        5,
+        8
+      ],
+      "description": "Preservação mais funda. As figuras aqui morreram mais devagar."
+    },
+    {
+      "name": "THE VAULT",
+      "tier": 3,
+      "roomRange": [
+        9,
+        12
+      ],
+      "description": "O gelo mais antigo. As primeiras coisas congeladas."
+    }
+  ],
+  "dungeonLayout": {
+    "totalRooms": 12,
+    "structure": [
+      {
+        "type": "explore",
+        "template": "entrance"
+      },
+      {
+        "type": "combat",
+        "template": "thawing"
+      },
+      {
+        "type": "corpse",
+        "template": "preserved"
+      },
+      {
+        "type": "explore",
+        "template": "gallery"
+      },
+      {
+        "type": "corpse",
+        "template": "mid-action"
+      },
+      {
+        "type": "combat",
+        "template": "wraith"
+      },
+      {
+        "type": "cache",
+        "template": "sealed-chamber"
+      },
+      {
+        "type": "corpse",
+        "template": "composed"
+      },
+      {
+        "type": "explore",
+        "template": "deep-gallery"
+      },
+      {
+        "type": "combat",
+        "template": "sentinel"
+      },
+      {
+        "type": "corpse",
+        "template": "long-preserved"
+      },
+      {
+        "type": "combat",
+        "template": "sovereign",
+        "boss": true
+      }
+    ]
+  },
+  "boss": "The Glacial Sovereign",
+  "audio": {
+    "ambient": {
+      "explore": "/audio/zones/frozen-gallery/ambient-explore.mp3",
+      "combat": "/audio/zones/frozen-gallery/ambient-combat.mp3"
+    },
+    "sfx": {
+      "footstep": "/audio/zones/frozen-gallery/footstep.mp3",
+      "descend": "/audio/zones/frozen-gallery/depth-descend.mp3",
+      "environment": [
+        "/audio/zones/frozen-gallery/ice-crack.mp3",
+        "/audio/zones/frozen-gallery/wind-tunnel.mp3",
+        "/audio/zones/frozen-gallery/glacier-groan.mp3"
+      ],
+      "atmosphere": [
+        "/audio/zones/frozen-gallery/deep-silence.mp3",
+        "/audio/zones/frozen-gallery/distant-crack.mp3"
+      ],
+      "boss": {
+        "intro": "/audio/zones/frozen-gallery/boss-intro.mp3",
+        "roar": "/audio/zones/frozen-gallery/boss-roar.mp3"
+      }
+    }
+  }
+}

@@ -1,0 +1,416 @@
+{
+  "id": "living-tomb",
+  "version": "1.0.0",
+  "meta": {
+    "name": "THE LIVING TOMB",
+    "tagline": "Có thứ gì đó đã mọc lên trong bóng tối. Giờ mọi thứ đều là một phần của nó.",
+    "element": "organic",
+    "difficulty": 2,
+    "colors": {
+      "primary": "#1a0a0a",
+      "accent": "#c0392b",
+      "text": "#e8a0a0"
+    },
+    "mechanic": "INFECTION",
+    "mechanicDescription": "Các tầng nhiễm bệnh tích tụ dần. Ở mức 3: mất một vật phẩm ngẫu nhiên. Ở mức 5: -30% sát thương. Giết thật nhanh.",
+    "unlockRequirement": "Hoàn thành một cuộc xuống sâu",
+    "emoji": "🩸"
+  },
+  "lore": "Ngôi mộ không có điểm khởi đầu nào để ai lần theo được. Nó lớn lên trong lúc không ai để mắt, và đến khi có kẻ hiểu ra nó đang lớn về hướng nào, thì chính sự sinh trưởng đã trở thành câu trả lời cho câu hỏi ấy. Mọi thi hài nơi đây đều trở thành một phần của thứ giữ cho nó ấm.",
+  "fragments": {
+    "explore": {
+      "opening": [
+        "Không khí đón ngươi như một hơi thở bị nén lại. Ấm — đúng bằng thân nhiệt — và mang theo mùi sắt tanh của những thứ đang sống.",
+        "Mùi hương chạm đến ngươi trước tiên. Sắt tanh và men chua, và bên dưới còn thứ gì khác: mùi bên trong của một sinh thể, gần gũi và đầy thú tính.",
+        "Hơi nóng. Dưới lòng đất, nơi mọi thứ lẽ ra phải lạnh, không khí đứng yên ở mức thân nhiệt. Mặt sàn dưới đôi ủng ngươi hơi lún xuống khi ngươi ấn vào.",
+        "Những bức tường nơi đây sai lệch. Vẫn mang dáng dấp của đá, nhưng ấm khi ngươi lướt tay qua và mềm ở những chỗ lẽ ra phải cứng.",
+        "Thứ gì đó thở trong các bức tường. Chậm rãi và đều đặn. Một nhịp tim — kiên nhẫn, đặc quánh — trong sàn, trên trần, ở khắp nơi trừ trong ngươi.",
+        "Lối đi phía trước phát sáng mờ nhạt. Không phải ánh đuốc. Một thứ ánh sáng sinh học màu đỏ, phập phồng theo những nhịp dài đều đặn.",
+        "Hơi ấm tỏa ra từ mọi bề mặt. Làn da ngươi đọc nó thành sự dễ chịu trước khi tâm trí ngươi đọc nó thành điều sai trái.",
+        "Mặt sàn lún xuống dưới sức nặng của ngươi. Không phải đá — một thứ nhún nhẹ theo từng bước chân. Ngươi thôi không cố nhận diện nó nữa.",
+        "Một tiếng nhỏ giọt, đâu đó rất gần. Không phải nước. Âm thanh quá đặc, quá chậm. Ngươi bước tới. Không khí sực mùi sắt tanh.",
+        "Nhịp tim chạm đến bàn chân ngươi trước. Xuyên qua sàn, xuyên qua đôi ủng, vào tận xương ngươi. Nó không phải của ngươi.",
+        "Ngươi thở và căn phòng thở đáp lại. Nhịp điệu gần khớp với nhịp của ngươi. Gần khớp.",
+        "Đá nơi đây đã biến mất từ lâu. Thứ thay thế nó ấm hơn, ướt khi chạm vào, và phát sáng mờ nhạt nơi ánh đèn của ngươi quét qua."
+      ],
+      "middle": [
+        "Bức tường bên cạnh ngươi phồng ra trong một nhịp đập dài chậm rãi, rồi trở lại như cũ. Thứ gì đó đang luân chuyển bên dưới lớp màng.",
+        "Những hình dạng ép vào mặt trong của các bức tường. Đường viền một bàn tay. Một lồng ngực. Một gương mặt, phong kín dưới lớp mô hồng xám, miệng há mở.",
+        "Một vật thể — có lẽ là một lưỡi dao — hiện rõ qua lớp mô phủ kín mặt sàn. Bị phong kín bên trong. Ngôi mộ đã sáp nhập mọi thứ từ rất lâu rồi.",
+        "Trần nhà nhỏ giọt. Không phải nước. Một thứ ấm và hơi sánh rơi thành từng giọt chậm rãi xuống những bề mặt hút lấy nó không một tiếng bắn tóe.",
+        "Lối đi đã hẹp lại — không phải do hư hại kết cấu, mà do lớp mô đang mọc lấn vào trong. Nó đang khép lại. Chậm rãi. Nó chưa xong việc.",
+        "Những vật thể trong không gian này đã bị đồng hóa. Ngươi thấy được hình dáng của chúng qua lớp màng — bóng dáng của một chiếc ba lô, một cây đèn, một bàn tay.",
+        "Thứ gì đó chuyển động trong bức tường cạnh ngươi. Một cơn sóng co bóp, lan từ đầu này sang đầu kia. Bức tường đang tiêu hóa.",
+        "Ánh sáng sinh học nơi đây rực hơn. Đỏ thẫm hơn. Lớp mô ở khu vực này già hơn — hoàn chỉnh hơn, tự tin hơn về chính nó.",
+        "Một đường ráp trên lớp màng đánh dấu nơi thứ gì đó từng bị đùn ra rồi bị hút lại. Hình dáng nó để lại mang kích cỡ một con người.",
+        "Mọi bề mặt nơi đây đều ấm ở đúng cùng một mức nhiệt. Thân nhiệt. Chính xác. Như thể ngươi đã bước vào bên trong một sinh thể chứ không phải vào một nơi chốn.",
+        "Một khúc xương ép sát bề mặt bức tường xa — hiện rõ qua lớp màng nhưng không được tự do. Vừa được lưu giữ vừa bị chiếm hữu, cùng một lúc.",
+        "Lớp mô đã bít kín một khung cửa bên trái. Một lối đi mới hơn đã mở ra bên phải. Ngôi mộ tự vẽ lại đường đi của chính nó."
+      ],
+      "closing": [
+        "Nhịp tim ở đây to hơn. Gần hơn. Nó đang chú ý.",
+        "Thứ gì đó trong các bức tường dịch chuyển. Căn phòng tự điều chỉnh theo sự hiện diện của ngươi.",
+        "Ngươi là một dị vật. Nó biết.",
+        "Hơi ấm phía sau ngươi khác với hơi ấm phía trước. Cái ở phía sau ngươi là hơi ấm mới.",
+        "Không gì ở đây đang chuyển động. Điều đó không đồng nghĩa với việc không gì ở đây đang sống.",
+        "Mặt sàn ghi nhớ từng bước chân ngươi đã đi. Ngôi mộ cũng vậy.",
+        "Nó kiên nhẫn. Nó không cần phải vội.",
+        "Đám mô ở đầu xa đã lan rộng kể từ khi ngươi bước vào. Ngươi đã không để mắt. Nó thì có.",
+        "Một âm thanh trầm chậm, đâu đó rất gần. Không phải tiếng rên — chỉ là hình dáng của một tiếng rên. Bóng dáng của hơi thở đi qua thứ gì đó không phải là cổ họng.",
+        "Nhịp đập trong sàn ổn định dần. Nó đã tìm thấy nhịp điệu của ngươi.",
+        "Một âm thanh sau lưng ngươi, ngừng lại khi ngươi ngừng lại. Sự tĩnh lặng mang theo chủ đích.",
+        "Những bức tường gần hơn so với lúc ngươi bước vào. Ngươi không hề tưởng tượng ra điều đó."
+      ]
+    },
+    "combat": {
+      "opening": [
+        "Không khí đặc quánh lại. Sắt tanh và một thứ gì ấm nóng. Nhịp tim trong sàn nhanh lên đôi chút.",
+        "Mặt sàn phập phồng dưới chân ngươi theo một nhịp không phải nhịp tim của căn phòng. Có thứ gì khác đang ở trong này.",
+        "Ánh sáng sinh học ở đầu xa chớp một lần, rồi ổn định, rồi lại chớp.",
+        "Căn phòng quá ấm. Ngay cả so với chuẩn mực của ngôi mộ này. Thứ gì đó đã ở đây đủ lâu để làm nhiệt độ tăng lên.",
+        "Lớp màng trên bức tường xa đang chuyển động. Không phải hơi thở chậm rãi của ngôi mộ. Thứ gì đó bên dưới nó đang đẩy ra.",
+        "Một giọt rơi từ trần nhà. Ngươi ngước nhìn lên. Trần nhà nhìn đáp lại.",
+        "Mùi trong căn phòng này khác đi. Nồng hơn. Nhiều sắt tanh hơn. Ít men chua hơn. Mùi trao đổi chất của một thứ đang hoạt động.",
+        "Một âm thanh từ bức tường bên trái ngươi. Ướt át. Nhịp nhàng. Rất gần.",
+        "Lớp mô trên sàn phía trước tươi mới hơn phần mô xung quanh. Thứ gì đó vẫn đang di chuyển qua đây.",
+        "Lối đi sau lưng ngươi phát ra âm thanh như một hơi thở khẽ hắt ra. Căn phòng lắng vào một sự im lặng mới.",
+        "Bàn chân ngươi khó tìm điểm tựa hơn ở đây. Bề mặt nhún nhường hơn. Sẵn sàng đón nhận hơn.",
+        "Nhịp tim đổi nhịp. Một nhịp đôi ở nơi trước đó chỉ có một. Thứ gì đó trong căn phòng mang mạch đập của riêng nó."
+      ],
+      "middle": [
+        "Chúng tràn ra từ khe hở trên bức tường màng — Kẻ Trườn Tơ Nấm, hàng chục con, mỗi con quá nhiều chân, di chuyển thành từng đợt lách tách chớp nhoáng. Mỗi cú đánh trúng sẽ khiến ngươi trả giá.",
+        "Kẻ Bị Đồng Hóa đứng giữa căn phòng, bất động. Đầu nó dõi theo chuyển động của ngươi. Thứ gì đó sau đôi mắt ấy vẫn đang cố với đến ngươi. Phần còn lại của nó đã thôi không cố nữa.",
+        "Đóa Nở Rộ trôi dạt từ đầu xa của không gian, kéo theo vệt chuyển hóa trên sàn phía sau nó. Nó không săn đuổi ngươi. Nó không cần phải thế. Nó chỉ cần có mặt ở đây.",
+        "Chúng trồi lên từ mặt sàn — Kẻ Trườn Tơ Nấm, hai, rồi bốn, rồi nhiều hơn — lách tách và chạy tán loạn, vùng đất nhiễm bệnh chúng để lại đã bắt đầu lan rộng.",
+        "Kẻ Bị Đồng Hóa bước ra khỏi bức tường nơi nó vẫn đứng. Nó đã ở đó đủ lâu để bức tường bắt đầu chiếm hữu nó. Lớp màng vẫn bám vào lưng nó khi nó di chuyển.",
+        "Một Hộ Vệ Màng Nhầy lấp kín lối đi phía trước, chậm rãi, nhịp nhàng, đang thở. Nó nhận biết được ngươi. Căn phòng co thắt lại sau lưng ngươi.",
+        "Những Kẻ Bị Đồng Hóa, nhiều hơn một — bị đùn ra từ lớp màng vào căn phòng, chậm chạp, lê lết, kéo theo những sợi liên kết nối ngược về khối mô đã sản sinh ra chúng.",
+        "Bọn Trườn kéo đến trong im lặng. Rồi tiếng lách tách bắt đầu, và đến lúc ấy chúng đã ở rất gần.",
+        "Một Đóa Nở Rộ lơ lửng giữa căn phòng, chuyển hóa mặt sàn theo những vòng tròn lan chậm. Ngươi đã ở trong vòng ngoài. Ngươi đã bắt đầu nhiễm dần.",
+        "Kẻ Bị Đồng Hóa quay đầu về phía ngươi. Miệng nó mở ra. Thứ phát ra không phải ngôn ngữ — chỉ là hình dáng của ngôn ngữ, trống rỗng, không mang bất cứ nghĩa nào phía sau. Nó tiến về phía trước.",
+        "Từ trần nhà: một giọt chất lỏng ấm. Rồi một Kẻ Trườn lao theo nó, chân xòe rộng, rơi rất nhanh.",
+        "Hộ Vệ phong kín căn phòng. Lối đi sau lưng ngươi co thắt lại. Âm thanh nó phát ra như một hơi thở bị nén."
+      ],
+      "closing": [
+        "Nó không muốn giết ngươi. Đó không phải điều an ủi. Đó chính là vấn đề.",
+        "Giết thật nhanh. Mỗi giây trong căn phòng này là thêm một giây nhiễm dần.",
+        "Sự nhiễm bệnh đã bắt đầu vận hành. Ngươi cảm nhận được hơi ấm ở những chỗ lẽ ra không được ấm. Đừng cho nó thêm thời gian.",
+        "Nó đang ở gần. Đang gần hơn. Hơi ấm nó tỏa ra là thứ sai trái nhất ngươi từng cảm nhận trong này.",
+        "Ngôi mộ muốn giữ ngươi lại. Mọi thứ trong căn phòng này đều đang phục vụ mục đích ấy.",
+        "Ngươi đã ở trong này quá lâu rồi.",
+        "Di chuyển đi. Đừng để nó chạm vào ngươi quá một lần.",
+        "Dù trước kia nó là gì, giờ nó đã là thứ khác. Hãy đối phó với thứ nó đang là.",
+        "Bào tử đã ở trong không khí. Đánh nhanh và rời đi nhanh.",
+        "Nhịp tim của căn phòng và của ngươi đã gần hòa vào nhau. Đừng để chúng hòa vào nhau trọn vẹn."
+      ]
+    },
+    "corpse": {
+      "framing": [
+        "Thi hài còn ấm. Đó là điều đầu tiên. Đó luôn là điều đầu tiên ở nơi này.",
+        "Họ không hiện ra trọn vẹn. Bức tường đã chiếm lấy nửa dưới. Gương mặt còn rõ, và vẫn còn đọc được.",
+        "Mặt sàn đã mọc lấn vào chân họ. Họ bị phong kín từ đầu gối trở xuống. Phần còn lại của họ vẫn còn, nhận ra được, là một con người.",
+        "Nửa trồi ra khỏi lớp màng, nửa còn trong nó. Đến một thời điểm nào đó, điều này đã thôi là cái chết và trở thành một thứ khác.",
+        "Ngồi. Một bàn tay bị đồng hóa vào bức tường phía sau, một bàn tay tự do. Bàn tay tự do đã viết điều gì đó trước khi không còn viết được nữa.",
+        "Ngôi mộ đã lưu giữ họ. Họ ấm khi chạm vào. Hơi ấm ấy không còn là của họ nữa. Nó là dấu chiếm hữu của ngôi mộ lên họ.",
+        "Thi hài bị phong kín trong lớp màng từ vai trở xuống. Gương mặt, quay về phía ngươi, mang một vẻ không hẳn là sợ hãi.",
+        "Họ nằm ngang trên sàn, lớp mô dâng lên quanh họ thành một gờ thấp. Họ đã ở đây đủ lâu để trở thành một phần của kiến trúc.",
+        "Nằm sấp. Mặt sàn đã mọc trùm lên đôi bàn tay họ. Họ đang với lấy thứ gì đó khi sự đồng hóa tìm đến.",
+        "Đứng thẳng. Bức tường phía sau giữ họ đứng thẳng. Những gì còn lại của nửa thân trên mang tư thế của một người đã quyết định ngừng di chuyển và chờ đợi."
+      ],
+      "discoveryBeats": [
+        "Hình dáng trong lớp màng phía trước quá đều đặn để là cấu tạo của khối mô. Ngươi tiến lại gần. Nó hiện rõ thành một thứ ngươi nhận ra.",
+        "Một bàn tay trồi ra khỏi bức tường ngang tầm thắt lưng, xòe mở. Không vươn tới — chỉ hiện diện. Được lưu giữ. Chìa ra.",
+        "Ngươi ngửi thấy mùi sắt tanh trước khi nhìn thấy họ. Sắt tanh và một thứ ấm nóng từng là sự sống và, xét cho cùng, vẫn còn ấm.",
+        "Mặt sàn phía trước có một gờ nhô nhẹ — một đường ráp nơi kết cấu của lớp mô khác đi. Ngươi lần theo đường ráp cho đến khi hiểu ra điều gì đã tạo nên nó.",
+        "Chuyển động, thoạt tiên. Rồi ngươi hiểu ra đó không phải chuyển động — đó là hơi thở chậm rãi của lớp màng bao quanh một thứ bất động.",
+        "Thứ gì đó bắt ánh sáng một cách sai lệch. Quá đều đặn. Quá rõ ràng. Không phải cấu tạo của khối mô. Một gương mặt, bên dưới lớp màng, đang ngước nhìn lên.",
+        "Nhịp tim ở góc phòng này khác đi. Một nhịp điệu thứ hai bên dưới nhịp thứ nhất. Yếu ớt. Đang chậm dần.",
+        "Thứ gì đó nhô ra khỏi bức tường mà không thuộc về cấu tạo của bức tường. Ngươi nhìn kỹ hơn. Ngươi lùi lại một bước.",
+        "Ánh sáng sinh học nơi đây rực hơn — khối mô hoạt động mạnh hơn, ấm hơn, đang tiêu hóa. Ở trung tâm của vùng hoạt động ấy, một thứ từng biết cử động.",
+        "Ngươi suýt bước ngang qua họ. Lớp mô trên sàn che phủ gần hết. Ngươi thấy bàn tay trước tiên."
+      ]
+    },
+    "cache": {
+      "locationLines": [
+        "Một hốc tường được niêm kín — đá, đá thật sự, lạnh và mang vị khoáng, chưa từng bị chạm đến bởi lớp mô phủ kín mọi thứ bên ngoài.",
+        "Một khoảng trống trong kiến trúc nguyên thủy nơi ngôi mộ chưa lan tới. Nhiệt độ tụt xuống rõ rệt ngay ngưỡng cửa.",
+        "Thứ gì đó trong khối đá nơi đây kháng lại sự đồng hóa. Lớp mô dừng lại ở bức tường, cuộn mình lùi khỏi nó. Bên trong: khô ráo, lạnh lẽo, chưa bị quấy động.",
+        "Một gian phòng mà lớp mô đã né tránh. Không khí mang vị khoáng chất và năm tháng thay vì sắt tanh. Lạnh theo cách khiến người ta thấy nhẹ nhõm.",
+        "Một lối đi khô ráo, già hơn cả sự sinh trưởng của ngôi mộ, bị chính sự sụp đổ của nó niêm kín từ bên trên. Đống đá vụn đã chặn lớp mô lại. Đồ dự trữ tích tụ dần trong khe hở.",
+        "Một mạch rỉ axit chạy dọc một bức tường — đá vàng nhạt, bị ăn mòn. Ngôi mộ chừa cho khu vực này một khoảng cách rộng. Trong khoảng khô ráo bên cạnh, có những thứ đã được để lại.",
+        "Phía sau một mảng mô chưa liền hẳn — một khe hở, chật hẹp, lạnh lẽo, đá ở phía bên kia. Ai đó đã tìm thấy nó trước ngươi.",
+        "Nơi hai lối đi nguyên thủy giao nhau, lớp mô phủ kín cả hai ngả vào nhưng chừa lại chính điểm giao. Một đường ráp trong tầm phủ của ngôi mộ. Ngắn ngủi."
+      ],
+      "toneClosers": [
+        "Bức tường sau lưng ngươi đang thở. Cái lạnh nơi đây làm nó nghẹt đi. Nhưng không làm nó ngừng lại.",
+        "Ngươi vẫn nghe được nhịp tim từ đây. Nhỏ hơn. Vẫn hiện diện.",
+        "Lớp mô ở ngưỡng cửa dường như đang cân nhắc về khe hở. Nó có thời gian. Nó không hề vội.",
+        "An toàn. Trong chốc lát. Từ ấy không mang nghĩa nó thường mang, nhưng đó là từ gần đúng nhất còn lại.",
+        "Dù thứ gì đã giữ ngôi mộ ngoài không gian này, đó không phải một sự bảo đảm. Đó là một sự trì hoãn.",
+        "Cái lạnh chưa đủ lạnh. Nó chỉ mát. Ngôi mộ đang ở rìa không gian này, chưa ở trong nó. Chưa.",
+        "Lấy những gì ngươi cần. Đừng nán lại. Hơi ấm đã bắt đầu quay trở lại.",
+        "Không gì ở đây đang quan sát ngươi. Ngươi nhận ra điều đó. Ngươi trân trọng điều đó. Ngươi không tin điều đó."
+      ]
+    },
+    "exit": {
+      "opening": [
+        "Đá. Đá thật sự, lạnh và mang vị khoáng, trong một lối đi nơi mọi thứ trước giờ đều ấm, mềm và sai trái.",
+        "Nhịp tim nhạt dần theo từng nấc khi lối đi thay đổi. Một bước, rồi một bước nữa, và nhịp đập dưới chân ngươi nhỏ dần.",
+        "Không khí nơi đây khô ráo. Lạnh theo cách được ghi nhận như một sự vắng mặt — sự vắng mặt của hơi ấm ngôi mộ.",
+        "Phía trước: lớp mô kết thúc. Dứt khoát. Lớp màng ngừng lại, đá bắt đầu, và nhiệt độ tụt xuống vài độ chỉ trong một bước chân.",
+        "Ánh sáng sinh học nhạt dần. Phía trước chỉ còn bóng tối, và bóng tối thì không sống.",
+        "Hơi ấm buông ngươi ra, từng bước một. Ngươi cảm nhận sự khác biệt ở đôi bàn tay trước tiên.",
+        "Mùi hương thay đổi. Sắt tanh và men chua nhường chỗ cho đất lạnh và khoáng chất. Lối đi này chưa bị đồng hóa.",
+        "Tiếng bước chân ngươi nghe khác đi ở đây. Đanh hơn. Mặt sàn không hút lấy âm thanh. Mặt sàn là đá."
+      ],
+      "middle": [
+        "Nhịp tim chạm đến một ngưỡng rồi ngừng hẳn. Không phải nhạt dần — ngừng hẳn. Ngươi đã bước ra ngoài tầm với của thứ tạo ra nó.",
+        "Lớp mô rơi lại phía sau ngươi. Ngươi cảm nhận được nó sau lưng: đường ranh giới, đúng nơi ngươi vừa vượt qua.",
+        "Ngôi mộ thả ngươi đi không một lời bình phẩm. Hơi ấm vơi dần, sự ẩm ướt biến mất, sức nặng của nơi chốn ấy được nhấc lên.",
+        "Ngươi nhận ra nhịp tim của chính mình giờ nghe thật to. Ngươi đã đi xuyên qua một thứ mang nhịp tim riêng, và nhịp của ngươi bị nhấn chìm bên dưới nó. Giờ nhịp của ngươi là tất cả những gì còn lại.",
+        "Lối đi sau lưng ngươi thở thêm một lần nữa. Một áp lực nhẹ sau lưng, rồi không gì nữa. Ngôi mộ đã thở hắt ra. Nó đã xong việc với ngươi.",
+        "Nhiệt độ của chính làn da ngươi lại trở nên cảm nhận được — tách biệt khỏi không khí xung quanh. Ngươi là một cơ thể trong một không gian, không phải một cơ thể đang bị ôm giữ.",
+        "Sau lưng ngươi: hơi ấm, mạch đập và mùi của một thứ đang sống. Phía trước: cái lạnh, khoáng chất, và những bề mặt không biết thở.",
+        "Lớp màng sau lưng ngươi — ngươi cảm nhận được nơi nó dừng lại. Một đường ranh. Ngôi mộ không vượt qua đường ranh ấy. Ngôi mộ dừng ở đó, kiên nhẫn, nơi ngưỡng cửa nó canh giữ."
+      ],
+      "closing": [
+        "Ngươi kiểm tra khắp người tìm bào tử. Việc kiểm tra kéo dài hơn mức lẽ ra phải thế.",
+        "Cái lạnh phía trước là đúng đắn. Cái lạnh phía trước là cảm giác mà lòng đất lẽ ra phải mang. Ngươi đã không nhận ra hơi ấm kia sai trái đến mức nào cho đến khi nó ngừng lại.",
+        "Ngươi sẽ quay lại. Ngôi mộ biết điều này. Không có cách nào để biết vì sao nó biết, và không có lý do nào để nó sai.",
+        "Ngôi mộ không để mất ngươi. Nó cho phép ngươi rời đi. Hãy ghi nhớ sự khác biệt.",
+        "Ngươi đã ra khỏi nó. Tạm thời, ngươi đã ra khỏi nó.",
+        "Dù ngươi mang gì ra ngoài — ký ức về hơi ấm, nhịp điệu của trái tim kia, mùi sắt tanh — những thứ ấy ở lại cùng ngươi.",
+        "Thứ gì đó trong ngươi đã bị điều chỉnh. Ngươi sẽ không nhận ra ngay. Ngươi sẽ nhận ra về sau.",
+        "Ngươi ngoái nhìn lại một lần. Lối đi vẫn tĩnh lặng, ấm áp và kiên nhẫn. Nó đã bắt đầu chờ đợi."
+      ]
+    },
+    "options": {
+      "cautious": [
+        "Di chuyển cẩn thận qua lớp mô",
+        "Men theo mép rìa",
+        "Tiến lên mà không chạm vào tường",
+        "Bước vòng qua nó",
+        "Đi thật chậm"
+      ],
+      "aggressive": [
+        "Chém đường mà đi",
+        "Vượt qua",
+        "Mở lối bằng sức",
+        "Đi thật nhanh",
+        "Đừng dừng lại"
+      ],
+      "investigative": [
+        "Xem xét lớp màng",
+        "Thăm dò khối mô",
+        "Nhìn kỹ hơn",
+        "Tìm thứ bên dưới",
+        "Nghiên cứu bề mặt"
+      ],
+      "retreat": [
+        "Bước lùi lại",
+        "Tránh xa hơi ấm",
+        "Rút lui",
+        "Giữ khoảng cách",
+        "Chờ đợi"
+      ]
+    }
+  },
+  "bestiary": {
+    "shared": [
+      "Bloated One",
+      "The Congregation",
+      "Pale Crawler",
+      "Carrion Knight"
+    ],
+    "local": [
+      {
+        "name": "Mycelium Crawlers",
+        "tier": 1,
+        "health": {
+          "min": 30,
+          "max": 45
+        },
+        "behaviors": [
+          "AGGRESSIVE",
+          "ERRATIC",
+          "CHARGING"
+        ],
+        "description": "Quá nhiều chân — con số thay đổi mỗi khi ngươi nhìn. Chúng di chuyển thành từng đợt chớp nhoáng và tiêm bào tử khi chạm vào. Mỗi cú đánh trúng thêm một tầng nhiễm bệnh. Từng con một rất mong manh. Chúng hiếm khi chỉ có một con.",
+        "emoji": "🍄",
+        "artUrl": "/creatures/mycelium-crawlers.webp"
+      },
+      {
+        "name": "The Incorporated",
+        "tier": 1,
+        "health": {
+          "min": 50,
+          "max": 70
+        },
+        "behaviors": [
+          "STALKING",
+          "AGGRESSIVE",
+          "RETREATING"
+        ],
+        "description": "Họ từng là người. Ngôi mộ đẩy họ trở ra vì nó cần họ di chuyển. Chúng không tấn công vì muốn thế. Đôi mắt chúng vẫn ghi nhận ngươi. Vài kẻ trong số chúng vẫn đang cố nói điều gì đó.",
+        "emoji": "🫀",
+        "artUrl": "/creatures/the-incorporated.webp"
+      },
+      {
+        "name": "Membrane Guardian",
+        "tier": 2,
+        "health": {
+          "min": 90,
+          "max": 115
+        },
+        "behaviors": [
+          "DEFENSIVE",
+          "CHARGING",
+          "AGGRESSIVE"
+        ],
+        "description": "Nó không đứng trong lối đi. Nó chính là lối đi, tại điểm ấy — như một cơ vòng, phập phồng, khép kín khi giao chiến. Có thể đánh bại nó. Việc ấy cần thời gian. Trong khoảng thời gian ấy, căn phòng bị phong kín.",
+        "emoji": "🫁",
+        "artUrl": "/creatures/membrane-guardian.webp"
+      },
+      {
+        "name": "The Bloom",
+        "tier": 2,
+        "health": {
+          "min": 65,
+          "max": 85
+        },
+        "behaviors": [
+          "STALKING",
+          "ERRATIC",
+          "RETREATING"
+        ],
+        "description": "Một ổ dịch biết đi. Nó trôi dạt. Nó lang thang. Nó không đến tìm ngươi. Nó chỉ cần ở cùng một căn phòng. Sự gần kề tích tụ các tầng nhiễm bệnh. Giữ khoảng cách. Giết thật nhanh.",
+        "emoji": "🌸",
+        "artUrl": "/creatures/the-bloom.webp"
+      },
+      {
+        "name": "The Root",
+        "tier": 3,
+        "health": {
+          "min": 180,
+          "max": 220
+        },
+        "behaviors": [
+          "CHARGING",
+          "AGGRESSIVE",
+          "DEFENSIVE",
+          "ERRATIC"
+        ],
+        "description": "Cội Rễ không phải một sinh vật chiếm giữ gian phòng cuối. Cội Rễ chính là gian phòng cuối. Mọi bức tường đều là nó. Mọi bề mặt. Mặt sàn dâng lên. Trần nhà hạ xuống. Một bức tường vươn tới. Nó đang làm điều ngôi mộ vẫn luôn làm. Chỉ là ngươi đã đến đủ gần để trở nên đáng kể.",
+        "emoji": "🌿",
+        "artUrl": "/creatures/the-root.webp"
+      }
+    ]
+  },
+  "depths": [
+    {
+      "name": "THE OUTER GROWTH",
+      "tier": 1,
+      "roomRange": [
+        1,
+        4
+      ],
+      "description": "Vùng rìa. Phần lớn vẫn còn là đá. Lớp mô nơi đây còn non."
+    },
+    {
+      "name": "THE DEEP FLESH",
+      "tier": 2,
+      "roomRange": [
+        5,
+        8
+      ],
+      "description": "Thuần hữu cơ. Không còn thấy đá. Những bức tường đang thở."
+    },
+    {
+      "name": "THE CORE",
+      "tier": 3,
+      "roomRange": [
+        9,
+        12
+      ],
+      "description": "Lớp mô cổ xưa nhất. Trung tâm của thứ này, dù nó là gì."
+    }
+  ],
+  "dungeonLayout": {
+    "totalRooms": 12,
+    "structure": [
+      {
+        "type": "explore",
+        "template": "explore"
+      },
+      {
+        "type": "combat",
+        "template": "combat"
+      },
+      {
+        "type": "combat",
+        "template": "combat"
+      },
+      {
+        "type": "corpse",
+        "template": "corpse"
+      },
+      {
+        "type": "combat",
+        "template": "combat"
+      },
+      {
+        "type": "combat",
+        "template": "combat"
+      },
+      {
+        "type": "cache",
+        "template": "cache"
+      },
+      {
+        "type": "combat",
+        "template": "combat"
+      },
+      {
+        "type": "explore",
+        "template": "explore"
+      },
+      {
+        "type": "combat",
+        "template": "combat"
+      },
+      {
+        "type": "corpse",
+        "template": "corpse"
+      },
+      {
+        "type": "combat",
+        "template": "combat",
+        "boss": true
+      }
+    ]
+  },
+  "boss": "The Root",
+  "audio": {
+    "ambient": {
+      "explore": "/audio/zones/living-tomb/ambient-explore.mp3",
+      "combat": "/audio/zones/living-tomb/ambient-combat.mp3"
+    },
+    "sfx": {
+      "footstep": "/audio/zones/living-tomb/footstep.mp3",
+      "descend": "/audio/zones/living-tomb/depth-descend.mp3",
+      "environment": [
+        "/audio/zones/living-tomb/heartbeat.mp3",
+        "/audio/zones/living-tomb/wet-drip.mp3",
+        "/audio/zones/living-tomb/membrane-breathe.mp3"
+      ],
+      "atmosphere": [
+        "/audio/zones/living-tomb/distant-pulse.mp3",
+        "/audio/zones/living-tomb/growth-creak.mp3"
+      ],
+      "boss": {
+        "intro": "/audio/zones/living-tomb/boss-intro.mp3",
+        "roar": "/audio/zones/living-tomb/boss-roar.mp3"
+      }
+    }
+  }
+}

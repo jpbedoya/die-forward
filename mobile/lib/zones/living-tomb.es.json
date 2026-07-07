@@ -1,0 +1,416 @@
+{
+  "id": "living-tomb",
+  "version": "1.0.0",
+  "meta": {
+    "name": "THE LIVING TOMB",
+    "tagline": "Algo creció en la oscuridad. Ahora todo forma parte de ello.",
+    "element": "organic",
+    "difficulty": 2,
+    "colors": {
+      "primary": "#1a0a0a",
+      "accent": "#c0392b",
+      "text": "#e8a0a0"
+    },
+    "mechanic": "INFECTION",
+    "mechanicDescription": "Las acumulaciones de infección se suman. A 3: pierdes un objeto al azar. A 5: -30% de daño. Mata rápido.",
+    "unlockRequirement": "Completa un descenso",
+    "emoji": "🩸"
+  },
+  "lore": "La tumba no tiene un comienzo que nadie pueda rastrear. Creció mientras nadie miraba, y para cuando alguien entendió hacia qué crecía, el crecimiento ya se había vuelto la respuesta a esa pregunta. Cada cuerpo de aquí pasó a formar parte de lo que la mantiene caliente.",
+  "fragments": {
+    "explore": {
+      "opening": [
+        "El aire te recibe como un aliento contenido. Cálido — temperatura corporal, exacta — y cargado del olor a hierro de las cosas vivas.",
+        "El olor te alcanza primero. Hierro y levadura, y algo más debajo: el interior de una cosa viva, cercano y animal.",
+        "Calor. Bajo tierra, donde todo debería ser frío, el aire se asienta a temperatura corporal. El suelo bajo tus botas cede ligeramente cuando lo presionas.",
+        "Las paredes de aquí están mal. Todavía tienen aproximadamente forma de piedra, pero están cálidas cuando las rozas y blandas donde deberían ser duras.",
+        "Algo respira en las paredes. Lento y medido. Un latido — paciente, espeso — en el suelo, en el techo, en todas partes menos en ti.",
+        "El pasaje adelante brilla débilmente. No es luz de antorcha. Algo bioluminiscente y rojo, pulsando a intervalos largos y regulares.",
+        "El calor irradia de cada superficie. Tu piel lo lee como consuelo antes de que tu mente lo lea como error.",
+        "El suelo cede bajo tu peso. No es piedra — algo que se hunde, apenas, con cada paso. Dejas de intentar identificarlo.",
+        "Un goteo, en algún lugar cercano. No es agua. El sonido es demasiado espeso, demasiado lento. Das un paso adelante. El aire huele a hierro.",
+        "El latido te alcanza primero por los pies. A través del suelo, a través de tus botas, hasta los huesos. No es el tuyo.",
+        "Respiras y la sala respira de vuelta. El ritmo casi coincide con el tuyo. Casi.",
+        "La piedra de aquí desapareció hace mucho. Lo que la reemplazó es más cálido y húmedo al tacto, y débilmente luminiscente donde atrapa tu luz."
+      ],
+      "middle": [
+        "La pared a tu lado se abulta hacia afuera en un pulso largo y lento, luego regresa. Algo circula bajo la membrana.",
+        "Formas presionan contra el interior de las paredes. El contorno de una mano. Una caja torácica. Un rostro, sellado bajo tejido gris rosado, la boca abierta.",
+        "Un objeto — una hoja, tal vez — es visible a través del crecimiento que cubre el suelo. Sellado adentro. La tumba lleva mucho tiempo incorporando cosas.",
+        "El techo gotea. No es agua. Algo cálido y ligeramente viscoso cae en gotas lentas sobre superficies que lo absorben sin salpicar.",
+        "El pasaje se ha estrechado — no por daño estructural, sino por crecimiento extendiéndose hacia adentro. Se está cerrando. Despacio. No ha terminado.",
+        "Los objetos de este espacio han sido incorporados. Puedes ver sus formas a través de la membrana — la sugerencia de una mochila, una linterna, una mano.",
+        "Algo se mueve en la pared a tu lado. Una onda peristáltica, viajando de un extremo al otro. La pared está procesando.",
+        "La bioluminiscencia de aquí es más brillante. De un rojo más profundo. El crecimiento es más viejo en esta sección — más completo, más seguro de sí mismo.",
+        "Una costura en la membrana marca dónde algo fue extruido y luego reabsorbido. La forma que dejó atrás es de tamaño humano.",
+        "Cada superficie de aquí está cálida exactamente a la misma temperatura. Temperatura corporal. Exacta. Como si hubieras entrado dentro de algo y no en algo.",
+        "Un hueso presiona contra la superficie de la pared lejana — visible a través de la membrana pero no libre. Preservado y reclamado al mismo tiempo.",
+        "El crecimiento ha sellado una puerta a la izquierda. Un pasaje más nuevo se ha abierto a la derecha. La tumba se redirige a sí misma."
+      ],
+      "closing": [
+        "El latido es más fuerte aquí. Más cercano. Está prestando atención.",
+        "Algo en las paredes se desplaza. La sala se ajusta a tu presencia.",
+        "Eres un cuerpo extraño. Lo sabe.",
+        "El calor detrás de ti es distinto del calor adelante. El de atrás es nuevo.",
+        "Nada aquí se mueve. Eso no es lo mismo que nada aquí esté vivo.",
+        "El suelo recuerda cada paso que has dado. La tumba también.",
+        "Es paciente. No necesita apurarse.",
+        "El crecimiento del extremo lejano se ha extendido desde que entraste. Tú no estabas mirando. Él sí.",
+        "Un sonido bajo y lento, en algún lugar cercano. No un gemido — la forma de uno. La sugerencia de un aliento a través de algo que no es una garganta.",
+        "El pulso del suelo se estabiliza. Ha encontrado tu ritmo.",
+        "Un sonido detrás de ti que se detiene cuando te detienes. Quietud con intención detrás.",
+        "Las paredes están más cerca que cuando entraste. No lo estás imaginando."
+      ]
+    },
+    "combat": {
+      "opening": [
+        "El aire se espesa. Hierro y algo cálido. El latido del suelo se acelera un poco.",
+        "El suelo pulsa bajo tus pies en un patrón que no es el latido de la sala. Hay algo más aquí.",
+        "La bioluminiscencia del extremo lejano parpadea una vez, luego se estabiliza, luego parpadea otra vez.",
+        "La sala está demasiado cálida. Incluso para los estándares de esta tumba. Algo lleva aquí lo suficiente para subir la temperatura.",
+        "La membrana de la pared lejana se mueve. No es la respiración lenta de la tumba. Algo debajo está empujando.",
+        "Una gota desde el techo. Miras hacia arriba. El techo te mira de vuelta.",
+        "El olor de esta sala es distinto. Más fuerte. Más hierro. Menos levadura. El olor metabólico de algo activo.",
+        "Un sonido desde la pared a tu izquierda. Húmedo. Rítmico. Cercano.",
+        "El crecimiento del suelo adelante es más fresco que el tejido circundante. Algo ha estado moviéndose por aquí.",
+        "El pasaje detrás de ti hace un sonido como una exhalación suave. La sala se asienta en un silencio nuevo.",
+        "Tus pies encuentran apoyo con menos facilidad aquí. La superficie cede más. Es más receptiva.",
+        "El latido cambia de cadencia. Un latido doble donde había uno. Algo en la sala tiene pulso propio."
+      ],
+      "middle": [
+        "Brotan de una brecha en la pared de membrana — Reptantes de Micelio, docenas, demasiadas patas cada uno, moviéndose en ráfagas rápidas y chasqueantes. Cada golpe te costará.",
+        "El Incorporado está de pie en el centro de la sala, inmóvil. Su cabeza sigue tu movimiento. Algo detrás de sus ojos todavía intenta alcanzarte. El resto de él dejó de intentarlo.",
+        "La Floración se desplaza desde el extremo lejano del espacio, arrastrando conversión tras de sí por el suelo. No te está cazando. No lo necesita. Solo necesita estar aquí.",
+        "Emergen del suelo — Reptantes de Micelio, dos, luego cuatro, luego más — chasqueando y correteando, el terreno infectado que dejan ya extendiéndose.",
+        "El Incorporado se desprende de la pared donde estaba de pie. Estuvo ahí lo suficiente para que la pared empezara a reclamarlo. La membrana todavía se aferra a su espalda mientras se mueve.",
+        "Un Guardián de la Membrana llena el pasaje adelante, lento y rítmico y respirando. Es consciente de ti. La sala se contrae detrás de ti.",
+        "Los Incorporados, en plural — extruidos de la membrana hacia la sala, lentos, arrastrándose, dejando conexiones que regresan al tejido del que emergieron.",
+        "Los Reptantes llegan en silencio. Luego empieza el chasquido, y para entonces ya están cerca.",
+        "Una Floración cuelga en el centro de la sala, convirtiendo el suelo en anillos lentos que se expanden. Ya estás en el anillo exterior. Ya estás acumulando.",
+        "El Incorporado gira la cabeza hacia ti. Su boca se abre. Lo que sale no es lenguaje — es la forma del lenguaje, sin nada detrás que signifique algo. Avanza.",
+        "Desde el techo: una gota de fluido cálido. Luego un Reptante la sigue, las patas abiertas, cayendo rápido.",
+        "El Guardián sella la sala. El pasaje detrás de ti se contrae. El sonido que hace es como un aliento contenido."
+      ],
+      "closing": [
+        "No quiere matarte. Eso no es un consuelo. Ese es el problema.",
+        "Mata rápido. Cada segundo en esta sala es otro segundo acumulando.",
+        "La infección ya está trabajando. Sientes calor en lugares que no deberían estar cálidos. No le des más tiempo.",
+        "Está cerca. Acercándose. El calor que irradia es lo más equivocado que has sentido aquí adentro.",
+        "La tumba quiere quedarse contigo. Todo en esta sala trabaja hacia ese fin.",
+        "Ya llevas demasiado tiempo aquí adentro.",
+        "Muévete. No dejes que te toque más de una vez.",
+        "Fuera lo que fuera antes, ahora es otra cosa. Lidia con lo que es.",
+        "Las esporas ya están en el aire. Pelea rápido y vete rápido.",
+        "El latido de la sala y el tuyo están casi alineados. No dejes que terminen de alinearse."
+      ]
+    },
+    "corpse": {
+      "framing": [
+        "El cuerpo está cálido. Esto es lo primero. Aquí esto siempre es lo primero.",
+        "No son del todo visibles. La pared ha reclamado la mitad inferior. El rostro está despejado, y todavía es legible.",
+        "El suelo ha crecido dentro de sus piernas. Están sellados por debajo de la rodilla. El resto sigue siendo, reconociblemente, una persona.",
+        "Medio emergido de la membrana, medio dentro de ella. En algún punto esto dejó de ser morir y se convirtió en otra cosa.",
+        "Sentado. Una mano incorporada a la pared detrás, una mano libre. La mano libre escribió algo antes de ya no poder escribir.",
+        "La tumba los ha preservado. Están cálidos al tacto. El calor ya no es suyo. Es el reclamo de la tumba sobre ellos.",
+        "El cuerpo está sellado en membrana por debajo de los hombros. El rostro, vuelto hacia ti, lleva una expresión que no es exactamente miedo.",
+        "Están horizontales en el suelo, el crecimiento alzado a su alrededor en una cresta baja. Llevan aquí lo suficiente para volverse parte de la arquitectura.",
+        "Boca abajo. El suelo ha crecido alrededor de sus manos. Estaban alcanzando algo cuando la incorporación los encontró.",
+        "Erguido. La pared detrás lo mantiene erguido. Lo que queda de su mitad superior tiene la postura de alguien que decidió dejar de moverse y esperar."
+      ],
+      "discoveryBeats": [
+        "La forma en la membrana adelante es demasiado regular para ser anatomía del crecimiento. Te acercas. Se resuelve en algo que reconoces.",
+        "Una mano emerge de la pared a la altura de la cintura, abierta. No alcanza — solo está presente. Preservada. Extendida.",
+        "Hueles el hierro antes de verlos. Hierro y algo cálido que estuvo vivo y sigue, técnicamente, cálido.",
+        "El suelo adelante tiene una leve cresta — una costura donde la textura del crecimiento difiere. Sigues la costura hasta entender qué la causó.",
+        "Movimiento, al principio. Luego entiendes que no es movimiento — es la respiración lenta de la membrana alrededor de algo inmóvil.",
+        "Algo atrapa la luz mal. Demasiado regular. Demasiado específico. No es anatomía del crecimiento. Un rostro, bajo la membrana, mirando hacia arriba.",
+        "El latido en esta parte de la sala es distinto. Un segundo ritmo bajo el primero. Débil. Desacelerando.",
+        "Algo sobresale de la pared que no es anatomía de pared. Miras más de cerca. Das un paso atrás.",
+        "La bioluminiscencia es más brillante aquí — el crecimiento más activo, más cálido, procesando. En el centro de la actividad, algo que solía moverse.",
+        "Casi caminas a través de ellos. El crecimiento del suelo cubre la mayor parte. Ves la mano primero."
+      ]
+    },
+    "cache": {
+      "locationLines": [
+        "Un nicho sellado — piedra, piedra de verdad, fría y mineral, intocada por el crecimiento que lo cubre todo afuera.",
+        "Un bolsillo de la arquitectura original donde la tumba no se ha extendido. La temperatura cae notablemente en el umbral.",
+        "Algo en la piedra de aquí resiste la incorporación. El crecimiento se detiene en la pared, se repliega de ella. Adentro: seco, frío, sin perturbar.",
+        "Una cámara que el crecimiento ha evitado. El aire sabe a mineral y a edad en vez de a hierro. Frío de una forma que se siente como alivio.",
+        "Un pasaje seco, más viejo que el crecimiento de la tumba, sellado desde arriba por su propio derrumbe. Los escombros mantuvieron el crecimiento afuera. En la brecha se acumularon provisiones.",
+        "Una filtración ácida corre a lo largo de una pared — piedra amarillo pálido, corroída. La tumba le da a esta área un margen amplio. En el espacio seco de al lado, han dejado cosas.",
+        "Detrás de una sección de crecimiento que no se ha fusionado del todo — una brecha, estrecha, fría, piedra al otro lado. Alguien la encontró antes que tú.",
+        "Donde dos pasajes originales se intersecan, el crecimiento cubre ambos accesos pero no el cruce mismo. Una costura en la cobertura de la tumba. Breve."
+      ],
+      "toneClosers": [
+        "La pared detrás de ti respira. El frío de aquí lo amortigua. No lo detiene.",
+        "Puedes oír el latido desde aquí. Más silencioso. Presente.",
+        "El crecimiento del umbral parece estar considerando la brecha. Tiene tiempo. No tiene prisa.",
+        "Seguro. Brevemente. La palabra no significa lo que suele significar, pero es la palabra más cercana disponible.",
+        "Lo que sea que mantuvo a la tumba fuera de este espacio no es una garantía. Es una demora.",
+        "El frío no es lo bastante frío. Es fresco. La tumba está en los bordes de este espacio, no adentro. Todavía.",
+        "Toma lo que necesites. No te demores. El calor ya está regresando.",
+        "Nada aquí te observa. Lo notas. Lo agradeces. No te fías."
+      ]
+    },
+    "exit": {
+      "opening": [
+        "Piedra. Piedra de verdad, fría y mineral, en un pasaje donde todo ha sido cálido y blando y equivocado.",
+        "El latido se desvanece por grados a medida que el pasaje cambia. Un paso, luego otro, y el pulso bajo tus pies es más silencioso.",
+        "El aire de aquí es seco. Frío de una forma que se registra como ausencia — la ausencia del calor de la tumba.",
+        "Adelante: el crecimiento termina. Con precisión. La membrana se detiene y la piedra comienza y la temperatura cae varios grados en un solo paso.",
+        "La bioluminiscencia se apaga. Adelante solo hay oscuridad, y la oscuridad no está viva.",
+        "El calor te suelta, un paso a la vez. Sientes la diferencia primero en las manos.",
+        "El olor cambia. El hierro y la levadura ceden ante la tierra fría y el mineral. Este pasaje no ha sido incorporado.",
+        "Tus pasos suenan distinto aquí. Más duros. El suelo no absorbe el sonido. El suelo es piedra."
+      ],
+      "middle": [
+        "El latido alcanza un umbral y se detiene. No se desvanece — se detiene. Has salido del alcance de lo que sea que lo produce.",
+        "El crecimiento queda atrás. Puedes sentirlo a tu espalda: el límite, precisamente donde lo cruzaste.",
+        "La tumba te suelta sin comentario. El calor disminuye, la humedad desaparece, el peso del lugar se levanta.",
+        "Te das cuenta de que tu propio latido ahora es fuerte. Has estado caminando a través de algo con el suyo, y el tuyo quedaba apagado debajo. Ahora el tuyo es todo lo que hay.",
+        "El pasaje detrás de ti respira una vez más. Una leve presión en tu espalda, luego nada. La tumba ha exhalado. Ha terminado contigo.",
+        "La temperatura de tu propia piel vuelve a ser perceptible — separada del aire circundante. Eres un cuerpo en un espacio, no un cuerpo siendo sostenido.",
+        "Detrás de ti: calor y pulso y el olor de algo vivo. Adelante: frío, y mineral, y superficies que no respiran.",
+        "La membrana a tu espalda — puedes sentir dónde se detiene. Una línea. La tumba no la cruza. La tumba se detiene ahí, paciente, en el umbral que guarda."
+      ],
+      "closing": [
+        "Te revisas en busca de esporas. La revisión tarda más de lo que debería.",
+        "El frío adelante es correcto. El frío adelante es lo que el subsuelo debería sentirse. No sabías cuán equivocado era el calor hasta que cesó.",
+        "Volverás. La tumba lo sabe. No hay forma de saber cómo lo sabe, y ninguna razón para que se equivoque.",
+        "La tumba no te perdió. Te dejó ir. Nota la diferencia.",
+        "Estás fuera. Por ahora, estás fuera.",
+        "Lo que sea que saques de aquí — el recuerdo del calor, el ritmo del latido, el olor a hierro — eso se queda contigo.",
+        "Algo en ti ha sido ajustado. No lo notarás de inmediato. Lo notarás después.",
+        "Te vuelves una vez para mirar atrás. El pasaje está quieto y cálido y paciente. Ya está esperando."
+      ]
+    },
+    "options": {
+      "cautious": [
+        "Avanza con cuidado entre el crecimiento",
+        "Pégate al borde",
+        "Avanza sin tocar las paredes",
+        "Rodéalo",
+        "Muévete despacio"
+      ],
+      "aggressive": [
+        "Corta a través",
+        "Pasa de largo",
+        "Ábrete paso",
+        "Muévete rápido",
+        "No te detengas"
+      ],
+      "investigative": [
+        "Examina la membrana",
+        "Sondea el crecimiento",
+        "Mira más de cerca",
+        "Busca lo que hay debajo",
+        "Estudia la superficie"
+      ],
+      "retreat": [
+        "Da un paso atrás",
+        "Aléjate del calor",
+        "Repliégate",
+        "Pon distancia",
+        "Espera"
+      ]
+    }
+  },
+  "bestiary": {
+    "shared": [
+      "Bloated One",
+      "The Congregation",
+      "Pale Crawler",
+      "Carrion Knight"
+    ],
+    "local": [
+      {
+        "name": "Mycelium Crawlers",
+        "tier": 1,
+        "health": {
+          "min": 30,
+          "max": 45
+        },
+        "behaviors": [
+          "AGGRESSIVE",
+          "ERRATIC",
+          "CHARGING"
+        ],
+        "description": "Demasiadas patas — la cuenta cambia cuando miras. Se mueven en ráfagas rápidas e inyectan esporas al contacto. Cada golpe suma infección. Individualmente son frágiles. Con frecuencia no son individuales.",
+        "emoji": "🍄",
+        "artUrl": "/creatures/mycelium-crawlers.webp"
+      },
+      {
+        "name": "The Incorporated",
+        "tier": 1,
+        "health": {
+          "min": 50,
+          "max": 70
+        },
+        "behaviors": [
+          "STALKING",
+          "AGGRESSIVE",
+          "RETREATING"
+        ],
+        "description": "Eran personas. La tumba los expulsó de vuelta porque necesitaba que se movieran. No atacan porque quieran. Sus ojos todavía te registran. Algunos todavía intentan decir algo.",
+        "emoji": "🫀",
+        "artUrl": "/creatures/the-incorporated.webp"
+      },
+      {
+        "name": "Membrane Guardian",
+        "tier": 2,
+        "health": {
+          "min": 90,
+          "max": 115
+        },
+        "behaviors": [
+          "DEFENSIVE",
+          "CHARGING",
+          "AGGRESSIVE"
+        ],
+        "description": "No está de pie en el pasaje. Es el pasaje, en ese punto — como un esfínter, pulsante, sellándose al entrar en combate. Se puede pelear contra él. Toma tiempo. Durante ese tiempo, la sala está sellada.",
+        "emoji": "🫁",
+        "artUrl": "/creatures/membrane-guardian.webp"
+      },
+      {
+        "name": "The Bloom",
+        "tier": 2,
+        "health": {
+          "min": 65,
+          "max": 85
+        },
+        "behaviors": [
+          "STALKING",
+          "ERRATIC",
+          "RETREATING"
+        ],
+        "description": "Un evento de infección que camina. Se desplaza. Deambula. No viene por ti. Solo necesita estar en la misma sala. La proximidad acumula infección. Mantén distancia. Mata rápido.",
+        "emoji": "🌸",
+        "artUrl": "/creatures/the-bloom.webp"
+      },
+      {
+        "name": "The Root",
+        "tier": 3,
+        "health": {
+          "min": 180,
+          "max": 220
+        },
+        "behaviors": [
+          "CHARGING",
+          "AGGRESSIVE",
+          "DEFENSIVE",
+          "ERRATIC"
+        ],
+        "description": "La Raíz no es una criatura que ocupa la cámara final. La Raíz es la cámara final. Cada pared es ella. Cada superficie. El suelo se alza. El techo desciende. Una pared se extiende. Está haciendo lo que la tumba siempre ha hecho. Simplemente te has acercado lo suficiente para importar.",
+        "emoji": "🌿",
+        "artUrl": "/creatures/the-root.webp"
+      }
+    ]
+  },
+  "depths": [
+    {
+      "name": "THE OUTER GROWTH",
+      "tier": 1,
+      "roomRange": [
+        1,
+        4
+      ],
+      "description": "Los bordes. Todavía casi todo piedra. El crecimiento es más nuevo aquí."
+    },
+    {
+      "name": "THE DEEP FLESH",
+      "tier": 2,
+      "roomRange": [
+        5,
+        8
+      ],
+      "description": "Puro tejido orgánico. Sin piedra visible. Las paredes respiran."
+    },
+    {
+      "name": "THE CORE",
+      "tier": 3,
+      "roomRange": [
+        9,
+        12
+      ],
+      "description": "El crecimiento más antiguo. El centro de lo que sea que esto es."
+    }
+  ],
+  "dungeonLayout": {
+    "totalRooms": 12,
+    "structure": [
+      {
+        "type": "explore",
+        "template": "explore"
+      },
+      {
+        "type": "combat",
+        "template": "combat"
+      },
+      {
+        "type": "combat",
+        "template": "combat"
+      },
+      {
+        "type": "corpse",
+        "template": "corpse"
+      },
+      {
+        "type": "combat",
+        "template": "combat"
+      },
+      {
+        "type": "combat",
+        "template": "combat"
+      },
+      {
+        "type": "cache",
+        "template": "cache"
+      },
+      {
+        "type": "combat",
+        "template": "combat"
+      },
+      {
+        "type": "explore",
+        "template": "explore"
+      },
+      {
+        "type": "combat",
+        "template": "combat"
+      },
+      {
+        "type": "corpse",
+        "template": "corpse"
+      },
+      {
+        "type": "combat",
+        "template": "combat",
+        "boss": true
+      }
+    ]
+  },
+  "boss": "The Root",
+  "audio": {
+    "ambient": {
+      "explore": "/audio/zones/living-tomb/ambient-explore.mp3",
+      "combat": "/audio/zones/living-tomb/ambient-combat.mp3"
+    },
+    "sfx": {
+      "footstep": "/audio/zones/living-tomb/footstep.mp3",
+      "descend": "/audio/zones/living-tomb/depth-descend.mp3",
+      "environment": [
+        "/audio/zones/living-tomb/heartbeat.mp3",
+        "/audio/zones/living-tomb/wet-drip.mp3",
+        "/audio/zones/living-tomb/membrane-breathe.mp3"
+      ],
+      "atmosphere": [
+        "/audio/zones/living-tomb/distant-pulse.mp3",
+        "/audio/zones/living-tomb/growth-creak.mp3"
+      ],
+      "boss": {
+        "intro": "/audio/zones/living-tomb/boss-intro.mp3",
+        "roar": "/audio/zones/living-tomb/boss-roar.mp3"
+      }
+    }
+  }
+}

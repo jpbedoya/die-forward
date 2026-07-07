@@ -1,0 +1,420 @@
+{
+  "id": "void-beyond",
+  "version": "1.0.0",
+  "meta": {
+    "name": "THE VOID BEYOND",
+    "tagline": "Donde el inframundo olvidó terminar de construir.",
+    "element": "void",
+    "difficulty": 3,
+    "colors": {
+      "primary": "#0d0010",
+      "accent": "#9b59b6",
+      "text": "#d7aef5"
+    },
+    "mechanic": "FLUX",
+    "mechanicDescription": "Las intenciones enemigas pueden cambiar. La claridad se degrada — a 0, aparecen opciones falsas. Las salas de eco se repiten.",
+    "unlockRequirement": "Supera 3 zonas distintas",
+    "emoji": "🌑"
+  },
+  "lore": "Más allá del último pasaje que el inframundo se molestó en terminar, espera algo ensamblado con todo lo que elegiste no ser. La estática de aquí tiene forma — casi un patrón. Nada confirma qué intenta decir.",
+  "fragments": {
+    "explore": {
+      "opening": [
+        "La estática comienza antes que el espacio. Una interferencia baja, con forma, al borde de lo audible — casi un patrón. El suelo probablemente es sólido. Las paredes probablemente son paredes.",
+        "Ozono. Agudo y eléctrico, llenando un espacio sin fuente visible. El aire de aquí convierte algo. No sabes qué en qué.",
+        "Púrpura — una profundidad de púrpura que no pertenece ni a la oscuridad ni a la luz, que lleva aquí lo suficiente para desarrollar su propia comprensión de lo que significa el color.",
+        "Tus pasos suenan mal. No más fuertes ni más suaves — mal en especie, como si el suelo discrepara de tu estimación de la distancia que has recorrido.",
+        "Algo parpadea al borde de tu visión. Un color que no debería estar aquí, sugiriendo un espacio adyacente filtrándose por la costura. Te giras a mirar. No está. Solo fue alguna vez periférico.",
+        "La temperatura cambia. No gradualmente — entre un paso y el siguiente, el frío se convierte en algo que no se resuelve ni en frío ni en calor. Tu cuerpo reporta datos contradictorios.",
+        "Un silencio que no es silencioso. Un silencio con textura y peso, como si algo estuviera presente y hubiera decidido dejar de hacer ruido en vez de estar ausente.",
+        "La geometría es aproximadamente correcta. Aproximadamente. Los ángulos de las esquinas sugieren algo ligeramente distinto de noventa grados — no lo bastante mal para identificarlo, lo bastante mal para registrarse.",
+        "En algún lugar detrás de ti, una puerta se cierra. No entraste por una puerta.",
+        "El vacío es púrpura donde se ha asentado en sí mismo. Aquí se ha asentado. La estática es baja. Lo equivocado es la línea base. Así se ve la calma aquí.",
+        "Un olor a algo quemado y dulce, que dura precisamente lo justo para notarlo y no lo suficiente para ubicarlo. Luego ozono. Luego nada. La secuencia puede repetirse. No estás seguro de que no lo haya hecho ya.",
+        "Espacio, aquí. Más del que la entrada sugería. Las paredes están más lejos de lo que deberían, dado por dónde entraste, dado lo que recuerdas de la forma del pasaje."
+      ],
+      "middle": [
+        "Una puerta en el centro del suelo, abriéndose hacia abajo a una oscuridad púrpura. La puerta misma es horizontal — con bisagras correctas para una pared, instalada aquí. Alguien la puso ahí. Tiene el pestillo echado.",
+        "Marcas en la pared a la altura de los ojos, luego otra vez a nivel del suelo, luego otra vez en el techo. Las mismas marcas. Tres veces. Cada conjunto rayado desde una dirección, como si tres personas hubieran estado de pie en tres orientaciones y cada una hubiera visto lo mismo.",
+        "Una silla en medio de un espacio vacío, mirando una pared que no tiene nada. Alguien se sentó aquí el tiempo suficiente para que la piedra bajo la silla se desgastara un poco. Sientes la impresión de un propósito que no puedes identificar.",
+        "Marcas de rayado contando algo. Veintitrés, y la cuenta vuelve a empezar. Veintitrés otra vez. Un tercer grupo de veintitrés. La persona se detuvo tras tres repeticiones. No sabes qué contaba.",
+        "El pasaje continúa en ambas direcciones desde aquí. Viniste de una. No recuerdas de cuál. Ambas direcciones parecen por igual la dirección de la que viniste.",
+        "Un objeto en el suelo que reconoces. Tú no lo pusiste ahí. Puede que lo hayas tenido, alguna vez. No estás seguro de si lo dejaste aquí o si llegó sin tu participación.",
+        "A la pared de tu izquierda le falta una sección. No rota — ausente. El espacio donde debería estar es solo espacio. Nada hay en el espacio. Nada ha estado siempre en ese espacio. La pared de tu derecha está exactamente donde debería.",
+        "Tu voz, desde una dirección que no estás mirando, dice una palabra. La palabra es tu nombre, o algo lo bastante parecido como para que no sepas si el vacío lo pronuncia mal o si tú lo recuerdas mal.",
+        "Un corredor se ramifica aquí en tres pasajes. Caminaste por este cruce exacto en un descenso anterior — la misma irregularidad en la pared izquierda, el mismo olor equivocado desde el centro. O caminaste por algo parecido. O estás a punto de hacerlo.",
+        "Evidencia de construcción: marcas en el suelo que sugieren intención, herramientas dispuestas en un patrón, una porción de pared empezada y sin terminar. La construcción es reciente. El constructor no está.",
+        "El suelo se inclina hacia arriba adelante y hacia abajo detrás de ti, pero desde tu posición el suelo parece plano. No se puede confiar en el gradiente. No se puede confiar en tu memoria del gradiente.",
+        "Algo estuvo aquí. El espacio tiene la cualidad de una ocupación reciente — un calor que no pertenece, una disposición de la nada que sugiere que algo estuvo presente hace poco y ahora está ausente. La ausencia es fresca."
+      ],
+      "closing": [
+        "El espacio no se resuelve en certeza. Avanzas hacia él de todos modos. La certeza es un recurso que no empacaste.",
+        "Nada se ha confirmado como amenaza. Nada se ha confirmado como seguro. Tienes la impresión de ser observado por algo que aún no ha decidido qué pensar de ti.",
+        "La estática tiene el mismo volumen que ha tenido. Eres consciente de que has empezado a interpretarla como retroalimentación — la atención del vacío, registrándote. Esta interpretación puede ser correcta.",
+        "Avanzas. El espacio detrás de ti permanece como estaba. O cambia. O nunca fue lo que pensabas. No puedes mirarlo y avanzar al mismo tiempo.",
+        "No hay razón para no continuar. Esto es lo más cercano a la seguridad que existe aquí. Continúas.",
+        "El vacío no observa con hostilidad. Observa con la atención de algo que rara vez ha encontrado algo tan coherente como tú. Eres, en este lugar, inusual.",
+        "Lo que has visto no suma una conclusión. Lo anotas y sigues. El vacío tiene muchas salas que no suman conclusiones.",
+        "El camino adelante tiene la misma cualidad de amenaza potencial que el camino atrás. Eliges adelante. La elección es la única herramienta que tienes que funciona con consistencia.",
+        "Compruebas el pasaje detrás de ti. Está ahí. Continúas. Estos son los hechos disponibles.",
+        "La estática se asienta en la frecuencia que has empezado a asociar con el vacío prestando atención. Continúas. Qué otra cosa harías.",
+        "En algún lugar de este espacio, persiste algo que no puedes ver. Esto no es información nueva. Esta es la condición. Has estado operando en esta condición desde que entraste.",
+        "El siguiente pasaje está adelante. Adelante es una dirección que, hasta ahora, se ha mantenido consistente. Lo das por hecho y te mueves."
+      ]
+    },
+    "combat": {
+      "opening": [
+        "El espacio es más grande de lo que la entrada sugería. Amplio y de oscuridad púrpura, con múltiples direcciones desde las que algo podría emerger. La estática es un poco más fuerte aquí. Un poco.",
+        "Nada está mal. La temperatura está mal. El olor está mal. Son cosas distintas. El espacio en sí no tiene nada de particular. Notas que los espacios sin nada de particular en el vacío tienen una cualidad específica.",
+        "Una sala sin amenaza evidente. La estática es más alta aquí — la clase de más alta que en tu experiencia se ha asociado con cosas resolviéndose de lo potencial a lo específico. Esperas. O no esperas.",
+        "El suelo está marcado. Rayado con líneas que podrían ser marcas de garras o podrían ser arquitectura — la geometría consistente con una intención, pero no está claro de quién. El aire está quieto. La quietud es deliberada.",
+        "Has estado en esta sala antes, o en algo tan parecido que la diferencia no es útil. La última vez — si hubo una última vez — algo estaba aquí. La estática sugiere que la categoría no ha cambiado.",
+        "El espacio se resuelve despacio. Lo que ves al principio es una cámara vacía. La resolución toma un momento. Has aprendido a estar atento durante el momento previo a que un espacio termine de resolverse.",
+        "Dos cosas parpadean al borde de la visión. No una — dos, superpuestas en la misma ubicación aproximada, compartiendo un espacio que solo puede contener una de ellas una vez que la observación se asiente.",
+        "Cálido. Parches de calor sin fuente, lo que en el vacío se ha vuelto la forma corta de algo presente que aún no se ha comprometido a ser visible. Los parches se mueven, apenas, cuando entras.",
+        "La estática cambia de tono. Un cambio demasiado pequeño para estar seguro, demasiado consistente para ser ruido. Cambió cuando cruzaste el umbral. No ha vuelto a cambiar.",
+        "La sala parece vacía. El vacío te ha enseñado la distinción entre parece vacía y está vacía. Esta sala tiene la cualidad de lo primero. La tratas en consecuencia.",
+        "Algo en la periferia — no del todo una forma, no del todo una sombra. La clase de presencia que el vacío produce cuando está ensamblando una amenaza específica con la materia de probabilidad disponible.",
+        "La salida es visible desde aquí. Esto es sospechoso. En el vacío, las salidas visibles tienen una relación con las salidas reales que no es fiable. El espacio entre tú y la salida requerirá negociación."
+      ],
+      "middle": [
+        "Se resuelve. Las dos formas superpuestas colapsan en una: alta, rápida, observándote con la atención de algo que acaba de volverse real y todavía procesa qué significa ser real. Una Sombra de Probabilidad. Entraste en combate. Se convirtió.",
+        "Se parece a ti. Tu postura, tu distribución del peso, la forma en que te sostienes cuando estás en un espacio del que no estás seguro. Un Doble de Eco, construido con los datos de tu descenso, vistiendo tus elecciones recientes como piel. Te mira como tú miras las decisiones difíciles.",
+        "La pared se mueve. No se rompe — se mueve, deliberadamente, una mano presionándola desde adentro. Luego emerge la forma entera: grande, lenta, intencional, colocándose entre tú y la salida. Un Arquitecto del Vacío. Empieza a reestructurar la sala sin reconocerte.",
+        "Múltiples — la palabra equivocada en este contexto, pero disponible. Formas que no sostienen una silueta consistente, cada una distinta cada vez que las atiendes. Los Desanclados. Han estado aquí en alguna forma todo el tiempo. Las formas se están volviendo más específicas.",
+        "Avanza desde la pared lejana. Recto. En una zona donde nada se mueve en línea recta, esto es su propia clase de amenaza. El Hueco, en casa aquí, moviéndose con la certeza de algo que ha perdido demasiado para desorientarse por perder más.",
+        "Tu voz viene de detrás de ti. Te giras. Una Cáscara de Eco, la boca abierta, repitiendo algo que todavía no ha pasado. O que le pasó a otro. O que ensambló con los rastros de descensos anteriores. Se extiende hacia ti, todavía hablando.",
+        "Parpadean — tres, o una tres veces, la distinción es funcionalmente irrelevante. Sombras Titilantes, cruzando la sala en distancias que la sala no debería permitir, ya en puntos distintos del mismo espacio simultáneamente.",
+        "Una segunda Sombra de Probabilidad se resuelve distinto: baja, defensiva, pautada. La primera se resolvió agresiva. Ninguna resolución era predecible. Lo anotas para calibración futura y atiendes el problema inmediato.",
+        "Te mira con algo que podría ser reconocimiento. El Doble de Eco sostiene tu equipo, lo que significa que sostiene los objetos que elegiste, lo que significa que refleja el descenso que estás teniendo. Sabe lo que has hecho. Fue construido con eso.",
+        "El Arquitecto del Vacío pausa su construcción para mirarte. Una evaluación breve. Luego vuelve a la pared, lo que significa que tienes hasta que termine para enfrentar algo lento y deliberado que construye hacia una geometría de sala que no favorecerá a nada humano.",
+        "No son hostiles en la forma en que las cosas suelen ser hostiles. Los Desanclados se mueven hacia ti porque la proximidad es su naturaleza — derivan hacia el objeto más coherente de un espacio, y tú eres, aquí, el objeto más coherente. Esto termina en el mismo lugar donde termina la hostilidad.",
+        "El vacío te muestra dos intenciones simultáneas por un momento. Luego una. La que te mostró puede o no ser hacia la que se resuelva. Esto es una Sombra de Probabilidad siendo honesta sobre su propia incertidumbre."
+      ],
+      "closing": [
+        "Lo que te mostró y lo que hizo no fueron lo mismo. Lo has procesado y te has ajustado. El ajuste es la única herramienta que funciona aquí.",
+        "La intención se declaró. La leíste. Leerla puede haber sido acertado. Puede. El vacío no certifica tus lecturas.",
+        "Peleas contra algo que no sabe qué hará después. Eso vuelve la estrategia aproximada. Lo aproximado es lo que tienes.",
+        "Todavía no se ha movido. Mostró una intención. La intención era específica. Las intenciones específicas de esta zona tienen una probabilidad de resolverse en lo que muestran. No una certeza.",
+        "La sala ha cambiado desde que entraste — no dramáticamente, solo de la forma específica que sugiere la atención de un Arquitecto del Vacío, o el eco de uno. La salida sigue aproximadamente donde estaba.",
+        "Dos de los Desanclados se mueven hacia ti. El tercero se contiene, o cambia, o se convierte en algo que se lee como contenerse. Orden de ataque: incierto. Secuencia: por descubrir.",
+        "Tu Doble de Eco eligió Resistir. Tú consideraste Golpear. Anticipó la anticipación de tu elección y contrarrestó. Te ajustas. Se ajustará a tu ajuste. Encuentra la divergencia.",
+        "La estática es fuerte durante el combate aquí — un correlato de la materia de probabilidad en flujo activo. No te dice nada salvo que las cosas están activamente inciertas. Eso ya lo sabías.",
+        "Mostró CHARGING. El vacío tiene razones para creer que puede resolverse como CHARGING. También puede resolverse como algo adyacente. Resiste, y sabe que resistir funciona contra la mayoría de las adyacencias.",
+        "La pelea no ha terminado. Estás vivo. El espacio sigue estando mal. Estos son los hechos disponibles."
+      ]
+    },
+    "corpse": {
+      "framing": [
+        "El cuerpo está aquí, y también aquí — una leve duplicación, dos posiciones ocupando el mismo espacio, como si la muerte los hubiera atrapado a medio paso entre dos momentos. El vacío no ha decidido dónde estuvieron finalmente.",
+        "No se han descompuesto. Esto no es preservación — el vacío simplemente no los ha procesado todavía. Esperan a que la zona decida qué hacer con un cuerpo, y la zona no ha decidido.",
+        "El cuerpo está fresco, o parece fresco, lo que aquí puede significar lo mismo o puede significar solo la apariencia. El vacío recicla mal. Cosas que deberían haber envejecido no lo han hecho. Cosas que deberían haberse quedado han derivado.",
+        "Su contorno parpadea. No el cuerpo — el contorno, el borde donde terminan y comienza el vacío. La frontera todavía negocia. Están casi del todo idos. Casi.",
+        "Dos cuerpos. La misma persona. El vacío hizo una copia en el momento de la muerte, o atrapó la muerte dos veces, o los descensos que parecen uno a veces son dos. Ambas versiones del mensaje están en la misma letra.",
+        "El cuerpo está posicionado como en pleno movimiento — congelado entre un paso y una decisión, detenido en el momento de una elección. El vacío detuvo el tiempo aquí, o ellos se detuvieron de la única forma disponible.",
+        "La claridad los abandonó antes del final. Lo ves en la calidad de las marcas que hicieron. Las letras se volvieron inciertas hacia el final — no asustadas. Inciertas. La distinción es específica y relevante aquí.",
+        "Intentaban irse cuando ocurrió. Su cuerpo mira en la dirección de la salida — o de lo que era la dirección de la salida cuando se movían hacia ella. La salida puede haberse movido.",
+        "El espacio a su alrededor es estable. Más estable que la sala circundante. Como si su presencia hubiera dejado un bolsillo de coherencia que el vacío aún no ha sobrescrito. Lo hará.",
+        "Están exactamente donde cayeron. El vacío no los movió. Esto es inusual. El vacío mueve las cosas. Este cuerpo, en esta ubicación, ha permanecido. No hay explicación disponible para la excepción."
+      ],
+      "discoveryBeats": [
+        "Una forma que no debería estar horizontal.",
+        "La estática cae en una dirección específica — hacia la pared lejana, una ausencia localizada de interferencia que sugiere que algo asentado ha desplazado la materia de probabilidad.",
+        "Tu cara. El cuerpo tiene tu cara, o algo tan parecido que la diferencia requiere atención para establecerse. La muerte de un Doble de Eco — construido a partir de ti, muerto en una pelea que pudo ser contigo, o con la versión de ti de un descenso anterior.",
+        "Las marcas del suelo: no marcas de garras, no arquitectura intencional. Un patrón hecho por algo moviéndose en círculos apretados — paciente, repetido — antes de detenerse.",
+        "Sus manos siguen alzadas. Lo que fuera que sostenían, lo sostenían cuando terminó. La posición se mantiene, bloqueada. El vacío preservó la postura.",
+        "Un olor distinto de la línea base de la zona: algo que pertenece al mundo de arriba — tierra, o el frío específico del clima y no el frío sin contexto del vacío. Quienes hayan sido, trajeron ese olor consigo.",
+        "Dos rastros de huellas que llevan a una sola posición. Ninguna huella de salida. El camino converge aquí. La convergencia es toda la historia.",
+        "El eco de su última palabra todavía circula — apenas audible, degradándose, girando en la estática. No las palabras que siguen, solo esa. No logras distinguir la palabra. Solo que hubo una.",
+        "Los objetos que llevaban siguen aquí. Algunos los reconoces — no de su descenso específico, sino por su tipo. Puedes leer el descenso que estaban teniendo en lo que dejaron atrás.",
+        "Una quietud localizada en una parte de la sala — un espacio donde la probabilidad ha dejado de moverse. El vacío suele moverse. Aquí, en este punto, se ha detenido. El cuerpo está en el centro de la quietud."
+      ]
+    },
+    "cache": {
+      "locationLines": [
+        "Un bolsillo del vacío donde la estabilidad es inexplicable y no requiere explicación. Las paredes están donde están las paredes. El suelo es un suelo. La estática está por debajo del umbral de lo audible.",
+        "Una sala que ha decidido ser una sala. No transicional, no incierta — la clase de espacio que el vacío produce rara vez y por poco tiempo, donde la geometría se sostiene y el aire es lo que el aire es.",
+        "La claridad regresa aquí. No restaurada — aquí, entiendes las cosas con claridad. Las paredes no sugieren espacios adyacentes. El suelo no vacila. Algo en esta ubicación resiste la incertidumbre del vacío. Por ahora.",
+        "El Fantasma del Cartógrafo ha estado aquí. Mapas cubren tres superficies — correcciones sobre correcciones, rutas a lápiz sobre rutas a tinta. La estación es funcional y de ocupación reciente y te dirá más de lo que esperabas.",
+        "Un espacio entre los estados mayores de la zona — ni vacío profundo ni borde. La estática ha sido desplazada, empujada fuera de este bolsillo por algo que prefiere la quietud. Provisiones en el rincón. Alguien sabía dónde estaba el bolsillo.",
+        "El púrpura de aquí se ha hundido en algo más azul — una calidad distinta de oscuridad, una que se ha asentado en vez de agitarse. La temperatura es consistente. El aire tiene una cualidad específica: no amenazante.",
+        "Un punto de anclaje — uno de los raros nodos estables del vacío, una ubicación a la que la inestabilidad de la zona no ha llegado o de la que ha retrocedido. Lo sientes en tu claridad, que se agudiza. Los objetos de aquí están donde están.",
+        "Estabilidad estructural sin razón estructural. La sala debería ser tan incierta como las salas de alrededor. No lo es. La excepción no se explica. Se sostiene por ahora, y ahora es lo que tienes."
+      ],
+      "toneClosers": [
+        "La estabilidad es real. Mientras es real, es real. La inestabilidad del vacío está justo afuera de este bolsillo, y el bolsillo no es permanente, pero el momento es genuino y deberías usarlo.",
+        "Descansa. Toma lo que hay aquí. La estática volverá — no está ausente, solo por debajo del oído — pero durante este tramo del descenso, el espacio es lo que dice ser.",
+        "La claridad que tienes aquí no persistirá en la siguiente sala. Lleva contigo lo que puedas de ella. El vacío empieza de nuevo en el umbral.",
+        "Algo mantiene estable esta sala. No sabes qué. El no saber es manejable aquí, donde el algo está funcionando. Será menos manejable cuando te vayas.",
+        "Una consistencia breve. El inframundo las produce, y son breves y no debe confiarse en que duren y son, de todos modos, dignas de usarse mientras están presentes.",
+        "El Fantasma del Cartógrafo trabaja en el rincón, actualizando mapas que quedarán obsoletos antes de que la tinta se seque. La futilidad es visible y no parece perturbar al Fantasma. Encuentras esto reconfortante.",
+        "Tómate un momento. El vacío seguirá siendo el vacío cuando te vayas — en la misma proporción, con la misma falta de fiabilidad. Tómate el momento de todos modos.",
+        "La seguridad de aquí es condicional. La condición es: mientras estés aquí. Estás, por ahora, aquí."
+      ]
+    },
+    "exit": {
+      "opening": [
+        "Un pasaje donde la estática cae. No gradualmente — un umbral, un punto específico en el que la interferencia se reduce a algo distinguible del silencio. Esta cualidad no ha caracterizado a ningún otro pasaje de la zona.",
+        "El aire de aquí sabe al mundo más allá del vacío — no al ozono y al error de azúcar quemada de la zona, sino a algo que pertenece al inframundo consistente, a zonas con una temperatura que sigue reglas.",
+        "Esta salida se presenta como una salida. Otros pasajes se han presentado como salidas en esta zona y no lo eran. Este tiene una cualidad que los otros no tenían: la geometría se mantiene firme. Los bordes no se difuminan.",
+        "Has estado en salas de eco — espacios que se repetían, que te devolvían a estados anteriores. Este pasaje no tiene esa cualidad. Tiene la cualidad de llevar a un lugar específico, y ese lugar parece ser afuera.",
+        "La estática es direccional aquí. No uniforme — disminuye en la dirección del pasaje adelante, como si el vacío se adelgazara en esa dirección, como si hubiera menos de él entre tú y adonde sea que esto lleve.",
+        "Frío desde el pasaje — no la temperatura variable y sin contexto del vacío, sino un frío específico que pertenece a la piedra y a la profundidad, el frío fiable del inframundo. El pasaje lleva de vuelta hacia lo fiable.",
+        "Los parpadeos periféricos del vacío están ausentes en este umbral. La filtración de realidad adyacente que ha estado presente desde que entraste — los colores que no deberían estar aquí, los otros espacios casi visibles — se detiene aquí.",
+        "El suelo del pasaje adelante está marcado de otra forma que el suelo del vacío — no geometría del vacío, no obra de arquitecto, solo piedra gastada por el paso repetido. Han venido pies por aquí y han continuado en una dirección."
+      ],
+      "middle": [
+        "El púrpura se desvanece mientras caminas. No hacia lo oscuro — hacia una oscuridad distinta, una que pertenece a la piedra y no a la ausencia. La estática cae a nada. El aire vuelve a convertirse en algo que tu cuerpo reconoce.",
+        "Algo se suelta. No como sensación física sino como la ausencia de una presión que habías estado cargando, una tensión que resulta haberse acumulado desde que cruzaste hacia el vacío. Ha terminado contigo, o tú has terminado con él.",
+        "La cualidad específica del vacío — la sensación de ser lo más sólido en un espacio no del todo decidido sobre su propia existencia — se desvanece. El espacio se vuelve más sólido que tú. Te vuelves ordinario. Esto es un alivio.",
+        "Tus pasos cambian. En el vacío, los pasos aterrizaban con una leve incertidumbre — podías oír al suelo evaluando cada contacto. Aquí, el suelo simplemente es, y tus pasos suenan como pasos.",
+        "Los parpadeos cesan. Las voces que a veces eran tu voz cesan. El eco de cosas que aún no habían pasado cesa. La estática, persistente desde la entrada, cae por debajo del umbral de lo audible y luego desaparece.",
+        "Un umbral que no se anuncia — simplemente comprendes, tras unos pasos, que la cualidad del vacío quedó atrás. La transición ocurrió sin ceremonia. Estabas dentro, y ahora estás más allá.",
+        "Las Sombras de Probabilidad no pueden llegar aquí. Los Arquitectos del Vacío no pueden construir aquí. Los Dobles de Eco fueron hechos del material del vacío y no pueden seguirte más allá de la costura. Has cruzado una línea que ellos no pueden cruzar.",
+        "Compruebas el pasaje detrás de ti. El vacío está ahí. Está exactamente donde estaba. No te ha seguido. No sigue — solo retiene lo que entra. Entraste. Saliste. Deja que esos hechos coexistan sin comentario."
+      ],
+      "closing": [
+        "Te miras las manos. Son tuyas. El descenso es tuyo. Saliste de una zona que no confirma nada. Esto es, dadas las circunstancias, significativo.",
+        "El vacío quedó atrás. Todo lo que sacas de él es real. La claridad que encontraste y perdiste y encontraste. Las elecciones que hiciste. El descenso que tuviste. Real. Tuyo.",
+        "Eres, del otro lado, la persona que entró. En su mayor parte. El vacío toma algo — no dramáticamente, no de una forma que puedas inventariar — pero eres en su mayor parte la misma persona. Eso es, aquí, suficiente.",
+        "El peso del descenso te sigue afuera. Lo que elegiste. Lo que no elegiste. Los Dobles de Eco construidos con tus caminos no elegidos. Están detrás de ti. Estás delante de ellos. Por ahora.",
+        "Te miras las manos para confirmar que son tuyas. Lo son. Revisas tu memoria del descenso para confirmar que ocurrió. Ocurrió. El vacío hace necesarias estas comprobaciones. Las has hecho. Has terminado.",
+        "Fuera. La palabra significa aquí algo que dejó de significar en el vacío. Fuera en oposición a dentro. Un binario fiable. Estás en el fuera. Se sostiene.",
+        "La zona no te libera con ceremonia. Simplemente dejas de estar dentro. La salida era real. Has cruzado. Estos hechos están confirmados y no requieren más verificación. Probablemente.",
+        "Volverás. Lo sabes de la misma forma en que supiste, al cruzar hacia el vacío, que algo observaba. No conocimiento, exactamente. La sensación de una cosa que es verdad."
+      ]
+    },
+    "options": {
+      "cautious": [
+        "Pisa donde el suelo se sostiene",
+        "Avanza por el borde estable",
+        "Avanza un espacio a la vez",
+        "Sigue por donde la estática es más silenciosa",
+        "Avanza con cuidado por lo incierto"
+      ],
+      "aggressive": [
+        "Comprométete y muévete",
+        "Cruza antes de que cambie",
+        "Decide y ve",
+        "Actúa antes de que la intención cambie",
+        "Empuja a través de la incertidumbre"
+      ],
+      "investigative": [
+        "Prueba la pared",
+        "Sondea el espacio",
+        "Atiende a los detalles",
+        "Estudia lo que no cuadra",
+        "Presiona contra lo equivocado"
+      ],
+      "retreat": [
+        "Retrocede del borde",
+        "Vuelve al espacio conocido",
+        "Retírate de lo que viste",
+        "Aléjate de la forma",
+        "Declina la invitación"
+      ]
+    }
+  },
+  "bestiary": {
+    "shared": [
+      "The Hollow",
+      "Echo Husks",
+      "Pale Oracle",
+      "The Unnamed"
+    ],
+    "local": [
+      {
+        "name": "Probability Shade",
+        "tier": 1,
+        "health": {
+          "min": 30,
+          "max": 60
+        },
+        "behaviors": [
+          "AGGRESSIVE",
+          "DEFENSIVE",
+          "CHARGING",
+          "ERRATIC"
+        ],
+        "description": "Existe en superposición hasta que el combate la colapsa en algo específico. Alta varianza. Cada encuentro revela algo distinto.",
+        "emoji": "🌫️",
+        "artUrl": "/creatures/probability-shade.webp"
+      },
+      {
+        "name": "Echo Double",
+        "tier": 2,
+        "health": {
+          "min": 70,
+          "max": 95
+        },
+        "behaviors": [
+          "STALKING",
+          "AGGRESSIVE",
+          "DEFENSIVE",
+          "RETREATING"
+        ],
+        "description": "Una copia de ti moldeada en materia de probabilidad. Tiene tus estadísticas actuales y tus movimientos recientes. Pelea como tú peleas. Te mira con tu cara.",
+        "emoji": "🪞",
+        "artUrl": "/creatures/echo-double.webp"
+      },
+      {
+        "name": "Void Architect",
+        "tier": 2,
+        "health": {
+          "min": 80,
+          "max": 110
+        },
+        "behaviors": [
+          "DEFENSIVE",
+          "CHARGING",
+          "STALKING",
+          "AGGRESSIVE"
+        ],
+        "description": "Remodela las salas en pleno encuentro. Lento, deliberado, inamovible en su propósito. Las paredes se desplazan cuando sus manos las tocan. Debe morir antes de que la geometría de la sala se vuelva innavegable.",
+        "emoji": "🏗️",
+        "artUrl": "/creatures/void-architects.webp"
+      },
+      {
+        "name": "The Unanchored",
+        "tier": 1,
+        "health": {
+          "min": 35,
+          "max": 55
+        },
+        "behaviors": [
+          "ERRATIC",
+          "CHARGING",
+          "AGGRESSIVE"
+        ],
+        "description": "No puede mantener una forma consistente por más de unos segundos. El tipo de daño cambia cada turno. No es deliberadamente caótico — simplemente es incapaz de sostener un estado consistente. Esto es lo que la existencia es para ellos.",
+        "emoji": "〰️",
+        "artUrl": "/creatures/the-unanchored.webp"
+      },
+      {
+        "name": "The Unwritten",
+        "tier": 3,
+        "health": {
+          "min": 180,
+          "max": 220
+        },
+        "behaviors": [
+          "CHARGING",
+          "AGGRESSIVE",
+          "DEFENSIVE",
+          "ERRATIC",
+          "STALKING"
+        ],
+        "description": "Construido con cada elección que no hiciste en este descenso. Conoce la forma de tu descenso porque es el espacio negativo de tu descenso. Habita la opción que no seleccionaste. Sabe lo que ibas a hacer.",
+        "emoji": "🕳️",
+        "artUrl": "/creatures/the-unwritten.webp"
+      }
+    ]
+  },
+  "depths": [
+    {
+      "name": "THE EDGE",
+      "tier": 1,
+      "roomRange": [
+        1,
+        4
+      ],
+      "description": "Donde el inframundo termina y el vacío comienza. La realidad todavía se sostiene, en su mayor parte."
+    },
+    {
+      "name": "THE UNFINISHED",
+      "tier": 2,
+      "roomRange": [
+        5,
+        8
+      ],
+      "description": "Salas a medio construir. Paredes que no llevan a ninguna parte. Puertas que se abren a más puertas."
+    },
+    {
+      "name": "THE NOTHING",
+      "tier": 3,
+      "roomRange": [
+        9,
+        12
+      ],
+      "description": "Vacío puro. No estás seguro de estar aquí."
+    }
+  ],
+  "dungeonLayout": {
+    "totalRooms": 12,
+    "structure": [
+      {
+        "type": "explore",
+        "template": "edge"
+      },
+      {
+        "type": "explore",
+        "template": "edge-wrong"
+      },
+      {
+        "type": "combat",
+        "template": "probability-shade"
+      },
+      {
+        "type": "corpse",
+        "template": "clarity-loss"
+      },
+      {
+        "type": "explore",
+        "template": "unfinished"
+      },
+      {
+        "type": "combat",
+        "template": "void-architect"
+      },
+      {
+        "type": "cache",
+        "template": "stable-pocket"
+      },
+      {
+        "type": "explore",
+        "template": "echo-room"
+      },
+      {
+        "type": "explore",
+        "template": "deep-void"
+      },
+      {
+        "type": "corpse",
+        "template": "echo-loop"
+      },
+      {
+        "type": "combat",
+        "template": "echo-double"
+      },
+      {
+        "type": "combat",
+        "template": "unwritten",
+        "boss": true
+      }
+    ]
+  },
+  "boss": "The Unwritten",
+  "audio": {
+    "ambient": {
+      "explore": "/audio/zones/void-beyond/ambient-explore.mp3",
+      "combat": "/audio/zones/void-beyond/ambient-combat.mp3"
+    },
+    "sfx": {
+      "footstep": "/audio/zones/void-beyond/footstep.mp3",
+      "descend": "/audio/zones/void-beyond/depth-descend.mp3",
+      "environment": [
+        "/audio/zones/void-beyond/static-burst.mp3",
+        "/audio/zones/void-beyond/reality-glitch.mp3",
+        "/audio/zones/void-beyond/wrong-echo.mp3"
+      ],
+      "atmosphere": [
+        "/audio/zones/void-beyond/distant-voice.mp3",
+        "/audio/zones/void-beyond/silence-wrong.mp3"
+      ],
+      "boss": {
+        "intro": "/audio/zones/void-beyond/boss-intro.mp3",
+        "roar": "/audio/zones/void-beyond/boss-roar.mp3"
+      }
+    }
+  }
+}

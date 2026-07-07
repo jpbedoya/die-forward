@@ -1,0 +1,413 @@
+{
+  "id": "frozen-gallery",
+  "version": "1.0.0",
+  "meta": {
+    "name": "THE FROZEN GALLERY",
+    "tagline": "Thời gian dừng lại ở đây. Người chết được lưu giữ nguyên vẹn.",
+    "element": "ice",
+    "difficulty": 2,
+    "colors": {
+      "primary": "#0d1f2d",
+      "accent": "#7eceff",
+      "text": "#c8ecff"
+    },
+    "mechanic": "CHILL",
+    "mechanicDescription": "Các tầng buốt giá làm giảm hồi phục thể lực. Đóng băng kẻ địch để bỏ qua lượt của chúng. Kẻ địch băng miễn nhiễm.",
+    "unlockRequirement": "Hoàn thành một cuộc xuống sâu",
+    "emoji": "❄️"
+  },
+  "lore": "Thứ gì đó đã thở ra một lần, sâu bên dưới những nơi chốn có tên, và mọi thứ dừng lại. Những ngọn lửa vẫn đang cháy bên trong các bức tường. Người chết vẫn mang nguyên vẻ mặt của mình. Thứ đã thở ra ấy vẫn chưa hít vào.",
+  "fragments": {
+    "explore": {
+      "opening": [
+        "Cái lạnh đến trước ánh sáng, lắng vào phổi ngươi với sự kiên nhẫn của thứ đã chờ đợi trong lối đi này từ rất lâu.",
+        "Hơi thở ngươi đọng thành mây và không tan đi. Không khí quá tĩnh lặng để mang nó đi đâu. Ngươi nhìn nó lơ lửng, loãng dần và biến mất, và sự im lặng vẫn còn nguyên.",
+        "Không có mùi gì ở đây. Cái lạnh đã giết chết nó — dù là mùi mục rữa, mùi khoáng chất, hay bất cứ sinh vật nào lẽ ra sẽ tự báo hiệu ở một vùng khác. Nơi đây chỉ có sự vắng mặt.",
+        "Tiếng bước chân ngươi vang lên rồi tắt lịm. Sàn đá phủ một lớp sương giá mịn đến mức trông như hơi thở được trải lên mặt đá. Ngươi để lại dấu chân phía sau. Ngươi là thứ duy nhất đang chuyển động.",
+        "Hành Lang được thắp sáng từ bên trong các bức tường. Những ngọn đuốc bị phong kín trong băng từ hàng chục năm trước vẫn cháy — màu hổ phách, không lay động, tỏa thứ ánh sáng vươn về phía ngươi nhưng không mang theo hơi ấm.",
+        "Cái lạnh ép vào mặt ngươi như một bàn tay. Không đẩy — chỉ hiện diện. Thứ lạnh không đòi ngươi phải bước nhanh hơn.",
+        "Sự im lặng trọn vẹn đến thế này có kết cấu riêng. Ngươi nghe máu chảy trong chính tai mình. Ngươi nghe nhịp tim mình. Ngươi nghe những âm thanh nhỏ bé của chính sự hiện diện của mình, và đó là những âm thanh duy nhất tồn tại.",
+        "Lớp sương giá trên tường không phải một lớp phủ. Nó là một biên niên — tầng chồng tầng của những mùa lạnh, mỗi tầng ép sâu hơn. Ngươi thấy được năm tháng theo mặt cắt nơi băng đã nứt.",
+        "Kim loại sẽ dính chặt vào ngón tay trần của ngươi ở đây. Ngươi biết điều này mà không cần thử. Không khí mang theo lời cảnh báo ấy trong sức nặng của nó, trong cách nó ép ngược lại khi ngươi thở vào nó.",
+        "Nơi ngưỡng cửa, cái lạnh là một bức tường ngươi phải bước xuyên qua. Ở phía bên kia: sự im lặng sâu hơn bất cứ thứ gì bên trên, và cái tĩnh lặng đặc thù của một nơi đã không bị quấy động suốt nhiều năm.",
+        "Ánh sáng xuyên qua những bức tường băng mang màu hổ phách và trọn vẹn, như ánh nến — nhưng không ngọn nến nào lay động. Không gì ở đây chuyển động. Hành Lang giữ mọi thứ đúng nguyên như nó từng là.",
+        "Sự thay đổi nhiệt độ là lời cảnh báo đầu tiên. Không phải một luồng gió — nơi đây không có gió lùa — mà là một sự lắng xuống, như thể chính không khí đã trở nên nặng hơn vì lạnh."
+      ],
+      "middle": [
+        "Một bóng người đứng ở bức tường xa, quay lưng về phía ngươi, một cánh tay giơ lên như đang chỉ vào thứ gì đó trong góc. Nó đã chỉ như thế lâu hơn cả quãng đời ngươi từng sống. Chiếc áo khoác của nó vẫn còn tốt.",
+        "Dòng chữ trên tường đứt giữa câu. Cây bút trâm nằm trên sàn bên dưới, bị đánh rơi chứ không phải được đặt xuống. Dù học giả kia đang viết gì, Hành Lang đã trả lời trước khi câu văn kết thúc.",
+        "Hai bóng người đối diện nhau qua một mặt bàn thấp, miệng mở, tay vươn ra — giữa cuộc tranh cãi, giữa lời nói, dừng lại trong khoảnh khắc giữa lời buộc tội và lời đáp trả. Vẻ mặt của họ vẫn còn đọc được.",
+        "Một chiếc ủng trẻ con gần lối đi xa. Rồi đến đứa trẻ — đông cứng sát tường, hai tay che mặt, như thể việc không nhìn thấy có thể đã giúp được gì. Đôi bàn tay vẫn nguyên vẹn hoàn hảo.",
+        "Những ngọn đuốc trong các bức tường phong kín không hắt ra bóng tối nào để ngươi ẩn mình. Mọi góc đều được chiếu sáng. Ngươi thấy được mọi gương mặt. Không gương mặt nào nhìn ngươi. Ngươi kiểm tra lại hai lần.",
+        "Một bóng người ở đây đang chuyển động khi nó dừng lại. Trọng tâm dồn về trước, hai tay ngả về sau, mọi đường nét cơ thể đều nói lên hai chữ tiến tới. Nó chẳng đi đến đâu. Hành Lang rất kiên nhẫn về điều đó.",
+        "Sương giá đã chất dày trên vai bóng người trong hốc tường — hàng năm trời bồi tụ, một biên niên địa chất về quãng thời gian nó đã chờ đợi ở đó. Các tầng lớp rất dày.",
+        "Hành Lang giữ một căn phòng đầy những người hành hương được lưu giữ giữa lời cầu nguyện, tay giơ cao, đầu cúi thấp, môi hé mở quanh những âm tiết sẽ không bao giờ trọn vẹn. Lời cầu nguyện đã chờ được hồi đáp lâu hơn cả tuổi đời của thứ ngôn ngữ dùng để thốt ra nó.",
+        "Một cuốn sách mở trên giá đọc, lật đến chương viết về lịch sử thuở đầu của vùng đất. Người đọc vẫn còn đây — ngồi yên, một ngón tay đặt trên trang giấy. Họ đã hài lòng vì điều gì đó vừa tìm thấy. Điều ấy hiện rõ trên gương mặt họ.",
+        "Băng trong bức tường xa đã lưu giữ một thứ với độ trong hoàn hảo: một gương mặt ép sát mặt trong của nó, mắt mở, nhìn ra ngoài. Nhìn vào căn phòng này. Nhìn vào bất cứ thứ gì đi qua đây. Nhìn vào ngươi.",
+        "Chữ viết tay trên băng — không phải khắc mà là ấn, như thể ai đó viết lên bề mặt khi nó còn mềm và cái lạnh đã lưu giữ vết hằn. Nét chữ cẩn thận. Ai đó đã không hề vội vã.",
+        "Một đống trang bị gần trung tâm — ba lô, dụng cụ, vũ khí — và không ai gắn liền với chúng. Kẻ đã vứt lại những thứ này đã bỏ chạy. Hành Lang bắt được họ ở một nơi khác."
+      ],
+      "closing": [
+        "Cái lạnh không đe dọa. Nó chờ đợi. Nó vẫn luôn giỏi chờ đợi hơn ngươi.",
+        "Điều gì đã xảy ra ở đây đều xảy ra cùng một lúc. Căn phòng lưu giữ chứng tích của một khoảnh khắc duy nhất. Khoảnh khắc tiếp theo đã bị trì hoãn từ rất lâu rồi.",
+        "Hành Lang giữ gìn người chết của nó tốt hơn cả cách người sống tự lo cho mình. Sự thật ấy phủ lên ngươi như thêm một độ lạnh nữa.",
+        "Ngươi là thứ ấm nhất trong căn phòng này, hơn hẳn mọi thứ khác. Hành Lang đã nhận ra.",
+        "Phía sau ngươi, lối đi in dấu chân ngươi trên lớp sương giá. Không gì khác quấy động bề mặt. Nhưng cái lạnh không cần quấy động bề mặt để di chuyển.",
+        "Không có nơi nào để vội vã đến ở đây. Hành Lang có tất cả thời gian trên thế gian. Những thứ nó lưu giữ cũng vậy.",
+        "Sự im lặng không hề trống rỗng. Nó chứa đầy thứ gì đó ngươi chưa định vị được. Ngươi tiến về lối đi kế tiếp. Sự im lặng bám theo ở đúng khoảng cách ấy.",
+        "Ngươi rời khỏi căn phòng và những bóng người vẫn giữ nguyên tư thế, như chúng vẫn luôn giữ nguyên. Chúng không nhìn ngươi đi. Chúng không cần phải nhìn.",
+        "Mọi bề mặt nơi đây đều mang dấu hằn của thứ từng ở đây trước khi băng giá ập đến. Hành Lang không quên điều gì. Nó chưa quên rằng ngươi đã đến.",
+        "Hơi ấm không tồn tại trong Hành Lang. Ngươi đang cầm cự với một nguồn dự trữ đang cạn dần, từng chút một, theo mỗi phút ngươi nán lại.",
+        "Những thứ được lưu giữ nơi đây đã chết mà không hề được báo trước. Họ không kịp gồng mình. Họ không kịp biết. Hành Lang dạy bài học này cho mọi kẻ bước vào. Sớm hay muộn.",
+        "Cái lạnh đã làm nơi này ngừng lại là thứ lạnh tuyệt đối. Nó không thương lượng. Nó không cảnh báo. Hành Lang đứng đó như bằng chứng cho điều xảy ra khi nó quyết định."
+      ]
+    },
+    "combat": {
+      "opening": [
+        "Nhiệt độ trong căn phòng này tụt xuống ngay khoảnh khắc ngươi bước vào. Một độ, rồi hai, rồi đến mức khiến ngón tay ngươi buốt nhức xuyên qua lớp vải quấn.",
+        "Căn phòng chứa hàng chục bóng người được lưu giữ và ngươi biết, không thể nói rõ vì sao, rằng con số ấy sai. Một trong số chúng không hề đóng băng.",
+        "Hơi thở ngươi mờ đục rồi tan biến. Rồi ngươi nhận ra: lớp sương giá trên sàn gần bức tường xa không đồng đều. Thứ gì đó đã đứng ở đó gần đây. Thứ gì đó đã xô lệch lớp băng khi nó di chuyển.",
+        "Sự tĩnh lặng nơi đây khác với sự tĩnh lặng trong những căn phòng khác. Không phải cái tĩnh của sự lưu giữ. Cái tĩnh của thứ đã ngừng chuyển động vì ngươi vừa đến.",
+        "Băng nứt — một âm thanh duy nhất, có hướng, rồi không gì nữa. Âm thanh phát ra từ bên trong căn phòng, không phải từ tường. Không phải từ trần. Từ sàn nhà, nơi có thứ gì đó đang nằm.",
+        "Hành Lang giữ cái lạnh của nó theo từng tầng, mỗi phòng một cung bậc hơi khác. Phòng này lạnh hơn những phòng trước. Không phải vì độ sâu. Vì một sự hiện diện.",
+        "Những bóng người được lưu giữ dọc bức tường xa đang quay về một hướng khác so với lúc ngươi đi ngang ô cửa nhìn vào phòng này. Ngươi chắc chắn về điều đó. Bốn mươi giây trước, chúng quay mặt đi.",
+        "Thứ gì đó trong căn phòng này vẫn còn hơi ấm. Không nhiều. Chỉ vừa đủ để quấy động không khí, để tạo ra chênh lệch mờ nhạt mà cái lạnh lợi dụng. Ngươi cảm nhận được nó trước khi nhìn thấy nó.",
+        "Sương giá trên trần rơi xuống thành lớp bụi mịn — không phải do lắng đọng, mà do xô lệch. Thứ gì đó đã di chuyển trong này chưa lâu. Bụi sương vẫn còn lơ lửng.",
+        "Tiếng băng bị nén vang khắp căn phòng — tiếng rên rỉ trầm sâu, mang tính kết cấu, của sức nặng đang dịch chuyển, của thứ gì đó khổng lồ đang tìm thế cân bằng mới. Rồi âm thanh dừng lại. Rồi bóng người đầu tiên cử động.",
+        "Ngươi từng bước vào những căn phòng như thế này và thấy chúng trống rỗng. Căn phòng này không trống rỗng. Sự khác biệt nằm ở cách im lặng ngự trị — không phải sự im lặng của vắng mặt mà là sự im lặng của chú ý.",
+        "Ánh đuốc hổ phách hắt ra những cái bóng lẽ ra phải đứng yên. Một trong số chúng thì không. Một trong số chúng đã cử động chậm hơn một phần giây so với thứ tạo ra nó."
+      ],
+      "middle": [
+        "Kẻ Bị Lưu Giữ vươn tay về phía ngươi. Không đe dọa — chỉ vươn tới. Theo cách thứ gì đó vươn về phía vật ấm duy nhất trong một căn phòng rất lạnh. Chiếc áo khoác của nó vẫn còn tốt. Tên của ai đó được khâu bên trong cổ áo.",
+        "Oán Hồn Băng không có gương mặt. Chỉ là hình hài của cơn thèm khát, mang lấy hình dạng giá lạnh, ép mình qua khoảng không giữa hai bên. Nơi nó đi qua, nhiệt độ không khí tụt xuống và không hồi phục. Nó đang lượn vòng.",
+        "Lính Gác Sương Giá đã đứng ở ngưỡng cửa này từ trước khi Hành Lang đóng băng. Lớp băng trên vai nó xếp tầng như địa tầng đá. Giờ nó cử động, lần đầu tiên sau hàng chục năm, về phía ngươi.",
+        "Hai Kẻ Bị Lưu Giữ. Rồi ba. Họ từng là người hành hương — ngươi thấy được thứ họ mang theo khi họ ngừng lại. Băng đã nới lỏng vừa đủ để họ lại cử động, chậm rãi, hướng về hơi ấm. Hướng về ngươi.",
+        "Oán Hồn xuyên qua bức tường và nhiệt độ trong phòng tụt năm độ trong khoảng thời gian ngươi kịp quay người. Nó không tấn công. Nó đang ăn. Sự phân biệt ấy chẳng còn mấy ý nghĩa.",
+        "Kẻ Vỡ Vụn di chuyển sai cách — không như một cơ thể, mà như đống mảnh vụn. Bốn mảnh phối hợp, rồi năm, rồi nhiều hơn khi trận chiến kéo dài. Sàn nhà đang chật dần những phần của một thứ từng nguyên vẹn.",
+        "Tấm che mặt của Lính Gác Sương Giá phản chiếu gương mặt ngươi. Hình phản chiếu của ngươi quay đầu trước cả ngươi. Lớp băng trên giáp nó đủ dày để làm chệch hầu hết mọi thứ. Không có hầu hết ở đây. Chỉ có những gì ngươi đang có.",
+        "Oán Hồn Băng không tự báo hiệu. Chúng đến như một chênh lệch nhiệt độ, một cơn rút cạn đột ngột, một luồng buốt giá lắng vào những khớp xương ngươi không hề để ý là còn ấm cho đến khi chúng thôi ấm. Có hai con. Ít nhất.",
+        "Kẻ Bị Lưu Giữ tiến lên chậm đến mức ngươi suýt không nhận ra chuyển động. Giờ nó đã ở gần. Nó mang cái lạnh của hàng chục năm trong các khớp xương, trong đôi bàn tay, trong vẻ mặt nó mang khoảnh khắc Hành Lang bắt lấy nó.",
+        "Lính Gác Sương Giá đã ngủ yên. Ngươi đến quá gần. Giờ nó cử động — nghiến rít, chậm chạp, mỗi bước chân là một biến cố địa chất. Băng trên các khớp không làm nó chậm lại. Chỉ khiến nó ồn hơn.",
+        "Kẻ Vỡ Vụn từng bị đóng băng và đã nứt vỡ. Mỗi mảnh di chuyển độc lập, đói khát theo cách riêng. Tấn công mảnh lớn nhất tạo ra hai mảnh nhỏ hơn. Căn phòng đang đầy dần những mảnh rời.",
+        "Kẻ Bị Lưu Giữ nơi đây đến theo từng nhóm — người hành hương, học giả, những kẻ chỉ đơn thuần lạc lối. Họ tan giá cùng nhau, hướng về phía ngươi. Không ai trong họ trông sợ hãi. Họ trông như những người đã lạnh rất lâu và vừa mới nhận ra hơi ấm của ngươi."
+      ],
+      "closing": [
+        "Không có đường vòng. Chỉ có đường xuyên qua. Cái lạnh đang quan sát xem ngươi xoay xở thế nào.",
+        "Nó chưa từng vội vã. Nó sẽ không vội vã. Hành Lang không cần phải thế.",
+        "Nhiệt độ đã tụt dần từ lúc ngươi bước vào căn phòng này. Ngươi cần kết thúc chuyện này trước khi mất nhiều hơn những gì có thể lấy lại.",
+        "Dù nó từng là gì trước khi Hành Lang bắt lấy, giờ nó là thứ lạnh giá, và thứ lạnh giá luôn hướng về hơi ấm.",
+        "Lính Gác được đặt ở đây. Thứ gì đó đã quyết định rằng ngưỡng cửa này cần được canh giữ. Thứ ấy vẫn chưa đổi ý.",
+        "Những oán hồn đã lượn vòng đủ lâu. Chúng đã tìm ra khe hở trong hơi ấm của ngươi. Chúng đang tiến về phía đó.",
+        "Những kẻ được lưu giữ không hề vội. Họ đã kiên nhẫn lâu hơn mức ngươi có thể đo đếm. Họ sẽ kiên nhẫn chừng nào chuyện này còn kéo dài. Ngươi không đủ sức kiên nhẫn như họ.",
+        "Cái lạnh không đứng về phe nào. Nhưng ngươi là thứ ấm duy nhất trong căn phòng này, và hơi ấm là thứ mọi vật nơi đây đang vươn tới.",
+        "Băng kẽo kẹt trên đầu. Hành Lang ghi nhận trận chiến như một tòa nhà ghi nhận cơn địa chấn — một sự thừa nhận về kết cấu, không hơn. Nó đã trụ qua những điều tệ hơn. Ngươi nhỏ bé hơn những điều tệ hơn.",
+        "Tĩnh lặng. Quan sát. Lạnh giá."
+      ]
+    },
+    "corpse": {
+      "framing": [
+        "Cái lạnh đã lưu giữ họ hoàn hảo. Ngươi không thể nhìn thi hài này mà thấy sự phân hủy. Ngươi chỉ thấy một con người đã dừng lại, giữa mọi thứ, trong tình trạng hoàn hảo.",
+        "Hành Lang giữ gìn người chết của nó tốt hơn bất cứ nghi thức mai táng nào. Thi hài nơi đây nguyên vẹn hơn bất cứ thi hài nào ngươi từng tìm thấy — nguyên vẹn đến mức, ngươi nhận ra, ngươi chẳng còn quyền gì để thấy bất an.",
+        "Sương giá phủ lên họ, nhưng không che khuất. Băng là một môi trường, không phải một tấm màn. Vẻ mặt, thế đặt của đôi tay, hướng của ánh nhìn — tất cả được lưu giữ. Tất cả bày ra trước mắt ngươi.",
+        "Không gì phân hủy ở đây. Cái lạnh cấm điều đó. Thứ nằm trước mặt ngươi không phải là dấu tích gợi nhớ về một con người — nó chính là con người ấy, dừng lại, giữa lúc đang sống.",
+        "Trông họ như thể có thể tỉnh dậy. Sắc màu trên gương mặt họ không phải sắc màu của cái chết mà là sắc màu của giấc ngủ lạnh. Ngươi biết họ sẽ không tỉnh dậy. Ngươi vẫn sẽ kiểm tra lại nhiều lần.",
+        "Hành Lang đã bắt lấy họ một cách nhẹ nhàng, theo những gì ngươi thấy được. Vẻ mặt không phải của đau đớn. Cái lạnh đến đủ nhanh để thứ duy nhất được lưu giữ là khoảnh khắc trước khi họ kịp biết.",
+        "Hàng chục năm đóng băng không làm họ thay đổi. Quần áo vẫn thế. Gương mặt vẫn thế. Đôi ủng vẫn còn tốt. Ai đó, nơi nào đó xa phía trên, rồi sẽ nhớ tiếc đôi ủng này. Họ không biết rằng lẽ ra họ nên bắt đầu từ lâu rồi.",
+        "Được lưu giữ tốt đến mức ngươi nhận ra túi áo nào bị thủng. Chiếc cúc nào bị lỏng. Chiếc ủng nào được buộc chặt hơn chiếc kia. Ngươi biết về họ qua năm giây quan sát nhiều hơn bất cứ ký ức nào có thể cho.",
+        "Cái lạnh không lấy họ đi từ từ. Người này bị bắt giữa chuyển động — cơ thể vẫn nghiêng theo đà lao tới, đông cứng trong hình dáng của một sải bước không bao giờ hoàn thành. Hành Lang bắt được họ giữa hành trình.",
+        "Băng đã hình thành quanh họ qua năm tháng, chậm rãi sáp nhập họ vào kết cấu của Hành Lang. Giờ họ là một phần của bức tường — một cánh tay vẫn vươn ra, những ngón tay còn rõ nét, với vào căn phòng như đang xin một điều chưa bao giờ đến."
+      ],
+      "discoveryBeats": [
+        "Một hình dáng trong băng gần bức tường phía đông. Không phải cấu tạo tự nhiên. Quá đều đặn. Thẳng đứng. Ánh đuốc hổ phách soi tỏ thứ gì đó bên trong, và mắt ngươi dần thích nghi, và đó là một gương mặt.",
+        "Chiếc ủng, trước tiên — một chiếc ủng trong lối đi, dựng thẳng như thể được đặt đó có chủ đích. Rồi đến cổ chân bên trên. Rồi phần còn lại, gập mình sát tường.",
+        "Làn sương từ hơi thở ngươi trôi đi và để lộ thứ ngươi đã bỏ sót trong lần quét mắt đầu tiên: một bàn tay vươn ra từ hốc tường ngang tầm vai. Những ngón tay vẫn tách rời rõ rệt. Chúng không vươn về phía ngươi. Chúng đang chỉ.",
+        "Chất của sự im lặng thay đổi trước khi ngươi tìm thấy thi hài — trở nên nặng nề hơn, đắn đo hơn. Như thể căn phòng vẫn đang ôm giữ một điều gì và cuối cùng mới chịu trao nó cho sự chú ý của ngươi.",
+        "Lớp sương giá trên sàn bị quấy động theo một vệt dừng lại đột ngột — một chuỗi dấu chân đi vào, dừng lại, rồi không còn dấu hiệu nào về điều xảy ra tiếp theo ngoài hình dáng tựa vào bức tường xa.",
+        "Thứ gì đó ở rìa quầng sáng đuốc. Ánh hổ phách bắt lấy nó theo cách khác — không phải màu đá của các bức tường, mà là vẻ mềm mại hơn của vải vóc được lưu giữ, của thứ từng được khoác lên bởi một người đã chọn nó.",
+        "Dòng chữ trên tường gần sàn nhà níu mắt ngươi trước. Rồi ngươi thấy thứ đang ngồi bên dưới dòng chữ, và ngươi hiểu ai đã đặt nó ở đó.",
+        "Họ ngồi thẳng. Lưng thẳng. Hai tay đặt trong lòng. Ngươi suýt không nhận ra đó là một thi hài, vì tư thế được sắp đặt quá chỉn chu. Ai đó đã tự chỉnh trang mình trước khi cái lạnh hoàn tất công việc của nó.",
+        "Một cái tên, khắc vào băng ngang tầm mắt. Rồi bên dưới: một ngày tháng. Rồi bên dưới ngày tháng: phần mở đầu của một câu văn. Rồi bên dưới câu văn: phần còn lại của câu chuyện, và thi hài đã cần kể nó.",
+        "Ánh sáng của ngươi bắt được một vật nhỏ trên sàn: một chiếc nhẫn, được tháo ra và đặt sang bên. Riêng tư. Có chủ đích. Một lựa chọn được đưa ra vào phút cuối. Rồi ngươi tìm thấy người đã đưa ra lựa chọn ấy."
+      ]
+    },
+    "cache": {
+      "locationLines": [
+        "Một gian phòng phụ được niêm kín, cánh cửa bị hé mở bởi hàng chục năm băng hà dịch chuyển, bên trong khô ráo, lạnh lẽo và đúng nguyên như cách người để lại đã sắp đặt.",
+        "Bên trên ranh giới sương giá — một hốc nông đục vào đá, ngoài tầm với của những mức nhiệt thấp nhất trong Hành Lang. Ai đó đã tìm thấy chỗ này và hiểu được giá trị của nó.",
+        "Một căn phòng đã được niêm kín khi Hành Lang đóng băng, vẫn kín cho đến bây giờ, được mở ra bởi sức nặng của thời gian ép đá vào băng và tìm được đường xuyên qua. Đồ dự trữ bên trong vẫn nguyên như xưa.",
+        "Những hòm chứa được băng lưu giữ, xếp chồng sát bức tường xa — dán nhãn bằng nét chữ cẩn thận và thong thả. Bên trong còn nguyên vẹn. Chính cái lạnh đã hủy diệt mọi thứ khác lại bảo vệ những thứ này.",
+        "Một lối đi hẹp phía trên hành lang chính, tiếp cận được từ một gờ đá đã sụt lún. Hình thể của Hành Lang tạo ra nó. Ai đó đã tìm thấy nó. Ai đó đã để lại đồ đạc ở đây.",
+        "Trạm của Kẻ Lưu Trữ: một mặt bàn làm việc bằng băng nén, phủ đầy giấy được sương giá bảo quản, vật dụng sắp xếp với sự chăm chút của một người đã duy trì tuyến đường này từ rất lâu.",
+        "Một túi khí ấm nơi hơi nóng địa nhiệt rỉ qua khe nứt dưới sàn — băng ở đây đã lùi lại, tạo thành một khoảng nhỏ ấm hơn vài độ so với mức lạnh bất biến của Hành Lang. Đồ dự trữ được để lại trong vùng ấm tương đối ấy.",
+        "Phía sau một bóng người đã đứng trong hốc tường này lâu đến mức ngươi suýt bỏ lỡ kho đồ bên cạnh — bóng người ấy giờ là một phần bộ sưu tập của Hành Lang, bất động, quay lưng về thứ mà nó đã dành cả cái chết để bảo vệ."
+      ],
+      "toneClosers": [
+        "Cái lạnh không rời khỏi căn phòng này. An toàn, trong Hành Lang, chỉ là vấn đề mức độ.",
+        "Nghỉ lại đây. Hành Lang sẽ vẫn đúng nguyên như lúc ngươi rời đi khi ngươi tiếp tục. Nó không thay đổi trong lúc ngươi chờ. Nó không cần phải thế.",
+        "Không gì chuyển động. Không gì quan sát. Vậy mà sự chú ý của Hành Lang, thứ chú ý của đá lạnh kiên nhẫn, vẫn không rời khỏi ngươi ngay cả ở đây.",
+        "Kẻ đã để lại số đồ dự trữ này chưa từng rời đi. Họ đang ở đâu đó trong Hành Lang, được lưu giữ, nguyên vẹn hoàn hảo, chờ đợi như mọi thứ nơi đây vẫn chờ.",
+        "Sự im lặng trong phòng chứa đồ cũng là sự im lặng ở mọi nơi khác trong Hành Lang. Đồ dự trữ thì khác. Sự im lặng thì y hệt.",
+        "Nghỉ ngơi là điều có thể. Hơi ấm thì không. Lấy những gì hữu ích và nhớ rằng mỗi phút ở lại đây là một phút cái lạnh có thêm để gặm vào hơi ấm ngươi mang theo khi bước vào.",
+        "Tạm đủ an toàn. Hành Lang chưa từng bắt ai từ một căn phòng như thế này — theo những gì ngươi biết. Ngươi biết rất ít về những gì Hành Lang đã hoặc chưa bắt lấy.",
+        "Cái lạnh rất kiên nhẫn. Nó kiên nhẫn nhất khi ngươi đứng yên."
+      ]
+    },
+    "exit": {
+      "opening": [
+        "Một hơi ấm ở rìa xa của lối đi — không hẳn là nhiệt độ, mà là ký ức về nhiệt độ. Sự chắc chắn của Hành Lang chao đảo nơi đây. Cái lạnh loãng dần.",
+        "Thứ ánh sáng không phải màu hổ phách. Không phải ánh đuốc bị giam trong những bức tường phong kín của Hành Lang — một thứ ánh sáng khác, từ bên trên, rơi qua khe nứt trên trần đá và đáp xuống lớp sương giá mà không sưởi ấm nó.",
+        "Băng trong các bức tường nơi đây già hơn, sự phong kín đã trọn vẹn. Nhưng phía trước, nơi lối đi ngoặt khúc, chất của cái lạnh thay đổi — bớt tuyệt đối, bớt kiên nhẫn. Mặt đất bên trên đã đủ gần để làm nó rối loạn.",
+        "Một cánh cửa ngươi không ngờ tới. Gỗ, ấm đến khó tin khi chạm vào — cong vênh vì chống chọi cái lạnh, thớ gỗ nở phồng, nhưng vẫn trụ vững. Ở phía bên kia ngươi cảm nhận được: một điều khác hẳn mọi thứ sau lưng ngươi.",
+        "Lớp sương giá trên sàn cho thấy một điều bất thường: nó dừng lại. Một đường ranh chính xác nơi sự lưu giữ tuyệt đối của Hành Lang kết thúc và một thứ kém chắc chắn hơn bắt đầu. Cái lạnh vẫn bám giữ ở đó. Chỉ là không còn bám chắc như trước.",
+        "Hơi thở ngươi vẫn đọng thành mây, nhưng giờ nó chuyển động — luồng khí đầu tiên ngươi cảm nhận được kể từ khi bước vào. Một luồng gió từ trên cao. Mặt đất bên trên đang đè xuống cái lạnh của Hành Lang và nhận ra nó không bất di bất dịch như nó từng là.",
+        "Tiếng răng rắc trên đầu — không phải kết cấu, không phải tiếng băng hà rên rỉ, mà là thứ gì đó chủ đích hơn. Băng đang tách khỏi đá. Áp lực của nhiệt độ bên ngoài đang xuyên xuống từ bên trên, lần theo bất cứ vết nứt nào nó tìm thấy.",
+        "Hành Lang cho ngươi thấy điểm kết thúc theo cách nó đã cho ngươi thấy mọi thứ: không cảnh báo, không loan báo. Lối đi đơn giản là mở ra một khoảng sáng hơn. Cái lạnh đơn giản là vơi đi. Thế là đủ."
+      ],
+      "middle": [
+        "Những bóng người trong căn phòng cuối vẫn giữ nguyên tư thế. Ngươi không thấy họ từ đây, nhưng ngươi biết họ vẫn ở đó, vẫn lưu giữ khoảnh khắc của mình. Hành Lang giữ lại mọi thứ ngươi đã thấy. Nó sẽ giữ cả ký ức về bước chân ngươi.",
+        "Cái lạnh buông ngươi ra như một hơi thở bị nén được thả — không phải hơi ấm ập đến mà là áp lực rút đi. Một thứ khổng lồ và kiên nhẫn đã ghi nhận sự hiện diện của ngươi từ khoảnh khắc ngươi bước vào. Giờ nó ghi nhận sự ra đi của ngươi.",
+        "Phía sau ngươi, Hành Lang vẫn tiếp diễn. Kẻ Lưu Trữ vẫn đang ghi chép. Kẻ Bị Lưu Giữ vẫn đang lê bước về phía hơi ấm ngươi bỏ lại. Lớp băng cổ xưa nhất vẫn ôm giữ những gì cơn lạnh đầu tiên bắt được. Ngươi rời bỏ tất cả.",
+        "Lối đi dốc lên và nhiệt độ tăng theo, từng độ một, mỗi bước chân là một cuộc thương lượng giữa sự chắc chắn của Hành Lang và sự hỗn loạn của mặt đất bên trên. Hành Lang không chống lại điều này. Nó chỉ đơn giản giữ những gì nó giữ, tức là tất cả mọi thứ bên dưới.",
+        "Ngươi vượt qua ranh giới sương giá. Không khí đổi tính chất — bớt tuyệt đối, bớt được lưu giữ. Giờ ngươi ngửi thấy được: đá, khoáng chất, chút gợi ý mờ nhạt về thế giới bên trên. Sự im lặng của Hành Lang lùi dần nhưng không biến mất.",
+        "Lối ra vẫn luôn ở đây. Hành Lang biết về nó. Hành Lang biết về mọi thứ bên trong mình. Nó chọn thả ngươi đi, hoặc ngươi đã chọn đủ khôn ngoan để sự phóng thích ấy là xứng đáng. Dù thế nào, con đường cũng mở ra.",
+        "Những gì ngươi bỏ lại: những bóng người trong sảnh ngoài. Câu văn dang dở của một học giả. Đôi ủng của người có cái tên khâu trong cổ áo. Vẻ mặt của một học giả khoảnh khắc họ hiểu ra điều gì đó. Tất cả vẫn ở đó. Không gì theo ngươi đi.",
+        "Cái lạnh không đuổi theo ngươi lên lối đi. Nó không cần phải thế. Hành Lang kiên nhẫn, và những thứ kiên nhẫn hiểu rõ giá trị của việc chờ ai đó quay lại."
+      ],
+      "closing": [
+        "Hành Lang thả ngươi đi. Tạm thời.",
+        "Mặt đất ở trên ngươi và cái lạnh ở dưới ngươi, và ngươi mang theo một mảnh của mỗi bên, mãi mãi, kể từ thời khắc này.",
+        "Ngươi sẽ lại được ấm. Hơi ấm sẽ trở nên xa lạ. Ngươi đã học được cái lạnh có thể làm gì. Tri thức ấy ở lại.",
+        "Hành Lang đã ở đây lâu hơn cả sự tồn tại của ngươi. Nó sẽ còn ở đây về sau. Ngươi là một hơi ấm thoáng qua mà nó ôm giữ trong chốc lát rồi buông ra. Nó sẽ không quên ngươi. Cái lạnh không quên điều gì.",
+        "Lối ra khép lại sau lưng ngươi — không một tiếng động, không một cơ cấu nào, chỉ là sự im lặng của Hành Lang quay trở lại. Nó biết ngươi đang ở đâu. Nó biết ngươi sẽ quay lại.",
+        "Dù ngươi mang gì ra khỏi Hành Lang — chiến lợi phẩm, thương tích, những gương mặt của kẻ được lưu giữ — cái lạnh cũng đi cùng. Kiểm tra các khớp xương vào buổi sáng. Nó ở lại.",
+        "Ngươi đã sống sót. Hành Lang không ngạc nhiên. Người hành hương đôi khi sống sót. Rồi họ quay lại.",
+        "Cái lạnh đã ở đây trước ngươi và sẽ còn lại sau ngươi. Ngươi đi xuyên qua nó. Nó đi xuyên qua ngươi. Cuộc trao đổi ấy là vĩnh viễn."
+      ]
+    },
+    "options": {
+      "cautious": [
+        "Di chuyển cẩn thận qua lớp băng",
+        "Bước vòng qua những bóng người",
+        "Tiến lên chậm rãi",
+        "Bám sát bức tường",
+        "Thử mặt sàn trước"
+      ],
+      "aggressive": [
+        "Xông qua",
+        "Vượt qua bằng sức",
+        "Phá lối mà đi",
+        "Đi nhanh, đừng nhìn"
+      ],
+      "investigative": [
+        "Xem xét bóng người đóng băng",
+        "Lục soát hài cốt được lưu giữ",
+        "Quan sát lớp băng kỹ hơn",
+        "Đọc những gì được lưu giữ nơi đây"
+      ],
+      "retreat": [
+        "Lùi khỏi cái lạnh",
+        "Bước lùi khỏi bóng người",
+        "Chờ ở ngưỡng cửa",
+        "Cân nhắc mức nhiệt"
+      ]
+    }
+  },
+  "bestiary": {
+    "shared": [
+      "Forgotten Guardian",
+      "The Hollow",
+      "The Weeping",
+      "The Bound"
+    ],
+    "local": [
+      {
+        "name": "The Preserved",
+        "tier": 1,
+        "health": {
+          "min": 40,
+          "max": 60
+        },
+        "behaviors": [
+          "HUNTING",
+          "AGGRESSIVE",
+          "STALKING"
+        ],
+        "description": "Những người hành hương đóng băng được tan giá vừa đủ để cử động. Chúng vươn về hơi ấm với sự kiên nhẫn của những thứ đã chờ đợi nó hàng chục năm. Chúng không nhớ gì. Chúng di chuyển bởi vì thứ lạnh giá luôn tan chảy về phía hơi nóng.",
+        "emoji": "🧊",
+        "artUrl": "/creatures/the-preserved.webp"
+      },
+      {
+        "name": "Ice Wraiths",
+        "tier": 1,
+        "health": {
+          "min": 30,
+          "max": 45
+        },
+        "behaviors": [
+          "ERRATIC",
+          "STALKING",
+          "HUNTING"
+        ],
+        "description": "Cơn đói mang hình hài giá lạnh. Chúng xuyên qua tường và để lại những vùng chênh lệch nhiệt độ phía sau. Chạm vào sẽ nhiễm buốt giá. Chúng không tấn công ngươi. Chúng đang ăn.",
+        "emoji": "👁️",
+        "artUrl": "/creatures/ice-wraiths.webp"
+      },
+      {
+        "name": "Frost Sentinels",
+        "tier": 2,
+        "health": {
+          "min": 90,
+          "max": 120
+        },
+        "behaviors": [
+          "DEFENSIVE",
+          "CHARGING",
+          "AGGRESSIVE"
+        ],
+        "description": "Những hộ vệ cổ xưa bị phong kín trong lớp giáp băng nén. Ngủ yên cho đến khi bị tiếp cận. Miễn nhiễm với đóng băng. Mỗi bước chân của chúng là một biến cố địa chất. Một đòn duy nhất của chúng làm nhiệt độ cả căn phòng tụt xuống.",
+        "emoji": "🛡️",
+        "artUrl": "/creatures/frost-sentinels.webp"
+      },
+      {
+        "name": "The Shattered",
+        "tier": 2,
+        "health": {
+          "min": 70,
+          "max": 95
+        },
+        "behaviors": [
+          "ERRATIC",
+          "AGGRESSIVE",
+          "CHARGING"
+        ],
+        "description": "Những thứ đóng băng đã nứt vỡ thay vì trụ vững. Mỗi mảnh di chuyển độc lập. Gây tổn thương cho tổng thể tạo ra thêm nhiều mảnh. Căn phòng đầy dần những mảnh vụn vẫn còn đói khát.",
+        "emoji": "🔷",
+        "artUrl": "/creatures/the-shattered.webp"
+      },
+      {
+        "name": "The Glacial Sovereign",
+        "tier": 3,
+        "health": {
+          "min": 190,
+          "max": 220
+        },
+        "behaviors": [
+          "CHARGING",
+          "AGGRESSIVE",
+          "DEFENSIVE",
+          "STALKING"
+        ],
+        "description": "Thứ đầu tiên bị đóng băng. Nó đã ở đây trước khi Hành Lang có tên, trước khi người hành hương đầu tiên xuống sâu. Nó di chuyển với sự chắc chắn của thời gian địa chất. Mỗi đòn đánh làm nhiệt độ căn phòng tụt xuống. Nó đã chờ hơi ấm từ trước khi ngươi tồn tại. Miễn nhiễm với đóng băng.",
+        "emoji": "❄️",
+        "artUrl": "/creatures/the-glacial-sovereign.webp"
+      }
+    ]
+  },
+  "depths": [
+    {
+      "name": "THE OUTER GALLERY",
+      "tier": 1,
+      "roomRange": [
+        1,
+        4
+      ],
+      "description": "Những sảnh vào. Những bóng người đóng băng trong tư thế chào đón."
+    },
+    {
+      "name": "THE COLLECTION",
+      "tier": 2,
+      "roomRange": [
+        5,
+        8
+      ],
+      "description": "Sự lưu giữ sâu hơn. Những bóng người nơi đây chết chậm hơn."
+    },
+    {
+      "name": "THE VAULT",
+      "tier": 3,
+      "roomRange": [
+        9,
+        12
+      ],
+      "description": "Lớp băng cổ xưa nhất. Những thứ đầu tiên bị đóng băng."
+    }
+  ],
+  "dungeonLayout": {
+    "totalRooms": 12,
+    "structure": [
+      {
+        "type": "explore",
+        "template": "entrance"
+      },
+      {
+        "type": "combat",
+        "template": "thawing"
+      },
+      {
+        "type": "corpse",
+        "template": "preserved"
+      },
+      {
+        "type": "explore",
+        "template": "gallery"
+      },
+      {
+        "type": "corpse",
+        "template": "mid-action"
+      },
+      {
+        "type": "combat",
+        "template": "wraith"
+      },
+      {
+        "type": "cache",
+        "template": "sealed-chamber"
+      },
+      {
+        "type": "corpse",
+        "template": "composed"
+      },
+      {
+        "type": "explore",
+        "template": "deep-gallery"
+      },
+      {
+        "type": "combat",
+        "template": "sentinel"
+      },
+      {
+        "type": "corpse",
+        "template": "long-preserved"
+      },
+      {
+        "type": "combat",
+        "template": "sovereign",
+        "boss": true
+      }
+    ]
+  },
+  "boss": "The Glacial Sovereign",
+  "audio": {
+    "ambient": {
+      "explore": "/audio/zones/frozen-gallery/ambient-explore.mp3",
+      "combat": "/audio/zones/frozen-gallery/ambient-combat.mp3"
+    },
+    "sfx": {
+      "footstep": "/audio/zones/frozen-gallery/footstep.mp3",
+      "descend": "/audio/zones/frozen-gallery/depth-descend.mp3",
+      "environment": [
+        "/audio/zones/frozen-gallery/ice-crack.mp3",
+        "/audio/zones/frozen-gallery/wind-tunnel.mp3",
+        "/audio/zones/frozen-gallery/glacier-groan.mp3"
+      ],
+      "atmosphere": [
+        "/audio/zones/frozen-gallery/deep-silence.mp3",
+        "/audio/zones/frozen-gallery/distant-crack.mp3"
+      ],
+      "boss": {
+        "intro": "/audio/zones/frozen-gallery/boss-intro.mp3",
+        "roar": "/audio/zones/frozen-gallery/boss-roar.mp3"
+      }
+    }
+  }
+}
