@@ -1,0 +1,231 @@
+{
+  "type": "cache",
+  "zone": "THRESHOLD OF THE UNNAMED",
+  "rooms": [
+    {
+      "template": "alcove",
+      "variations": [
+        {
+          "id": "alcove_1",
+          "narrative": "Un hueco en la pared, sobre la línea del agua. Seco. Casi cálido. Alguien dejó provisiones aquí. Quizá logró salir. Quizá simplemente lo dejó todo atrás."
+        },
+        {
+          "id": "alcove_2",
+          "narrative": "Una cavidad natural en la piedra. Lo bastante pequeña para pasar inadvertida, lo bastante grande para esconderse. Adentro: vendas, comida seca, una nota que dice 'Tómalo. No lo voy a necesitar.'"
+        },
+        {
+          "id": "alcove_3",
+          "narrative": "Detrás de una piedra suelta. Casi no revisas. Alguien quería esto oculto. Alguien que sabía que no volvería por ello."
+        },
+        {
+          "id": "alcove_4",
+          "narrative": "Un pasadizo estrecho. Apretado, pero se abre a una cámara pequeña. Las provisiones están apiladas con orden. Sin polvo — alguien estuvo aquí hace poco. Alguien que se fue con prisa."
+        },
+        {
+          "id": "alcove_5",
+          "narrative": "Una alcoba marcada con el símbolo de un sobreviviente. La señal universal de 'bastante seguro'. Adentro: lo que necesitas. Afuera: todo lo demás."
+        }
+      ]
+    },
+    {
+      "template": "offering_site",
+      "variations": [
+        {
+          "id": "offering_1",
+          "narrative": "Un altar a algo sin nombre. Las ofrendas se pudren a su base — pero entre ellas, algo útil. Tomarlo se siente como aceptar un contrato."
+        },
+        {
+          "id": "offering_2",
+          "narrative": "Un santuario al agua misma. Monedas brillan bajo la superficie de un estanque. Otras cosas también — armas, hierbas, esperanza. El agua da, si estás dispuesto a meter la mano."
+        },
+        {
+          "id": "offering_3",
+          "narrative": "Los fieles dejaron regalos aquí. Los fieles ya no están. Los regalos permanecen. Tomarlos podría enfurecer a algo. No tomarlos parece un desperdicio."
+        },
+        {
+          "id": "offering_4",
+          "narrative": "Una estatua de algo que quizá fue adorado. A sus pies: provisiones dejadas por peregrinos. En su rostro: una sonrisa cómplice. Quiere que las tomes."
+        },
+        {
+          "id": "offering_5",
+          "narrative": "Velas rodean un pequeño botín. Las velas están frescas. ¿Quién las enciende? ¿Quién deja provisiones para extraños? No lo pienses. Toma lo que necesitas."
+        }
+      ]
+    },
+    {
+      "template": "survivor_stash",
+      "variations": [
+        {
+          "id": "stash_1",
+          "narrative": "Marcas en la pared. ¿Contando días? Hay cientos. Quien estuvo aquí sobrevivió más de lo que parece posible. Lo dejó todo atrás. ¿Escapó, o simplemente se rindió?"
+        },
+        {
+          "id": "stash_2",
+          "narrative": "Un petate. Un fuego frío. Un diario, con la última página arrancada. Vivió aquí. ¿Cuánto tiempo? El suficiente para acumular provisiones. El suficiente para irse de repente."
+        },
+        {
+          "id": "stash_3",
+          "narrative": "Alguien construyó una vida aquí abajo. Muebles hechos de escombros. Arte rayado en las paredes. Luego lo abandonó. Todo lo útil está empacado con cuidado, esperando."
+        },
+        {
+          "id": "stash_4",
+          "narrative": "El campamento de un sobreviviente. No hay cuerpo — no murió aquí. Sus provisiones están etiquetadas, organizadas, dejadas con intención. Un regalo para quien venga después."
+        },
+        {
+          "id": "stash_5",
+          "narrative": "Armas. Comida. Medicina. Apiladas contra la pared del fondo. Una nota dice: 'No podía cargar con todo. No hacía falta. Logré salir.' Esperanza en tinta."
+        }
+      ]
+    },
+    {
+      "template": "spring",
+      "variations": [
+        {
+          "id": "spring_1",
+          "narrative": "El agua gotea de la piedra. Clara, no negra. Algo verde crece en sus bordes — lo único vivo que has visto. Beber se siente como esperanza. El regusto persiste."
+        },
+        {
+          "id": "spring_2",
+          "narrative": "Un estanque de agua limpia. Un milagro aquí abajo. Puedes ver el fondo. Nada se mueve. Nada acecha. Es seguro. Tiene que ser seguro. Bebe."
+        },
+        {
+          "id": "spring_3",
+          "narrative": "Vapor sube de una grieta en el suelo. Agua tibia, rica en minerales, casi agradable. El calor es ajeno después de tanto frío. Descansa aquí. Recupérate."
+        },
+        {
+          "id": "spring_4",
+          "narrative": "Un manantial subterráneo, fresco y frío. Otros han acampado aquí — se ven las marcas. Un lugar seguro. Tan seguro como puede ser cualquier cosa."
+        },
+        {
+          "id": "spring_5",
+          "narrative": "El agua aquí brilla tenuemente. Un azul suave. No es peligrosa — de algún modo lo sabes. Beberla alivia las heridas. No preguntes cómo. No preguntes por qué."
+        }
+      ]
+    },
+    {
+      "template": "abandoned_camp",
+      "variations": [
+        {
+          "id": "camp_1",
+          "narrative": "Un petate. Cenizas frías. Comida a medio comer. Se fueron rápido. Las provisiones permanecen, pero también la pregunta: ¿qué hizo que alguien abandonara su único lugar seguro?"
+        },
+        {
+          "id": "camp_2",
+          "narrative": "Tiendas — en plural. Un grupo acampó aquí. Su equipo está disperso, con pánico. Algunos tomaron lo esencial. Algunos no tomaron nada. Lo que llegó no merecía empacar."
+        },
+        {
+          "id": "camp_3",
+          "narrative": "Todo está volcado. ¿Señales de lucha? ¿Señales de huida? Las provisiones están enterradas bajo el caos, pero están aquí. Lo que sea que pasó, pasó rápido."
+        },
+        {
+          "id": "camp_4",
+          "narrative": "Un puesto de vigilancia. Alguien montaba guardia aquí. Su silla mira ahora en la dirección equivocada. Sus provisiones están intactas. Vio algo. No terminó de verlo."
+        },
+        {
+          "id": "camp_5",
+          "narrative": "A mitad de la comida. La comida sigue en los platos. Todavía... comestible, probablemente. Ni siquiera dejaron de comer antes de correr. O de ser llevados. Las provisiones no responden preguntas."
+        }
+      ]
+    },
+    {
+      "template": "armory",
+      "variations": [
+        {
+          "id": "armory_1",
+          "narrative": "Estantes de armas, picadas por la edad. Un ejército fue equipado aquí alguna vez. ¿Para qué guerra? ¿Contra qué enemigo? Algunas hojas aún conservan el filo. Sírvete."
+        },
+        {
+          "id": "armory_2",
+          "narrative": "Un alijo de armas, oculto en las paredes. Alguien se preparó para una guerra que nunca llegó. O una guerra que nunca terminó. Su preparación es tu supervivencia."
+        },
+        {
+          "id": "armory_3",
+          "narrative": "Herramientas de violencia, organizadas por tipo. El polvo es espeso. Nadie ha estado aquí en siglos. Nadie salvo las cosas que no necesitan armas."
+        },
+        {
+          "id": "armory_4",
+          "narrative": "Una sala de guardia. Vacía ahora. El equipo de los guardias permanece — corroído, pero funcional. No les importará que lo tomes prestado. Ya no les importa nada."
+        },
+        {
+          "id": "armory_5",
+          "narrative": "Armas incrustadas en la pared. ¿Trofeos? ¿Almacenamiento? ¿Arte? La disposición es deliberada. Toma lo que te llame. Algo aquí te esperaba a ti en particular."
+        }
+      ]
+    },
+    {
+      "template": "merchant",
+      "variations": [
+        {
+          "id": "merchant_1",
+          "narrative": "Una figura en la oscuridad. Tiene provisiones. Tiene precios. Ninguno es negociable. En el inframundo, el comercio continúa. Los muertos siguen negociando."
+        },
+        {
+          "id": "merchant_2",
+          "narrative": "El Coleccionista se sienta entre reliquias. 'Nada es gratis. Todo cuesta. ¿Qué estás dispuesto a pagar?' Extiende su mercancía. Los precios no están en SOL."
+        },
+        {
+          "id": "merchant_3",
+          "narrative": "'Tú tienes cosas. Yo tengo cosas. Podemos comerciar, o podemos esperar a ver quién le quita las cosas a quién por la fuerza.' El mercader sonríe. No es una sonrisa amable."
+        },
+        {
+          "id": "merchant_4",
+          "narrative": "Se hace llamar 'facilitador'. Facilita el paso de objetos de manos muertas a manos vivas. 'Todos ganan', dice. 'Tarde o temprano, todos son proveedores.'"
+        },
+        {
+          "id": "merchant_5",
+          "narrative": "Una tienda. Aquí abajo. Surtida con objetos de cada aventurero muerto que pasó por aquí. 'Reciclaje', lo llama el tendero. 'Sostenible.' Los precios son tus futuras posesiones."
+        }
+      ]
+    },
+    {
+      "template": "trophy_room",
+      "variations": [
+        {
+          "id": "trophy_1",
+          "narrative": "Cráneos montados en las paredes. Garras en exhibición. Alguien cazó aquí, con éxito. Sus trofeos te dicen lo que viene. Sus provisiones podrían ayudarte a sobrevivirlo."
+        },
+        {
+          "id": "trophy_2",
+          "narrative": "La guarida de un cazador. Pieles, huesos, cosas que no reconoces. Quien vivió aquí sabía sobrevivir. Sabía matar. Sus herramientas están disponibles. Su sabiduría, menos."
+        },
+        {
+          "id": "trophy_3",
+          "narrative": "Cada criatura de las profundidades, preservada y montada. Un catálogo de pesadillas. Entre ellas: provisiones para crear más trofeos. O para no convertirse en uno."
+        },
+        {
+          "id": "trophy_4",
+          "narrative": "Lo primero que ves es la cabeza de uno de los Ahogados en una pica. Luego el Reptante, clavado como un espécimen. Alguien los estudiaba. Sus notas y provisiones permanecen."
+        },
+        {
+          "id": "trophy_5",
+          "narrative": "Un monumento a la violencia. Trofeos de cien cacerías. El cazador no está. Los trofeos sugieren que rara vez se queda en un lugar. Rara vez lo necesita. Toma lo útil."
+        }
+      ]
+    },
+    {
+      "template": "hermit",
+      "variations": [
+        {
+          "id": "hermit_1",
+          "narrative": "Lleva años aquí. ¿Décadas? Solo. Sobreviviendo. No quiere compañía, pero compartirá lo que sabe. Y lo que ya no necesita."
+        },
+        {
+          "id": "hermit_2",
+          "narrative": "'Eres la primera visita en... perdí la cuenta.' Los ojos del ermitaño son extraños pero no hostiles. 'Toma esto. He hecho más. Siempre hago más.'"
+        },
+        {
+          "id": "hermit_3",
+          "narrative": "Un filósofo de las profundidades. Ha aceptado su existencia aquí. '¿Provisiones? Sí, tómalas. ¿Respuestas? También tengo. Las preguntas son más difíciles.'"
+        },
+        {
+          "id": "hermit_4",
+          "narrative": "Ha olvidado su propio nombre. Recuerda cómo sobrevivir. 'Esto te ayudará. Aquello te matará. Aprendí la diferencia. Por las malas. Tú no tienes que hacerlo.'"
+        },
+        {
+          "id": "hermit_5",
+          "narrative": "'Quieres salir. Yo también lo quise, una vez.' El ermitaño señala las provisiones. 'Tómalas. Logra salir. O no. De cualquier modo, aquí estaré.'"
+        }
+      ]
+    }
+  ]
+}

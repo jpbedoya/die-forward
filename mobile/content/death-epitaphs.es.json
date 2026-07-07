@@ -1,0 +1,49 @@
+{
+  "type": "death",
+  "death_moments": [
+    "El frío te alcanza el pecho. Tus piernas dejan de funcionar. El agua sube, o quizá te hundes. Cuesta notar la diferencia ahora.",
+    "Caes. La piedra está fría contra tu mejilla. En algún lugar arriba, la luz parpadea. No la alcanzarás.",
+    "La oscuridad se agolpa en los bordes de tu visión. Lo último que ves es el techo, imposiblemente lejano.",
+    "El arma resbala de tus dedos entumecidos. El sonido al golpear la piedra es lo último que oyes.",
+    "El dolor se disuelve en entumecimiento. El entumecimiento se disuelve en frío. El frío se disuelve en nada. Así se siente la nada.",
+    "La criatura te mira caer. Hay algo parecido a la lástima en sus ojos. O al hambre. Cuesta notar la diferencia ahora.",
+    "Siempre te preguntaste cómo terminaría. Ahora lo sabes. Termina así. Sobre piedra fría. En agua oscura.",
+    "Tus pensamientos se dispersan como pájaros espantados. Uno permanece, claro y final: esto es. Así termina tu historia.",
+    "El inframundo te recibe mientras caes. Ha estado esperando esto. Siempre ha estado esperando esto.",
+    "Todo se vuelve distante — el dolor, el frío, el miedo. Paz, casi. Casi como la paz.",
+    "Intentas moverte. Tu cuerpo no está de acuerdo. La discusión termina antes de empezar. El cuerpo gana. El cuerpo siempre gana.",
+    "Sangre o agua. No sabes cuál te está llenando los pulmones. ¿Importa? ¿Importa algo ahora?",
+    "El último aliento te abandona. No regresa. Esta es la parte que no te cuentan: el silencio.",
+    "Te estiras hacia algo — esperanza, ayuda, otra oportunidad. Tu mano se cierra sobre nada. Nada es todo lo que queda.",
+    "El mundo se inclina. Gira. Se detiene. Así se siente detenerse. A esto saben los finales.",
+    "En algún lugar, alguien podría recordarte. Aquí, las paredes recordarán. El agua recordará. La oscuridad siempre recuerda.",
+    "Peleaste. Lo intentaste. No fue suficiente. Nunca es suficiente. El inframundo acepta todas las deudas, todos los sueños, todas las muertes.",
+    "La criatura sigue su camino. Fuiste un momento en su existencia eterna. Una comida. Un recuerdo. Un mensaje.",
+    "La conciencia se adelgaza como niebla matinal. ¿Qué hay más allá? Estás a punto de averiguarlo. Estás a punto de volverte parte de la respuesta.",
+    "A esta profundidad, la muerte es solo un cambio de domicilio. Vivías arriba. Ahora vives aquí. Aquí para siempre."
+  ],
+  "final_words_intros": [
+    "Tu último pensamiento cristaliza. Algo para los que sigan. ¿Una advertencia? ¿Una broma? ¿Una plegaria?",
+    "Con lo que queda de tus fuerzas, dejas un mensaje. Que signifique algo. Que importe.",
+    "Las palabras se forman en la oscuridad. Últimas palabras. Lo único que dejarás atrás.",
+    "Un pensamiento sobrevive a la caída. Un mensaje. Que valga la pena.",
+    "La pared está fría bajo tus dedos. Trazas letras. Estas letras te sobrevivirán.",
+    "Rayas en la piedra lo que quisieras poder gritarle al mundo: una última declaración.",
+    "Antes de que la oscuridad se lo lleve todo, le das algo: palabras. Tus palabras. Para siempre.",
+    "Los moribundos escriben a los vivos. Es la tradición más antigua. La comunicación más honesta.",
+    "¿Qué dices cuando no queda nada por decir? Dices esto:",
+    "Un mensaje en una botella. Salvo que la botella es piedra y el océano es tiempo."
+  ],
+  "corpse_discovery_outros": [
+    "Lo intentaron. Fallaron. Pero dejaron algo atrás.",
+    "Otra alma, otra historia, otra advertencia.",
+    "El inframundo está lleno de finales. Este es uno de ellos.",
+    "Quienesquiera que fueran, importaron. Sus palabras lo prueban.",
+    "Cada cuerpo fue esperanza alguna vez. Cada mensaje fue aliento alguna vez.",
+    "Vinieron buscando fortuna. Encontraron esto en su lugar.",
+    "Los muertos enseñan a los vivos. Es la escuela más antigua.",
+    "Alguien los amó alguna vez. Alguien podría recordarlos todavía.",
+    "Una vida, reducida a un mensaje. Un mensaje, preservado en piedra.",
+    "Ellos no lo lograron. Tú todavía puedes. Por eso escribieron."
+  ]
+}

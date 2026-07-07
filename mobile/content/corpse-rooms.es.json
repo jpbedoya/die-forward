@@ -1,0 +1,321 @@
+{
+  "type": "corpse",
+  "zone": "THRESHOLD OF THE UNNAMED",
+  "rooms": [
+    {
+      "template": "fresh",
+      "variations": [
+        {
+          "id": "fresh_1",
+          "narrative": "La sangre no ha secado. Cayó aquí hace momentos — o años. El tiempo miente aquí abajo. Su mano aún se extiende hacia la pared, donde hay palabras rayadas:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "fresh_2",
+          "narrative": "Todavía tibio. Puedes ver el último aliento aún flotando en el aire frío. Casi lo logra. Casi. Sus últimas palabras, talladas con prisa:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "fresh_3",
+          "narrative": "Sabes que no fue hace mucho porque todavía puedes oler el miedo. Agudo. Metálico. Su mensaje es reciente, el polvo de piedra aún cae de las letras:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "fresh_4",
+          "narrative": "Su antorcha aún arde. Así de reciente. La llama vacila cuando te acercas, como si te reconociera. Sus palabras brillan en esa luz moribunda:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "fresh_5",
+          "narrative": "Las ondas del agua no se han asentado. Acaba de caer. Por poco no lo alcanzas — o por poco no te alcanza. De cualquier modo, su mensaje es para quien venga después:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "old",
+      "variations": [
+        {
+          "id": "old_1",
+          "narrative": "Casi parte de la pared ahora. El agua ha reclamado la mayor parte. Pero las palabras talladas en piedra permanecen, pacientes como el duelo:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "old_2",
+          "narrative": "Huesos. Solo huesos ahora. Ordenados por el tiempo y el agua en algo casi apacible. Su mensaje se ha desgastado, pero permanece:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "old_3",
+          "narrative": "El inframundo lleva un tiempo digiriéndolo. Lo que queda es más recuerdo que cuerpo. Pero los recuerdos persisten aquí. Sus palabras perduran:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "old_4",
+          "narrative": "El musgo crece sobre él ahora. El inframundo ha aceptado este cuerpo como parte de sí. Solo el mensaje tallado se resiste a la absorción:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "old_5",
+          "narrative": "¿Cuánto tiempo lleva aquí? El suficiente para volverse mobiliario. Un punto de referencia. Otros sobrevivientes claramente han pasado, pero ninguno lo movió. Su advertencia sigue en pie:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "peaceful",
+      "variations": [
+        {
+          "id": "peaceful_1",
+          "narrative": "Se puso cómodo. Ordenó sus pertenencias con cuidado. Se orientó hacia la salida que nunca alcanzaría. Su mensaje es cuidadoso, meditado:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "peaceful_2",
+          "narrative": "Sin lucha. Sin violencia. Simplemente se sentó y decidió que hasta aquí era suficiente. Su aceptación es casi envidiable. Sus palabras son serenas:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "peaceful_3",
+          "narrative": "Murió con las manos cruzadas. Los ojos cerrados. En paz con un final que eligió. Su mensaje se lee como una despedida, no como una advertencia:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "peaceful_4",
+          "narrative": "Un fuego pequeño, frío hace mucho. Una comida, a medio terminar. Descansó aquí. Nunca despertó. A veces el inframundo es misericordioso. Su último pensamiento:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "peaceful_5",
+          "narrative": "Está sonriendo. De algún modo. Después de todo. Su cuerpo es una lección sobre soltar. Su mensaje es tanto para sí mismo como para ti:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "heroic",
+      "variations": [
+        {
+          "id": "heroic_1",
+          "narrative": "La criatura yace a su lado. La mató. Lo mató. ¿Un trato justo? Su hoja sigue en el cráneo de la bestia. Su mensaje es breve, satisfecho:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "heroic_2",
+          "narrative": "Resistió aquí. Puedes ver dónde ocurrió la pelea — las cicatrices en las paredes, el icor negro, los cuerpos de las cosas que mató. Su epitafio está ganado:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "heroic_3",
+          "narrative": "Tres criaturas muertas a su alrededor. No se fue en silencio. No se fue fácilmente. Se fue peleando, rodeado, llevándose a cuantas pudo. Su alarde:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "heroic_4",
+          "narrative": "Murió salvando a alguien. Puedes ver el segundo par de huellas, alejándose. Alguien más sobrevivió gracias a este. Su legado:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "heroic_5",
+          "narrative": "De pie. Murió de pie. El arma en alto. Frente a algo que sabía que no podía vencer. Lo enfrentó de todos modos. Su desafío tallado en piedra:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "disturbing",
+      "variations": [
+        {
+          "id": "disturbing_1",
+          "narrative": "No murió peleando. Murió esperando. Sentado contra la pared, las manos cruzadas, paciente. Como si supiera. El mensaje a su lado:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "disturbing_2",
+          "narrative": "Algo está mal en este cuerpo. Las proporciones. La posición. La sonrisa. Parece posado. Acomodado. Por algo que no entiende las formas humanas. Sus palabras:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "disturbing_3",
+          "narrative": "Está de cara a la pared. La frente apretada contra la piedra. La arañó hasta quedarse sin dedos. El mensaje está tallado en la roca, no rayado. Tallado hondo. Dice:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "disturbing_4",
+          "narrative": "Sin heridas. Sin marcas. Sin causa aparente. Simplemente... se detuvo. Su expresión es de confusión, aún resolviendo el problema. Su mensaje se apaga a medias:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "disturbing_5",
+          "narrative": "Está de pie. Muerto, pero de pie. Los ojos abiertos. Vigilando el pasaje por el que acabas de venir. ¿Ha estado vigilando todo este tiempo? Su mensaje mira contigo:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "group",
+      "variations": [
+        {
+          "id": "group_1",
+          "narrative": "Tres. Acurrucados juntos al final. Lo que sea que vino, lo enfrentaron como uno. Solo uno tuvo tiempo de escribir. Las palabras son de todos:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "group_2",
+          "narrative": "Un círculo de cuerpos. Mirando hacia afuera. Espalda con espalda hasta el final. Confiaron el uno en el otro. Murieron juntos. Una voz habla por todos:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "group_3",
+          "narrative": "Dos. Tomados de la mano. Incluso ahora. Lo que sea que los mató no los separó. Su mensaje compartido:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "group_4",
+          "narrative": "Una pila. Es la única palabra. Alguien murió primero, y los demás no se fueron. Se sumaron a la pila. El de abajo escribió algo:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "group_5",
+          "narrative": "Murieron en formación. Como soldados. Como creyentes. Como gente que sabía lo que venía y decidió enfrentarlo junta. Su última palabra colectiva:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "trapped",
+      "variations": [
+        {
+          "id": "trapped_1",
+          "narrative": "El derrumbe lo selló adentro. Marcas de arañazos cubren los escombros. Lo intentó por mucho tiempo. Luego se detuvo. Su mensaje, escrito en la oscuridad:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "trapped_2",
+          "narrative": "Encerrado. La puerta no abre desde este lado. No lo sabía cuando la cerró. Las marcas en la puerta cuentan la historia. Sus palabras están rayadas al pie:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "trapped_3",
+          "narrative": "El agua subió. Puedes ver la marca donde se detuvo — justo sobre su cabeza. Trepó tan alto como pudo. No lo suficiente. Su mensaje está en la línea del agua:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "trapped_4",
+          "narrative": "Cadenas. Está encadenado aquí. ¿Quién lo encadenó? Algo que quería que esperara. Que pensara. Que escribiera una última cosa:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "trapped_5",
+          "narrative": "Un pozo. Paredes lisas. Sin salida. Sobrevivió aquí abajo más de lo que esperarías. Lo suficiente para tallar estas palabras:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "posed",
+      "variations": [
+        {
+          "id": "posed_1",
+          "narrative": "Alguien acomodó este cuerpo. Lo apoyó erguido. Giró su rostro hacia la entrada. Hacia ti. El mensaje no es suyo — otra cosa lo escribió:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "posed_2",
+          "narrative": "Está arrodillado. La cabeza inclinada. Las manos juntas. Una burla de la oración, montada por algo que observó a los humanos adorar. Las palabras a su lado no son adoración:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "posed_3",
+          "narrative": "Incrustado en la pared. Literalmente. Su cuerpo es parte de la arquitectura ahora. El Arquitecto estuvo aquí. Solo su mano está libre, señalando palabras talladas:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "posed_4",
+          "narrative": "Está sentado a una mesa. Con una comida. Con compañía — otros cadáveres, acomodados como invitados a cenar. Una parodia horrible. Su tarjeta de lugar dice:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "posed_5",
+          "narrative": "Exhibido. Como arte. Montado en la pared con cuidado, con intención. Una galería de uno solo. La placa debajo muestra:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "legendary",
+      "variations": [
+        {
+          "id": "legendary_1",
+          "narrative": "Has oído hablar de este. Todos han oído. Llegó más lejos que nadie antes. Su cuerpo se ha vuelto un punto de referencia. Sus palabras, copiadas y compartidas:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "legendary_2",
+          "narrative": "El famoso. Ofrendas lo rodean — regalos de otros viajeros, respetos rendidos. Casi lo logra. Su mensaje se volvió una plegaria:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "legendary_3",
+          "narrative": "Lo reconoces por las historias. Más pequeño de lo que imaginabas. Más humano. Su leyenda es más grande que su cuerpo. Sus palabras son sorprendentemente simples:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "legendary_4",
+          "narrative": "Un lugar de peregrinación. Otros han venido solo a ver este punto, donde cayó el grande. Flores se pudren a sus pies. Su mensaje está gastado de tanto ser trazado con los dedos:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "legendary_5",
+          "narrative": "La apuesta más alta de la historia. La mayor pérdida. El intento más valiente. Su fracaso enseñó a otros cómo triunfar. Su legado es más que palabras:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    }
+  ]
+}
