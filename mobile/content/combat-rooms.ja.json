@@ -1,0 +1,276 @@
+{
+  "type": "combat",
+  "zone": "THRESHOLD OF THE UNNAMED",
+  "rooms": [
+    {
+      "template": "ambush",
+      "variations": [
+        {
+          "id": "ambush_1",
+          "narrative": "部屋は空に見える。静かな水、静かな空気。そして気づく――何も動いていないのに、水面が波立っている。上がってくる。下で待っていたのだ。",
+          "enemy": "The Drowned"
+        },
+        {
+          "id": "ambush_2",
+          "narrative": "見えるより半秒早く、音で気づく。石を打つ湿った音。頭上だ。天井に張り付いている。落ちてくる。今。",
+          "enemy": "Pale Crawler"
+        },
+        {
+          "id": "ambush_3",
+          "narrative": "影の動きがおかしい。気づいたときには遅い――虚ろなる者はすでに輪郭の内側にいて、そこを抜けて、こちらへ手を伸ばしている。",
+          "enemy": "The Hollow"
+        },
+        {
+          "id": "ambush_4",
+          "narrative": "跨いだ死体は死んでいなかった。足首を掴まれる。腐ったものにあるまじき握力。口が開く。音は出ない。",
+          "enemy": "Bloated One"
+        },
+        {
+          "id": "ambush_5",
+          "narrative": "視界の端で何かが明滅する。振り向く。何もない。向き直る。そこにいる。すぐそこに。ずっとすぐそこにいたのだ。",
+          "enemy": "Flickering Shade"
+        }
+      ]
+    },
+    {
+      "template": "confrontation",
+      "variations": [
+        {
+          "id": "confrontation_1",
+          "narrative": "行く手に立ちはだかっている。待っている。辛抱強い飢えをもって、頭がこちらの動きを追う。迂回する道はない。突き抜けるしかない。",
+          "enemy": "The Drowned"
+        },
+        {
+          "id": "confrontation_2",
+          "narrative": "そいつが戸口を塞いでいる。攻撃してこない。動かない。ただ……そこにいる。品定めしている。何を決めるにせよ、ろくなことにはならない。",
+          "enemy": "Forgotten Guardian"
+        },
+        {
+          "id": "confrontation_3",
+          "narrative": "祭壇の前に跪き、思考を軋ませる周波数で唱えている。こちらの存在に気づいている。詠唱はお前のためのものだ。招待か、死刑宣告か。",
+          "enemy": "Hollow Clergy"
+        },
+        {
+          "id": "confrontation_4",
+          "narrative": "騎士が錆びた刃を掲げて礼をする。誉れある一騎打ち。死ぬまで。良い戦いを期待している。どちらにせよ、失望するだろう。",
+          "enemy": "Carrion Knight"
+        },
+        {
+          "id": "confrontation_5",
+          "narrative": "水から立ち上がる。背丈の倍、闇を滴らせて。一瞬、ほとんど人間に見える。そして口を開く。そして口が多すぎる。",
+          "enemy": "Mother of Tides"
+        }
+      ]
+    },
+    {
+      "template": "territorial",
+      "variations": [
+        {
+          "id": "territorial_1",
+          "narrative": "骨が積まれている。並べられている。ここは巣だ。そして今、その主を起こした。殺したいのではない。出て行ってほしいのだ。もう手遅れだが。",
+          "enemy": "Pale Crawler"
+        },
+        {
+          "id": "territorial_2",
+          "narrative": "ここの水は温かい。大きな何かがその下で休んでいた。それが今、侵入に怒って上がってくる。ここは奴の水場だ。お前は侵しているのだ。",
+          "enemy": "Tideborn"
+        },
+        {
+          "id": "territorial_3",
+          "narrative": "壁に引っかき傷が刻まれている。縄張りだ。気づかなかった裂け目から怪物が現れ、勝ち取った地を守る。その一寸一寸に代償を払ってきたのだ。",
+          "enemy": "The Hunched"
+        },
+        {
+          "id": "territorial_4",
+          "narrative": "ここはかつて聖堂だった。今は巣穴だ。奪った者はここで祈らない――君臨する。そしてお前は今、招かれざる客としてその御前に踏み込んだ。",
+          "enemy": "Hollow Clergy"
+        },
+        {
+          "id": "territorial_5",
+          "narrative": "闇の中で鎖が鳴る。縛られし者がこの通路を我が物としている。通しはしない。誰も通しはしない。その孤独は牙を持っている。",
+          "enemy": "The Bound"
+        }
+      ]
+    },
+    {
+      "template": "pursuit",
+      "variations": [
+        {
+          "id": "pursuit_1",
+          "narrative": "もう三部屋、あの音を聞いている。近づいてくる。速くなっていく。逃げても無駄だ。逃げるのをやめる時だ。",
+          "enemy": "The Hunched"
+        },
+        {
+          "id": "pursuit_2",
+          "narrative": "階段からずっと付いてくる。辛抱強く。執拗に。振り切れはしない――奴はこの坑道を知り尽くしている。この坑道を作ったのだ。立ち止まり、向き合え。",
+          "enemy": "The Bound"
+        },
+        {
+          "id": "pursuit_3",
+          "narrative": "背後の水音が止む。それは悪い報せだ。もう追っていないということだ。もうここにいるということだ。",
+          "enemy": "The Drowned"
+        },
+        {
+          "id": "pursuit_4",
+          "narrative": "あの音がすぐ後ろにいる。息づかいを――あれが息なら――首筋に感じる。振り向け。振り向くしかない。振り向きたくない。",
+          "enemy": "Pale Crawler"
+        },
+        {
+          "id": "pursuit_5",
+          "narrative": "振り返るたび、近づいている。見ている間は決して動かない。永遠に見てはいられない。目が灼ける。瞬きすれば、終わる。",
+          "enemy": "The Hollow"
+        }
+      ]
+    },
+    {
+      "template": "swarm",
+      "variations": [
+        {
+          "id": "swarm_1",
+          "narrative": "一匹なら脅威ではない。だが一匹ではない。壁の裂け目から、床の隙間から溢れ出す。何十匹も。まだ来る。いくらでも来る。",
+          "enemy": "Pale Crawler Swarm"
+        },
+        {
+          "id": "swarm_2",
+          "narrative": "水がそれらで満ちている。小さな、掴みかかるものたち。一匹では無に等しい。集まれば、歯と飢えの潮流だ。その質量で水位が上がる。",
+          "enemy": "Tideborn"
+        },
+        {
+          "id": "swarm_3",
+          "narrative": "手。手だけ。至る所から現れる――床、壁、天井。掴み、引き、引きずり込む。戦うべき胴体はない。手だけだ。",
+          "enemy": "Bone Weavers"
+        },
+        {
+          "id": "swarm_4",
+          "narrative": "灰の子らが集まった。かつては見ているだけで足りていた。今はもっと欲しがっている。詰め寄ってくる。空気が薄くなる。攻撃ではない――窒息させているのだ。",
+          "enemy": "Ash Children"
+        },
+        {
+          "id": "swarm_5",
+          "narrative": "残響の抜け殻たちが互いを見つけた。盗まれた末期の言葉の合唱。一体となってよろめき、一体となって手を伸ばす。「助けて助けて助けて」――十あまりの潰れた喉から、同じ懇願。",
+          "enemy": "Echo Husks"
+        }
+      ]
+    },
+    {
+      "template": "feeding",
+      "variations": [
+        {
+          "id": "feeding_1",
+          "narrative": "何かを食っている。湿った、几帳面な音。まだこちらに気づいていない。忍び足で抜けられる。先手を打てる。どちらにせよ、まもなく食べ終わる。",
+          "enemy": "The Hunched"
+        },
+        {
+          "id": "feeding_2",
+          "narrative": "溺者が死体を見つけた。食べているのではない――……取り込んでいる。大きくなっていく。強くなっていく。待つほどに、危険は増す。",
+          "enemy": "Bloated One"
+        },
+        {
+          "id": "feeding_3",
+          "narrative": "怪物が、かつて人だったものの上に屈み込んでいる。顔を上げる。口がいっぱいだ。邪魔されて腹を立てている様子はない。感謝しているようだ。餌が増えた、と。",
+          "enemy": "Pale Crawler"
+        },
+        {
+          "id": "feeding_4",
+          "narrative": "咽び泣くものが、糧とする悲嘆を見つけた。別の挑戦者の骸、その末期の言葉はまだ新しい。奴はその哀しみを飲む。そしてこちらを向く。お前の哀しみのほうが、豊かに匂うのだ。",
+          "enemy": "The Weeping"
+        },
+        {
+          "id": "feeding_5",
+          "narrative": "骨の山に座り、それを割り、中身を飲んでいる。古い骨だ。太古の骨だ。何世紀もここで食い続けてきた。久方ぶりの新鮮なものが、お前だ。",
+          "enemy": "The Hunched"
+        }
+      ]
+    },
+    {
+      "template": "guardian",
+      "variations": [
+        {
+          "id": "guardian_1",
+          "narrative": "扉の前に立っている。ずっとこの扉の前に立ってきた。この扉の前で死ぬだろう。その向こうのものが欲しいなら、お前もだ。",
+          "enemy": "Forgotten Guardian"
+        },
+        {
+          "id": "guardian_2",
+          "narrative": "先の通路には重要な何かがある。それが感じられる。道を塞ぐものにも感じられている。あれはここに置かれたのだ。目的があるのだ。その目的とは、お前だ。",
+          "enemy": "Carrion Knight"
+        },
+        {
+          "id": "guardian_3",
+          "narrative": "出口はすぐそこだ。二十歩ほど。その間に、まさにこの瞬間だけを待ち続けてきたものが立っている。お前の瞬間。奴の使命。",
+          "enemy": "Hollow Clergy"
+        },
+        {
+          "id": "guardian_4",
+          "narrative": "貯蔵庫はすぐ先だ。物資、武器、希望。それを守るものは、そのどれも使わない。ただ、お前に渡したくないだけだ。",
+          "enemy": "The Bound"
+        },
+        {
+          "id": "guardian_5",
+          "narrative": "聖堂を守っている。神ではない――神は死んだ。供物でもない――腐り果てた。守っているのは観念だ。記憶だ。それを、お前から守るのだ。",
+          "enemy": "Forgotten Guardian"
+        }
+      ]
+    },
+    {
+      "template": "arena",
+      "variations": [
+        {
+          "id": "arena_1",
+          "narrative": "円形の広間。滑らかだ。このために設計されている。視線を感じる――どこからだ。向かいに立つものは観客に興味がない。お前だけだ。",
+          "enemy": "Carrion Knight"
+        },
+        {
+          "id": "arena_2",
+          "narrative": "段状の座席が中央の窪地を囲む。空席、だが空ではない気配。何かが見ている。何かが裁いている。窪地の怪物が、お前が降りてくるのを待っている。",
+          "enemy": "The Bound"
+        },
+        {
+          "id": "arena_3",
+          "narrative": "骨の円形劇場。音響は完璧だ――喘ぎも、呻きも、断末魔も、美しく響き渡るだろう。会衆が開演を待っている。",
+          "enemy": "The Congregation"
+        },
+        {
+          "id": "arena_4",
+          "narrative": "床に円が描かれている。古い。拘束の円だ。踏み入れば、どちらかが動きを止めるまで出られない。円の中のものは、決して動きを止めない。",
+          "enemy": "Flickering Shade"
+        },
+        {
+          "id": "arena_5",
+          "narrative": "入ると同時に部屋が組み変わる。壁がせり上がる。出口が封じられる。空間が作られる。舞台が。闘技場が。どこかで、何かが大いに愉しんでいる。",
+          "enemy": "The Unnamed"
+        }
+      ]
+    },
+    {
+      "template": "wounded",
+      "variations": [
+        {
+          "id": "wounded_1",
+          "narrative": "血を流している。体を引きずっている。その傷はお前のものではない――誰かが挑んだのだ。誰かが失敗したのだ。奴がこちらを見る。歯を剥いて。恐怖と憤怒を等分に湛えて。",
+          "enemy": "The Drowned"
+        },
+        {
+          "id": "wounded_2",
+          "narrative": "半分が失われている。残る半分はまだ動く。まだ狩る。削がれてはいるが、終わってはいない。失うものは何もない。だからこそ危険なのだ。",
+          "enemy": "Pale Crawler"
+        },
+        {
+          "id": "wounded_3",
+          "narrative": "守護者にひびが入っている。欠けた破片。別の冒険者の仕業だ。その冒険者はどこに。おそらく死んだ。だが奴を弱らせた。始められた仕事を終わらせろ。",
+          "enemy": "Forgotten Guardian"
+        },
+        {
+          "id": "wounded_4",
+          "narrative": "足を引きずりながら迫ってくる。壊れている、だが敗れてはいない。傷を負うほどに怒りを増す。痛むほどにお前への憎悪を深める。慈悲という選択肢を、奴は理解しない。",
+          "enemy": "The Hunched"
+        },
+        {
+          "id": "wounded_5",
+          "narrative": "手首から千切れた鎖が垂れている。何かから逃げたのだ。あるいは逃げようとしたのだ。今や自由で、傷つき、混乱し、最初に目にしたのがお前だ。運のいいことに。",
+          "enemy": "The Bound"
+        }
+      ]
+    }
+  ]
+}

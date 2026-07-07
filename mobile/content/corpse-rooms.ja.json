@@ -1,0 +1,321 @@
+{
+  "type": "corpse",
+  "zone": "THRESHOLD OF THE UNNAMED",
+  "rooms": [
+    {
+      "template": "fresh",
+      "variations": [
+        {
+          "id": "fresh_1",
+          "narrative": "血がまだ乾いていない。倒れたのはついさっきだ――あるいは何年も前か。この底では時が嘘をつく。その手はまだ壁へ伸び、そこに言葉が刻まれている：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "fresh_2",
+          "narrative": "まだ温かい。冷たい空気に、最後の吐息がまだ白く漂っている。あと少しだった。あと少し。慌ただしく刻まれた、末期の言葉：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "fresh_3",
+          "narrative": "遠い昔ではないと分かる。恐怖の匂いがまだ残っているからだ。鋭い。金属質の。伝言は新しく、文字から石の粉がまだ零れている：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "fresh_4",
+          "narrative": "松明がまだ燃えている。それほど新しい。近づくと炎が揺れる。まるでこちらを認めたかのように。消えゆく光の中で、言葉が浮かび上がる：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "fresh_5",
+          "narrative": "波紋がまだ収まっていない。倒れたばかりだ。すれ違ったばかりだ――こちらが間に合わなかったのか、向こうが間に合わなかったのか。いずれにせよ、この伝言は次に来る者へのものだ：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "old",
+      "variations": [
+        {
+          "id": "old_1",
+          "narrative": "もうほとんど壁の一部だ。大半は水に奪われた。だが石に刻まれた言葉は残っている。悲嘆のように辛抱強く：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "old_2",
+          "narrative": "骨。今はもう骨だけだ。時と水に並べ替えられ、ほとんど安らかにさえ見える。伝言は風化しながらも、残っている：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "old_3",
+          "narrative": "冥府はこの者を長らく消化してきた。残っているのは体というより記憶だ。だがここでは記憶が消えない。言葉は残り続ける：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "old_4",
+          "narrative": "今は苔が生えている。冥府はこの体を己の一部として受け入れた。刻まれた伝言だけが、取り込まれることを拒んでいる：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "old_5",
+          "narrative": "どれほどここにいたのか。調度品になるほど長く。目印になるほど。他の生存者たちも通り過ぎたはずだが、誰も動かさなかった。その警告は立ち続けている：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "peaceful",
+      "variations": [
+        {
+          "id": "peaceful_1",
+          "narrative": "楽な姿勢を取っている。持ち物をきちんと並べて。決して辿り着けなかった出口の方角を向いて。その伝言は丁寧で、考え抜かれている：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "peaceful_2",
+          "narrative": "争った跡はない。暴力の跡も。ただ座り込み、ここまでで十分だと決めたのだ。その受容は羨ましいほどだ。言葉は静かだ：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "peaceful_3",
+          "narrative": "手を組んで死んでいる。目を閉じて。自ら選んだ終わりに安らいで。その伝言は警告ではなく、別れの挨拶のように読める：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "peaceful_4",
+          "narrative": "小さな焚き火、とうに冷えている。食べかけの食事。ここで休んだのだ。二度と目覚めなかった。冥府も時に慈悲深い。最後の想い：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "peaceful_5",
+          "narrative": "微笑んでいる。どういうわけか。すべての果てに。その骸は、手放すことの教本だ。この伝言は、読む者に向けたものであると同時に、自分自身へのものだ：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "heroic",
+      "variations": [
+        {
+          "id": "heroic_1",
+          "narrative": "怪物が傍らに横たわっている。この者が仕留めたのだ。怪物もこの者を仕留めた。等価の取引か。刃はまだ頭蓋に刺さったまま。伝言は短く、満足げだ：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "heroic_2",
+          "narrative": "ここで踏みとどまったのだ。この場所で。戦いの跡が見える――壁の傷、黒い膿汁、仕留めたものたちの死骸。その墓碑銘は勝ち取ったものだ：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "heroic_3",
+          "narrative": "周りに三体の怪物が死んでいる。静かには逝かなかった。容易くも逝かなかった。囲まれ、戦いながら、道連れにできる限りを道連れにして逝った。その誇り：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "heroic_4",
+          "narrative": "誰かを守って死んだ。二人目の足跡が、去っていく方向へ続いている。この者のおかげで、誰かが生き延びた。その遺産：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "heroic_5",
+          "narrative": "立ったまま。立ったまま死んでいる。得物を掲げ。勝てないと知っていた何かと向き合って。それでも向き合った。石に刻まれた、その抗い：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "disturbing",
+      "variations": [
+        {
+          "id": "disturbing_1",
+          "narrative": "戦って死んだのではない。待って死んだのだ。壁にもたれて座り、手を組み、辛抱強く。まるで知っていたかのように。傍らの伝言：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "disturbing_2",
+          "narrative": "この体は何かがおかしい。比率が。姿勢が。笑みが。ポーズを取らされたように見える。並べられたように。人の形を理解していない何かの手で。その言葉：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "disturbing_3",
+          "narrative": "壁を向いている。額を石に押し当てて。指がなくなるまで掻きむしったのだ。伝言は岩に刻まれている。引っかき傷ではない。深く彫られている。こうある：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "disturbing_4",
+          "narrative": "傷がない。痕跡がない。死因が見当たらない。ただ……止まったのだ。その表情は困惑し、まだ問題を解こうとしている。伝言は途切れている：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "disturbing_5",
+          "narrative": "立っている。死んでいるのに、立っている。目を開けて。お前が今来た通路を見つめて。ずっと見ていたのか。その伝言も、共に見つめている：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "group",
+      "variations": [
+        {
+          "id": "group_1",
+          "narrative": "三人。最期に身を寄せ合って。何が来たにせよ、一つになって迎えたのだ。書く時間があったのは一人だけ。言葉は全員のものだ：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "group_2",
+          "narrative": "死体の輪。外を向いて。最後まで背中合わせで。互いを信じていた。共に死んだ。一つの声が全員を代弁する：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "group_3",
+          "narrative": "二人。手を繋いで。今もなお。二人を殺したものも、二人を引き離せなかった。二人で分かち合った伝言：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "group_4",
+          "narrative": "山。それしか言いようがない。誰かが最初に死に、残りの者は去らなかった。自らを山に加えていったのだ。一番下の者が何かを書き残した：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "group_5",
+          "narrative": "隊列を組んで死んでいる。兵士のように。信徒のように。来るものを知り、共に迎えると決めた者たちのように。彼らの最期の言葉：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "trapped",
+      "variations": [
+        {
+          "id": "trapped_1",
+          "narrative": "崩落が閉じ込めた。瓦礫は引っかき傷だらけだ。長いこと足掻いたのだ。やがて、やめた。闇の中で書かれた伝言：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "trapped_2",
+          "narrative": "閉じ込められた。この扉は内側からは開かない。閉めたとき、それを知らなかったのだ。扉の傷跡が物語る。言葉はその下端に刻まれている：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "trapped_3",
+          "narrative": "水が上がってきたのだ。止まった位置に跡が見える――頭のすぐ上だ。登れるだけ登った。足りなかった。伝言は水位線のところにある：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "trapped_4",
+          "narrative": "鎖。ここに繋がれている。誰が繋いだのか。待たせたかった何かだ。考えさせたかった。最後に一つ、書かせたかった：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "trapped_5",
+          "narrative": "縦穴。滑らかな壁。出口はない。思いのほか長く、この底で生き延びた。この言葉を刻むには十分なほど：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "posed",
+      "variations": [
+        {
+          "id": "posed_1",
+          "narrative": "誰かがこの体を整えた。座らせ、顔を入口へ向けた。お前のほうへ。伝言はこの者のものではない――別の何かが書いたのだ：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "posed_2",
+          "narrative": "跪いている。頭を垂れ。両手を合わせて。祈りの戯画だ。人が祈るのを見ていた何かが仕組んだ。傍らの言葉は、祈りではない：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "posed_3",
+          "narrative": "壁に組み込まれている。文字通りに。その体は今や建築の一部だ。設計者がここにいたのだ。自由なのは手だけ。刻まれた言葉を指している：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "posed_4",
+          "narrative": "食卓についている。食事とともに。連れとともに――晩餐の客のように並べられた他の骸たち。おぞましい茶番だ。その席札にはこうある：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "posed_5",
+          "narrative": "展示されている。芸術品のように。丁寧に、意図をもって壁に据えられて。一人だけの画廊。その下の銘板には：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "legendary",
+      "variations": [
+        {
+          "id": "legendary_1",
+          "narrative": "この者のことは聞いたことがある。誰もが知っている。誰よりも深くまで辿り着いた。その骸は目印になった。その言葉は写され、語り継がれている：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "legendary_2",
+          "narrative": "あの有名な者だ。供物に囲まれている――旅人たちの贈り物、捧げられた敬意。あと少しだった。その伝言は祈りになった：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "legendary_3",
+          "narrative": "物語で知っている顔だ。想像より小さい。想像より人間らしい。伝説は肉体より大きい。その言葉は、意外なほど簡素だ：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "legendary_4",
+          "narrative": "巡礼の地。偉大なる者が倒れたこの場所を、一目見るためだけに人々が来た。足元で花が朽ちている。伝言は、なぞる指に磨り減っている：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "legendary_5",
+          "narrative": "史上最高額を賭けた降下。最大の損失。最も勇敢な挑戦。その失敗が、他の者たちに成功の道を教えた。その遺産は言葉にとどまらない：",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    }
+  ]
+}
