@@ -1,0 +1,49 @@
+{
+  "type": "death",
+  "death_moments": [
+    "O frio alcança seu peito. Suas pernas param de funcionar. A água sobe, ou talvez você afunde. É difícil notar a diferença agora.",
+    "Você cai. A pedra está fria contra sua bochecha. Em algum lugar acima, uma luz tremula. Você não vai alcançá-la.",
+    "A escuridão se aglomera nas bordas da sua visão. A última coisa que você vê é o teto, impossivelmente distante.",
+    "Sua arma escorrega dos dedos dormentes. O som dela batendo na pedra é a última coisa que você ouve.",
+    "A dor esmaece em dormência. A dormência esmaece em frio. O frio esmaece em nada. É assim que o nada se sente.",
+    "A criatura o observa cair. Há algo como piedade em seus olhos. Ou fome. Difícil notar a diferença agora.",
+    "Você sempre se perguntou como terminaria. Agora sabe. Termina assim. Na pedra fria. Na água escura.",
+    "Seus pensamentos se dispersam como pássaros assustados. Um permanece, claro e final: é isto. É assim que sua história termina.",
+    "O submundo o apara na queda. Estava esperando por isto. Sempre esteve esperando por isto.",
+    "Tudo fica distante — a dor, o frio, o medo. Paz, quase. Quase como paz.",
+    "Você tenta se mover. Seu corpo discorda. A discussão termina antes de começar. O corpo vence. O corpo sempre vence.",
+    "Sangue ou água. Você não sabe dizer o que está enchendo seus pulmões. Importa? Alguma coisa importa agora?",
+    "O último suspiro o abandona. Não volta. Esta é a parte que não contam a você: o silêncio.",
+    "Você estende a mão para algo — esperança, socorro, outra chance. Sua mão se fecha sobre o nada. O nada é tudo o que resta.",
+    "O mundo se inclina. Gira. Para. É assim que parar se sente. É este o gosto dos finais.",
+    "Em algum lugar, alguém talvez se lembre de você. Aqui, as paredes vão lembrar. A água vai lembrar. O escuro sempre lembra.",
+    "Você lutou. Você tentou. Não foi o bastante. Nunca é o bastante. O submundo aceita todas as dívidas, todos os sonhos, todas as mortes.",
+    "A criatura segue em frente. Você foi um momento em sua existência eterna. Uma refeição. Uma memória. Uma mensagem.",
+    "A consciência rareia como névoa da manhã. O que há além dela? Você está prestes a descobrir. Está prestes a se tornar parte da resposta.",
+    "A esta profundidade, a morte é só uma mudança de endereço. Você vivia lá em cima. Agora vive aqui. Para sempre aqui."
+  ],
+  "final_words_intros": [
+    "Seu último pensamento se cristaliza. Algo para os que vierem depois. Um aviso? Uma piada? Uma prece?",
+    "Com o que resta de suas forças, você deixa uma mensagem. Que ela signifique algo. Que ela importe.",
+    "Palavras se formam no escuro. Últimas palavras. A única coisa que você vai deixar para trás.",
+    "Um pensamento sobrevive à queda. Uma mensagem. Faça-a valer.",
+    "A parede está fria sob seus dedos. Você traça letras. Estas letras vão durar mais que você.",
+    "Você arranha na pedra o que gostaria de poder gritar ao mundo: uma última declaração.",
+    "Antes que o escuro leve tudo, você lhe dá algo: palavras. As suas palavras. Para sempre.",
+    "Os que morrem escrevem aos que vivem. É a tradição mais antiga. A comunicação mais honesta.",
+    "O que se diz quando não resta nada a dizer? Diz-se isto:",
+    "Uma mensagem na garrafa. Só que a garrafa é pedra e o oceano é o tempo."
+  ],
+  "corpse_discovery_outros": [
+    "Eles tentaram. Falharam. Mas deixaram algo para trás.",
+    "Outra alma, outra história, outro aviso.",
+    "O submundo está cheio de finais. Este é um deles.",
+    "Quem quer que fossem, importaram. Suas palavras provam isso.",
+    "Todo corpo já foi esperança. Toda mensagem já foi fôlego.",
+    "Vieram em busca de fortuna. Encontraram isto no lugar.",
+    "Os mortos ensinam os vivos. É a escola mais antiga.",
+    "Alguém os amou um dia. Alguém talvez ainda se lembre deles.",
+    "Uma vida, reduzida a uma mensagem. Uma mensagem, preservada na pedra.",
+    "Eles não conseguiram. Você ainda pode. Foi por isso que escreveram."
+  ]
+}

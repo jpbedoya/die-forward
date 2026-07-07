@@ -1,0 +1,276 @@
+{
+  "type": "combat",
+  "zone": "THRESHOLD OF THE UNNAMED",
+  "rooms": [
+    {
+      "template": "ambush",
+      "variations": [
+        {
+          "id": "ambush_1",
+          "narrative": "A sala parece vazia. Água parada, ar parado. Então você o vê — a superfície ondulando onde nada se moveu. Erguendo-se. Estava esperando embaixo.",
+          "enemy": "The Drowned"
+        },
+        {
+          "id": "ambush_2",
+          "narrative": "Você o ouve meio segundo antes de vê-lo. Estalos úmidos na pedra. Acima de você. Agarrado ao teto. Caindo. Agora.",
+          "enemy": "Pale Crawler"
+        },
+        {
+          "id": "ambush_3",
+          "narrative": "Sua sombra se move errado. Você percebe tarde demais — o Oco já está dentro da sua silhueta, atravessando-a, estendendo-se para você.",
+          "enemy": "The Hollow"
+        },
+        {
+          "id": "ambush_4",
+          "narrative": "O corpo por cima do qual você passou não está morto. Ele agarra seu tornozelo. O aperto é mais forte do que qualquer coisa podre deveria ter. A boca se abre. Nenhum som sai.",
+          "enemy": "Bloated One"
+        },
+        {
+          "id": "ambush_5",
+          "narrative": "Um tremular na borda da sua visão. Você se vira. Nada. Vira de volta. Está ali. Bem ali. Sempre esteve bem ali.",
+          "enemy": "Flickering Shade"
+        }
+      ]
+    },
+    {
+      "template": "confrontation",
+      "variations": [
+        {
+          "id": "confrontation_1",
+          "narrative": "Ele está de pé no seu caminho. Esperando. Sua cabeça acompanha seus movimentos com fome paciente. Não há como contornar. Só atravessar.",
+          "enemy": "The Drowned"
+        },
+        {
+          "id": "confrontation_2",
+          "narrative": "A coisa bloqueia a porta. Não atacou. Não se moveu. Está apenas... ali. Avaliando. Seja o que for que decida, você não vai gostar.",
+          "enemy": "Forgotten Guardian"
+        },
+        {
+          "id": "confrontation_3",
+          "narrative": "Ele se ajoelha diante de um altar, salmodiando em frequências que ferem seus pensamentos. Sabe que você está aqui. O cântico é para você. Um convite ou uma sentença de morte.",
+          "enemy": "Hollow Clergy"
+        },
+        {
+          "id": "confrontation_4",
+          "narrative": "O cavaleiro ergue uma lâmina enferrujada em saudação. Combate honrado. Até a morte. Ele espera que você lute bem. Vai se decepcionar de qualquer forma.",
+          "enemy": "Carrion Knight"
+        },
+        {
+          "id": "confrontation_5",
+          "narrative": "Ela emerge da água, com o dobro da sua altura, gotejando escuridão. Por um momento, quase parece humana. Então abre a boca. Então tem bocas demais.",
+          "enemy": "Mother of Tides"
+        }
+      ]
+    },
+    {
+      "template": "territorial",
+      "variations": [
+        {
+          "id": "territorial_1",
+          "narrative": "Há ossos empilhados aqui. Arranjados. Isto é um ninho. E você acabou de acordar o que vive nele. Ele não quer matá-lo. Quer que você vá embora. Tarde demais para isso.",
+          "enemy": "Pale Crawler"
+        },
+        {
+          "id": "territorial_2",
+          "narrative": "A água aqui é mais quente. Algo grande esteve descansando embaixo dela. Esse algo está subindo agora, furioso com a intrusão. Esta poça é dele. Você está invadindo.",
+          "enemy": "Tideborn"
+        },
+        {
+          "id": "territorial_3",
+          "narrative": "As paredes estão marcadas de arranhões. Território. A criatura emerge de uma fresta que você não tinha notado, defendendo o chão que reivindicou. Cada palmo lhe custou algo.",
+          "enemy": "The Hunched"
+        },
+        {
+          "id": "territorial_4",
+          "narrative": "Isto foi um santuário um dia. Agora é um covil. A coisa que o tomou não adora aqui — reina. E você acabou de entrar em sua corte sem ser convidado.",
+          "enemy": "Hollow Clergy"
+        },
+        {
+          "id": "territorial_5",
+          "narrative": "Correntes chacoalham no escuro. O Agrilhoado reivindicou esta passagem. Não vai deixar você passar. Não vai deixar ninguém passar. Sua solidão é agressiva.",
+          "enemy": "The Bound"
+        }
+      ]
+    },
+    {
+      "template": "pursuit",
+      "variations": [
+        {
+          "id": "pursuit_1",
+          "narrative": "Você vem ouvindo aquilo há três salas. Mais perto a cada vez. Mais rápido a cada vez. Correr não está funcionando. Hora de parar de correr.",
+          "enemy": "The Hunched"
+        },
+        {
+          "id": "pursuit_2",
+          "narrative": "Vem seguindo você desde as escadas. Paciente. Implacável. Você não consegue ser mais rápido — ele conhece estes túneis. Ele fez estes túneis. Fique e o enfrente.",
+          "enemy": "The Bound"
+        },
+        {
+          "id": "pursuit_3",
+          "narrative": "O chapinhar atrás de você cessa. Isso é pior. Significa que não está mais perseguindo. Significa que já está aqui.",
+          "enemy": "The Drowned"
+        },
+        {
+          "id": "pursuit_4",
+          "narrative": "Os estalos estão bem atrás de você agora. Você sente sua respiração — se aquilo é respiração — no pescoço. Vire-se. Você precisa. Você não quer.",
+          "enemy": "Pale Crawler"
+        },
+        {
+          "id": "pursuit_5",
+          "narrative": "Toda vez que você olha para trás, está mais perto. Nunca se move enquanto você observa. Você não pode observar para sempre. Seus olhos ardem. Pisque, e acaba.",
+          "enemy": "The Hollow"
+        }
+      ]
+    },
+    {
+      "template": "swarm",
+      "variations": [
+        {
+          "id": "swarm_1",
+          "narrative": "Um só não seria uma ameaça. Mas não há um só. Eles jorram das frestas nas paredes, dos vãos no chão. Dezenas. Mais vindo. Sempre mais.",
+          "enemy": "Pale Crawler Swarm"
+        },
+        {
+          "id": "swarm_2",
+          "narrative": "A água está cheia deles. Coisas pequenas, ávidas. Sozinhas, não são nada. Juntas, são uma correnteza de dentes e fome. A água sobe com a massa delas.",
+          "enemy": "Tideborn"
+        },
+        {
+          "id": "swarm_3",
+          "narrative": "Mãos. Apenas mãos. Elas emergem de toda parte — chão, paredes, teto. Agarrando, puxando, arrastando. Não há corpo para combater. Apenas mãos.",
+          "enemy": "Bone Weavers"
+        },
+        {
+          "id": "swarm_4",
+          "narrative": "As Crianças de Cinza se reuniram. Observar costumava bastar para elas. Agora querem mais. Elas se aproximam. O ar rareia. Não estão atacando — estão sufocando.",
+          "enemy": "Ash Children"
+        },
+        {
+          "id": "swarm_5",
+          "narrative": "As Cascas de Eco se encontraram. Um coro de últimas palavras roubadas, arrastando-se como um só, estendendo-se como um só. 'Me ajude me ajude me ajude' — a mesma súplica de uma dúzia de gargantas arruinadas.",
+          "enemy": "Echo Husks"
+        }
+      ]
+    },
+    {
+      "template": "feeding",
+      "variations": [
+        {
+          "id": "feeding_1",
+          "narrative": "Ele está comendo algo. Os sons são úmidos, metódicos. Não viu você. Você poderia passar despercebido. Poderia atacar primeiro. Ele vai terminar logo de qualquer jeito.",
+          "enemy": "The Hunched"
+        },
+        {
+          "id": "feeding_2",
+          "narrative": "Os Afogados encontraram um corpo. Não está comendo — está... absorvendo. Crescendo. Ficando mais forte. Cada instante que você espera, torna-se mais perigoso.",
+          "enemy": "Bloated One"
+        },
+        {
+          "id": "feeding_3",
+          "narrative": "A criatura se agacha sobre algo que já foi uma pessoa. Ela ergue o olhar. A boca está cheia. Não parece incomodada com a interrupção. Parece grata. Mais comida.",
+          "enemy": "Pale Crawler"
+        },
+        {
+          "id": "feeding_4",
+          "narrative": "As Carpideiras encontraram luto para se alimentar. O corpo de outro jogador, suas últimas palavras ainda frescas. Elas bebem sua tristeza. Voltam-se para você. Sua tristeza tem cheiro mais rico.",
+          "enemy": "The Weeping"
+        },
+        {
+          "id": "feeding_5",
+          "narrative": "Ele está sentado entre ossos, quebrando-os, bebendo o que há dentro. Ossos velhos. Antigos. Vem se alimentando aqui há séculos. Você é a primeira coisa fresca em muito tempo.",
+          "enemy": "The Hunched"
+        }
+      ]
+    },
+    {
+      "template": "guardian",
+      "variations": [
+        {
+          "id": "guardian_1",
+          "narrative": "Ele está de pé diante da porta. Sempre esteve de pé diante desta porta. Morrerá diante desta porta. Você também, se quiser o que há atrás dela.",
+          "enemy": "Forgotten Guardian"
+        },
+        {
+          "id": "guardian_2",
+          "narrative": "A passagem adiante guarda algo importante. Você sente. A coisa que bloqueia seu caminho também. Ela foi posta aqui. Tem um propósito. Esse propósito é você.",
+          "enemy": "Carrion Knight"
+        },
+        {
+          "id": "guardian_3",
+          "narrative": "A saída está bem ali. Seis metros. Entre você e ela está algo que esperou exatamente por este momento. O seu momento. O propósito dele.",
+          "enemy": "Hollow Clergy"
+        },
+        {
+          "id": "guardian_4",
+          "narrative": "O esconderijo está logo adiante. Suprimentos, armas, esperança. A coisa que o guarda não usa nada disso. Só não quer que você tenha.",
+          "enemy": "The Bound"
+        },
+        {
+          "id": "guardian_5",
+          "narrative": "Ele protege o santuário. Não o deus — o deus está morto. Não as oferendas — apodreceram. Ele protege a ideia. A memória. Vai protegê-las de você.",
+          "enemy": "Forgotten Guardian"
+        }
+      ]
+    },
+    {
+      "template": "arena",
+      "variations": [
+        {
+          "id": "arena_1",
+          "narrative": "A câmara é redonda. Lisa. Feita para isto. Você sente olhos sobre você — de onde? A coisa do outro lado não se importa com a plateia. Só com você.",
+          "enemy": "Carrion Knight"
+        },
+        {
+          "id": "arena_2",
+          "narrative": "Arquibancadas cercam um fosso central. Assentos vazios, mas presença não. Algo observa. Algo julga. A criatura no fosso aguarda sua descida.",
+          "enemy": "The Bound"
+        },
+        {
+          "id": "arena_3",
+          "narrative": "Um anfiteatro de osso. A acústica é perfeita — cada arquejo, cada grunhido, cada estertor vai ecoar lindamente. A Congregação espera pelo espetáculo.",
+          "enemy": "The Congregation"
+        },
+        {
+          "id": "arena_4",
+          "narrative": "Há um círculo desenhado no chão. Antigo. Vinculante. Uma vez dentro, você não pode sair até que um dos dois pare de se mover. A coisa no círculo nunca para de se mover.",
+          "enemy": "Flickering Shade"
+        },
+        {
+          "id": "arena_5",
+          "narrative": "A sala se reconfigura quando você entra. Paredes sobem. Saídas se selam. Um espaço é criado. Um palco. Uma arena. Em algum lugar, algo está muito entretido.",
+          "enemy": "The Unnamed"
+        }
+      ]
+    },
+    {
+      "template": "wounded",
+      "variations": [
+        {
+          "id": "wounded_1",
+          "narrative": "Ele está sangrando. Arrastando-se. As feridas não são suas — outra pessoa tentou. Outra pessoa falhou. Ele vê você. Dentes à mostra. Medo e fúria em igual medida.",
+          "enemy": "The Drowned"
+        },
+        {
+          "id": "wounded_2",
+          "narrative": "Metade dele está faltando. A outra metade ainda funciona. Ainda caça. Reduzido, mas não acabado. Não tem mais nada a perder. Isso o torna mais perigoso.",
+          "enemy": "Pale Crawler"
+        },
+        {
+          "id": "wounded_3",
+          "narrative": "O Guardião está rachado. Faltam pedaços. Outro aventureiro fez isto. Onde está esse aventureiro? Morto, provavelmente. Mas o enfraqueceram. Termine o que começaram.",
+          "enemy": "Forgotten Guardian"
+        },
+        {
+          "id": "wounded_4",
+          "narrative": "Ele manca em sua direção. Quebrado, mas não vencido. Cada ferida o deixa mais furioso. Cada dor o faz odiá-lo mais. Misericórdia não é uma opção que ele entenda.",
+          "enemy": "The Hunched"
+        },
+        {
+          "id": "wounded_5",
+          "narrative": "Correntes pendem quebradas de seus pulsos. Ele escapou de algo. Ou tentou. Agora está livre, ferido, confuso, e você é a primeira coisa que ele vê. Que sorte a sua.",
+          "enemy": "The Bound"
+        }
+      ]
+    }
+  ]
+}

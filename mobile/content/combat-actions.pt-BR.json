@@ -1,0 +1,184 @@
+{
+  "type": "combat_actions",
+  "actions": {
+    "strike": {
+      "success": [
+        "Sua lâmina encontra carne. O impacto estremece seu braço. A criatura recua cambaleando, ferida mas não acabada.",
+        "O aço encontra a corrupção. A criatura vacila, esguichando icor. Você a feriu. Agora ela conhece a dor.",
+        "Seu golpe é certeiro. Acerta em cheio, empurrando a coisa um passo para trás. Sangue — ou algo parecido com sangue — escorre.",
+        "Um golpe limpo. A criatura uiva — ou tenta, com o que resta de sua garganta. Você a feriu gravemente.",
+        "Sua arma morde fundo. Os olhos da criatura se arregalam com algo parecido com surpresa. Ela não esperava que você revidasse."
+      ],
+      "mutual": [
+        "Você golpeia. Ela golpeia. Ambos acertam. A dor floresce no seu flanco enquanto a criatura cambaleia. Troca justa. Por pouco.",
+        "O aço encontra a garra. Vocês se dilaceram. Nenhum dos dois recua. O sangue se mistura — o seu e o que quer que passe pelo dela.",
+        "Uma troca feroz. Você a feriu. Ela feriu você. A aritmética da violência: os dois números caem.",
+        "Sua lâmina afunda enquanto as garras dela rasgam você. Agonia e satisfação, entrelaçadas.",
+        "Você corta fundo. Os dentes dela encontram seu braço. Destruição mútua. Determinação mútua. Nenhum dos dois vai parar."
+      ],
+      "weak": [
+        "O golpe resvala. Não basta. Ela mal percebe, já avançando sobre você.",
+        "Você golpeia, mas o ângulo está errado. Ela absorve o impacto e continua vindo. Isso vai exigir mais.",
+        "Sua arma acerta, mas fraco. A criatura ri — ou faz o som onde a risada deveria estar.",
+        "Seu golpe passa longe. Fadiga? Medo? A criatura não se importa com razões. Se importa com a brecha.",
+        "O golpe acerta, mas em carne endurecida. Como golpear pedra. Seu braço reverbera. Ela nem sequer se abala.",
+        "Você erra. Por completo. O impulso o tira do equilíbrio. Isso vai custar caro."
+      ]
+    },
+    "dodge": {
+      "success": [
+        "Você se desvia no último instante. Garras cortam o ar vazio. A criatura passa cambaleando, exposta.",
+        "Puro instinto. Seu corpo se move antes que sua mente decida. O ataque erra por centímetros. Você sente o vento dele.",
+        "Você não está onde ela esperava. O golpe dela não encontra nada. Por um instante, ela se confunde. Aproveite.",
+        "Lenta demais. Ela é lenta demais. Você dança em torno da investida, intocado, já se posicionando para o contra-ataque.",
+        "O ataque atravessa o lugar onde você estava. Agora você está em outro lugar. Um lugar seguro. Um lugar pronto."
+      ],
+      "close": [
+        "Quase. Você quase desvia limpo. Uma garra pega seu ombro — de raspão, não de rasgar. Ainda assim arde.",
+        "Você se move, mas não rápido o bastante. A borda do ataque encontra você. Dor, mas dá para sobreviver.",
+        "Perto o bastante para sentir a pressão do ar. Perto o bastante para rasgar o pano, mas não a carne. Da próxima vez, seja mais rápido.",
+        "Você desvia contra a parede. A pedra sólida barra sua fuga. O golpe da criatura encontra você, de raspão mas real.",
+        "Lento demais. Mais lento que da última vez. A exaustão está aparecendo. A criatura percebe. Ela o atinge de passagem.",
+        "Você escorrega na pedra molhada. O desvio vira um tropeço. Não é um golpe limpo, mas é um golpe."
+      ],
+      "fail": [
+        "Você se move na direção errada. Para dentro do ataque. Com força total. Você sente coisas quebrarem.",
+        "O desvio que funcionou antes não funciona agora. Ela aprendeu. Se adaptou. Você não.",
+        "Suas pernas o traem. Congeladas. O ataque acerta com tudo o que ela tem."
+      ],
+      "counter": [
+        "Você lê a investida. Dá um passo para o lado. Algo estala.",
+        "Ela veio com tudo para cima de você. Você a deixou passar. O contra-ataque acerta limpo.",
+        "A investida os deixa expostos. Você faz com que paguem por isso.",
+        "Você desvia para a brecha. Eles a entregaram a você.",
+        "Um passo à esquerda e uma cotovelada seca. Você sabia que vinha."
+      ]
+    },
+    "brace": {
+      "success": [
+        "Você ergue a guarda. O impacto sacode seus ossos, mas você se mantém firme. Reduzido, não eliminado.",
+        "Você firma os pés e recebe o golpe. Ele acerta, mas sua postura absorve quase toda a força. Você continua de pé.",
+        "Resista. Absorva. Aguente. O ataque da criatura se espatifa contra a sua defesa. Doloroso. Dá para sobreviver.",
+        "O impacto o estremece inteiro, mas você transformou um golpe mortal em um que só machuca. Com machucados dá para trabalhar.",
+        "Você cerra os dentes e aguenta. A dor é real, mas distante. Você ainda está aqui. Ainda lutando."
+      ],
+      "broken": [
+        "Você resiste, mas ela é mais forte do que você esperava. Sua guarda quebra. Nem todo o dano passa. O bastante passa.",
+        "A força é esmagadora. Sua postura aguenta, por pouco, mas algo no seu braço estala. Ainda assim melhor que a alternativa.",
+        "Sua guarda desmorona. O golpe encontra você mesmo assim, diminuído mas não derrotado. Tudo dói.",
+        "Você resiste com tudo o que tem. Não basta. O impacto o arremessa ao chão, ofegante."
+      ],
+      "fail": [
+        "Você se protege tarde demais. O ataque já está dentro da sua guarda. Dano completo. Arrependimento completo.",
+        "Seus braços não cooperam. Lento demais. Cansado demais. O golpe acerta como se você nem tivesse tentado.",
+        "Você se encolhe em vez de resistir. A pior resposta. A criatura capitaliza sua fraqueza."
+      ]
+    },
+    "herbs": {
+      "heal": [
+        "Folhas amargas. Remédio amargo. O calor se espalha por você enquanto as feridas fecham, a dor recua. O gosto permanece.",
+        "Você amassa as ervas e as pressiona contra as feridas. A cura vem rápido aqui embaixo — a sobrevivência exige.",
+        "As ervas queimam ao descer, mas a queimação é boa. Purificadora. Você sente a força voltar.",
+        "Remédios antigos. Eles funcionam aqui, no escuro, onde a medicina moderna não ousa pisar. Você está sarando.",
+        "Você come o que parece podridão e tem gosto de esperança. Seu corpo lembra da saúde. Suas feridas lembram de fechar."
+      ],
+      "interrupted": [
+        "Você estende a mão para as ervas. Ela estende a dela para você. A cura acontece, mas o ferimento também.",
+        "Sem tempo para saborear o remédio. Ela ataca enquanto você está distraído. Valeu a pena? A cura diz que sim. A dor diz que talvez."
+      ]
+    },
+    "flee": {
+      "success": [
+        "EVADIDO — Você dá as costas e corre. Sobrevivência antes do orgulho. A escuridão o engole antes que ela possa segui-lo.",
+        "EVADIDO — Fuga. Não é covardia — é tática. Você se desvencilha, disparando para a passagem. Atrás de você, sons de frustração.",
+        "EVADIDO — Você escapa, pernas bombeando, pulmões queimando. Ela não persegue. Não precisa. Sempre há outro caminho.",
+        "EVADIDO — Correr não é perder. Correr é escolher lutar depois, em outro lugar, nos seus termos. Você corre.",
+        "EVADIDO — Você foge. A palavra tem gosto amargo, mas você está vivo para senti-lo. É isso que importa."
+      ],
+      "hurt": [
+        "EVADIDO COM DOR — Você corre. Uma garra pega suas costas — presente de despedida. O sangue escorre, mas suas pernas seguem. A distância cresce.",
+        "EVADIDO COM DOR — Escapar não é de graça. Ela leva um pedaço de você na saída. O preço da fuga. Ainda assim mais barato que o fracasso.",
+        "EVADIDO COM DOR — Você foge, mas não rápido o bastante. Não limpo o bastante. Ela o marca antes que você se vá. Um lembrete.",
+        "EVADIDO COM DOR — Correr dói. Cada passo custa algo. Mas ficar custa mais. Você paga o preço e vai.",
+        "EVADIDO COM DOR — Ela leva um pedaço de você. Um talho fundo, um troféu. Mas você está vivo. Vivo e em movimento. É isso que importa."
+      ],
+      "fail": [
+        "EVASÃO FALHOU — Você se vira para correr e bate na parede. Direção errada. Nenhuma direção. Ela está sobre você antes que possa corrigir.",
+        "EVASÃO FALHOU — Suas pernas cedem. Demais. Rápido demais. Você desaba antes de poder fugir. A criatura se avulta.",
+        "EVASÃO FALHOU — Não há para onde correr. Você percebe isso enquanto tenta. Beco sem saída. Você, sem saída."
+      ]
+    }
+  },
+  "enemy_intents": {
+    "AGGRESSIVE": [
+      "Avança de súbito, garras estendidas",
+      "Se prepara para golpear com força total",
+      "Músculos se tensionando para um ataque brutal",
+      "Olhos cravados na sua garganta",
+      "Se arma para um golpe devastador",
+      "Se recolhe para dar o bote",
+      "Rosna, pronta para dilacerar",
+      "Se enrosca como uma mola prestes a soltar"
+    ],
+    "DEFENSIVE": [
+      "Circula com cautela, buscando fraqueza",
+      "Braços erguidos, protegendo pontos vitais",
+      "Recua, reavaliando",
+      "Ferida e cautelosa agora",
+      "Observa sua arma, não seus olhos",
+      "Se move para manter distância",
+      "Sibila avisos, sem atacar ainda",
+      "Testa sua postura com fintas"
+    ],
+    "CHARGING": [
+      "Acumula energia sombria",
+      "Reúne poder para algo terrível",
+      "O ar crepita ao redor dela",
+      "Algo está se formando, a pressão sobe",
+      "Salmodia entre os dentes",
+      "Atrai as sombras para si",
+      "Fica mais escura, mais densa",
+      "Prepara algo que você não quer ver"
+    ],
+    "ERRATIC": [
+      "Se contorce de forma imprevisível",
+      "Se move em padrões quebrados",
+      "Sacode à esquerda, depois à direita, depois à frente",
+      "Impossível de ler, impossível de prever",
+      "Movimentos quebrados, mente quebrada",
+      "Convulsiona, espasma, ataca",
+      "Sem padrão, sem aviso",
+      "Caos vestindo um corpo"
+    ],
+    "HUNTING": [
+      "Fareja o ar, rastreando você",
+      "Circula em busca do ângulo perfeito",
+      "Paciente, predadora, precisa",
+      "Espera que você cometa um erro",
+      "Olhos seguindo cada movimento seu",
+      "Se posiciona para a matança",
+      "Espreita, passo a cuidadoso passo",
+      "Observa. Aprende. Espera."
+    ],
+    "STALKING": [
+      "Acompanha seus movimentos desde as sombras",
+      "Mantém a distância perfeita, nunca mais perto, nunca mais longe",
+      "Segue sem perseguir",
+      "A paciência dela é aterradora",
+      "Sempre na borda da luz da sua tocha",
+      "Você sente a atenção dela como um peso",
+      "Se move quando você se move, para quando você para",
+      "Está aprendendo seus padrões"
+    ],
+    "RETREATING": [
+      "Recua, ferida mas vigilante",
+      "Cria distância, planejando algo",
+      "Se dissolve nas sombras, não foge — se reposiciona",
+      "A retirada dela parece uma armadilha",
+      "Se retrai em direção a algo",
+      "Se afasta mancando, mas não derrotada",
+      "Atrai você para um lugar específico",
+      "Isto não é rendição — é estratégia"
+    ]
+  }
+}

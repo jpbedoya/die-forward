@@ -1,0 +1,181 @@
+{
+  "type": "exit",
+  "zone": "THRESHOLD OF THE UNNAMED",
+  "rooms": [
+    {
+      "template": "threshold",
+      "variations": [
+        {
+          "id": "exit_threshold_1",
+          "narrative": "Luz. Luz de verdade, não de tocha — luz do dia, filtrando por uma fresta lá em cima. Degraus de pedra sobem. O ar tem cheiro do mundo que você lembra. Você conseguiu. Desta vez."
+        },
+        {
+          "id": "exit_threshold_2",
+          "narrative": "A saída. Real. Tangível. Depois de tudo, aqui está — uma porta de volta ao mundo de cima. A escuridão atrás de você parece se inclinar mais perto, relutante em soltar."
+        },
+        {
+          "id": "exit_threshold_3",
+          "narrative": "A luz do sol toca seu rosto. Calor depois de um frio sem fim. As escadas estão bem ali. A superfície está bem ali. Cada passo parece um desafio. Você está desafiando algo antigo."
+        },
+        {
+          "id": "exit_threshold_4",
+          "narrative": "A passagem sobe. A água recua. À frente: luz, ar, vida. Atrás: todo o resto. Não olhe para trás. Você mereceu isto. Tome."
+        },
+        {
+          "id": "exit_threshold_5",
+          "narrative": "Uma porta, antiga mas funcional. Além dela: som. Vento. Pássaros? Os sons de um mundo que continuou girando enquanto você estava embaixo. Abra. Vá para casa."
+        }
+      ]
+    },
+    {
+      "template": "release",
+      "variations": [
+        {
+          "id": "exit_release_1",
+          "narrative": "A escuridão recua atrás de você. A água não segue além deste ponto. O submundo o solta — não derrotado, apenas... satisfeito. Por enquanto."
+        },
+        {
+          "id": "exit_release_2",
+          "narrative": "Você o sente soltar. Uma pressão que você não sabia carregar se ergue quando cruza a fronteira. O submundo o tinha. Agora não tem. Simples assim. Aterrador assim."
+        },
+        {
+          "id": "exit_release_3",
+          "narrative": "O frio para numa linha invisível. Você a atravessa e sente calor pela primeira vez no que parecem anos. As profundezas o observam partir. Elas vão lembrar."
+        },
+        {
+          "id": "exit_release_4",
+          "narrative": "Algo se descontrai. Algo vasto, de incontáveis dedos, afrouxando o aperto. Você está livre. Estava preso, e agora está livre. Não pense no que o segurava."
+        },
+        {
+          "id": "exit_release_5",
+          "narrative": "Os sussurros esmaecem. A pressão cede. O submundo se descola dos seus pensamentos como um pesadelo que se despede. Você está subindo. Está partindo. É você de novo."
+        }
+      ]
+    },
+    {
+      "template": "earned",
+      "variations": [
+        {
+          "id": "exit_earned_1",
+          "narrative": "A porta final. Estava selada. Agora se abre. Você mereceu isto. O que quer que julgue no escuro pesou você e o achou suficiente. Atravesse, sobrevivente."
+        },
+        {
+          "id": "exit_earned_2",
+          "narrative": "A luz inunda a câmara. Uma recompensa por chegar tão longe. O caminho para a superfície se abre como um presente — ou um reconhecimento. Você lutou por isto. É seu."
+        },
+        {
+          "id": "exit_earned_3",
+          "narrative": "Os portões se abrem. Mecanismos antigos rangem. Alguém — algo — está impressionado. Você passou nos testes. Sobreviveu às provações. A saída é seu prêmio. Reivindique-a."
+        },
+        {
+          "id": "exit_earned_4",
+          "narrative": "Um coro de silêncio. O respeito dos mortos. Você chegou mais longe que a maioria, sobreviveu ao que mata a maioria. A saída o honra por existir. Por deixá-lo passar."
+        },
+        {
+          "id": "exit_earned_5",
+          "narrative": "O caminho se abre. Não dado — merecido. Cada corpo por que você passou, cada criatura a que sobreviveu, cada escolha que fez levou até aqui. A esta porta. A esta luz. À vida."
+        }
+      ]
+    },
+    {
+      "template": "reluctant",
+      "variations": [
+        {
+          "id": "exit_reluctant_1",
+          "narrative": "A saída está aqui. A segurança está aqui. Mas algo permanece por fazer. Alguém permanece por encontrar. Você parte, mas não por completo. Parte de você fica. Você voltará por ela."
+        },
+        {
+          "id": "exit_reluctant_2",
+          "narrative": "Luz acima. Escuridão atrás. Você deveria sentir alívio. Em vez disso, sente-se... inacabado. O submundo tem mais a mostrar. Mais a ensinar. Você não tem certeza de que terminou com ele."
+        },
+        {
+          "id": "exit_reluctant_3",
+          "narrative": "Você pode partir. Você vai partir. Mas hesita no limiar. Algo chama das profundezas — não ameaça, mas convite. Da próxima vez, sussurra. Da próxima vez, desça mais fundo."
+        },
+        {
+          "id": "exit_reluctant_4",
+          "narrative": "A vitória soa vazia. Você escapou, mas deixou coisas para trás. Corpos com mensagens que não leu. Caminhos que não tomou. A saída o julga por partir cedo demais."
+        },
+        {
+          "id": "exit_reluctant_5",
+          "narrative": "A superfície espera. O fundo chama. Você está dividido entre a sobrevivência e a curiosidade, entre a luz e os segredos ainda escondidos na sombra. Você parte. Por enquanto."
+        }
+      ]
+    },
+    {
+      "template": "changed",
+      "variations": [
+        {
+          "id": "exit_changed_1",
+          "narrative": "A superfície espera lá em cima. Mas você pode voltar a ela? Você viu o que há embaixo. Tornou-se alguém que sabe. O mundo de cima parece menor agora. Menos real."
+        },
+        {
+          "id": "exit_changed_2",
+          "narrative": "Você sobe em direção à luz. Cada passo parece mais estranho que o anterior. A pessoa que desceu não é a pessoa que sobe. Algo foi acrescentado. Algo foi tirado. Bem-vindo de volta."
+        },
+        {
+          "id": "exit_changed_3",
+          "narrative": "O lar está lá em cima. Segurança. Normalidade. Mas agora você sabe. Você viu os alicerces do mundo. Como algo pode parecer normal de novo? Como algo pode parecer real?"
+        },
+        {
+          "id": "exit_changed_4",
+          "narrative": "A saída não parece vitória. Parece intervalo. O submundo o marcou. Mudou você. Você vai carregar isso para sempre. Mesmo sob a luz do sol. Sobretudo sob a luz do sol."
+        },
+        {
+          "id": "exit_changed_5",
+          "narrative": "Emergir parece um nascimento. Doloroso. Confuso. O mundo é claro demais, alto demais, demais. Você estava adaptado à escuridão. Agora precisa se adaptar de volta. Consegue?"
+        }
+      ]
+    },
+    {
+      "template": "invitation",
+      "variations": [
+        {
+          "id": "exit_invitation_1",
+          "narrative": "A porta está aberta. A luz do sol se derrama por ela. Nenhum guardião, nenhuma provação, nenhum preço. Apenas... permissão. Ele quer que você parta. Sabe que você voltará. Eles sempre voltam."
+        },
+        {
+          "id": "exit_invitation_2",
+          "narrative": "'Volte logo', algo não diz mas definitivamente comunica. A saída é fácil demais. Acolhedora demais. Você não está escapando — está sendo solto. Há uma diferença."
+        },
+        {
+          "id": "exit_invitation_3",
+          "narrative": "O submundo segura a porta para você. Educado. Paciente. Já está se preparando para a sua próxima visita. Sabe algo que você não sabe: você agora é viciado na descida."
+        },
+        {
+          "id": "exit_invitation_4",
+          "narrative": "Nenhum obstáculo bloqueia seu caminho. Estranho, depois de tudo. Suspeito. A saída parece isca, parece engodo. Mas para quê? Para quando? Vá, sobrevivente. Volte rico. Volte sempre."
+        },
+        {
+          "id": "exit_invitation_5",
+          "narrative": "Luz adiante. Liberdade adiante. A escuridão atrás de você não persegue — acena em despedida. Até breve, parece dizer. Vamos deixar a porta destrancada."
+        }
+      ]
+    },
+    {
+      "template": "false",
+      "variations": [
+        {
+          "id": "exit_false_1",
+          "narrative": "Luz adiante. Escadas subindo. O alívio o inunda. Então você percebe — as escadas estão descendo. Sempre estiveram descendo. A 'luz' sorri com dentes demais."
+        },
+        {
+          "id": "exit_false_2",
+          "narrative": "A saída. Finalmente. Você estende a mão para a porta e ela a atravessa. Ilusão. Crueldade. O caminho verdadeiro continua atrás de você, mais fundo. O submundo ri sem som."
+        },
+        {
+          "id": "exit_false_3",
+          "narrative": "Você sobe em direção à luz do sol. O ar fica mais frio. A luz fica mais escura. De algum modo as escadas que sobem estão levando você para baixo. A geometria mente aqui. A esperança mente aqui."
+        },
+        {
+          "id": "exit_false_4",
+          "narrative": "'SAÍDA' está entalhado acima da porta. Além dela: outra câmara. Outra escolha. Outra mentira. O submundo está testando sua esperança. Torturando-a. A saída verdadeira ainda está adiante. Talvez."
+        },
+        {
+          "id": "exit_false_5",
+          "narrative": "O caminho para fora. Você tem certeza. Você está errado. Atravessa e se vê na entrada outra vez. Círculo. Ciclo. Armadilha. O submundo ainda não terminou com você."
+        }
+      ]
+    }
+  ]
+}

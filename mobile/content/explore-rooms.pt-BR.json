@@ -1,0 +1,306 @@
+{
+  "type": "explore",
+  "zone": "THRESHOLD OF THE UNNAMED",
+  "rooms": [
+    {
+      "template": "corridor",
+      "variations": [
+        {
+          "id": "corridor_1",
+          "narrative": "Água pinga em algum lugar adiante. A passagem se estreita, paredes viscosas de algo que não é bem água. Sua tocha empurra o escuro. O escuro empurra de volta.",
+          "options": ["Siga em frente", "Examine as paredes"]
+        },
+        {
+          "id": "corridor_2",
+          "narrative": "O corredor faz uma curva. Você não vê o que há depois dela, mas ouve — um som úmido, rítmico. Respiração? Gotejamento? Outra coisa por completo.",
+          "options": ["Dobre a curva", "Escute com atenção primeiro"]
+        },
+        {
+          "id": "corridor_3",
+          "narrative": "Marcas de arranhões cobrem as duas paredes. Algo foi arrastado por aqui. Há pouco. As marcas levam para o fundo. O único caminho também.",
+          "options": ["Siga as marcas", "Avance com cautela"]
+        },
+        {
+          "id": "corridor_4",
+          "narrative": "A pedra aqui é mais antiga. Polida por incontáveis pés ao longo de incontáveis anos. Você não é o primeiro a trilhar este caminho. Os ossos no canto sugerem que você pode estar entre os últimos.",
+          "options": ["Continue", "Examine os ossos"]
+        },
+        {
+          "id": "corridor_5",
+          "narrative": "Seus passos ecoam errado. Ecos demais. Como se alguém andasse ao seu lado, meio passo atrás. Você não olha para trás. Sabe que é melhor não.",
+          "options": ["Continue andando", "Pare e vire-se"]
+        }
+      ]
+    },
+    {
+      "template": "chamber",
+      "variations": [
+        {
+          "id": "chamber_1",
+          "narrative": "Um espaço vasto se abre diante de você. Pilares sobem para a sombra, os topos perdidos na escuridão. Isto foi construído para reuniões. Agora reúne apenas silêncio. E você.",
+          "options": ["Atravesse a câmara", "Fique perto das paredes"]
+        },
+        {
+          "id": "chamber_2",
+          "narrative": "O teto some no negro. As paredes estão distantes demais. Esta sala é maior do que deveria ser — maior do que o templo acima poderia conter. A geometria mente aqui embaixo.",
+          "options": ["Atravesse depressa", "Vasculhe o perímetro"]
+        },
+        {
+          "id": "chamber_3",
+          "narrative": "Água cobre o chão, parada como vidro negro. A câmara se estende em todas as direções. No centro, algo se ergue da água. Um altar? Um trono? Daqui não dá para saber.",
+          "options": ["Avance pela água até o centro", "Contorne pela borda"]
+        },
+        {
+          "id": "chamber_4",
+          "narrative": "Bancos quebrados enfileiram o salão. Uma congregação sentou-se aqui um dia, ouvindo sermões em línguas anteriores às palavras. O púlpito está vazio. Algo observa por trás dele.",
+          "options": ["Aproxime-se do púlpito", "Saia depressa"]
+        },
+        {
+          "id": "chamber_5",
+          "narrative": "A câmara zumbe. Uma frequência que você sente nos dentes, nos ossos, nos pensamentos. As paredes estão entalhadas com padrões que doem ao serem seguidos. Não os siga.",
+          "options": ["Atravesse mesmo assim", "Feche os olhos e navegue pelo tato"]
+        }
+      ]
+    },
+    {
+      "template": "descent",
+      "variations": [
+        {
+          "id": "descent_1",
+          "narrative": "Escadas espiralam para baixo. E mais para baixo. E mais. Você perde a conta depois da primeira centena. O ar fica mais pesado a cada degrau. Mais quente. Errado.",
+          "options": ["Continue descendo", "Descanse nas escadas"]
+        },
+        {
+          "id": "descent_2",
+          "narrative": "Um poço mergulha na escuridão. Apoios estão entalhados na pedra — polidos por incontáveis mãos antes das suas. Alguns dos apoios estão manchados. Não pense no porquê.",
+          "options": ["Desça escalando", "Procure outro caminho"]
+        },
+        {
+          "id": "descent_3",
+          "narrative": "O chão cede numa rampa suave. Molhada. Escorregadia. Você está descendo, queira ou não. A inclinação aumenta. O controle é uma ilusão.",
+          "options": ["Deslize com cuidado", "Tente encontrar apoio"]
+        },
+        {
+          "id": "descent_4",
+          "narrative": "Degraus de pedra, cada um mais baixo que o anterior. As proporções estão erradas — feitas para algo de pernas mais longas, ou talvez para humanos destinados a tropeçar. Você tropeça.",
+          "options": ["Firme-se e continue", "Vá devagar"]
+        },
+        {
+          "id": "descent_5",
+          "narrative": "O caminho despenca por uma fenda no chão. Embaixo, a água reluz. Que profundidade? A luz da tocha não alcança o fundo. Nada alcança.",
+          "options": ["Desça pela fenda", "Jogue algo para testar a profundidade"]
+        }
+      ]
+    },
+    {
+      "template": "flooded",
+      "variations": [
+        {
+          "id": "flooded_1",
+          "narrative": "Água até os joelhos. Negra. Fria. Seus pés encontram degraus submersos que você não vê. Algo roça sua perna. Detrito, provavelmente. Provavelmente.",
+          "options": ["Avance pela água", "Siga junto à parede"]
+        },
+        {
+          "id": "flooded_2",
+          "narrative": "A passagem está meio afogada. A água chega ao seu peito se você anda, ao pescoço se atravessa pelo centro. As duas opções são terríveis.",
+          "options": ["Fique no raso junto às paredes", "Nade pelo centro mais fundo"]
+        },
+        {
+          "id": "flooded_3",
+          "narrative": "A água sobe quando você entra. Tornozelo. Joelho. Coxa. Não está fluindo para dentro — está apenas... subindo. Como se a própria sala engolisse. Ande rápido.",
+          "options": ["Atravesse correndo", "Procure um ponto mais alto"]
+        },
+        {
+          "id": "flooded_4",
+          "narrative": "Corpos flutuam aqui. De bruços. Balançando de leve. Não são frescos, mas também não são velhos. A água os preserva. A água preserva tudo.",
+          "options": ["Nade por eles", "Verifique se algum é de jogador recente"]
+        },
+        {
+          "id": "flooded_5",
+          "narrative": "A água brilha. Fracamente. Uma fosforescência doentia que não ilumina nada além de si mesma. Coisas se movem sob a superfície. Você tenta não olhar diretamente para elas.",
+          "options": ["Atravesse depressa", "Espere e observe os movimentos"]
+        }
+      ]
+    },
+    {
+      "template": "shrine",
+      "variations": [
+        {
+          "id": "shrine_1",
+          "narrative": "Um altar a algo esquecido. O rosto do ídolo foi raspado, mas você o sente observando mesmo assim. Oferendas apodrecem em sua base. Algumas são frescas.",
+          "options": ["Faça uma oferenda", "Passe sem reverência"]
+        },
+        {
+          "id": "shrine_2",
+          "narrative": "Velas queimam aqui. Quem as acende? A cera se acumulou em formas — rostos, mãos, coisas que talvez sejam palavras numa língua de escorridos. As chamas não tremulam.",
+          "options": ["Examine as velas", "Não toque em nada"]
+        },
+        {
+          "id": "shrine_3",
+          "narrative": "Uma roda de orações, travada pela ferrugem. As preces entalhadas nela estão gastas, ilegíveis. Provavelmente melhor assim. Alguém tentou girá-la há pouco — a ferrugem está raspada.",
+          "options": ["Tente girá-la", "Deixe-a em paz"]
+        },
+        {
+          "id": "shrine_4",
+          "narrative": "O santuário é à própria água. Uma poça, perfeitamente circular, perfeitamente parada. Seu reflexo olha de volta para você. Ele pisca quando você não pisca.",
+          "options": ["Desvie o olhar", "Sustente o olhar"]
+        },
+        {
+          "id": "shrine_5",
+          "narrative": "Nomes cobrem cada superfície. Entalhados, arranhados, queimados na pedra. Milhares de nomes. Peregrinos que vieram antes. Um espaço em branco espera, como se aguardasse o seu.",
+          "options": ["Acrescente seu nome", "Não deixe rastro"]
+        }
+      ]
+    },
+    {
+      "template": "crossroads",
+      "variations": [
+        {
+          "id": "crossroads_1",
+          "narrative": "Três caminhos divergem. O da esquerda exala ar frio e sussurros. O da direita ecoa com água distante. O do centro mostra marcas de arrasto entrando. Nenhum leva para fora.",
+          "options": ["Tome o caminho da esquerda", "Tome o caminho da direita", "Siga pelo centro"]
+        },
+        {
+          "id": "crossroads_2",
+          "narrative": "A passagem se divide. Alguém marcou as paredes — setas arranhadas, direções desesperadas. As setas se contradizem. Alguém se perdeu aqui. Muitos alguéns.",
+          "options": ["Siga o caminho mais gasto", "Escolha a via sem marcas"]
+        },
+        {
+          "id": "crossroads_3",
+          "narrative": "Um núcleo de corredores, cinco ao todo. Sua tocha capta movimento em dois deles. Nada nos outros três — mas nada pode ser pior.",
+          "options": ["Em direção ao movimento", "Para longe dele"]
+        },
+        {
+          "id": "crossroads_4",
+          "narrative": "Para cima ou para baixo. As únicas escolhas. Para cima é mais difícil — as escadas estão quebradas, desmoronando. Para baixo é mais fácil. Para baixo é sempre mais fácil aqui.",
+          "options": ["Suba", "Desça mais fundo"]
+        },
+        {
+          "id": "crossroads_5",
+          "narrative": "Duas passagens idênticas. Mesmas dimensões. Mesma escuridão. Mesma sensação de errado. Uma leva mais fundo. Uma leva à morte. Podem ser a mesma coisa.",
+          "options": ["Tome a passagem da esquerda", "Tome a passagem da direita"]
+        }
+      ]
+    },
+    {
+      "template": "collapse",
+      "variations": [
+        {
+          "id": "collapse_1",
+          "narrative": "Rachaduras teiam o teto. Poeira cai em fios. Este lugar quer vir abaixo. Você o ouve deliberando — gemendo, assentando, decidindo. Ande. Agora.",
+          "options": ["Atravesse correndo", "Avance com cuidado"]
+        },
+        {
+          "id": "collapse_2",
+          "narrative": "Metade da passagem é entulho. A outra metade é paciência — esperando para virar entulho. Dá para ver o outro lado. A brecha é estreita. O tempo é mais estreito ainda.",
+          "options": ["Esgueire-se depressa", "Teste a estabilidade primeiro"]
+        },
+        {
+          "id": "collapse_3",
+          "narrative": "O chão se inclina. Não muito, mas o bastante. A água empoça de um lado. Rachaduras se espalham de onde você está pisando. Cada passo é uma negociação com a gravidade.",
+          "options": ["Vá para o chão firme", "Fique bem parado"]
+        },
+        {
+          "id": "collapse_4",
+          "narrative": "Alguém provocou um desabamento aqui. Dá para ver onde estava quando tudo veio abaixo. Dá para ver onde deixou de estar. Não pise ali.",
+          "options": ["Encontre outra rota", "Escale os escombros"]
+        },
+        {
+          "id": "collapse_5",
+          "narrative": "As paredes estão vergadas para dentro. Pressão de algum lugar. O templo acima? O peso da água? O esmagamento lento do submundo digerindo a si mesmo? Importa? Ande.",
+          "options": ["Apresse-se", "Tente escorar as paredes de algum jeito"]
+        }
+      ]
+    },
+    {
+      "template": "graveyard",
+      "variations": [
+        {
+          "id": "graveyard_1",
+          "narrative": "Ossos. Separados por tipo — crânios aqui, costelas ali, fêmures empilhados como lenha. Alguém organizou isto. Há pouco. Há lacunas no arranjo. Espaços esperando.",
+          "options": ["Procure entre os ossos", "Passe depressa"]
+        },
+        {
+          "id": "graveyard_2",
+          "narrative": "Sepulturas enfileiram as duas paredes, empilhadas em três alturas. Algumas estão seladas. Algumas, abertas. Algumas estão se abrindo, devagar, por dentro. Você não tem tempo de assistir.",
+          "options": ["Ande pelo centro", "Corra"]
+        },
+        {
+          "id": "graveyard_3",
+          "narrative": "Um fosso de corpos. Os antigos, no fundo. Os mais frescos, perto do topo. O fosso ainda não está cheio. É paciente. Sabe que mais estão vindo.",
+          "options": ["Contorne o fosso", "Procure rostos conhecidos"]
+        },
+        {
+          "id": "graveyard_4",
+          "narrative": "Pedras memoriais, rachadas e gastas. Nomes em línguas que você não reconhece. Datas anteriores aos calendários. Estes mortos são mais velhos que a história. Eles lembram mesmo assim.",
+          "options": ["Leia as pedras", "Não se demore"]
+        },
+        {
+          "id": "graveyard_5",
+          "narrative": "Os mortos estão posados aqui. De pé. Sentados. Ajoelhados. Congelados em seus últimos momentos, preservados pelo escuro. Uma galeria de finais. A entrada é grátis. Sair custa mais.",
+          "options": ["Estude as poses", "Mantenha os olhos à frente"]
+        }
+      ]
+    },
+    {
+      "template": "witness",
+      "variations": [
+        {
+          "id": "witness_1",
+          "narrative": "As paredes estão chamuscadas num padrão. Circular. Preciso. No centro, a pedra derreteu e se refez. O que quer que estivesse aqui se foi. Você espera que tenha ido.",
+          "options": ["Examine as marcas de queimadura", "Saia imediatamente"]
+        },
+        {
+          "id": "witness_2",
+          "narrative": "Marcas de garras cobrem cada superfície — chão, paredes, teto. Sulcos fundos na pedra maciça. Algo estava tentando escapar. Ou algo estava tentando entrar.",
+          "options": ["Estude as marcas", "Não pense nisso"]
+        },
+        {
+          "id": "witness_3",
+          "narrative": "Um círculo perfeito de pedra intocada numa sala de caos. O círculo está limpo. Tudo fora dele está destruído. Você está fora do círculo.",
+          "options": ["Entre no círculo", "Fique de fora"]
+        },
+        {
+          "id": "witness_4",
+          "narrative": "Algo aconteceu aqui. O ar ainda tem gosto de grito. As pedras estão mornas — mais mornas do que deveriam. Você está pisando no rescaldo de algo terrível.",
+          "options": ["Procure pistas", "Saia rápido"]
+        },
+        {
+          "id": "witness_5",
+          "narrative": "Marcas de mãos. Centenas delas. Impressas nas paredes, no chão, no teto. Todas se estendendo na mesma direção. Em direção à porta de onde você acabou de vir.",
+          "options": ["Siga para onde apontam", "Vá na direção oposta"]
+        }
+      ]
+    },
+    {
+      "template": "threshold",
+      "variations": [
+        {
+          "id": "threshold_1",
+          "narrative": "A porta adiante é mais antiga que as paredes ao redor. Além dela, o ar tem outro gosto — cobre e sal. Os arranhões no batente apontam para trás. Alguém tentou sair a unhadas.",
+          "options": ["Cruze o limiar", "Hesite"]
+        },
+        {
+          "id": "threshold_2",
+          "narrative": "Uma fronteira. Você a sente — a pressão do ar muda, os sons se deslocam, seus pensamentos se dispersam por um instante. Você está prestes a entrar em outro lugar. Um lugar mais fundo.",
+          "options": ["Atravesse", "Prepare-se primeiro"]
+        },
+        {
+          "id": "threshold_3",
+          "narrative": "A passagem termina numa cortina de água, caindo de algum lugar acima. Além dela, escuridão. A água é fria. A escuridão é mais fria. Atravessar é o único caminho.",
+          "options": ["Atravesse a água", "Procure outro caminho"]
+        },
+        {
+          "id": "threshold_4",
+          "narrative": "Um portão de osso. Osso de verdade — caixas torácicas entrelaçadas, crânios como dobradiças. Ele se abre quando você se aproxima. Estava esperando por você especificamente.",
+          "options": ["Entre", "Recuse o convite"]
+        },
+        {
+          "id": "threshold_5",
+          "narrative": "A luz da sua tocha para neste ponto. Não ilumina o que há além — a escuridão ali é absoluta, faminta. Você terá de andar cego por um tempo.",
+          "options": ["Entre na escuridão", "Procure outra fonte de luz"]
+        }
+      ]
+    }
+  ]
+}
