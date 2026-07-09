@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as api from './api';
 import { dlog } from './debug-log';
 
-import { generateRandomDungeon, generateDungeon, DungeonRoom, getItemDetails, rollRandomItem, getItemEffects } from './content';
+import { generateDungeonGraph, DungeonRoom, DungeonGraph, getItemDetails, rollRandomItem, getItemEffects } from './content';
 import { getMilestonePerks } from './milestones';
 import { maxHpForModifier, computeHealAmount, computeDamageAmount, deathSaveOutcome, voidbladeDamage } from './combat-math';
 import { initZoneStatus, type ZoneStatusState } from './zone-mechanics';
@@ -71,11 +71,23 @@ interface GameState {
   sessionToken: string | null;
   stakeAmount: number;
   zoneId: string;
+  /**
+   * Canonical projection: the 1-based DEPTH of the current node in the run
+   * graph, maintained on every move. (Phase 2a: was a 0-based room index.)
+   */
   currentRoom: number;
+  graph: DungeonGraph | null;        // Run dungeon graph (nodes + edges)
+  currentNodeId: string | null;      // Id of the node the player is currently on
+  path: string[];                    // Ordered node ids walked from startId
   health: number;
   stamina: number;
   inventory: { id: string; name: string; emoji: string }[];
   pendingItem: PendingInventoryItem | null;  // Item waiting to swap when inventory full
+  /**
+   * Compat projection of `graph.nodes` flattened by ascending depth. Retained
+   * so legacy consumers (play.tsx / combat.tsx / victory.tsx / death.tsx) keep
+   * working until Tasks 5-6 migrate them to graph/currentNodeId traversal.
+   */
   dungeon: DungeonRoom[];
   itemsFound: number;
   seed: string | null;  // RNG seed for verifiable randomness
@@ -113,7 +125,7 @@ interface GameContextType extends GameState {
   
   // Game actions
   startGame: (amount: number, emptyHanded?: boolean, zoneId?: string, totalDeaths?: number) => Promise<void>;
-  advance: () => Promise<boolean>;
+  advance: (toNodeId?: string) => Promise<boolean>;
   recordDeath: (finalMessage: string, killedBy?: string, nowPlaying?: { title: string; artist: string }) => Promise<void>;
   claimVictory: () => Promise<void>;
   
@@ -203,6 +215,9 @@ const initialState: GameState = {
   stakeAmount: 0,
   zoneId: 'sunken-crypt',
   currentRoom: 0,
+  graph: null,
+  currentNodeId: null,
+  path: [],
   health: 100,
   stamina: STARTING_STAMINA,
   inventory: [],
@@ -841,13 +856,19 @@ export function GameProvider({
       // Use a separate RNG instance from the same seed so the modifier roll
       // doesn't offset the dungeon generation sequence.
       const mainRng = createRunRng(seed);
-      const dungeon = generateDungeon(session.zoneId || zoneId || 'sunken-crypt', mainRng);
-      
+      const graph = generateDungeonGraph(session.zoneId || zoneId || 'sunken-crypt', mainRng);
+      // Compat projection for legacy consumers: nodes flattened by ascending
+      // depth. Tasks 5-6 remove this once screens traverse the graph directly.
+      const dungeon: DungeonRoom[] = Object.values(graph.nodes).sort((a, b) => a.depth - b.depth);
+
       updateState({
         sessionToken: session.sessionToken,
         stakeAmount: emptyHanded ? 0 : amount,  // Empty handed stores 0 so isEmptyHanded works correctly
         zoneId: session.zoneId || zoneId || 'sunken-crypt',
-        currentRoom: 0,
+        graph,
+        currentNodeId: graph.startId,
+        path: [graph.startId],
+        currentRoom: 1,  // 1-based depth of the start node
         health: startingHP,
         stamina: startingStamina,
         inventory: initialInventory,
@@ -873,31 +894,46 @@ export function GameProvider({
     }
   }, [state.authId, state.walletAddress, unifiedWallet, updateState]);
 
-  const advance = useCallback(async (): Promise<boolean> => {
+  const advance = useCallback(async (toNodeId?: string): Promise<boolean> => {
     if (!state.sessionToken) return false;
-    
-    const currentRoom = state.currentRoom;
-    const nextRoom = currentRoom + 1;
-    const maxRooms = state.dungeon?.length || 9;
-    
-    // Check if we've reached the end
-    if (nextRoom >= maxRooms) {
-      return false; // Can't advance past final room
-    }
-    
-    // Update room client-side (dungeon is generated locally)
-    // Fix 9: use settings.staminaPool instead of hardcoded 3
-    // Fix 3 (Revy): apply modifier staminaRegenBonus so Numbing Cold works between rooms too
+
+    const graph = state.graph;
+    const currentNodeId = state.currentNodeId;
+    if (!graph || !currentNodeId) return false;
+
+    const current = graph.nodes[currentNodeId];
+    if (!current) return false;
+
+    // Candidate edges from the current node.
+    const candidates = current.next;
+    if (candidates.length === 0) return false; // Terminal node — can't advance
+
+    // Default to the first edge; an explicit target must be a valid choice.
+    const targetId = toNodeId ?? candidates[0];
+    if (!candidates.includes(targetId)) return false;
+
+    const targetNode = graph.nodes[targetId];
+    if (!targetNode) return false;
+
+    // Server sync sends the CURRENT (pre-move) room as a 1-based depth — the
+    // node's own depth is already 1-based, so this preserves prior semantics.
+    const serverRoom = current.depth;
+
+    // Fix 3 (Revy): apply modifier staminaRegenBonus so Numbing Cold works between rooms too.
     const staminaRegenBonus = state.currentModifier?.staminaRegenBonus ?? 0;
-    updateState({
-      currentRoom: nextRoom,
-      stamina: Math.min(settings.staminaPool, state.stamina + 1 + staminaRegenBonus),
-    });
-    
-    // Notify backend - send CURRENT room (1-indexed for server)
-    // Client is 0-indexed, server is 1-indexed. Offline runs have no server
-    // session, so skip the sync entirely (client state is authoritative).
-    const serverRoom = currentRoom + 1;
+    // Functional update: derive stamina from `prev` (not the render-closure
+    // `state.stamina`) so a same-tick stamina cost isn't clobbered. currentRoom
+    // becomes the target node's 1-based depth (canonical projection).
+    setState((prev) => ({
+      ...prev,
+      currentNodeId: targetId,
+      path: [...prev.path, targetId],
+      currentRoom: targetNode.depth,
+      stamina: Math.min(settings.staminaPool, prev.stamina + 1 + staminaRegenBonus),
+    }));
+
+    // Notify backend — send CURRENT (pre-move) room, already 1-based. Offline
+    // runs have no server session, so skip the sync entirely.
     if (!api.isOfflineSession(state.sessionToken)) {
       api.advanceRoom(state.sessionToken, serverRoom).catch((err) => {
         console.warn('[advance] Backend sync failed:', err);
@@ -905,16 +941,18 @@ export function GameProvider({
       });
     }
 
-    // Persist highest room reached for zone unlock progression (fire-and-forget)
-    // updateHighestRoom only writes if nextRoom exceeds current stored value
+    // Persist highest room reached for zone unlock progression (fire-and-forget).
+    // BUG FIX: write the 1-based depth of the node just reached (previously a
+    // 0-based value), unifying with the web routes' 1-based writes.
+    // updateHighestRoom only writes if this exceeds the current stored value.
     if (state.authId) {
-      updateHighestRoom(state.authId, nextRoom).catch((err) => {
+      updateHighestRoom(state.authId, targetNode.depth).catch((err) => {
         console.warn('[advance] Failed to update highest room:', err);
       });
     }
-    
+
     return true;
-  }, [state.sessionToken, state.currentRoom, state.stamina, state.dungeon?.length, settings.staminaPool, state.currentModifier, state.authId, updateState]);
+  }, [state.sessionToken, state.graph, state.currentNodeId, settings.staminaPool, state.currentModifier, state.authId]);
 
   const recordDeathAction = useCallback(async (finalMessage: string, killedBy?: string, nowPlaying?: { title: string; artist: string }) => {
     if (!state.sessionToken) return;
@@ -924,7 +962,7 @@ export function GameProvider({
 
     updateState({ loading: true });
     try {
-      const room = (state.currentRoom || 0) + 1; // Room is 1-indexed for display
+      const room = state.currentRoom || 1; // currentRoom is already the 1-based depth
       // Use nickname first, fall back to formatted wallet address, then default
       const playerName = state.nickname || (state.walletAddress 
         ? `${state.walletAddress.slice(0, 4)}...${state.walletAddress.slice(-4)}`
