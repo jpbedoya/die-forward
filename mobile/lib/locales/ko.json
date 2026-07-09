@@ -1,6 +1,7 @@
 {
   "test.greeting": "심연이 지켜본다, {name}.",
   "combat.synergy.discovered": "{name}이(가) 맺어진다.",
+  "combat.resolved": "It is done. The way forward opens.",
   "synergy.ossuary-pact.name": "납골당의 맹약",
   "synergy.ossuary-pact.flavor": "부적이 갈고리에 닿아 웅웅거린다. 뼈들이 응답한다.",
   "synergy.grave-tide.name": "무덤의 조수",

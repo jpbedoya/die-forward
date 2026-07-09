@@ -642,7 +642,14 @@ export default function CombatScreen() {
       playSFX('footstep');
       setPhase('resolve');
       setTimeout(() => {
-        game.advance();
+        // Forking nodes: don't silently take next[0] — let play.tsx offer the
+        // branch choice. Single-edge nodes advance as before.
+        const node = game.currentNodeId ? game.graph?.nodes[game.currentNodeId] : undefined;
+        if (node && node.next.length > 1) {
+          game.markNodeResolved();
+        } else {
+          game.advance();
+        }
         router.replace('/play');
       }, 1500);
       return;
@@ -677,7 +684,14 @@ export default function CombatScreen() {
       }
       setPhase('victory');
       setTimeout(() => {
-        game.advance();
+        // Forking nodes: don't silently take next[0] — let play.tsx offer the
+        // branch choice. Single-edge nodes advance as before.
+        const resolvedNode = game.currentNodeId ? game.graph?.nodes[game.currentNodeId] : undefined;
+        if (resolvedNode && resolvedNode.next.length > 1) {
+          game.markNodeResolved();
+        } else {
+          game.advance();
+        }
         router.replace('/play');
       }, 2000);
       return;

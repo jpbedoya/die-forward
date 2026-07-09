@@ -79,6 +79,13 @@ interface GameState {
   graph: DungeonGraph | null;        // Run dungeon graph (nodes + edges)
   currentNodeId: string | null;      // Id of the node the player is currently on
   path: string[];                    // Ordered node ids walked from startId
+  /**
+   * True once the current node's encounter has been resolved (combat won or
+   * fled) but the player has NOT yet moved. Lets play.tsx offer the branch
+   * choice on a resolved forking combat node instead of re-offering combat.
+   * Cleared on every move (advance) and at run start.
+   */
+  nodeResolved: boolean;
   health: number;
   stamina: number;
   inventory: { id: string; name: string; emoji: string }[];
@@ -126,6 +133,8 @@ interface GameContextType extends GameState {
   // Game actions
   startGame: (amount: number, emptyHanded?: boolean, zoneId?: string, totalDeaths?: number) => Promise<void>;
   advance: (toNodeId?: string) => Promise<boolean>;
+  /** Mark the current node's encounter as resolved (combat won/fled) without moving. */
+  markNodeResolved: () => void;
   recordDeath: (finalMessage: string, killedBy?: string, nowPlaying?: { title: string; artist: string }) => Promise<void>;
   claimVictory: () => Promise<void>;
   
@@ -218,6 +227,7 @@ const initialState: GameState = {
   graph: null,
   currentNodeId: null,
   path: [],
+  nodeResolved: false,
   health: 100,
   stamina: STARTING_STAMINA,
   inventory: [],
@@ -868,6 +878,7 @@ export function GameProvider({
         graph,
         currentNodeId: graph.startId,
         path: [graph.startId],
+        nodeResolved: false,
         currentRoom: 1,  // 1-based depth of the start node
         health: startingHP,
         stamina: startingStamina,
@@ -929,6 +940,7 @@ export function GameProvider({
       currentNodeId: targetId,
       path: [...prev.path, targetId],
       currentRoom: targetNode.depth,
+      nodeResolved: false,
       stamina: Math.min(settings.staminaPool, prev.stamina + 1 + staminaRegenBonus),
     }));
 
@@ -953,6 +965,10 @@ export function GameProvider({
 
     return true;
   }, [state.sessionToken, state.graph, state.currentNodeId, settings.staminaPool, state.currentModifier, state.authId]);
+
+  const markNodeResolved = useCallback(() => {
+    updateState({ nodeResolved: true });
+  }, [updateState]);
 
   const recordDeathAction = useCallback(async (finalMessage: string, killedBy?: string, nowPlaying?: { title: string; artist: string }) => {
     if (!state.sessionToken) return;
@@ -1183,6 +1199,7 @@ export function GameProvider({
     // Game actions
     startGame,
     advance,
+    markNodeResolved,
     recordDeath: recordDeathAction as (finalMessage: string, killedBy?: string, nowPlaying?: { title: string; artist: string }) => Promise<void>,
     claimVictory: claimVictoryAction,
     // State helpers
@@ -1220,7 +1237,7 @@ export function GameProvider({
     signInWithWalletAction, signInEmptyHandedAction, linkWalletAction,
     connect, connectTo, disconnect, refreshBalance,
     setNicknameAction, dismissNicknameModal,
-    startGame, advance, recordDeathAction, claimVictoryAction,
+    startGame, advance, markNodeResolved, recordDeathAction, claimVictoryAction,
     setHealth, setStamina, adjustStamina, setZoneStatus, addToInventory, removeFromInventory,
     incrementItemsFound, clearError, rng,
     swapItem, dismissPendingItem, applyVoidbladeEffect, checkDeathSave,

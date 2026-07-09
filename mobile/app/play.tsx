@@ -171,6 +171,9 @@ export default function PlayScreen() {
   // Get narrative from room content
   const getNarrative = (): string => {
     if (!room) return 'Darkness surrounds you...';
+    // Resolved forking combat node: don't re-stream the combat intro — the
+    // fight is over, the branch choice is what's on offer now.
+    if (room.type === 'combat' && game.nodeResolved) return t('combat.resolved');
     if (room.content?.narrative) return room.content.narrative;
     // Fallback for old dungeon format
     return (room as any).narrative || 'You proceed deeper into the crypt.';
@@ -496,6 +499,13 @@ export default function PlayScreen() {
           : [{ id: '1', text: 'Press forward', action: 'explore-primary', tag: null as string | null }];
       }
       case 'combat':
+        // Encounter already resolved (won/fled) on a forking node — offer the
+        // branch choice for the descent instead of re-offering combat/flee.
+        if (game.nodeResolved) {
+          return branchOptions
+            ? branchOptions.map((b) => ({ ...b, tag: null as string | null }))
+            : [{ id: '1', text: 'Continue deeper', action: 'explore' }];
+        }
         return [
           { id: '1', text: 'Enter combat', action: 'combat', icon: 'strike' },
           { id: '2', text: 'Try to flee', action: 'flee', icon: 'flee' },

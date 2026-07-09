@@ -1,6 +1,7 @@
 {
   "test.greeting": "Las profundidades observan, {name}.",
   "combat.synergy.discovered": "Un {name} es golpeado.",
+  "combat.resolved": "It is done. The way forward opens.",
   "synergy.ossuary-pact.name": "Pacto del Osario",
   "synergy.ossuary-pact.flavor": "El amuleto zumba contra el gancho. Los huesos responden.",
   "synergy.grave-tide.name": "Marea Sepulcral",

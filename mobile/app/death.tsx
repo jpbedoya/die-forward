@@ -8,7 +8,8 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import * as Haptics from 'expo-haptics';
 import { useGame } from '../lib/GameContext';
 import { useAudio } from '../lib/audio';
-import { BESTIARY, getDeathMoment, getFinalWordsIntro, getDepthForRoom } from '../lib/content';
+import { BESTIARY, getDeathMoment, getFinalWordsIntro } from '../lib/content';
+import { getZoneDepth, loadZone } from '../lib/zone-loader';
 import { DeathCard, ShareCardCapture, useShareCard } from '../lib/shareCard';
 import { useAudius } from '../lib/AudiusContext';
 import { AudioSettingsModal } from '../components/AudioSettingsModal';
@@ -48,8 +49,9 @@ export default function DeathScreen() {
   const [deathMoment] = useState(() => getDeathMoment());
   const [finalWordsIntro] = useState(() => getFinalWordsIntro());
 
-  const roomNumber = (game.currentRoom || 0) + 1;
-  const depth = getDepthForRoom(roomNumber);
+  // currentRoom is already the 1-based depth of the current node (Phase 2a).
+  const roomNumber = game.currentRoom || 0;
+  const depth = getZoneDepth(loadZone(game.zoneId), roomNumber);
   const stakeAmountNum = Number(game.stakeAmount || 0);
   const isEmptyHanded = !Number.isFinite(stakeAmountNum) || stakeAmountNum <= 0;
   const trail = game.graph ? trailRows(game.graph, game.path) : [];

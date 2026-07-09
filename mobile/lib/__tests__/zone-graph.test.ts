@@ -44,6 +44,15 @@ describe('sunken-crypt graph', () => {
     expect(Math.max(...zone.graph!.nodes.map(n => n.depth))).toBe(13);
   });
 
+  // Documents why combat.tsx's resolved-flow (markNodeResolved) exists: a
+  // combat node that forks (>1 next edge) must NOT auto-advance to next[0] on
+  // win/flee, or half the map's branch choices would never reach the player.
+  it('has at least one forking combat node (drives the resolved-branch flow)', () => {
+    const zone = loadZone('sunken-crypt');
+    const forkingCombat = zone.graph!.nodes.filter(n => n.type === 'combat' && n.next.length > 1);
+    expect(forkingCombat.length).toBeGreaterThanOrEqual(1);
+  });
+
   it('has an identical graph across all locale packs', () => {
     const zonesDir = path.join(__dirname, '../zones');
     const base = JSON.parse(fs.readFileSync(path.join(zonesDir, 'sunken-crypt.json'), 'utf8'));
