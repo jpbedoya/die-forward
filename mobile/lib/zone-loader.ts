@@ -124,6 +124,20 @@ export interface ZoneStructureRoom {
   boss?: boolean;
 }
 
+export interface ZoneNode {
+  id: string;                       // unique within zone, e.g. "n01-descent"
+  type: 'explore' | 'combat' | 'corpse' | 'cache' | 'exit';
+  template: string;
+  depth: number;                    // 1-based canonical depth
+  next: string[];                   // node ids; empty ONLY on the exit node
+  boss?: boolean;
+}
+
+export interface ZoneGraphLayout {
+  start: string;
+  nodes: ZoneNode[];
+}
+
 export interface ZoneData {
   id: string;
   version: string;
@@ -139,8 +153,130 @@ export interface ZoneData {
     totalRooms: number;
     structure: ZoneStructureRoom[];
   };
+  /** Graph-based layout (new zones). Legacy zones keep using dungeonLayout. */
+  graph?: ZoneGraphLayout;
   boss: string;
   audio?: unknown;
+}
+
+/**
+ * Validates a ZoneGraphLayout. Returns an array of human-readable error
+ * strings; an empty array means the graph is valid.
+ */
+export function validateZoneGraph(g: ZoneGraphLayout): string[] {
+  const errors: string[] = [];
+  const nodesById = new Map<string, ZoneNode>();
+
+  // Rule: unique ids
+  const seenIds = new Set<string>();
+  for (const node of g.nodes) {
+    if (seenIds.has(node.id)) {
+      errors.push(`duplicate node id: "${node.id}"`);
+    } else {
+      seenIds.add(node.id);
+      nodesById.set(node.id, node);
+    }
+  }
+
+  // Rule: start exists at depth 1
+  const startNode = nodesById.get(g.start);
+  if (!startNode) {
+    errors.push(`start node "${g.start}" does not exist`);
+  } else if (startNode.depth !== 1) {
+    errors.push(`start node "${g.start}" must be at depth 1, found depth ${startNode.depth}`);
+  }
+
+  // Rule: exactly one exit-type node and it has next: []
+  const exitNodes = g.nodes.filter(n => n.type === 'exit');
+  if (exitNodes.length !== 1) {
+    errors.push(`expected exactly one exit node, found ${exitNodes.length}`);
+  } else if (exitNodes[0].next.length !== 0) {
+    errors.push(`exit node "${exitNodes[0].id}" must have next: []`);
+  }
+
+  // Rule: every non-exit node has >=1 edge
+  for (const node of g.nodes) {
+    if (node.type !== 'exit' && node.next.length === 0) {
+      errors.push(`non-exit node "${node.id}" has no outgoing edges (dead end)`);
+    }
+  }
+
+  // Rule: all edge targets exist; every edge target.depth === source.depth + 1
+  for (const node of g.nodes) {
+    for (const targetId of node.next) {
+      const target = nodesById.get(targetId);
+      if (!target) {
+        errors.push(`node "${node.id}" has edge to nonexistent node "${targetId}"`);
+        continue;
+      }
+      if (target.depth !== node.depth + 1) {
+        errors.push(
+          `edge "${node.id}" -> "${targetId}" skips a depth (source depth ${node.depth}, target depth ${target.depth})`
+        );
+      }
+    }
+  }
+
+  // Rule: every node reachable from start (BFS)
+  if (startNode) {
+    const reachable = new Set<string>();
+    const queue: string[] = [startNode.id];
+    reachable.add(startNode.id);
+    while (queue.length > 0) {
+      const current = queue.shift()!;
+      const currentNode = nodesById.get(current);
+      if (!currentNode) continue;
+      for (const nextId of currentNode.next) {
+        if (!reachable.has(nextId) && nodesById.has(nextId)) {
+          reachable.add(nextId);
+          queue.push(nextId);
+        }
+      }
+    }
+    for (const node of g.nodes) {
+      if (!reachable.has(node.id)) {
+        errors.push(`node "${node.id}" is unreachable from start`);
+      }
+    }
+  }
+
+  // Rule: exit reachable from every node (reverse BFS from exit)
+  if (exitNodes.length === 1) {
+    const exitId = exitNodes[0].id;
+    const reverseEdges = new Map<string, string[]>();
+    for (const node of g.nodes) {
+      for (const targetId of node.next) {
+        if (!reverseEdges.has(targetId)) reverseEdges.set(targetId, []);
+        reverseEdges.get(targetId)!.push(node.id);
+      }
+    }
+    const canReachExit = new Set<string>();
+    const queue: string[] = [exitId];
+    canReachExit.add(exitId);
+    while (queue.length > 0) {
+      const current = queue.shift()!;
+      const predecessors = reverseEdges.get(current) ?? [];
+      for (const predId of predecessors) {
+        if (!canReachExit.has(predId)) {
+          canReachExit.add(predId);
+          queue.push(predId);
+        }
+      }
+    }
+    for (const node of g.nodes) {
+      if (!canReachExit.has(node.id)) {
+        errors.push(`exit is not reachable from node "${node.id}"`);
+      }
+    }
+  }
+
+  // Rule: exactly one boss: true
+  const bossNodes = g.nodes.filter(n => n.boss === true);
+  if (bossNodes.length !== 1) {
+    errors.push(`expected exactly one boss node, found ${bossNodes.length}`);
+  }
+
+  return errors;
 }
 
 /** The output type from getZoneRoom — matches RoomVariation shape */
