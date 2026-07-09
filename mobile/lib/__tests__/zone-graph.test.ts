@@ -1,4 +1,6 @@
-import { validateZoneGraph, ZoneGraphLayout } from '../zone-loader';
+import { validateZoneGraph, ZoneGraphLayout, loadZone } from '../zone-loader';
+import fs from 'fs';
+import path from 'path';
 
 const tiny = (over: Partial<ZoneGraphLayout> = {}): ZoneGraphLayout => ({
   start: 'a',
@@ -28,5 +30,27 @@ describe('validateZoneGraph', () => {
   it('requires exactly one boss', () => {
     const g = tiny(); delete g.nodes[1].boss;
     expect(validateZoneGraph(g).some(e => e.includes('boss'))).toBe(true);
+  });
+});
+
+describe('sunken-crypt graph', () => {
+  it('ships a valid graph using only existing templates', () => {
+    const zone = loadZone('sunken-crypt');
+    expect(zone.graph).toBeDefined();
+    expect(validateZoneGraph(zone.graph!)).toEqual([]);
+    const known = new Set(Object.values(zone.rooms!).flat().map(t => t.template).concat('zone-exit'));
+    for (const n of zone.graph!.nodes) expect(known.has(n.template)).toBe(true);
+    expect(zone.graph!.nodes.length).toBeGreaterThanOrEqual(18);
+    expect(Math.max(...zone.graph!.nodes.map(n => n.depth))).toBe(13);
+  });
+
+  it('has an identical graph across all locale packs', () => {
+    const zonesDir = path.join(__dirname, '../zones');
+    const base = JSON.parse(fs.readFileSync(path.join(zonesDir, 'sunken-crypt.json'), 'utf8'));
+    const locales = ['ja', 'ko', 'zh-TW', 'vi', 'pt-BR', 'es'];
+    for (const locale of locales) {
+      const localized = JSON.parse(fs.readFileSync(path.join(zonesDir, `sunken-crypt.${locale}.json`), 'utf8'));
+      expect(localized.graph).toEqual(base.graph);
+    }
   });
 });
