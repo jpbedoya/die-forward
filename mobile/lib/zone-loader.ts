@@ -13,6 +13,7 @@
 
 import type { SeededRng } from './seeded-random';
 import type { CreatureInfo, DepthInfo, IntentType } from './content';
+import { getLocale } from './i18n';
 
 // ── Static zone JSON imports ──────────────────────────────────────────────────
 import sunkenCryptData from './zones/sunken-crypt.json';
@@ -20,6 +21,44 @@ import ashenCryptsData from './zones/ashen-crypts.json';
 import frozenGalleryData from './zones/frozen-gallery.json';
 import livingTombData from './zones/living-tomb.json';
 import voidBeyondData from './zones/void-beyond.json';
+
+// TODO: asset-based lazy loading — this adds ~1.4MB JSON to the bundle
+// ── Static per-locale zone JSON imports ─────────────────────────────────────
+// es
+import sunkenCryptEs from './zones/sunken-crypt.es.json';
+import ashenCryptsEs from './zones/ashen-crypts.es.json';
+import frozenGalleryEs from './zones/frozen-gallery.es.json';
+import livingTombEs from './zones/living-tomb.es.json';
+import voidBeyondEs from './zones/void-beyond.es.json';
+// ja
+import sunkenCryptJa from './zones/sunken-crypt.ja.json';
+import ashenCryptsJa from './zones/ashen-crypts.ja.json';
+import frozenGalleryJa from './zones/frozen-gallery.ja.json';
+import livingTombJa from './zones/living-tomb.ja.json';
+import voidBeyondJa from './zones/void-beyond.ja.json';
+// ko
+import sunkenCryptKo from './zones/sunken-crypt.ko.json';
+import ashenCryptsKo from './zones/ashen-crypts.ko.json';
+import frozenGalleryKo from './zones/frozen-gallery.ko.json';
+import livingTombKo from './zones/living-tomb.ko.json';
+import voidBeyondKo from './zones/void-beyond.ko.json';
+// pt-BR
+import sunkenCryptPtBR from './zones/sunken-crypt.pt-BR.json';
+import ashenCryptsPtBR from './zones/ashen-crypts.pt-BR.json';
+import frozenGalleryPtBR from './zones/frozen-gallery.pt-BR.json';
+import livingTombPtBR from './zones/living-tomb.pt-BR.json';
+import voidBeyondPtBR from './zones/void-beyond.pt-BR.json';
+// zh-TW
+import sunkenCryptZhTW from './zones/sunken-crypt.zh-TW.json';
+import ashenCryptsZhTW from './zones/ashen-crypts.zh-TW.json';
+import frozenGalleryZhTW from './zones/frozen-gallery.zh-TW.json';
+import livingTombZhTW from './zones/living-tomb.zh-TW.json';
+import voidBeyondZhTW from './zones/void-beyond.zh-TW.json';
+// vi — void-beyond.vi.json does not exist yet; omitted (falls back to English per-zone)
+import sunkenCryptVi from './zones/sunken-crypt.vi.json';
+import ashenCryptsVi from './zones/ashen-crypts.vi.json';
+import frozenGalleryVi from './zones/frozen-gallery.vi.json';
+import livingTombVi from './zones/living-tomb.vi.json';
 
 // ── Zone data types ───────────────────────────────────────────────────────────
 
@@ -298,13 +337,66 @@ const ZONE_MAP: Record<string, ZoneData> = {
   'void-beyond': voidBeyondData as unknown as ZoneData,
 };
 
+/**
+ * Localized zone packs, keyed by locale then zone id. Only zone×locale
+ * combinations that exist on disk are present here; missing entries fall
+ * back to the English pack in ZONE_MAP (per-zone fallback), e.g. `vi` has
+ * no `void-beyond` pack yet.
+ */
+const ZONE_LOCALE_MAP: Record<string, Record<string, ZoneData>> = {
+  es: {
+    'sunken-crypt': sunkenCryptEs as unknown as ZoneData,
+    'ashen-crypts': ashenCryptsEs as unknown as ZoneData,
+    'frozen-gallery': frozenGalleryEs as unknown as ZoneData,
+    'living-tomb': livingTombEs as unknown as ZoneData,
+    'void-beyond': voidBeyondEs as unknown as ZoneData,
+  },
+  ja: {
+    'sunken-crypt': sunkenCryptJa as unknown as ZoneData,
+    'ashen-crypts': ashenCryptsJa as unknown as ZoneData,
+    'frozen-gallery': frozenGalleryJa as unknown as ZoneData,
+    'living-tomb': livingTombJa as unknown as ZoneData,
+    'void-beyond': voidBeyondJa as unknown as ZoneData,
+  },
+  ko: {
+    'sunken-crypt': sunkenCryptKo as unknown as ZoneData,
+    'ashen-crypts': ashenCryptsKo as unknown as ZoneData,
+    'frozen-gallery': frozenGalleryKo as unknown as ZoneData,
+    'living-tomb': livingTombKo as unknown as ZoneData,
+    'void-beyond': voidBeyondKo as unknown as ZoneData,
+  },
+  'pt-BR': {
+    'sunken-crypt': sunkenCryptPtBR as unknown as ZoneData,
+    'ashen-crypts': ashenCryptsPtBR as unknown as ZoneData,
+    'frozen-gallery': frozenGalleryPtBR as unknown as ZoneData,
+    'living-tomb': livingTombPtBR as unknown as ZoneData,
+    'void-beyond': voidBeyondPtBR as unknown as ZoneData,
+  },
+  'zh-TW': {
+    'sunken-crypt': sunkenCryptZhTW as unknown as ZoneData,
+    'ashen-crypts': ashenCryptsZhTW as unknown as ZoneData,
+    'frozen-gallery': frozenGalleryZhTW as unknown as ZoneData,
+    'living-tomb': livingTombZhTW as unknown as ZoneData,
+    'void-beyond': voidBeyondZhTW as unknown as ZoneData,
+  },
+  vi: {
+    'sunken-crypt': sunkenCryptVi as unknown as ZoneData,
+    'ashen-crypts': ashenCryptsVi as unknown as ZoneData,
+    'frozen-gallery': frozenGalleryVi as unknown as ZoneData,
+    'living-tomb': livingTombVi as unknown as ZoneData,
+    // 'void-beyond' intentionally omitted — no vi pack on disk yet.
+  },
+};
+
 // ── Public API ────────────────────────────────────────────────────────────────
 
 /**
- * Load a zone by ID. Returns ZoneData or throws for unknown zone.
+ * Load a zone by ID. Returns the localized pack for the current locale
+ * (falling back to English per-zone if no localized pack exists), or
+ * throws for an unknown zone id.
  */
 export function loadZone(zoneId: string): ZoneData {
-  const zone = ZONE_MAP[zoneId];
+  const zone = ZONE_LOCALE_MAP[getLocale()]?.[zoneId] ?? ZONE_MAP[zoneId];
   if (!zone) {
     throw new Error(`Unknown zone: "${zoneId}". Available zones: ${Object.keys(ZONE_MAP).join(', ')}`);
   }
