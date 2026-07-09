@@ -1,6 +1,6 @@
 // Content loader - pulls from pre-generated JSON content
 
-import { loadZone, getZoneRoom, getZoneCreatureSeeded, getZoneBoss, getZoneDepth } from './zone-loader';
+import { loadZone, getZoneRoom, getZoneCreatureSeeded, getZoneBoss, getZoneDepth, type ZoneData } from './zone-loader';
 import { createRunRng, generateRandomSeed, type SeededRng } from './seeded-random';
 import type { SignatureRule } from './creature-rules';
 
@@ -1114,6 +1114,139 @@ export function generateDungeon(zoneId: string, rng: SeededRng): DungeonRoom[] {
   });
 
   return rooms;
+}
+
+/**
+ * Roll content for a single dungeon node/slot, matching generateDungeon's
+ * per-room logic exactly:
+ * - boss nodes get the zone boss as their enemy (regardless of room type)
+ * - exit-type nodes never look up their own template (graph exit nodes carry
+ *   the "zone-exit" sentinel template, which isn't a real room pool entry) —
+ *   roll with template: undefined, same as the legacy appended exit room
+ * - combat nodes (non-boss) get a zone-appropriate creature at the node's tier
+ */
+function rollNodeContent(
+  zone: ZoneData,
+  type: DungeonRoom['type'],
+  template: string | undefined,
+  depth: number,
+  boss: boolean,
+  rng: SeededRng,
+  index: number,
+): RoomVariation {
+  if (boss) {
+    const bossCreature = getZoneBoss(zone, BESTIARY);
+    const content = getZoneRoom(zone, type, rng, template, index);
+    return {
+      ...content,
+      enemy: bossCreature.name,
+      enemyEmoji: bossCreature.emoji,
+    } as RoomVariation;
+  }
+
+  if (type === 'exit') {
+    return getZoneRoom(zone, 'exit', rng, undefined, index) as RoomVariation;
+  }
+
+  const content = getZoneRoom(zone, type, rng, template, index);
+
+  if (type === 'combat') {
+    const tier = getZoneDepth(zone, depth).tier;
+    const creature = getZoneCreatureSeeded(zone, tier, rng, BESTIARY);
+    return {
+      ...content,
+      enemy: creature.name,
+      enemyEmoji: creature.emoji,
+    } as RoomVariation;
+  }
+
+  return content as RoomVariation;
+}
+
+export interface DungeonNode extends DungeonRoom {
+  id: string;
+  depth: number;
+  next: string[];
+}
+
+export interface DungeonGraph {
+  startId: string;
+  nodes: Record<string, DungeonNode>;
+  maxDepth: number;
+}
+
+/**
+ * Zone-aware dungeon graph generator.
+ *
+ * - If the zone defines a `graph` (ZoneGraphLayout), content is rolled per
+ *   node in `zone.graph.nodes` array order, preserving the graph's branching
+ *   structure (`next` edges) and depths.
+ * - Otherwise (legacy zones with only `dungeonLayout.structure`), a linear
+ *   chain is synthesized from the structure with an appended exit node
+ *   (ids `lin-1..lin-N`, depths `1..N`), so legacy zones keep working
+ *   unmodified.
+ *
+ * All random choices go through the seeded RNG for full reproducibility.
+ */
+export function generateDungeonGraph(zoneId: string, rng: SeededRng): DungeonGraph {
+  const zone = loadZone(zoneId);
+
+  if (zone.graph) {
+    const nodes: Record<string, DungeonNode> = {};
+    let maxDepth = 0;
+
+    zone.graph.nodes.forEach((node, index) => {
+      const content = rollNodeContent(zone, node.type, node.template, node.depth, !!node.boss, rng, index);
+      nodes[node.id] = {
+        type: node.type,
+        template: node.template,
+        content,
+        boss: node.boss,
+        id: node.id,
+        depth: node.depth,
+        next: node.next,
+      };
+      if (node.depth > maxDepth) maxDepth = node.depth;
+    });
+
+    return { startId: zone.graph.start, nodes, maxDepth };
+  }
+
+  // Legacy zones: synthesize a single linear chain from dungeonLayout.structure
+  // plus an appended exit node.
+  const structure = zone.dungeonLayout.structure;
+  const total = structure.length + 1;
+  const nodes: Record<string, DungeonNode> = {};
+
+  structure.forEach((slot, index) => {
+    const depth = index + 1;
+    const id = `lin-${depth}`;
+    const nextId = depth < total ? `lin-${depth + 1}` : undefined;
+    const content = rollNodeContent(zone, slot.type, slot.template, depth, !!slot.boss, rng, index);
+    nodes[id] = {
+      type: slot.type,
+      template: slot.template,
+      content,
+      boss: slot.boss,
+      id,
+      depth,
+      next: nextId ? [nextId] : [],
+    };
+  });
+
+  const exitDepth = total;
+  const exitId = `lin-${exitDepth}`;
+  const exitContent = rollNodeContent(zone, 'exit', undefined, exitDepth, false, rng, structure.length);
+  nodes[exitId] = {
+    type: 'exit',
+    template: 'zone-exit',
+    content: exitContent,
+    id: exitId,
+    depth: exitDepth,
+    next: [],
+  };
+
+  return { startId: 'lin-1', nodes, maxDepth: exitDepth };
 }
 
 /**

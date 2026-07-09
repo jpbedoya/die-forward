@@ -1,8 +1,8 @@
-import { generateDungeon, getTierForRoom } from '../content';
+import { generateDungeon, generateDungeonGraph, getTierForRoom } from '../content';
 import { loadZone, listZoneIds, getZoneDepth } from '../zone-loader';
 import { createRunRng } from '../seeded-random';
 
-describe('generateDungeon', () => {
+describe('generateDungeon (legacy flat API)', () => {
   it('is deterministic — the same zone + seed produces an identical dungeon', () => {
     const a = generateDungeon('sunken-crypt', createRunRng('run-1'));
     const b = generateDungeon('sunken-crypt', createRunRng('run-1'));
@@ -46,6 +46,51 @@ describe('generateDungeon', () => {
       const d = generateDungeon(zoneId, createRunRng('zone-' + zoneId));
       expect(d.length).toBeGreaterThan(0);
       expect(d[d.length - 1].type).toBe('exit');
+    }
+  });
+});
+
+describe('generateDungeonGraph', () => {
+  it('is deterministic — same zone + seed → identical graph', () => {
+    expect(generateDungeonGraph('sunken-crypt', createRunRng('s1')))
+      .toEqual(generateDungeonGraph('sunken-crypt', createRunRng('s1')));
+  });
+
+  it('different seeds produce different graphs', () => {
+    const a = generateDungeonGraph('sunken-crypt', createRunRng('s1'));
+    const b = generateDungeonGraph('sunken-crypt', createRunRng('s2'));
+    expect(a).not.toEqual(b);
+  });
+
+  it('legacy zones synthesize a linear graph', () => {
+    const g = generateDungeonGraph('ashen-crypts', createRunRng('s1'));
+    const n = Object.values(g.nodes);
+    expect(n.every(x => x.next.length <= 1)).toBe(true);
+    expect(n.filter(x => x.type === 'exit')).toHaveLength(1);
+  });
+
+  it('graph zones: every combat node has an enemy; exactly one boss; maxDepth 13', () => {
+    const g = generateDungeonGraph('sunken-crypt', createRunRng('s2'));
+    const n = Object.values(g.nodes);
+    for (const c of n.filter(x => x.type === 'combat')) expect(c.content.enemy).toBeTruthy();
+    expect(n.filter(x => x.boss)).toHaveLength(1);
+    expect(g.maxDepth).toBe(13);
+  });
+
+  it('generates a valid graph for every registered zone', () => {
+    for (const zoneId of listZoneIds()) {
+      const g = generateDungeonGraph(zoneId, createRunRng('graph-' + zoneId));
+      const nodes = Object.values(g.nodes);
+      expect(nodes.length).toBeGreaterThan(0);
+      expect(g.nodes[g.startId]).toBeTruthy();
+      const exitNodes = nodes.filter(n => n.type === 'exit');
+      expect(exitNodes).toHaveLength(1);
+      expect(exitNodes[0].next).toHaveLength(0);
+      for (const node of nodes) {
+        for (const nextId of node.next) {
+          expect(g.nodes[nextId]).toBeTruthy();
+        }
+      }
     }
   });
 });
