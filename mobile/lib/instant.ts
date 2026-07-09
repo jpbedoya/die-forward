@@ -30,6 +30,8 @@ export interface Death {
   playerName: string;
   zone: string;
   room: number;
+  /** Graph node the player died on. Optional — legacy rows predate the node graph. */
+  nodeId?: string;
   stakeAmount: number;
   finalMessage: string;
   inventory: string[];
@@ -47,6 +49,8 @@ export interface Corpse {
   deathId: string;
   zone: string;
   room: number;
+  /** Graph node the corpse lies on. Optional — legacy rows predate the node graph. */
+  nodeId?: string;
   playerName: string;
   walletAddress: string;
   finalMessage: string;
@@ -165,11 +169,14 @@ export function useCurrentPlayer() {
 }
 
 // Record a death and create corpse
+/** @deprecated dead code — live path is src/app/api/session/death; kept for schema documentation */
 export async function recordDeath(data: {
   walletAddress: string;
   playerName: string;
   zone: string;
   room: number;
+  /** Graph node the player died on; written to both the death and corpse rows. */
+  nodeId?: string;
   stakeAmount: number;
   finalMessage: string;
   inventory: { name: string; emoji: string }[];
@@ -191,6 +198,7 @@ export async function recordDeath(data: {
       playerName: data.playerName,
       zone: data.zone,
       room: data.room,
+      ...(data.nodeId ? { nodeId: data.nodeId } : {}),
       stakeAmount: data.stakeAmount,
       finalMessage: data.finalMessage,
       killedBy,
@@ -201,6 +209,7 @@ export async function recordDeath(data: {
       deathId,
       zone: data.zone,
       room: data.room,
+      ...(data.nodeId ? { nodeId: data.nodeId } : {}),
       playerName: data.playerName,
       walletAddress: data.walletAddress,
       finalMessage: data.finalMessage,
@@ -538,8 +547,22 @@ export function useLeaderboard(limit = 10) {
   return { leaderboard, isLoading, error };
 }
 
-// Hook to get corpses for a room
-export function useCorpsesForRoom(zone: string, room: number) {
+/**
+ * Client-side adjacency filter for corpse discovery.
+ * Exact-node corpses (same nodeId) sort to the front, followed by corpses
+ * within one depth of the player (`room` holds the 1-based depth). Legacy
+ * rows without a nodeId match by depth band only. No duplicates.
+ */
+export function filterNearbyCorpses(corpses: Corpse[], depth: number, nodeId?: string): Corpse[] {
+  const exactNode = nodeId ? corpses.filter((c) => c.nodeId === nodeId) : [];
+  const nearbyDepth = corpses.filter(
+    (c) => !exactNode.includes(c) && c.room >= depth - 1 && c.room <= depth + 1
+  );
+  return [...exactNode, ...nearbyDepth];
+}
+
+// Hook to get corpses near the player's position (zone id + depth, optionally node-keyed)
+export function useCorpsesForRoom(zone: string, depth: number, nodeId?: string) {
   const { data, isLoading, error } = db.useQuery({
     corpses: {
       $: {
@@ -552,10 +575,11 @@ export function useCorpsesForRoom(zone: string, room: number) {
     },
   });
 
-  // Filter for nearby rooms
-  const nearbyCorpses = (data?.corpses || [])
-    .map((c) => c as unknown as Corpse)
-    .filter((c) => c.room >= room - 1 && c.room <= room + 1);
+  const nearbyCorpses = filterNearbyCorpses(
+    (data?.corpses || []).map((c) => c as unknown as Corpse),
+    depth,
+    nodeId
+  );
 
   return { corpses: nearbyCorpses, isLoading, error };
 }

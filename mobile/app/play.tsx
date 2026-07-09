@@ -125,8 +125,9 @@ export default function PlayScreen() {
     setSkipNarrative(false);
   }
 
-  // Fetch real corpses from InstantDB
-  const { corpses: nearbyCorpses } = useCorpsesForRoom(depth.name, roomNumber);
+  // Fetch real corpses from InstantDB — query by zone id (corpse rows store
+  // zone ids, not depth display names), keyed to the player's current node.
+  const { corpses: nearbyCorpses } = useCorpsesForRoom(game.zoneId, roomNumber, game.currentNodeId ?? undefined);
   const realCorpse = nearbyCorpses?.[0] || null;
 
   // Play zone-specific ambient when entering

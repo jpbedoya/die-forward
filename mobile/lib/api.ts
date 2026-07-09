@@ -164,19 +164,21 @@ export async function recordDeath(
   killedBy?: string,
   playerName?: string,
   nowPlaying?: { title: string; artist: string },
+  nodeId?: string,
 ): Promise<DeathResponse> {
   const response = await fetch(`${API_BASE}/api/session/death`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ 
-      sessionToken, 
-      room, 
-      finalMessage, 
+    body: JSON.stringify({
+      sessionToken,
+      room,
+      finalMessage,
       inventory,
       killedBy,
       playerName,
       nowPlayingTitle: nowPlaying?.title,
       nowPlayingArtist: nowPlaying?.artist,
+      nodeId,
     }),
   });
 

@@ -969,13 +969,14 @@ export function GameProvider({
         : randomDefaultName());
       
       await api.recordDeath(
-        state.sessionToken, 
-        room, 
-        finalMessage, 
+        state.sessionToken,
+        room,
+        finalMessage,
         state.inventory,
         killedBy,
         playerName,
         nowPlaying,
+        state.currentNodeId ?? undefined,
       );
       updateState({ loading: false });
     } catch (err) {
@@ -984,7 +985,7 @@ export function GameProvider({
         error: err instanceof Error ? err.message : 'Failed to record death',
       });
     }
-  }, [state.sessionToken, state.currentRoom, state.inventory, state.walletAddress, state.nickname, updateState]);
+  }, [state.sessionToken, state.currentRoom, state.currentNodeId, state.inventory, state.walletAddress, state.nickname, updateState]);
 
   const claimVictoryAction = useCallback(async () => {
     if (!state.sessionToken) return;

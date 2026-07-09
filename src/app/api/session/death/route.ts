@@ -11,7 +11,7 @@ const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { sessionToken, room, finalMessage, inventory, playerName, killedBy, nowPlayingTitle, nowPlayingArtist } = body;
+    const { sessionToken, room, finalMessage, inventory, playerName, killedBy, nowPlayingTitle, nowPlayingArtist, nodeId } = body;
 
     // Validate inputs
     if (!sessionToken || typeof sessionToken !== 'string') {
@@ -157,13 +157,22 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Corpse discovery queries by zone id (e.g. "sunken-crypt"), so death/corpse
+    // rows store the id. Legacy sessions without zoneId fall back to the display
+    // name (session.zone) — those rows stay orphaned from discovery.
+    const zoneForRecords = session.zoneId || session.zone;
+    const validNodeId = typeof nodeId === 'string' && nodeId.length > 0 && nodeId.length <= 64
+      ? nodeId
+      : undefined;
+
     await db.transact([
       // Record the death with hash for verification
       tx.deaths[deathId].update({
         walletAddress: session.walletAddress,
         playerName: displayName,
-        zone: session.zone,
+        zone: zoneForRecords,
         room,
+        ...(validNodeId ? { nodeId: validNodeId } : {}),
         stakeAmount: session.stakeAmount,
         finalMessage: finalMessage.trim(),
         killedBy: killedBy || 'Unknown',
@@ -175,8 +184,9 @@ export async function POST(request: NextRequest) {
       // Create a corpse for other players to find
       tx.corpses[corpseId].update({
         deathId,
-        zone: session.zone,
+        zone: zoneForRecords,
         room,
+        ...(validNodeId ? { nodeId: validNodeId } : {}),
         playerName: displayName,
         walletAddress: session.walletAddress, // For tipping
         finalMessage: finalMessage.trim(),

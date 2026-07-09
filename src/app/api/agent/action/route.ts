@@ -310,7 +310,8 @@ export async function POST(request: NextRequest) {
         tx.deaths[deathId].update({
           walletAddress: session.walletAddress,
           playerName: session.playerName,
-          zone: session.zone,
+          // Corpse discovery queries by zone id — store the id, not the display name
+          zone: zoneId,
           room: currentRoom,
           stakeAmount: 0,
           finalMessage: message,
@@ -323,7 +324,7 @@ export async function POST(request: NextRequest) {
         }),
         tx.corpses[corpseId].update({
           deathId,
-          zone: session.zone,
+          zone: zoneId,
           room: currentRoom,
           playerName: session.playerName,
           walletAddress: session.walletAddress,
