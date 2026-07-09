@@ -332,9 +332,10 @@ export default function PlayScreen() {
           // Navigate to full combat screen
           router.push({
             pathname: '/combat',
-            params: { 
+            params: {
               enemy: room?.content?.enemy || 'The Drowned',
-              roomNum: String(roomNumber)
+              roomNum: String(roomNumber),
+              nodeId: game.currentNodeId
             }
           });
           break;

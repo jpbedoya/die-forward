@@ -40,6 +40,7 @@ import {
   IntentEffects,
   CreatureInfo,
 } from '../lib/content';
+import { getZoneDepth, loadZone } from '../lib/zone-loader';
 import { calculateCombatDamage, heartstoneWarning } from '../lib/combat-math';
 import {
   getZoneMechanic,
@@ -101,7 +102,7 @@ export default function CombatScreen() {
   const { playSFX, playAmbient } = useAudio();
   const { settings } = useGameSettings();
   const { player } = useCurrentPlayer();
-  const params = useLocalSearchParams<{ enemy?: string; roomNum?: string }>();
+  const params = useLocalSearchParams<{ enemy?: string; roomNum?: string; nodeId?: string }>();
   
   const [phase, setPhase] = useState<CombatPhase>('choose');
   const [creature, setCreature] = useState<CreatureInfo | null>(null);
@@ -165,7 +166,7 @@ export default function CombatScreen() {
   };
 
   const roomNumber = parseInt(params.roomNum || '1', 10);
-  const depth = getDepthForRoom(roomNumber);
+  const depth = getZoneDepth(loadZone(game.zoneId), roomNumber);
   const mechanic = getZoneMechanic(game.zoneId);
 
   // Initialize combat
@@ -655,8 +656,8 @@ export default function CombatScreen() {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
       // Fix 6 (Revy): record zone clear when boss is defeated
-      const currentRoomData = game.dungeon[roomNumber - 1];
-      if (currentRoomData?.boss && game.authId && game.zoneId) {
+      const node = params.nodeId ? game.graph?.nodes[params.nodeId] : undefined;
+      if (node?.boss && game.authId && game.zoneId) {
         updatePlayerClearedZone(game.authId, game.zoneId).catch(err =>
           console.warn('[combat] Failed to record zone clear:', err)
         );
@@ -764,7 +765,7 @@ export default function CombatScreen() {
             </View>
             <View className="flex-row items-center gap-1">
               <AudioToggle ambientTrack="ambient-combat" inline />
-              <ProgressBar current={roomNumber} total={13} />
+              <ProgressBar current={roomNumber} total={game.graph?.maxDepth ?? 13} />
             </View>
           </View>
 
