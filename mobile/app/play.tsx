@@ -16,10 +16,13 @@ import { GameMenu, MenuButton } from '../components/GameMenu';
 import { MiniPlayer } from '../components/MiniPlayer';
 import { AudioToggle } from '../components/AudioToggle';
 import { CRTOverlay } from '../components/CRTOverlay';
-import { getDepthForRoom, DungeonRoom, getItemDetails, getCreatureInfo, CreatureInfo, rollRandomItem, getItemEffects, newlyFormedSynergies } from '../lib/content';
+import { DungeonNode, getItemDetails, getCreatureInfo, CreatureInfo, rollRandomItem, getItemEffects, newlyFormedSynergies } from '../lib/content';
 import { t } from '../lib/i18n';
 import { getMilestonePerks } from '../lib/milestones';
 import { getZoneMechanic } from '../lib/zone-mechanics';
+import { getZoneDepth, loadZone } from '../lib/zone-loader';
+import { nextChoices, edgeHint } from '../lib/traversal';
+import { createRunRng } from '../lib/seeded-random';
 import { useUnifiedWallet, type Address } from '../lib/wallet/unified';
 import { ItemModal, CreatureModal } from '../components/CryptModal';
 import { palette } from '../lib/theme';
@@ -83,13 +86,35 @@ export default function PlayScreen() {
     }
   };
 
-  // Safe access to game state
+  // Safe access to game state — traverse the run graph directly. `game.dungeon`
+  // is a depth-sorted compat array kept only for the empty-session check below;
+  // reading `dungeon[currentRoom]` mis-indexes now that `currentRoom` is a
+  // 1-based depth (Task 4), not a 0-based array index. Read the graph node
+  // the player is actually standing on instead.
   const dungeon = game.dungeon || [];
-  const currentRoom = game.currentRoom || 0;
-  const room = dungeon[currentRoom] as DungeonRoom | undefined;
-  const roomNumber = currentRoom + 1;
-  const depth = getDepthForRoom(roomNumber);
+  const room = game.graph?.nodes[game.currentNodeId ?? ''] as DungeonNode | undefined;
+  const currentRoom = room?.depth ?? 0;
+  const roomNumber = currentRoom;
+  // Zone-aware depth display — bug fix: getDepthForRoom used hardcoded
+  // sunken-crypt values for every zone, mislabeling non-sunken depths.
+  const depth = getZoneDepth(loadZone(game.zoneId), roomNumber);
   const mechanic = getZoneMechanic(game.zoneId);
+
+  // Branch choices: when the current node forks (>1 next edge), replace the
+  // single "continue" affordance with one dual-signal hint button per edge
+  // (spec §4.2). Single-edge nodes fall through to null and keep today's
+  // single continue button. Hints are seeded per-node so they're stable
+  // across re-renders/replays of the same run, independent of gameplay rng.
+  const branchOptions = (() => {
+    if (!game.graph || !game.currentNodeId) return null;
+    const choices = nextChoices(game.graph, game.currentNodeId);
+    if (choices.length <= 1) return null;
+    return choices.map((n) => {
+      const hintRng = createRunRng(`${game.seed ?? 'seed'}-hint-${n.id}`);
+      const { sense, tag } = edgeHint(n, hintRng);
+      return { id: n.id, text: `${sense} ${tag}`, action: `advance:${n.id}` };
+    });
+  })();
 
   // Reset narrative streaming state synchronously when entering a new room.
   // An effect runs one render too late — the stale skip flag would make the
@@ -182,6 +207,18 @@ export default function PlayScreen() {
     setSynergyMessage(null);
 
     try {
+      if (action.startsWith('advance:')) {
+        // Player chose one of several forks from a branching node — advance
+        // straight to the chosen edge. Reset the corpse-card state too since
+        // this button also stands in for "post-loot continue" at a fork.
+        const targetId = action.slice('advance:'.length);
+        playSFX('footstep');
+        setShowCorpse(false);
+        setLootedCorpse(null);
+        await game.advance(targetId);
+        return;
+      }
+
       switch (action) {
         case 'explore':
         case 'explore-primary':
@@ -257,27 +294,35 @@ export default function PlayScreen() {
           if (peekCost > 0) {
             game.setStamina(game.stamina - peekCost);
           }
-          // Intel: peek at the next room
-          const nextRoomIndex = currentRoom + 1;
-          const nextRoom = dungeon[nextRoomIndex] as DungeonRoom | undefined;
+          // Intel: peek at the paths ahead. When the current node forks, this
+          // reveals the concrete type of one chosen edge (the first) and
+          // says it's only one of several — it does not spoil every fork.
+          const peekChoices = game.graph && game.currentNodeId
+            ? nextChoices(game.graph, game.currentNodeId)
+            : [];
+          const revealed = peekChoices[0];
           let intelMsg = 'You read the signs ahead. The path continues.';
-          if (nextRoom) {
-            switch (nextRoom.type) {
+          if (revealed) {
+            let typeMsg: string;
+            switch (revealed.type) {
               case 'combat':
-                intelMsg = `You sense a presence beyond. ${nextRoom.content?.enemy ? `Something called ${nextRoom.content.enemy} waits.` : 'Danger waits.'}`;
+                typeMsg = `You sense a presence beyond. ${revealed.content?.enemy ? `Something called ${revealed.content.enemy} waits.` : 'Danger waits.'}`;
                 break;
               case 'corpse':
-                intelMsg = 'A scent of death lingers ahead. Someone fell here.';
+                typeMsg = 'A scent of death lingers ahead. Someone fell here.';
                 break;
               case 'cache':
-                intelMsg = 'You hear a faint echo ahead. Supplies may remain.';
+                typeMsg = 'You hear a faint echo ahead. Supplies may remain.';
                 break;
               case 'exit':
-                intelMsg = 'You feel the air change. The exit draws near.';
+                typeMsg = 'You feel the air change. The exit draws near.';
                 break;
               default:
-                intelMsg = 'The path ahead seems passable. Stay alert.';
+                typeMsg = 'The path ahead seems passable. Stay alert.';
             }
+            intelMsg = peekChoices.length > 1
+              ? `Of the paths ahead, one reveals itself. ${typeMsg}`
+              : typeMsg;
           }
           setMessage(`[Intel] ${intelMsg}`);
           break;
@@ -430,7 +475,11 @@ export default function PlayScreen() {
         const contentOpts = room.content?.options;
         if (contentOpts && contentOpts.length > 0) {
           const opts = [];
-          if (contentOpts[0]) opts.push({ id: '1', text: contentOpts[0], action: 'explore-primary', tag: null as string | null });
+          if (branchOptions) {
+            opts.push(...branchOptions.map((b) => ({ ...b, tag: null as string | null })));
+          } else if (contentOpts[0]) {
+            opts.push({ id: '1', text: contentOpts[0], action: 'explore-primary', tag: null as string | null });
+          }
           if (contentOpts[1]) opts.push({ id: '2', text: contentOpts[1], action: 'explore-secondary', tag: '[RISK]' as string | null });
           if (contentOpts[2]) {
             opts.push({ id: '3', text: contentOpts[2], action: 'explore-tertiary', tag: '[1⚡]' as string | null });
@@ -440,7 +489,9 @@ export default function PlayScreen() {
           }
           return opts;
         }
-        return [{ id: '1', text: 'Press forward', action: 'explore-primary', tag: null as string | null }];
+        return branchOptions
+          ? branchOptions.map((b) => ({ ...b, tag: null as string | null }))
+          : [{ id: '1', text: 'Press forward', action: 'explore-primary', tag: null as string | null }];
       }
       case 'combat':
         return [
@@ -450,12 +501,12 @@ export default function PlayScreen() {
       case 'corpse':
         return [
           { id: '1', text: 'Search the body', action: 'loot' },
-          { id: '2', text: 'Pay respects and move on', action: 'explore' },
+          ...(branchOptions ?? [{ id: '2', text: 'Pay respects and move on', action: 'explore' }]),
         ];
       case 'cache':
         return [
           { id: '1', text: '🌿 Take supplies (+30 HP)', action: 'heal' },
-          { id: '2', text: 'Continue deeper', action: 'explore' },
+          ...(branchOptions ?? [{ id: '2', text: 'Continue deeper', action: 'explore' }]),
         ];
       case 'exit':
         return [
@@ -496,7 +547,7 @@ export default function PlayScreen() {
           </View>
           <View className="flex-row items-center gap-1">
             <AudioToggle ambientTrack="ambient-explore" inline />
-            <ProgressBar current={roomNumber} total={dungeon.length} />
+            <ProgressBar current={room.depth} total={game.graph?.maxDepth ?? 13} />
           </View>
         </View>
 
@@ -681,24 +732,53 @@ export default function PlayScreen() {
         {/* Options */}
         <Text className="text-bone-dark text-[10px] font-mono tracking-widest mb-3">▼ WHAT DO YOU DO?</Text>
         {showCorpse ? (
-          // Show continue button after looting corpse (player controls when to advance)
-          <Pressable
-            className="flex-row items-center bg-crypt-surface border-l-2 border-amber py-4 px-3"
-            onPress={() => handleAction('loot-continue')}
-            disabled={processing}
-          >
-            <Text className="text-bone-dark text-sm font-mono mr-2">▶</Text>
-            <Text className="text-bone text-sm font-mono">Continue deeper...</Text>
-          </Pressable>
+          // Show continue button(s) after looting corpse (player controls when to advance).
+          // A branching node shows one hint button per fork instead of a single continue.
+          branchOptions ? (
+            branchOptions.map((opt) => (
+              <Pressable
+                key={opt.id}
+                className="flex-row items-center bg-crypt-surface border-l-2 border-amber py-4 px-3 mb-2"
+                onPress={() => handleAction(opt.action)}
+                disabled={processing}
+              >
+                <Text className="text-bone-dark text-sm font-mono mr-2">▶</Text>
+                <Text className="text-bone text-sm font-mono flex-1">{opt.text}</Text>
+              </Pressable>
+            ))
+          ) : (
+            <Pressable
+              className="flex-row items-center bg-crypt-surface border-l-2 border-amber py-4 px-3"
+              onPress={() => handleAction('loot-continue')}
+              disabled={processing}
+            >
+              <Text className="text-bone-dark text-sm font-mono mr-2">▶</Text>
+              <Text className="text-bone text-sm font-mono">Continue deeper...</Text>
+            </Pressable>
+          )
         ) : message ? (
-          <Pressable
-            className="flex-row items-center bg-crypt-surface border-l-2 border-amber py-4 px-3"
-            onPress={() => handleAction('continue')}
-            disabled={processing}
-          >
-            <Text className="text-bone-dark text-sm font-mono mr-2">▶</Text>
-            <Text className="text-bone text-sm font-mono">Continue...</Text>
-          </Pressable>
+          branchOptions ? (
+            branchOptions.map((opt) => (
+              <Pressable
+                key={opt.id}
+                className="flex-row items-center bg-crypt-surface border-l-2 border-amber py-4 px-3 mb-2"
+                onPress={() => handleAction(opt.action)}
+                disabled={processing}
+              >
+                <Text className="text-bone-dark text-sm font-mono mr-2">▶</Text>
+                <Text className="text-bone text-sm font-mono flex-1">{opt.text}</Text>
+              </Pressable>
+            ))
+          ) : (
+            <Pressable
+              className="flex-row items-center bg-crypt-surface border-l-2 border-amber py-4 px-3"
+              onPress={() => handleAction('continue')}
+              disabled={processing}
+            >
+              <Text className="text-bone-dark text-sm font-mono mr-2">▶</Text>
+              <Text className="text-bone text-sm font-mono">Continue...</Text>
+            </Pressable>
+          )
         ) : (
           options.map((option) => {
             const tag = (option as any).tag as string | null | undefined;

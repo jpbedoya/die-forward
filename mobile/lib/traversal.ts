@@ -1,4 +1,6 @@
 import type { DungeonGraph, DungeonNode } from './content';
+import type { SeededRng } from './seeded-random';
+import { t } from './i18n';
 
 /**
  * Pure traversal helpers over a DungeonGraph. No React / state — safe to unit
@@ -39,4 +41,22 @@ export function declinedBranches(
     }
   }
   return declined;
+}
+
+/** Number of authored sense-line variants per node type, `hint.<type>.1..N`. */
+const HINT_VARIANT_COUNT = 3;
+
+/**
+ * Dual-signal hint for a node: a bible-voice "sense" line (one of a few
+ * i18n variants per node type, picked deterministically from the given rng)
+ * plus a legible "tag" marker keyed by type and risk (boss combat reads
+ * `[DEATH]` instead of `[DANGER]`). Pure — callers own which rng to pass
+ * (e.g. a per-node seeded rng so re-renders / replays stay stable).
+ */
+export function edgeHint(node: DungeonNode, rng: SeededRng): { sense: string; tag: string } {
+  const n = rng.range(1, HINT_VARIANT_COUNT);
+  const sense = t(`hint.${node.type}.${n}`);
+  const tagType = node.type === 'combat' && node.boss ? 'boss' : node.type;
+  const tag = t(`hint.tag.${tagType}`);
+  return { sense, tag };
 }
