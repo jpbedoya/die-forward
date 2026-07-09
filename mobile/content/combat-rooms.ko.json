@@ -1,0 +1,276 @@
+{
+  "type": "combat",
+  "zone": "THRESHOLD OF THE UNNAMED",
+  "rooms": [
+    {
+      "template": "ambush",
+      "variations": [
+        {
+          "id": "ambush_1",
+          "narrative": "방이 비어 보인다. 잔잔한 물, 잔잔한 공기. 그때 보인다 — 아무것도 움직이지 않은 수면이 일렁인다. 솟아오른다. 그 아래에서 기다리고 있었다.",
+          "enemy": "The Drowned"
+        },
+        {
+          "id": "ambush_2",
+          "narrative": "보기 반 박자 전에 소리가 먼저 들린다. 돌 위의 젖은 딸깍 소리. 머리 위다. 천장에 붙어 있다. 떨어진다. 지금.",
+          "enemy": "Pale Crawler"
+        },
+        {
+          "id": "ambush_3",
+          "narrative": "네 그림자가 이상하게 움직인다. 너무 늦게 알아차린다 — 텅 빈 자는 이미 네 윤곽 안에 들어와, 그것을 통해, 너를 향해 손을 뻗는다.",
+          "enemy": "The Hollow"
+        },
+        {
+          "id": "ambush_4",
+          "narrative": "네가 타넘은 주검은 죽지 않았다. 그것이 발목을 붙잡는다. 썩은 것이라기엔 지나치게 억센 손아귀다. 입이 벌어진다. 아무 소리도 나오지 않는다.",
+          "enemy": "Bloated One"
+        },
+        {
+          "id": "ambush_5",
+          "narrative": "시야 가장자리의 어른거림. 돌아본다. 아무것도 없다. 다시 고개를 돌린다. 거기 있다. 바로 거기. 처음부터 바로 거기 있었다.",
+          "enemy": "Flickering Shade"
+        }
+      ]
+    },
+    {
+      "template": "confrontation",
+      "variations": [
+        {
+          "id": "confrontation_1",
+          "narrative": "그것이 길을 막고 서 있다. 기다린다. 머리가 참을성 있는 굶주림으로 네 움직임을 좇는다. 돌아갈 길은 없다. 뚫고 갈 뿐이다.",
+          "enemy": "The Drowned"
+        },
+        {
+          "id": "confrontation_2",
+          "narrative": "그것이 문을 막고 있다. 공격하지 않았다. 움직이지도 않았다. 그저... 있다. 가늠하고 있다. 무엇을 결정하든, 네 마음에 들지는 않을 것이다.",
+          "enemy": "Forgotten Guardian"
+        },
+        {
+          "id": "confrontation_3",
+          "narrative": "그것이 제단 앞에 무릎 꿇은 채, 생각을 아프게 하는 주파수로 읊조린다. 네가 온 것을 안다. 그 영창은 너를 위한 것이다. 초대이거나, 사형 선고이거나.",
+          "enemy": "Hollow Clergy"
+        },
+        {
+          "id": "confrontation_4",
+          "narrative": "기사가 녹슨 칼을 들어 예를 표한다. 명예로운 결투. 죽음까지. 네가 잘 싸우기를 기대한다. 어느 쪽이든 실망하게 될 것이다.",
+          "enemy": "Carrion Knight"
+        },
+        {
+          "id": "confrontation_5",
+          "narrative": "그것이 물에서 솟아오른다. 네 키의 두 배, 어둠을 뚝뚝 흘리며. 한순간, 거의 사람처럼 보인다. 그러다 입을 연다. 그러자 입이 너무 많다.",
+          "enemy": "Mother of Tides"
+        }
+      ]
+    },
+    {
+      "template": "territorial",
+      "variations": [
+        {
+          "id": "territorial_1",
+          "narrative": "뼈가 쌓여 있다. 배열되어 있다. 여기는 둥지다. 그리고 방금 그 안에 사는 것을 깨웠다. 놈은 너를 죽이고 싶은 게 아니다. 네가 떠나기를 바란다. 이미 늦었다.",
+          "enemy": "Pale Crawler"
+        },
+        {
+          "id": "territorial_2",
+          "narrative": "이곳의 물은 더 따뜻하다. 커다란 무언가가 그 아래에서 쉬고 있었다. 그 무언가가 지금 솟아오른다. 침입에 노한 채. 여기는 놈의 웅덩이다. 너는 무단 침입자다.",
+          "enemy": "Tideborn"
+        },
+        {
+          "id": "territorial_3",
+          "narrative": "벽에 긁힌 자국이 가득하다. 영역 표시다. 괴물이 미처 보지 못한 틈에서 기어 나온다. 제가 차지한 땅을 지키려고. 그 한 뼘 한 뼘에 대가가 있었다.",
+          "enemy": "The Hunched"
+        },
+        {
+          "id": "territorial_4",
+          "narrative": "한때 사당이었다. 이제는 소굴이다. 이곳을 차지한 것은 여기서 경배하지 않는다 — 군림한다. 그리고 너는 방금 초대 없이 그 궁정에 들어섰다.",
+          "enemy": "Hollow Clergy"
+        },
+        {
+          "id": "territorial_5",
+          "narrative": "어둠 속에서 사슬이 절그럭거린다. 결박된 자가 이 통로를 차지했다. 너를 지나가게 두지 않을 것이다. 누구도 지나가게 두지 않는다. 그 외로움은 공격적이다.",
+          "enemy": "The Bound"
+        }
+      ]
+    },
+    {
+      "template": "pursuit",
+      "variations": [
+        {
+          "id": "pursuit_1",
+          "narrative": "벌써 세 방째 그 소리를 듣고 있다. 매번 더 가깝다. 매번 더 빠르다. 달아나는 것은 통하지 않는다. 이제 달아나기를 멈출 때다.",
+          "enemy": "The Hunched"
+        },
+        {
+          "id": "pursuit_2",
+          "narrative": "계단에서부터 따라오고 있다. 참을성 있게. 집요하게. 따돌릴 수 없다 — 놈은 이 굴을 안다. 이 굴을 만들었다. 멈춰 서서 맞서라.",
+          "enemy": "The Bound"
+        },
+        {
+          "id": "pursuit_3",
+          "narrative": "등 뒤의 첨벙거림이 멎는다. 그게 더 나쁘다. 더는 쫓고 있지 않다는 뜻이다. 이미 여기 있다는 뜻이다.",
+          "enemy": "The Drowned"
+        },
+        {
+          "id": "pursuit_4",
+          "narrative": "딸깍 소리가 이제 바로 등 뒤다. 놈의 숨결이 — 그것이 숨이라면 — 목덜미에 느껴진다. 돌아서라. 그래야 한다. 그러고 싶지 않다.",
+          "enemy": "Pale Crawler"
+        },
+        {
+          "id": "pursuit_5",
+          "narrative": "돌아볼 때마다 더 가까이 있다. 보고 있을 때는 결코 움직이지 않는다. 영원히 볼 수는 없다. 눈이 타들어 간다. 깜박이면, 끝난다.",
+          "enemy": "The Hollow"
+        }
+      ]
+    },
+    {
+      "template": "swarm",
+      "variations": [
+        {
+          "id": "swarm_1",
+          "narrative": "하나라면 위협이 아닐 것이다. 하지만 하나가 아니다. 벽의 틈에서, 바닥의 균열에서 쏟아져 나온다. 수십. 더 온다. 언제나 더 온다.",
+          "enemy": "Pale Crawler Swarm"
+        },
+        {
+          "id": "swarm_2",
+          "narrative": "물이 그것들로 가득하다. 작고, 움켜쥐는 것들. 홀로는 아무것도 아니다. 함께라면 이빨과 굶주림의 물살이다. 그 무게로 물이 차오른다.",
+          "enemy": "Tideborn"
+        },
+        {
+          "id": "swarm_3",
+          "narrative": "손. 손뿐이다. 사방에서 나온다 — 바닥, 벽, 천장. 움켜쥐고, 잡아당기고, 끌어내린다. 싸울 몸통이 없다. 손뿐이다.",
+          "enemy": "Bone Weavers"
+        },
+        {
+          "id": "swarm_4",
+          "narrative": "재의 아이들이 모여들었다. 지켜보는 것으로 충분하던 때가 있었다. 이제는 더 원한다. 바짝 다가든다. 공기가 옅어진다. 공격하는 게 아니다 — 질식시키는 것이다.",
+          "enemy": "Ash Children"
+        },
+        {
+          "id": "swarm_5",
+          "narrative": "메아리 껍데기들이 서로를 찾아냈다. 훔친 유언의 합창이 하나로 비틀거리며, 하나로 손을 뻗는다. '살려줘 살려줘 살려줘' — 열두 개의 망가진 목구멍에서 나오는 같은 애원.",
+          "enemy": "Echo Husks"
+        }
+      ]
+    },
+    {
+      "template": "feeding",
+      "variations": [
+        {
+          "id": "feeding_1",
+          "narrative": "무언가를 먹고 있다. 젖은, 규칙적인 소리. 아직 너를 보지 못했다. 몰래 지나갈 수도 있다. 선수를 칠 수도 있다. 어느 쪽이든 놈은 곧 식사를 끝낸다.",
+          "enemy": "The Hunched"
+        },
+        {
+          "id": "feeding_2",
+          "narrative": "익사자가 주검을 찾아냈다. 먹는 게 아니다 — 흡수하고 있다. 더 커진다. 더 강해진다. 기다리는 매 순간, 더 위험해진다.",
+          "enemy": "Bloated One"
+        },
+        {
+          "id": "feeding_3",
+          "narrative": "괴물이 한때 사람이었던 것 위에 웅크리고 있다. 고개를 든다. 입이 가득 차 있다. 방해받아 언짢은 기색이 아니다. 고마워하는 기색이다. 먹이가 늘었으니.",
+          "enemy": "Pale Crawler"
+        },
+        {
+          "id": "feeding_4",
+          "narrative": "흐느끼는 자가 먹을 슬픔을 찾아냈다. 다른 플레이어의 주검, 아직 생생한 유언. 그것이 그들의 슬픔을 들이켠다. 그리고 너를 돌아본다. 네 슬픔이 더 진한 냄새를 풍긴다.",
+          "enemy": "The Weeping"
+        },
+        {
+          "id": "feeding_5",
+          "narrative": "뼈들 사이에 앉아, 뼈를 쪼개어 그 속의 것을 마신다. 오래된 뼈다. 태고의 뼈. 수백 년을 여기서 먹어 왔다. 오랜만에 나타난 첫 신선한 것이 너다.",
+          "enemy": "The Hunched"
+        }
+      ]
+    },
+    {
+      "template": "guardian",
+      "variations": [
+        {
+          "id": "guardian_1",
+          "narrative": "그것이 문 앞에 서 있다. 언제나 이 문 앞에 서 있었다. 이 문 앞에서 죽을 것이다. 그 뒤의 것을 원한다면, 너도 그럴 것이다.",
+          "enemy": "Forgotten Guardian"
+        },
+        {
+          "id": "guardian_2",
+          "narrative": "저 너머 통로에 중요한 무언가가 있다. 느낄 수 있다. 길을 막은 것도 느낀다. 그것은 여기 놓였다. 목적이 있다. 그 목적이 너다.",
+          "enemy": "Carrion Knight"
+        },
+        {
+          "id": "guardian_3",
+          "narrative": "출구가 바로 저기다. 스무 걸음. 너와 그 사이에, 바로 이 순간을 기다려 온 무언가가 서 있다. 너의 순간. 놈의 목적.",
+          "enemy": "Hollow Clergy"
+        },
+        {
+          "id": "guardian_4",
+          "narrative": "은닉처가 바로 너머에 있다. 물자, 무기, 희망. 그것을 지키는 놈은 그중 무엇도 쓰지 않는다. 그저 네가 갖는 것이 싫을 뿐이다.",
+          "enemy": "The Bound"
+        },
+        {
+          "id": "guardian_5",
+          "narrative": "그것은 사당을 지킨다. 신이 아니다 — 신은 죽었다. 공물도 아니다 — 공물은 썩었다. 그것이 지키는 것은 관념이다. 기억이다. 너로부터 그것들을 지킬 것이다.",
+          "enemy": "Forgotten Guardian"
+        }
+      ]
+    },
+    {
+      "template": "arena",
+      "variations": [
+        {
+          "id": "arena_1",
+          "narrative": "방은 둥글다. 매끄럽다. 이것을 위해 설계되었다. 시선이 느껴진다 — 어디에서? 맞은편의 것은 관객 따위 상관하지 않는다. 오직 너만을.",
+          "enemy": "Carrion Knight"
+        },
+        {
+          "id": "arena_2",
+          "narrative": "계단식 좌석이 중앙의 구덩이를 둘러싼다. 빈 좌석, 그러나 비어 있지 않은 기척. 무언가 지켜본다. 무언가 심판한다. 구덩이 속 괴물이 네가 내려오기를 기다린다.",
+          "enemy": "The Bound"
+        },
+        {
+          "id": "arena_3",
+          "narrative": "뼈로 지은 원형 극장. 음향은 완벽하다 — 모든 헐떡임, 모든 신음, 모든 단말마가 아름답게 울릴 것이다. 회중이 공연을 기다린다.",
+          "enemy": "The Congregation"
+        },
+        {
+          "id": "arena_4",
+          "narrative": "바닥에 원이 그려져 있다. 오래된 것. 구속하는 것. 한번 들어서면, 둘 중 하나가 움직임을 멈출 때까지 나갈 수 없다. 원 안의 것은 결코 움직임을 멈추지 않는다.",
+          "enemy": "Flickering Shade"
+        },
+        {
+          "id": "arena_5",
+          "narrative": "들어서자 방이 모습을 바꾼다. 벽이 솟는다. 출구가 봉해진다. 공간이 만들어진다. 무대. 투기장. 어딘가에서, 무언가가 몹시 즐거워하고 있다.",
+          "enemy": "The Unnamed"
+        }
+      ]
+    },
+    {
+      "template": "wounded",
+      "variations": [
+        {
+          "id": "wounded_1",
+          "narrative": "피를 흘리고 있다. 몸을 끌고 있다. 네가 낸 상처가 아니다 — 다른 누군가 시도했다. 다른 누군가 실패했다. 놈이 너를 본다. 이빨을 드러낸 채. 공포와 분노가 반반이다.",
+          "enemy": "The Drowned"
+        },
+        {
+          "id": "wounded_2",
+          "narrative": "반쪽이 없다. 남은 반쪽은 여전히 움직인다. 여전히 사냥한다. 줄었지만 끝나지 않았다. 잃을 것이 없다. 그래서 더 위험하다.",
+          "enemy": "Pale Crawler"
+        },
+        {
+          "id": "wounded_3",
+          "narrative": "수호자에 금이 가 있다. 조각들이 떨어져 나갔다. 다른 모험가가 한 짓이다. 그 모험가는 어디에? 죽었겠지, 아마. 하지만 놈을 약하게 만들었다. 그들이 시작한 일을 끝내라.",
+          "enemy": "Forgotten Guardian"
+        },
+        {
+          "id": "wounded_4",
+          "narrative": "절뚝이며 다가온다. 부서졌지만, 꺾이지 않았다. 상처 하나마다 더 노한다. 고통 하나마다 너를 더 미워한다. 자비는 놈이 이해하는 선택지가 아니다.",
+          "enemy": "The Hunched"
+        },
+        {
+          "id": "wounded_5",
+          "narrative": "손목에서 끊어진 사슬이 늘어져 있다. 무언가에서 달아났다. 아니면 달아나려 했다. 이제 자유롭고, 다쳤고, 혼란스럽다. 그리고 처음 눈에 띈 것이 너다. 운도 좋지.",
+          "enemy": "The Bound"
+        }
+      ]
+    }
+  ]
+}

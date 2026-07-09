@@ -1,0 +1,321 @@
+{
+  "type": "corpse",
+  "zone": "THRESHOLD OF THE UNNAMED",
+  "rooms": [
+    {
+      "template": "fresh",
+      "variations": [
+        {
+          "id": "fresh_1",
+          "narrative": "피가 아직 마르지 않았다. 그들은 조금 전에 여기 쓰러졌다 — 혹은 몇 해 전에. 이 아래에서 시간은 거짓말을 한다. 그 손은 아직도 벽을 향해 뻗어 있다. 벽에는 글자가 긁혀 있다:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "fresh_2",
+          "narrative": "아직 따뜻하다. 차가운 공기 속에 마지막 숨이 아직 김으로 서려 있다. 거의 해낼 뻔했다. 거의. 황급히 새긴 유언:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "fresh_3",
+          "narrative": "오래되지 않았다는 것을 안다. 아직 두려움의 냄새가 나기 때문이다. 날카롭고. 금속성의. 남긴 말은 새것이다. 글자에서 아직 돌가루가 떨어진다:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "fresh_4",
+          "narrative": "그들의 횃불이 아직 타고 있다. 그만큼 최근이다. 다가서자 불꽃이 흔들린다. 너를 알아본다는 듯이. 꺼져 가는 불빛 속에 그들의 말이 떠오른다:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "fresh_5",
+          "narrative": "물결이 아직 가라앉지 않았다. 방금 쓰러진 것이다. 간발의 차로 놓쳤다 — 아니면 그들이 너를 놓쳤거나. 어느 쪽이든, 그 말은 다음에 올 자를 위한 것이다:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "old",
+      "variations": [
+        {
+          "id": "old_1",
+          "narrative": "이제는 거의 벽의 일부다. 물이 그 대부분을 가져갔다. 하지만 돌에 새긴 말은 남아 있다. 슬픔처럼 끈질기게:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "old_2",
+          "narrative": "뼈. 이제는 뼈뿐이다. 시간과 물이 거의 평온해 보이는 모습으로 추슬러 놓았다. 남긴 말은 풍화되었지만, 남아 있다:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "old_3",
+          "narrative": "명부가 그들을 소화한 지 오래다. 남은 것은 몸이라기보다 기억이다. 하지만 이곳에서 기억은 사라지지 않는다. 그 말은 버틴다:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "old_4",
+          "narrative": "이제는 이끼가 자란다. 명부가 이 몸을 제 일부로 받아들였다. 새겨진 말만이 흡수를 거부한다:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "old_5",
+          "narrative": "얼마나 오래 여기 있었을까? 세간이 될 만큼 오래. 이정표가 될 만큼. 다른 생존자들이 분명 지나갔지만, 아무도 옮기지 않았다. 그 경고는 그대로 서 있다:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "peaceful",
+      "variations": [
+        {
+          "id": "peaceful_1",
+          "narrative": "그들은 편하게 자리를 잡았다. 소지품을 가지런히 정리했다. 결코 닿지 못할 출구 쪽을 향해 앉았다. 남긴 말은 신중하고, 정돈되어 있다:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "peaceful_2",
+          "narrative": "몸부림도 없다. 폭력도 없다. 그저 주저앉아, 여기까지면 충분하다고 정했다. 그 수용이 부러울 지경이다. 그 말은 고요하다:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "peaceful_3",
+          "narrative": "두 손을 모은 채 죽었다. 눈을 감고. 스스로 택한 끝과 화해한 채. 그 말은 경고가 아니라 작별 인사처럼 읽힌다:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "peaceful_4",
+          "narrative": "작은 모닥불, 식은 지 오래. 먹다 만 식사. 그들은 여기서 쉬었다. 다시 깨어나지 못했다. 명부도 때로는 자비롭다. 그들의 마지막 생각:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "peaceful_5",
+          "narrative": "웃고 있다. 어째서인지. 그 모든 일을 겪고도. 그 몸은 내려놓음에 대한 가르침이다. 그 말은 너를 위한 것이면서 그들 자신을 위한 것이다:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "heroic",
+      "variations": [
+        {
+          "id": "heroic_1",
+          "narrative": "괴물이 곁에 쓰러져 있다. 그들이 죽였다. 그것이 그들을 죽였다. 공정한 거래일까? 칼은 아직 놈의 두개골에 박혀 있다. 남긴 말은 짧고, 흡족하다:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "heroic_2",
+          "narrative": "그들은 여기서 버텼다. 바로 여기서. 싸움의 흔적이 보인다 — 벽의 상처, 검은 진액, 그들이 죽인 것들의 몸뚱이. 이 묘비명은 그들이 벌어 낸 것이다:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "heroic_3",
+          "narrative": "주위에 괴물 셋이 죽어 있다. 조용히 가지 않았다. 쉽게 가지 않았다. 포위된 채, 싸우며, 데려갈 수 있는 만큼 데려가며 갔다. 그들의 호언:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "heroic_4",
+          "narrative": "누군가를 구하다 죽었다. 멀어져 가는 두 번째 발자국이 보인다. 이 사람 덕분에 다른 누군가 살아남았다. 그들의 유산:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "heroic_5",
+          "narrative": "선 채로. 그들은 선 채로 죽었다. 무기를 든 채. 이길 수 없음을 알면서도 마주 본 채. 그래도 마주 섰다. 돌에 새겨진 그들의 저항:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "disturbing",
+      "variations": [
+        {
+          "id": "disturbing_1",
+          "narrative": "싸우다 죽지 않았다. 기다리다 죽었다. 벽에 기대앉아, 두 손을 모으고, 참을성 있게. 알고 있었다는 듯이. 곁에 남은 말:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "disturbing_2",
+          "narrative": "이 몸은 어딘가 잘못되었다. 비율이. 자세가. 미소가. 연출된 것처럼 보인다. 배치된 것처럼. 인간의 형상을 이해하지 못하는 무언가에 의해. 그들의 말:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "disturbing_3",
+          "narrative": "벽을 마주 보고 있다. 이마를 돌에 붙인 채. 손가락이 다 닳아 없어질 때까지 벽을 긁었다. 그 말은 긁힌 게 아니라 새겨져 있다. 깊이 새겨져 있다. 이렇게:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "disturbing_4",
+          "narrative": "상처가 없다. 자국도 없다. 뚜렷한 원인이 없다. 그저... 멈췄다. 표정은 어리둥절하다. 아직도 문제를 풀고 있는 듯이. 그 말은 도중에 끊긴다:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "disturbing_5",
+          "narrative": "서 있다. 죽었지만, 서 있다. 눈을 뜬 채. 네가 방금 지나온 통로를 지켜보며. 지금까지 내내 지켜보고 있었던 걸까? 그 말도 함께 응시한다:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "group",
+      "variations": [
+        {
+          "id": "group_1",
+          "narrative": "셋이다. 마지막 순간에 서로 부둥켜안았다. 무엇이 왔든, 하나로 맞섰다. 글을 남길 시간이 있었던 것은 하나뿐. 그 말은 모두를 위한 것이다:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "group_2",
+          "narrative": "빙 둘러선 주검들. 바깥을 향한 채. 끝까지 등을 맞대고. 그들은 서로를 믿었다. 함께 죽었다. 한 목소리가 모두를 대신해 말한다:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "group_3",
+          "narrative": "둘이다. 손을 잡은 채. 지금까지도. 그들을 죽인 것이 무엇이든, 둘을 갈라놓지는 못했다. 함께 남긴 말:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "group_4",
+          "narrative": "더미. 그 말밖에 없다. 누군가 먼저 죽었고, 남은 이들은 떠나지 않았다. 스스로 더미에 몸을 보탰다. 맨 아래의 사람이 무언가 적었다:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "group_5",
+          "narrative": "대형을 갖춘 채 죽었다. 병사들처럼. 신자들처럼. 무엇이 오는지 알고서 함께 맞서기로 한 사람들처럼. 그들이 함께 남긴 마지막 한마디:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "trapped",
+      "variations": [
+        {
+          "id": "trapped_1",
+          "narrative": "붕괴가 그들을 가두었다. 잔해에 긁힌 자국이 가득하다. 오랫동안 애썼다. 그러다 멈췄다. 어둠 속에서 쓴 그들의 말:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "trapped_2",
+          "narrative": "갇혔다. 문은 이쪽에서 열리지 않는다. 문을 닫을 때는 그것을 몰랐다. 문에 남은 자국이 그 이야기를 전한다. 그 아래에 긁어 쓴 말:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "trapped_3",
+          "narrative": "물이 차올랐다. 어디서 멈췄는지 자국이 보인다 — 머리 바로 위다. 오를 수 있는 데까지 올랐다. 충분히 높지 않았다. 그 말은 물이 닿던 자리에 있다:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "trapped_4",
+          "narrative": "사슬. 여기 사슬로 묶여 있다. 누가 묶었을까? 그들이 기다리기를 바란 무언가가. 생각하기를. 마지막으로 한 가지를 쓰기를:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "trapped_5",
+          "narrative": "구덩이. 매끈한 벽. 나갈 길이 없다. 생각보다 오래 이 아래에서 버텼다. 이 말을 새길 만큼은 오래:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "posed",
+      "variations": [
+        {
+          "id": "posed_1",
+          "narrative": "누군가 이 몸을 배치했다. 일으켜 세웠다. 얼굴을 입구 쪽으로 돌렸다. 너를 향해. 그 말은 그들의 것이 아니다 — 다른 무언가가 썼다:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "posed_2",
+          "narrative": "무릎을 꿇고 있다. 고개를 숙이고. 두 손을 모으고. 기도의 조롱. 인간이 경배하는 모습을 지켜본 무언가가 연출한 것이다. 곁에 적힌 말은 경배가 아니다:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "posed_3",
+          "narrative": "벽 속에 박혀 있다. 말 그대로. 그 몸은 이제 건축의 일부다. 설계자가 여기 다녀갔다. 자유로운 것은 한 손뿐, 새겨진 글자를 가리키고 있다:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "posed_4",
+          "narrative": "식탁에 앉아 있다. 식사를 앞에 두고. 손님들과 함께 — 만찬의 객처럼 배치된 다른 주검들. 끔찍한 흉내다. 그들의 자리표에는 이렇게 적혀 있다:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "posed_5",
+          "narrative": "전시되어 있다. 예술품처럼. 정성 들여, 의도를 담아 벽에 걸려 있다. 단 하나뿐인 전시관. 그 아래 명판에는:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "legendary",
+      "variations": [
+        {
+          "id": "legendary_1",
+          "narrative": "이 사람 이야기는 들어 봤다. 모두가 들었다. 그 누구보다 멀리 갔다. 그 주검은 이정표가 되었다. 그 말은 베껴지고 전해졌다:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "legendary_2",
+          "narrative": "그 유명한 이다. 주위에 공물이 놓여 있다 — 다른 여행자들의 선물, 바쳐진 경의. 거의 해낼 뻔했다. 그 말은 기도가 되었다:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "legendary_3",
+          "narrative": "이야기 속에서 본 얼굴이다. 상상보다 작다. 더 인간적이다. 전설이 몸보다 크다. 그 말은 뜻밖에 소박하다:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "legendary_4",
+          "narrative": "순례지. 위대한 이가 쓰러진 이 자리를 보러 사람들이 찾아왔다. 발치에서 꽃이 썩는다. 그 말은 더듬는 손끝에 닳아 흐려졌다:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "legendary_5",
+          "narrative": "역사상 가장 큰 판돈이 걸린 하강. 가장 큰 손실. 가장 용감한 시도. 그 실패가 다른 이들에게 성공하는 법을 가르쳤다. 그들의 유산은 말 그 이상이다:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    }
+  ]
+}
