@@ -1,5 +1,5 @@
 import { loadZone } from '../zone-loader';
-import { setLocale } from '../i18n';
+import { setLocale, getLocale } from '../i18n';
 
 afterEach(() => {
   setLocale('en');
@@ -18,10 +18,20 @@ describe('loadZone locale selection', () => {
 
   it('missing locale file falls back to English per zone', () => {
     setLocale('vi');
-    const vi = loadZone('void-beyond').lore;
+    expect(getLocale()).toBe('vi');
+
+    const viVoidBeyond = loadZone('void-beyond').lore;
     setLocale('en');
-    const en = loadZone('void-beyond').lore;
-    expect(vi).toEqual(en);
+    const enVoidBeyond = loadZone('void-beyond').lore;
+    // vi has no void-beyond pack — falls back to English.
+    expect(viVoidBeyond).toEqual(enVoidBeyond);
+
+    setLocale('vi');
+    const viSunkenCrypt = loadZone('sunken-crypt').lore;
+    setLocale('en');
+    const enSunkenCrypt = loadZone('sunken-crypt').lore;
+    // vi has a sunken-crypt pack — should NOT fall back to English.
+    expect(viSunkenCrypt).not.toEqual(enSunkenCrypt);
   });
 
   it('ja graph/dungeonLayout stay structurally identical to English through the loader', () => {

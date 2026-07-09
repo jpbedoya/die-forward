@@ -8,6 +8,7 @@ Kit: `docs/localization/LOC_KIT.md` — canonical glossary + voice rules. All wo
 ## Remaining
 - **vi:** `lib/zones/void-beyond.vi.json`; `content/{combat-actions,combat-rooms,corpse-rooms,death-epitaphs,exit-rooms,explore-rooms}.vi.json`; `lib/locales/vi.json`
   (already done: sunken-crypt/ashen-crypts/frozen-gallery/living-tomb zones, cache-rooms)
+  `lib/locales/vi.json` now EXISTS with English placeholder values — translate values in place, don't create.
 
 ## Process notes (learned the hard way)
 - **Write-first**: agents must write each file to disk as soon as it's translated — session-limit deaths then cost at most one partial file.
