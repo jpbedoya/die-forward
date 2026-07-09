@@ -89,6 +89,8 @@ Escape to victory.
 - Light after darkness
 - But hint that you'll return...
 
+> **Structure note (phase 2a):** zones no longer render as a flat 12-room corridor — each zone defines a branching node graph (two parallel lanes with cross-links; sunken-crypt ships 21 nodes / 26 edges as the reference layout, identical across all locale packs). Branch choices surface a **dual-signal hint**: one sensory line in bible voice plus one legible risk/reward tag the player can read cold, so a choice trades a known reward against a known risk rather than being a coin flip. The room-type templates and prose pools above are unchanged — the graph decides which templates connect to which, not what's in them.
+
 ---
 
 ## Bestiary
