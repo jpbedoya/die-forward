@@ -60,8 +60,9 @@ export async function POST(request: NextRequest) {
     const session = sessions[0];
 
     // Validate room progress - must have reached final room
+    // 'room' = canonical 1-based node depth (spec §4.1); graph edges always descend one depth, so linear validation holds
     const currentRoom = session.currentRoom || 1;
-    const maxRooms = session.maxRooms || 7;
+    const maxRooms = session.maxRooms || 13;
     
     if (currentRoom < maxRooms) {
       return NextResponse.json({ 
@@ -224,7 +225,7 @@ export async function POST(request: NextRequest) {
       if (players && players.length > 0) {
         const player = players[0];
         const currentHighest = (player as Record<string, unknown>).highestRoom as number || 0;
-        const clearedRoom = session.currentRoom || 12; // Full dungeon clear = actual room reached
+        const clearedRoom = session.currentRoom || (session.maxRooms || 13); // Full dungeon clear = reached max depth
 
         // Read existing clearedZones (stored as array, matching mobile schema)
         const existingCleared = (player as Record<string, unknown>).clearedZones;

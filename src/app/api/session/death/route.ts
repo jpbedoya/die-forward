@@ -18,6 +18,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid session token' }, { status: 400 });
     }
 
+    // 'room' = canonical 1-based node depth (spec §4.1); graph edges always descend one depth, so linear validation holds
     if (typeof room !== 'number' || room < 1) {
       return NextResponse.json({ error: 'Invalid room number' }, { status: 400 });
     }
