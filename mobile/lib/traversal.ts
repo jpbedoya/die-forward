@@ -43,6 +43,38 @@ export function declinedBranches(
   return declined;
 }
 
+/**
+ * One row per traversed node in `path`, for the post-run trail screen:
+ * the node taken at that depth, plus the sibling branches that were
+ * available at the PREVIOUS step but not walked ("declined"). Row 0 always
+ * has an empty `declined` (no previous step to have declined from). Unknown
+ * node ids are skipped defensively rather than throwing — the "previous
+ * step" for declined-branch purposes is the nearest preceding *known* node.
+ */
+export function trailRows(
+  graph: DungeonGraph,
+  path: string[],
+): { depth: number; taken: { type: string; boss?: boolean }; declined: { type: string }[] }[] {
+  const known = path.filter((id) => !!graph.nodes[id]);
+  const rows: { depth: number; taken: { type: string; boss?: boolean }; declined: { type: string }[] }[] = [];
+
+  for (let i = 0; i < known.length; i++) {
+    const node = graph.nodes[known[i]];
+    const declined: { type: string }[] = [];
+    if (i > 0) {
+      const prev = graph.nodes[known[i - 1]];
+      for (const siblingId of prev.next) {
+        if (siblingId === known[i]) continue;
+        const sibling = graph.nodes[siblingId];
+        if (sibling) declined.push({ type: sibling.type });
+      }
+    }
+    rows.push({ depth: node.depth, taken: { type: node.type, boss: node.boss }, declined });
+  }
+
+  return rows;
+}
+
 /** Number of authored sense-line variants per node type, `hint.<type>.1..N`. */
 const HINT_VARIANT_COUNT = 3;
 

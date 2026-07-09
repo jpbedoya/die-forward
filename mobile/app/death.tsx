@@ -16,6 +16,8 @@ import { AudioToggle } from '../components/AudioToggle';
 import { CRTOverlay } from '../components/CRTOverlay';
 import { useCurrentPlayer, applyMilestoneCosmetics, useGameSettings, recordCreatureUpdate } from '../lib/instant';
 import { getNewMilestone, getMilestoneTypeLabel, type Milestone } from '../lib/milestones';
+import { trailRows } from '../lib/traversal';
+import { t } from '../lib/i18n';
 
 export default function DeathScreen() {
   const insets = useSafeAreaInsets();
@@ -50,6 +52,7 @@ export default function DeathScreen() {
   const depth = getDepthForRoom(roomNumber);
   const stakeAmountNum = Number(game.stakeAmount || 0);
   const isEmptyHanded = !Number.isFinite(stakeAmountNum) || stakeAmountNum <= 0;
+  const trail = game.graph ? trailRows(game.graph, game.path) : [];
 
   // Check for milestone unlock when player data is ready (run once)
   useEffect(() => {
@@ -468,6 +471,28 @@ export default function DeathScreen() {
           </View>
         )}
 
+        {/* Path Trail */}
+        {trail.length > 0 && (
+          <View className="bg-crypt-surface border border-crypt-border p-4 mb-6">
+            <Text className="text-bone-dark text-xs font-mono tracking-widest mb-3">{t('trail.header')}</Text>
+            <View>
+              {trail.map((row, i) => (
+                <View key={i} className="mb-1">
+                  <Text className="text-amber text-xs font-mono">
+                    {'d'}{row.depth}  {'▸ '}{t(`trail.type.${row.taken.type}`)}
+                    {row.taken.boss ? ` ${t('trail.boss')}` : ''}
+                  </Text>
+                  {row.declined.map((d, j) => (
+                    <Text key={j} className="text-bone-dark text-xs font-mono">
+                      {'      ▹ '}{t(`trail.type.${d.type}`)} {t('trail.declined')}
+                    </Text>
+                  ))}
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
+
         {/* Divider */}
         <Text className="text-crypt-border-light text-xs font-mono text-center mb-6">────────────────────────</Text>
 
@@ -522,7 +547,7 @@ export default function DeathScreen() {
                   data={{
                     playerName: game.nickname || 'Wanderer',
                     room: roomNumber,
-                    totalRooms: game.dungeon?.length || 12,
+                    totalRooms: game.graph?.maxDepth ?? 13,
                     killedBy: params.killedBy || null,
                     epitaph: finalWords || 'No final words...',
                     stakeLost: stakeAmountNum,

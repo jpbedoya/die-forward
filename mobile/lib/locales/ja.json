@@ -58,5 +58,13 @@
   "hint.tag.cache": "[RESPITE]",
   "hint.tag.corpse": "[THE FALLEN]",
   "hint.tag.explore": "[PASSAGE]",
-  "hint.tag.exit": "[LIGHT]"
+  "hint.tag.exit": "[LIGHT]",
+  "trail.header": "THE PATH YOU WALKED",
+  "trail.declined": "(unwalked)",
+  "trail.boss": "†",
+  "trail.type.combat": "COMBAT",
+  "trail.type.cache": "CACHE",
+  "trail.type.corpse": "CORPSE",
+  "trail.type.explore": "EXPLORE",
+  "trail.type.exit": "EXIT"
 }

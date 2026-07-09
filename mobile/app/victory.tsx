@@ -13,6 +13,8 @@ import { useAudius } from '../lib/AudiusContext';
 import { AudioSettingsModal } from '../components/AudioSettingsModal';
 import { AudioToggle } from '../components/AudioToggle';
 import { CRTOverlay } from '../components/CRTOverlay';
+import { trailRows } from '../lib/traversal';
+import { t } from '../lib/i18n';
 
 // ASCII sparkle component
 const AsciiSparkle = ({ delay, x, y }: { delay: number; x: number; y: number }) => {
@@ -89,6 +91,7 @@ export default function VictoryScreen() {
   const victoryBonus = stakeNum * bonusPercent;
   const totalReward = stakeNum + victoryBonus;
   const isEmptyHanded = stakeNum <= 0;
+  const trail = game.graph ? trailRows(game.graph, game.path) : [];
   
   const handleShare = async () => {
     setSharing(true);
@@ -279,7 +282,7 @@ export default function VictoryScreen() {
         <View className="bg-crypt-surface border border-victory/30 p-4 mb-6">
           <View className="flex-row justify-between mb-2">
             <Text className="text-bone-dark text-sm font-mono">Rooms Cleared</Text>
-            <Text className="text-bone text-sm font-mono">{game.dungeon?.length || 12}</Text>
+            <Text className="text-bone text-sm font-mono">{game.graph?.maxDepth ?? 13}</Text>
           </View>
           <View className="flex-row justify-between mb-2">
             <Text className="text-bone-dark text-sm font-mono">Health Remaining</Text>
@@ -292,6 +295,28 @@ export default function VictoryScreen() {
             <Text className="text-ethereal text-sm font-mono">{game.itemsFound || 0}</Text>
           </View>
         </View>
+
+        {/* Path Trail */}
+        {trail.length > 0 && (
+          <View className="bg-crypt-surface border border-victory/30 p-4 mb-6">
+            <Text className="text-bone-dark text-xs font-mono tracking-widest mb-3">{t('trail.header')}</Text>
+            <View>
+              {trail.map((row, i) => (
+                <View key={i} className="mb-1">
+                  <Text className="text-amber text-xs font-mono">
+                    {'d'}{row.depth}  {'▸ '}{t(`trail.type.${row.taken.type}`)}
+                    {row.taken.boss ? ` ${t('trail.boss')}` : ''}
+                  </Text>
+                  {row.declined.map((d, j) => (
+                    <Text key={j} className="text-bone-dark text-xs font-mono">
+                      {'      ▹ '}{t(`trail.type.${d.type}`)} {t('trail.declined')}
+                    </Text>
+                  ))}
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
 
         {/* Reward Section */}
         {!isEmptyHanded ? (
@@ -414,7 +439,7 @@ export default function VictoryScreen() {
                 <VictoryCard 
                   data={{
                     playerName: game.nickname || 'Champion',
-                    roomsCleared: game.dungeon?.length || 12,
+                    roomsCleared: game.graph?.maxDepth ?? 13,
                     stakeWon: totalReward,
                     enemiesDefeated: 4, // TODO: Track actual kills
                     nowPlaying: musicSource === 'audius' && currentTrack
