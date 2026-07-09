@@ -31,7 +31,6 @@ import {
   getItemEffects,
   getTagDamageBonus,
   getItemDetails,
-  getDepthForRoom,
   getStrikeNarration,
   getDodgeNarration,
   getBraceNarration,
