@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { tx } from '@instantdb/admin';
+import { tx, id } from '@instantdb/admin';
 import { db } from '@/lib/db';
+import { computeVictoryReward } from '@/lib/payout';
+import { buildRunReceipt } from '@/lib/coins';
 
 // Stale session threshold: 1 hour
 const STALE_THRESHOLD_MS = 60 * 60 * 1000;
@@ -50,17 +52,33 @@ export async function POST(_request: NextRequest) {
       });
     }
 
+    // ── Load game settings (money-integrity: never blocks the sweep) ──────────
+    const settingsResult = await db.query({ gameSettings: {} }).catch(() => null);
+    const settingsRow = settingsResult?.gameSettings?.[0] as Record<string, unknown> | undefined;
+    const victoryBonusPercent = (settingsRow?.victoryBonusPercent as number) ?? 50;
+
     const victoryCandidates = staleSessions.filter((s: any) => {
       const currentRoom = s.currentRoom || 1;
-      const maxRooms = s.maxRooms || 7;
+      const maxRooms = s.maxRooms || 13;
       return currentRoom >= maxRooms;
     });
 
     const deathCandidates = staleSessions.filter((s: any) => {
       const currentRoom = s.currentRoom || 1;
-      const maxRooms = s.maxRooms || 7;
+      const maxRooms = s.maxRooms || 13;
       return currentRoom < maxRooms;
     });
+
+    // Abandoned COIN-BOUND runs: the stake was deducted at start, so burn it into
+    // the pool (like a death) and stamp an immutable 'abandoned' receipt. Streak is
+    // left untouched — abandonment is treated generously, not as a loss.
+    const coinBoundSessions = staleSessions.filter(
+      (s: any) => s.stakeMode === 'coins' && (Number(s.coinStake) || 0) > 0,
+    );
+    const totalCoinBurn = coinBoundSessions.reduce(
+      (sum: number, s: any) => sum + (Number(s.coinStake) || 0),
+      0,
+    );
 
     const updates = [
       ...deathCandidates.map((session: any) =>
@@ -73,18 +91,51 @@ export async function POST(_request: NextRequest) {
       ),
       ...victoryCandidates.map((session: any) => {
         const stakeAmount = session.stakeAmount || 0;
-        const bonus = stakeAmount * 0.5;
-        const reward = stakeAmount + bonus;
         const freeMode = session.demoMode || stakeAmount === 0;
+        const { totalReward } = computeVictoryReward(stakeAmount, victoryBonusPercent);
 
         return tx.sessions[session.id].update({
           status: 'completed',
           endedAt: now,
-          reward: freeMode ? 0 : reward,
+          reward: freeMode ? 0 : totalReward,
           payoutStatus: freeMode ? 'free_mode' : 'abandoned_pending_claim',
-          finalRoom: session.currentRoom || session.maxRooms || 7,
+          finalRoom: session.currentRoom || session.maxRooms || 13,
         });
       }),
+      // Single accumulated pool burn — ONLY against a real existing settings row
+      // (never invent one; that would orphan the pool). Multiple .update calls on
+      // the same row are last-write-wins, so we sum first and write once.
+      ...(totalCoinBurn > 0 && settingsRow?.id
+        ? [
+            tx.gameSettings[settingsRow.id as string].update({
+              coinPool: ((settingsRow.coinPool as number) ?? 0) + totalCoinBurn,
+            }),
+          ]
+        : []),
+      // One immutable 'abandoned' receipt per coin-bound run (no streak change).
+      ...coinBoundSessions.map((session: any) =>
+        tx.runReceipts[id()].update(
+          { ...buildRunReceipt({
+            sessionId: session.id,
+            sessionToken: session.token ?? '',
+            authId: session.authId ?? null,
+            walletAddress: session.walletAddress ?? null,
+            zoneId: session.zoneId ?? null,
+            runSeed: session.seed ?? null,
+            seedSource: session.seedSource ?? null,
+            serverDayKey: session.serverDayKey ?? null,
+            dailyShiftEnabled: session.dailyShiftEnabled ?? null,
+            chosenModifierId: session.chosenModifierId ?? null,
+            stakeMode: 'coins',
+            coinStake: Number(session.coinStake) || 0,
+            outcome: 'abandoned',
+            finalDepth: session.currentRoom || 1,
+            coinDelta: 0, // stake burned, nothing granted
+            streakAfter: (session.bindingStreak as number) ?? 0, // unchanged
+            createdAt: now,
+          }) },
+        )
+      ),
     ];
 
     if (updates.length > 0) {

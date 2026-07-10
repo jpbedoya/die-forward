@@ -14,6 +14,13 @@ import {
 } from '@solana/web3.js';
 import { processVictoryPayout } from '@/lib/onchain';
 import { computeVictoryReward } from '@/lib/payout';
+import {
+  buildRunReceipt,
+  computeCoinEarn,
+  computeCoinStakeSettlement,
+  nextStreak,
+  type StakeMode,
+} from '@/lib/coins';
 
 // Pool wallet keypair (loaded from env)
 function getPoolKeypair(): Keypair {
@@ -207,12 +214,18 @@ export async function POST(request: NextRequest) {
       }),
     ]);
 
-    // Update player stats (increment clears, track earned)
-    // Use authId for lookup (supports guests + wallet users), fallback to walletAddress for legacy
+    // ── Coin economy settlement (grant, stake return + pool bonus, streak, receipt) ──
+    // Mirrors the death route: everything below lands in ONE transact so the
+    // coin settlement is atomic among itself. It is intentionally SEPARATE from
+    // (and after) the SOL payout / session-settle awaits above — the SOL reward
+    // is already committed on-chain and must not be re-attempted or rolled back
+    // by a coin-write failure. Grants are skipped for guests with no player row;
+    // the receipt is written either way (records the run, not the grant).
+    // Use authId for lookup (supports guests + wallet users), fallback to walletAddress for legacy.
     try {
       const lookupKey = session.authId || session.walletAddress;
       const lookupField = session.authId ? 'authId' : 'walletAddress';
-      
+
       const { players } = await db.query({
         players: {
           $: {
@@ -222,33 +235,115 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      if (players && players.length > 0) {
-        const player = players[0];
-        const currentHighest = (player as Record<string, unknown>).highestRoom as number || 0;
-        const clearedRoom = session.currentRoom || (session.maxRooms || 13); // Full dungeon clear = reached max depth
+      const player = players && players.length > 0
+        ? (players[0] as Record<string, unknown>)
+        : null;
 
-        // Read existing clearedZones (stored as array, matching mobile schema)
-        const existingCleared = (player as Record<string, unknown>).clearedZones;
-        const existingZonesCleared: string[] = Array.isArray(existingCleared) ? existingCleared : [];
-        const zoneId = (session as Record<string, unknown>).zoneId as string || 'sunken-crypt';
-        const newZonesCleared = existingZonesCleared.includes(zoneId)
-          ? existingZonesCleared
-          : [...existingZonesCleared, zoneId];
+      const clearedRoom = session.currentRoom || (session.maxRooms || 13); // Full dungeon clear = reached max depth
+      const zoneId = (session as Record<string, unknown>).zoneId as string || 'sunken-crypt';
+      const stakeMode: StakeMode = ((session as Record<string, unknown>).stakeMode as StakeMode) ?? 'sol';
+      const coinStake: number = ((session as Record<string, unknown>).coinStake as number) ?? 0;
 
-        await db.transact([
-          tx.players[player.id].update({
-            totalClears: ((player as Record<string, unknown>).totalClears as number || 0) + 1,
-            totalEarned: ((player as Record<string, unknown>).totalEarned as number || 0) + totalReward,
+      // Existing clearedZones (stored as array, matching mobile schema).
+      const existingCleared = player ? player.clearedZones : undefined;
+      const existingZonesCleared: string[] = Array.isArray(existingCleared) ? existingCleared : [];
+      const firstClearOfZone = !existingZonesCleared.includes(zoneId);
+      const newZonesCleared = existingZonesCleared.includes(zoneId)
+        ? existingZonesCleared
+        : [...existingZonesCleared, zoneId];
+
+      // Universal coin earn for the run (every stake mode earns).
+      const earn = computeCoinEarn({
+        finalDepth: clearedRoom,
+        cleared: true,
+        firstClearOfZone,
+        stakeMode,
+      });
+
+      // Coin-Bound settlement: stake back + pool-funded bonus (coins mode only).
+      // The write reads the SAME pool value the settlement was computed against.
+      const settingsRow = gameSettings; // real existing gameSettings row, or undefined
+      const poolAvailable = (settingsRow?.coinPool as number) ?? 0;
+      let coinPlayerDelta = 0;
+      let coinPoolDelta = 0;
+      if (stakeMode === 'coins') {
+        const settlement = computeCoinStakeSettlement({
+          coinStake,
+          cleared: true,
+          bonusPercent: (settingsRow?.coinBonusPercent as number) ?? 50,
+          poolAvailable,
+        });
+        coinPlayerDelta = settlement.playerDelta; // coinStake + bonus
+        coinPoolDelta = settlement.poolDelta;     // -bonus (never positive on victory)
+      }
+
+      // Streak: coins clears increment; non-coins pass through unchanged.
+      const prevStreak = (player?.bindingStreak as number) ?? 0;
+      const { streak } = nextStreak({ current: prevStreak, stakeMode, cleared: true });
+
+      // What was actually granted (0 / unchanged for guests) — the receipt records this.
+      const grantedCoinDelta = player ? earn + (stakeMode === 'coins' ? coinPlayerDelta : 0) : 0;
+      const grantedStreakAfter = player ? streak : prevStreak;
+
+      const writes: Parameters<typeof db.transact>[0] = [];
+
+      // Pool decrement (bonus payout) — ONLY against a real existing settings row,
+      // floored at 0 defensively. Never invent a gameSettings row (would orphan the pool).
+      if (stakeMode === 'coins' && coinPoolDelta !== 0 && settingsRow?.id) {
+        writes.push(
+          tx.gameSettings[settingsRow.id as string].update({
+            coinPool: Math.max(0, poolAvailable + coinPoolDelta),
+          }),
+        );
+      }
+
+      if (player) {
+        const currentHighest = (player.highestRoom as number) || 0;
+        writes.push(
+          tx.players[player.id as string].update({
+            totalClears: ((player.totalClears as number) || 0) + 1,
+            totalEarned: ((player.totalEarned as number) || 0) + totalReward,
             highestRoom: Math.max(currentHighest, clearedRoom), // Track deepest room reached
             lastPlayedAt: Date.now(),
-            totalRuns: ((player as Record<string, unknown>).totalRuns as number || 0) + 1,
+            totalRuns: ((player.totalRuns as number) || 0) + 1,
             clearedZones: newZonesCleared,
+            paleCoins: ((player.paleCoins as number) ?? 0) + grantedCoinDelta,
+            bindingStreak: streak,
+            bestBindingStreak: Math.max((player.bestBindingStreak as number) ?? 0, streak),
           }),
-        ]);
+        );
       }
+
+      // Immutable run receipt — written even for guests.
+      const runReceiptId = id();
+      writes.push(
+        tx.runReceipts[runReceiptId].update(
+          { ...buildRunReceipt({
+            sessionId: session.id,
+            sessionToken,
+            authId: session.authId ?? null,
+            walletAddress: session.walletAddress ?? null,
+            zoneId: (session as Record<string, unknown>).zoneId as string ?? null,
+            runSeed: (session as Record<string, unknown>).seed as string ?? null,
+            seedSource: (session as Record<string, unknown>).seedSource as string ?? null,
+            serverDayKey: (session as Record<string, unknown>).serverDayKey as string ?? null,
+            dailyShiftEnabled: (session as Record<string, unknown>).dailyShiftEnabled as boolean ?? null,
+            chosenModifierId: (session as Record<string, unknown>).chosenModifierId as string ?? null,
+            stakeMode,
+            coinStake,
+            outcome: 'cleared',
+            finalDepth: clearedRoom,
+            coinDelta: grantedCoinDelta,
+            streakAfter: grantedStreakAfter,
+            createdAt: Date.now(),
+          }) },
+        ),
+      );
+
+      await db.transact(writes);
     } catch (statsError) {
-      console.warn('Failed to update player stats:', statsError);
-      // Don't fail the whole request for stats
+      console.warn('Failed to settle victory coins/stats:', statsError);
+      // Don't fail the whole request — the SOL payout already succeeded.
     }
 
     // Post to Tapestry social graph (wallet users only, non-blocking)

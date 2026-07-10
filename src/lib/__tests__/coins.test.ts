@@ -358,9 +358,38 @@ describe('buildRunReceipt', () => {
     expect(receipt.coinDelta).toBe(0);
   });
 
-  it('carries the outcome verbatim for both terminal states', () => {
+  it('carries the outcome verbatim for all terminal states', () => {
     expect(buildRunReceipt({ ...full, outcome: 'dead' }).outcome).toBe('dead');
     expect(buildRunReceipt({ ...full, outcome: 'cleared' }).outcome).toBe('cleared');
+    expect(buildRunReceipt({ ...full, outcome: 'abandoned' }).outcome).toBe('abandoned');
+  });
+
+  it('builds a victory-shape receipt: cleared outcome with a positive coinDelta and advanced streak', () => {
+    const receipt = buildRunReceipt({
+      ...full,
+      outcome: 'cleared',
+      finalDepth: 13,
+      coinDelta: 108 + 90, // earn (48+60 first clear) + stake-return+bonus (60+30)
+      streakAfter: 3,
+    });
+    expect(receipt.outcome).toBe('cleared');
+    expect(receipt.finalDepth).toBe(13);
+    expect(receipt.coinDelta).toBe(198);
+    expect(receipt.streakAfter).toBe(3);
+  });
+
+  it('builds an abandoned-shape receipt: burned coin stake, no coins granted, streak unchanged', () => {
+    const receipt = buildRunReceipt({
+      ...full,
+      outcome: 'abandoned',
+      stakeMode: 'coins',
+      coinStake: 120,
+      coinDelta: 0,
+      streakAfter: 0,
+    });
+    expect(receipt.outcome).toBe('abandoned');
+    expect(receipt.coinStake).toBe(120);
+    expect(receipt.coinDelta).toBe(0);
   });
 });
 

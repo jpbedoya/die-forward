@@ -688,6 +688,8 @@ export interface GameSettings {
   erraticDamageMax: number;    // Cap on ERRATIC intent damage multiplier
   // Victory settings
   victoryBonusPercent: number;
+  // Coin-Bound (pale coin stake) settings
+  coinBonusPercent: number;    // Pool-funded bonus % returned on a coin-staked clear
   // UI settings
   showLeaderboardLink: boolean;    // Show leaderboard link on title screen
   // Storytelling settings
@@ -723,6 +725,7 @@ export const DEFAULT_GAME_SETTINGS: Omit<GameSettings, 'id'> = {
   braceBaseDamageMax: 12,
   erraticDamageMax: 1.3,
   victoryBonusPercent: 50,
+  coinBonusPercent: 50,
   showLeaderboardLink: true,
   enableRoomTextStreaming: false,
   roomTextStreamSpeedMs: 28,
@@ -767,6 +770,7 @@ export function useGameSettings() {
     braceBaseDamageMax: dbSettings?.braceBaseDamageMax ?? DEFAULT_GAME_SETTINGS.braceBaseDamageMax,
     erraticDamageMax: dbSettings?.erraticDamageMax ?? DEFAULT_GAME_SETTINGS.erraticDamageMax,
     victoryBonusPercent: dbSettings?.victoryBonusPercent ?? DEFAULT_GAME_SETTINGS.victoryBonusPercent,
+    coinBonusPercent: dbSettings?.coinBonusPercent ?? DEFAULT_GAME_SETTINGS.coinBonusPercent,
     showLeaderboardLink: dbSettings?.showLeaderboardLink ?? DEFAULT_GAME_SETTINGS.showLeaderboardLink,
     enableRoomTextStreaming: dbSettings?.enableRoomTextStreaming ?? DEFAULT_GAME_SETTINGS.enableRoomTextStreaming,
     roomTextStreamSpeedMs: dbSettings?.roomTextStreamSpeedMs ?? DEFAULT_GAME_SETTINGS.roomTextStreamSpeedMs,

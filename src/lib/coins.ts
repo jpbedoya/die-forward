@@ -209,8 +209,12 @@ export function sealTier(streak: number): 0 | 1 | 2 | 3 {
   return 3;
 }
 
-/** Terminal outcome recorded on a run receipt. */
-export type RunOutcome = 'dead' | 'cleared';
+/**
+ * Terminal outcome recorded on a run receipt. `dead`/`cleared` come from the
+ * player-driven death/victory routes; `abandoned` is stamped by the stale-session
+ * cleanup sweep on runs the player never finished.
+ */
+export type RunOutcome = 'dead' | 'cleared' | 'abandoned';
 
 export interface RunReceiptInput {
   sessionId: string;
