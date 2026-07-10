@@ -34,6 +34,20 @@ export default function DeathScreen() {
   const [newMilestone, setNewMilestone] = useState<Milestone | null>(null);
   const [milestoneChecked, setMilestoneChecked] = useState(false);
 
+  // Coin economy (Task 7): snapshot the player's pale-coin balance and
+  // binding streak the moment they're available on this screen — i.e.
+  // BEFORE recordDeathIfNeeded's settlement transact lands. The death route
+  // isn't surfaced in DeathResponse (no coinDelta field), so we derive the
+  // delta client-side: player.paleCoins is a live InstantDB subscription, so
+  // once the server settles, coinsAtRunEnd - coinsAtRunStart is the true
+  // combined delta (universal depth earn; the coin-stake burn contributes 0
+  // to the player row on death — see computeCoinStakeSettlement). The streak
+  // snapshot lets us show a "the pact breaks" line only when there was
+  // actually a streak to lose (current value is always 0 post-death for a
+  // coins run, so we'd otherwise lose that signal).
+  const [runStartCoins, setRunStartCoins] = useState<number | null>(null);
+  const [runStartStreak, setRunStartStreak] = useState<number | null>(null);
+
   // Dramatic intro state
   const [showDramaticIntro, setShowDramaticIntro] = useState(true);
   const introFade = useRef(new Animated.Value(0)).current;
@@ -56,6 +70,12 @@ export default function DeathScreen() {
   const isEmptyHanded = !Number.isFinite(stakeAmountNum) || stakeAmountNum <= 0;
   const trail = game.graph ? trailRows(game.graph, game.path) : [];
 
+  // Coin economy display (Task 7): see runStartCoins/runStartStreak comment above.
+  const isCoinBound = (game.coinStake ?? 0) > 0;
+  const coinsAtRunEnd = player?.paleCoins ?? 0;
+  const coinsGained = runStartCoins !== null ? Math.max(0, coinsAtRunEnd - runStartCoins) : 0;
+  const streakBroken = isCoinBound && runStartStreak !== null && runStartStreak > 0 && (player?.bindingStreak ?? 0) === 0;
+
   // Check for milestone unlock when player data is ready (run once)
   useEffect(() => {
     if (milestoneChecked || !player) return;
@@ -65,6 +85,8 @@ export default function DeathScreen() {
     const milestone = getNewMilestone(prevDeaths, nextDeaths);
     setNewMilestone(milestone);
     setMilestoneChecked(true);
+    setRunStartCoins(player.paleCoins ?? 0);
+    setRunStartStreak(player.bindingStreak ?? 0);
 
     // Persist title/border unlocks immediately when crossed.
     if (milestone) {
@@ -352,6 +374,23 @@ export default function DeathScreen() {
               <Text className="text-bone-dark text-sm font-mono">{t('death.solLeft')}</Text>
               <Text className="text-blood text-sm font-mono">{stakeAmountNum}</Text>
             </View>
+          )}
+        </View>
+
+        {/* Pale Coin economy (Task 7) — display-only, see runStartCoins comment above */}
+        <View className="bg-crypt-surface border border-crypt-border p-4 mb-6">
+          <View className="flex-row justify-between mb-2">
+            <Text className="text-bone-dark text-sm font-mono">{t('death.coin.balance')}</Text>
+            <Text className="text-amber-light text-sm font-mono">🪙 {coinsAtRunEnd}</Text>
+          </View>
+          {coinsGained > 0 && (
+            <Text className="text-bone-dark text-xs font-mono">{t('death.coin.gained', { amount: coinsGained })}</Text>
+          )}
+          {isCoinBound && (
+            <Text className="text-blood-light text-xs font-mono mt-2 italic">{t('death.coin.stakeFeeds')}</Text>
+          )}
+          {streakBroken && (
+            <Text className="text-bone-dark text-xs font-mono mt-1 italic">{t('death.coin.streakBroken')}</Text>
           )}
         </View>
 

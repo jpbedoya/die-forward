@@ -18,6 +18,7 @@ import { getDailyShift, utcDayKey } from '../lib/world-shift';
 import { RUN_MODIFIERS } from '../lib/modifiers';
 import { API_BASE } from '../lib/api';
 import { resolveStakeUi, isStakingPosture, DEFAULT_STAKING_POSTURE, type StakingPosture } from '../lib/stake-posture';
+import { COIN_STAKE_OPTIONS, sealTier } from '../lib/coins';
 
 const STAKE_OPTIONS = [0.01, 0.05, 0.1, 0.25];
 
@@ -47,14 +48,22 @@ export default function StakeScreen() {
   const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
   const [selectedStake, setSelectedStake] = useState(0.05);
   const [staking, setStaking] = useState(false);
-  const [stakingMode, setStakingMode] = useState<'stake' | 'free' | null>(null);
+  const [stakingMode, setStakingMode] = useState<'stake' | 'free' | 'coin' | null>(null);
   const [showWalletPicker, setShowWalletPicker] = useState(false);
   const [walletStatus, setWalletStatus] = useState<'idle' | 'connecting' | 'cancelled' | 'error'>('idle');
   const [sealStatus, setSealStatus] = useState<'idle' | 'signing' | 'cancelled' | 'error'>('idle');
   const [showNicknameEdit, setShowNicknameEdit] = useState(false);
   const [showLinkWallet, setShowLinkWallet] = useState(false);
-  const [pendingRun, setPendingRun] = useState<{ stake: number; emptyHanded: boolean; zoneId: string; chosenModifierId?: string } | null>(null);
+  const [pendingRun, setPendingRun] = useState<{ stake: number; emptyHanded: boolean; zoneId: string; chosenModifierId?: string; coinStake?: number } | null>(null);
   const [freeRunStatus, setFreeRunStatus] = useState<'idle' | 'error'>('idle');
+  const [coinRunStatus, setCoinRunStatus] = useState<'idle' | 'error'>('idle');
+
+  // Coin-Bound (Task 7): the Toll's Pale Coin stake ladder. Selection defaults
+  // to the smallest option; the balance check that disables an option happens
+  // at render time against the live player row.
+  const [selectedCoinStake, setSelectedCoinStake] = useState<number>(COIN_STAKE_OPTIONS[0]);
+  const paleCoinsBalance = player?.paleCoins ?? 0;
+  const showCoinBound = paleCoinsBalance >= COIN_STAKE_OPTIONS[0];
 
   // The Shift (Task 6): admin-controlled staking posture — gates whether the
   // SOL section renders at all. Defaults to 'ritual' while the fetch is in
@@ -98,9 +107,9 @@ export default function StakeScreen() {
     playAmbient('ambient-title');
   }, []);
 
-  const resumePendingRun = async (run: { stake: number; emptyHanded: boolean; zoneId: string; chosenModifierId?: string }) => {
+  const resumePendingRun = async (run: { stake: number; emptyHanded: boolean; zoneId: string; chosenModifierId?: string; coinStake?: number }) => {
     setPendingRun(null);
-    await game.startGame(run.stake, run.emptyHanded, run.zoneId, player?.totalDeaths, run.chosenModifierId);
+    await game.startGame(run.stake, run.emptyHanded, run.zoneId, player?.totalDeaths, run.chosenModifierId, run.coinStake);
     playSFX('depth-descend');
     router.push('/play');
   };
@@ -186,16 +195,18 @@ export default function StakeScreen() {
     }
   };
 
-  const handleStake = async (emptyHanded = false) => {
+  const handleStake = async (emptyHanded = false, coinAmount?: number) => {
+    const isCoinRun = (coinAmount ?? 0) > 0;
     setStaking(true);
-    setStakingMode(emptyHanded ? 'free' : 'stake');
-    if (!emptyHanded) setSealStatus('signing');
+    setStakingMode(isCoinRun ? 'coin' : emptyHanded ? 'free' : 'stake');
+    if (!emptyHanded && !isCoinRun) setSealStatus('signing');
     playSFX('confirm-action');
 
     try {
-      if (emptyHanded) {
-        // Empty-handed should NEVER force wallet users back into guest mode.
-        // Only establish guest auth if the player is not authenticated yet.
+      if (emptyHanded || isCoinRun) {
+        // Empty-handed and Coin-Bound runs never carry a SOL tx — neither
+        // should force wallet users back into guest mode. Only establish
+        // guest auth if the player is not authenticated yet.
         if (!game.isAuthenticated) {
           await game.signInEmptyHanded();
         }
@@ -213,17 +224,32 @@ export default function StakeScreen() {
       // syncNickname in GameContext will show the modal from local state
       // (no DB round-trip required), and pendingRun resumes after submission.
       if (!game.nickname) {
-        setPendingRun({ stake: selectedStake, emptyHanded, zoneId, chosenModifierId: selectedModifier });
+        setPendingRun({ stake: selectedStake, emptyHanded: emptyHanded || isCoinRun, zoneId, chosenModifierId: selectedModifier, coinStake: coinAmount });
         setStaking(false);
         return;
       }
 
-      await game.startGame(selectedStake, emptyHanded, zoneId, player?.totalDeaths, selectedModifier);
-      if (!emptyHanded) setSealStatus('idle');
+      // A Coin-Bound run mirrors the empty-handed shape (no SOL tx, amount 0)
+      // and threads coinAmount as startGame's 6th arg so GameContext resolves
+      // stakeMode: 'coins' via resolveStakeIntent.
+      await game.startGame(
+        isCoinRun ? 0 : selectedStake,
+        emptyHanded || isCoinRun,
+        zoneId,
+        player?.totalDeaths,
+        selectedModifier,
+        coinAmount,
+      );
+      if (!emptyHanded && !isCoinRun) setSealStatus('idle');
       playSFX('depth-descend');
       router.push('/play');
     } catch (err) {
-      if (!emptyHanded) {
+      if (isCoinRun) {
+        console.error('Failed to start coin-bound game:', err);
+        setCoinRunStatus('error');
+        playSFX('error-buzz');
+        setTimeout(() => setCoinRunStatus('idle'), 2000);
+      } else if (!emptyHanded) {
         if (isWalletCancellation(err)) {
           flashSealStatus('cancelled');
         } else {
@@ -383,6 +409,77 @@ export default function StakeScreen() {
                 );
               })}
             </View>
+          </View>
+        )}
+
+        {/* Coin-Bound: Pale Coin staking (Task 7). Renders in every staking
+            posture — independent of showSol — as long as the player holds at
+            least the cheapest rung of the ladder. */}
+        {showCoinBound && (
+          <View className="mb-6">
+            <View className="flex-row items-center justify-between mb-3">
+              <Text className="text-bone-dark text-xs font-mono tracking-widest">{t('stake.coin.title')}</Text>
+              <Text className="text-amber-light text-sm font-mono font-bold">
+                {t('stake.coin.balance', { amount: paleCoinsBalance })}
+              </Text>
+            </View>
+
+            <View className="flex-row gap-2 mb-3">
+              {COIN_STAKE_OPTIONS.map((amount) => {
+                const disabled = amount > paleCoinsBalance;
+                const selected = selectedCoinStake === amount;
+                return (
+                  <Pressable
+                    key={amount}
+                    className={`flex-1 py-3 items-center border ${
+                      disabled
+                        ? 'border-crypt-border bg-crypt-surface opacity-40'
+                        : selected
+                          ? 'border-amber bg-amber/10'
+                          : 'border-crypt-border-light bg-crypt-surface'
+                    }`}
+                    onPress={() => {
+                      if (disabled) return;
+                      playSFX('ui-click');
+                      setSelectedCoinStake(amount);
+                    }}
+                    disabled={disabled}
+                  >
+                    <Text className={`font-mono text-base ${
+                      disabled ? 'text-bone-dark' : selected ? 'text-amber-light' : 'text-bone-muted'
+                    }`}>
+                      🪙 {amount}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+
+            {(player?.bindingStreak ?? 0) > 0 && (
+              <Text className="text-amber-light text-xs font-mono mb-3">
+                {'⟐'.repeat(sealTier(player?.bindingStreak ?? 0))} {t('coin.streak', { n: player?.bindingStreak ?? 0 })}
+              </Text>
+            )}
+
+            <Pressable
+              className={`py-2.5 items-center ${
+                coinRunStatus === 'error'
+                  ? 'bg-blood/60'
+                  : staking || selectedCoinStake > paleCoinsBalance
+                    ? 'bg-amber/50'
+                    : 'bg-amber active:bg-amber-dark'
+              }`}
+              onPress={() => handleStake(true, selectedCoinStake)}
+              disabled={staking || selectedCoinStake > paleCoinsBalance}
+            >
+              {staking && stakingMode === 'coin' ? (
+                <AsciiLoader variant="pulse" color="#0d0d0d" />
+              ) : coinRunStatus === 'error' ? (
+                <Text className="text-blood-light font-mono font-bold tracking-wider">{t('stake.failed_retry')}</Text>
+              ) : (
+                <Text className="text-crypt-bg font-mono font-bold tracking-wider">{t('stake.coin.bind_action')}</Text>
+              )}
+            </Pressable>
           </View>
         )}
 

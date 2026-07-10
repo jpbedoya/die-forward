@@ -68,6 +68,14 @@ function DeathEntry({ death }: { death: Death }) {
             </Text>
           </>
         )}
+        {(death.sealTier ?? 0) >= 1 && (
+          <>
+            <Text className="text-bone-dark text-xs font-mono">•</Text>
+            <Text className="text-ethereal text-xs font-mono">
+              {t(`feed.seal.${death.sealTier}`)}
+            </Text>
+          </>
+        )}
       </View>
 
       {/* Final message */}

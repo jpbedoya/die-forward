@@ -7,7 +7,8 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import * as Haptics from 'expo-haptics';
 import { useGame } from '../lib/GameContext';
 import { useAudio } from '../lib/audio';
-import { useGameSettings } from '../lib/instant';
+import { useGameSettings, useCurrentPlayer } from '../lib/instant';
+import { sealTier } from '../lib/coins';
 import { VictoryCard, ShareCardCapture, useShareCard } from '../lib/shareCard';
 import { useAudius } from '../lib/AudiusContext';
 import { AudioSettingsModal } from '../components/AudioSettingsModal';
@@ -67,6 +68,7 @@ export default function VictoryScreen() {
   const game = useGame();
   const { playSFX, playAmbient, ready: audioReady } = useAudio();
   const { settings } = useGameSettings();
+  const { player } = useCurrentPlayer();
   const { viewShotRef, webRef, captureAndShare } = useShareCard();
   const { currentTrack, musicSource } = useAudius();
 
@@ -85,6 +87,20 @@ export default function VictoryScreen() {
   const [sharing, setSharing] = useState(false);
   const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
 
+  // Coin economy (Task 7): snapshot the player's pale-coin balance and
+  // binding streak on arrival, BEFORE finalizeVictoryIfNeeded's claimVictory
+  // call settles server-side (stake return + pool bonus + universal depth
+  // earn + streak++, all summed into one paleCoins write — see
+  // computeCoinStakeSettlement / computeCoinEarn in src/lib/coins.ts).
+  // VictoryResponse doesn't surface coinDelta, so the delta is derived
+  // client-side from the live InstantDB subscription instead (exact combined
+  // total; the earn/stake-return/bonus split isn't decomposed client-side).
+  const [runStartCoins, setRunStartCoins] = useState<number | null>(null);
+  useEffect(() => {
+    if (runStartCoins !== null || !player) return;
+    setRunStartCoins(player.paleCoins ?? 0);
+  }, [player, runStartCoins]);
+
   // Use victory bonus from admin settings
   const stakeNum = Number(game.stakeAmount || 0);
   const bonusPercent = settings.victoryBonusPercent / 100;
@@ -92,6 +108,12 @@ export default function VictoryScreen() {
   const totalReward = stakeNum + victoryBonus;
   const isEmptyHanded = stakeNum <= 0;
   const trail = game.graph ? trailRows(game.graph, game.path) : [];
+
+  // Coin economy display (Task 7): see runStartCoins comment above.
+  const isCoinBound = (game.coinStake ?? 0) > 0;
+  const coinsAtRunEnd = player?.paleCoins ?? 0;
+  const coinsGained = runStartCoins !== null ? Math.max(0, coinsAtRunEnd - runStartCoins) : 0;
+  const bindingStreak = player?.bindingStreak ?? 0;
   
   const handleShare = async () => {
     setSharing(true);
@@ -294,6 +316,27 @@ export default function VictoryScreen() {
             <Text className="text-bone-dark text-sm font-mono">{t('victory.itemsFound')}</Text>
             <Text className="text-ethereal text-sm font-mono">{game.itemsFound || 0}</Text>
           </View>
+        </View>
+
+        {/* Pale Coin economy (Task 7) — display-only, see runStartCoins comment above */}
+        <View className="bg-crypt-surface border border-victory/30 p-4 mb-6">
+          <View className="flex-row justify-between mb-2">
+            <Text className="text-bone-dark text-sm font-mono">{t('victory.coin.balance')}</Text>
+            <Text className="text-amber-light text-sm font-mono">🪙 {coinsAtRunEnd}</Text>
+          </View>
+          {coinsGained > 0 && (
+            <Text className="text-victory text-xs font-mono">{t('victory.coin.gained', { amount: coinsGained })}</Text>
+          )}
+          {isCoinBound && (
+            <Text className="text-victory-light text-xs font-mono mt-2 italic">
+              {t('victory.coin.returned', { amount: game.coinStake })}
+            </Text>
+          )}
+          {isCoinBound && bindingStreak > 0 && (
+            <Text className="text-amber-light text-xs font-mono mt-1">
+              {'⟐'.repeat(sealTier(bindingStreak))} {t('victory.coin.streak', { n: bindingStreak })}
+            </Text>
+          )}
         </View>
 
         {/* Path Trail */}

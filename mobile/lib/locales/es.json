@@ -622,5 +622,20 @@
   "shift.line": "The passages are not as you left them.",
   "shift.offers": "Today's offers: {mods}",
   "shift.zone.sealed": "{n} passage(s) sealed today.",
-  "shift.zone.open": "All passages stand open."
+  "shift.zone.open": "All passages stand open.",
+  "coin.streak": "{n} runs bound without breaking.",
+  "death.coin.balance": "Pale Coins",
+  "death.coin.gained": "+{amount} gathered from the depths",
+  "death.coin.stakeFeeds": "The stake feeds the depths.",
+  "death.coin.streakBroken": "The pact is broken. The streak resets.",
+  "feed.seal.1": "⟐",
+  "feed.seal.2": "⟐⟐",
+  "feed.seal.3": "⟐⟐⟐",
+  "stake.coin.title": "PALE COIN BINDING",
+  "stake.coin.balance": "🪙 {amount}",
+  "stake.coin.bind_action": "BIND IN COIN",
+  "victory.coin.balance": "Pale Coins",
+  "victory.coin.gained": "+{amount} gathered from the depths",
+  "victory.coin.returned": "The stake of {amount} coins returns, and the depths add their due.",
+  "victory.coin.streak": "{n} runs bound without breaking."
 }

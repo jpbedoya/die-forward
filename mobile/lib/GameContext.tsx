@@ -73,6 +73,13 @@ interface GameState {
   // Session
   sessionToken: string | null;
   stakeAmount: number;
+  /**
+   * Pale-coin stake amount for the current run (0 unless the run was started
+   * Coin-Bound). Mirrors `stakeAmount`'s "0 for non-SOL runs" convention so
+   * death/victory screens can tell a Coin-Bound run apart from a truly
+   * empty-handed one (both have stakeAmount === 0).
+   */
+  coinStake: number;
   zoneId: string;
   /**
    * Canonical projection: the 1-based DEPTH of the current node in the run
@@ -228,6 +235,7 @@ const initialState: GameState = {
   guestProgressExists: false,
   sessionToken: null,
   stakeAmount: 0,
+  coinStake: 0,
   zoneId: 'sunken-crypt',
   currentRoom: 0,
   graph: null,
@@ -909,6 +917,7 @@ export function GameProvider({
       updateState({
         sessionToken: session.sessionToken,
         stakeAmount: emptyHanded ? 0 : amount,  // Empty handed stores 0 so isEmptyHanded works correctly
+        coinStake: intent.stakeMode === 'coins' ? (coinStake ?? 0) : 0,
         zoneId: session.zoneId || zoneId || 'sunken-crypt',
         graph,
         currentNodeId: graph.startId,
