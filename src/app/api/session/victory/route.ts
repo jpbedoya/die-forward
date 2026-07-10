@@ -155,19 +155,18 @@ export async function POST(request: NextRequest) {
 
     if (settlementPath === 'coins_settle') {
       // Coin-Bound victory: no SOL payout (stakeAmount 0 — nothing to transfer,
-      // and we must not touch the pool wallet). Mark the session completed and
-      // FALL THROUGH to the coin settlement block below (stake return + bonus +
-      // streak + receipt). This is the whole point of the fix.
+      // and we must not touch the pool wallet). Unlike the SOL path, there is NO
+      // irreversible on-chain commit here, so the session-completion write MUST
+      // NOT be committed separately — if it landed first and the coin settlement
+      // then threw (swallowed by the non-fatal catch below), the session would be
+      // 'completed' while the coin stake is never returned, and the next victory
+      // call (which queries status:'active') would 403 → unrecoverable stake loss.
+      // Instead we DEFER the session-complete write into the SAME db.transact as
+      // the coin settlement writes below (see `writes[]`), so either everything
+      // commits (session completed + coins returned) or nothing does (session
+      // stays 'active', player can retry).
       payoutStatus = 'coins_settled';
       responseReward = 0;
-      await db.transact([
-        tx.sessions[session.id].update({
-          status: 'completed',
-          endedAt: Date.now(),
-          reward: 0,
-          payoutStatus,
-        }),
-      ]);
     } else {
       // ── Real SOL payout (escrow or pool wallet) ──
       payoutStatus = 'paid';
@@ -328,6 +327,27 @@ export async function POST(request: NextRequest) {
       const grantedStreakAfter = player ? streak : prevStreak;
 
       const writes: Parameters<typeof db.transact>[0] = [];
+
+      // Coin-Bound session-completion: committed ATOMICALLY with the coin
+      // settlement writes (stake return + bonus + earn + streak + pool decrement +
+      // player + receipt). This is deliberately NOT done in its own transact
+      // above (see the coins_settle branch): coins have no irreversible on-chain
+      // commit, so completing the session separately risks marking it 'completed'
+      // while the stake is silently lost if the settlement throws. Pushing it into
+      // this same batch means the session only flips out of 'active' if the coins
+      // are actually returned — otherwise the player can retry. Always in the batch
+      // for coins_settle, including the guest (no-player) receipt-only case.
+      if (settlementPath === 'coins_settle') {
+        writes.push(
+          tx.sessions[session.id].update({
+            status: 'completed',
+            endedAt: Date.now(),
+            reward: 0,
+            payoutStatus: 'coins_settled',
+            finalRoom: clearedRoom,
+          }),
+        );
+      }
 
       // Pool decrement (bonus payout) — ONLY against a real existing settings row,
       // floored at 0 defensively. Never invent a gameSettings row (would orphan the pool).
