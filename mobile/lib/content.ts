@@ -1167,6 +1167,8 @@ export interface DungeonNode extends DungeonRoom {
   id: string;
   depth: number;
   next: string[];
+  side?: boolean;                             // same-depth annex (see ZoneNode.side)
+  gate?: { item: string; consumes: boolean }; // gate spec, only on side nodes
 }
 
 export interface DungeonGraph {
@@ -1205,6 +1207,8 @@ export function generateDungeonGraph(zoneId: string, rng: SeededRng): DungeonGra
         id: node.id,
         depth: node.depth,
         next: node.next,
+        side: node.side,
+        gate: node.gate,
       };
       if (node.depth > maxDepth) maxDepth = node.depth;
     });

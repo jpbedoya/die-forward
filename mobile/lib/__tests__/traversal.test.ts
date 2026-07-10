@@ -1,6 +1,8 @@
-import { nextChoices, declinedBranches, trailRows } from '../traversal';
+import { nextChoices, declinedBranches, trailRows, isSideNode, gateStatus } from '../traversal';
 import { generateDungeonGraph } from '../content';
+import type { DungeonNode } from '../content';
 import { createRunRng } from '../seeded-random';
+import * as zoneLoader from '../zone-loader';
 
 const g = generateDungeonGraph('sunken-crypt', createRunRng('t1'));
 
@@ -81,5 +83,79 @@ describe('trailRows', () => {
     const rows = trailRows(g, path);
     expect(rows.length).toBe(2);
     expect(rows.map((r) => r.depth)).toEqual([g.nodes[g.startId].depth, g.nodes[first[0]].depth]);
+  });
+});
+
+// Minimal DungeonNode factory — only the fields the traversal helpers read.
+function node(partial: Partial<DungeonNode>): DungeonNode {
+  return {
+    id: 'n',
+    type: 'explore',
+    template: 'x',
+    content: {} as DungeonNode['content'],
+    depth: 1,
+    next: [],
+    ...partial,
+  } as DungeonNode;
+}
+
+describe('isSideNode', () => {
+  it('is true when node.side === true', () => {
+    expect(isSideNode(node({ side: true }))).toBe(true);
+  });
+  it('is false when node.side is absent or false', () => {
+    expect(isSideNode(node({}))).toBe(false);
+    expect(isSideNode(node({ side: false }))).toBe(false);
+  });
+});
+
+describe('gateStatus', () => {
+  it("is 'ungated' when the node has no gate field", () => {
+    expect(gateStatus(node({ side: true }), [])).toBe('ungated');
+    expect(gateStatus(node({ side: true }), [{ name: 'Torch' }])).toBe('ungated');
+  });
+  it("is 'open' when the gate item is present in inventory by exact name", () => {
+    const n = node({ side: true, gate: { item: 'Rusted Key', consumes: true } });
+    expect(gateStatus(n, [{ name: 'Rusted Key' }])).toBe('open');
+  });
+  it("is 'locked' when the gate item is absent from inventory", () => {
+    const n = node({ side: true, gate: { item: 'Rusted Key', consumes: true } });
+    expect(gateStatus(n, [])).toBe('locked');
+    expect(gateStatus(n, [{ name: 'rusted key' }])).toBe('locked'); // exact-name only
+  });
+});
+
+describe('generateDungeonGraph side/gate passthrough', () => {
+  // Fixture choice: no shipped zone authors a side node yet, so we spy on
+  // loadZone and hand generateDungeonGraph a synthetic zone that reuses the
+  // real sunken-crypt content data (so rollNodeContent has real rooms to roll
+  // from) but swaps in a tiny graph containing one gated side node. This
+  // exercises the exact ZoneNode -> DungeonNode copy path in production code.
+  it('copies side and gate from ZoneNode onto the generated DungeonNode', () => {
+    const real = zoneLoader.loadZone('sunken-crypt');
+    const synthetic = {
+      ...real,
+      graph: {
+        start: 's-start',
+        nodes: [
+          { id: 's-start', type: 'explore' as const, template: 'x', depth: 1, next: ['s-side', 's-next'] },
+          { id: 's-side', type: 'explore' as const, template: 'x', depth: 1, side: true, gate: { item: 'Rusted Key', consumes: true } },
+          { id: 's-next', type: 'exit' as const, template: 'x', depth: 2, next: [] },
+        ],
+      },
+    } as unknown as ReturnType<typeof zoneLoader.loadZone>;
+
+    const spy = jest.spyOn(zoneLoader, 'loadZone').mockReturnValue(synthetic);
+    try {
+      const graph = generateDungeonGraph('sunken-crypt', createRunRng('side-t'));
+      const side = graph.nodes['s-side'];
+      expect(side.side).toBe(true);
+      expect(side.gate).toEqual({ item: 'Rusted Key', consumes: true });
+      // Non-side nodes carry no side/gate.
+      expect(graph.nodes['s-start'].side).toBeUndefined();
+      expect(graph.nodes['s-start'].gate).toBeUndefined();
+    } finally {
+      spy.mockRestore();
+    }
   });
 });

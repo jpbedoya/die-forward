@@ -75,6 +75,31 @@ export function trailRows(
   return rows;
 }
 
+/**
+ * True when a node is a same-depth side annex (`side: true`). Side nodes are
+ * traversed locally but are invisible to the server room counter — see
+ * `advance` in GameContext.
+ */
+export function isSideNode(node: DungeonNode): boolean {
+  return node.side === true;
+}
+
+/**
+ * Gate state of a node for a given inventory:
+ * - `'ungated'` — no `gate` field (the vast majority of nodes).
+ * - `'open'`    — gated and the required item is present by EXACT name.
+ * - `'locked'`  — gated and the required item is absent.
+ * Pure; matches on exact `name` equality (no case folding / fuzzy match).
+ */
+export function gateStatus(
+  node: DungeonNode,
+  inventory: { name: string }[],
+): 'open' | 'locked' | 'ungated' {
+  if (!node.gate) return 'ungated';
+  const has = inventory.some((i) => i.name === node.gate!.item);
+  return has ? 'open' : 'locked';
+}
+
 /** Number of authored sense-line variants per node type, `hint.<type>.1..N`. */
 const HINT_VARIANT_COUNT = 3;
 

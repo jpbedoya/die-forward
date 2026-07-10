@@ -4,6 +4,7 @@ import * as api from './api';
 import { dlog } from './debug-log';
 
 import { generateDungeonGraph, DungeonRoom, DungeonGraph, getItemDetails, rollRandomItem, getItemEffects } from './content';
+import { isSideNode } from './traversal';
 import { getMilestonePerks } from './milestones';
 import { maxHpForModifier, computeHealAmount, computeDamageAmount, deathSaveOutcome, voidbladeDamage } from './combat-math';
 import { initZoneStatus, type ZoneStatusState } from './zone-mechanics';
@@ -943,6 +944,18 @@ export function GameProvider({
       nodeResolved: false,
       stamina: Math.min(settings.staminaPool, prev.stamina + 1 + staminaRegenBonus),
     }));
+
+    // Side-node detours are invisible to the server: skip BOTH api.advanceRoom
+    // AND updateHighestRoom. A side node shares the source's depth and its own
+    // outgoing edges are ordinary depth+1 descents, so the sequence
+    // A(d) -> S(d, no sync) -> C(d+1) later sends fromRoom=d exactly as a plain
+    // A(d) -> C(d+1) would have — the server's room counter never sees the
+    // detour and stays consistent. highestRoom likewise never advances on a
+    // same-depth side move. The local move above (path/currentNodeId/
+    // currentRoom/stamina/nodeResolved) has already applied identically.
+    if (isSideNode(targetNode)) {
+      return true;
+    }
 
     // Notify backend — send CURRENT (pre-move) room, already 1-based. Offline
     // runs have no server session, so skip the sync entirely.
