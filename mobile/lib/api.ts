@@ -2,6 +2,7 @@
 // Full dungeon generation is now in lib/content.ts
 
 import { Platform } from 'react-native';
+import { getAuthToken } from './auth';
 
 // Determine API base URL:
 // - Web production (dieforward.com or www.dieforward.com): relative paths
@@ -23,6 +24,15 @@ function getApiBase(): string {
 }
 
 export const API_BASE = getApiBase();
+
+// Builds the Authorization header for identity-bearing requests from the
+// current InstantDB customToken (see auth.ts's getAuthToken/setAuthToken
+// registry). Offline-local guests and pre-login callers have no token — in
+// that case the header is omitted entirely (the server degrades to
+// free/unbound runs; it never blocks the request for a missing header).
+export function authHeaders(token: string | null = getAuthToken()): Record<string, string> {
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
 
 // Offline support for empty-handed runs.
 // When the network is unreachable, an empty-handed run starts with a locally
@@ -124,7 +134,7 @@ export async function startSession(
 ): Promise<StartSessionResponse> {
   const response = await fetchWithTimeout(`${API_BASE}/api/session/start`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
     body: JSON.stringify({
       walletAddress,
       stakeAmount,
@@ -155,7 +165,7 @@ export async function advanceRoom(
 ): Promise<AdvanceResponse> {
   const response = await fetch(`${API_BASE}/api/session/advance`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
     body: JSON.stringify({ sessionToken, fromRoom }),
   });
 
@@ -180,7 +190,7 @@ export async function recordDeath(
 ): Promise<DeathResponse> {
   const response = await fetch(`${API_BASE}/api/session/death`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
     body: JSON.stringify({
       sessionToken,
       room,
@@ -208,7 +218,7 @@ export async function claimVictory(
 ): Promise<VictoryResponse> {
   const response = await fetch(`${API_BASE}/api/session/victory`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
     body: JSON.stringify({ sessionToken }),
   });
 
@@ -249,7 +259,7 @@ export async function syncProfileToTapestry(
   try {
     const response = await fetch(`${API_BASE}/api/player/sync-profile`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
       body: JSON.stringify({ walletAddress, nickname }),
     });
 
@@ -273,7 +283,7 @@ export async function likeDeath(
 ): Promise<{ likeCount: number }> {
   const response = await fetch(`${API_BASE}/api/tapestry/like`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
     body: JSON.stringify({ deathId, walletAddress }),
   });
 

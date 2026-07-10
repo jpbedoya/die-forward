@@ -46,6 +46,34 @@ export interface AuthState {
   customToken?: string; // InstantDB custom auth token for session restore
 }
 
+// ── In-memory auth token registry ────────────────────────────────────────────
+//
+// api.ts needs the current InstantDB customToken to attach as an
+// `Authorization: Bearer <token>` header on identity-bearing requests.
+// auth.ts does not import api.ts (or anything that transitively reaches it),
+// so `import { getAuthToken } from './auth'` in api.ts is safe — no import
+// cycle. Auth.ts owns the token lifecycle (it's the only module that knows
+// when a token is minted, restored, or invalidated), so it exposes a tiny
+// synchronous getter/setter pair rather than making api.ts re-derive the
+// token from AsyncStorage (async, and would duplicate the "which token is
+// current" logic that already lives here).
+//
+// Every function below that mints or invalidates a session updates this
+// registry so `getAuthToken()` always reflects the token belonging to the
+// current InstantDB session (or null when there isn't one, e.g. offline-local
+// guests or before first sign-in).
+let currentAuthToken: string | null = null;
+
+/** Returns the customToken for the current InstantDB session, or null if none. */
+export function getAuthToken(): string | null {
+  return currentAuthToken;
+}
+
+/** Sets (or clears, with null) the customToken for the current InstantDB session. */
+export function setAuthToken(token: string | null): void {
+  currentAuthToken = token;
+}
+
 /**
  * Sign in with a connected wallet
  * 
@@ -97,6 +125,7 @@ export async function signInWithWallet(
     customToken: token,
   };
   await AsyncStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authState));
+  setAuthToken(token);
 
   return authState;
 }
@@ -138,6 +167,7 @@ export async function signInAsGuest(): Promise<AuthState> {
     customToken: token,
   };
   await AsyncStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authState));
+  setAuthToken(token);
 
   return authState;
 }
@@ -166,6 +196,9 @@ export async function signInAsGuestLocal(): Promise<AuthState> {
     // No customToken — offline, so there is no InstantDB session to restore.
   };
   await AsyncStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authState));
+  // Explicitly clear — an offline-local guest must never send a stale/prior
+  // session's token on subsequent requests.
+  setAuthToken(null);
 
   return authState;
 }
@@ -216,6 +249,7 @@ export async function linkWalletToGuest(
     customToken: token,
   };
   await AsyncStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authState));
+  setAuthToken(token);
 
   // Clear guest ID since we're now a wallet user
   await AsyncStorage.removeItem(GUEST_ID_KEY);
@@ -225,14 +259,26 @@ export async function linkWalletToGuest(
 
 /**
  * Get stored auth state
+ *
+ * Also re-syncs the in-memory auth token registry (see setAuthToken) to match
+ * what's persisted. This matters on a normal app restart: GameContext skips
+ * re-calling signInWithToken for wallet sessions (InstantDB already persists
+ * its own session), so this is the only place that token would otherwise get
+ * loaded back into memory for api.ts to read.
  */
 export async function getStoredAuthState(): Promise<AuthState | null> {
   const stored = await AsyncStorage.getItem(AUTH_STORAGE_KEY);
-  if (!stored) return null;
-  
+  if (!stored) {
+    setAuthToken(null);
+    return null;
+  }
+
   try {
-    return JSON.parse(stored) as AuthState;
+    const authState = JSON.parse(stored) as AuthState;
+    setAuthToken(authState.customToken ?? null);
+    return authState;
   } catch {
+    setAuthToken(null);
     return null;
   }
 }
@@ -244,6 +290,7 @@ export async function signOut(): Promise<void> {
   await db.auth.signOut();
   await AsyncStorage.removeItem(AUTH_STORAGE_KEY);
   // Keep guest ID so they can recover their account if they sign back in as guest
+  setAuthToken(null);
 }
 
 /**
@@ -262,8 +309,11 @@ export async function canUpgradeToWallet(): Promise<boolean> {
 export async function restoreInstantDBSession(customToken: string): Promise<boolean> {
   try {
     await db.auth.signInWithToken(customToken);
+    setAuthToken(customToken);
     return true;
   } catch {
+    // Expired/invalid token — do not leave a stale token in the registry.
+    setAuthToken(null);
     return false;
   }
 }
