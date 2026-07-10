@@ -22,6 +22,7 @@ import {
   nextStreak,
   type StakeMode,
 } from '@/lib/coins';
+import { verifyAuthToken, sessionAuthMismatch } from '@/lib/auth-server';
 
 // Pool wallet keypair (loaded from env)
 function getPoolKeypair(): Keypair {
@@ -40,6 +41,10 @@ const connection = new Connection(
 
 export async function POST(request: NextRequest) {
   try {
+    // Cross-account defense-in-depth: read any bearer token BEFORE the body is
+    // consumed. Identity/money below still come from session.authId, never this.
+    const identity = await verifyAuthToken(request);
+
     const body = await request.json();
     const { sessionToken } = body;
 
@@ -66,6 +71,13 @@ export async function POST(request: NextRequest) {
     }
 
     const session = sessions[0];
+
+    // Cross-account guard: a VALID token for a different account cannot claim
+    // this session's payout/coins (both settle to session.authId). No token →
+    // unchanged; legacy sessions without an authId are unaffected.
+    if (sessionAuthMismatch(identity, session.authId as string | null | undefined)) {
+      return NextResponse.json({ error: 'Session does not belong to this account' }, { status: 403 });
+    }
 
     // Validate room progress - must have reached final room
     // 'room' = canonical 1-based node depth (spec §4.1); graph edges always descend one depth, so linear validation holds

@@ -137,6 +137,32 @@ export async function verifyAuthToken(
   return { authId, email: user.email, instantUserId: user.id };
 }
 
+/**
+ * Cross-account defense-in-depth for token-bearing session routes
+ * (death/victory/advance). Those routes locate the session by its unguessable
+ * secret token and read money/stats identity from `session.authId` (never the
+ * body). This adds a second gate: a caller holding a VALID token for a
+ * DIFFERENT account must not be able to drive someone else's session.
+ *
+ * Returns true iff BOTH ids are present (non-empty, same id space) AND disagree.
+ * Fail-open on absence, deliberately:
+ *  - No verified identity (no/invalid token) → false. The secret session token
+ *    remains the sole gate, exactly as before this guard existed.
+ *  - Legacy session with no stored `authId` → false. We can't compare, so we do
+ *    NOT reject a legitimate holder of the session token (avoids a false 403 on
+ *    pre-hardening sessions).
+ * Only a NON-EMPTY mismatch — a valid token whose authId differs from the
+ * session's own authId — is treated as cross-account and rejected by the caller.
+ */
+export function sessionAuthMismatch(
+  identity: AuthedIdentity | null,
+  sessionAuthId: string | null | undefined,
+): boolean {
+  if (!identity || !identity.authId) return false;
+  if (!sessionAuthId) return false;
+  return identity.authId !== sessionAuthId;
+}
+
 // ─── Start-route identity resolution ─────────────────────────────────────────
 
 export interface ResolveStartIdentityInput {

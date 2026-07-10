@@ -3,6 +3,7 @@ import {
   verifyAuthToken,
   isAdminAuthId,
   resolveStartIdentity,
+  sessionAuthMismatch,
   type AuthedIdentity,
 } from '@/lib/auth-server';
 
@@ -199,6 +200,30 @@ describe('resolveStartIdentity', () => {
     expect(
       resolveStartIdentity({ identity: null, bodyAuthId: null, bodyWallet: null, isCoinMode: false }),
     ).toEqual({ reject: 'Identity required', status: 400 });
+  });
+});
+
+describe('sessionAuthMismatch', () => {
+  it('returns false when there is no verified identity (token-only gate stands)', () => {
+    expect(sessionAuthMismatch(null, 'verified-abc')).toBe(false);
+  });
+
+  it('returns false when the identity has an empty authId', () => {
+    expect(sessionAuthMismatch({ ...IDENTITY, authId: '' }, 'verified-abc')).toBe(false);
+  });
+
+  it('returns false when the session has no stored authId (legacy session)', () => {
+    expect(sessionAuthMismatch(IDENTITY, null)).toBe(false);
+    expect(sessionAuthMismatch(IDENTITY, undefined)).toBe(false);
+    expect(sessionAuthMismatch(IDENTITY, '')).toBe(false);
+  });
+
+  it('returns false when the verified authId matches the session authId', () => {
+    expect(sessionAuthMismatch(IDENTITY, 'verified-abc')).toBe(false);
+  });
+
+  it('returns true when a valid token authId differs from the session authId (cross-account)', () => {
+    expect(sessionAuthMismatch(IDENTITY, 'someone-else')).toBe(true);
   });
 });
 
