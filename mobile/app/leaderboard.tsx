@@ -7,6 +7,7 @@ import { useGame } from '../lib/GameContext';
 import { AudioToggle } from '../components/AudioToggle';
 import { AudioSettingsModal } from '../components/AudioSettingsModal';
 import { ScreenHeader } from '../components/ScreenHeader';
+import { t } from '../lib/i18n';
 
 export default function LeaderboardScreen() {
   const game = useGame();
@@ -20,7 +21,7 @@ export default function LeaderboardScreen() {
     <SafeAreaView className="flex-1 bg-crypt-bg" edges={['left', 'right', 'bottom']}>
       <ScreenHeader
         showHome
-        title="◈ RANKS"
+        title={t('leaderboard.title')}
         right={<AudioToggle inline onSettingsPress={() => setAudioSettingsOpen(true)} />}
       />
       
@@ -39,7 +40,7 @@ export default function LeaderboardScreen() {
             <Text className={`text-xs font-mono tracking-widest ${
               activeTab === tab ? 'text-amber' : 'text-bone-dark'
             }`}>
-              {tab === 'wanderers' ? '◈ WANDERERS' : '♪ SOUNDTRACK'}
+              {tab === 'wanderers' ? t('leaderboard.tab.wanderers') : t('leaderboard.tab.soundtrack')}
             </Text>
           </Pressable>
         ))}
@@ -48,15 +49,15 @@ export default function LeaderboardScreen() {
       {isLoading && activeTab === 'wanderers' ? (
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#f59e0b" />
-          <Text className="text-amber text-sm font-mono mt-4">Loading ranks...</Text>
+          <Text className="text-amber text-sm font-mono mt-4">{t('leaderboard.loading')}</Text>
         </View>
       ) : activeTab === 'soundtrack' ? (
         <ScrollView className="flex-1" contentContainerClassName="p-4">
           <Text className="text-bone-dark text-xs font-mono tracking-widest mb-1">
-            ▼ DEATH SOUNDTRACK
+            {t('leaderboard.soundtrack.header')}
           </Text>
           <Text className="text-stone-600 text-[10px] font-mono mb-4 italic">
-            Tracks playing when wanderers fell
+            {t('leaderboard.soundtrack.subheader')}
           </Text>
 
           {soundtrackLoading ? (
@@ -64,7 +65,7 @@ export default function LeaderboardScreen() {
           ) : soundtrack.length === 0 ? (
             <View className="bg-crypt-surface border border-crypt-border p-6">
               <Text className="text-bone-dark text-sm font-mono text-center italic">
-                No death soundtracks yet.{'\n'}Play with Audius to contribute.
+                {t('leaderboard.soundtrack.empty')}
               </Text>
             </View>
           ) : (
@@ -92,7 +93,7 @@ export default function LeaderboardScreen() {
                   </View>
                   <View className="items-end">
                     <Text className="text-blood text-base font-mono font-bold">{entry.deathCount}</Text>
-                    <Text className="text-stone-600 text-[10px] font-mono">deaths</Text>
+                    <Text className="text-stone-600 text-[10px] font-mono">{t('leaderboard.soundtrack.deaths')}</Text>
                   </View>
                 </View>
               );
@@ -100,7 +101,7 @@ export default function LeaderboardScreen() {
           )}
 
           <Text className="text-bone-dark text-xs font-mono text-center mt-6 mb-4 italic">
-            The crypt echoes with their music.
+            {t('leaderboard.soundtrack.footer')}
           </Text>
         </ScrollView>
       ) : (
@@ -108,7 +109,7 @@ export default function LeaderboardScreen() {
           {/* Current player card */}
           {player && (
             <View className="bg-crypt-surface border-2 border-amber p-4 mb-4">
-              <Text className="text-amber text-xs font-mono tracking-widest mb-2">YOUR STATS</Text>
+              <Text className="text-amber text-xs font-mono tracking-widest mb-2">{t('leaderboard.yourStats')}</Text>
               <View className="flex-row justify-between items-center mb-2">
                 <Text className="text-bone text-base font-mono font-bold">{player.nickname}</Text>
                 {player.walletAddress && (
@@ -119,19 +120,19 @@ export default function LeaderboardScreen() {
               </View>
               <View className="flex-row justify-between border-t border-crypt-border pt-2">
                 <View>
-                  <Text className="text-bone-dark text-xs font-mono">Deepest Room</Text>
+                  <Text className="text-bone-dark text-xs font-mono">{t('leaderboard.stat.deepestRoom')}</Text>
                   <Text className="text-amber text-lg font-mono font-bold">{player.highestRoom || 0}</Text>
                 </View>
                 <View>
-                  <Text className="text-bone-dark text-xs font-mono">Clears</Text>
+                  <Text className="text-bone-dark text-xs font-mono">{t('leaderboard.stat.clears')}</Text>
                   <Text className="text-victory text-lg font-mono font-bold">{player.totalClears}</Text>
                 </View>
                 <View>
-                  <Text className="text-bone-dark text-xs font-mono">Deaths</Text>
+                  <Text className="text-bone-dark text-xs font-mono">{t('leaderboard.stat.deaths')}</Text>
                   <Text className="text-blood text-lg font-mono font-bold">{player.totalDeaths}</Text>
                 </View>
                 <View>
-                  <Text className="text-bone-dark text-xs font-mono">Candles</Text>
+                  <Text className="text-bone-dark text-xs font-mono">{t('leaderboard.stat.candles')}</Text>
                   <Text className="text-amber text-lg font-mono font-bold">🕯️ {player.totalLikesReceived || 0}</Text>
                 </View>
               </View>
@@ -140,14 +141,14 @@ export default function LeaderboardScreen() {
 
           {/* Leaderboard title */}
           <Text className="text-bone-dark text-xs font-mono tracking-widest mb-3">
-            ▼ TOP WANDERERS
+            {t('leaderboard.topWanderers')}
           </Text>
 
           {/* Leaderboard entries */}
           {leaderboard.length === 0 ? (
             <View className="bg-crypt-surface border border-crypt-border p-6">
               <Text className="text-bone-dark text-sm font-mono text-center italic">
-                No wanderers yet. Be the first to brave the crypt!
+                {t('leaderboard.wanderers.empty')}
               </Text>
             </View>
           ) : (
@@ -189,25 +190,25 @@ export default function LeaderboardScreen() {
                           </Text>
                         )}
                         {isCurrentPlayer && (
-                          <Text className="text-amber text-[10px] font-mono">(YOU)</Text>
+                          <Text className="text-amber text-[10px] font-mono">{t('leaderboard.you')}</Text>
                         )}
                       </View>
                       
                       <View className="flex-row gap-4">
                         <View>
-                          <Text className="text-bone-dark text-[10px] font-mono">ROOM</Text>
+                          <Text className="text-bone-dark text-[10px] font-mono">{t('leaderboard.col.room')}</Text>
                           <Text className="text-amber text-sm font-mono font-bold">
                             {entry.highestRoom}
                           </Text>
                         </View>
                         <View>
-                          <Text className="text-bone-dark text-[10px] font-mono">CLEARS</Text>
+                          <Text className="text-bone-dark text-[10px] font-mono">{t('leaderboard.col.clears')}</Text>
                           <Text className="text-victory text-sm font-mono font-bold">
                             {entry.totalClears}
                           </Text>
                         </View>
                         <View>
-                          <Text className="text-bone-dark text-[10px] font-mono">DEATHS</Text>
+                          <Text className="text-bone-dark text-[10px] font-mono">{t('leaderboard.col.deaths')}</Text>
                           <Text className="text-blood text-sm font-mono font-bold">
                             {entry.totalDeaths}
                           </Text>
@@ -222,7 +223,7 @@ export default function LeaderboardScreen() {
 
           {/* Footer note */}
           <Text className="text-bone-dark text-xs font-mono text-center mt-6 mb-4 italic">
-            The crypt remembers all who enter.
+            {t('leaderboard.footer')}
           </Text>
         </ScrollView>
       )}

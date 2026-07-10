@@ -13,16 +13,17 @@ import { NicknameModal } from '../components/NicknameModal';
 import { LinkWalletModal } from '../components/LinkWalletModal';
 import { AsciiLoader } from '../components/AsciiLoader';
 import { isWalletCancellation } from '../lib/wallet-utils';
+import { t } from '../lib/i18n';
 
 const STAKE_OPTIONS = [0.01, 0.05, 0.1, 0.25];
 
-// Zone data for display purposes only (name + emoji lookup)
-const ZONE_META: Record<string, { name: string; emoji: string; accentColor: string; bgColor: string; element: string; tagline: string }> = {
-  'sunken-crypt':   { name: 'THE SUNKEN CRYPT',   emoji: '🌊', accentColor: '#4a9eff', bgColor: '#0a1628', element: 'WATER', tagline: 'The dead float here. They always rise.' },
-  'ashen-crypts':   { name: 'THE ASHEN CRYPTS',   emoji: '🔥', accentColor: '#ff6b2b', bgColor: '#1a0800', element: 'FIRE',  tagline: 'Everything here has already burned.' },
-  'frozen-gallery': { name: 'THE FROZEN GALLERY',  emoji: '❄️', accentColor: '#7eceff', bgColor: '#040d14', element: 'ICE',   tagline: 'Time stopped here. The dead are preserved perfectly.' },
-  'living-tomb':    { name: 'THE LIVING TOMB',     emoji: '🩸', accentColor: '#c0392b', bgColor: '#0f0000', element: 'ORGANIC', tagline: 'The walls breathe. Something grows in the dark.' },
-  'void-beyond':    { name: 'THE VOID BEYOND',     emoji: '🌑', accentColor: '#9b59b6', bgColor: '#06000f', element: 'VOID',  tagline: 'You are not sure this place exists.' },
+// Zone data for display purposes only (emoji + color lookup; name/element/tagline come from i18n)
+const ZONE_META: Record<string, { emoji: string; accentColor: string; bgColor: string }> = {
+  'sunken-crypt':   { emoji: '🌊', accentColor: '#4a9eff', bgColor: '#0a1628' },
+  'ashen-crypts':   { emoji: '🔥', accentColor: '#ff6b2b', bgColor: '#1a0800' },
+  'frozen-gallery': { emoji: '❄️', accentColor: '#7eceff', bgColor: '#040d14' },
+  'living-tomb':    { emoji: '🩸', accentColor: '#c0392b', bgColor: '#0f0000' },
+  'void-beyond':    { emoji: '🌑', accentColor: '#9b59b6', bgColor: '#06000f' },
 };
 
 export default function StakeScreen() {
@@ -34,6 +35,10 @@ export default function StakeScreen() {
   const { zoneId: rawZoneId } = useLocalSearchParams<{ zoneId: string }>();
   const zoneId = rawZoneId ?? 'sunken-crypt';
   const zoneMeta = ZONE_META[zoneId] ?? ZONE_META['sunken-crypt'];
+  const zoneMetaId = ZONE_META[zoneId] ? zoneId : 'sunken-crypt';
+  const zoneName = t(`stake.zone.${zoneMetaId}.name`);
+  const zoneElement = t(`stake.zone.${zoneMetaId}.element`);
+  const zoneTagline = t(`stake.zone.${zoneMetaId}.tagline`);
 
   const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
   const [selectedStake, setSelectedStake] = useState(0.05);
@@ -210,12 +215,12 @@ export default function StakeScreen() {
           onPress={() => router.replace('/zone-select')}
           className="py-2 px-3 -ml-3"
         >
-          <Text className="text-bone-muted text-xs font-mono">[ ZONES ]</Text>
+          <Text className="text-bone-muted text-xs font-mono">{t('stake.nav.zones')}</Text>
         </Pressable>
 
         {/* True center title across full header width */}
         <View className="absolute inset-x-0 items-center" style={{ pointerEvents: 'none' }}>
-          <Text className="text-amber text-base font-mono font-bold tracking-widest">THE TOLL</Text>
+          <Text className="text-amber text-base font-mono font-bold tracking-widest">{t('stake.title')}</Text>
         </View>
 
         <AudioToggle ambientTrack="ambient-title" inline onSettingsPress={() => setAudioSettingsOpen(true)} />
@@ -226,26 +231,26 @@ export default function StakeScreen() {
         {/* Zone identity */}
         <View className="mb-5 pb-4 border-b border-crypt-border">
           <Text style={{ color: zoneMeta.accentColor ?? '#c8a96e' }} className="text-[10px] font-mono tracking-widest mb-1">
-            [ {zoneMeta.element} ]
+            [ {zoneElement} ]
           </Text>
           <Text style={{ color: zoneMeta.accentColor ?? '#c8a96e' }} className="text-lg font-mono font-bold tracking-widest">
-            {zoneMeta.name}
+            {zoneName}
           </Text>
-          {zoneMeta.tagline ? (
-            <Text className="text-bone-muted text-xs font-mono mt-1 leading-4">{zoneMeta.tagline}</Text>
+          {zoneTagline ? (
+            <Text className="text-bone-muted text-xs font-mono mt-1 leading-4">{zoneTagline}</Text>
           ) : null}
         </View>
 
         {/* Warning */}
         <View className="bg-blood/10 border border-blood-dark p-4 mb-6">
           <Text className="text-blood-light text-sm font-mono leading-5">
-Offer it. Lose it on death. Escape and claim more.
+{t('stake.warning')}
           </Text>
         </View>
 
         {/* Stake options */}
         <View className="mb-6">
-          <Text className="text-bone-dark text-xs font-mono tracking-widest mb-3">CHOOSE YOUR OFFERING</Text>
+          <Text className="text-bone-dark text-xs font-mono tracking-widest mb-3">{t('stake.choose_offering')}</Text>
           <View className="flex-row gap-2">
             {STAKE_OPTIONS.map((amount) => (
               <Pressable
@@ -273,16 +278,16 @@ Offer it. Lose it on death. Escape and claim more.
         {/* Summary */}
         <View className="bg-crypt-surface border border-crypt-border p-4 mb-6">
           <View className="flex-row justify-between mb-2">
-            <Text className="text-bone-dark text-sm font-mono">Your Offering</Text>
+            <Text className="text-bone-dark text-sm font-mono">{t('stake.summary.offering_label')}</Text>
             <Text className="text-bone-muted text-sm font-mono">{selectedStake}</Text>
           </View>
           <View className="flex-row justify-between mb-2">
-            <Text className="text-bone-dark text-sm font-mono">If You Escape (+{settings.victoryBonusPercent}%)</Text>
+            <Text className="text-bone-dark text-sm font-mono">{t('stake.summary.escape_bonus_label', { percent: settings.victoryBonusPercent })}</Text>
             <Text className="text-victory text-sm font-mono">+{(selectedStake * settings.victoryBonusPercent / 100).toFixed(3)}</Text>
           </View>
           <View className="flex-row justify-between border-t border-crypt-border pt-3 mt-1">
-            <Text className="text-bone-muted text-sm font-mono font-bold">Should You Survive</Text>
-            <Text className="text-amber-light text-base font-mono font-bold">{(selectedStake * (1 + settings.victoryBonusPercent / 100)).toFixed(3)} SOL</Text>
+            <Text className="text-bone-muted text-sm font-mono font-bold">{t('stake.summary.survive_label')}</Text>
+            <Text className="text-amber-light text-base font-mono font-bold">{t('stake.sol_amount', { amount: (selectedStake * (1 + settings.victoryBonusPercent / 100)).toFixed(3) })}</Text>
           </View>
         </View>
 
@@ -296,7 +301,7 @@ Offer it. Lose it on death. Escape and claim more.
             {game.isAuthenticated && game.authType === 'wallet' && game.nickname === null
               ? <AsciiLoader />
               : <Text className="text-amber text-sm font-mono font-bold">
-                  {game.nickname || 'Wanderer'}
+                  {game.nickname || t('stake.wanderer')}
                 </Text>
             }
             <Text className="text-bone-dark text-xs">✎</Text>
@@ -307,12 +312,12 @@ Offer it. Lose it on death. Escape and claim more.
               {game.balance !== null && (
                 <>
                   <Text className="text-bone-dark text-xs">·</Text>
-                  <Text className="text-amber-light text-xs font-mono font-bold">{game.balance.toFixed(3)} SOL</Text>
+                  <Text className="text-amber-light text-xs font-mono font-bold">{t('stake.sol_amount', { amount: game.balance.toFixed(3) })}</Text>
                 </>
               )}
               <Text className="text-bone-dark text-xs">·</Text>
               <Pressable onPress={() => game.disconnect()}>
-                <Text className="text-bone-muted text-xs font-mono">[logout]</Text>
+                <Text className="text-bone-muted text-xs font-mono">{t('stake.logout')}</Text>
               </Pressable>
             </View>
           )}
@@ -335,12 +340,12 @@ Offer it. Lose it on death. Escape and claim more.
                 {walletStatus === 'connecting' ? (
                   <AsciiLoader variant="pulse" color="#ffffff" />
                 ) : walletStatus === 'cancelled' ? (
-                  <Text className="text-bone-muted font-mono font-bold tracking-wider">REJECTED</Text>
+                  <Text className="text-bone-muted font-mono font-bold tracking-wider">{t('stake.rejected')}</Text>
                 ) : walletStatus === 'error' ? (
-                  <Text className="text-blood-light font-mono font-bold tracking-wider">FAILED — TAP TO RETRY</Text>
+                  <Text className="text-blood-light font-mono font-bold tracking-wider">{t('stake.failed_retry')}</Text>
                 ) : (
                   <View className="items-center">
-                    <Text className="text-white font-mono font-bold tracking-wider leading-tight">BIND WALLET</Text>
+                    <Text className="text-white font-mono font-bold tracking-wider leading-tight">{t('stake.bind_wallet')}</Text>
                     <Text className="text-white/80 text-[9px] font-mono mt-0.5 leading-none">[DEVNET]</Text>
                   </View>
                 )}
@@ -354,9 +359,9 @@ Offer it. Lose it on death. Escape and claim more.
                 {staking ? (
                   <AsciiLoader variant="pulse" color="#a8a29e" />
                 ) : freeRunStatus === 'error' ? (
-                  <Text className="text-blood font-mono">FAILED — TAP TO RETRY</Text>
+                  <Text className="text-blood font-mono">{t('stake.failed_retry')}</Text>
                 ) : (
-                  <Text className="text-bone-muted font-mono">EMPTY-HANDED</Text>
+                  <Text className="text-bone-muted font-mono">{t('stake.empty_handed')}</Text>
                 )}
               </Pressable>
             </>
@@ -377,12 +382,12 @@ Offer it. Lose it on death. Escape and claim more.
                 {staking && stakingMode === 'stake' ? (
                   <AsciiLoader variant="pulse" color="#0d0d0d" />
                 ) : sealStatus === 'cancelled' ? (
-                  <Text className="text-bone-muted font-mono font-bold tracking-wider">REJECTED</Text>
+                  <Text className="text-bone-muted font-mono font-bold tracking-wider">{t('stake.rejected')}</Text>
                 ) : sealStatus === 'error' ? (
-                  <Text className="text-blood-light font-mono font-bold tracking-wider">FAILED — TAP TO RETRY</Text>
+                  <Text className="text-blood-light font-mono font-bold tracking-wider">{t('stake.failed_retry')}</Text>
                 ) : (
                   <View className="items-center">
-                    <Text className="text-crypt-bg font-mono font-bold tracking-wider leading-tight">SEAL YOUR FATE</Text>
+                    <Text className="text-crypt-bg font-mono font-bold tracking-wider leading-tight">{t('stake.seal_fate')}</Text>
                     <Text className="text-crypt-bg/70 text-[9px] font-mono mt-0.5 leading-none">[DEVNET]</Text>
                   </View>
                 )}
@@ -390,7 +395,7 @@ Offer it. Lose it on death. Escape and claim more.
 
               {game.balance !== null && game.balance < selectedStake && (
                 <Text className="text-blood text-xs font-mono text-center">
-                  Insufficient balance ({game.balance.toFixed(3)} SOL)
+                  {t('stake.insufficient_balance', { amount: game.balance.toFixed(3) })}
                 </Text>
               )}
 
@@ -402,9 +407,9 @@ Offer it. Lose it on death. Escape and claim more.
                 {stakingMode === 'free' ? (
                   <AsciiLoader variant="pulse" color="#a8a29e" />
                 ) : freeRunStatus === 'error' ? (
-                  <Text className="text-blood font-mono">FAILED — TAP TO RETRY</Text>
+                  <Text className="text-blood font-mono">{t('stake.failed_retry')}</Text>
                 ) : (
-                  <Text className="text-bone-muted font-mono">EMPTY-HANDED</Text>
+                  <Text className="text-bone-muted font-mono">{t('stake.empty_handed')}</Text>
                 )}
               </Pressable>
             </>
@@ -425,7 +430,7 @@ Offer it. Lose it on death. Escape and claim more.
         >
           <View className="bg-crypt-bg border border-crypt-border w-full max-w-sm p-4">
             <Text className="text-amber text-lg font-mono font-bold text-center mb-4">
-              SELECT WALLET
+              {t('stake.select_wallet')}
             </Text>
 
             {game.connectors.map((connector) => (
@@ -445,7 +450,7 @@ Offer it. Lose it on death. Escape and claim more.
               className="mt-4 p-3"
               onPress={() => setShowWalletPicker(false)}
             >
-              <Text className="text-bone-muted text-sm font-mono text-center">Cancel</Text>
+              <Text className="text-bone-muted text-sm font-mono text-center">{t('stake.cancel')}</Text>
             </Pressable>
           </View>
         </Pressable>

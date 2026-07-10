@@ -5,18 +5,19 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useDeathFeed, usePoolStats, Death } from '../lib/instant';
 import { getDepthForRoom } from '../lib/content';
 import { useState } from 'react';
+import { t } from '../lib/i18n';
 
 // Format timestamp as relative time
 function formatTimeAgo(timestamp: number): string {
   const seconds = Math.floor((Date.now() - timestamp) / 1000);
-  if (seconds < 60) return 'just now';
+  if (seconds < 60) return t('feed.justNow');
   const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
+  if (minutes < 60) return t('feed.minutesAgo', { minutes });
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) return t('feed.hoursAgo', { hours });
   const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d ago`;
-  return `${Math.floor(days / 7)}w ago`;
+  if (days < 7) return t('feed.daysAgo', { days });
+  return t('feed.weeksAgo', { weeks: Math.floor(days / 7) });
 }
 
 function DeathEntry({ death }: { death: Death }) {
@@ -45,7 +46,7 @@ function DeathEntry({ death }: { death: Death }) {
           {depth.name}
         </Text>
         <Text className="text-bone-dark text-xs font-mono">•</Text>
-        <Text className="text-bone-dark text-xs font-mono">ROOM {death.room}</Text>
+        <Text className="text-bone-dark text-xs font-mono">{t('feed.roomLabel', { room: death.room })}</Text>
         {death.stakeAmount > 0 && (
           <>
             <Text className="text-bone-dark text-xs font-mono">•</Text>
@@ -82,16 +83,16 @@ export default function FeedScreen() {
       {/* Header */}
       <View className="flex-row items-center justify-between px-3 border-b border-amber/30" style={{ paddingTop: insets.top + 12, paddingBottom: 12 }}>
         <Pressable onPress={() => router.back()}>
-          <Text className="text-bone-muted text-sm font-mono">[← BACK]</Text>
+          <Text className="text-bone-muted text-sm font-mono">{t('feed.back')}</Text>
         </Pressable>
-        <Text className="text-amber text-xs font-mono tracking-widest">◈ DEATH FEED</Text>
+        <Text className="text-amber text-xs font-mono tracking-widest">{t('feed.title')}</Text>
         <View className="w-16" />
       </View>
 
       {isLoading && !refreshing ? (
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#f59e0b" />
-          <Text className="text-amber text-sm font-mono mt-4">Loading deaths...</Text>
+          <Text className="text-amber text-sm font-mono mt-4">{t('feed.loadingDeaths')}</Text>
         </View>
       ) : (
         <ScrollView
@@ -110,15 +111,15 @@ export default function FeedScreen() {
           {!statsLoading && (
             <View className="bg-crypt-surface border-2 border-ethereal p-4 mb-4">
               <Text className="text-ethereal text-xs font-mono tracking-widest mb-3">
-                ◈ THE CRYPT REMEMBERS
+                {t('feed.cryptRemembers')}
               </Text>
               <View className="flex-row justify-around">
                 <View className="items-center">
-                  <Text className="text-bone-dark text-xs font-mono">Total Deaths</Text>
+                  <Text className="text-bone-dark text-xs font-mono">{t('feed.totalDeaths')}</Text>
                   <Text className="text-blood text-2xl font-mono font-bold">{totalDeaths}</Text>
                 </View>
                 <View className="items-center">
-                  <Text className="text-bone-dark text-xs font-mono">SOL Lost</Text>
+                  <Text className="text-bone-dark text-xs font-mono">{t('feed.solLost')}</Text>
                   <Text className="text-amber text-2xl font-mono font-bold">
                     {totalStaked.toFixed(2)}
                   </Text>
@@ -129,13 +130,13 @@ export default function FeedScreen() {
 
           {/* Recent deaths */}
           <Text className="text-bone-dark text-xs font-mono tracking-widest mb-3">
-            ▼ RECENT FALLEN
+            {t('feed.recentFallen')}
           </Text>
 
           {deaths.length === 0 ? (
             <View className="bg-crypt-surface border border-crypt-border p-6">
               <Text className="text-bone-dark text-sm font-mono text-center italic">
-                The crypt is silent... for now.
+                {t('feed.cryptSilent')}
               </Text>
             </View>
           ) : (
@@ -144,7 +145,7 @@ export default function FeedScreen() {
 
           {/* Footer */}
           <Text className="text-bone-dark text-xs font-mono text-center mt-6 mb-4 italic">
-            Each death becomes content for the living.
+            {t('feed.footer')}
           </Text>
         </ScrollView>
       )}

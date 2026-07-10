@@ -10,6 +10,7 @@ Kit: `docs/localization/LOC_KIT.md` — canonical glossary + voice rules. All wo
   (already done: sunken-crypt/ashen-crypts/frozen-gallery/living-tomb zones, cache-rooms)
   `lib/locales/vi.json` now EXISTS with English placeholder values — translate values in place, don't create.
 - **Phase 2a addendum:** the new `hint.*` (branch hint sense-line + tag) and `trail.*` (path-trail screen) keys landed in `lib/locales/*.json` across ALL 7 locale catalogs carrying English values (not just vi) — add them to the loc pass list for es/ja/pt-BR/zh-TW/ko as well as vi.
+- **Phase 2b screen-string extraction:** all mobile screens now route player-facing UI text through `t()` — the new keys (530 across `codex.*`, `stake.*`, `leaderboard.*`, `index.*`, `feed.*`, `bestiary.*`, `zoneSelect.*`, `play.*`, `combat.ui.*`, `death.*`, `victory.*`) carry English values in every catalog, so the full UI-catalog translation debt for any locale is now enumerable by diffing that locale's values against `en.json` (identical value = untranslated).
 
 ## Process notes (learned the hard way)
 - **Write-first**: agents must write each file to disk as soon as it's translated — session-limit deaths then cost at most one partial file.

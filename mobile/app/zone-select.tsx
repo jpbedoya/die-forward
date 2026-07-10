@@ -12,6 +12,7 @@ import { useGame } from '../lib/GameContext';
 import { useCurrentPlayer, usePlayer, Player } from '../lib/instant';
 import { API_BASE } from '../lib/api';
 import { palette } from '../lib/theme';
+import { t } from '../lib/i18n';
 
 // Determine if a player has unlocked a zone through progression
 function isZoneUnlocked(zoneId: string, player: Player | undefined): boolean {
@@ -25,14 +26,16 @@ function isZoneUnlocked(zoneId: string, player: Player | undefined): boolean {
   return false;
 }
 
+// name/tagline/mechanic/element hold i18n keys (looked up via t() at render time),
+// not literal display text — see zoneSelect.zone.* in the locale catalog.
 const ZONES = [
   {
     id: 'sunken-crypt',
-    name: 'THE SUNKEN CRYPT',
-    tagline: 'The first descent. Nothing here is alive.',
+    name: 'zoneSelect.zone.sunkenCrypt.name',
+    tagline: 'zoneSelect.zone.sunkenCrypt.tagline',
     difficulty: 1,
     mechanic: null,
-    element: 'WATER',
+    element: 'zoneSelect.zone.sunkenCrypt.element',
     accentColor: '#4a9eff',
     bgColor: '#0a1628',
     ambientTrack: 'ambient-explore',
@@ -40,11 +43,11 @@ const ZONES = [
   },
   {
     id: 'ashen-crypts',
-    name: 'THE ASHEN CRYPTS',
-    tagline: 'A civilization that chose fire over surrender.',
+    name: 'zoneSelect.zone.ashenCrypts.name',
+    tagline: 'zoneSelect.zone.ashenCrypts.tagline',
     difficulty: 2,
-    mechanic: 'BURN — hesitation kills you.',
-    element: 'FIRE',
+    mechanic: 'zoneSelect.zone.ashenCrypts.mechanic',
+    element: 'zoneSelect.zone.ashenCrypts.element',
     accentColor: '#ff6b2b',
     bgColor: '#1a0800',
     ambientTrack: 'ambient-explore',
@@ -52,11 +55,11 @@ const ZONES = [
   },
   {
     id: 'frozen-gallery',
-    name: 'THE FROZEN GALLERY',
-    tagline: 'Time stopped here. The dead are preserved perfectly.',
+    name: 'zoneSelect.zone.frozenGallery.name',
+    tagline: 'zoneSelect.zone.frozenGallery.tagline',
     difficulty: 2,
-    mechanic: 'CHILL — stamina slows. FREEZE — skip enemy turns.',
-    element: 'ICE',
+    mechanic: 'zoneSelect.zone.frozenGallery.mechanic',
+    element: 'zoneSelect.zone.frozenGallery.element',
     accentColor: '#7eceff',
     bgColor: '#040d14',
     ambientTrack: 'ambient-explore',
@@ -64,11 +67,11 @@ const ZONES = [
   },
   {
     id: 'living-tomb',
-    name: 'THE LIVING TOMB',
-    tagline: 'Something grew in the dark. Now everything is part of it.',
+    name: 'zoneSelect.zone.livingTomb.name',
+    tagline: 'zoneSelect.zone.livingTomb.tagline',
     difficulty: 2,
-    mechanic: 'INFECTION — kill fast or be consumed.',
-    element: 'ORGANIC',
+    mechanic: 'zoneSelect.zone.livingTomb.mechanic',
+    element: 'zoneSelect.zone.livingTomb.element',
     accentColor: '#c0392b',
     bgColor: '#0f0000',
     ambientTrack: 'ambient-explore',
@@ -76,11 +79,11 @@ const ZONES = [
   },
   {
     id: 'void-beyond',
-    name: 'THE VOID BEYOND',
-    tagline: 'Where the underworld forgot to finish building.',
+    name: 'zoneSelect.zone.voidBeyond.name',
+    tagline: 'zoneSelect.zone.voidBeyond.tagline',
     difficulty: 3,
-    mechanic: 'FLUX — nothing is reliable. CLARITY — protect your mind.',
-    element: 'VOID',
+    mechanic: 'zoneSelect.zone.voidBeyond.mechanic',
+    element: 'zoneSelect.zone.voidBeyond.element',
     accentColor: '#9b59b6',
     bgColor: '#06000f',
     ambientTrack: 'ambient-explore',
@@ -137,17 +140,17 @@ function GridZoneCard({
           }}
         >
           <Text style={{ fontFamily: 'monospace', fontSize: 10, color: zone.accentColor, letterSpacing: 1, marginBottom: 6 }}>
-            [ {zone.element} ]
+            [ {t(zone.element)} ]
           </Text>
           <Text style={{ fontFamily: 'monospace', fontWeight: 'bold', fontSize: 13, color: palette.bone.muted, lineHeight: 18, marginBottom: 4 }}>
-            {zone.name}
+            {t(zone.name)}
           </Text>
           <Text style={{ fontFamily: 'monospace', fontSize: 9, color: palette.bone.dark, marginBottom: 6, lineHeight: 13 }}>
-            {zone.tagline}
+            {t(zone.tagline)}
           </Text>
           <DifficultyDots difficulty={zone.difficulty} accentColor={zone.accentColor} />
           <Text style={{ fontFamily: 'monospace', fontSize: 9, color: palette.bone.dark, marginTop: 8, letterSpacing: 0.5 }}>
-            // COMING SOON
+            {t('zoneSelect.comingSoon')}
           </Text>
         </View>
       </View>
@@ -170,17 +173,17 @@ function GridZoneCard({
           }}
         >
           <Text style={{ fontFamily: 'monospace', fontSize: 10, color: zone.accentColor, letterSpacing: 1, marginBottom: 6 }}>
-            [ {zone.element} ]
+            [ {t(zone.element)} ]
           </Text>
           <Text style={{ fontFamily: 'monospace', fontWeight: 'bold', fontSize: 13, color: palette.bone.muted, lineHeight: 18, marginBottom: 4 }}>
-            🔒 {zone.name}
+            🔒 {t(zone.name)}
           </Text>
           <Text style={{ fontFamily: 'monospace', fontSize: 9, color: palette.bone.dark, marginBottom: 6, lineHeight: 13 }}>
-            {zone.tagline}
+            {t(zone.tagline)}
           </Text>
           <DifficultyDots difficulty={zone.difficulty} accentColor={zone.accentColor} />
           <Text style={{ fontFamily: 'monospace', fontSize: 9, color: palette.bone.dark, marginTop: 8, letterSpacing: 0.5 }}>
-            // Reach room 8 to unlock
+            {t('zoneSelect.reachRoom8')}
           </Text>
         </View>
       </View>
@@ -201,13 +204,13 @@ function GridZoneCard({
         }}
       >
         <Text style={{ fontFamily: 'monospace', fontSize: 10, color: zone.accentColor, letterSpacing: 1, marginBottom: 6 }}>
-          [ {zone.element} ]
+          [ {t(zone.element)} ]
         </Text>
         <Text style={{ fontFamily: 'monospace', fontWeight: 'bold', fontSize: 13, color: isSelected ? zone.accentColor : palette.bone.muted, lineHeight: 18, marginBottom: 4 }}>
-          {zone.name}
+          {t(zone.name)}
         </Text>
         <Text style={{ fontFamily: 'monospace', fontSize: 9, color: palette.bone.dark, marginTop: 6, lineHeight: 13 }}>
-          {zone.tagline}
+          {t(zone.tagline)}
         </Text>
         <DifficultyDots difficulty={zone.difficulty} accentColor={zone.accentColor} />
       </View>
@@ -253,7 +256,7 @@ function VoidBeyondCard({
           marginBottom: 6,
         }}
       >
-        [ {zone.element} ]
+        [ {t(zone.element)} ]
       </Text>
       <Text
         style={{
@@ -265,7 +268,7 @@ function VoidBeyondCard({
           marginBottom: 4,
         }}
       >
-        {zone.name}
+        {t(zone.name)}
       </Text>
       <Text
         style={{
@@ -276,21 +279,21 @@ function VoidBeyondCard({
           marginBottom: 8,
         }}
       >
-        "{zone.tagline}"
+        "{t(zone.tagline)}"
       </Text>
       <DifficultyDots difficulty={zone.difficulty} accentColor={zone.accentColor} />
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
         {enabled && playerLocked ? (
           <Text style={{ fontFamily: 'monospace', fontSize: 9, color: palette.bone.dark, letterSpacing: 0.5 }}>
-            🔒 Clear 3 zones to unlock
+            {t('zoneSelect.clear3Zones')}
           </Text>
         ) : (
           <>
             <Text style={{ fontFamily: 'monospace', fontSize: 9, color: palette.bone.dark, letterSpacing: 0.5 }}>
-              // COMING SOON
+              {t('zoneSelect.comingSoon')}
             </Text>
             <Text style={{ fontFamily: 'monospace', fontSize: 9, color: palette.bone.faint, letterSpacing: 1 }}>
-              // UNLOCKS AFTER 3 CLEARED ZONES
+              {t('zoneSelect.unlocksAfter3')}
             </Text>
           </>
         )}
@@ -382,13 +385,13 @@ export default function ZoneSelectScreen() {
       <SafeAreaView className="flex-1" edges={['left', 'right', 'bottom']}>
         <ScreenHeader
           showHome
-          title="◈ CHOOSE YOUR DESCENT"
+          title={t('zoneSelect.title')}
           right={<AudioToggle ambientTrack="ambient-title" inline onSettingsPress={() => setAudioSettingsOpen(true)} />}
         />
 
         {/* Subheader */}
         <View className="items-center py-2 border-b border-crypt-border">
-          <Text className="text-bone-dark text-xs font-mono">"Where will you die today?"</Text>
+          <Text className="text-bone-dark text-xs font-mono">{t('zoneSelect.subheader')}</Text>
         </View>
 
         <ScrollView
@@ -438,7 +441,7 @@ export default function ZoneSelectScreen() {
               letterSpacing: 0.5,
             }}
           >
-            {selectedZone.mechanic ? `// ${selectedZone.mechanic}` : '// No special mechanics'}
+            {selectedZone.mechanic ? t('zoneSelect.mechanicLine', { mechanic: t(selectedZone.mechanic) }) : t('zoneSelect.noSpecialMechanics')}
           </Text>
           <Pressable
             className="py-4 items-center"
@@ -454,7 +457,7 @@ export default function ZoneSelectScreen() {
                 fontSize: 13,
               }}
             >
-              ENTER [ {selectedZone.name} ] -&gt;
+              {t('zoneSelect.enterButton', { name: t(selectedZone.name) })}
             </Text>
           </Pressable>
         </View>

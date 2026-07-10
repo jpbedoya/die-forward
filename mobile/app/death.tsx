@@ -77,8 +77,8 @@ export default function DeathScreen() {
   const handleShare = async () => {
     setSharing(true);
     playSFX('share-click');
-    const shareText = `I died at room ${roomNumber} in Die Forward. Depth: ${depth.name}.\n\n"${finalWords}"\n\n@dieforward | dieforward.com`;
-    const success = await captureAndShare('Die Forward', shareText);
+    const shareText = t('death.shareText', { room: roomNumber, depth: depth.name, words: finalWords });
+    const success = await captureAndShare(t('death.shareCardTitle'), shareText);
     setSharing(false);
     // Only close modal on success
     if (success) {
@@ -294,11 +294,11 @@ export default function DeathScreen() {
             </Text>
             {params.killedBy && (
               <Text className="text-bone-muted text-base font-mono text-center mb-2">
-                Slain by {params.killedBy}
+                {t('death.slainBy', { name: params.killedBy })}
               </Text>
             )}
             <Text className="text-bone-dark text-sm font-mono text-center">
-              {depth.name} - Room {roomNumber}
+              {t('death.depthRoom', { depth: depth.name, room: roomNumber })}
             </Text>
           </Animated.View>
         </Animated.View>
@@ -332,7 +332,7 @@ export default function DeathScreen() {
           </Text>
           {params.killedBy && (
             <Text className="text-bone-muted text-sm font-mono mt-1">
-              Slain by {params.killedBy}
+              {t('death.slainBy', { name: params.killedBy })}
             </Text>
           )}
         </View>
@@ -340,16 +340,16 @@ export default function DeathScreen() {
         {/* Death Stats */}
         <View className="bg-crypt-surface border border-crypt-border p-4 mb-4">
           <View className="flex-row justify-between mb-2">
-            <Text className="text-bone-dark text-sm font-mono">Depth Reached</Text>
+            <Text className="text-bone-dark text-sm font-mono">{t('death.depthReached')}</Text>
             <Text className="text-ethereal text-sm font-mono">{depth.name}</Text>
           </View>
           <View className="flex-row justify-between mb-2">
-            <Text className="text-bone-dark text-sm font-mono">Room</Text>
+            <Text className="text-bone-dark text-sm font-mono">{t('death.room')}</Text>
             <Text className="text-bone text-sm font-mono">{roomNumber}</Text>
           </View>
           {!isEmptyHanded && (
             <View className="flex-row justify-between">
-              <Text className="text-bone-dark text-sm font-mono">SOL Left</Text>
+              <Text className="text-bone-dark text-sm font-mono">{t('death.solLeft')}</Text>
               <Text className="text-blood text-sm font-mono">{stakeAmountNum}</Text>
             </View>
           )}
@@ -391,7 +391,7 @@ export default function DeathScreen() {
                 marginBottom: 6,
               }}
             >
-              ─── MILESTONE UNLOCKED ───
+              {t('death.milestoneUnlocked')}
             </Text>
             <Text
               style={{
@@ -427,8 +427,8 @@ export default function DeathScreen() {
                 }}
               >
                 {newMilestone.value === 'starting_item'
-                  ? 'You will now begin each run with a random item'
-                  : 'You will now begin each run with 110 HP'}
+                  ? t('death.perkStartingItem')
+                  : t('death.perkStartHp')}
               </Text>
             )}
           </View>
@@ -439,7 +439,7 @@ export default function DeathScreen() {
           <View className="mb-6">
             <TextInput
               className="bg-crypt-surface border border-crypt-border p-4 text-bone font-mono text-base mb-4"
-              placeholder="Your final words..."
+              placeholder={t('death.finalWordsPlaceholder')}
               placeholderTextColor="#57534e"
               value={finalWords}
               onChangeText={setFinalWords}
@@ -455,7 +455,7 @@ export default function DeathScreen() {
                 <AsciiLoader variant="pulse" color="#ffffff" />
               ) : (
                 <Text className={`font-mono font-bold ${finalWords.trim() ? 'text-white' : 'text-bone-dark'}`}>
-                  ETCH INTO STONE
+                  {t('death.etchButton')}
                 </Text>
               )}
             </Pressable>
@@ -464,7 +464,7 @@ export default function DeathScreen() {
           <View className="mb-6">
             <View className="bg-ethereal/20 border border-ethereal p-4 mb-4">
               <Text className="text-ethereal text-sm font-mono text-center">
-                Your final words have been etched into the crypt
+                {t('death.etchedConfirm')}
               </Text>
             </View>
             <View className="bg-crypt-surface border-l-2 border-ethereal p-4">
@@ -505,7 +505,7 @@ export default function DeathScreen() {
               className="bg-ethereal py-4 items-center active:bg-purple-700"
               onPress={() => setShowShareModal(true)}
             >
-              <Text className="text-white font-mono font-bold tracking-widest">SHARE DEATH CARD</Text>
+              <Text className="text-white font-mono font-bold tracking-widest">{t('death.shareDeathCard')}</Text>
             </Pressable>
           )}
 
@@ -513,20 +513,20 @@ export default function DeathScreen() {
             className="bg-amber py-4 items-center active:bg-amber-dark"
             onPress={handlePlayAgain}
           >
-            <Text className="text-crypt-bg font-mono font-bold tracking-widest">DESCEND AGAIN</Text>
+            <Text className="text-crypt-bg font-mono font-bold tracking-widest">{t('death.descendAgain')}</Text>
           </Pressable>
 
           <Pressable
             className="border border-crypt-border-light py-4 items-center active:border-amber"
             onPress={handleHome}
           >
-            <Text className="text-bone-muted font-mono">Return to Surface</Text>
+            <Text className="text-bone-muted font-mono">{t('death.returnToSurface')}</Text>
           </Pressable>
         </View>
 
         {/* Footer */}
         <Text className="text-bone-dark text-xs font-mono text-center mt-6">
-          {!isEmptyHanded ? 'Your offering feeds the depths.' : 'Next time, leave something behind.'}
+          {!isEmptyHanded ? t('death.footerOffering') : t('death.footerNothing')}
         </Text>
       </ScrollView>
       </Animated.View>
@@ -540,18 +540,18 @@ export default function DeathScreen() {
       >
         <View className="flex-1 bg-black/80 justify-center items-center p-4">
           <View className="bg-crypt-surface border border-crypt-border p-4 w-full max-w-[340px]">
-            <Text className="text-amber text-lg font-mono font-bold text-center mb-4">Share Death Card</Text>
+            <Text className="text-amber text-lg font-mono font-bold text-center mb-4">{t('death.shareModalTitle')}</Text>
 
             {/* Card Preview */}
             <View className="items-center mb-4">
               <ShareCardCapture viewShotRef={viewShotRef} webRef={webRef}>
                 <DeathCard
                   data={{
-                    playerName: game.nickname || 'Wanderer',
+                    playerName: game.nickname || t('death.defaultNickname'),
                     room: roomNumber,
                     totalRooms: game.graph?.maxDepth ?? 13,
                     killedBy: params.killedBy || null,
-                    epitaph: finalWords || 'No final words...',
+                    epitaph: finalWords || t('death.defaultEpitaph'),
                     stakeLost: stakeAmountNum,
                     nowPlaying: musicSource === 'audius' && currentTrack
                       ? { title: currentTrack.title, artist: currentTrack.user.name }
@@ -569,7 +569,7 @@ export default function DeathScreen() {
               {sharing ? (
                 <AsciiLoader variant="pulse" color="#ffffff" />
               ) : (
-                <Text className="text-white font-mono font-bold">SHARE</Text>
+                <Text className="text-white font-mono font-bold">{t('death.share')}</Text>
               )}
             </Pressable>
 
@@ -577,7 +577,7 @@ export default function DeathScreen() {
               className="py-3 items-center"
               onPress={() => setShowShareModal(false)}
             >
-              <Text className="text-bone-muted font-mono">Cancel</Text>
+              <Text className="text-bone-muted font-mono">{t('death.cancel')}</Text>
             </Pressable>
           </View>
         </View>

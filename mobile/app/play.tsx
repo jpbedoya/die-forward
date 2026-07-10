@@ -74,13 +74,13 @@ export default function PlayScreen() {
       if (Platform.OS !== 'web') {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
-      setMessage(`Tipped @${corpse.playerName} ◎ ${tipAmount} SOL`);
+      setMessage(t('play.tippedMessage', { name: corpse.playerName, amount: tipAmount }));
     } catch (e) {
       console.error('Tip failed:', e);
       if (Platform.OS !== 'web') {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       }
-      Alert.alert('Tip Failed', 'Could not send tip. Please try again.');
+      Alert.alert(t('play.tipFailedTitle'), t('play.tipFailedMessage'));
     } finally {
       setTipping(false);
     }
@@ -190,13 +190,13 @@ export default function PlayScreen() {
 
   // Get narrative from room content
   const getNarrative = (): string => {
-    if (!room) return 'Darkness surrounds you...';
+    if (!room) return t('play.narrativeDarkness');
     // Resolved forking combat node: don't re-stream the combat intro — the
     // fight is over, the branch choice is what's on offer now.
     if (room.type === 'combat' && game.nodeResolved) return t('combat.resolved');
     if (room.content?.narrative) return room.content.narrative;
     // Fallback for old dungeon format
-    return (room as any).narrative || 'You proceed deeper into the crypt.';
+    return (room as any).narrative || t('play.narrativeFallback');
   };
 
   const renderNarrative = () => {
@@ -218,7 +218,7 @@ export default function PlayScreen() {
           onComplete={() => setNarrativeDone(true)}
         />
         {!narrativeDone && (
-          <Text className="text-bone-dark text-[10px] font-mono mt-1">[tap to skip]</Text>
+          <Text className="text-bone-dark text-[10px] font-mono mt-1">{t('play.tapToSkip')}</Text>
         )}
       </Pressable>
     );
@@ -304,14 +304,14 @@ export default function PlayScreen() {
             game.addToInventory(newItem);
             game.incrementItemsFound();
             setLastFoundItem({ name: newItem.name, emoji: newItem.emoji });
-            setMessage(`Found: ${newItem.emoji} ${newItem.name}`);
+            setMessage(t('play.foundPrefix', { emoji: newItem.emoji, name: newItem.name }));
           } else if (roll < 0.85) {
             // Fix 5: "nothing" branch — show a contextual message instead of silently advancing
             const nothingMessages = [
-              'You find nothing of interest.',
-              'The room offers no reward. You press on.',
-              'Dust and silence. Nothing here.',
-              'Whatever was here is long gone.',
+              t('play.nothing1'),
+              t('play.nothing2'),
+              t('play.nothing3'),
+              t('play.nothing4'),
             ];
             const msgIdx = game.rng
               ? Math.floor(game.rng.random() * nothingMessages.length)
@@ -336,7 +336,7 @@ export default function PlayScreen() {
                 return;
               }
             } else {
-              setMessage(`You take ${dmg} damage!`);
+              setMessage(t('play.tookDamage', { dmg }));
             }
           }
           break;
@@ -346,7 +346,7 @@ export default function PlayScreen() {
           const peekItemEffects = getItemEffects(game.inventory);
           const peekCost = peekItemEffects.peekFree ? 0 : 1;
           if (peekCost > game.stamina) {
-            setMessage('Not enough stamina.');
+            setMessage(t('play.notEnoughStamina'));
             break;
           }
           playSFX('footstep');
@@ -360,30 +360,30 @@ export default function PlayScreen() {
             ? nextChoices(game.graph, game.currentNodeId)
             : [];
           const revealed = peekChoices[0];
-          let intelMsg = 'You read the signs ahead. The path continues.';
+          let intelMsg = t('play.intelDefault');
           if (revealed) {
             let typeMsg: string;
             switch (revealed.type) {
               case 'combat':
-                typeMsg = `You sense a presence beyond. ${revealed.content?.enemy ? `Something called ${revealed.content.enemy} waits.` : 'Danger waits.'}`;
+                typeMsg = `${t('play.intelCombatSense')} ${revealed.content?.enemy ? t('play.intelCombatNamed', { enemy: revealed.content.enemy }) : t('play.intelCombatDanger')}`;
                 break;
               case 'corpse':
-                typeMsg = 'A scent of death lingers ahead. Someone fell here.';
+                typeMsg = t('play.intelCorpse');
                 break;
               case 'cache':
-                typeMsg = 'You hear a faint echo ahead. Supplies may remain.';
+                typeMsg = t('play.intelCache');
                 break;
               case 'exit':
-                typeMsg = 'You feel the air change. The exit draws near.';
+                typeMsg = t('play.intelExit');
                 break;
               default:
-                typeMsg = 'The path ahead seems passable. Stay alert.';
+                typeMsg = t('play.intelPathDefault');
             }
             intelMsg = peekChoices.length > 1
-              ? `Of the paths ahead, one reveals itself. ${typeMsg}`
+              ? t('play.intelMultiPrefix', { msg: typeMsg })
               : typeMsg;
           }
-          setMessage(`[Intel] ${intelMsg}`);
+          setMessage(t('play.intelPrefix', { msg: intelMsg }));
           break;
         }
 
@@ -422,7 +422,7 @@ export default function PlayScreen() {
             return;
           }
           
-          setMessage(`Escaped! -${fleeDamage} HP`);
+          setMessage(t('play.escapedDamage', { dmg: fleeDamage }));
           playSFX('flee-fail');
           break;
         }
@@ -455,9 +455,9 @@ export default function PlayScreen() {
               });
               game.incrementItemsFound();
               setLastFoundItem({ name: realCorpse.loot, emoji: realCorpse.lootEmoji });
-              setMessage(`Found: ${realCorpse.lootEmoji} ${realCorpse.loot}`);
+              setMessage(t('play.foundPrefix', { emoji: realCorpse.lootEmoji, name: realCorpse.loot }));
             } else {
-              setMessage('The corpse has nothing you need.');
+              setMessage(t('play.corpseNothing'));
             }
             
             if (game.walletAddress) {
@@ -478,12 +478,12 @@ export default function PlayScreen() {
                 game.addToInventory({ id: Date.now().toString(), ...loot });
                 game.incrementItemsFound();
                 setLastFoundItem({ name: loot.name, emoji: loot.emoji });
-                setMessage(`Found: ${loot.emoji} ${loot.name}`);
+                setMessage(t('play.foundPrefix', { emoji: loot.emoji, name: loot.name }));
               } else {
-                setMessage('Nothing new here.');
+                setMessage(t('play.nothingNewHere'));
               }
             } else {
-              setMessage('Nothing useful here.');
+              setMessage(t('play.nothingUseful'));
             }
           }
           
@@ -506,7 +506,7 @@ export default function PlayScreen() {
           // Fix 2 (Revy): use applyHealing so Blood Pact penalty and HP cap apply
           const healed = game.applyHealing(30);
           game.incrementItemsFound();
-          setMessage(`Found supplies. +${healed} HP`);
+          setMessage(t('play.foundSupplies', { healed }));
           break;
         }
 
@@ -545,13 +545,13 @@ export default function PlayScreen() {
             opts.push({ id: '3', text: contentOpts[2], action: 'explore-tertiary', tag: '[1⚡]' as string | null });
           } else {
             // Fix 11: always include tertiary (intel scout) even if zone only has 2 authored options
-            opts.push({ id: '3', text: 'Observe carefully', action: 'explore-tertiary', tag: '[1⚡]' as string | null });
+            opts.push({ id: '3', text: t('play.observeCarefully'), action: 'explore-tertiary', tag: '[1⚡]' as string | null });
           }
           return opts;
         }
         return branchOptions
           ? branchOptions.map((b) => ({ ...b, tag: null as string | null }))
-          : [{ id: '1', text: 'Press forward', action: 'explore-primary', tag: null as string | null }];
+          : [{ id: '1', text: t('play.pressForward'), action: 'explore-primary', tag: null as string | null }];
       }
       case 'combat':
         // Encounter already resolved (won/fled) on a forking node — offer the
@@ -559,28 +559,28 @@ export default function PlayScreen() {
         if (game.nodeResolved) {
           return branchOptions
             ? branchOptions.map((b) => ({ ...b, tag: null as string | null }))
-            : [{ id: '1', text: 'Continue deeper', action: 'explore' }];
+            : [{ id: '1', text: t('play.continueDeeperOption'), action: 'explore' }];
         }
         return [
-          { id: '1', text: 'Enter combat', action: 'combat', icon: 'strike' },
-          { id: '2', text: 'Try to flee', action: 'flee', icon: 'flee' },
+          { id: '1', text: t('play.enterCombat'), action: 'combat', icon: 'strike' },
+          { id: '2', text: t('play.tryToFlee'), action: 'flee', icon: 'flee' },
         ];
       case 'corpse':
         return [
-          { id: '1', text: 'Search the body', action: 'loot' },
-          ...(branchOptions ?? [{ id: '2', text: 'Pay respects and move on', action: 'explore' }]),
+          { id: '1', text: t('play.searchBody'), action: 'loot' },
+          ...(branchOptions ?? [{ id: '2', text: t('play.payRespects'), action: 'explore' }]),
         ];
       case 'cache':
         return [
-          { id: '1', text: '🌿 Take supplies (+30 HP)', action: 'heal' },
-          ...(branchOptions ?? [{ id: '2', text: 'Continue deeper', action: 'explore' }]),
+          { id: '1', text: t('play.takeSupplies'), action: 'heal' },
+          ...(branchOptions ?? [{ id: '2', text: t('play.continueDeeperOption'), action: 'explore' }]),
         ];
       case 'exit':
         return [
-          { id: '1', text: '🌟 Ascend to victory!', action: 'victory' },
+          { id: '1', text: t('play.ascendVictory'), action: 'victory' },
         ];
       default:
-        return [{ id: '1', text: 'Continue', action: 'explore' }];
+        return [{ id: '1', text: t('play.continueDefault'), action: 'explore' }];
     }
   };
 
@@ -589,7 +589,7 @@ export default function PlayScreen() {
     return (
       <View className="flex-1 bg-crypt-bg justify-center items-center">
         <AsciiLoader width={16} color="#f59e0b" style={{ fontSize: 16 }} />
-        <Text className="text-amber text-sm font-mono mt-4">Loading dungeon...</Text>
+        <Text className="text-amber text-sm font-mono mt-4">{t('play.loadingDungeon')}</Text>
       </View>
     );
   }
@@ -654,7 +654,7 @@ export default function PlayScreen() {
         {/* Boss warning for room 12 */}
         {room.boss && (
           <View className="bg-blood/20 border-2 border-blood p-3 mb-4">
-            <Text className="text-blood text-center font-mono font-bold">⚠️ BOSS ENCOUNTER ⚠️</Text>
+            <Text className="text-blood text-center font-mono font-bold">{t('play.bossEncounter')}</Text>
           </View>
         )}
 
@@ -675,7 +675,7 @@ export default function PlayScreen() {
               </Text>
             </View>
             <Text className="text-bone-dark text-xs font-mono">
-              They fell here. Their belongings remain...
+              {t('play.corpseFlavor')}
             </Text>
           </View>
         )}
@@ -684,7 +684,7 @@ export default function PlayScreen() {
         {optionsVisible && room.type === 'corpse' && !realCorpse && !showCorpse && (
           <View className="bg-crypt-surface border-l-2 border-ethereal p-4 mb-4">
             <Text className="text-ethereal text-sm font-mono">
-              💀 An unknown wanderer lies here, their story lost to the depths.
+              {t('play.unknownWandererFlavor')}
             </Text>
           </View>
         )}
@@ -718,8 +718,8 @@ export default function PlayScreen() {
                 )}
                 <View className="flex-1">
                   <Text className="text-blood-light text-sm font-mono font-bold mb-1">{room.content.enemy}</Text>
-                  <Text className="text-blood-dark text-xs font-mono">blocks your path...</Text>
-                  <Text className="text-bone-muted text-xs font-mono mt-1">[tap to inspect]</Text>
+                  <Text className="text-blood-dark text-xs font-mono">{t('play.blocksPath')}</Text>
+                  <Text className="text-bone-muted text-xs font-mono mt-1">{t('play.tapToInspect')}</Text>
                 </View>
               </View>
             </Pressable>
@@ -728,7 +728,7 @@ export default function PlayScreen() {
 
         {/* Message */}
         {message && (
-          message.startsWith('Found:') && lastFoundItem ? (
+          lastFoundItem && message === t('play.foundPrefix', { emoji: lastFoundItem.emoji, name: lastFoundItem.name }) ? (
             <Pressable
               className="bg-amber/20 border-2 border-amber p-4 mb-4 active:border-amber-bright active:bg-amber/30"
               onPress={() => {
@@ -738,7 +738,7 @@ export default function PlayScreen() {
             >
               <View className="flex-row items-center justify-between">
                 <Text className="text-amber-light text-sm font-mono">✦ {message}</Text>
-                <Text className="text-amber-dark text-xs font-mono ml-2">[tap]</Text>
+                <Text className="text-amber-dark text-xs font-mono ml-2">{t('play.tapHint')}</Text>
               </View>
             </Pressable>
           ) : (
@@ -762,7 +762,7 @@ export default function PlayScreen() {
               <Text className="text-3xl">💀</Text>
               <View className="flex-1">
                 <Text className="text-ethereal text-base font-mono font-bold">@{lootedCorpse.playerName}</Text>
-                <Text className="text-blood text-[10px] font-mono tracking-widest">FALLEN</Text>
+                <Text className="text-blood text-[10px] font-mono tracking-widest">{t('play.fallenLabel')}</Text>
               </View>
               {/* Tip button */}
               {game.walletConnected && !lootedCorpse.tipped && (
@@ -774,19 +774,19 @@ export default function PlayScreen() {
                   {tipping ? (
                     <AsciiLoader variant="pulse" color="#f59e0b" style={{ fontSize: 12 }} />
                   ) : (
-                    <Text className="text-amber text-xs font-mono">💰 TIP</Text>
+                    <Text className="text-amber text-xs font-mono">{t('play.tipButton')}</Text>
                   )}
                 </Pressable>
               )}
               {lootedCorpse.tipped && (
-                <Text className="text-victory text-xs font-mono">✓ Tipped</Text>
+                <Text className="text-victory text-xs font-mono">{t('play.tippedLabel')}</Text>
               )}
             </View>
             <View className="bg-black/30 border-l-2 border-ethereal p-3 mb-3">
               <Text className="text-bone text-sm font-mono italic">"{lootedCorpse.finalMessage}"</Text>
             </View>
             <View className="flex-row justify-between">
-              <Text className="text-bone-dark text-xs font-mono">They carried:</Text>
+              <Text className="text-bone-dark text-xs font-mono">{t('play.theyCarried')}</Text>
               <Text className="text-amber-light text-xs font-mono">{lootedCorpse.lootEmoji} {lootedCorpse.loot}</Text>
             </View>
           </View>
@@ -797,7 +797,7 @@ export default function PlayScreen() {
         <Text className="text-crypt-border-light text-xs font-mono text-center mb-4">────────────────────────</Text>
 
         {/* Options */}
-        <Text className="text-bone-dark text-[10px] font-mono tracking-widest mb-3">▼ WHAT DO YOU DO?</Text>
+        <Text className="text-bone-dark text-[10px] font-mono tracking-widest mb-3">{t('play.whatDoYouDo')}</Text>
         {showCorpse ? (
           // Show continue button(s) after looting corpse (player controls when to advance).
           // A branching node shows one hint button per fork instead of a single continue.
@@ -820,7 +820,7 @@ export default function PlayScreen() {
               disabled={processing}
             >
               <Text className="text-bone-dark text-sm font-mono mr-2">▶</Text>
-              <Text className="text-bone text-sm font-mono">Continue deeper...</Text>
+              <Text className="text-bone text-sm font-mono">{t('play.continueDeeperEllipsis')}</Text>
             </Pressable>
           )
         ) : message ? (
@@ -843,7 +843,7 @@ export default function PlayScreen() {
               disabled={processing}
             >
               <Text className="text-bone-dark text-sm font-mono mr-2">▶</Text>
-              <Text className="text-bone text-sm font-mono">Continue...</Text>
+              <Text className="text-bone text-sm font-mono">{t('play.continueEllipsis')}</Text>
             </Pressable>
           )
         ) : (
@@ -902,7 +902,7 @@ export default function PlayScreen() {
           <View className="flex-row items-center gap-1">
             <Text className="text-amber">◎</Text>
             <Text className="text-amber font-mono font-bold">
-              {game.stakeAmount > 0 ? `${game.stakeAmount} SOL` : 'FREE'}
+              {game.stakeAmount > 0 ? `${game.stakeAmount} SOL` : t('play.freeLabel')}
             </Text>
           </View>
         </View>
@@ -928,7 +928,7 @@ export default function PlayScreen() {
 
         {/* Inventory - clickable items */}
         <View className="flex-row items-center">
-          <Text className="text-bone-dark text-xs font-mono mr-2">ITEMS</Text>
+          <Text className="text-bone-dark text-xs font-mono mr-2">{t('play.itemsLabel')}</Text>
           <ScrollView horizontal style={{ flex: 1 }} showsHorizontalScrollIndicator={false}>
             {game.inventory.length > 0 ? (
               game.inventory.map((item) => (
@@ -947,7 +947,7 @@ export default function PlayScreen() {
                 </Pressable>
               ))
             ) : (
-              <Text className="text-stone-600 text-xs font-mono italic">None</Text>
+              <Text className="text-stone-600 text-xs font-mono italic">{t('play.noneLabel')}</Text>
             )}
           </ScrollView>
         </View>
@@ -967,14 +967,14 @@ export default function PlayScreen() {
             {/* Header */}
             <View style={{ backgroundColor: '#1a0a00', borderBottomWidth: 1, borderBottomColor: '#f59e0b', padding: 12 }}>
               <Text style={{ color: '#f59e0b', fontFamily: 'monospace', fontSize: 12, textAlign: 'center', letterSpacing: 2 }}>
-                ▓ INVENTORY FULL (4/4) ▓
+                {t('play.inventoryFullTitle')}
               </Text>
             </View>
 
             {/* Found item */}
             {game.pendingItem && (
               <View style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: '#2a2a2a' }}>
-                <Text style={{ color: '#9ca3af', fontFamily: 'monospace', fontSize: 10, letterSpacing: 1, marginBottom: 6 }}>FOUND</Text>
+                <Text style={{ color: '#9ca3af', fontFamily: 'monospace', fontSize: 10, letterSpacing: 1, marginBottom: 6 }}>{t('play.foundLabel')}</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                   <Text style={{ fontSize: 28 }}>{game.pendingItem.emoji}</Text>
                   <View style={{ flex: 1 }}>
@@ -999,7 +999,7 @@ export default function PlayScreen() {
             {/* Swap options */}
             <View style={{ padding: 12 }}>
               <Text style={{ color: palette.bone.dark, fontFamily: 'monospace', fontSize: 10, textAlign: 'center', letterSpacing: 2, marginBottom: 8 }}>
-                ── SWAP FOR ──
+                {t('play.swapForLabel')}
               </Text>
               {game.inventory.map((item, idx) => {
                 const details = getItemDetails(item.name);
@@ -1029,7 +1029,7 @@ export default function PlayScreen() {
                         </Text>
                       )}
                     </View>
-                    <Text style={{ color: palette.bone.dark, fontFamily: 'monospace', fontSize: 10 }}>SWAP ▶</Text>
+                    <Text style={{ color: palette.bone.dark, fontFamily: 'monospace', fontSize: 10 }}>{t('play.swapButton')}</Text>
                   </Pressable>
                 );
               })}
@@ -1051,7 +1051,7 @@ export default function PlayScreen() {
                 game.dismissPendingItem();
               }}
             >
-              <Text style={{ color: '#9ca3af', fontFamily: 'monospace', fontSize: 12 }}>Leave it</Text>
+              <Text style={{ color: '#9ca3af', fontFamily: 'monospace', fontSize: 12 }}>{t('play.leaveIt')}</Text>
             </Pressable>
           </View>
         </View>
@@ -1075,11 +1075,11 @@ export default function PlayScreen() {
             const baseHeal = game.rng ? game.rng.range(25, 40) : Math.floor(Math.random() * 15) + 25;
             // Fix 2 (Revy): use applyHealing so Blood Pact penalty and HP cap apply
             const healed = game.applyHealing(baseHeal);
-            setMessage(`You apply the herbs. +${healed} HP.`);
+            setMessage(t('play.herbsApplied', { healed }));
             playSFX('heal');
           } else if (name === 'Pale Rations') {
             game.adjustStamina(1);
-            setMessage('You eat quickly. Stamina restored.');
+            setMessage(t('play.rationsEaten'));
             playSFX('loot-discover');
           } else if (name === 'Bone Dust') {
             // Passive item (Task 3): Bone Dust's reveal fires automatically

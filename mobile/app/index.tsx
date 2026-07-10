@@ -8,6 +8,7 @@ import { CryptBackground } from '../components/CryptBackground';
 import { router, useFocusEffect } from 'expo-router';
 import { useAudio } from '../lib/audio';
 import { dlog, exportDebugLogs } from '../lib/debug-log';
+import { t } from '../lib/i18n';
 
 // Animated gradient button decoration - constantly flows inward
 function AnimatedDescendButton() {
@@ -42,7 +43,7 @@ function AnimatedDescendButton() {
       onPress={() => { router.push('/zone-select'); playSFX('depth-descend'); }}
     >
       <Text className="text-amber font-mono text-sm">{leftFrames[frame]}</Text>
-      <Text className="text-amber text-lg font-bold font-mono tracking-widest mx-2">DESCEND</Text>
+      <Text className="text-amber text-lg font-bold font-mono tracking-widest mx-2">{t('index.descend')}</Text>
       <Text className="text-amber font-mono text-sm">{rightFrames[frame]}</Text>
     </Pressable>
   );
@@ -167,7 +168,7 @@ function EchoSheet({
           letterSpacing: 2,
           color: C.ethereal,
         }}>
-          † ECHOES OF THE FALLEN
+          {t('index.echoesOfFallenTitle')}
         </Text>
       </View>
 
@@ -186,9 +187,9 @@ function EchoSheet({
           }}>
             <Text style={{ fontFamily: 'monospace', fontSize: 14, textAlign: 'center' }} numberOfLines={1}>
               <Text style={{ color: C.ethereal }}>†</Text>
-              <Text style={{ color: C.bone, fontWeight: '600' }}> {(death.playerName || 'Unknown').toUpperCase()}</Text>
+              <Text style={{ color: C.bone, fontWeight: '600' }}> {(death.playerName || t('index.unknownPlayer')).toUpperCase()}</Text>
               <Text style={{ color: C.boneDark }}> · </Text>
-              <Text style={{ color: C.boneDark }}>depth </Text>
+              <Text style={{ color: C.boneDark }}>{t('index.depthLabel')}</Text>
               <Text style={{ color: C.amber, fontWeight: '600' }}>{death.room || '?'}</Text>
             </Text>
             {death.finalMessage ? (
@@ -222,7 +223,7 @@ function EchoSheet({
           );
         }) : (
           <Text style={{ fontFamily: 'monospace', fontSize: 12, color: C.boneMuted, textAlign: 'center', paddingVertical: 32, fontStyle: 'italic' }}>
-            No echoes yet... be the first to fall.
+            {t('index.noEchoesYet')}
           </Text>
         )}
         <View style={{ height: 32 }} />
@@ -362,7 +363,7 @@ export default function HomeScreen() {
                     fontFamily: 'monospace', fontSize: 10, fontWeight: '700',
                     color: '#f59e0b', letterSpacing: 0.5,
                   }}>
-                    {walletConnecting ? 'CONNECTING...' : 'CONNECT'}
+                    {walletConnecting ? t('index.connecting') : t('index.connect')}
                   </Text>
                 </View>
               )}
@@ -380,18 +381,18 @@ export default function HomeScreen() {
           {settings.showLeaderboardLink && (
             <Pressable onPress={() => router.push('/leaderboard')} style={{ paddingVertical: 6, paddingHorizontal: 10 }}>
               {({ pressed }) => (
-                <Text style={{ fontFamily: 'monospace', fontSize: 11, letterSpacing: 1, color: pressed ? '#fff' : '#f59e0b', backgroundColor: pressed ? 'rgba(245,158,11,0.15)' : 'transparent' }}>◈ RANKS</Text>
+                <Text style={{ fontFamily: 'monospace', fontSize: 11, letterSpacing: 1, color: pressed ? '#fff' : '#f59e0b', backgroundColor: pressed ? 'rgba(245,158,11,0.15)' : 'transparent' }}>{t('index.ranksNav')}</Text>
               )}
             </Pressable>
           )}
           <Pressable onPress={() => router.push('/bestiary')} style={{ paddingVertical: 6, paddingHorizontal: 10 }}>
             {({ pressed }) => (
-              <Text style={{ fontFamily: 'monospace', fontSize: 11, letterSpacing: 1, color: pressed ? '#fff' : '#f59e0b', backgroundColor: pressed ? 'rgba(245,158,11,0.15)' : 'transparent' }}>◈ BESTIARY</Text>
+              <Text style={{ fontFamily: 'monospace', fontSize: 11, letterSpacing: 1, color: pressed ? '#fff' : '#f59e0b', backgroundColor: pressed ? 'rgba(245,158,11,0.15)' : 'transparent' }}>{t('index.bestiaryNav')}</Text>
             )}
           </Pressable>
           <Pressable onPress={() => router.push('/codex')} style={{ paddingVertical: 6, paddingHorizontal: 10 }}>
             {({ pressed }) => (
-              <Text style={{ fontFamily: 'monospace', fontSize: 11, letterSpacing: 1, color: pressed ? '#fff' : '#f59e0b', backgroundColor: pressed ? 'rgba(245,158,11,0.15)' : 'transparent' }}>◈ CODEX</Text>
+              <Text style={{ fontFamily: 'monospace', fontSize: 11, letterSpacing: 1, color: pressed ? '#fff' : '#f59e0b', backgroundColor: pressed ? 'rgba(245,158,11,0.15)' : 'transparent' }}>{t('index.codexNav')}</Text>
             )}
           </Pressable>
         </View>
@@ -411,7 +412,7 @@ export default function HomeScreen() {
           <Pressable onPress={() => setAudioSettingsOpen(true)} hitSlop={4}>
             <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 999, gap: 4, backgroundColor: 'rgba(168, 85, 247, 0.15)', borderWidth: 1, borderColor: 'rgba(168, 85, 247, 0.3)' }}>
               <AudiusLogo width={60} height={12} color="#a855f7" />
-              <Text style={{ fontFamily: 'monospace', fontSize: 10, fontWeight: '700', color: '#a855f7', letterSpacing: 0.5 }}>SOUNDTRACK</Text>
+              <Text style={{ fontFamily: 'monospace', fontSize: 10, fontWeight: '700', color: '#a855f7', letterSpacing: 0.5 }}>{t('index.soundtrack')}</Text>
             </View>
           </Pressable>
         </View>
@@ -422,7 +423,7 @@ export default function HomeScreen() {
         <View className="items-center">
           <DieForwardLogoImage variant="vertical" size="large" showGlow glowColor="#f59e0b" />
           <Text className="text-bone font-mono text-center italic mt-6 mb-12">
-            Your death feeds the depths
+            {t('index.tagline')}
           </Text>
           <AnimatedDescendButton />
         </View>
@@ -434,7 +435,7 @@ export default function HomeScreen() {
           {/* Title */}
           <View className="items-center mb-3">
             <Text className="font-mono text-base tracking-widest text-ethereal">
-              † ECHOES
+              {t('index.echoesTitle')}
             </Text>
           </View>
 
@@ -443,21 +444,21 @@ export default function HomeScreen() {
             <View className="items-center w-full" style={{ maxWidth: 280 }}>
               {feedLoading && cachedPreviewDeaths.length === 0 ? (
                 <Text className="text-xs text-bone-dark font-mono italic text-center">
-                  Listening for echoes...
+                  {t('index.listeningForEchoes')}
                 </Text>
               ) : displayedDeaths.length > 0 ? (
                 displayedDeaths.map((death, i) => (
                   <View key={death.id || i} className="py-1">
                     <Text className="text-xs text-bone-muted font-mono text-center" numberOfLines={1}>
                       <Text className="text-ethereal">{death.playerName}</Text>
-                      <Text className="text-bone-dark"> fell at </Text>
-                      <Text className="text-bone-muted">Depth {death.room || '?'}</Text>
+                      <Text className="text-bone-dark">{t('index.fellAt')}</Text>
+                      <Text className="text-bone-muted">{t('index.depthValue', { room: death.room || '?' })}</Text>
                     </Text>
                   </View>
                 ))
               ) : (
                 <Text className="text-xs text-bone-dark font-mono italic text-center">
-                  No echoes yet... be the first to fall.
+                  {t('index.noEchoesYet')}
                 </Text>
               )}
             </View>
@@ -471,7 +472,7 @@ export default function HomeScreen() {
             fontFamily: 'monospace', fontSize: 9, color: C.boneMuted,
             textAlign: 'center', marginTop: 4, letterSpacing: 1,
           }}>
-            tap to open
+            {t('index.tapToOpen')}
           </Text>
         </Pressable>
       </View>
@@ -486,7 +487,7 @@ export default function HomeScreen() {
             fontSize: 9, fontFamily: 'monospace', color: '#6b6460', letterSpacing: 0.5,
           }}
         >
-          v{Constants.expoConfig?.version} [logs]
+          {t('index.versionBadge', { version: Constants.expoConfig?.version ?? '' })}
         </Text>
       </Pressable>
 

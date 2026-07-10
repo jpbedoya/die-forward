@@ -96,10 +96,10 @@ export default function VictoryScreen() {
   const handleShare = async () => {
     setSharing(true);
     playSFX('share-click');
-    const shareMessage = isEmptyHanded 
-      ? `I escaped Die Forward! No stake, just glory. dieforward.com`
-      : `I escaped Die Forward and won ${totalReward.toFixed(3)} SOL! dieforward.com`;
-    const success = await captureAndShare('Die Forward - Victory!', shareMessage);
+    const shareMessage = isEmptyHanded
+      ? t('victory.shareTextEmpty')
+      : t('victory.shareTextWon', { amount: totalReward.toFixed(3) });
+    const success = await captureAndShare(t('victory.shareCardTitle'), shareMessage);
     setSharing(false);
     if (success) {
       setShowShareModal(false);
@@ -245,7 +245,7 @@ export default function VictoryScreen() {
               · · ◆ · ◆ · ◆ · ·
             </Text>
             <Text className="text-bone text-base font-mono text-center mb-2">
-              {isEmptyHanded ? 'You emerged. Unmarked, unbound.' : 'You emerged. The depths released you.'}
+              {isEmptyHanded ? t('victory.emergedEmpty') : t('victory.emergedStaked')}
             </Text>
             {!isEmptyHanded && (
               <Text className="text-amber-bright text-xl font-mono text-center font-bold">
@@ -271,27 +271,27 @@ export default function VictoryScreen() {
         {/* Victory Header */}
         <View className="items-center mb-8">
           <Text className="text-6xl mb-4">🏆</Text>
-          <Text className="text-victory text-2xl font-mono font-bold tracking-widest">ESCAPED</Text>
+          <Text className="text-victory text-2xl font-mono font-bold tracking-widest">{t('victory.escaped')}</Text>
           <Text className="text-bone-muted text-sm font-mono mt-2">
-            {isEmptyHanded ? 'You emerged. Unmarked, unbound.' : 'You emerged. The depths released you.'}
+            {isEmptyHanded ? t('victory.emergedEmpty') : t('victory.emergedStaked')}
           </Text>
         </View>
 
         {/* Victory Stats */}
-        <Text className="text-bone-dark text-xs font-mono tracking-widest mb-2 text-center">YOUR PASSAGE</Text>
+        <Text className="text-bone-dark text-xs font-mono tracking-widest mb-2 text-center">{t('victory.yourPassage')}</Text>
         <View className="bg-crypt-surface border border-victory/30 p-4 mb-6">
           <View className="flex-row justify-between mb-2">
-            <Text className="text-bone-dark text-sm font-mono">Rooms Cleared</Text>
+            <Text className="text-bone-dark text-sm font-mono">{t('victory.roomsCleared')}</Text>
             <Text className="text-bone text-sm font-mono">{game.graph?.maxDepth ?? 13}</Text>
           </View>
           <View className="flex-row justify-between mb-2">
-            <Text className="text-bone-dark text-sm font-mono">Health Remaining</Text>
+            <Text className="text-bone-dark text-sm font-mono">{t('victory.healthRemaining')}</Text>
             <Text className={`text-sm font-mono ${game.health > 50 ? 'text-victory' : 'text-amber'}`}>
               {game.health}%
             </Text>
           </View>
           <View className="flex-row justify-between">
-            <Text className="text-bone-dark text-sm font-mono">Items Found</Text>
+            <Text className="text-bone-dark text-sm font-mono">{t('victory.itemsFound')}</Text>
             <Text className="text-ethereal text-sm font-mono">{game.itemsFound || 0}</Text>
           </View>
         </View>
@@ -322,23 +322,23 @@ export default function VictoryScreen() {
         {!isEmptyHanded ? (
           <View className="bg-victory/10 border-2 border-victory p-4 mb-6">
             <Text className="text-victory-light text-xs font-mono tracking-widest mb-4 text-center">
-              WHAT YOU RECLAIM
+              {t('victory.whatYouReclaim')}
             </Text>
-            
+
             <View className="items-center mb-4">
               <View className="flex-row items-baseline">
                 <Text className="text-victory text-4xl font-mono font-bold">{totalReward.toFixed(3)}</Text>
               </View>
-              <Text className="text-victory-light text-sm font-mono mt-1">SOL</Text>
+              <Text className="text-victory-light text-sm font-mono mt-1">{t('victory.solLabel')}</Text>
             </View>
-            
+
             <View className="bg-black/20 p-3 mb-4">
               <View className="flex-row justify-between mb-1">
-                <Text className="text-bone-dark text-xs font-mono">Original Stake</Text>
+                <Text className="text-bone-dark text-xs font-mono">{t('victory.originalStake')}</Text>
                 <Text className="text-bone text-xs font-mono">{game.stakeAmount}</Text>
               </View>
               <View className="flex-row justify-between">
-                <Text className="text-bone-dark text-xs font-mono">Victory Bonus ({settings.victoryBonusPercent}%)</Text>
+                <Text className="text-bone-dark text-xs font-mono">{t('victory.bonusLabel', { percent: settings.victoryBonusPercent })}</Text>
                 <Text className="text-victory text-xs font-mono">+{victoryBonus.toFixed(3)}</Text>
               </View>
             </View>
@@ -352,15 +352,15 @@ export default function VictoryScreen() {
                 {claiming ? (
                   <AsciiLoader variant="pulse" color="#0d0d0d" />
                 ) : (
-                  <Text className="text-crypt-bg font-mono font-bold">CLAIM REWARD</Text>
+                  <Text className="text-crypt-bg font-mono font-bold">{t('victory.claimReward')}</Text>
                 )}
               </Pressable>
             ) : (
               <View className="bg-victory/20 py-4 items-center">
-                <Text className="text-victory font-mono font-bold">REWARD CLAIMED</Text>
+                <Text className="text-victory font-mono font-bold">{t('victory.rewardClaimed')}</Text>
                 {signature && (
                   <Text className="text-victory-light text-xs font-mono mt-2">
-                    TX: {signature.slice(0, 8)}...
+                    {t('victory.txLabel', { sig: signature.slice(0, 8) })}
                   </Text>
                 )}
               </View>
@@ -369,7 +369,7 @@ export default function VictoryScreen() {
         ) : (
           <View className="bg-crypt-surface border border-crypt-border p-4 mb-6">
             <Text className="text-bone-muted text-sm font-mono text-center italic">
-              An unbound soul. No debt to pay.
+              {t('victory.unboundSoul')}
             </Text>
           </View>
         )}
@@ -377,7 +377,7 @@ export default function VictoryScreen() {
         {/* Inventory */}
         {game.inventory.length > 0 && (
           <View className="bg-crypt-surface border border-crypt-border p-4 mb-6">
-            <Text className="text-bone-dark text-xs font-mono tracking-widest mb-3">ITEMS COLLECTED</Text>
+            <Text className="text-bone-dark text-xs font-mono tracking-widest mb-3">{t('victory.itemsCollected')}</Text>
             <View className="flex-row flex-wrap gap-2">
               {game.inventory.map((item) => (
                 <View key={item.id} className="bg-crypt-bg border border-crypt-border-light py-1 px-2">
@@ -397,27 +397,27 @@ export default function VictoryScreen() {
             className="bg-victory py-4 items-center active:bg-green-600"
             onPress={() => setShowShareModal(true)}
           >
-            <Text className="text-crypt-bg font-mono font-bold tracking-widest">SHARE VICTORY</Text>
+            <Text className="text-crypt-bg font-mono font-bold tracking-widest">{t('victory.shareVictory')}</Text>
           </Pressable>
-          
+
           <Pressable
             className="bg-amber py-4 items-center active:bg-amber-dark"
             onPress={handlePlayAgain}
           >
-            <Text className="text-crypt-bg font-mono font-bold tracking-widest">PLAY AGAIN</Text>
+            <Text className="text-crypt-bg font-mono font-bold tracking-widest">{t('victory.playAgain')}</Text>
           </Pressable>
-          
+
           <Pressable
             className="border border-crypt-border-light py-4 items-center active:border-amber"
             onPress={handleHome}
           >
-            <Text className="text-bone-muted font-mono">Return Home</Text>
+            <Text className="text-bone-muted font-mono">{t('victory.returnHome')}</Text>
           </Pressable>
         </View>
 
         {/* Footer */}
         <Text className="text-bone-dark text-xs font-mono text-center mt-6">
-          Few emerge. Fewer return.
+          {t('victory.footer')}
         </Text>
       </ScrollView>
       </Animated.View>
@@ -431,14 +431,14 @@ export default function VictoryScreen() {
       >
         <View className="flex-1 bg-black/80 justify-center items-center p-4">
           <View className="bg-crypt-surface border border-crypt-border p-4 w-full max-w-[340px]">
-            <Text className="text-victory text-lg font-mono font-bold text-center mb-4">Share Victory Card</Text>
-            
+            <Text className="text-victory text-lg font-mono font-bold text-center mb-4">{t('victory.shareModalTitle')}</Text>
+
             {/* Card Preview */}
             <View className="items-center mb-4">
               <ShareCardCapture viewShotRef={viewShotRef} webRef={webRef}>
-                <VictoryCard 
+                <VictoryCard
                   data={{
-                    playerName: game.nickname || 'Champion',
+                    playerName: game.nickname || t('victory.defaultNickname'),
                     roomsCleared: game.graph?.maxDepth ?? 13,
                     stakeWon: totalReward,
                     enemiesDefeated: 4, // TODO: Track actual kills
@@ -458,15 +458,15 @@ export default function VictoryScreen() {
               {sharing ? (
                 <AsciiLoader variant="pulse" color="#0d0d0d" />
               ) : (
-                <Text className="text-crypt-bg font-mono font-bold">SHARE</Text>
+                <Text className="text-crypt-bg font-mono font-bold">{t('victory.share')}</Text>
               )}
             </Pressable>
-            
+
             <Pressable
               className="py-3 items-center"
               onPress={() => setShowShareModal(false)}
             >
-              <Text className="text-bone-muted font-mono">Cancel</Text>
+              <Text className="text-bone-muted font-mono">{t('victory.cancel')}</Text>
             </Pressable>
           </View>
         </View>

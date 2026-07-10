@@ -9,18 +9,19 @@ import { AudioSettingsModal } from '../components/AudioSettingsModal';
 import { ItemModal, CreatureModal } from '../components/CryptModal';
 import { getItemDetails, getCreatureInfo, ItemDetails, CreatureInfo } from '../lib/content';
 import { useAudio } from '../lib/audio';
+import { t } from '../lib/i18n';
 
 // ─── Tab definitions ──────────────────────────────────────────────────────────
 
 const TABS = [
-  { id: 'combat', label: 'COMBAT' },
-  { id: 'items', label: 'ITEMS' },
-  { id: 'zones', label: 'ZONES' },
-  { id: 'creatures', label: 'CREATURES' },
-  { id: 'milestones', label: 'MILESTONES' },
-  { id: 'modifiers', label: 'MODIFIERS' },
-  { id: 'staking', label: 'STAKING' },
-  { id: 'tips', label: 'WISDOM' },
+  { id: 'combat', label: t('codex.tab.combat') },
+  { id: 'items', label: t('codex.tab.items') },
+  { id: 'zones', label: t('codex.tab.zones') },
+  { id: 'creatures', label: t('codex.tab.creatures') },
+  { id: 'milestones', label: t('codex.tab.milestones') },
+  { id: 'modifiers', label: t('codex.tab.modifiers') },
+  { id: 'staking', label: t('codex.tab.staking') },
+  { id: 'tips', label: t('codex.tab.tips') },
 ] as const;
 
 type TabId = (typeof TABS)[number]['id'];
@@ -103,61 +104,61 @@ function Body({ children }: { children: string }) {
 function CombatSection() {
   return (
     <View>
-      <SectionTitle>ACTIONS</SectionTitle>
+      <SectionTitle>{t('codex.combat.section.actions')}</SectionTitle>
       <Card>
-        <Row label="STRIKE (2 stamina)" value="15-25 base dmg" valueColor={C.blood} />
-        <Body>Attack the enemy. Take a counter-attack. 15% critical hit chance (1.75x).</Body>
+        <Row label={t('codex.combat.action.strike.label')} value={t('codex.combat.action.strike.value')} valueColor={C.blood} />
+        <Body>{t('codex.combat.action.strike.body')}</Body>
       </Card>
       <Card>
-        <Row label="DODGE (1 stamina)" value="65% success" valueColor={C.victory} />
-        <Body>Success: negate all damage. Failure: take 5-9 damage. Dodging a CHARGING enemy deals 8-14 counter damage.</Body>
+        <Row label={t('codex.combat.action.dodge.label')} value={t('codex.combat.action.dodge.value')} valueColor={C.victory} />
+        <Body>{t('codex.combat.action.dodge.body')}</Body>
       </Card>
       <Card>
-        <Row label="BRACE (0 stamina)" value="-50% damage" valueColor={C.amber} />
-        <Body>Reduce incoming damage by half. Still take 6-12 base damage. Free to use when out of stamina.</Body>
+        <Row label={t('codex.combat.action.brace.label')} value={t('codex.combat.action.brace.value')} valueColor={C.amber} />
+        <Body>{t('codex.combat.action.brace.body')}</Body>
       </Card>
       <Card>
-        <Row label="FLEE (1 stamina)" value="50% escape" valueColor={C.ethereal} />
-        <Body>Success: leave combat. 60% clean escape, 40% take 5-12 damage. Failure: take 8-19 damage.</Body>
-      </Card>
-
-      <Divider />
-
-      <SectionTitle>STAMINA</SectionTitle>
-      <Card>
-        <Row label="Starting" value="3 pips" />
-        <Row label="Maximum" value="4 pips" />
-        <Row label="Regen" value="+1 per turn" />
+        <Row label={t('codex.combat.action.flee.label')} value={t('codex.combat.action.flee.value')} valueColor={C.ethereal} />
+        <Body>{t('codex.combat.action.flee.body')}</Body>
       </Card>
 
       <Divider />
 
-      <SectionTitle>ENEMY INTENTS</SectionTitle>
+      <SectionTitle>{t('codex.combat.section.stamina')}</SectionTitle>
       <Card>
-        <Row label="AGGRESSIVE" value="Normal attack" />
-        <Row label="CHARGING" value="Weak now, 2x next turn" valueColor={C.blood} />
-        <Row label="DEFENSIVE" value="Half dmg both ways" />
-        <Row label="HUNTING" value="+30% dmg, -20% flee" valueColor={C.amber} />
-        <Row label="STALKING" value="Normal, -30% flee" />
-        <Row label="ERRATIC" value="Random 0.5-2x dmg" valueColor={C.ethereal} />
-        <Row label="RETREATING" value="Weak, easy to flee" valueColor={C.victory} />
+        <Row label={t('codex.combat.stamina.starting.label')} value={t('codex.combat.stamina.starting.value')} />
+        <Row label={t('codex.combat.stamina.maximum.label')} value={t('codex.combat.stamina.maximum.value')} />
+        <Row label={t('codex.combat.stamina.regen.label')} value={t('codex.combat.stamina.regen.value')} />
       </Card>
 
       <Divider />
 
-      <SectionTitle>COUNTER-PLAY</SectionTitle>
+      <SectionTitle>{t('codex.combat.section.intents')}</SectionTitle>
       <Card>
-        <Body>Choose the right action against an intent for +50% damage bonus:</Body>
+        <Row label={t('codex.combat.intent.aggressive.label')} value={t('codex.combat.intent.aggressive.value')} />
+        <Row label={t('codex.combat.intent.charging.label')} value={t('codex.combat.intent.charging.value')} valueColor={C.blood} />
+        <Row label={t('codex.combat.intent.defensive.label')} value={t('codex.combat.intent.defensive.value')} />
+        <Row label={t('codex.combat.intent.hunting.label')} value={t('codex.combat.intent.hunting.value')} valueColor={C.amber} />
+        <Row label={t('codex.combat.intent.stalking.label')} value={t('codex.combat.intent.stalking.value')} />
+        <Row label={t('codex.combat.intent.erratic.label')} value={t('codex.combat.intent.erratic.value')} valueColor={C.ethereal} />
+        <Row label={t('codex.combat.intent.retreating.label')} value={t('codex.combat.intent.retreating.value')} valueColor={C.victory} />
+      </Card>
+
+      <Divider />
+
+      <SectionTitle>{t('codex.combat.section.counterplay')}</SectionTitle>
+      <Card>
+        <Body>{t('codex.combat.counterplay.intro')}</Body>
         <View style={{ marginTop: 6 }}>
-          <Row label="Strike vs AGGRESSIVE" value="+50% bonus" valueColor={C.victory} />
-          <Row label="Strike vs HUNTING" value="+50% bonus" valueColor={C.victory} />
-          <Row label="Dodge vs CHARGING" value="+50% bonus + counter" valueColor={C.victory} />
+          <Row label={t('codex.combat.counterplay.strikeAggressive.label')} value={t('codex.combat.counterplay.strikeAggressive.value')} valueColor={C.victory} />
+          <Row label={t('codex.combat.counterplay.strikeHunting.label')} value={t('codex.combat.counterplay.strikeHunting.value')} valueColor={C.victory} />
+          <Row label={t('codex.combat.counterplay.dodgeCharging.label')} value={t('codex.combat.counterplay.dodgeCharging.value')} valueColor={C.victory} />
         </View>
       </Card>
 
       <Card>
-        <SectionTitle>THE CHARGE</SectionTitle>
-        <Body>When an enemy shows CHARGING, they deal half damage this turn but DOUBLE damage next turn. Dodge to avoid the charge and deal counter damage. Fail to dodge and the punishment is severe.</Body>
+        <SectionTitle>{t('codex.combat.charge.title')}</SectionTitle>
+        <Body>{t('codex.combat.charge.body')}</Body>
       </Card>
     </View>
   );
@@ -167,33 +168,33 @@ function ItemsSection() {
   const [selectedItem, setSelectedItem] = useState<ItemDetails | null>(null);
 
   const items = [
-    { cat: 'WEAPONS', entries: [
-      { name: 'Rusty Blade', emoji: '⚔️', rarity: 'common', effect: '+20% damage' },
-      { name: 'Torch', emoji: '🔥', rarity: 'uncommon', effect: '+25% damage' },
-      { name: 'Dagger', emoji: '🗡️', rarity: 'uncommon', effect: '+35% damage' },
-      { name: 'Bone Hook', emoji: '🪝', rarity: 'uncommon', effect: '+20% flee chance' },
-      { name: 'Voidblade', emoji: '⚔️', rarity: 'legendary', effect: '+50% damage, -5 HP/turn' },
+    { cat: t('codex.items.category.weapons'), entries: [
+      { name: 'Rusty Blade', label: t('codex.items.weapon.rustyBlade.name'), emoji: '⚔️', rarity: 'common', effect: t('codex.items.weapon.rustyBlade.effect') },
+      { name: 'Torch', label: t('codex.items.weapon.torch.name'), emoji: '🔥', rarity: 'uncommon', effect: t('codex.items.weapon.torch.effect') },
+      { name: 'Dagger', label: t('codex.items.weapon.dagger.name'), emoji: '🗡️', rarity: 'uncommon', effect: t('codex.items.weapon.dagger.effect') },
+      { name: 'Bone Hook', label: t('codex.items.weapon.boneHook.name'), emoji: '🪝', rarity: 'uncommon', effect: t('codex.items.weapon.boneHook.effect') },
+      { name: 'Voidblade', label: t('codex.items.weapon.voidblade.name'), emoji: '⚔️', rarity: 'legendary', effect: t('codex.items.weapon.voidblade.effect') },
     ]},
-    { cat: 'ARMOR', entries: [
-      { name: 'Tattered Shield', emoji: '🛡️', rarity: 'common', effect: '+25% defense' },
-      { name: 'Shield', emoji: '🛡️', rarity: 'uncommon', effect: '+25% defense' },
-      { name: 'Cloak', emoji: '🧥', rarity: 'uncommon', effect: '+10% defense, +15% flee' },
-      { name: 'Bone Charm', emoji: '💀', rarity: 'uncommon', effect: '+15% defense' },
-      { name: 'Ancient Scroll', emoji: '📜', rarity: 'rare', effect: '+20% defense, +10% flee' },
+    { cat: t('codex.items.category.armor'), entries: [
+      { name: 'Tattered Shield', label: t('codex.items.armor.tatteredShield.name'), emoji: '🛡️', rarity: 'common', effect: t('codex.items.armor.tatteredShield.effect') },
+      { name: 'Shield', label: t('codex.items.armor.shield.name'), emoji: '🛡️', rarity: 'uncommon', effect: t('codex.items.armor.shield.effect') },
+      { name: 'Cloak', label: t('codex.items.armor.cloak.name'), emoji: '🧥', rarity: 'uncommon', effect: t('codex.items.armor.cloak.effect') },
+      { name: 'Bone Charm', label: t('codex.items.armor.boneCharm.name'), emoji: '💀', rarity: 'uncommon', effect: t('codex.items.armor.boneCharm.effect') },
+      { name: 'Ancient Scroll', label: t('codex.items.armor.ancientScroll.name'), emoji: '📜', rarity: 'rare', effect: t('codex.items.armor.ancientScroll.effect') },
     ]},
-    { cat: 'CONSUMABLES', entries: [
-      { name: 'Herbs', emoji: '🌿', rarity: 'common', effect: 'Heal 25-40 HP' },
-      { name: 'Pale Rations', emoji: '🍖', rarity: 'common', effect: 'Restore full stamina' },
-      { name: 'Bone Dust', emoji: '💨', rarity: 'common', effect: 'Reveals branching paths (consumed)' },
-      { name: 'Poison Vial', emoji: '🧪', rarity: 'rare', effect: '+40% damage (passive)' },
-      { name: 'Void Salt', emoji: '🧂', rarity: 'uncommon', effect: '+40% vs aquatic' },
+    { cat: t('codex.items.category.consumables'), entries: [
+      { name: 'Herbs', label: t('codex.items.consumable.herbs.name'), emoji: '🌿', rarity: 'common', effect: t('codex.items.consumable.herbs.effect') },
+      { name: 'Pale Rations', label: t('codex.items.consumable.paleRations.name'), emoji: '🍖', rarity: 'common', effect: t('codex.items.consumable.paleRations.effect') },
+      { name: 'Bone Dust', label: t('codex.items.consumable.boneDust.name'), emoji: '💨', rarity: 'common', effect: t('codex.items.consumable.boneDust.effect') },
+      { name: 'Poison Vial', label: t('codex.items.consumable.poisonVial.name'), emoji: '🧪', rarity: 'rare', effect: t('codex.items.consumable.poisonVial.effect') },
+      { name: 'Void Salt', label: t('codex.items.consumable.voidSalt.name'), emoji: '🧂', rarity: 'uncommon', effect: t('codex.items.consumable.voidSalt.effect') },
     ]},
-    { cat: 'ARTIFACTS', entries: [
-      { name: 'Pale Coin', emoji: '🪙', rarity: 'common', effect: '+10% flee chance' },
-      { name: 'Eye of the Hollow', emoji: '👁️', rarity: 'rare', effect: '+20% corpse discovery' },
-      { name: 'Soulstone', emoji: '💎', rarity: 'rare', effect: '+10% all stats (50+ deaths)' },
-      { name: 'Heartstone', emoji: '💎', rarity: 'legendary', effect: 'Near-death warning' },
-      { name: "Death's Mantle", emoji: '🌑', rarity: 'legendary', effect: 'Survive lethal hit at 1 HP' },
+    { cat: t('codex.items.category.artifacts'), entries: [
+      { name: 'Pale Coin', label: t('codex.items.artifact.paleCoin.name'), emoji: '🪙', rarity: 'common', effect: t('codex.items.artifact.paleCoin.effect') },
+      { name: 'Eye of the Hollow', label: t('codex.items.artifact.eyeOfTheHollow.name'), emoji: '👁️', rarity: 'rare', effect: t('codex.items.artifact.eyeOfTheHollow.effect') },
+      { name: 'Soulstone', label: t('codex.items.artifact.soulstone.name'), emoji: '💎', rarity: 'rare', effect: t('codex.items.artifact.soulstone.effect') },
+      { name: 'Heartstone', label: t('codex.items.artifact.heartstone.name'), emoji: '💎', rarity: 'legendary', effect: t('codex.items.artifact.heartstone.effect') },
+      { name: "Death's Mantle", label: t('codex.items.artifact.deathsMantle.name'), emoji: '🌑', rarity: 'legendary', effect: t('codex.items.artifact.deathsMantle.effect') },
     ]},
   ];
 
@@ -210,18 +211,18 @@ function ItemsSection() {
         item={selectedItem}
       />
 
-      <SectionTitle>INVENTORY</SectionTitle>
+      <SectionTitle>{t('codex.items.section.inventory')}</SectionTitle>
       <Card>
-        <Row label="Slots" value="4 maximum" />
-        <Body>When you find a 5th item, choose which slot to swap or leave it behind.</Body>
+        <Row label={t('codex.items.inventory.slots.label')} value={t('codex.items.inventory.slots.value')} />
+        <Body>{t('codex.items.inventory.body')}</Body>
       </Card>
 
-      <SectionTitle>DROP RATES</SectionTitle>
+      <SectionTitle>{t('codex.items.section.dropRates')}</SectionTitle>
       <Card>
-        <Row label="Common" value="55%" valueColor={RARITY_COLOR.common} />
-        <Row label="Uncommon" value="30%" valueColor={RARITY_COLOR.uncommon} />
-        <Row label="Rare" value="12%" valueColor={RARITY_COLOR.rare} />
-        <Row label="Legendary" value="3%" valueColor={RARITY_COLOR.legendary} />
+        <Row label={t('codex.items.dropRate.common.label')} value={t('codex.items.dropRate.common.value')} valueColor={RARITY_COLOR.common} />
+        <Row label={t('codex.items.dropRate.uncommon.label')} value={t('codex.items.dropRate.uncommon.value')} valueColor={RARITY_COLOR.uncommon} />
+        <Row label={t('codex.items.dropRate.rare.label')} value={t('codex.items.dropRate.rare.value')} valueColor={RARITY_COLOR.rare} />
+        <Row label={t('codex.items.dropRate.legendary.label')} value={t('codex.items.dropRate.legendary.value')} valueColor={RARITY_COLOR.legendary} />
       </Card>
 
       <Divider />
@@ -243,8 +244,8 @@ function ItemsSection() {
             >
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                 <Text style={{ fontSize: 16 }}>{item.emoji}</Text>
-                <Text style={{ fontFamily: 'monospace', fontSize: 12, color: RARITY_COLOR[item.rarity] || C.bone, flex: 1 }}>{item.name}</Text>
-                <Badge text={item.rarity.toUpperCase()} color={RARITY_COLOR[item.rarity] || C.boneDark} />
+                <Text style={{ fontFamily: 'monospace', fontSize: 12, color: RARITY_COLOR[item.rarity] || C.bone, flex: 1 }}>{item.label}</Text>
+                <Badge text={t(`codex.rarity.${item.rarity}`)} color={RARITY_COLOR[item.rarity] || C.boneDark} />
               </View>
               <Body>{item.effect}</Body>
             </Pressable>
@@ -257,16 +258,16 @@ function ItemsSection() {
 
 function ZonesSection() {
   const zones = [
-    { emoji: '🌊', name: 'THE SUNKEN CRYPT', unlock: 'Always available', desc: 'Flooded corridors and drowned dead. The first descent.' },
-    { emoji: '🔥', name: 'THE ASHEN CRYPTS', unlock: 'Reach room 8 in any run', desc: 'Scorched halls where embers never die.' },
-    { emoji: '❄️', name: 'THE FROZEN GALLERY', unlock: 'Reach room 8 in any run', desc: 'A gallery of ice-preserved horrors.' },
-    { emoji: '🩸', name: 'THE LIVING TOMB', unlock: 'Reach room 8 in any run', desc: 'Organic walls that breathe and bleed.' },
-    { emoji: '🌑', name: 'THE VOID BEYOND', unlock: 'Clear 3 different zone bosses', desc: 'Where reality frays. Nothing is certain.' },
+    { emoji: '🌊', name: t('codex.zones.sunkenCrypt.name'), unlock: t('codex.zones.sunkenCrypt.unlock'), desc: t('codex.zones.sunkenCrypt.desc') },
+    { emoji: '🔥', name: t('codex.zones.ashenCrypts.name'), unlock: t('codex.zones.ashenCrypts.unlock'), desc: t('codex.zones.ashenCrypts.desc') },
+    { emoji: '❄️', name: t('codex.zones.frozenGallery.name'), unlock: t('codex.zones.frozenGallery.unlock'), desc: t('codex.zones.frozenGallery.desc') },
+    { emoji: '🩸', name: t('codex.zones.livingTomb.name'), unlock: t('codex.zones.livingTomb.unlock'), desc: t('codex.zones.livingTomb.desc') },
+    { emoji: '🌑', name: t('codex.zones.voidBeyond.name'), unlock: t('codex.zones.voidBeyond.unlock'), desc: t('codex.zones.voidBeyond.desc') },
   ];
 
   return (
     <View>
-      <SectionTitle>THE FIVE DESCENTS</SectionTitle>
+      <SectionTitle>{t('codex.zones.section.title')}</SectionTitle>
       {zones.map((z) => (
         <Card key={z.name}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
@@ -275,37 +276,37 @@ function ZonesSection() {
           </View>
           <Body>{z.desc}</Body>
           <View style={{ marginTop: 6 }}>
-            <Row label="Unlock" value={z.unlock} valueColor={C.ethereal} />
+            <Row label={t('codex.zones.row.unlock.label')} value={z.unlock} valueColor={C.ethereal} />
           </View>
         </Card>
       ))}
 
       <Divider />
 
-      <SectionTitle>DUNGEON STRUCTURE</SectionTitle>
+      <SectionTitle>{t('codex.zones.section.structure')}</SectionTitle>
       <Card>
-        <Row label="Rooms 1-4" value="Tier 1 (upper)" valueColor={C.boneDark} />
-        <Row label="Rooms 5-8" value="Tier 2 (middle)" valueColor={C.amber} />
-        <Row label="Rooms 9-12" value="Tier 3 (deep)" valueColor={C.blood} />
-        <Row label="Room 13" value="Boss" valueColor={C.blood} />
+        <Row label={t('codex.zones.structure.rooms1to4.label')} value={t('codex.zones.structure.rooms1to4.value')} valueColor={C.boneDark} />
+        <Row label={t('codex.zones.structure.rooms5to8.label')} value={t('codex.zones.structure.rooms5to8.value')} valueColor={C.amber} />
+        <Row label={t('codex.zones.structure.rooms9to12.label')} value={t('codex.zones.structure.rooms9to12.value')} valueColor={C.blood} />
+        <Row label={t('codex.zones.structure.room13.label')} value={t('codex.zones.structure.room13.value')} valueColor={C.blood} />
       </Card>
 
-      <SectionTitle>ROOM TYPES</SectionTitle>
+      <SectionTitle>{t('codex.zones.section.roomTypes')}</SectionTitle>
       <Card>
-        <Row label="Explore" value="Choose a path" />
-        <Body>Three options: safe path, risk path (55% loot, 15% damage), or spend 1 stamina to scout ahead.</Body>
+        <Row label={t('codex.zones.roomType.explore.label')} value={t('codex.zones.roomType.explore.value')} />
+        <Body>{t('codex.zones.roomType.explore.body')}</Body>
       </Card>
       <Card>
-        <Row label="Combat" value="Fight or flee" />
-        <Body>Turn-based battle against a zone creature. Read the intent. Choose wisely.</Body>
+        <Row label={t('codex.zones.roomType.combat.label')} value={t('codex.zones.roomType.combat.value')} />
+        <Body>{t('codex.zones.roomType.combat.body')}</Body>
       </Card>
       <Card>
-        <Row label="Corpse" value="The fallen" />
-        <Body>Discover real player corpses. Search for loot, pay respects, or tip the dead.</Body>
+        <Row label={t('codex.zones.roomType.corpse.label')} value={t('codex.zones.roomType.corpse.value')} />
+        <Body>{t('codex.zones.roomType.corpse.body')}</Body>
       </Card>
       <Card>
-        <Row label="Cache" value="Supplies" />
-        <Body>Heal +30 HP. A moment of respite before the darkness deepens.</Body>
+        <Row label={t('codex.zones.roomType.cache.label')} value={t('codex.zones.roomType.cache.value')} />
+        <Body>{t('codex.zones.roomType.cache.body')}</Body>
       </Card>
     </View>
   );
@@ -315,27 +316,27 @@ function CreaturesSection() {
   const [selectedCreature, setSelectedCreature] = useState<CreatureInfo | null>(null);
 
   const tiers = [
-    { tier: 1, label: 'TIER 1 — THE UPPER DEPTHS', color: C.boneDark, creatures: [
-      { name: 'The Drowned', emoji: '🧟', hp: '45-65', behavior: 'Aggressive, Erratic' },
-      { name: 'Pale Crawler', emoji: '🕷️', hp: '35-50', behavior: 'Stalking, Hunting' },
-      { name: 'The Hollow', emoji: '👤', hp: '40-55', behavior: 'Stalking, Charging' },
-      { name: 'Bloated One', emoji: '🫧', hp: '55-75', behavior: 'Aggressive, Charging' },
-      { name: 'Flickering Shade', emoji: '👻', hp: '30-45', behavior: 'Erratic, Retreating' },
-      { name: 'The Hunched', emoji: '🐺', hp: '50-70', behavior: 'Hunting, Aggressive' },
-      { name: 'Tideborn', emoji: '🌊', hp: '60-80', behavior: 'Charging, Defensive' },
+    { tier: 1, label: t('codex.creatures.tier1.label'), color: C.boneDark, creatures: [
+      { name: 'The Drowned', label: t('codex.creatures.theDrowned.label'), emoji: '🧟', hp: '45-65', behavior: t('codex.creatures.theDrowned.behavior') },
+      { name: 'Pale Crawler', label: t('codex.creatures.paleCrawler.label'), emoji: '🕷️', hp: '35-50', behavior: t('codex.creatures.paleCrawler.behavior') },
+      { name: 'The Hollow', label: t('codex.creatures.theHollow.label'), emoji: '👤', hp: '40-55', behavior: t('codex.creatures.theHollow.behavior') },
+      { name: 'Bloated One', label: t('codex.creatures.bloatedOne.label'), emoji: '🫧', hp: '55-75', behavior: t('codex.creatures.bloatedOne.behavior') },
+      { name: 'Flickering Shade', label: t('codex.creatures.flickeringShade.label'), emoji: '👻', hp: '30-45', behavior: t('codex.creatures.flickeringShade.behavior') },
+      { name: 'The Hunched', label: t('codex.creatures.theHunched.label'), emoji: '🐺', hp: '50-70', behavior: t('codex.creatures.theHunched.behavior') },
+      { name: 'Tideborn', label: t('codex.creatures.tideborn.label'), emoji: '🌊', hp: '60-80', behavior: t('codex.creatures.tideborn.behavior') },
     ]},
-    { tier: 2, label: 'TIER 2 — THE FLOODED HALLS', color: C.amber, creatures: [
-      { name: 'Hollow Clergy', emoji: '🧙', hp: '70-90', behavior: 'Charging, Defensive' },
-      { name: 'The Bound', emoji: '⛓️', hp: '80-100', behavior: 'Hunting, Charging' },
-      { name: 'Forgotten Guardian', emoji: '🗿', hp: '90-110', behavior: 'Defensive, Charging' },
-      { name: 'The Weeping', emoji: '😢', hp: '60-80', behavior: 'Stalking, Erratic' },
-      { name: 'Carrion Knight', emoji: '⚔️', hp: '85-105', behavior: 'Aggressive, Defensive' },
-      { name: 'The Congregation', emoji: '👥', hp: '100-130', behavior: 'Aggressive, Charging' },
+    { tier: 2, label: t('codex.creatures.tier2.label'), color: C.amber, creatures: [
+      { name: 'Hollow Clergy', label: t('codex.creatures.hollowClergy.label'), emoji: '🧙', hp: '70-90', behavior: t('codex.creatures.hollowClergy.behavior') },
+      { name: 'The Bound', label: t('codex.creatures.theBound.label'), emoji: '⛓️', hp: '80-100', behavior: t('codex.creatures.theBound.behavior') },
+      { name: 'Forgotten Guardian', label: t('codex.creatures.forgottenGuardian.label'), emoji: '🗿', hp: '90-110', behavior: t('codex.creatures.forgottenGuardian.behavior') },
+      { name: 'The Weeping', label: t('codex.creatures.theWeeping.label'), emoji: '😢', hp: '60-80', behavior: t('codex.creatures.theWeeping.behavior') },
+      { name: 'Carrion Knight', label: t('codex.creatures.carrionKnight.label'), emoji: '⚔️', hp: '85-105', behavior: t('codex.creatures.carrionKnight.behavior') },
+      { name: 'The Congregation', label: t('codex.creatures.theCongregation.label'), emoji: '👥', hp: '100-130', behavior: t('codex.creatures.theCongregation.behavior') },
     ]},
-    { tier: 3, label: 'TIER 3 — THE ABYSS', color: C.blood, creatures: [
-      { name: 'The Unnamed', emoji: '❓', hp: '120-150', behavior: 'Erratic, Stalking' },
-      { name: 'Mother of Tides', emoji: '🌊', hp: '130-160', behavior: 'Charging, Aggressive' },
-      { name: 'The Keeper', emoji: '👁️', hp: '180-220', behavior: 'Charging, Aggressive, Defensive' },
+    { tier: 3, label: t('codex.creatures.tier3.label'), color: C.blood, creatures: [
+      { name: 'The Unnamed', label: t('codex.creatures.theUnnamed.label'), emoji: '❓', hp: '120-150', behavior: t('codex.creatures.theUnnamed.behavior') },
+      { name: 'Mother of Tides', label: t('codex.creatures.motherOfTides.label'), emoji: '🌊', hp: '130-160', behavior: t('codex.creatures.motherOfTides.behavior') },
+      { name: 'The Keeper', label: t('codex.creatures.theKeeper.label'), emoji: '👁️', hp: '180-220', behavior: t('codex.creatures.theKeeper.behavior') },
     ]},
   ];
 
@@ -352,19 +353,19 @@ function CreaturesSection() {
         creature={selectedCreature}
       />
 
-      <Body>Creatures grow stronger in the deep. Tier 2 deal 1.5x damage. Tier 3 deal 2x.</Body>
+      <Body>{t('codex.creatures.intro')}</Body>
       <Divider />
-      {tiers.map((t) => (
-        <View key={t.tier}>
-          <SectionTitle>{t.label}</SectionTitle>
-          {t.creatures.map((c) => (
+      {tiers.map((tier) => (
+        <View key={tier.tier}>
+          <SectionTitle>{tier.label}</SectionTitle>
+          {tier.creatures.map((c) => (
             <Pressable
               key={c.name}
               onPress={() => handleCreaturePress(c.name)}
               style={({ pressed }) => ({
                 backgroundColor: pressed ? 'rgba(245,158,11,0.08)' : C.cardBg,
                 borderWidth: 1,
-                borderColor: pressed ? t.color : C.cardBorder,
+                borderColor: pressed ? tier.color : C.cardBorder,
                 padding: 14,
                 marginBottom: 10,
               })}
@@ -372,9 +373,9 @@ function CreaturesSection() {
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 3 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flex: 1 }}>
                   <Text style={{ fontSize: 14 }}>{c.emoji}</Text>
-                  <Text style={{ fontFamily: 'monospace', fontSize: 12, color: t.color }}>{c.name}</Text>
+                  <Text style={{ fontFamily: 'monospace', fontSize: 12, color: tier.color }}>{c.label}</Text>
                 </View>
-                <Text style={{ fontFamily: 'monospace', fontSize: 10, color: C.blood }}>{c.hp} HP</Text>
+                <Text style={{ fontFamily: 'monospace', fontSize: 10, color: C.blood }}>{t('codex.creatures.hpLabel', { hp: c.hp })}</Text>
               </View>
               <Body>{c.behavior}</Body>
             </Pressable>
@@ -388,27 +389,27 @@ function CreaturesSection() {
 
 function MilestonesSection() {
   const milestones = [
-    { deaths: '10', reward: 'Title: "The Persistent"', type: 'cosmetic' },
-    { deaths: '25', reward: 'Border: Bone Frame', type: 'cosmetic' },
-    { deaths: '50', reward: 'Soulstone added to loot pool', type: 'gameplay' },
-    { deaths: '100', reward: 'Title: "The Undying"', type: 'cosmetic' },
-    { deaths: '250', reward: 'Start each run with a random item', type: 'gameplay' },
-    { deaths: '500', reward: 'Start each run with 110 HP', type: 'gameplay' },
+    { deaths: '10', reward: t('codex.milestones.10.reward'), type: 'cosmetic' },
+    { deaths: '25', reward: t('codex.milestones.25.reward'), type: 'cosmetic' },
+    { deaths: '50', reward: t('codex.milestones.50.reward'), type: 'gameplay' },
+    { deaths: '100', reward: t('codex.milestones.100.reward'), type: 'cosmetic' },
+    { deaths: '250', reward: t('codex.milestones.250.reward'), type: 'gameplay' },
+    { deaths: '500', reward: t('codex.milestones.500.reward'), type: 'gameplay' },
   ];
 
   return (
     <View>
-      <Body>Every death moves you forward. Die enough and the dungeon begins to respect you.</Body>
+      <Body>{t('codex.milestones.intro')}</Body>
       <Divider />
-      <SectionTitle>DEATH MILESTONES</SectionTitle>
+      <SectionTitle>{t('codex.milestones.section.title')}</SectionTitle>
       {milestones.map((m) => (
         <Card key={m.deaths}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 3 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
               <Text style={{ fontFamily: 'monospace', fontSize: 14, color: C.blood }}>💀</Text>
-              <Text style={{ fontFamily: 'monospace', fontSize: 13, color: C.amber }}>{m.deaths} deaths</Text>
+              <Text style={{ fontFamily: 'monospace', fontSize: 13, color: C.amber }}>{t('codex.milestones.deathsLabel', { deaths: m.deaths })}</Text>
             </View>
-            <Badge text={m.type === 'gameplay' ? 'PERK' : 'COSMETIC'} color={m.type === 'gameplay' ? C.victory : C.ethereal} />
+            <Badge text={m.type === 'gameplay' ? t('codex.milestones.badge.perk') : t('codex.milestones.badge.cosmetic')} color={m.type === 'gameplay' ? C.victory : C.ethereal} />
           </View>
           <Body>{m.reward}</Body>
         </Card>
@@ -419,19 +420,19 @@ function MilestonesSection() {
 
 function ModifiersSection() {
   const mods = [
-    { emoji: '🩸', name: 'Blood Pact', desc: '+25% damage dealt, -30% healing received. Strike hard, heal little.' },
-    { emoji: '🌑', name: 'Blind Descent', desc: 'Enemy intents hidden on the first turn of each combat. Trust your instincts.' },
-    { emoji: '💀', name: "Death's Echo", desc: '+30% corpse discovery chance. The dead are restless here.' },
-    { emoji: '🧊', name: 'Numbing Cold', desc: 'Start with 2 stamina (not 3), but regen +1 extra per turn.' },
-    { emoji: '🛡️', name: 'Iron Will', desc: 'Brace negates ALL damage, but costs 1 stamina instead of free.' },
-    { emoji: '⚡', name: 'Glass Cannon', desc: 'Start at 60 HP. Deal +50% damage. Kill fast or be killed.' },
+    { emoji: '🩸', name: t('codex.modifiers.bloodPact.name'), desc: t('codex.modifiers.bloodPact.desc') },
+    { emoji: '🌑', name: t('codex.modifiers.blindDescent.name'), desc: t('codex.modifiers.blindDescent.desc') },
+    { emoji: '💀', name: t('codex.modifiers.deathsEcho.name'), desc: t('codex.modifiers.deathsEcho.desc') },
+    { emoji: '🧊', name: t('codex.modifiers.numbingCold.name'), desc: t('codex.modifiers.numbingCold.desc') },
+    { emoji: '🛡️', name: t('codex.modifiers.ironWill.name'), desc: t('codex.modifiers.ironWill.desc') },
+    { emoji: '⚡', name: t('codex.modifiers.glassCannon.name'), desc: t('codex.modifiers.glassCannon.desc') },
   ];
 
   return (
     <View>
-      <Body>Each descent is shaped by a single modifier, rolled at the start. The dungeon never plays the same way twice.</Body>
+      <Body>{t('codex.modifiers.intro')}</Body>
       <Divider />
-      <SectionTitle>RUN MODIFIERS</SectionTitle>
+      <SectionTitle>{t('codex.modifiers.section.title')}</SectionTitle>
       {mods.map((m) => (
         <Card key={m.name}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 }}>
@@ -448,36 +449,36 @@ function ModifiersSection() {
 function StakingSection() {
   return (
     <View>
-      <SectionTitle>STAKE YOUR DESCENT</SectionTitle>
+      <SectionTitle>{t('codex.staking.section.title')}</SectionTitle>
       <Card>
-        <Body>Risk SOL for real stakes. Victory returns your stake plus a 50% bonus from the Memorial Pool. Death claims your stake forever.</Body>
+        <Body>{t('codex.staking.intro')}</Body>
       </Card>
 
-      <SectionTitle>STAKE OPTIONS</SectionTitle>
+      <SectionTitle>{t('codex.staking.section.options')}</SectionTitle>
       <Card>
-        <Row label="Empty-handed" value="0 SOL" valueColor={C.boneDark} />
-        <Row label="0.01 SOL" value="Win: 0.015 SOL" valueColor={C.victory} />
-        <Row label="0.05 SOL" value="Win: 0.075 SOL" valueColor={C.victory} />
-        <Row label="0.10 SOL" value="Win: 0.150 SOL" valueColor={C.victory} />
-        <Row label="0.25 SOL" value="Win: 0.375 SOL" valueColor={C.victory} />
+        <Row label={t('codex.staking.option.emptyHanded.label')} value={t('codex.staking.option.emptyHanded.value')} valueColor={C.boneDark} />
+        <Row label={t('codex.staking.option.tier1.label')} value={t('codex.staking.option.tier1.value')} valueColor={C.victory} />
+        <Row label={t('codex.staking.option.tier2.label')} value={t('codex.staking.option.tier2.value')} valueColor={C.victory} />
+        <Row label={t('codex.staking.option.tier3.label')} value={t('codex.staking.option.tier3.value')} valueColor={C.victory} />
+        <Row label={t('codex.staking.option.tier4.label')} value={t('codex.staking.option.tier4.value')} valueColor={C.victory} />
       </Card>
 
       <Divider />
 
-      <SectionTitle>EMPTY-HANDED</SectionTitle>
+      <SectionTitle>{t('codex.staking.section.emptyHanded')}</SectionTitle>
       <Card>
-        <Body>No wallet required. No risk. Full gameplay, full progression, full milestones. Connect a wallet later to begin staking.</Body>
+        <Body>{t('codex.staking.emptyHanded.body')}</Body>
       </Card>
 
-      <SectionTitle>THE MEMORIAL POOL</SectionTitle>
+      <SectionTitle>{t('codex.staking.section.memorialPool')}</SectionTitle>
       <Card>
-        <Body>When you die, your stake flows into the Memorial Pool. When another player escapes, the pool pays their victory bonus. The dead fund the living.</Body>
+        <Body>{t('codex.staking.memorialPool.body')}</Body>
       </Card>
 
-      <SectionTitle>TIPPING THE FALLEN</SectionTitle>
+      <SectionTitle>{t('codex.staking.section.tipping')}</SectionTitle>
       <Card>
-        <Row label="Tip amount" value="0.01 SOL" />
-        <Body>When you discover a corpse, you may tip the fallen player directly. The SOL goes to their wallet. Honor the dead.</Body>
+        <Row label={t('codex.staking.tipping.label')} value={t('codex.staking.tipping.value')} />
+        <Body>{t('codex.staking.tipping.body')}</Body>
       </Card>
     </View>
   );
@@ -485,23 +486,23 @@ function StakingSection() {
 
 function WisdomSection() {
   const tips = [
-    'Read the intent. CHARGING enemies telegraph double damage. Always dodge them.',
-    'Manage stamina. Keep 1 pip in reserve for emergency dodges.',
-    'Brace is free. When in doubt and low on stamina, brace. 50% reduction beats full damage.',
-    'Risk the secondary path in early rooms when HP is high. Finding items early compounds across the run.',
-    'Voidblade is a gamble. +50% damage is powerful, but 5 self-damage per turn means you must end fights fast.',
-    "Death's Mantle is insurance. Don't swap it for a damage item unless you're confident.",
-    'Flee from Tier 3 enemies if HP is low. Living to fight the boss matters more than killing every creature.',
-    "Don't flee from STALKING enemies. Their -30% flee penalty makes escape unlikely.",
-    'Counter-play matters. Striking an AGGRESSIVE enemy or dodging a CHARGING one gives +50% damage. Learn the matchups.',
-    'Every death counts toward milestones. Even a room-1 death moves you forward.',
+    t('codex.tips.0'),
+    t('codex.tips.1'),
+    t('codex.tips.2'),
+    t('codex.tips.3'),
+    t('codex.tips.4'),
+    t('codex.tips.5'),
+    t('codex.tips.6'),
+    t('codex.tips.7'),
+    t('codex.tips.8'),
+    t('codex.tips.9'),
   ];
 
   return (
     <View>
-      <Body>Knowledge carved by those who came before. Heed it or join them.</Body>
+      <Body>{t('codex.wisdom.intro')}</Body>
       <Divider />
-      <SectionTitle>LESSONS FROM THE DEAD</SectionTitle>
+      <SectionTitle>{t('codex.wisdom.section.title')}</SectionTitle>
       {tips.map((tip, i) => (
         <Card key={i}>
           <View style={{ flexDirection: 'row', gap: 8 }}>
@@ -513,7 +514,7 @@ function WisdomSection() {
 
       <Divider />
       <Text style={{ fontFamily: 'monospace', fontSize: 12, color: C.boneDark, textAlign: 'center', fontStyle: 'italic', marginVertical: 16 }}>
-        Die forward. Die often. Die well.
+        {t('codex.wisdom.footer')}
       </Text>
     </View>
   );
@@ -555,7 +556,7 @@ export default function CodexScreen() {
 
         <ScreenHeader
           showHome
-          title="◈ THE CODEX"
+          title={t('codex.title')}
           right={<AudioToggle inline onSettingsPress={() => setAudioSettingsOpen(true)} />}
         />
 

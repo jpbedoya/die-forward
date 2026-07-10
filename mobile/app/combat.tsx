@@ -73,11 +73,11 @@ type CombatPhase = 'choose' | 'resolve' | 'victory' | 'death';
 
 // Costs are settings-driven — getCombatOptions() builds this at render time
 const BASE_COMBAT_OPTIONS = [
-  { id: 'strike', text: 'Strike', emoji: '⚔️', desc: 'Attack the enemy' },
-  { id: 'dodge',  text: 'Dodge',  emoji: '💨', desc: 'Evade the attack' },
-  { id: 'brace',  text: 'Brace',  emoji: '🛡️', desc: 'Reduce damage' },
-  { id: 'bait',   text: 'Bait',   emoji: '🎯', desc: 'Provoke its nature' },
-  { id: 'flee',   text: 'Flee',   emoji: '🏃', desc: 'Try to escape' },
+  { id: 'strike', textKey: 'combat.ui.optionStrike', emoji: '⚔️', desc: 'Attack the enemy' },
+  { id: 'dodge',  textKey: 'combat.ui.optionDodge',  emoji: '💨', desc: 'Evade the attack' },
+  { id: 'brace',  textKey: 'combat.ui.optionBrace',  emoji: '🛡️', desc: 'Reduce damage' },
+  { id: 'bait',   textKey: 'combat.ui.optionBait',   emoji: '🎯', desc: 'Provoke its nature' },
+  { id: 'flee',   textKey: 'combat.ui.optionFlee',   emoji: '🏃', desc: 'Try to escape' },
 ];
 
 function HealthBar({ current, max, color = 'red' }: { current: number; max: number; color?: string }) {
@@ -251,12 +251,13 @@ export default function CombatScreen() {
   const fleeGated = fleeBlocked(creature?.signature, ruleStateRef.current);
   const COMBAT_OPTIONS = BASE_COMBAT_OPTIONS.map(o => ({
     ...o,
+    text: t(o.textKey),
     cost: o.id === 'strike' ? settings.strikeCost : o.id === 'brace' ? game.getModifiedBraceCost(0) : o.id === 'bait' ? settings.baitCost : 1,
     disabled: o.id === 'flee' && fleeGated,
   }));
   // Void Beyond — at zero clarity, an option that isn't real slips into the list.
   if (clarityDepleted(mechanic, game.zoneStatus)) {
-    COMBAT_OPTIONS.push({ id: 'void-fake', text: 'Step toward the light', emoji: '✨', desc: 'A way out', cost: 0, disabled: false });
+    COMBAT_OPTIONS.push({ id: 'void-fake', textKey: 'combat.ui.optionVoidFake', text: t('combat.ui.optionVoidFake'), emoji: '✨', desc: 'A way out', cost: 0, disabled: false });
   }
 
   // Calculate damage using admin settings — pure math lives in combat-math.ts
@@ -295,7 +296,7 @@ export default function CombatScreen() {
   const handleAction = (action: string) => {
     // Void Beyond — a fake option injected at zero clarity; it resolves to nothing.
     if (action === 'void-fake') {
-      setNarrative('You reach for it — but it was never there. Or it was. You are no longer sure.');
+      setNarrative(t('combat.ui.voidFakeNarrative'));
       return;
     }
 
@@ -521,7 +522,7 @@ export default function CombatScreen() {
     enemyDmg = Math.round(enemyDmg * infectionDamageMultiplier(status));
     if (enemyFrozen && playerDmg > 0) {
       playerDmg = 0;
-      actionNarrative += ' The frozen creature strains against the ice — it cannot strike.';
+      actionNarrative += t('combat.ui.frozenStrain');
     }
     if (enemyFrozen) setEnemyFrozen(false);
 
@@ -547,7 +548,7 @@ export default function CombatScreen() {
         const victim = game.inventory[Math.floor((game.rng ? game.rng.random() : Math.random()) * game.inventory.length)];
         game.removeFromInventory(victim.id);
         status = { ...status, infectionItemDropped: true };
-        actionNarrative += ` The infection spreads — your ${victim.name} rots away.`;
+        actionNarrative += t('combat.ui.infectionSpread', { item: victim.name });
       }
     }
     game.setZoneStatus(status);
@@ -754,7 +755,7 @@ export default function CombatScreen() {
           }
           setNarrative(save.message ?? t('item.mantle.save'));
         } else {
-          setNarrative(`Voidblade burns — ${voidDmg} damage!`);
+          setNarrative(t('combat.ui.voidbladeBurns', { dmg: voidDmg }));
         }
       }
 
@@ -772,7 +773,7 @@ export default function CombatScreen() {
         newIntent = getEnemyIntent('AGGRESSIVE');
       } else if (mechanic === 'FLUX' && rollFlux(game.rng)) {
         newIntent = honorFilteredIntent(creature?.signature, rollIntent(), rollIntent);
-        setNarrative(prev => `${prev} The creature's intent flickers — unreadable.`);
+        setNarrative(prev => `${prev}${t('combat.ui.intentFlickers')}`);
       }
       setEnemyIntent(newIntent);
       setIntentEffects(getIntentEffects(newIntent.type));
@@ -844,7 +845,7 @@ export default function CombatScreen() {
             )}
             <View className="flex-1">
               <Text className="text-bone text-lg font-mono font-bold">{creature.name}</Text>
-              <Text className="text-bone-dark text-xs font-mono">Tier {creature.tier}</Text>
+              <Text className="text-bone-dark text-xs font-mono">{t('combat.ui.tierLabel', { tier: creature.tier })}</Text>
               <View className="flex-row items-center gap-2 mt-2">
                 <Image source={Icons.heart} style={{ width: 22, height: 22, alignSelf: "center" }} resizeMode="contain" />
                 <HealthBar current={enemyHealth} max={enemyMaxHealth} />
@@ -886,12 +887,12 @@ export default function CombatScreen() {
               <View className="border-t border-amber/30 py-4">
                 {enemyDmgTaken > 0 && (
                   <Text className="text-victory text-lg font-mono font-bold text-center">
-                    {`YOU DEALT ${enemyDmgTaken}`}
+                    {t('combat.ui.youDealt', { dmg: enemyDmgTaken })}
                   </Text>
                 )}
                 {playerDmgTaken > 0 && (
                   <Text className="text-blood text-lg font-mono font-bold text-center mt-1">
-                    {`YOU TOOK ${playerDmgTaken}`}
+                    {t('combat.ui.youTook', { dmg: playerDmgTaken })}
                   </Text>
                 )}
               </View>
@@ -909,18 +910,18 @@ export default function CombatScreen() {
         {/* Victory/Death Messages */}
         {phase === 'victory' && (
           <View className="bg-victory/20 border-2 border-victory p-4 mb-4">
-            <Text className="text-victory text-lg font-mono font-bold text-center">VICTORY!</Text>
+            <Text className="text-victory text-lg font-mono font-bold text-center">{t('combat.ui.victoryBanner')}</Text>
             <Text className="text-victory-light text-sm font-mono text-center mt-2">
-              {creature.name} has fallen.
+              {t('combat.ui.enemyFallen', { name: creature.name })}
             </Text>
           </View>
         )}
-        
+
         {phase === 'death' && (
           <View className="bg-blood/20 border-2 border-blood p-4 mb-4">
-            <Text className="text-blood text-lg font-mono font-bold text-center">DEFEATED</Text>
+            <Text className="text-blood text-lg font-mono font-bold text-center">{t('combat.ui.defeatedBanner')}</Text>
             <Text className="text-blood-light text-sm font-mono text-center mt-2">
-              You have fallen to {creature.name}.
+              {t('combat.ui.playerFallen', { name: creature.name })}
             </Text>
           </View>
         )}
@@ -928,7 +929,7 @@ export default function CombatScreen() {
         {/* Combat Options - 2x2 Grid */}
         {phase === 'choose' && (
           <View className="mt-4">
-            <Text className="text-bone-dark text-xs font-mono tracking-widest mb-3">▼ CHOOSE ACTION</Text>
+            <Text className="text-bone-dark text-xs font-mono tracking-widest mb-3">{t('combat.ui.chooseAction')}</Text>
             <View className="flex-row flex-wrap justify-between">
               {COMBAT_OPTIONS.map((option) => {
                 const canUse = game.stamina >= option.cost && !option.disabled;
@@ -991,7 +992,7 @@ export default function CombatScreen() {
               <View className="flex-row items-center gap-1">
                 <Text className="text-amber">◎</Text>
                 <Text className="text-amber font-mono font-bold">
-                  {game.stakeAmount > 0 ? `${game.stakeAmount}` : 'FREE'}
+                  {game.stakeAmount > 0 ? `${game.stakeAmount}` : t('combat.ui.free')}
                 </Text>
               </View>
             </View>
@@ -1000,23 +1001,23 @@ export default function CombatScreen() {
             {mechanic !== 'NONE' && (
               <View className="flex-row items-center gap-3 mb-2">
                 {game.zoneStatus.burn > 0 && (
-                  <Text className="text-amber text-xs font-mono">🔥 Burn {game.zoneStatus.burn}</Text>
+                  <Text className="text-amber text-xs font-mono">{t('combat.ui.burnStatus', { n: game.zoneStatus.burn })}</Text>
                 )}
                 {game.zoneStatus.chill > 0 && (
-                  <Text className="text-stamina-light text-xs font-mono">❄️ Chill {game.zoneStatus.chill}</Text>
+                  <Text className="text-stamina-light text-xs font-mono">{t('combat.ui.chillStatus', { n: game.zoneStatus.chill })}</Text>
                 )}
                 {game.zoneStatus.infection > 0 && (
-                  <Text className="text-victory text-xs font-mono">☣️ Infection {game.zoneStatus.infection}</Text>
+                  <Text className="text-victory text-xs font-mono">{t('combat.ui.infectionStatus', { n: game.zoneStatus.infection })}</Text>
                 )}
                 {mechanic === 'FLUX' && (
-                  <Text className="text-ethereal text-xs font-mono">👁️ Clarity {game.zoneStatus.clarity}</Text>
+                  <Text className="text-ethereal text-xs font-mono">{t('combat.ui.clarityStatus', { n: game.zoneStatus.clarity })}</Text>
                 )}
               </View>
             )}
 
             {/* Inventory */}
             <View className="flex-row items-center">
-              <Text className="text-bone-dark text-xs font-mono mr-2">ITEMS</Text>
+              <Text className="text-bone-dark text-xs font-mono mr-2">{t('combat.ui.itemsLabel')}</Text>
               <ScrollView horizontal style={{ flex: 1 }} showsHorizontalScrollIndicator={false}>
                 {game.inventory.length > 0 ? (
                   game.inventory.map((item) => (
@@ -1029,7 +1030,7 @@ export default function CombatScreen() {
                     </Pressable>
                   ))
                 ) : (
-                  <Text className="text-stone-600 text-xs font-mono italic">None</Text>
+                  <Text className="text-stone-600 text-xs font-mono italic">{t('combat.ui.noneLabel')}</Text>
                 )}
               </ScrollView>
             </View>
@@ -1063,11 +1064,11 @@ export default function CombatScreen() {
                 const baseHeal = game.rng ? game.rng.range(25, 40) : Math.floor(Math.random() * 15) + 25; // 25-40 HP
                 // Fix 2 (Revy): use applyHealing so modifier penalty and HP cap apply consistently
                 const healed = game.applyHealing(baseHeal);
-                setNarrative(`You quickly apply the herbs. Wounds close. +${healed} HP.`);
+                setNarrative(t('combat.ui.herbsApplied', { healed }));
                 playSFX('heal');
               } else if (name === 'Pale Rations') {
                 game.adjustStamina(settings.staminaRegen);
-                setNarrative('You eat quickly. Strength returns to your legs.');
+                setNarrative(t('combat.ui.rationsEaten'));
                 playSFX('loot-discover');
               } else if (name === 'Bone Dust') {
                 // Passive item (Task 3): Bone Dust's reveal fires automatically
@@ -1079,26 +1080,26 @@ export default function CombatScreen() {
                 return;
               } else if (name === 'Ember Flask') {
                 game.setZoneStatus(clearStatus(game.zoneStatus, 'burn'));
-                setNarrative('The flask drinks the heat. The burning stops.');
+                setNarrative(t('combat.ui.emberFlaskUsed'));
                 playSFX('heal');
               } else if (name === 'Thermal Flask') {
                 game.setZoneStatus(clearStatus(game.zoneStatus, 'chill'));
-                setNarrative('Warmth floods back. The cold retreats.');
+                setNarrative(t('combat.ui.thermalFlaskUsed'));
                 playSFX('heal');
               } else if (name === 'Cleansing Salts') {
                 game.setZoneStatus(clearStatus(game.zoneStatus, 'infection'));
-                setNarrative('The salts draw the rot out through the skin. It is not painless.');
+                setNarrative(t('combat.ui.cleansingSaltsUsed'));
                 playSFX('heal');
               } else if (name === 'Clarity Shard') {
                 game.setZoneStatus(restoreClarity(game.zoneStatus));
-                setNarrative('The shard steadies your mind. Reality settles, briefly.');
+                setNarrative(t('combat.ui.clarityShardUsed'));
                 playSFX('ui-click');
               } else if (name === 'Frost Shard') {
                 if (creature && isFreezeImmune(creature.name)) {
-                  setNarrative(`The cold finds no purchase — ${creature.name} does not feel it.`);
+                  setNarrative(t('combat.ui.freezeImmune', { name: creature.name }));
                 } else {
                   setEnemyFrozen(true);
-                  setNarrative('The shard shatters against the enemy. It seizes, locked in ice.');
+                  setNarrative(t('combat.ui.enemyFrozen'));
                 }
                 playSFX('ui-click');
               }

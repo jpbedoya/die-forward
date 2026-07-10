@@ -24,13 +24,14 @@ import {
   type CreatureMasteryEntry,
   computeAggregate,
 } from '../lib/bestiary-mastery';
+import { t } from '../lib/i18n';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const TIER_CONFIG = {
-  1: { label: 'TIER I',   color: palette.bone.dark, border: '#2a2520', bg: 'rgba(42,37,32,0.6)' },
-  2: { label: 'TIER II',  color: '#c47a3a', border: '#5a3a1a', bg: 'rgba(90,58,26,0.3)' },
-  3: { label: 'TIER III', color: '#c84040', border: '#5a1a1a', bg: 'rgba(90,26,26,0.3)' },
+  1: { label: 'bestiary.tierI',   color: palette.bone.dark, border: '#2a2520', bg: 'rgba(42,37,32,0.6)' },
+  2: { label: 'bestiary.tierII',  color: '#c47a3a', border: '#5a3a1a', bg: 'rgba(90,58,26,0.3)' },
+  3: { label: 'bestiary.tierIII', color: '#c84040', border: '#5a1a1a', bg: 'rgba(90,26,26,0.3)' },
 } as const;
 
 type BestiaryCreature = CreatureInfo & {
@@ -164,7 +165,7 @@ function CreatureCard({ creature, onPress, cardWidth, mastery }: {
           paddingHorizontal: 5, paddingVertical: 2,
         }}>
           <Text style={{ fontFamily: 'monospace', fontSize: 9, color: tier.color, letterSpacing: 1 }}>
-            {tier.label}
+            {t(tier.label)}
           </Text>
         </View>
         {/* Mastery badge overlay — top-right corner */}
@@ -398,7 +399,7 @@ function CreatureDetailModal({ creature, onClose, mastery, onPrev, onNext }: {
                       backgroundColor: tier.bg, paddingHorizontal: 7, paddingVertical: 3,
                     }}>
                       <Text style={{ fontFamily: 'monospace', fontSize: 10, color: tier.color, letterSpacing: 1 }}>
-                        {tier.label}
+                        {t(tier.label)}
                       </Text>
                     </View>
                     {creature.zoneNames.length > 0 && (
@@ -433,7 +434,7 @@ function CreatureDetailModal({ creature, onClose, mastery, onPrev, onNext }: {
                 fontFamily: 'monospace', fontSize: 10, color: palette.bone.dark,
                 letterSpacing: 2, marginBottom: 8,
               }}>
-                BEHAVIORS
+                {t('bestiary.behaviors')}
               </Text>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
                 {[...new Set(creature.behaviors)].map((b) => (
@@ -448,21 +449,21 @@ function CreatureDetailModal({ creature, onClose, mastery, onPrev, onNext }: {
                 fontFamily: 'monospace', fontSize: 10, color: palette.bone.dark,
                 letterSpacing: 2, marginTop: 18, marginBottom: 8,
               }}>
-                MASTERY
+                {t('bestiary.mastery')}
               </Text>
               {mastery ? (
                 <View style={{ gap: 4 }}>
                   <Text style={{ fontFamily: 'monospace', fontSize: 12, color: palette.bone.muted }}>
-                    Encountered <Text style={{ color: palette.amber.DEFAULT }}>{mastery.encounters}</Text> · Defeated <Text style={{ color: palette.victory.DEFAULT }}>{mastery.defeats}</Text>
-                    {mastery.killedByCount > 0 && <> · Killed you <Text style={{ color: palette.blood.DEFAULT }}>{mastery.killedByCount}</Text></>}
+                    {t('bestiary.encounteredLabel')}<Text style={{ color: palette.amber.DEFAULT }}>{mastery.encounters}</Text>{t('bestiary.defeatedLabel')}<Text style={{ color: palette.victory.DEFAULT }}>{mastery.defeats}</Text>
+                    {mastery.killedByCount > 0 && <>{t('bestiary.killedYouLabel')}<Text style={{ color: palette.blood.DEFAULT }}>{mastery.killedByCount}</Text></>}
                   </Text>
                   <Text style={{ fontFamily: 'monospace', fontSize: 10, color: palette.bone.dark }}>
-                    First seen {new Date(mastery.firstSeenAt).toLocaleDateString()} · Last seen {new Date(mastery.lastSeenAt).toLocaleDateString()}
+                    {t('bestiary.firstSeenLabel')}{new Date(mastery.firstSeenAt).toLocaleDateString()}{t('bestiary.lastSeenLabel')}{new Date(mastery.lastSeenAt).toLocaleDateString()}
                   </Text>
                 </View>
               ) : (
                 <Text style={{ fontFamily: 'monospace', fontSize: 11, color: palette.bone.dark, fontStyle: 'italic' }}>
-                  Not yet encountered.
+                  {t('bestiary.notYetEncountered')}
                 </Text>
               )}
             </View>
@@ -545,20 +546,20 @@ export default function BestiaryScreen() {
       {/* Aggregate mastery strip */}
       <View style={{ alignItems: 'center', paddingVertical: 4 }}>
         <Text style={{ fontFamily: 'monospace', fontSize: 11, color: palette.bone.muted, letterSpacing: 1 }}>
-          Discovered <Text style={{ color: palette.amber.DEFAULT }}>{aggregate.discoveredCount}</Text>
-          <Text style={{ color: palette.bone.dark }}>/{aggregate.totalCount}</Text>
+          {t('bestiary.discoveredLabel')}<Text style={{ color: palette.amber.DEFAULT }}>{aggregate.discoveredCount}</Text>
+          <Text style={{ color: palette.bone.dark }}>{t('bestiary.slash')}{aggregate.totalCount}</Text>
           {'   ·   '}
-          Mastered <Text style={{ color: palette.victory.DEFAULT }}>{aggregate.masteredCount}</Text>
-          <Text style={{ color: palette.bone.dark }}>/{aggregate.totalCount}</Text>
+          {t('bestiary.masteredLabel')}<Text style={{ color: palette.victory.DEFAULT }}>{aggregate.masteredCount}</Text>
+          <Text style={{ color: palette.bone.dark }}>{t('bestiary.slash')}{aggregate.totalCount}</Text>
         </Text>
       </View>
 
       {/* Mastery filter pills */}
       <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 8, paddingTop: 8, paddingBottom: 4 }}>
         {([
-          { key: null,           label: 'ALL' },
-          { key: 'encountered',  label: 'ENCOUNTERED' },
-          { key: 'undefeated',   label: 'UNDEFEATED' },
+          { key: null,           label: 'bestiary.filterAll' },
+          { key: 'encountered',  label: 'bestiary.filterEncountered' },
+          { key: 'undefeated',   label: 'bestiary.filterUndefeated' },
         ] as const).map((m) => {
           const active = filterMastery === m.key;
           return (
@@ -573,7 +574,7 @@ export default function BestiaryScreen() {
               }}
             >
               <Text style={{ fontFamily: 'monospace', fontSize: 10, color: active ? palette.amber.DEFAULT : palette.bone.dark, letterSpacing: 1 }}>
-                {m.label}
+                {t(m.label)}
               </Text>
             </Pressable>
           );
@@ -582,13 +583,13 @@ export default function BestiaryScreen() {
 
       {/* Tier filter buttons */}
       <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 8, paddingVertical: 8 }}>
-        {([1, 2, 3] as const).map((t) => {
-          const cfg = TIER_CONFIG[t];
-          const active = filterTier === t;
+        {([1, 2, 3] as const).map((tierNum) => {
+          const cfg = TIER_CONFIG[tierNum];
+          const active = filterTier === tierNum;
           return (
             <Pressable
-              key={t}
-              onPress={() => setFilterTier(prev => prev === t ? null : t)}
+              key={tierNum}
+              onPress={() => setFilterTier(prev => prev === tierNum ? null : tierNum)}
               style={{
                 flexDirection: 'row', alignItems: 'center', gap: 5,
                 borderWidth: 1,
@@ -598,7 +599,7 @@ export default function BestiaryScreen() {
               }}
             >
               <View style={{ width: 6, height: 6, backgroundColor: cfg.color }} />
-              <Text style={{ fontFamily: 'monospace', fontSize: 10, color: cfg.color, letterSpacing: 1 }}>{cfg.label}</Text>
+              <Text style={{ fontFamily: 'monospace', fontSize: 10, color: cfg.color, letterSpacing: 1 }}>{t(cfg.label)}</Text>
             </Pressable>
           );
         })}
@@ -615,7 +616,7 @@ export default function BestiaryScreen() {
             paddingVertical: 5,
           }}
         >
-          <Text style={{ fontFamily: 'monospace', fontSize: 10, color: filterZone ? palette.bone.dark : '#a78bfa' }}>ALL ZONES</Text>
+          <Text style={{ fontFamily: 'monospace', fontSize: 10, color: filterZone ? palette.bone.dark : '#a78bfa' }}>{t('bestiary.allZones')}</Text>
         </Pressable>
         {ZONES.map((z) => {
           const active = filterZone === z.id;
@@ -646,7 +647,7 @@ export default function BestiaryScreen() {
 
         <ScreenHeader
           showHome
-          title="◈ BESTIARY"
+          title={t('bestiary.title')}
           right={<AudioToggle inline onSettingsPress={() => setAudioSettingsOpen(true)} />}
         />
 
