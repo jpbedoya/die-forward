@@ -184,7 +184,7 @@ function ItemsSection() {
     { cat: 'CONSUMABLES', entries: [
       { name: 'Herbs', emoji: '🌿', rarity: 'common', effect: 'Heal 25-40 HP' },
       { name: 'Pale Rations', emoji: '🍖', rarity: 'common', effect: 'Restore full stamina' },
-      { name: 'Bone Dust', emoji: '💨', rarity: 'common', effect: 'Reveal hidden paths' },
+      { name: 'Bone Dust', emoji: '💨', rarity: 'common', effect: 'Reveals branching paths (consumed)' },
       { name: 'Poison Vial', emoji: '🧪', rarity: 'rare', effect: '+40% damage (passive)' },
       { name: 'Void Salt', emoji: '🧂', rarity: 'uncommon', effect: '+40% vs aquatic' },
     ]},

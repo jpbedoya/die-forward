@@ -100,6 +100,73 @@ export function gateStatus(
   return has ? 'open' : 'locked';
 }
 
+/**
+ * Display resolution for a single branch-choice button, folding together
+ * side/gate status and Bone Dust's `revealPaths` reveal into one precedence
+ * order so play.tsx has no branching logic of its own:
+ *
+ *   1. locked gate always wins — `[SEALED]`, never names the required item
+ *      (bible: imply, don't explain).
+ *   2. `revealPaths` (open gate or ungated) — the concrete `trail.type.<type>`
+ *      tag, since Bone Dust shows the dead's true paths.
+ *   3. open gate (no reveal) — `[UNSEALED]`.
+ *   4. plain side node — `[ASIDE]`.
+ *   5. anything else — `undefined`, caller keeps its existing hint tag.
+ *
+ * `tagOverride` is `undefined` rather than the normal hint tag so callers
+ * that already compute a per-type tag (`edgeHint`) know to keep it.
+ */
+export interface BranchDisplay {
+  locked: boolean;
+  tagOverride?: string;
+  /** Descriptive line shown alongside a locked button (`t('gate.locked')`). */
+  note?: string;
+  consumesGateItem: boolean;
+  gateItem?: string;
+}
+
+// `[SEALED]` is a literal marker, not an i18n key — mirrors the existing
+// hardcoded `[RISK]` / `[1⚡]` tags in play.tsx rather than going through
+// `hint.tag.*` (not in the task's key list; locked state is legible without
+// translation, same as those).
+const SEALED_TAG = '[SEALED]';
+
+export function resolveBranchDisplay(
+  node: DungeonNode,
+  inventory: { name: string }[],
+  revealPaths: boolean,
+): BranchDisplay {
+  const status = gateStatus(node, inventory);
+
+  if (status === 'locked') {
+    return { locked: true, tagOverride: SEALED_TAG, note: t('gate.locked'), consumesGateItem: false };
+  }
+
+  if (revealPaths) {
+    return {
+      locked: false,
+      tagOverride: t(`trail.type.${node.type}`),
+      consumesGateItem: status === 'open' && !!node.gate?.consumes,
+      gateItem: status === 'open' ? node.gate!.item : undefined,
+    };
+  }
+
+  if (status === 'open') {
+    return {
+      locked: false,
+      tagOverride: t('hint.tag.unsealed'),
+      consumesGateItem: !!node.gate?.consumes,
+      gateItem: node.gate!.item,
+    };
+  }
+
+  if (isSideNode(node)) {
+    return { locked: false, tagOverride: t('hint.tag.side'), consumesGateItem: false };
+  }
+
+  return { locked: false, consumesGateItem: false };
+}
+
 /** Number of authored sense-line variants per node type, `hint.<type>.1..N`. */
 const HINT_VARIANT_COUNT = 3;
 

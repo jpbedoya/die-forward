@@ -21,7 +21,7 @@ import { t } from '../lib/i18n';
 import { getMilestonePerks } from '../lib/milestones';
 import { getZoneMechanic } from '../lib/zone-mechanics';
 import { getZoneDepth, loadZone } from '../lib/zone-loader';
-import { nextChoices, edgeHint } from '../lib/traversal';
+import { nextChoices, edgeHint, resolveBranchDisplay } from '../lib/traversal';
 import { createRunRng } from '../lib/seeded-random';
 import { useUnifiedWallet, type Address } from '../lib/wallet/unified';
 import { ItemModal, CreatureModal } from '../components/CryptModal';
@@ -100,11 +100,21 @@ export default function PlayScreen() {
   const depth = getZoneDepth(loadZone(game.zoneId), roomNumber);
   const mechanic = getZoneMechanic(game.zoneId);
 
+  // Item effects for the current inventory — read once per render so the
+  // branch builder and the advance handler agree on the same revealPaths
+  // (Bone Dust) state.
+  const itemEffects = getItemEffects(game.inventory);
+
   // Branch choices: when the current node forks (>1 next edge), replace the
   // single "continue" affordance with one dual-signal hint button per edge
   // (spec §4.2). Single-edge nodes fall through to null and keep today's
   // single continue button. Hints are seeded per-node so they're stable
   // across re-renders/replays of the same run, independent of gameplay rng.
+  // Side/gate status (Task 3) folds into the same tag slot via
+  // resolveBranchDisplay: a locked gate renders `[SEALED]` and disables the
+  // button; an open gate or plain side annex swaps in `[UNSEALED]`/`[ASIDE]`;
+  // Bone Dust's revealPaths overrides all of that with the concrete node
+  // type, since the whole point is to stop being vague.
   const branchOptions = (() => {
     if (!game.graph || !game.currentNodeId) return null;
     const choices = nextChoices(game.graph, game.currentNodeId);
@@ -112,7 +122,17 @@ export default function PlayScreen() {
     return choices.map((n) => {
       const hintRng = createRunRng(`${game.seed ?? 'seed'}-hint-${n.id}`);
       const { sense, tag } = edgeHint(n, hintRng);
-      return { id: n.id, text: `${sense} ${tag}`, action: `advance:${n.id}` };
+      const display = resolveBranchDisplay(n, game.inventory, !!itemEffects.revealPaths);
+      const displayTag = display.tagOverride ?? tag;
+      const text = display.locked ? `${sense} ${display.note} ${displayTag}` : `${sense} ${displayTag}`;
+      return {
+        id: n.id,
+        text,
+        action: `advance:${n.id}`,
+        locked: display.locked,
+        consumesGateItem: display.consumesGateItem,
+        gateItem: display.gateItem,
+      };
     });
   })();
 
@@ -216,6 +236,41 @@ export default function PlayScreen() {
         // straight to the chosen edge. Reset the corpse-card state too since
         // this button also stands in for "post-loot continue" at a fork.
         const targetId = action.slice('advance:'.length);
+        const targetNode = game.graph?.nodes[targetId];
+
+        // Gate/reveal consumption happens on CHOOSE, not on render — the
+        // branch buttons already reflect gate/reveal status, but the actual
+        // inventory removal (and its narrative line) only fires once the
+        // player commits to this edge. A native Alert (not `message` state)
+        // carries the line so it doesn't bleed into the next room's
+        // narrative-streaming gate (`optionsVisible` would otherwise flip
+        // true early via `!!message`).
+        if (targetNode) {
+          const display = resolveBranchDisplay(targetNode, game.inventory, !!itemEffects.revealPaths);
+          let narrativeLine: string | null = null;
+
+          if (display.consumesGateItem && display.gateItem) {
+            const gateItem = game.inventory.find((i) => i.name === display.gateItem);
+            if (gateItem) {
+              game.removeFromInventory(gateItem.id);
+              narrativeLine = t('gate.opened', { item: display.gateItem });
+            }
+          }
+
+          // Bone Dust is consumed the first time its reveal is acted on —
+          // i.e. the first branch choice made at a revealing multi-edge
+          // node — regardless of which edge is taken.
+          if (itemEffects.revealPaths && branchOptions && branchOptions.length > 1) {
+            const dust = game.inventory.find((i) => i.name === 'Bone Dust');
+            if (dust) {
+              game.removeFromInventory(dust.id);
+              narrativeLine = narrativeLine ?? t('item.bonedust.used');
+            }
+          }
+
+          if (narrativeLine) Alert.alert('', narrativeLine);
+        }
+
         playSFX('footstep');
         setShowCorpse(false);
         setLootedCorpse(null);
@@ -750,12 +805,12 @@ export default function PlayScreen() {
             branchOptions.map((opt) => (
               <Pressable
                 key={opt.id}
-                className="flex-row items-center bg-crypt-surface border-l-2 border-amber py-4 px-3 mb-2"
+                className={`flex-row items-center bg-crypt-surface border-l-2 py-4 px-3 mb-2 ${opt.locked ? 'border-crypt-border-light opacity-40' : 'border-amber'}`}
                 onPress={() => handleAction(opt.action)}
-                disabled={processing}
+                disabled={processing || opt.locked}
               >
                 <Text className="text-bone-dark text-sm font-mono mr-2">▶</Text>
-                <Text className="text-bone text-sm font-mono flex-1">{opt.text}</Text>
+                <Text className={`text-sm font-mono flex-1 ${opt.locked ? 'text-bone-dark' : 'text-bone'}`}>{opt.text}</Text>
               </Pressable>
             ))
           ) : (
@@ -773,12 +828,12 @@ export default function PlayScreen() {
             branchOptions.map((opt) => (
               <Pressable
                 key={opt.id}
-                className="flex-row items-center bg-crypt-surface border-l-2 border-amber py-4 px-3 mb-2"
+                className={`flex-row items-center bg-crypt-surface border-l-2 py-4 px-3 mb-2 ${opt.locked ? 'border-crypt-border-light opacity-40' : 'border-amber'}`}
                 onPress={() => handleAction(opt.action)}
-                disabled={processing}
+                disabled={processing || opt.locked}
               >
                 <Text className="text-bone-dark text-sm font-mono mr-2">▶</Text>
-                <Text className="text-bone text-sm font-mono flex-1">{opt.text}</Text>
+                <Text className={`text-sm font-mono flex-1 ${opt.locked ? 'text-bone-dark' : 'text-bone'}`}>{opt.text}</Text>
               </Pressable>
             ))
           ) : (
@@ -796,12 +851,13 @@ export default function PlayScreen() {
             const tag = (option as any).tag as string | null | undefined;
             const isRisk = tag === '[RISK]';
             const isTertiary = tag === '[1⚡]';
+            const isLocked = !!(option as any).locked;
             return (
               <Pressable
                 key={option.id}
-                className={`bg-crypt-surface border-l-2 py-4 px-3 mb-2 ${isRisk ? 'border-blood/60 active:border-blood active:bg-blood/5' : isTertiary ? 'border-stamina-dark/60 active:border-stamina active:bg-stamina-dark/10' : 'border-crypt-border-light active:border-amber active:bg-amber/5'} ${processing ? 'opacity-50' : ''}`}
+                className={`bg-crypt-surface border-l-2 py-4 px-3 mb-2 ${isLocked ? 'border-crypt-border-light' : isRisk ? 'border-blood/60 active:border-blood active:bg-blood/5' : isTertiary ? 'border-stamina-dark/60 active:border-stamina active:bg-stamina-dark/10' : 'border-crypt-border-light active:border-amber active:bg-amber/5'} ${processing || isLocked ? 'opacity-40' : ''}`}
                 onPress={() => handleAction(option.action)}
-                disabled={processing}
+                disabled={processing || isLocked}
               >
                 <View className="flex-row items-center justify-between">
                   <View className="flex-row items-center flex-1">
@@ -1026,8 +1082,12 @@ export default function PlayScreen() {
             setMessage('You eat quickly. Stamina restored.');
             playSFX('loot-discover');
           } else if (name === 'Bone Dust') {
-            setMessage('The dust reveals hidden signs. Your path feels clearer.');
-            playSFX('ui-click');
+            // Passive item (Task 3): Bone Dust's reveal fires automatically
+            // at a branching node and is consumed there — manually "using"
+            // it here would silently discard it for no effect, so decline
+            // rather than remove it from inventory.
+            setSelectedItem(null);
+            return;
           }
           game.removeFromInventory((selectedItem as any).id);
           setSelectedItem(null);

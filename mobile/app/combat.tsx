@@ -1030,8 +1030,13 @@ export default function CombatScreen() {
                 setNarrative('You eat quickly. Strength returns to your legs.');
                 playSFX('loot-discover');
               } else if (name === 'Bone Dust') {
-                setNarrative('The dust swirls. Your senses sharpen — you feel the creature\'s next move.');
-                playSFX('ui-click');
+                // Passive item (Task 3): Bone Dust's reveal fires automatically
+                // at a branching node on the play screen and is consumed
+                // there — it has no combat effect, so decline the manual use
+                // (no consumption, no pounce-punish opening) rather than
+                // silently discard it here.
+                setSelectedItem(null);
+                return;
               } else if (name === 'Ember Flask') {
                 game.setZoneStatus(clearStatus(game.zoneStatus, 'burn'));
                 setNarrative('The flask drinks the heat. The burning stops.');

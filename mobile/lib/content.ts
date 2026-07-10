@@ -547,6 +547,7 @@ export interface ItemEffects {
   peekFree?: boolean;             // pilgrims-clarity: tertiary peek costs 0 stamina
   critBonus?: number;             // twin-fangs: added to base crit chance
   fleeDamageHalved?: boolean;     // beggars-grace: damage taken while fleeing is halved
+  revealPaths?: boolean;          // Bone Dust: branch buttons show concrete node types
 }
 
 export function getItemEffects(inventory: {name: string}[]): ItemEffects {
@@ -583,6 +584,9 @@ export function getItemEffects(inventory: {name: string}[]): ItemEffects {
         break;
       case 'Pale Coin':
         effects.fleeBonus += 0.10;
+        break;
+      case 'Bone Dust':
+        effects.revealPaths = true;
         break;
     }
   }
@@ -724,7 +728,7 @@ export const ITEM_DETAILS: Record<string, ItemDetails> = {
     name: 'Bone Dust',
     emoji: '💨',
     description: 'Ground remains of something old. Inhale it to see what it saw.',
-    effect: 'Reveals hidden paths',
+    effect: 'Reveals the nature of branching paths (consumed)',
     type: 'consumable',
     rarity: 'common',
     artUrl: '/items/bone-dust.webp',
