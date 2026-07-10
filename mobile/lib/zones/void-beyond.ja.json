@@ -393,6 +393,208 @@
       }
     ]
   },
+  "graph": {
+    "start": "n01",
+    "nodes": [
+      {
+        "id": "n01",
+        "type": "explore",
+        "template": "edge",
+        "depth": 1,
+        "next": [
+          "n02",
+          "n03",
+          "n04"
+        ]
+      },
+      {
+        "id": "n02",
+        "type": "combat",
+        "template": "probability-shade",
+        "depth": 2,
+        "next": [
+          "n05"
+        ]
+      },
+      {
+        "id": "n03",
+        "type": "explore",
+        "template": "edge-wrong",
+        "depth": 2,
+        "next": [
+          "n05",
+          "n06"
+        ]
+      },
+      {
+        "id": "n04",
+        "type": "corpse",
+        "template": "clarity-loss",
+        "depth": 2,
+        "next": [
+          "n06"
+        ]
+      },
+      {
+        "id": "n05",
+        "type": "explore",
+        "template": "unfinished",
+        "depth": 3,
+        "next": [
+          "n07"
+        ]
+      },
+      {
+        "id": "n06",
+        "type": "combat",
+        "template": "void-architect",
+        "depth": 3,
+        "next": [
+          "n07"
+        ]
+      },
+      {
+        "id": "n07",
+        "type": "cache",
+        "template": "stable-pocket",
+        "depth": 4,
+        "next": [
+          "n08",
+          "n09"
+        ]
+      },
+      {
+        "id": "n08",
+        "type": "explore",
+        "template": "echo-room",
+        "depth": 5,
+        "next": [
+          "n10"
+        ]
+      },
+      {
+        "id": "n09",
+        "type": "combat",
+        "template": "echo-double",
+        "depth": 5,
+        "next": [
+          "n10",
+          "n11"
+        ]
+      },
+      {
+        "id": "n10",
+        "type": "corpse",
+        "template": "echo-loop",
+        "depth": 6,
+        "next": [
+          "n12"
+        ]
+      },
+      {
+        "id": "n11",
+        "type": "explore",
+        "template": "deep-void",
+        "depth": 6,
+        "next": [
+          "n12",
+          "n13"
+        ]
+      },
+      {
+        "id": "n12",
+        "type": "combat",
+        "template": "probability-shade",
+        "depth": 7,
+        "next": [
+          "n14"
+        ]
+      },
+      {
+        "id": "n13",
+        "type": "corpse",
+        "template": "clarity-loss",
+        "depth": 7,
+        "next": [
+          "n14"
+        ]
+      },
+      {
+        "id": "n14",
+        "type": "explore",
+        "template": "unfinished",
+        "depth": 8,
+        "next": [
+          "n15",
+          "n16"
+        ]
+      },
+      {
+        "id": "n15",
+        "type": "combat",
+        "template": "void-architect",
+        "depth": 9,
+        "next": [
+          "n17"
+        ]
+      },
+      {
+        "id": "n16",
+        "type": "cache",
+        "template": "stable-pocket",
+        "depth": 9,
+        "next": [
+          "n17",
+          "s01-drift"
+        ]
+      },
+      {
+        "id": "s01-drift",
+        "type": "explore",
+        "template": "echo-room",
+        "depth": 9,
+        "next": [
+          "n17"
+        ],
+        "side": true
+      },
+      {
+        "id": "n17",
+        "type": "explore",
+        "template": "deep-void",
+        "depth": 10,
+        "next": [
+          "n18"
+        ]
+      },
+      {
+        "id": "n18",
+        "type": "combat",
+        "template": "echo-double",
+        "depth": 11,
+        "next": [
+          "n19"
+        ]
+      },
+      {
+        "id": "n19",
+        "type": "combat",
+        "template": "unwritten",
+        "depth": 12,
+        "next": [
+          "n20"
+        ],
+        "boss": true
+      },
+      {
+        "id": "n20",
+        "type": "exit",
+        "template": "zone-exit",
+        "depth": 13,
+        "next": []
+      }
+    ]
+  },
   "boss": "The Unwritten",
   "audio": {
     "ambient": {

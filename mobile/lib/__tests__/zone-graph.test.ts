@@ -263,3 +263,58 @@ describe('living-tomb graph', () => {
     }
   });
 });
+
+describe('void-beyond graph', () => {
+  it('ships a valid graph using only existing structure templates', () => {
+    const zone = loadZone('void-beyond');
+    expect(zone.graph).toBeDefined();
+    expect(validateZoneGraph(zone.graph!)).toEqual([]);
+    const known = new Set(zone.dungeonLayout.structure.map(t => t.template).concat('zone-exit'));
+    for (const n of zone.graph!.nodes) expect(known.has(n.template)).toBe(true);
+    expect(zone.graph!.nodes.length).toBeGreaterThanOrEqual(17);
+    expect(Math.max(...zone.graph!.nodes.map(n => n.depth))).toBe(13);
+  });
+
+  it('has exactly one ungated explore/echo-room side chamber', () => {
+    const zone = loadZone('void-beyond');
+    const sideNodes = zone.graph!.nodes.filter(n => n.side === true);
+    expect(sideNodes.length).toBe(1);
+    const side = sideNodes[0];
+    expect(side.type).toBe('explore');
+    expect(side.template).toBe('echo-room');
+    expect(side.gate).toBeUndefined();
+  });
+
+  it('has a depth with three parallel nodes (disorientation topology)', () => {
+    const zone = loadZone('void-beyond');
+    const byDepth = new Map<number, number>();
+    for (const n of zone.graph!.nodes) {
+      if (n.side) continue;
+      byDepth.set(n.depth, (byDepth.get(n.depth) ?? 0) + 1);
+    }
+    expect(Math.max(...byDepth.values())).toBeGreaterThanOrEqual(3);
+  });
+
+  it('has exactly one boss (unwritten, depth 12) and one exit (zone-exit, depth 13)', () => {
+    const zone = loadZone('void-beyond');
+    const boss = zone.graph!.nodes.filter(n => n.boss === true);
+    expect(boss.length).toBe(1);
+    expect(boss[0].template).toBe('unwritten');
+    expect(boss[0].depth).toBe(12);
+    const exit = zone.graph!.nodes.filter(n => n.type === 'exit');
+    expect(exit.length).toBe(1);
+    expect(exit[0].template).toBe('zone-exit');
+    expect(exit[0].depth).toBe(13);
+  });
+
+  it('has an identical graph across all locale packs (no vi pack for this zone)', () => {
+    const zonesDir = path.join(__dirname, '../zones');
+    const base = JSON.parse(fs.readFileSync(path.join(zonesDir, 'void-beyond.json'), 'utf8'));
+    const locales = ['ja', 'ko', 'zh-TW', 'pt-BR', 'es'];
+    for (const locale of locales) {
+      const localized = JSON.parse(fs.readFileSync(path.join(zonesDir, `void-beyond.${locale}.json`), 'utf8'));
+      expect(localized.graph).toEqual(base.graph);
+    }
+    expect(fs.existsSync(path.join(zonesDir, 'void-beyond.vi.json'))).toBe(false);
+  });
+});
