@@ -37,6 +37,7 @@ import {
   type CombatSettings,
 } from '@/lib/agent-combat';
 import { processVictoryPayout, processDirectPayout } from '@/lib/onchain';
+import { buildRunReceipt } from '@/lib/coins';
 
 const db = init({
   appId: process.env.NEXT_PUBLIC_INSTANT_APP_ID!,
@@ -133,7 +134,34 @@ async function processVictory(
     dbUpdate.currentRoom = currentRoom;
   }
 
-  await db.transact([tx.sessions[sessionId].update(dbUpdate)]);
+  const runReceiptId = id();
+  // No coin/streak grant for agent runs: agent sessions have no Player identity to credit. Receipt only. See phase 3b plan Task 8.
+  await db.transact([
+    tx.sessions[sessionId].update(dbUpdate),
+    tx.runReceipts[runReceiptId].update(
+      { ...buildRunReceipt({
+        sessionId,
+        // Agent sessions have no session token (looked up by id, not token) — reuse
+        // the session id so the receipt still has a stable, non-null identifier.
+        sessionToken: sessionId,
+        authId: null,
+        walletAddress: session.walletAddress ?? null,
+        zoneId: session.zoneId ?? null,
+        runSeed: session.seed ?? null,
+        seedSource: session.seedSource ?? null,
+        serverDayKey: session.serverDayKey ?? null,
+        dailyShiftEnabled: null,
+        chosenModifierId: null,
+        stakeMode: session.stakeMode ?? 'free',
+        coinStake: 0,
+        outcome: 'cleared',
+        finalDepth: currentRoom - 1,
+        coinDelta: 0,
+        streakAfter: 0,
+        createdAt: Date.now(),
+      }) },
+    ),
+  ]);
 
   return NextResponse.json({
     state: {
@@ -304,8 +332,10 @@ export async function POST(request: NextRequest) {
     if (action === 'submit_death') {
       const deathId = id();
       const corpseId = id();
+      const runReceiptId = id();
       const message = (finalMessage || 'An agent fell here.').slice(0, 50);
 
+      // No coin/streak grant for agent runs: agent sessions have no Player identity to credit. Receipt only. See phase 3b plan Task 8.
       await db.transact([
         tx.deaths[deathId].update({
           walletAddress: session.walletAddress,
@@ -343,6 +373,29 @@ export async function POST(request: NextRequest) {
           endedAt: Date.now(),
           finalRoom: currentRoom,
         }),
+        tx.runReceipts[runReceiptId].update(
+          { ...buildRunReceipt({
+            sessionId,
+            // Agent sessions have no session token (looked up by id, not token) — reuse
+            // the session id so the receipt still has a stable, non-null identifier.
+            sessionToken: sessionId,
+            authId: null,
+            walletAddress: session.walletAddress ?? null,
+            zoneId: session.zoneId ?? null,
+            runSeed: session.seed ?? null,
+            seedSource: session.seedSource ?? null,
+            serverDayKey: session.serverDayKey ?? null,
+            dailyShiftEnabled: null,
+            chosenModifierId: null,
+            stakeMode: session.stakeMode ?? 'free',
+            coinStake: 0,
+            outcome: 'dead',
+            finalDepth: currentRoom,
+            coinDelta: 0,
+            streakAfter: 0,
+            createdAt: Date.now(),
+          }) },
+        ),
       ]);
 
       return NextResponse.json({
