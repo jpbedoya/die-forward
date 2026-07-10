@@ -1,4 +1,16 @@
-import { deriveAuthIdFromEmail, verifyAuthToken, isAdminAuthId } from '@/lib/auth-server';
+import {
+  deriveAuthIdFromEmail,
+  verifyAuthToken,
+  isAdminAuthId,
+  resolveStartIdentity,
+  type AuthedIdentity,
+} from '@/lib/auth-server';
+
+const IDENTITY: AuthedIdentity = {
+  authId: 'verified-abc',
+  email: 'verified-abc@wallet.dieforward.com',
+  instantUserId: 'user-1',
+};
 
 describe('deriveAuthIdFromEmail', () => {
   it('strips the wallet domain suffix', () => {
@@ -128,6 +140,65 @@ describe('verifyAuthToken', () => {
     const verifyToken = jest.fn().mockResolvedValue({ id: 'user-5' });
 
     expect(await verifyAuthToken(req, { verifyToken })).toBeNull();
+  });
+});
+
+describe('resolveStartIdentity', () => {
+  // ── Coin-mode: fail-closed, verified authId only ──────────────────────────
+  it('coin-mode with no identity rejects 403 (auth required)', () => {
+    expect(
+      resolveStartIdentity({ identity: null, bodyAuthId: 'victim', bodyWallet: 'victim-wallet', isCoinMode: true }),
+    ).toEqual({ reject: 'Authentication required for coin staking', status: 403 });
+  });
+
+  it('coin-mode with a body authId that mismatches the verified authId rejects 403', () => {
+    expect(
+      resolveStartIdentity({ identity: IDENTITY, bodyAuthId: 'victim', bodyWallet: 'w', isCoinMode: true }),
+    ).toEqual({ reject: 'Identity mismatch', status: 403 });
+  });
+
+  it('coin-mode with a matching body authId resolves to the verified authId', () => {
+    expect(
+      resolveStartIdentity({ identity: IDENTITY, bodyAuthId: 'verified-abc', bodyWallet: 'w', isCoinMode: true }),
+    ).toEqual({ authId: 'verified-abc' });
+  });
+
+  it('coin-mode with identity and no body authId resolves to the verified authId', () => {
+    expect(
+      resolveStartIdentity({ identity: IDENTITY, bodyAuthId: undefined, bodyWallet: 'w', isCoinMode: true }),
+    ).toEqual({ authId: 'verified-abc' });
+  });
+
+  it('coin-mode ignores the body walletAddress entirely (never used to locate a balance)', () => {
+    // A malicious body wallet must not leak into the resolved identity.
+    expect(
+      resolveStartIdentity({ identity: IDENTITY, bodyAuthId: null, bodyWallet: 'attacker-wallet', isCoinMode: true }),
+    ).toEqual({ authId: 'verified-abc' });
+  });
+
+  // ── SOL / free modes: verified overrides body, else body fallback ─────────
+  it('sol/free with identity overrides the body authId', () => {
+    expect(
+      resolveStartIdentity({ identity: IDENTITY, bodyAuthId: 'something-else', bodyWallet: 'w', isCoinMode: false }),
+    ).toEqual({ authId: 'verified-abc' });
+  });
+
+  it('sol/free with no identity falls back to the body authId', () => {
+    expect(
+      resolveStartIdentity({ identity: null, bodyAuthId: 'body-auth', bodyWallet: 'w', isCoinMode: false }),
+    ).toEqual({ authId: 'body-auth' });
+  });
+
+  it('sol/free with no identity and no body authId falls back to the walletAddress (pre-hardening behavior)', () => {
+    expect(
+      resolveStartIdentity({ identity: null, bodyAuthId: undefined, bodyWallet: 'wallet-xyz', isCoinMode: false }),
+    ).toEqual({ authId: 'wallet-xyz' });
+  });
+
+  it('sol/free with neither identity nor any body id rejects 400 (defensive; route validates wallet upstream)', () => {
+    expect(
+      resolveStartIdentity({ identity: null, bodyAuthId: null, bodyWallet: null, isCoinMode: false }),
+    ).toEqual({ reject: 'Identity required', status: 400 });
   });
 });
 

@@ -137,6 +137,67 @@ export async function verifyAuthToken(
   return { authId, email: user.email, instantUserId: user.id };
 }
 
+// ─── Start-route identity resolution ─────────────────────────────────────────
+
+export interface ResolveStartIdentityInput {
+  /** The verified identity from `verifyAuthToken`, or null when no valid token. */
+  identity: AuthedIdentity | null;
+  /** The untrusted `authId` field from the request body (if any). */
+  bodyAuthId?: string | null;
+  /** The untrusted `walletAddress` field from the request body (if any). */
+  bodyWallet?: string | null;
+  /** True when the run stakes coins (`stakeMode==='coins'` OR `coinStake>0`). */
+  isCoinMode: boolean;
+}
+
+export type ResolveStartIdentityResult =
+  | { authId: string }
+  | { reject: string; status: number };
+
+/**
+ * Decide the authoritative `authId` a run-start request should be stamped with,
+ * closing the coin-staking IDOR: a request must NEVER be able to spend another
+ * player's coins by asserting their `authId`/`walletAddress` in the body.
+ *
+ * Coin-mode is money-touching and therefore fail-closed:
+ *  - No verified identity -> reject 403 (a coin run cannot proceed anonymously).
+ *  - A body `authId` that disagrees with the verified `authId` -> reject 403
+ *    (explicit impersonation attempt).
+ *  - Otherwise the resolved authId is the VERIFIED `identity.authId` only; the
+ *    body's authId/wallet are never used to locate/debit the balance.
+ *
+ * SOL/free modes cannot touch balances (the leaderboard firewall blocks
+ * untrusted runs), so they keep today's behavior with a security upgrade:
+ *  - Verified identity present -> it OVERRIDES the body authId (authoritative).
+ *  - No identity -> fall back to the untrusted body authId, else the body
+ *    walletAddress (byte-identical to the pre-hardening `authId || walletAddress`
+ *    stamp). The route validates walletAddress is present upstream, so the final
+ *    reject branch is defensive only.
+ */
+export function resolveStartIdentity(
+  input: ResolveStartIdentityInput,
+): ResolveStartIdentityResult {
+  const { identity, bodyAuthId, bodyWallet, isCoinMode } = input;
+
+  if (isCoinMode) {
+    if (!identity) {
+      return { reject: 'Authentication required for coin staking', status: 403 };
+    }
+    if (bodyAuthId && bodyAuthId !== identity.authId) {
+      return { reject: 'Identity mismatch', status: 403 };
+    }
+    return { authId: identity.authId };
+  }
+
+  // SOL / free modes — cannot touch coin balances.
+  if (identity) return { authId: identity.authId };
+
+  const fallback = bodyAuthId || bodyWallet;
+  if (fallback) return { authId: fallback };
+
+  return { reject: 'Identity required', status: 400 };
+}
+
 // ─── Admin allowlist ─────────────────────────────────────────────────────────
 
 // Hardcoded fallback admin wallet — kept in sync with src/app/admin/page.tsx.

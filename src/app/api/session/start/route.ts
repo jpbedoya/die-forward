@@ -4,6 +4,7 @@ import { db } from '@/lib/db';
 import { startErRun, requestErVrfSeed, getErVrfSeed } from '@/lib/magicblock';
 import { loadZone } from '@/lib/content';
 import { resolveStakeMode, validateCoinStakeRequest, type StakeMode } from '@/lib/coins';
+import { verifyAuthToken, resolveStartIdentity } from '@/lib/auth-server';
 import crypto from 'crypto';
 
 // Valid stake amounts (0 = free play)
@@ -24,6 +25,12 @@ function serverDayKey(date: Date = new Date()): string {
 
 export async function POST(request: NextRequest) {
   try {
+    // Verify identity from the request's bearer token BEFORE consuming the body.
+    // The header path works regardless, and verifyAuthToken's body-token fallback
+    // uses req.clone() — which only works while the body is still unread. Calling
+    // it first is the safe ordering (see Task 1 HAZARD).
+    const identity = await verifyAuthToken(request);
+
     const body = await request.json();
     const {
       walletAddress,
@@ -64,21 +71,35 @@ export async function POST(request: NextRequest) {
     const stakeMode: StakeMode = modeResult.mode;
     const coinStake: number = typeof rawCoinStake === 'number' ? rawCoinStake : 0;
 
+    // ── Resolve authoritative identity (closes the coin-staking IDOR) ──────
+    // Coin runs REQUIRE a verified token; the resolved authId is then the
+    // VERIFIED authId only — body authId/walletAddress can never locate or
+    // debit a balance. SOL/free runs prefer the verified authId, falling back
+    // to the untrusted body values (they can't touch coins).
+    const isCoinMode = stakeMode === 'coins' || coinStake > 0;
+    const idResult = resolveStartIdentity({
+      identity,
+      bodyAuthId: authId,
+      bodyWallet: walletAddress,
+      isCoinMode,
+    });
+    if ('reject' in idResult) {
+      return NextResponse.json({ error: idResult.reject }, { status: idResult.status });
+    }
+    const resolvedAuthId = idResult.authId;
+
     // ── Coin-stake path: validate + prepare atomic deduction ──────────────
     // The deduction is not written here — it is batched into the SAME
     // db.transact() call as the session create below, so no failure path can
     // leave a player's coins debited without a live session (see ordering note).
     let coinDeductTx: ReturnType<typeof tx.players[string]['update']> | null = null;
     if (stakeMode === 'coins') {
-      // An identity is required to locate the Player row (authId else wallet).
-      const lookupKey = authId || walletAddress;
-      if (!lookupKey) {
-        return NextResponse.json({ error: 'Identity required for coin stake' }, { status: 400 });
-      }
-      const lookupField = authId ? 'authId' : 'walletAddress';
-
+      // resolveStartIdentity has already guaranteed a verified identity here and
+      // that resolvedAuthId === identity.authId. Look up the Player row by the
+      // VERIFIED authId ONLY — the body's authId/walletAddress never reach a
+      // balance read or debit.
       const { players } = await db.query({
-        players: { $: { where: { [lookupField]: lookupKey }, limit: 1 } },
+        players: { $: { where: { authId: resolvedAuthId }, limit: 1 } },
       });
       const player = players?.[0] as (Record<string, unknown> & { id: string }) | undefined;
       if (!player) {
@@ -158,7 +179,7 @@ export async function POST(request: NextRequest) {
       tx.sessions[sessionId].update({
         token: sessionToken,
         walletAddress,
-        authId: authId || walletAddress, // Unique player ID for stats tracking
+        authId: resolvedAuthId, // Resolved identity: verified authId when available (body fallback for non-coin runs only)
         stakeAmount,
         stakeMode,
         coinStake: stakeMode === 'coins' ? coinStake : 0,
