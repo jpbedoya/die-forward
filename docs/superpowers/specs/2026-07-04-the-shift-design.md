@@ -65,6 +65,8 @@ Derived **deterministically** from `hash(dateUTC + zoneId)`. The world shifts at
 
 **Trust boundary (red-team A1 — load-bearing):** *staked runs are never offline.* Blood-Bound and Coin-Bound runs receive a **server/VRF-committed `runSeed` and server-stamped date** at stake time (MagicBlock VRF exists for this); client-asserted dates and client-chosen seeds are rejected for anything with economic outcomes. Unbound runs stay fully offline/client-side — but are **firewalled**: no leaderboard writes, no currency grants, and no community-aggregation input without a server run receipt. The daily layer is public and pre-solvable by design (acceptable for Unbound); staked runs additionally mix a server-side per-run secret so the *run instance* is not pre-solvable. Assume the content is datamined day one (all synergies/rules/gates are public): difficulty and economy are tuned to **solved** play, and no single element tag may be a universal counter.
 
+**(done, phase 3a July 2026)** — client seeded layer shipped: `lib/world-shift.ts` (`utcDayKey` + `getDailyShift`, modifier pool of 2-3, side-door seals, validated edge mask, degradation ladder), threaded through `generateDungeonGraph(zoneId, rng, shift?)` and `startGame(..., chosenModifierId?)` with draw stability; `dailyShiftEnabled` typed setting (default true), admin-toggleable at `/admin`. Deterministic per (zone, day), fully client-side. **Remaining for 3b:** the server-authority carve-out above (A1: VRF-committed `runSeed` + server-stamped date for staked runs) and staked-run date stamping are not yet built — today's shift is unauthenticated client compute for every rung, including Blood-Bound.
+
 ### 3.2 Community layer (online, additive)
 
 A nightly aggregation job (web API cron over InstantDB death data, per zone, trailing 24h) produces a small `worldShifts` record. Purely additive — offline/failed fetch degrades gracefully to the seeded layer alone.
@@ -167,6 +169,8 @@ Design intent: reading the *creature*, not just the intent icon, becomes the ski
 - **Anti-solve (F5, load-bearing):** modifiers **interact with today's apex threat and map state**, so the best pick changes daily instead of being ranked once by the community (a static 6-pool is solved in 48 hours). Grow the pool toward ~10 over phases 2–3 (a modifier is cheap content). For staked runs, the pool is revealed only **after** stake commit (A6) so seed-knowledge can't cherry-pick counter days.
 - **Within-session escalator (F8):** the daily shift alone rewards an 8-minute login, not a session. Two levers make run 2 *today* hotter than run 1: the **apex bounty is a within-day chase** (reaching it needs depth + the right build — a failed attempt begs an immediate retry), and an optional **session ante** — each consecutive same-session run nudges modifier intensity and coin multiplier up.
 
+**(done, phase 3a July 2026)** — modifier choice shipped: the Toll presents "THE DEPTHS MAKE AN OFFER" with today's seeded pool (2-3 modifiers, first preselected), `startGame(..., chosenModifierId?)`. **Deferred to phase 4** (community layer): the apex-threat interaction (F5's anti-solve premise — modifiers reading today's apex/map state) requires the apex-threat data this section depends on, which doesn't exist until the community layer ships; today's pool selection is seed-only, not apex-aware.
+
 ## 8. Dispatches & Notifications
 
 **One content pipeline, three surfaces.** A `renderDispatch(shift)` function turns the day's shift into 1–3 short lines in the Cartographer's voice (bible tone rules; ≤ ~140 chars each):
@@ -181,6 +185,8 @@ Surfaces, identical content:
 **Scarcity rule (F7):** 1/day is a **cap, not a floor**. The banner dispatch fires only on personally consequential days (your bounty, your corpse, a door you tried now open); most days get a one-line ambient or silence. A dispatch that fires daily becomes wallpaper in two weeks — the fatigue failure Lifeline's own history warns about. The Cartographer gets 2–3 rotating registers (warning / lament / invitation) so the voice has weather.
 
 **Permission is diegetic and optional:** after the player's first death, the Cartographer appears once: *"The passages move. I can send word when they do — if you wish."* Decline = never asked again in-fiction (settings toggle remains). **Nothing is gated on permission**; deniers read the identical dispatch on the home screen. Expected: many/most players deny — the loop must be fully alive in-app, and it is, because the panel (not the push) is the primary surface.
+
+**(done, phase 3a July 2026)** — surfaces 1-2 shipped: home screen panel ("THE DEPTHS HAVE SHIFTED" block) and zone-select per-zone sealed/open lines (including a `VoidBeyondCard` variant). Both read the same client seeded `DailyShift`, gated by `dailyShiftEnabled`. **Remaining for phase 4:** the `renderDispatch(shift)` content pipeline and surface 3 (push notification, `expo-notifications` + hourly fan-out cron + `Player.pushToken`/`Player.timezone` schema) are not built — no dispatch text renderer exists yet; the panel/zone-select surfaces currently render shift state directly, not through a shared dispatch pipeline.
 
 ## 9. The Offering Ladder — Stakes for Everyone, Crypto for Some
 

@@ -56,6 +56,7 @@ interface GameSettings {
   erraticDamageMax: number;
   enableRoomTextStreaming: boolean;
   roomTextStreamSpeedMs: number;
+  dailyShiftEnabled: boolean;
 }
 
 interface Playlist {
@@ -98,6 +99,7 @@ const DEFAULT_SETTINGS: Omit<GameSettings, 'id'> = {
   erraticDamageMax: 1.3,
   enableRoomTextStreaming: false,
   roomTextStreamSpeedMs: 28,
+  dailyShiftEnabled: true,
 };
 
 type Tab = 'dashboard' | 'settings' | 'zones' | 'bestiary' | 'content' | 'music' | 'deaths' | 'corpses';
@@ -304,6 +306,7 @@ function SettingsTab() {
     erraticDamageMax: settings?.erraticDamageMax ?? DEFAULT_SETTINGS.erraticDamageMax,
     enableRoomTextStreaming: settings?.enableRoomTextStreaming ?? DEFAULT_SETTINGS.enableRoomTextStreaming,
     roomTextStreamSpeedMs: settings?.roomTextStreamSpeedMs ?? DEFAULT_SETTINGS.roomTextStreamSpeedMs,
+    dailyShiftEnabled: settings?.dailyShiftEnabled ?? DEFAULT_SETTINGS.dailyShiftEnabled,
   } as GameSettings;
 
   return (
@@ -369,6 +372,14 @@ function SettingsTab() {
           max={80}
           step={1}
           onChange={(v) => saveSettings({ roomTextStreamSpeedMs: v })}
+        />
+      </SettingsSection>
+      <SettingsSection title="🌑 THE SHIFT">
+        <SettingToggle
+          label="Daily World Shift"
+          description="Apply the daily seeded shift (modifier pool, side-door seals, edge mask) to runs. Deterministic per zone/UTC day. Off falls back to the unshifted map/modifier pool everywhere."
+          value={cs.dailyShiftEnabled}
+          onChange={(v) => saveSettings({ dailyShiftEnabled: v })}
         />
       </SettingsSection>
     </div>
