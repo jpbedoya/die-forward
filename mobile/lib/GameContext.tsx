@@ -147,7 +147,7 @@ interface GameContextType extends GameState {
   /** Mark the current node's encounter as resolved (combat won/fled) without moving. */
   markNodeResolved: () => void;
   recordDeath: (finalMessage: string, killedBy?: string, nowPlaying?: { title: string; artist: string }) => Promise<void>;
-  claimVictory: () => Promise<void>;
+  claimVictory: () => Promise<api.VictoryResponse | void>;
   
   // State helpers
   setHealth: (health: number) => void;
@@ -1064,15 +1064,19 @@ export function GameProvider({
     }
   }, [state.sessionToken, state.currentRoom, state.currentNodeId, state.inventory, state.walletAddress, state.nickname, updateState]);
 
-  const claimVictoryAction = useCallback(async () => {
+  const claimVictoryAction = useCallback(async (): Promise<api.VictoryResponse | void> => {
     if (!state.sessionToken) return;
     // Offline empty-handed run: no server session / no reward to claim.
     if (api.isOfflineSession(state.sessionToken)) return;
 
     updateState({ loading: true });
     try {
-      await api.claimVictory(state.sessionToken);
+      // Returns the settlement response so callers can detect a RETRYABLE coin
+      // failure (success:false / payoutStatus:'coins_pending') and avoid marking
+      // the run finalized — the server left the session 'active' for a retry.
+      const res = await api.claimVictory(state.sessionToken);
       updateState({ loading: false });
+      return res;
     } catch (err) {
       updateState({
         loading: false,

@@ -190,7 +190,14 @@ export default function VictoryScreen() {
 
     setClaiming(true);
     try {
-      await game.claimVictory();
+      const res = await game.claimVictory();
+      // RETRYABLE coin-settlement failure: the server left the session 'active'
+      // and returned nothing settled. Do NOT mark the run finalized/claimed —
+      // leave it so the player (or the auto-finalizer / Play Again / Home) can
+      // re-POST victory and actually get the coin stake back.
+      if (res && res.success === false && res.payoutStatus === 'coins_pending') {
+        return;
+      }
       setClaimed(true);
       setVictoryFinalized(true);
       playSFX('tip-chime');

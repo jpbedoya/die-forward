@@ -252,10 +252,79 @@ export function sealTier(streak: number): 0 | 1 | 2 | 3 {
 
 /**
  * Terminal outcome recorded on a run receipt. `dead`/`cleared` come from the
- * player-driven death/victory routes; `abandoned` is stamped by the stale-session
- * cleanup sweep on runs the player never finished.
+ * player-driven death/victory routes; `abandoned` and `cleared_unclaimed` are
+ * stamped by the stale-session cleanup sweep. `abandoned`: the player never
+ * reached the exit (stake burned to pool). `cleared_unclaimed`: the run reached
+ * the exit (a WIN) but the player never claimed it before it went stale — the
+ * stake is RETURNED (no bonus), so the win is not silently destroyed.
  */
-export type RunOutcome = 'dead' | 'cleared' | 'abandoned';
+export type RunOutcome = 'dead' | 'cleared' | 'abandoned' | 'cleared_unclaimed';
+
+export interface StaleCoinCleanupInput {
+  stakeMode?: string | null;
+  coinStake?: number | null;
+  currentRoom?: number | null;
+  maxRooms?: number | null;
+}
+
+export interface StaleCoinDisposition {
+  /**
+   *  - `'abandoned'`: coin run that never reached the exit — stake burns to the
+   *    pool, streak resets (force-quitting is not an escape hatch, F6).
+   *  - `'cleared_unclaimed'`: coin run that reached the exit but was never
+   *    claimed — stake is returned to the player (no bonus), streak untouched.
+   *  - `'none'`: not a staked coin run; cleanup does nothing coin-aware.
+   */
+  kind: 'abandoned' | 'cleared_unclaimed' | 'none';
+  /** Coins to ADD to the player's paleCoins (returned stake; 0 for abandoned). */
+  playerCoinDelta: number;
+  /** Coins to ADD to the pool (burned stake; 0 for cleared_unclaimed). */
+  poolDelta: number;
+  /** Whether to reset the player's bindingStreak to 0 (abandoned only). */
+  resetStreak: boolean;
+}
+
+/**
+ * Decide how the stale-session cleanup sweep must settle a single Coin-Bound run.
+ *
+ * Pure money-direction logic extracted so the CRITICAL "cleanup destroys the
+ * stake of a cleared-but-unclaimed win" bug is testable without InstantDB. A
+ * run that reached `currentRoom >= maxRooms` is a WIN: its stake is RETURNED to
+ * the player (no bonus — defensible for a run the player abandoned mid-claim),
+ * never burned. A run short of the exit is an abandonment: its stake burns to
+ * the pool (like a death) and the binding streak resets (F6 — force-quitting
+ * must not preserve a streak a death would have taken). Non-coin / zero-stake
+ * runs are a no-op.
+ */
+export function classifyStaleCoinCleanup(
+  input: StaleCoinCleanupInput,
+): StaleCoinDisposition {
+  const coinStake = clampNonNegativeInt(Number(input.coinStake));
+  if (input.stakeMode !== 'coins' || coinStake <= 0) {
+    return { kind: 'none', playerCoinDelta: 0, poolDelta: 0, resetStreak: false };
+  }
+
+  const currentRoom = clampNonNegativeInt(Number(input.currentRoom)) || 1;
+  const maxRooms = clampNonNegativeInt(Number(input.maxRooms)) || 13;
+
+  if (currentRoom >= maxRooms) {
+    // Cleared-but-unclaimed WIN: return the stake, no bonus, streak untouched.
+    return {
+      kind: 'cleared_unclaimed',
+      playerCoinDelta: coinStake,
+      poolDelta: 0,
+      resetStreak: false,
+    };
+  }
+
+  // Abandoned mid-run: burn the stake to the pool and reset the streak.
+  return {
+    kind: 'abandoned',
+    playerCoinDelta: 0,
+    poolDelta: coinStake,
+    resetStreak: true,
+  };
+}
 
 export interface RunReceiptInput {
   sessionId: string;

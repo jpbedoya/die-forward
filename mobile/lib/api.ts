@@ -104,6 +104,10 @@ export interface VictoryResponse {
   reward?: number;
   txSignature?: string;
   message?: string;
+  /** Server settlement status. `coins_pending` = retryable coin-settlement failure. */
+  payoutStatus?: string;
+  /** True when the failure is retryable (coin settlement) and the run is NOT finalized. */
+  retryable?: boolean;
 }
 
 // Start a new game session
@@ -208,12 +212,20 @@ export async function claimVictory(
     body: JSON.stringify({ sessionToken }),
   });
 
+  const data = await response.json().catch(() => ({} as VictoryResponse));
+
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Failed to claim victory');
+    // A RETRYABLE coin-settlement failure (503 + retryable) is surfaced as a
+    // structured result, NOT thrown: the run is still 'active' server-side and
+    // the caller must be able to leave it un-finalized and retry rather than
+    // treat it as a terminal error.
+    if (data?.retryable) {
+      return data as VictoryResponse;
+    }
+    throw new Error((data as { error?: string })?.error || 'Failed to claim victory');
   }
 
-  return response.json();
+  return data as VictoryResponse;
 }
 
 // Get leaderboard

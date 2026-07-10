@@ -409,7 +409,26 @@ export async function POST(request: NextRequest) {
       await db.transact(writes);
     } catch (statsError) {
       console.warn('Failed to settle victory coins/stats:', statsError);
-      // Don't fail the whole request — the SOL payout already succeeded.
+      // On the COINS path this transact IS the settlement: it carries the
+      // session-complete write AND the stake return, and nothing irreversible
+      // preceded it (no SOL moved). A failure here means NOTHING committed, so the
+      // session is still 'active' — the player can (and must be able to) re-POST
+      // victory. Report a RETRYABLE failure instead of the previous silent
+      // success:true/coins_settled, which drifted a failed settlement into the
+      // cleanup sweep and destroyed the stake.
+      if (settlementPath === 'coins_settle') {
+        return NextResponse.json(
+          {
+            success: false,
+            payoutStatus: 'coins_pending',
+            retryable: true,
+            error: 'Coin settlement failed — please retry',
+          },
+          { status: 503 },
+        );
+      }
+      // SOL path: the on-chain payout already succeeded and is irreversible, so a
+      // stats/receipt write failure must NOT fail the request.
     }
 
     // Post to Tapestry social graph (wallet users only, non-blocking)

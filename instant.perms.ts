@@ -49,4 +49,45 @@ export default {
       delete: "false",
     },
   },
+
+  // ── Money-critical namespaces (deny-by-default) ───────────────────────────
+  // These hold the pale-coin economy. The server admin client BYPASSES perms,
+  // so all legitimate writes (start/death/victory/cleanup routes, admin page)
+  // still work. Without these rules the namespaces are default-ALLOW, letting
+  // any authenticated InstantDB client mint coins (set coinPool huge), forge
+  // receipts, or tamper with live sessions. See spec §3.1.
+
+  // gameSettings: holds coinPool / coinBonusPercent / victoryBonusPercent.
+  // The mobile client legitimately READS this (useGameSettings), so allow view
+  // but deny every client write — mutations are server/admin-only.
+  gameSettings: {
+    allow: {
+      view: "true", // useGameSettings reads coinBonusPercent/pool for display
+      create: "false", // server/admin-only via backend
+      update: "false", // server/admin-only via backend (coin mint surface)
+      delete: "false",
+    },
+  },
+
+  // runReceipts: immutable server-written record of every run's coin settlement.
+  // Clients must never create/forge or alter them.
+  runReceipts: {
+    allow: {
+      view: "true", // players may read their own run history
+      create: "false", // server-only (death/victory/cleanup routes)
+      update: "false", // immutable
+      delete: "false",
+    },
+  },
+
+  // sessions: authoritative run state (stake, currentRoom, status, payout).
+  // Entirely server-managed — clients must not write session rows.
+  sessions: {
+    allow: {
+      view: "true",
+      create: "false", // server-only (start route)
+      update: "false", // server-only (advance/death/victory/cleanup)
+      delete: "false",
+    },
+  },
 };

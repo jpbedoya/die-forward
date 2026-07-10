@@ -1,6 +1,7 @@
 import {
   COIN_STAKE_OPTIONS,
   buildRunReceipt,
+  classifyStaleCoinCleanup,
   classifyVictorySettlement,
   computeCoinEarn,
   computeCoinStakeSettlement,
@@ -44,6 +45,53 @@ describe('classifyVictorySettlement', () => {
     expect(
       classifyVictorySettlement({ stakeAmount: 0, stakeMode: 'sol' }),
     ).toBe('free_mode');
+  });
+});
+
+describe('classifyStaleCoinCleanup', () => {
+  it('RETURNS the stake (no bonus) for a cleared-but-unclaimed coin win — the CRITICAL destruction bug', () => {
+    // Reached the exit (currentRoom >= maxRooms) but never claimed → this is a
+    // WIN. The stake must come BACK to the player, never be burned/destroyed.
+    expect(
+      classifyStaleCoinCleanup({ stakeMode: 'coins', coinStake: 60, currentRoom: 13, maxRooms: 13 }),
+    ).toEqual({ kind: 'cleared_unclaimed', playerCoinDelta: 60, poolDelta: 0, resetStreak: false });
+  });
+
+  it('burns the stake to the pool AND resets the streak for an abandoned mid-run (F6)', () => {
+    expect(
+      classifyStaleCoinCleanup({ stakeMode: 'coins', coinStake: 120, currentRoom: 5, maxRooms: 13 }),
+    ).toEqual({ kind: 'abandoned', playerCoinDelta: 0, poolDelta: 120, resetStreak: true });
+  });
+
+  it('is a no-op for non-coin runs', () => {
+    expect(
+      classifyStaleCoinCleanup({ stakeMode: 'sol', coinStake: 0, currentRoom: 3, maxRooms: 13 }),
+    ).toEqual({ kind: 'none', playerCoinDelta: 0, poolDelta: 0, resetStreak: false });
+    expect(
+      classifyStaleCoinCleanup({ stakeMode: 'free', coinStake: 0, currentRoom: 13, maxRooms: 13 }),
+    ).toEqual({ kind: 'none', playerCoinDelta: 0, poolDelta: 0, resetStreak: false });
+  });
+
+  it('is a no-op when stakeMode is coins but no coins were actually staked', () => {
+    expect(
+      classifyStaleCoinCleanup({ stakeMode: 'coins', coinStake: 0, currentRoom: 5, maxRooms: 13 }),
+    ).toEqual({ kind: 'none', playerCoinDelta: 0, poolDelta: 0, resetStreak: false });
+  });
+
+  it('applies default room bounds (1 / 13) when currentRoom/maxRooms are missing', () => {
+    // No room info → defaults to currentRoom 1 < maxRooms 13 → abandoned.
+    expect(
+      classifyStaleCoinCleanup({ stakeMode: 'coins', coinStake: 60 }),
+    ).toEqual({ kind: 'abandoned', playerCoinDelta: 0, poolDelta: 60, resetStreak: true });
+  });
+
+  it('guards malformed numeric inputs (negative/NaN/fractional coinStake)', () => {
+    expect(classifyStaleCoinCleanup({ stakeMode: 'coins', coinStake: -60, currentRoom: 5, maxRooms: 13 }).kind).toBe('none');
+    expect(classifyStaleCoinCleanup({ stakeMode: 'coins', coinStake: NaN, currentRoom: 5, maxRooms: 13 }).kind).toBe('none');
+    // Fractional stake floors to an integer before deciding.
+    expect(
+      classifyStaleCoinCleanup({ stakeMode: 'coins', coinStake: 60.9, currentRoom: 13, maxRooms: 13 }),
+    ).toEqual({ kind: 'cleared_unclaimed', playerCoinDelta: 60, poolDelta: 0, resetStreak: false });
   });
 });
 
