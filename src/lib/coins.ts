@@ -208,3 +208,81 @@ export function sealTier(streak: number): 0 | 1 | 2 | 3 {
   if (s < 15) return 2;
   return 3;
 }
+
+/** Terminal outcome recorded on a run receipt. */
+export type RunOutcome = 'dead' | 'cleared';
+
+export interface RunReceiptInput {
+  sessionId: string;
+  sessionToken: string;
+  authId?: string | null;
+  walletAddress?: string | null;
+  zoneId?: string | null;
+  runSeed?: string | null;
+  seedSource?: string | null;
+  serverDayKey?: string | null;
+  dailyShiftEnabled?: boolean | null;
+  chosenModifierId?: string | null;
+  stakeMode?: StakeMode | null;
+  coinStake?: number | null;
+  outcome: RunOutcome;
+  finalDepth: number;
+  coinDelta: number;
+  streakAfter: number;
+  createdAt: number;
+}
+
+export interface RunReceipt {
+  sessionId: string;
+  sessionToken: string;
+  authId: string | null;
+  walletAddress: string | null;
+  zoneId: string | null;
+  runSeed: string | null;
+  seedSource: string | null;
+  serverDayKey: string | null;
+  dailyShiftEnabled: boolean | null;
+  chosenModifierId: string | null;
+  stakeMode: StakeMode;
+  coinStake: number;
+  outcome: RunOutcome;
+  finalDepth: number;
+  coinDelta: number;
+  streakAfter: number;
+  createdAt: number;
+}
+
+/**
+ * Assemble the immutable receipt row written at the end of every run (death or
+ * clear). Both terminal routes (`death` / `victory`) share this so the receipt
+ * shape stays identical across outcomes.
+ *
+ * Pure field mapping with safe defaults: optional identity/context fields
+ * collapse to `null` (not `undefined`) so the stored row is uniform and
+ * queryable; `stakeMode` defaults to `'sol'` and `coinStake` to `0`. Falsy-but-
+ * meaningful values (`coinStake: 0`, `dailyShiftEnabled: false`, `streakAfter:
+ * 0`) are preserved — only `undefined`/`null` trigger a default. Numeric
+ * quantities (`coinDelta`, `streakAfter`, `finalDepth`) reflect what the caller
+ * actually granted and are passed through verbatim.
+ */
+export function buildRunReceipt(input: RunReceiptInput): RunReceipt {
+  return {
+    sessionId: input.sessionId,
+    sessionToken: input.sessionToken,
+    authId: input.authId ?? null,
+    walletAddress: input.walletAddress ?? null,
+    zoneId: input.zoneId ?? null,
+    runSeed: input.runSeed ?? null,
+    seedSource: input.seedSource ?? null,
+    serverDayKey: input.serverDayKey ?? null,
+    dailyShiftEnabled: input.dailyShiftEnabled ?? null,
+    chosenModifierId: input.chosenModifierId ?? null,
+    stakeMode: input.stakeMode ?? 'sol',
+    coinStake: input.coinStake ?? 0,
+    outcome: input.outcome,
+    finalDepth: input.finalDepth,
+    coinDelta: input.coinDelta,
+    streakAfter: input.streakAfter,
+    createdAt: input.createdAt,
+  };
+}

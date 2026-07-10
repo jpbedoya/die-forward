@@ -1,5 +1,6 @@
 import {
   COIN_STAKE_OPTIONS,
+  buildRunReceipt,
   computeCoinEarn,
   computeCoinStakeSettlement,
   nextStreak,
@@ -281,6 +282,85 @@ describe('sealTier', () => {
   it('guards a non-integer streak by flooring', () => {
     expect(sealTier(6.9)).toBe(1); // floor -> 6, still tier 1
     expect(sealTier(7.0001)).toBe(2);
+  });
+});
+
+describe('buildRunReceipt', () => {
+  const full = {
+    sessionId: 'sess-1',
+    sessionToken: 'tok-abc',
+    authId: 'auth-1',
+    walletAddress: 'wallet-1',
+    zoneId: 'sunken-crypt',
+    runSeed: 'deadbeef',
+    seedSource: 'vrf',
+    serverDayKey: '2026-07-10',
+    dailyShiftEnabled: true,
+    chosenModifierId: 'mod-1',
+    stakeMode: 'coins' as const,
+    coinStake: 120,
+    outcome: 'dead' as const,
+    finalDepth: 7,
+    coinDelta: 34,
+    streakAfter: 0,
+    createdAt: 1_700_000_000_000,
+  };
+
+  it('maps every field through unchanged when all are provided', () => {
+    expect(buildRunReceipt(full)).toEqual(full);
+  });
+
+  it('defaults optional identity/context fields to null when omitted', () => {
+    const receipt = buildRunReceipt({
+      sessionId: 'sess-2',
+      sessionToken: 'tok-2',
+      outcome: 'dead',
+      finalDepth: 3,
+      coinDelta: 0,
+      streakAfter: 0,
+      createdAt: 123,
+    });
+    expect(receipt.authId).toBeNull();
+    expect(receipt.walletAddress).toBeNull();
+    expect(receipt.zoneId).toBeNull();
+    expect(receipt.runSeed).toBeNull();
+    expect(receipt.seedSource).toBeNull();
+    expect(receipt.serverDayKey).toBeNull();
+    expect(receipt.dailyShiftEnabled).toBeNull();
+    expect(receipt.chosenModifierId).toBeNull();
+  });
+
+  it('defaults stakeMode to "sol" and coinStake to 0 when omitted', () => {
+    const receipt = buildRunReceipt({
+      sessionId: 'sess-3',
+      sessionToken: 'tok-3',
+      outcome: 'cleared',
+      finalDepth: 13,
+      coinDelta: 54,
+      streakAfter: 2,
+      createdAt: 456,
+    });
+    expect(receipt.stakeMode).toBe('sol');
+    expect(receipt.coinStake).toBe(0);
+  });
+
+  it('preserves falsy-but-meaningful values (coinStake 0, dailyShiftEnabled false, streakAfter 0)', () => {
+    const receipt = buildRunReceipt({
+      ...full,
+      coinStake: 0,
+      dailyShiftEnabled: false,
+      streakAfter: 0,
+      coinDelta: 0,
+    });
+    expect(receipt.coinStake).toBe(0);
+    expect(receipt.dailyShiftEnabled).toBe(false);
+    expect(receipt.streakAfter).toBe(0);
+    expect(receipt.coinDelta).toBe(0);
+  });
+
+  it('carries the outcome verbatim for both terminal states', () => {
+    expect(buildRunReceipt({ ...full, outcome: 'dead' }).outcome).toBe('dead');
+    expect(buildRunReceipt({ ...full, outcome: 'cleared' }).outcome).toBe('cleared');
   });
 });
 

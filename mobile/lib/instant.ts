@@ -41,6 +41,8 @@ export interface Death {
   nowPlayingArtist?: string;
   tapestryContentId?: string;
   likeCount?: number;
+  /** Seal tier of the coin-stake streak the player died holding (0-3). */
+  sealTier?: number;
   createdAt: number;
 }
 
@@ -80,6 +82,10 @@ export interface Player {
   highestRoom: number;
   createdAt: number;
   lastPlayedAt: number;
+  // Pale coin economy (free-to-play loop)
+  paleCoins?: number;
+  bindingStreak?: number;
+  bestBindingStreak?: number;
   // Milestone cosmetics
   activeTitle?: string;
   activeBorder?: string;

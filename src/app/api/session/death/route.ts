@@ -4,6 +4,14 @@ import { db } from '@/lib/db';
 import { hashDeathData, recordDeathOnChain, recordDeathInEscrow } from '@/lib/onchain';
 import { postDeath } from '@/lib/tapestry';
 import { commitErRun } from '@/lib/magicblock';
+import {
+  buildRunReceipt,
+  computeCoinEarn,
+  computeCoinStakeSettlement,
+  nextStreak,
+  sealTier,
+  type StakeMode,
+} from '@/lib/coins';
 
 // Demo mode flag - skip on-chain recording
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
@@ -166,6 +174,83 @@ export async function POST(request: NextRequest) {
       ? nodeId
       : undefined;
 
+    // ── Coin economy settlement (grant, burn, streak, seal, receipt) ──────────
+    // Everything below lands in ONE transact with the death/corpse/session rows
+    // so a run's money settlement is atomic: the seal stamp needs the pre-death
+    // streak, and a coin grant must never be recorded without its death. The
+    // player is looked up UP-FRONT (moved ahead of the death write) to make that
+    // atomicity possible. Grants are skipped entirely for guests with no player
+    // row — exactly as the stats increment was skipped before.
+    const stakeMode: StakeMode = (session.stakeMode as StakeMode) ?? 'sol';
+    const coinStake: number = (session.coinStake as number) ?? 0;
+
+    const earn = computeCoinEarn({
+      finalDepth: room,
+      cleared: false,
+      firstClearOfZone: false,
+      stakeMode,
+    });
+
+    // Player lookup (authId first, walletAddress fallback for legacy).
+    const lookupKey = session.authId || session.walletAddress;
+    const lookupField = session.authId ? 'authId' : 'walletAddress';
+    let player: Record<string, unknown> | null = null;
+    try {
+      const { players } = await db.query({
+        players: { $: { where: { [lookupField]: lookupKey }, limit: 1 } },
+      });
+      player = players && players.length > 0 ? (players[0] as Record<string, unknown>) : null;
+    } catch (lookupErr) {
+      console.warn('Failed to look up player for settlement:', lookupErr);
+    }
+
+    const prevStreak = (player?.bindingStreak as number) ?? 0;
+    const { streak } = nextStreak({ current: prevStreak, stakeMode, cleared: false });
+    const deathSealTier = sealTier(prevStreak); // the streak they DIED holding
+
+    // Grants only apply when a player row exists; the receipt records what was
+    // actually granted (0 / unchanged for guests).
+    const grantedCoinDelta = player ? earn : 0;
+    const grantedStreakAfter = player ? streak : prevStreak;
+
+    // Coin-Bound burn → pool. Gate on stakeMode === 'coins' (belt-and-suspenders;
+    // coinStake is already 0 for non-coins runs). On death playerDelta is 0 —
+    // the stake was deducted at run start, so we do NOT re-deduct here; only the
+    // burned stake feeds the pool.
+    const settlementWrites: Parameters<typeof db.transact>[0] = [];
+    if (stakeMode === 'coins') {
+      const { poolDelta } = computeCoinStakeSettlement({
+        coinStake,
+        cleared: false,
+        bonusPercent: 0,
+        poolAvailable: 0,
+      });
+      const settingsRow = settingsResult?.gameSettings?.[0] as Record<string, unknown> | undefined;
+      const settingsRowId = (settingsRow?.id as string) || id();
+      settlementWrites.push(
+        tx.gameSettings[settingsRowId].update({
+          coinPool: ((settingsRow?.coinPool as number) ?? 0) + poolDelta,
+        }),
+      );
+    }
+
+    if (player) {
+      const currentHighest = (player.highestRoom as number) || 0;
+      settlementWrites.push(
+        tx.players[player.id as string].update({
+          totalDeaths: ((player.totalDeaths as number) || 0) + 1,
+          totalLost: ((player.totalLost as number) || 0) + session.stakeAmount,
+          highestRoom: Math.max(currentHighest, room), // Track deepest room reached
+          lastPlayedAt: Date.now(),
+          totalRuns: ((player.totalRuns as number) || 0) + 1,
+          paleCoins: ((player.paleCoins as number) ?? 0) + earn,
+          bindingStreak: streak, // coins-death resets to 0; non-coins unchanged
+        }),
+      );
+    }
+
+    const runReceiptId = id();
+
     await db.transact([
       // Record the death with hash for verification
       tx.deaths[deathId].update({
@@ -179,6 +264,7 @@ export async function POST(request: NextRequest) {
         killedBy: killedBy || 'Unknown',
         inventory: JSON.stringify(inventoryArray),
         deathHash,
+        sealTier: deathSealTier, // seal of the streak they died holding
         ...(nowPlayingTitle ? { nowPlayingTitle, nowPlayingArtist: nowPlayingArtist || '' } : {}),
         createdAt: timestamp,
       }),
@@ -205,40 +291,32 @@ export async function POST(request: NextRequest) {
         endedAt: Date.now(),
         finalRoom: room,
       }),
+      // Immutable run receipt — written even for guests (records the run, not
+      // the player grant). coinDelta/streakAfter reflect what was granted.
+      tx.runReceipts[runReceiptId].update(
+        { ...buildRunReceipt({
+          sessionId: session.id,
+          sessionToken,
+          authId: session.authId ?? null,
+          walletAddress: session.walletAddress ?? null,
+          zoneId: session.zoneId ?? null,
+          runSeed: session.seed ?? null,
+          seedSource: session.seedSource ?? null,
+          serverDayKey: session.serverDayKey ?? null,
+          dailyShiftEnabled: session.dailyShiftEnabled ?? null,
+          chosenModifierId: session.chosenModifierId ?? null,
+          stakeMode,
+          coinStake,
+          outcome: 'dead',
+          finalDepth: room,
+          coinDelta: grantedCoinDelta,
+          streakAfter: grantedStreakAfter,
+          createdAt: Date.now(),
+        }) },
+      ),
+      // Coin grant + stat increments (player) and pool burn (coins mode).
+      ...settlementWrites,
     ]);
-
-    // Update player stats (increment deaths, track lost stake)
-    // Use authId for lookup (supports guests + wallet users), fallback to walletAddress for legacy
-    try {
-      const lookupKey = session.authId || session.walletAddress;
-      const lookupField = session.authId ? 'authId' : 'walletAddress';
-      
-      const { players } = await db.query({
-        players: {
-          $: {
-            where: { [lookupField]: lookupKey },
-            limit: 1,
-          },
-        },
-      });
-
-      if (players && players.length > 0) {
-        const player = players[0];
-        const currentHighest = (player as Record<string, unknown>).highestRoom as number || 0;
-        await db.transact([
-          tx.players[player.id].update({
-            totalDeaths: ((player as Record<string, unknown>).totalDeaths as number || 0) + 1,
-            totalLost: ((player as Record<string, unknown>).totalLost as number || 0) + session.stakeAmount,
-            highestRoom: Math.max(currentHighest, room), // Track deepest room reached
-            lastPlayedAt: Date.now(),
-            totalRuns: ((player as Record<string, unknown>).totalRuns as number || 0) + 1,
-          }),
-        ]);
-      }
-    } catch (statsError) {
-      console.warn('Failed to update player stats:', statsError);
-      // Don't fail the whole request for stats
-    }
 
     // Post to Tapestry social graph (wallet users only) and store contentId
     const isGuestWallet = !session.walletAddress || session.walletAddress.startsWith('guest-');
