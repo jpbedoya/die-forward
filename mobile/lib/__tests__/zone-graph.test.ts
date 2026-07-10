@@ -131,3 +131,47 @@ describe('sunken-crypt graph', () => {
     }
   });
 });
+
+describe('ashen-crypts graph', () => {
+  it('ships a valid graph using only existing structure templates', () => {
+    const zone = loadZone('ashen-crypts');
+    expect(zone.graph).toBeDefined();
+    expect(validateZoneGraph(zone.graph!)).toEqual([]);
+    const known = new Set(zone.dungeonLayout.structure.map(t => t.template).concat('zone-exit'));
+    for (const n of zone.graph!.nodes) expect(known.has(n.template)).toBe(true);
+    expect(zone.graph!.nodes.length).toBeGreaterThanOrEqual(17);
+    expect(Math.max(...zone.graph!.nodes.map(n => n.depth))).toBe(13);
+  });
+
+  it('has exactly one gated side chamber (Pale Coin, sealed-alcove)', () => {
+    const zone = loadZone('ashen-crypts');
+    const sideNodes = zone.graph!.nodes.filter(n => n.side === true);
+    expect(sideNodes.length).toBe(1);
+    const side = sideNodes[0];
+    expect(side.type).toBe('cache');
+    expect(side.template).toBe('sealed-alcove');
+    expect(side.gate).toEqual({ item: 'Pale Coin', consumes: true });
+  });
+
+  it('has exactly one boss (pyre-chamber, depth 12) and one exit (zone-exit, depth 13)', () => {
+    const zone = loadZone('ashen-crypts');
+    const boss = zone.graph!.nodes.filter(n => n.boss === true);
+    expect(boss.length).toBe(1);
+    expect(boss[0].template).toBe('pyre-chamber');
+    expect(boss[0].depth).toBe(12);
+    const exit = zone.graph!.nodes.filter(n => n.type === 'exit');
+    expect(exit.length).toBe(1);
+    expect(exit[0].template).toBe('zone-exit');
+    expect(exit[0].depth).toBe(13);
+  });
+
+  it('has an identical graph across all locale packs', () => {
+    const zonesDir = path.join(__dirname, '../zones');
+    const base = JSON.parse(fs.readFileSync(path.join(zonesDir, 'ashen-crypts.json'), 'utf8'));
+    const locales = ['ja', 'ko', 'zh-TW', 'vi', 'pt-BR', 'es'];
+    for (const locale of locales) {
+      const localized = JSON.parse(fs.readFileSync(path.join(zonesDir, `ashen-crypts.${locale}.json`), 'utf8'));
+      expect(localized.graph).toEqual(base.graph);
+    }
+  });
+});

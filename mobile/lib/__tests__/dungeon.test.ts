@@ -63,7 +63,7 @@ describe('generateDungeonGraph', () => {
   });
 
   it('legacy zones synthesize a linear graph', () => {
-    const g = generateDungeonGraph('ashen-crypts', createRunRng('s1'));
+    const g = generateDungeonGraph('frozen-gallery', createRunRng('s1'));
     const n = Object.values(g.nodes);
     expect(n.every(x => x.next.length <= 1)).toBe(true);
     expect(n.filter(x => x.type === 'exit')).toHaveLength(1);
@@ -71,6 +71,14 @@ describe('generateDungeonGraph', () => {
 
   it('graph zones: every combat node has an enemy; exactly one boss; maxDepth 13', () => {
     const g = generateDungeonGraph('sunken-crypt', createRunRng('s2'));
+    const n = Object.values(g.nodes);
+    for (const c of n.filter(x => x.type === 'combat')) expect(c.content.enemy).toBeTruthy();
+    expect(n.filter(x => x.boss)).toHaveLength(1);
+    expect(g.maxDepth).toBe(13);
+  });
+
+  it('graph zones: ashen-crypts (fragment zone) has an enemy on every combat node; exactly one boss; maxDepth 13', () => {
+    const g = generateDungeonGraph('ashen-crypts', createRunRng('s2'));
     const n = Object.values(g.nodes);
     for (const c of n.filter(x => x.type === 'combat')) expect(c.content.enemy).toBeTruthy();
     expect(n.filter(x => x.boss)).toHaveLength(1);
