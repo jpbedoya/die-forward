@@ -121,7 +121,7 @@ Past the last passage the underworld bothered to finish, something waits that wa
 
 ### Zone Structure
 
-Every zone is a branching node graph: two parallel lanes joined by cross-links, roughly twenty nodes deep. A run traverses about thirteen to sixteen of them — the path chosen decides which rooms are ever seen. Side chambers, gated by offerings, are coming. Each zone's three depth tiers scale the danger: the deeper the tier, the harder the creatures, the fewer who return.
+Every zone is a branching node graph: two parallel lanes joined by cross-links, roughly twenty nodes deep. A run traverses about thirteen to sixteen of them — the path chosen decides which rooms are ever seen. Side chambers wait off the main path, gated by offerings — an artifact spent or shown to pass. Each zone's three depth tiers scale the danger: the deeper the tier, the harder the creatures, the fewer who return.
 
 ---
 
@@ -441,6 +441,7 @@ Enemies telegraph their next action through visible intent. Players read the int
 | **Dodge** | Evade the attack | Success (clean), Close (grazed), Fail (hit) |
 | **Brace** | Reduce incoming damage | Success (reduced), Broken (partial), Fail (full hit) |
 | **Use Item** | Consume an item mid-fight (herbs, flasks, shards) | Effect applies; the enemy may strike while you're occupied |
+| **Bait** | Provoke its nature — force the creature to commit | Its next intent locks AGGRESSIVE, revealed; your next Strike this fight bites harder |
 | **Flee** | Escape the fight | Success (clean), Hurt (escape + damage), Fail (trapped) |
 
 **Signature rules:** creatures that carry a mechanical signature (rupture, reform, multiply, blink, pounce, absorb, honor, dormant, drain, chant) telegraph it at the start of combat — one line, in voice, that states the rule without naming it. `mobile/lib/locales/en.json` holds the canonical telegraph lines (`rule.*.telegraph`). Some signatures constrain your options — a woken Forgotten Guardian will not let you leave, and The Hunched punishes the moment you reach for your pack.
@@ -470,7 +471,7 @@ Enemies telegraph their next action through visible intent. Players read the int
 
 #### Bone Dust
 > Ground remains of something old. Inhale it to see what it saw.
-**Effect:** Reveals hidden paths. Common.
+**Effect:** Reveals the true nature of a branching path before you choose it. Consumed on use. Common.
 
 #### Void Salt
 > Black crystals that burn on contact. Creatures of water fear it.
