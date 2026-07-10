@@ -100,6 +100,12 @@ export async function POST(request: NextRequest) {
     const stakeAmount = session.stakeAmount || 0;
     const stakeMode: StakeMode = ((session as Record<string, unknown>).stakeMode as StakeMode) ?? 'sol';
     const coinStake: number = ((session as Record<string, unknown>).coinStake as number) ?? 0;
+
+    // A run may only mutate paleCoins/stats when its identity was token-verified at
+    // start. Coins-mode runs were provably verified (start 403s coins without a
+    // verified identity), so treat stakeMode==='coins' as verified too — this also
+    // covers in-flight coins sessions created before authVerified existed.
+    const authVerified = (session as Record<string, unknown>).authVerified === true || stakeMode === 'coins';
     const victoryBonusPercent = (gameSettings?.victoryBonusPercent as number) ?? 50;
     const { totalReward } = computeVictoryReward(stakeAmount, victoryBonusPercent);
 
@@ -335,8 +341,8 @@ export async function POST(request: NextRequest) {
       const { streak } = nextStreak({ current: prevStreak, stakeMode, cleared: true });
 
       // What was actually granted (0 / unchanged for guests) — the receipt records this.
-      const grantedCoinDelta = player ? earn + (stakeMode === 'coins' ? coinPlayerDelta : 0) : 0;
-      const grantedStreakAfter = player ? streak : prevStreak;
+      const grantedCoinDelta = (player && authVerified) ? earn + (stakeMode === 'coins' ? coinPlayerDelta : 0) : 0;
+      const grantedStreakAfter = (player && authVerified) ? streak : prevStreak;
 
       const writes: Parameters<typeof db.transact>[0] = [];
 
@@ -375,7 +381,7 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      if (player) {
+      if (player && authVerified) {
         const currentHighest = (player.highestRoom as number) || 0;
         writes.push(
           tx.players[player.id as string].update({

@@ -161,39 +161,39 @@ describe('resolveStartIdentity', () => {
   it('coin-mode with a matching body authId resolves to the verified authId', () => {
     expect(
       resolveStartIdentity({ identity: IDENTITY, bodyAuthId: 'verified-abc', bodyWallet: 'w', isCoinMode: true }),
-    ).toEqual({ authId: 'verified-abc' });
+    ).toEqual({ authId: 'verified-abc', verified: true });
   });
 
   it('coin-mode with identity and no body authId resolves to the verified authId', () => {
     expect(
       resolveStartIdentity({ identity: IDENTITY, bodyAuthId: undefined, bodyWallet: 'w', isCoinMode: true }),
-    ).toEqual({ authId: 'verified-abc' });
+    ).toEqual({ authId: 'verified-abc', verified: true });
   });
 
   it('coin-mode ignores the body walletAddress entirely (never used to locate a balance)', () => {
     // A malicious body wallet must not leak into the resolved identity.
     expect(
       resolveStartIdentity({ identity: IDENTITY, bodyAuthId: null, bodyWallet: 'attacker-wallet', isCoinMode: true }),
-    ).toEqual({ authId: 'verified-abc' });
+    ).toEqual({ authId: 'verified-abc', verified: true });
   });
 
   // ── SOL / free modes: verified overrides body, else body fallback ─────────
-  it('sol/free with identity overrides the body authId', () => {
+  it('sol/free with identity overrides the body authId (verified provenance)', () => {
     expect(
       resolveStartIdentity({ identity: IDENTITY, bodyAuthId: 'something-else', bodyWallet: 'w', isCoinMode: false }),
-    ).toEqual({ authId: 'verified-abc' });
+    ).toEqual({ authId: 'verified-abc', verified: true });
   });
 
-  it('sol/free with no identity falls back to the body authId', () => {
+  it('sol/free with no identity falls back to the body authId (unverified provenance)', () => {
     expect(
       resolveStartIdentity({ identity: null, bodyAuthId: 'body-auth', bodyWallet: 'w', isCoinMode: false }),
-    ).toEqual({ authId: 'body-auth' });
+    ).toEqual({ authId: 'body-auth', verified: false });
   });
 
-  it('sol/free with no identity and no body authId falls back to the walletAddress (pre-hardening behavior)', () => {
+  it('sol/free with no identity and no body authId falls back to the walletAddress (pre-hardening behavior, unverified)', () => {
     expect(
       resolveStartIdentity({ identity: null, bodyAuthId: undefined, bodyWallet: 'wallet-xyz', isCoinMode: false }),
-    ).toEqual({ authId: 'wallet-xyz' });
+    ).toEqual({ authId: 'wallet-xyz', verified: false });
   });
 
   it('sol/free with neither identity nor any body id rejects 400 (defensive; route validates wallet upstream)', () => {

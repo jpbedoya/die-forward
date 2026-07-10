@@ -180,6 +180,7 @@ export async function POST(request: NextRequest) {
         token: sessionToken,
         walletAddress,
         authId: resolvedAuthId, // Resolved identity: verified authId when available (body fallback for non-coin runs only)
+        authVerified: idResult.verified, // Token provenance — gates downstream currency/leaderboard writes
         stakeAmount,
         stakeMode,
         coinStake: stakeMode === 'coins' ? coinStake : 0,

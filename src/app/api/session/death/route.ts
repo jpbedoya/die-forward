@@ -199,6 +199,12 @@ export async function POST(request: NextRequest) {
     const stakeMode: StakeMode = (session.stakeMode as StakeMode) ?? 'sol';
     const coinStake: number = (session.coinStake as number) ?? 0;
 
+    // A run may only mutate paleCoins/stats when its identity was token-verified at
+    // start. Coins-mode runs were provably verified (start 403s coins without a
+    // verified identity), so treat stakeMode==='coins' as verified too — this also
+    // covers in-flight coins sessions created before authVerified existed.
+    const authVerified = (session as Record<string, unknown>).authVerified === true || stakeMode === 'coins';
+
     const earn = computeCoinEarn({
       finalDepth: room,
       cleared: false,
@@ -225,8 +231,8 @@ export async function POST(request: NextRequest) {
 
     // Grants only apply when a player row exists; the receipt records what was
     // actually granted (0 / unchanged for guests).
-    const grantedCoinDelta = player ? earn : 0;
-    const grantedStreakAfter = player ? streak : prevStreak;
+    const grantedCoinDelta = (player && authVerified) ? earn : 0;
+    const grantedStreakAfter = (player && authVerified) ? streak : prevStreak;
 
     // Coin-Bound burn → pool. Gate on stakeMode === 'coins' (belt-and-suspenders;
     // coinStake is already 0 for non-coins runs). On death playerDelta is 0 —
@@ -251,7 +257,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    if (player) {
+    if (player && authVerified) {
       const currentHighest = (player.highestRoom as number) || 0;
       settlementWrites.push(
         tx.players[player.id as string].update({

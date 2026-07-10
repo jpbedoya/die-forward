@@ -177,7 +177,7 @@ export interface ResolveStartIdentityInput {
 }
 
 export type ResolveStartIdentityResult =
-  | { authId: string }
+  | { authId: string; verified: boolean }
   | { reject: string; status: number };
 
 /**
@@ -199,6 +199,11 @@ export type ResolveStartIdentityResult =
  *    walletAddress (byte-identical to the pre-hardening `authId || walletAddress`
  *    stamp). The route validates walletAddress is present upstream, so the final
  *    reject branch is defensive only.
+ *
+ * The success result carries `verified`, reflecting token provenance: true when
+ * the authId came from a verified token, false when it came from the untrusted
+ * body fallback. Downstream this gates currency/leaderboard writes — only a
+ * token-verified run may mutate a player's paleCoins/stats.
  */
 export function resolveStartIdentity(
   input: ResolveStartIdentityInput,
@@ -212,14 +217,14 @@ export function resolveStartIdentity(
     if (bodyAuthId && bodyAuthId !== identity.authId) {
       return { reject: 'Identity mismatch', status: 403 };
     }
-    return { authId: identity.authId };
+    return { authId: identity.authId, verified: true };
   }
 
   // SOL / free modes — cannot touch coin balances.
-  if (identity) return { authId: identity.authId };
+  if (identity) return { authId: identity.authId, verified: true };
 
   const fallback = bodyAuthId || bodyWallet;
-  if (fallback) return { authId: fallback };
+  if (fallback) return { authId: fallback, verified: false };
 
   return { reject: 'Identity required', status: 400 };
 }
