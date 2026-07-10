@@ -245,12 +245,14 @@ function VoidBeyondCard({
   onPress,
   enabled: enabledProp,
   playerLocked,
+  shift,
 }: {
   zone: Zone;
   isSelected: boolean;
   onPress: () => void;
   enabled?: boolean;
   playerLocked?: boolean;
+  shift?: DailyShift;
 }) {
   const enabled = enabledProp ?? zone.enabled;
   const borderColor = isSelected ? zone.accentColor : palette.crypt.border;
@@ -302,6 +304,7 @@ function VoidBeyondCard({
       >
         "{t(zone.tagline)}"
       </Text>
+      {enabled && !playerLocked && shift && <ShiftLine shift={shift} />}
       <DifficultyDots difficulty={zone.difficulty} accentColor={zone.accentColor} />
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
         {enabled && playerLocked ? (
@@ -458,6 +461,7 @@ export default function ZoneSelectScreen() {
             onPress={() => handleSelect(voidZone.id)}
             enabled={isZoneEnabled(voidZone.id)}
             playerLocked={isPlayerLocked(voidZone.id)}
+            shift={shiftsByZone[voidZone.id]}
           />
 
           <View style={{ height: 16 }} />
