@@ -35,6 +35,7 @@ import {
   getDodgeNarration,
   getBraceNarration,
   getFleeNarration,
+  getEnemyIntent,
   IntentType,
   IntentEffects,
   CreatureInfo,
@@ -63,6 +64,7 @@ import {
   fleeBlocked,
   itemUseTriggersAttack,
   honorFilteredIntent,
+  onBait,
   CombatRuleState,
 } from '../lib/creature-rules';
 import { t } from '../lib/i18n';
@@ -74,6 +76,7 @@ const BASE_COMBAT_OPTIONS = [
   { id: 'strike', text: 'Strike', emoji: '⚔️', desc: 'Attack the enemy' },
   { id: 'dodge',  text: 'Dodge',  emoji: '💨', desc: 'Evade the attack' },
   { id: 'brace',  text: 'Brace',  emoji: '🛡️', desc: 'Reduce damage' },
+  { id: 'bait',   text: 'Bait',   emoji: '🎯', desc: 'Provoke its nature' },
   { id: 'flee',   text: 'Flee',   emoji: '🏃', desc: 'Try to escape' },
 ];
 
@@ -132,6 +135,10 @@ export default function CombatScreen() {
   // turn's enemy base damage, not the turn it was computed on.
   const ruleStateRef = useRef<CombatRuleState>(initialRuleState());
   const pendingChantBonusRef = useRef(0);
+  // Bait — the crit bonus a successful Bait grants the player's NEXT Strike.
+  // Held in a ref because it's set on the bait turn and consumed on a LATER
+  // turn's strike crit roll (then cleared), independent of CombatRuleState.
+  const baitCounterRef = useRef(0);
   const fleeAttemptedRef = useRef(false);
   // multiply — the "another hand joins" line only fires the FIRST time an
   // extra attacker is added; every recurring turn after uses a shorter line.
@@ -193,6 +200,7 @@ export default function CombatScreen() {
     // Signature-rule engine — fresh state for this fight.
     ruleStateRef.current = initialRuleState();
     pendingChantBonusRef.current = 0;
+    baitCounterRef.current = 0;
     fleeAttemptedRef.current = false;
     multiplyAnnouncedRef.current = false;
     // Reset per-fight combat state too, so dormant's turn-1 skip (gated on
@@ -243,7 +251,7 @@ export default function CombatScreen() {
   const fleeGated = fleeBlocked(creature?.signature, ruleStateRef.current);
   const COMBAT_OPTIONS = BASE_COMBAT_OPTIONS.map(o => ({
     ...o,
-    cost: o.id === 'strike' ? settings.strikeCost : o.id === 'brace' ? game.getModifiedBraceCost(0) : 1,
+    cost: o.id === 'strike' ? settings.strikeCost : o.id === 'brace' ? game.getModifiedBraceCost(0) : o.id === 'bait' ? settings.baitCost : 1,
     disabled: o.id === 'flee' && fleeGated,
   }));
   // Void Beyond — at zero clarity, an option that isn't real slips into the list.
@@ -347,6 +355,9 @@ export default function CombatScreen() {
     // Signature rule: `dodge`-into-counter is the one death-blow finish that
     // rupture doesn't punish (see onDeathBlow's lastActionWasDodgeCounter).
     let dodgeCounterLanded = false;
+    // Bait — when true, the next-turn intent roll (in the resolve setTimeout) is
+    // overridden to a forced, revealed AGGRESSIVE instead of a fresh roll.
+    let forceAggressiveNext = false;
     // Signature rule: chant's bonus was computed by the PREVIOUS turn's
     // onTurnEnd and feeds this turn's enemy base damage, before calculateDamage.
     const chantBonus = pendingChantBonusRef.current;
@@ -364,9 +375,13 @@ export default function CombatScreen() {
           ? settings.intentCounterBonus : 1.0;
         enemyDmg = Math.round(calculateDamage(basePlayerHit, true) * strikeIntentBonus);
 
-        // Critical hit chance from settings — twin-fangs synergy adds critBonus
+        // Critical hit chance from settings — twin-fangs synergy adds critBonus,
+        // and a pending Bait counter (set by a prior bait turn) adds its window.
+        // The bait window is one-shot: consumed by THIS strike's roll regardless
+        // of the outcome, then cleared.
         const strikeItemEffects = getItemEffects(game.inventory);
-        const criticalChance = settings.criticalChance + (strikeItemEffects.critBonus ?? 0);
+        const criticalChance = settings.criticalChance + (strikeItemEffects.critBonus ?? 0) + baitCounterRef.current;
+        baitCounterRef.current = 0;
         const isCritical = game.rng ? game.rng.chance(criticalChance) : Math.random() < criticalChance;
         if (isCritical) {
           enemyDmg = Math.round(enemyDmg * settings.criticalMultiplier);
@@ -424,6 +439,27 @@ export default function CombatScreen() {
           playerDmg = braceHeartstone.dmg;
         }
         actionNarrative = getBraceNarration('success');
+        break;
+      }
+      case 'bait': {
+        // Bait provokes the creature's nature. It is NOT a free turn: the enemy
+        // commits an attack NOW, resolved through its CURRENT intent on the
+        // normal enemy-hit path (no dodge/brace mitigation — only item defense
+        // via calculateDamage). The player deals no damage this turn.
+        playSFX('enemy-growl');
+        const baitBase = getBaseDamage();
+        const baitHeartstone = applyHeartstone(baitBase);
+        heartstoneTriggered = baitHeartstone.triggered;
+        playerDmg = baitHeartstone.dmg;
+        enemyDmg = 0;
+
+        // Engine: force next intent AGGRESSIVE, arm the +0.15 crit window for
+        // the next strike, and spend one-shot signatures (blink/pounce) harmlessly.
+        const bait = onBait(creature?.signature, ruleStateRef.current);
+        ruleStateRef.current = bait.state;
+        baitCounterRef.current = bait.counterBonus;
+        forceAggressiveNext = true;
+        actionNarrative = t('combat.bait');
         break;
       }
       case 'flee': {
@@ -729,8 +765,12 @@ export default function CombatScreen() {
           ? getCreatureIntentSeeded(creature?.name || 'The Drowned', game.rng)
           : getCreatureIntent(creature?.name || 'The Drowned');
       let newIntent = honorFilteredIntent(creature?.signature, rollIntent(), rollIntent);
-      // Void Beyond FLUX — the intent can shift again before the next turn.
-      if (mechanic === 'FLUX' && rollFlux(game.rng)) {
+      // Bait — the creature committed; its next intent is forced AGGRESSIVE and
+      // revealed (normal intent display). This overrides even FLUX's flicker:
+      // baiting guarantees the read.
+      if (forceAggressiveNext) {
+        newIntent = getEnemyIntent('AGGRESSIVE');
+      } else if (mechanic === 'FLUX' && rollFlux(game.rng)) {
         newIntent = honorFilteredIntent(creature?.signature, rollIntent(), rollIntent);
         setNarrative(prev => `${prev} The creature's intent flickers — unreadable.`);
       }
@@ -1065,7 +1105,7 @@ export default function CombatScreen() {
 
               // Signature rule: pounce (The Hunched) — using any item in
               // combat is an opening the creature takes immediately.
-              if (creature?.signature && itemUseTriggersAttack(creature.signature)) {
+              if (creature?.signature && itemUseTriggersAttack(creature.signature, ruleStateRef.current)) {
                 const pounceBase = game.rng ? game.rng.range(8, 14) : 8 + Math.floor(Math.random() * 7);
                 const pounceDmg = calculateDamage(pounceBase, false);
                 if (pounceDmg > 0) {

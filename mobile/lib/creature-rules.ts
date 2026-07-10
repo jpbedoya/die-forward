@@ -37,6 +37,7 @@ export interface CombatRuleState {
   blinkUsed: boolean;
   reformUsed: boolean;
   chantStacks: number;
+  pounceSpent: boolean;
 }
 
 export function initialRuleState(): CombatRuleState {
@@ -46,6 +47,51 @@ export function initialRuleState(): CombatRuleState {
     blinkUsed: false,
     reformUsed: false,
     chantStacks: 0,
+    pounceSpent: false,
+  };
+}
+
+/** Crit chance added to the player's next Strike after a successful Bait. */
+export const BAIT_COUNTER_BONUS = 0.15;
+
+export interface BaitResult {
+  forcedIntent: 'AGGRESSIVE';        // enemy commits next turn, intent revealed
+  counterBonus: number;              // added to player's crit chance next strike (this fight turn)
+  consumedSignature: boolean;        // one-shot signatures (blink/pounce) spent harmlessly
+  state: CombatRuleState;
+}
+
+/**
+ * Bait — provoke the creature's nature. The enemy's NEXT intent is forced to
+ * AGGRESSIVE (and revealed via the normal intent display), and the player's
+ * next Strike this fight gains `counterBonus` crit.
+ *
+ * Per-rule extras spend one-shot signatures harmlessly:
+ *  - `blink` → the evade is burned (`blinkUsed`), so a later Strike lands clean;
+ *  - `pounce` → the pounce is provoked NOW (`pounceSpent`), so a later item use
+ *    no longer opens a free attack (see `itemUseTriggersAttack`).
+ * `reform` and all death effects are untouched — Bait cannot pre-spend them.
+ *
+ * Bait is NOT a strike: `struckLastTurn` is left exactly as it was, so chant
+ * ramps normally through a bait turn. Pure — never mutates `s`.
+ */
+export function onBait(rule: SignatureRule | undefined, s: CombatRuleState): BaitResult {
+  let state: CombatRuleState = { ...s };
+  let consumedSignature = false;
+
+  if (rule?.id === 'blink' && !s.blinkUsed) {
+    state = { ...state, blinkUsed: true };
+    consumedSignature = true;
+  } else if (rule?.id === 'pounce' && !s.pounceSpent) {
+    state = { ...state, pounceSpent: true };
+    consumedSignature = true;
+  }
+
+  return {
+    forcedIntent: 'AGGRESSIVE',
+    counterBonus: BAIT_COUNTER_BONUS,
+    consumedSignature,
+    state,
   };
 }
 
@@ -123,9 +169,13 @@ export function fleeBlocked(rule: SignatureRule | undefined, s: CombatRuleState)
   return false;
 }
 
-/** Whether using an item in combat triggers this enemy's free attack. */
-export function itemUseTriggersAttack(rule: SignatureRule | undefined): boolean {
-  return rule?.id === 'pounce';
+/**
+ * Whether using an item in combat triggers this enemy's free attack.
+ * `pounce` opens on item use — but only until the signature is spent (a Bait
+ * provokes it early, setting `pounceSpent`), after which the opening is closed.
+ */
+export function itemUseTriggersAttack(rule: SignatureRule | undefined, s: CombatRuleState): boolean {
+  return rule?.id === 'pounce' && !s.pounceSpent;
 }
 
 /**

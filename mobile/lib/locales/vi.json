@@ -2,6 +2,7 @@
   "test.greeting": "The depths watch, {name}.",
   "combat.synergy.discovered": "An {name} is struck.",
   "combat.resolved": "It is done. The way forward opens.",
+  "combat.bait": "You give it what it wants. It commits.",
   "synergy.ossuary-pact.name": "Ossuary Pact",
   "synergy.ossuary-pact.flavor": "The charm hums against the hook. The bones answer.",
   "synergy.grave-tide.name": "Grave Tide",

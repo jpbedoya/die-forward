@@ -2,6 +2,7 @@
   "test.greeting": "深みが見ている、{name}。",
   "combat.synergy.discovered": "{name}が結ばれる。",
   "combat.resolved": "It is done. The way forward opens.",
+  "combat.bait": "You give it what it wants. It commits.",
   "synergy.ossuary-pact.name": "納骨堂の契り",
   "synergy.ossuary-pact.flavor": "護符が鉤に触れて唸る。骨が応える。",
   "synergy.grave-tide.name": "墓潮",

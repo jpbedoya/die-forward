@@ -7,6 +7,7 @@ import {
   fleeBlocked,
   itemUseTriggersAttack,
   honorFilteredIntent,
+  onBait,
   CombatRuleState,
 } from '../creature-rules';
 
@@ -25,6 +26,7 @@ describe('initialRuleState', () => {
       blinkUsed: false,
       reformUsed: false,
       chantStacks: 0,
+      pounceSpent: false,
     });
   });
 });
@@ -55,7 +57,7 @@ describe('undefined rule (neutral behavior)', () => {
   });
 
   it('itemUseTriggersAttack is false', () => {
-    expect(itemUseTriggersAttack(undefined)).toBe(false);
+    expect(itemUseTriggersAttack(undefined, s)).toBe(false);
   });
 });
 
@@ -161,11 +163,16 @@ describe('chant', () => {
 
 describe('pounce', () => {
   it('triggers a free attack on item use', () => {
-    expect(itemUseTriggersAttack({ id: 'pounce' })).toBe(true);
+    expect(itemUseTriggersAttack({ id: 'pounce' }, initialRuleState())).toBe(true);
   });
 
   it('does not trigger for other rules', () => {
-    expect(itemUseTriggersAttack({ id: 'honor' })).toBe(false);
+    expect(itemUseTriggersAttack({ id: 'honor' }, initialRuleState())).toBe(false);
+  });
+
+  it('does not trigger once the pounce has been spent (baited)', () => {
+    const spent: CombatRuleState = { ...initialRuleState(), pounceSpent: true };
+    expect(itemUseTriggersAttack({ id: 'pounce' }, spent)).toBe(false);
   });
 });
 
@@ -177,7 +184,7 @@ describe('honor', () => {
     expect(onDeathBlow({ id: 'honor' }, s, deathOpts())).toEqual({ ruptureDamage: 0, reformToHp: 0 });
     expect(onTurnEnd({ id: 'honor' }, s).addAttacker).toBe(false);
     expect(fleeBlocked({ id: 'honor' }, s)).toBe(false);
-    expect(itemUseTriggersAttack({ id: 'honor' })).toBe(false);
+    expect(itemUseTriggersAttack({ id: 'honor' }, s)).toBe(false);
   });
 });
 
@@ -219,5 +226,70 @@ describe('dormant', () => {
 
   it('does not block flee for other rules', () => {
     expect(fleeBlocked({ id: 'chant' }, { ...initialRuleState(), turn: 5 })).toBe(false);
+  });
+});
+
+describe('onBait', () => {
+  it('forces AGGRESSIVE + a 0.15 crit counter window for any rule', () => {
+    const s = initialRuleState();
+    const r = onBait(undefined, s);
+    expect(r.forcedIntent).toBe('AGGRESSIVE');
+    expect(r.counterBonus).toBe(0.15);
+    expect(r.consumedSignature).toBe(false);
+  });
+
+  it('does not touch struckLastTurn (chant unaffected by the bait action itself)', () => {
+    const s: CombatRuleState = { ...initialRuleState(), struckLastTurn: true };
+    expect(onBait(undefined, s).state.struckLastTurn).toBe(true);
+    const s2 = initialRuleState();
+    expect(onBait(undefined, s2).state.struckLastTurn).toBe(false);
+  });
+
+  it('does not mutate its input state (purity)', () => {
+    const s = initialRuleState();
+    const snapshot = { ...s };
+    onBait({ id: 'blink' }, s);
+    expect(s).toEqual(snapshot);
+  });
+
+  describe('blink', () => {
+    it('spends the evade (blinkUsed) and reports a consumed signature', () => {
+      const s = initialRuleState();
+      const r = onBait({ id: 'blink' }, s);
+      expect(r.state.blinkUsed).toBe(true);
+      expect(r.consumedSignature).toBe(true);
+      expect(r.forcedIntent).toBe('AGGRESSIVE');
+    });
+
+    it('does not re-consume an already-spent blink', () => {
+      const used: CombatRuleState = { ...initialRuleState(), blinkUsed: true };
+      const r = onBait({ id: 'blink' }, used);
+      expect(r.state.blinkUsed).toBe(true);
+      expect(r.consumedSignature).toBe(false);
+    });
+  });
+
+  describe('pounce', () => {
+    it('spends the pounce (pounceSpent) and gates itemUseTriggersAttack afterward', () => {
+      const s = initialRuleState();
+      const r = onBait({ id: 'pounce' }, s);
+      expect(r.state.pounceSpent).toBe(true);
+      expect(r.consumedSignature).toBe(true);
+      expect(itemUseTriggersAttack({ id: 'pounce' }, r.state)).toBe(false);
+    });
+
+    it('does not re-consume an already-spent pounce', () => {
+      const spent: CombatRuleState = { ...initialRuleState(), pounceSpent: true };
+      const r = onBait({ id: 'pounce' }, spent);
+      expect(r.consumedSignature).toBe(false);
+    });
+  });
+
+  it('leaves reform untouched (Bait cannot pre-spend death effects)', () => {
+    const s = initialRuleState();
+    const r = onBait({ id: 'reform' }, s);
+    expect(r.state.reformUsed).toBe(false);
+    expect(r.consumedSignature).toBe(false);
+    expect(r.forcedIntent).toBe('AGGRESSIVE');
   });
 });

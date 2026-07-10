@@ -669,6 +669,7 @@ export interface GameSettings {
   staminaPool: number;         // Max stamina (pip count)
   staminaRegen: number;        // Stamina recovered per turn
   strikeCost: number;          // Stamina cost for Strike action
+  baitCost: number;            // Stamina cost for Bait action
   // Enemy settings
   enemyCounterMultiplier: number; // Enemy counter-attack as fraction of base damage
   chargePunishment: number;    // Damage multiplier when enemy is CHARGING and player doesn't dodge
@@ -706,6 +707,7 @@ export const DEFAULT_GAME_SETTINGS: Omit<GameSettings, 'id'> = {
   staminaPool: 4,
   staminaRegen: 1,
   strikeCost: 2,
+  baitCost: 1,
   enemyCounterMultiplier: 0.85,
   chargePunishment: 2.0,
   intentCounterBonus: 1.5,
@@ -748,6 +750,7 @@ export function useGameSettings() {
     staminaPool: dbSettings?.staminaPool ?? DEFAULT_GAME_SETTINGS.staminaPool,
     staminaRegen: dbSettings?.staminaRegen ?? DEFAULT_GAME_SETTINGS.staminaRegen,
     strikeCost: dbSettings?.strikeCost ?? DEFAULT_GAME_SETTINGS.strikeCost,
+    baitCost: dbSettings?.baitCost ?? DEFAULT_GAME_SETTINGS.baitCost,
     enemyCounterMultiplier: dbSettings?.enemyCounterMultiplier ?? DEFAULT_GAME_SETTINGS.enemyCounterMultiplier,
     chargePunishment: dbSettings?.chargePunishment ?? DEFAULT_GAME_SETTINGS.chargePunishment,
     intentCounterBonus: dbSettings?.intentCounterBonus ?? DEFAULT_GAME_SETTINGS.intentCounterBonus,
