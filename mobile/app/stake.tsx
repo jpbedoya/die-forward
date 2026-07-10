@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { View, Text, Pressable, ScrollView, Modal } from 'react-native';
 import { CryptBackground } from '../components/CryptBackground';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -14,6 +14,8 @@ import { LinkWalletModal } from '../components/LinkWalletModal';
 import { AsciiLoader } from '../components/AsciiLoader';
 import { isWalletCancellation } from '../lib/wallet-utils';
 import { t } from '../lib/i18n';
+import { getDailyShift, utcDayKey } from '../lib/world-shift';
+import { RUN_MODIFIERS } from '../lib/modifiers';
 
 const STAKE_OPTIONS = [0.01, 0.05, 0.1, 0.25];
 
@@ -49,16 +51,31 @@ export default function StakeScreen() {
   const [sealStatus, setSealStatus] = useState<'idle' | 'signing' | 'cancelled' | 'error'>('idle');
   const [showNicknameEdit, setShowNicknameEdit] = useState(false);
   const [showLinkWallet, setShowLinkWallet] = useState(false);
-  const [pendingRun, setPendingRun] = useState<{ stake: number; emptyHanded: boolean; zoneId: string } | null>(null);
+  const [pendingRun, setPendingRun] = useState<{ stake: number; emptyHanded: boolean; zoneId: string; chosenModifierId?: string } | null>(null);
   const [freeRunStatus, setFreeRunStatus] = useState<'idle' | 'error'>('idle');
+
+  // Today's modifier pool for this zone (The Toll's offer). Empty when the
+  // daily shift is disabled — in that case no chooser renders and startGame
+  // gets no chosenModifierId (falls back to its own random roll).
+  const modifierPool = useMemo(
+    () => (settings.dailyShiftEnabled ? getDailyShift(zoneId, utcDayKey()).modifierPool : []),
+    [zoneId, settings.dailyShiftEnabled]
+  );
+  const [selectedModifier, setSelectedModifier] = useState<string | undefined>(undefined);
+
+  // Preselect the first offered modifier whenever the pool (re)loads.
+  useEffect(() => {
+    setSelectedModifier(modifierPool[0]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [modifierPool.join(',')]);
 
   useEffect(() => {
     playAmbient('ambient-title');
   }, []);
 
-  const resumePendingRun = async (run: { stake: number; emptyHanded: boolean; zoneId: string }) => {
+  const resumePendingRun = async (run: { stake: number; emptyHanded: boolean; zoneId: string; chosenModifierId?: string }) => {
     setPendingRun(null);
-    await game.startGame(run.stake, run.emptyHanded, run.zoneId, player?.totalDeaths);
+    await game.startGame(run.stake, run.emptyHanded, run.zoneId, player?.totalDeaths, run.chosenModifierId);
     playSFX('depth-descend');
     router.push('/play');
   };
@@ -171,12 +188,12 @@ export default function StakeScreen() {
       // syncNickname in GameContext will show the modal from local state
       // (no DB round-trip required), and pendingRun resumes after submission.
       if (!game.nickname) {
-        setPendingRun({ stake: selectedStake, emptyHanded, zoneId });
+        setPendingRun({ stake: selectedStake, emptyHanded, zoneId, chosenModifierId: selectedModifier });
         setStaking(false);
         return;
       }
 
-      await game.startGame(selectedStake, emptyHanded, zoneId, player?.totalDeaths);
+      await game.startGame(selectedStake, emptyHanded, zoneId, player?.totalDeaths, selectedModifier);
       if (!emptyHanded) setSealStatus('idle');
       playSFX('depth-descend');
       router.push('/play');
@@ -290,6 +307,46 @@ export default function StakeScreen() {
             <Text className="text-amber-light text-base font-mono font-bold">{t('stake.sol_amount', { amount: (selectedStake * (1 + settings.victoryBonusPercent / 100)).toFixed(3) })}</Text>
           </View>
         </View>
+
+        {/* The Toll's offer: today's modifier pool for this zone */}
+        {settings.dailyShiftEnabled && modifierPool.length > 0 && (
+          <View className="mb-6">
+            <Text className="text-bone-dark text-xs font-mono tracking-widest mb-3">{t('stake.offer.title')}</Text>
+            <View className="gap-2">
+              {modifierPool.map((modId) => {
+                const mod = RUN_MODIFIERS.find((m) => m.id === modId);
+                if (!mod) return null;
+                const selected = selectedModifier === modId;
+                return (
+                  <Pressable
+                    key={modId}
+                    className={`flex-row items-center gap-3 p-3 border ${
+                      selected
+                        ? 'border-amber bg-amber/10'
+                        : 'border-crypt-border-light bg-crypt-surface'
+                    }`}
+                    onPress={() => {
+                      playSFX('ui-click');
+                      setSelectedModifier(modId);
+                    }}
+                  >
+                    <Text className="text-xl">{mod.emoji}</Text>
+                    <View className="flex-1">
+                      <Text className={`font-mono text-sm font-bold ${
+                        selected ? 'text-amber-light' : 'text-bone-muted'
+                      }`}>
+                        {t(`modifier.${modId}.name`)}
+                      </Text>
+                      <Text className="text-bone-dark text-xs font-mono mt-0.5 leading-4">
+                        {t(`modifier.${modId}.desc`)}
+                      </Text>
+                    </View>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+        )}
 
         {/* Identity row */}
         <View className="items-center mb-5">

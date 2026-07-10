@@ -603,5 +603,18 @@
   "zoneSelect.zone.voidBeyond.element": "VOID",
   "zoneSelect.zone.voidBeyond.mechanic": "FLUX — nothing is reliable. CLARITY — protect your mind.",
   "zoneSelect.zone.voidBeyond.name": "THE VOID BEYOND",
-  "zoneSelect.zone.voidBeyond.tagline": "Where the underworld forgot to finish building."
+  "zoneSelect.zone.voidBeyond.tagline": "Where the underworld forgot to finish building.",
+  "stake.offer.title": "THE DEPTHS MAKE AN OFFER",
+  "modifier.blood-pact.name": "Blood Pact",
+  "modifier.blood-pact.desc": "+25% damage dealt, -30% healing received",
+  "modifier.blind-descent.name": "Blind Descent",
+  "modifier.blind-descent.desc": "Enemy intent hidden on the first turn of each combat",
+  "modifier.deaths-echo.name": "Death's Echo",
+  "modifier.deaths-echo.desc": "+30% chance to discover a corpse in any room",
+  "modifier.numbing-cold.name": "Numbing Cold",
+  "modifier.numbing-cold.desc": "Start with 2 stamina, but regen 1 extra per turn",
+  "modifier.iron-will.name": "Iron Will",
+  "modifier.iron-will.desc": "Brace negates all damage, but costs 1 stamina",
+  "modifier.glass-cannon.name": "Glass Cannon",
+  "modifier.glass-cannon.desc": "Start with 60 HP, deal +50% damage"
 }
