@@ -616,5 +616,10 @@
   "modifier.iron-will.name": "Iron Will",
   "modifier.iron-will.desc": "Brace negates all damage, but costs 1 stamina",
   "modifier.glass-cannon.name": "Glass Cannon",
-  "modifier.glass-cannon.desc": "Start with 60 HP, deal +50% damage"
+  "modifier.glass-cannon.desc": "Start with 60 HP, deal +50% damage",
+  "shift.header": "THE DEPTHS HAVE SHIFTED",
+  "shift.line": "The passages are not as you left them.",
+  "shift.offers": "Today's offers: {mods}",
+  "shift.zone.sealed": "{n} passage(s) sealed today.",
+  "shift.zone.open": "All passages stand open."
 }

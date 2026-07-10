@@ -9,6 +9,8 @@ import { router, useFocusEffect } from 'expo-router';
 import { useAudio } from '../lib/audio';
 import { dlog, exportDebugLogs } from '../lib/debug-log';
 import { t } from '../lib/i18n';
+import { getDailyShift, utcDayKey } from '../lib/world-shift';
+import { RUN_MODIFIERS } from '../lib/modifiers';
 
 // Animated gradient button decoration - constantly flows inward
 function AnimatedDescendButton() {
@@ -246,6 +248,16 @@ export default function HomeScreen() {
   const { settings } = useGameSettings();
   const [walletConnecting, setWalletConnecting] = useState(false);
 
+  // Home has no "current zone" concept, so the shift panel shows the pool for
+  // sunken-crypt — the always-unlocked anchor zone every player has access to
+  // from day one. Per-zone shift detail (sealed doors, etc.) lives on zone
+  // select where a concrete zoneId exists.
+  const dayKey = utcDayKey();
+  const shiftModifierPool = useMemo(
+    () => (settings.dailyShiftEnabled ? getDailyShift('sunken-crypt', dayKey).modifierPool : []),
+    [dayKey, settings.dailyShiftEnabled]
+  );
+
   useEffect(() => {
     dlog('Home', 'HomeScreen mounted');
     return () => dlog('Home', 'HomeScreen UNMOUNTED');
@@ -429,6 +441,25 @@ export default function HomeScreen() {
         </View>
 
         <View className="flex-[2]" />
+
+        {/* Daily World Shift — compact bible-voice callout, hidden when disabled */}
+        {settings.dailyShiftEnabled && shiftModifierPool.length > 0 && (
+          <View className="items-center mb-4">
+            <Text className="text-amber-dark font-mono text-xs tracking-widest">
+              {t('shift.header')}
+            </Text>
+            <Text className="text-bone-dark font-mono text-xs italic text-center mt-1">
+              {t('shift.line')}
+            </Text>
+            <Text className="text-bone-muted font-mono text-xs text-center mt-1">
+              {t('shift.offers', {
+                mods: shiftModifierPool
+                  .map((modId) => RUN_MODIFIERS.find((m) => m.id === modId)?.emoji ?? '')
+                  .join(' '),
+              })}
+            </Text>
+          </View>
+        )}
 
         {/* Echoes Section — whole area tappable */}
         <Pressable className="mb-4" onPress={openSheet}>

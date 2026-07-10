@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { View, Text, Pressable, ScrollView, useWindowDimensions } from 'react-native';
 import { CryptBackground } from '../components/CryptBackground';
 import { router } from 'expo-router';
@@ -9,10 +9,12 @@ import { AudioSettingsModal } from '../components/AudioSettingsModal';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { CRTOverlay } from '../components/CRTOverlay';
 import { useGame } from '../lib/GameContext';
-import { useCurrentPlayer, usePlayer, Player } from '../lib/instant';
+import { useCurrentPlayer, usePlayer, useGameSettings, Player } from '../lib/instant';
 import { API_BASE } from '../lib/api';
 import { palette } from '../lib/theme';
 import { t } from '../lib/i18n';
+import { getDailyShift, utcDayKey, type DailyShift } from '../lib/world-shift';
+import { RUN_MODIFIERS } from '../lib/modifiers';
 
 // Determine if a player has unlocked a zone through progression
 function isZoneUnlocked(zoneId: string, player: Player | undefined): boolean {
@@ -107,18 +109,36 @@ function DifficultyDots({ difficulty, accentColor }: { difficulty: number; accen
   );
 }
 
+// Subtle "today's shift" line for an unlocked zone card — sealed side doors
+// (if any) else "all passages stand open", plus the day's modifier emojis.
+function ShiftLine({ shift }: { shift: DailyShift }) {
+  const emojis = shift.modifierPool
+    .map((modId) => RUN_MODIFIERS.find((m) => m.id === modId)?.emoji ?? '')
+    .join(' ');
+  const line = shift.sealedSideNodes.length > 0
+    ? t('shift.zone.sealed', { n: shift.sealedSideNodes.length })
+    : t('shift.zone.open');
+  return (
+    <Text style={{ fontFamily: 'monospace', fontSize: 9, color: palette.bone.dark, marginTop: 6, letterSpacing: 0.3 }}>
+      {line} {emojis}
+    </Text>
+  );
+}
+
 function GridZoneCard({
   zone,
   isSelected,
   onPress,
   enabled: enabledProp,
   playerLocked,
+  shift,
 }: {
   zone: Zone;
   isSelected: boolean;
   onPress: () => void;
   enabled?: boolean;
   playerLocked?: boolean;
+  shift?: DailyShift;
 }) {
   const enabled = enabledProp ?? zone.enabled;
   const borderColor = isSelected ? zone.accentColor : palette.crypt.border;
@@ -213,6 +233,7 @@ function GridZoneCard({
           {t(zone.tagline)}
         </Text>
         <DifficultyDots difficulty={zone.difficulty} accentColor={zone.accentColor} />
+        {shift && <ShiftLine shift={shift} />}
       </View>
     </Pressable>
   );
@@ -324,6 +345,7 @@ export default function ZoneSelectScreen() {
   const player = (walletPlayer?.highestRoom ?? 0) >= (authPlayer?.highestRoom ?? 0)
     ? walletPlayer ?? authPlayer
     : authPlayer ?? walletPlayer;
+  const { settings } = useGameSettings();
   const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
   const [selectedZoneId, setSelectedZoneId] = useState('sunken-crypt');
   const { width: screenWidth } = useWindowDimensions();
@@ -357,6 +379,17 @@ export default function ZoneSelectScreen() {
 
   // TODO: fetch player progression unlock status post-auth (wallet bound after zone select)
   // useEffect(() => { ... fetch /api/player/unlock-status ... }, [game.walletAddress]);
+
+  // Today's shift per zone, for the subtle "sealed/open + offers" card line.
+  // All 5 zones are computed (cheap, pure functions) but only unlocked cards
+  // render the result — locked/coming-soon cards skip it entirely.
+  const dayKey = utcDayKey();
+  const shiftsByZone = useMemo(() => {
+    if (!settings.dailyShiftEnabled) return {} as Record<string, DailyShift>;
+    const map: Record<string, DailyShift> = {};
+    for (const zone of ZONES) map[zone.id] = getDailyShift(zone.id, dayKey);
+    return map;
+  }, [dayKey, settings.dailyShiftEnabled]);
 
   const selectedZone = ZONES.find((z) => z.id === selectedZoneId) ?? ZONES[0];
 
@@ -411,6 +444,7 @@ export default function ZoneSelectScreen() {
                     onPress={() => handleSelect(zone.id)}
                     enabled={isZoneEnabled(zone.id)}
                     playerLocked={isPlayerLocked(zone.id)}
+                    shift={shiftsByZone[zone.id]}
                   />
                 ))}
               </View>
