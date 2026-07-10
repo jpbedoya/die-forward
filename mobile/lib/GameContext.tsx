@@ -841,17 +841,26 @@ export function GameProvider({
       const seed = session.vrfSeed || session.seed || generateRandomSeed();
       console.log('[GameContext] Using run seed:', seed.slice(0, 16) + '...');
       
+      // Resolve the zone once and reuse it for both the daily shift lookup and
+      // dungeon generation so they can never diverge.
+      const resolvedZoneId = session.zoneId || zoneId || 'sunken-crypt';
+      const dayKey = utcDayKey();
+      const shift = settings.dailyShiftEnabled ? getDailyShift(resolvedZoneId, dayKey) : undefined;
+
       // Roll run modifier deterministically from seed.
       // Use a dedicated RNG instance so the modifier roll is always the first
       // value consumed from the sequence — this keeps other rng calls stable.
+      // (The shift lookup above is pure day/zone math, not rng-derived, so
+      // hoisting it above the roll doesn't affect the rng stream.)
       const modifierRng = createRunRng(seed);
       // ALWAYS roll (consumes exactly one pick from modifierRng) so the
       // downstream perk starting-item roll sees an identical stream whether or
-      // not the player supplied a choice. Then let a valid chosen id override.
+      // not the player supplied a choice. Then let a valid chosen id override,
+      // provided it's in today's shift pool (when a shift is active).
       const rolled = rollModifier(modifierRng);
-      const modifier = resolveModifier(chosenModifierId, rolled);
+      const modifier = resolveModifier(chosenModifierId, rolled, shift?.modifierPool);
       console.log('[GameContext] Run modifier:', modifier.id);
-      
+
       // Apply milestone perks
       const perks = getMilestonePerks(totalDeaths ?? 0);
 
@@ -876,11 +885,6 @@ export function GameProvider({
       // Use a separate RNG instance from the same seed so the modifier roll
       // doesn't offset the dungeon generation sequence.
       const mainRng = createRunRng(seed);
-      // Resolve the zone once and reuse it for both the daily shift lookup and
-      // dungeon generation so they can never diverge.
-      const resolvedZoneId = session.zoneId || zoneId || 'sunken-crypt';
-      const dayKey = utcDayKey();
-      const shift = settings.dailyShiftEnabled ? getDailyShift(resolvedZoneId, dayKey) : undefined;
       const graph = generateDungeonGraph(resolvedZoneId, mainRng, shift);
       // Compat projection for legacy consumers: nodes flattened by ascending
       // depth. Tasks 5-6 remove this once screens traverse the graph directly.

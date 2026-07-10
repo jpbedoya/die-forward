@@ -91,12 +91,19 @@ export function rollModifier(rng: { pick<T>(arr: T[]): T }): RunModifier {
  * consumers (e.g. the perk starting-item roll) then see a stable sequence.
  *
  * A valid `chosenId` selects that modifier; an unknown id or `undefined`
- * falls back to the rolled modifier.
+ * falls back to the rolled modifier. When `pool` is provided (today's daily
+ * shift modifier pool), a `chosenId` not present in that pool is also treated
+ * as invalid and falls back to the rolled modifier — this stops a stale
+ * client-side choice from a previous day's pool (or a tampered request) from
+ * being honored. When `pool` is omitted (no active daily shift), any valid
+ * `chosenId` is honored as-is.
  */
 export function resolveModifier(
   chosenId: string | undefined,
-  rolled: RunModifier
+  rolled: RunModifier,
+  pool?: string[]
 ): RunModifier {
   if (!chosenId) return rolled;
+  if (pool && !pool.includes(chosenId)) return rolled;
   return RUN_MODIFIERS.find((m) => m.id === chosenId) ?? rolled;
 }

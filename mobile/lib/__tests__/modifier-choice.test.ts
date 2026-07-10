@@ -18,6 +18,32 @@ describe('resolveModifier override semantics', () => {
   });
 });
 
+describe('resolveModifier pool validation (daily shift)', () => {
+  const rolled = RUN_MODIFIERS[0];
+
+  it('honors a chosen id that is present in the provided pool', () => {
+    const target = RUN_MODIFIERS[3];
+    const pool = [RUN_MODIFIERS[1].id, target.id, RUN_MODIFIERS[2].id];
+    expect(resolveModifier(target.id, rolled, pool)).toBe(target);
+  });
+
+  it('falls back to the rolled modifier when the chosen id is not in the provided pool', () => {
+    const target = RUN_MODIFIERS[3];
+    const pool = [RUN_MODIFIERS[1].id, RUN_MODIFIERS[2].id];
+    expect(resolveModifier(target.id, rolled, pool)).toBe(rolled);
+  });
+
+  it('honors a valid chosen id when no pool is provided (daily shift disabled)', () => {
+    const target = RUN_MODIFIERS[3];
+    expect(resolveModifier(target.id, rolled, undefined)).toBe(target);
+  });
+
+  it('falls back to the rolled modifier when chosenId is undefined, regardless of pool', () => {
+    const pool = [RUN_MODIFIERS[1].id, RUN_MODIFIERS[2].id];
+    expect(resolveModifier(undefined, rolled, pool)).toBe(rolled);
+  });
+});
+
 describe('modifierRng draw stability', () => {
   // The perk starting-item roll consumes modifierRng AFTER the modifier pick.
   // rollModifier must consume exactly one pick whether or not a choice overrides

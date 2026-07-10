@@ -57,9 +57,10 @@ export default function StakeScreen() {
   // Today's modifier pool for this zone (The Toll's offer). Empty when the
   // daily shift is disabled — in that case no chooser renders and startGame
   // gets no chosenModifierId (falls back to its own random roll).
+  const dayKey = utcDayKey();
   const modifierPool = useMemo(
-    () => (settings.dailyShiftEnabled ? getDailyShift(zoneId, utcDayKey()).modifierPool : []),
-    [zoneId, settings.dailyShiftEnabled]
+    () => (settings.dailyShiftEnabled ? getDailyShift(zoneId, dayKey).modifierPool : []),
+    [zoneId, dayKey, settings.dailyShiftEnabled]
   );
   const [selectedModifier, setSelectedModifier] = useState<string | undefined>(undefined);
 
