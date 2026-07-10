@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, useRef, ReactNode, useEffect, useMemo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as api from './api';
+import { resolveStakeIntent } from './stake-intent';
 import { dlog } from './debug-log';
 
 import { generateDungeonGraph, DungeonRoom, DungeonGraph, getItemDetails, rollRandomItem, getItemEffects } from './content';
@@ -134,7 +135,7 @@ interface GameContextType extends GameState {
   dismissNicknameModal: () => void;
   
   // Game actions
-  startGame: (amount: number, emptyHanded?: boolean, zoneId?: string, totalDeaths?: number, chosenModifierId?: string) => Promise<void>;
+  startGame: (amount: number, emptyHanded?: boolean, zoneId?: string, totalDeaths?: number, chosenModifierId?: string, coinStake?: number) => Promise<void>;
   advance: (toNodeId?: string) => Promise<boolean>;
   /** Mark the current node's encounter as resolved (combat won/fled) without moving. */
   markNodeResolved: () => void;
@@ -741,16 +742,21 @@ export function GameProvider({
   }, [unifiedWallet]);
 
   // Game actions
-  const startGame = useCallback(async (amount: number, emptyHanded = false, zoneId?: string, totalDeaths?: number, chosenModifierId?: string) => {
+  const startGame = useCallback(async (amount: number, emptyHanded = false, zoneId?: string, totalDeaths?: number, chosenModifierId?: string, coinStake?: number) => {
     updateState({ loading: true, error: null });
     try {
+      // Resolve how this run is staked (sol / coins / free). This decides three
+      // things: whether we build the on-chain escrow tx (sendSol), and whether a
+      // backend failure may fall back to an offline session (canFallbackOffline —
+      // only ever true for a truly empty-handed 'free' run).
+      const intent = resolveStakeIntent({ amount, coinStake, emptyHanded });
       let stakeTxSignature: string | undefined;
       // Prefer live wallet address from provider, then fallback to restored auth state.
       let activeWalletAddress = (unifiedWallet.address || state.walletAddress) as Address | null;
       // Use authId for player identity, fall back to wallet address or generate guest ID
       let playerIdentifier = state.authId || activeWalletAddress || `guest-${Date.now()}`;
 
-      if (!emptyHanded) {
+      if (intent.sendSol) {
         dlog('Stake', `startGame stake flow: providerConnected=${unifiedWallet.connected}, providerAddress=${unifiedWallet.address}, stateWallet=${state.walletAddress}`);
 
         // After force-close/reopen, auth state can restore before provider session does.
@@ -808,8 +814,10 @@ export function GameProvider({
       });
 
       let session: api.StartSessionResponse;
-      if (emptyHanded && offlineRef.current) {
+      if (intent.canFallbackOffline && offlineRef.current) {
         // Guest auth already detected offline this flow — skip the redundant timeout.
+        // Only a 'free' run reaches this branch (canFallbackOffline). A coin/sol
+        // run is server-validated and never starts from a cached offline state.
         dlog.warn('Stake', 'starting empty-handed run offline (cached offline state)');
         session = buildLocalSession();
       } else {
@@ -817,14 +825,22 @@ export function GameProvider({
           // Pass authId separately for proper player tracking (guests + wallet users)
           session = await api.startSession(
             (activeWalletAddress || state.walletAddress || playerIdentifier), // walletAddress for on-chain stuff
-            emptyHanded ? 0 : amount,  // Empty handed runs have 0 stake
+            intent.sendSol ? amount : 0,  // Only a SOL stake carries a lamport amount; coins/free stake 0
             stakeTxSignature,
             state.authId || playerIdentifier, // authId for player record lookup
             zoneId,
+            intent.stakeMode,
+            coinStake,
+            chosenModifierId,
+            settings.dailyShiftEnabled,
           );
           offlineRef.current = false;
         } catch (err) {
-          if (!emptyHanded || !api.isOfflineError(err)) throw err;
+          // Trust boundary: ONLY a truly empty-handed 'free' run may fall back to an
+          // offline session. A coin/sol run's balance can't be validated client-side,
+          // so a server failure must throw (mirrors the staked-run behavior) — a
+          // coinStake run never reaches buildLocalSession even with emptyHanded shape.
+          if (!intent.canFallbackOffline || !api.isOfflineError(err)) throw err;
           dlog.warn('Stake', 'session start offline — starting empty-handed run locally');
           offlineRef.current = true;
           session = buildLocalSession();
@@ -989,7 +1005,11 @@ export function GameProvider({
     // BUG FIX: write the 1-based depth of the node just reached (previously a
     // 0-based value), unifying with the web routes' 1-based writes.
     // updateHighestRoom only writes if this exceeds the current stored value.
-    if (state.authId) {
+    //
+    // FIREWALL: an offline (client-authoritative) session is unverified — its
+    // progression must never touch the shared leaderboard/unlock state. Skip the
+    // write entirely for offline sessions (matches the api.advanceRoom guard above).
+    if (state.authId && !api.isOfflineSession(state.sessionToken)) {
       updateHighestRoom(state.authId, targetNode.depth).catch((err) => {
         console.warn('[advance] Failed to update highest room:', err);
       });

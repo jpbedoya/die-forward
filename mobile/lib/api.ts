@@ -113,6 +113,10 @@ export async function startSession(
   stakeTxSignature?: string,
   authId?: string,
   zoneId?: string,
+  stakeMode?: 'sol' | 'coins' | 'free',
+  coinStake?: number,
+  chosenModifierId?: string,
+  dailyShiftEnabled?: boolean,
 ): Promise<StartSessionResponse> {
   const response = await fetchWithTimeout(`${API_BASE}/api/session/start`, {
     method: 'POST',
@@ -123,6 +127,10 @@ export async function startSession(
       stakeTxSignature,
       authId, // Unique player identifier (InstantDB auth ID)
       zoneId,
+      stakeMode,
+      coinStake,
+      chosenModifierId,
+      dailyShiftEnabled,
       // Demo mode if no signature
       demoMode: !stakeTxSignature,
     }),

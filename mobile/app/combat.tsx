@@ -10,7 +10,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useGame } from '../lib/GameContext';
 import { updatePlayerClearedZone, useCurrentPlayer, recordCreatureUpdate } from '../lib/instant';
-import { API_BASE } from '../lib/api';
+import { API_BASE, isOfflineSession } from '../lib/api';
 import { ProgressBar } from '../components/ProgressBar';
 import { GameMenu, MenuButton } from '../components/GameMenu';
 import { MiniPlayer } from '../components/MiniPlayer';
@@ -699,9 +699,11 @@ export default function CombatScreen() {
       if (Platform.OS !== 'web') {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
-      // Fix 6 (Revy): record zone clear when boss is defeated
+      // Fix 6 (Revy): record zone clear when boss is defeated.
+      // FIREWALL: an offline (client-authoritative) session is unverified — never
+      // let its boss kill write to the shared clearedZones/unlock progression.
       const node = params.nodeId ? game.graph?.nodes[params.nodeId] : undefined;
-      if (node?.boss && game.authId && game.zoneId) {
+      if (node?.boss && game.authId && game.zoneId && !isOfflineSession(game.sessionToken)) {
         updatePlayerClearedZone(game.authId, game.zoneId).catch(err =>
           console.warn('[combat] Failed to record zone clear:', err)
         );
