@@ -28,7 +28,8 @@ import { Transaction, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { getOrCreatePlayerByAuth, updatePlayerNicknameByAuth, useGameSettings, updateHighestRoom } from './instant';
 import { signInWithWallet, signInAsGuest, signInAsGuestLocal, signOut, linkWalletToGuest, getStoredAuthState, restoreInstantDBSession, type AuthState } from './auth';
 import { createRunRng, generateRandomSeed, type SeededRng } from './seeded-random';
-import { rollModifier, type RunModifier } from './modifiers';
+import { rollModifier, resolveModifier, type RunModifier } from './modifiers';
+import { utcDayKey, getDailyShift, type DailyShift } from './world-shift';
 
 const INVENTORY_MAX = 4;
 
@@ -100,6 +101,7 @@ interface GameState {
   itemsFound: number;
   seed: string | null;  // RNG seed for verifiable randomness
   currentModifier: RunModifier | null;  // Run modifier rolled at game start
+  dailyShift: DailyShift | null;        // Active daily world shift for this run (null if disabled)
   zoneStatus: ZoneStatusState;          // Per-zone combat status effects (burn/chill/infection/clarity)
   
   // UI state
@@ -132,7 +134,7 @@ interface GameContextType extends GameState {
   dismissNicknameModal: () => void;
   
   // Game actions
-  startGame: (amount: number, emptyHanded?: boolean, zoneId?: string, totalDeaths?: number) => Promise<void>;
+  startGame: (amount: number, emptyHanded?: boolean, zoneId?: string, totalDeaths?: number, chosenModifierId?: string) => Promise<void>;
   advance: (toNodeId?: string) => Promise<boolean>;
   /** Mark the current node's encounter as resolved (combat won/fled) without moving. */
   markNodeResolved: () => void;
@@ -179,6 +181,8 @@ interface GameContextType extends GameState {
 
   // Run modifier (rolled at game start, persists for the run)
   currentModifier: RunModifier | null;
+  // Active daily world shift for this run (null when disabled or before a run starts)
+  dailyShift: DailyShift | null;
 
   // Modifier effect helpers — call these instead of raw values in combat/play screens
   /** Additional damage multiplier from the run modifier (e.g. 0.25 = +25%) */
@@ -237,6 +241,7 @@ const initialState: GameState = {
   dungeon: [],
   seed: null,
   currentModifier: null,
+  dailyShift: null,
   zoneStatus: initZoneStatus(),
   loading: false,
   error: null,
@@ -736,7 +741,7 @@ export function GameProvider({
   }, [unifiedWallet]);
 
   // Game actions
-  const startGame = useCallback(async (amount: number, emptyHanded = false, zoneId?: string, totalDeaths?: number) => {
+  const startGame = useCallback(async (amount: number, emptyHanded = false, zoneId?: string, totalDeaths?: number, chosenModifierId?: string) => {
     updateState({ loading: true, error: null });
     try {
       let stakeTxSignature: string | undefined;
@@ -840,7 +845,11 @@ export function GameProvider({
       // Use a dedicated RNG instance so the modifier roll is always the first
       // value consumed from the sequence — this keeps other rng calls stable.
       const modifierRng = createRunRng(seed);
-      const modifier = rollModifier(modifierRng);
+      // ALWAYS roll (consumes exactly one pick from modifierRng) so the
+      // downstream perk starting-item roll sees an identical stream whether or
+      // not the player supplied a choice. Then let a valid chosen id override.
+      const rolled = rollModifier(modifierRng);
+      const modifier = resolveModifier(chosenModifierId, rolled);
       console.log('[GameContext] Run modifier:', modifier.id);
       
       // Apply milestone perks
@@ -867,7 +876,12 @@ export function GameProvider({
       // Use a separate RNG instance from the same seed so the modifier roll
       // doesn't offset the dungeon generation sequence.
       const mainRng = createRunRng(seed);
-      const graph = generateDungeonGraph(session.zoneId || zoneId || 'sunken-crypt', mainRng);
+      // Resolve the zone once and reuse it for both the daily shift lookup and
+      // dungeon generation so they can never diverge.
+      const resolvedZoneId = session.zoneId || zoneId || 'sunken-crypt';
+      const dayKey = utcDayKey();
+      const shift = settings.dailyShiftEnabled ? getDailyShift(resolvedZoneId, dayKey) : undefined;
+      const graph = generateDungeonGraph(resolvedZoneId, mainRng, shift);
       // Compat projection for legacy consumers: nodes flattened by ascending
       // depth. Tasks 5-6 remove this once screens traverse the graph directly.
       const dungeon: DungeonRoom[] = Object.values(graph.nodes).sort((a, b) => a.depth - b.depth);
@@ -888,6 +902,7 @@ export function GameProvider({
         dungeon,
         seed,
         currentModifier: modifier,
+        dailyShift: shift ?? null,
         zoneStatus: initZoneStatus(),
         loading: false,
       });
@@ -904,7 +919,7 @@ export function GameProvider({
       });
       throw err;
     }
-  }, [state.authId, state.walletAddress, unifiedWallet, updateState]);
+  }, [state.authId, state.walletAddress, unifiedWallet, updateState, settings.dailyShiftEnabled]);
 
   const advance = useCallback(async (toNodeId?: string): Promise<boolean> => {
     if (!state.sessionToken) return false;
@@ -1235,6 +1250,7 @@ export function GameProvider({
     checkDeathSave,
     // Modifier
     currentModifier: state.currentModifier,
+    dailyShift: state.dailyShift,
     getModifiedDamageBonus,
     getModifiedHealMultiplier,
     getModifiedStaminaRegen,

@@ -82,3 +82,21 @@ export const RUN_MODIFIERS: RunModifier[] = [
 export function rollModifier(rng: { pick<T>(arr: T[]): T }): RunModifier {
   return rng.pick(RUN_MODIFIERS);
 }
+
+/**
+ * Resolve the effective run modifier given an optional player choice.
+ *
+ * `rolled` MUST already have been produced by `rollModifier(rng)` so the rng
+ * stream advances identically whether or not a choice is supplied — downstream
+ * consumers (e.g. the perk starting-item roll) then see a stable sequence.
+ *
+ * A valid `chosenId` selects that modifier; an unknown id or `undefined`
+ * falls back to the rolled modifier.
+ */
+export function resolveModifier(
+  chosenId: string | undefined,
+  rolled: RunModifier
+): RunModifier {
+  if (!chosenId) return rolled;
+  return RUN_MODIFIERS.find((m) => m.id === chosenId) ?? rolled;
+}

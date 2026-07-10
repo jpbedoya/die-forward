@@ -687,6 +687,8 @@ export interface GameSettings {
   // Storytelling settings
   enableRoomTextStreaming: boolean; // Reveal room narrative character-by-character
   roomTextStreamSpeedMs: number;    // Base delay per character (ms)
+  // World shift settings
+  dailyShiftEnabled: boolean;       // Apply the daily world shift (pool/edge/side-node mask) to runs
 }
 
 // Default settings (fallback if not set in DB)
@@ -718,6 +720,7 @@ export const DEFAULT_GAME_SETTINGS: Omit<GameSettings, 'id'> = {
   showLeaderboardLink: true,
   enableRoomTextStreaming: false,
   roomTextStreamSpeedMs: 28,
+  dailyShiftEnabled: true,
 };
 
 // Hook to get game settings (from admin panel)
@@ -761,6 +764,7 @@ export function useGameSettings() {
     showLeaderboardLink: dbSettings?.showLeaderboardLink ?? DEFAULT_GAME_SETTINGS.showLeaderboardLink,
     enableRoomTextStreaming: dbSettings?.enableRoomTextStreaming ?? DEFAULT_GAME_SETTINGS.enableRoomTextStreaming,
     roomTextStreamSpeedMs: dbSettings?.roomTextStreamSpeedMs ?? DEFAULT_GAME_SETTINGS.roomTextStreamSpeedMs,
+    dailyShiftEnabled: dbSettings?.dailyShiftEnabled ?? DEFAULT_GAME_SETTINGS.dailyShiftEnabled,
   }), [dbSettings]);
 
   return { settings, isLoading, error };
