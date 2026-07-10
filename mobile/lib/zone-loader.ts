@@ -224,6 +224,16 @@ export function validateZoneGraph(g: ZoneGraphLayout): string[] {
     }
   }
 
+  // Once the duplicate-id error(s) above are recorded, every later rule
+  // works off a deduped node list (first occurrence of each id wins, via
+  // nodesById which is only populated on first sight). Without this, a
+  // shadowed duplicate node still gets walked by every subsequent rule as
+  // its own object — producing confusing secondary errors (dead-end, depth
+  // skip, unreachable, etc.) for a node that's already flagged as a dup and
+  // otherwise invisible to the graph (nothing can resolve to it by id).
+  const dedupedNodes = Array.from(nodesById.values());
+  g = { ...g, nodes: dedupedNodes };
+
   // Rule: start exists at depth 1
   const startNode = nodesById.get(g.start);
   if (!startNode) {

@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDeathFeed, usePoolStats, Death } from '../lib/instant';
 import { getDepthForRoom } from '../lib/content';
+import { getZoneDepth, loadZone, listZoneIds } from '../lib/zone-loader';
 import { useState } from 'react';
 import { t } from '../lib/i18n';
 
@@ -20,8 +21,20 @@ function formatTimeAgo(timestamp: number): string {
   return t('feed.weeksAgo', { weeks: Math.floor(days / 7) });
 }
 
+// Zone-aware depth label. Legacy rows predate the zone system and store a
+// display-name value (e.g. "THE SUNKEN CRYPT") in `death.zone` rather than a
+// real zone id — loadZone() would throw for those. Fall back to the old
+// sunken-crypt-banded getDepthForRoom() whenever the zone id isn't one we
+// actually ship, so legacy feed rows keep rendering exactly as before.
+function depthForDeath(death: Death) {
+  if (death.zone && listZoneIds().includes(death.zone)) {
+    return getZoneDepth(loadZone(death.zone), death.room);
+  }
+  return getDepthForRoom(death.room);
+}
+
 function DeathEntry({ death }: { death: Death }) {
-  const depth = getDepthForRoom(death.room);
+  const depth = depthForDeath(death);
   const depthColor = depth.tier === 3 ? 'text-ethereal' : depth.tier === 2 ? 'text-amber' : 'text-bone';
 
   return (

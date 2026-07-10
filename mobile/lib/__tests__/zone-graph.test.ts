@@ -43,6 +43,19 @@ const withSide = (): ZoneGraphLayout => ({
   ],
 });
 
+describe('validateZoneGraph: duplicate id cascade noise', () => {
+  it('reports the dup-id error and no unrelated cascade errors for the shadowed node', () => {
+    const g = tiny();
+    // Push a second node sharing id "b1" but with edges/depth that would, on
+    // their own, trip several other rules (dead end, depth skip, unreachable
+    // — none of which should surface since the duplicate is shadowed).
+    g.nodes.push({ id: 'b1', type: 'combat', template: 'ambush', depth: 99, next: [] });
+    const errors = validateZoneGraph(g);
+    expect(errors.some(e => e.includes('duplicate node id: "b1"'))).toBe(true);
+    expect(errors.length).toBe(1);
+  });
+});
+
 describe('validateZoneGraph: side nodes and gates', () => {
   it('accepts a gated same-depth side node', () => {
     expect(validateZoneGraph(withSide())).toEqual([]);

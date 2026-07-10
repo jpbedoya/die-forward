@@ -131,6 +131,18 @@ export function getEnemyIntent(type?: IntentType): { type: IntentType; descripti
   };
 }
 
+// Seeded variant of getEnemyIntent — routes the description pick through the
+// run's seeded RNG so forced-intent lines (e.g. bait's guaranteed AGGRESSIVE
+// read) stay reproducible from the same seed, matching every other combat
+// roll. Math.random() in a gameplay path is a defect (determinism hard rule).
+export function getEnemyIntentSeeded(type: IntentType, rng: SeededRng): { type: IntentType; description: string } {
+  const intents = combatActions.enemy_intents as Record<IntentType, string[]>;
+  return {
+    type,
+    description: pickSeeded(intents[type], rng),
+  };
+}
+
 // Death content
 export function getDeathMoment(): string {
   return pick(deathEpitaphs.death_moments);
@@ -1140,7 +1152,14 @@ function rollNodeContent(
 ): RoomVariation {
   if (boss) {
     const bossCreature = getZoneBoss(zone, BESTIARY);
-    const content = getZoneRoom(zone, type, rng, template, index);
+    // Invariant: a boss+exit node must never leak the zone-exit sentinel
+    // template into a non-exit pool lookup. getZoneRoom for `type === 'exit'`
+    // always resolves the zone-exit content regardless of `template`, so
+    // this only matters if a future zone graph ever pairs boss:true with a
+    // non-exit type while still carrying the exit sentinel value in
+    // `template` — guard it explicitly rather than relying on that coincidence.
+    const bossTemplate = type === 'exit' ? undefined : template;
+    const content = getZoneRoom(zone, type, rng, bossTemplate, index);
     return {
       ...content,
       enemy: bossCreature.name,

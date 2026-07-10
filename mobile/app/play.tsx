@@ -54,6 +54,14 @@ export default function PlayScreen() {
   const [selectedItem, setSelectedItem] = useState<{ name: string; emoji: string } | null>(null);
   const [lastFoundItem, setLastFoundItem] = useState<{ name: string; emoji: string } | null>(null);
   const [synergyMessage, setSynergyMessage] = useState<string | null>(null);
+  // Gate/Bone-Dust narrative — an inline banner mirroring the synergy-discovery
+  // pattern above. `Alert.alert` is a silent no-op on the web export
+  // (play.dieforward.com), so web players lost this flavor text entirely.
+  // Deliberately NOT the `message` state: `message` bleeding into the next
+  // room's narrative-streaming gate would flip `optionsVisible` true early
+  // (see the removed Alert's comment below), which is why Alert was chosen
+  // originally — this banner is fully separate state instead.
+  const [gateMessage, setGateMessage] = useState<string | null>(null);
   const [selectedCreature, setSelectedCreature] = useState<CreatureInfo | null>(null);
   const [modifierExpanded, setModifierExpanded] = useState(false);
   const [narrativeDone, setNarrativeDone] = useState(false);
@@ -229,6 +237,7 @@ export default function PlayScreen() {
     setProcessing(true);
     setMessage(null);
     setSynergyMessage(null);
+    setGateMessage(null);
 
     try {
       if (action.startsWith('advance:')) {
@@ -241,10 +250,10 @@ export default function PlayScreen() {
         // Gate/reveal consumption happens on CHOOSE, not on render — the
         // branch buttons already reflect gate/reveal status, but the actual
         // inventory removal (and its narrative line) only fires once the
-        // player commits to this edge. A native Alert (not `message` state)
-        // carries the line so it doesn't bleed into the next room's
-        // narrative-streaming gate (`optionsVisible` would otherwise flip
-        // true early via `!!message`).
+        // player commits to this edge. The dedicated `gateMessage` banner
+        // (not `message` state) carries the line so it doesn't bleed into
+        // the next room's narrative-streaming gate (`optionsVisible` would
+        // otherwise flip true early via `!!message`).
         if (targetNode) {
           const display = resolveBranchDisplay(targetNode, game.inventory, !!itemEffects.revealPaths);
           let narrativeLine: string | null = null;
@@ -268,7 +277,7 @@ export default function PlayScreen() {
             }
           }
 
-          if (narrativeLine) Alert.alert('', narrativeLine);
+          if (narrativeLine) setGateMessage(narrativeLine);
         }
 
         playSFX('footstep');
@@ -752,6 +761,15 @@ export default function PlayScreen() {
         {synergyMessage && (
           <View className="bg-amber/20 border-2 border-amber p-4 mb-4">
             <Text className="text-amber-light text-sm font-mono">✦ {synergyMessage}</Text>
+          </View>
+        )}
+
+        {/* Gate/Bone-Dust narrative — web-safe replacement for Alert.alert,
+            which is a silent no-op on the web export. Cleared at the start
+            of the next handleAction (room advance/continue). */}
+        {gateMessage && (
+          <View className="bg-amber/20 border-2 border-amber p-4 mb-4">
+            <Text className="text-amber-light text-sm font-mono">✦ {gateMessage}</Text>
           </View>
         )}
 

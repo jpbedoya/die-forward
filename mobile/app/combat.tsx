@@ -27,6 +27,7 @@ import {
   getCreatureHealthSeeded,
   getCreatureIntent,
   getCreatureIntentSeeded,
+  getEnemyIntentSeeded,
   getIntentEffects,
   getItemEffects,
   getTagDamageBonus,
@@ -770,7 +771,9 @@ export default function CombatScreen() {
       // revealed (normal intent display). This overrides even FLUX's flicker:
       // baiting guarantees the read.
       if (forceAggressiveNext) {
-        newIntent = getEnemyIntent('AGGRESSIVE');
+        newIntent = game.rng
+          ? getEnemyIntentSeeded('AGGRESSIVE', game.rng)
+          : getEnemyIntent('AGGRESSIVE');
       } else if (mechanic === 'FLUX' && rollFlux(game.rng)) {
         newIntent = honorFilteredIntent(creature?.signature, rollIntent(), rollIntent);
         setNarrative(prev => `${prev}${t('combat.ui.intentFlickers')}`);
