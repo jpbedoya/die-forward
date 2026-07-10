@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { init, tx, id } from '@instantdb/react';
+import { ensureAdminToken, clearAdminToken } from '@/lib/admin-auth';
 
 // ─── InstantDB ───────────────────────────────────────────────────────────────
 const APP_ID = process.env.NEXT_PUBLIC_INSTANT_APP_ID || '';
@@ -115,23 +116,63 @@ const DEFAULT_SETTINGS: Omit<GameSettings, 'id'> = {
 
 type Tab = 'dashboard' | 'settings' | 'zones' | 'bestiary' | 'content' | 'music' | 'deaths' | 'corpses';
 
+// ─── Authenticated gameSettings writes ────────────────────────────────────────
+// Direct `db.transact([tx.gameSettings...])` writes are denied by
+// instant.perms.ts (Phase 3b) for non-admin/anonymous clients. Every
+// gameSettings write now goes through this authenticated route instead —
+// see src/app/api/admin/settings/route.ts.
+async function postAdminSettings(adminToken: string | null, settings: Record<string, unknown>): Promise<void> {
+  if (!adminToken) {
+    throw new Error('Not signed in as admin yet — approve the wallet signature prompt and retry.');
+  }
+  const res = await fetch('/api/admin/settings', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+    body: JSON.stringify({ settings }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || 'Save failed');
+  }
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // MAIN ADMIN PAGE
 // ═══════════════════════════════════════════════════════════════════════════════
 export default function AdminPage() {
-  const { publicKey, connected } = useWallet();
+  const { publicKey, connected, signMessage } = useWallet();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
+
+  // Authenticated admin token: the SERVER is now authoritative for gameSettings
+  // writes (instant.perms.ts denies anonymous direct writes as of Phase 3b), so
+  // the admin page must sign in as its wallet via /api/auth/wallet to get a
+  // customToken it can send as `Authorization: Bearer <token>` — see
+  // src/lib/admin-auth.ts. The ADMIN_WALLETS check above stays as a UX gate
+  // only; every write route re-verifies isAdminAuthId() server-side.
+  const [adminToken, setAdminToken] = useState<string | null>(null);
+  const [adminTokenError, setAdminTokenError] = useState<string | null>(null);
 
   useEffect(() => {
     if (connected && publicKey) {
       setIsAdmin(ADMIN_WALLETS.includes(publicKey.toBase58()));
     } else {
       setIsAdmin(false);
+      setAdminToken(null);
+      clearAdminToken();
     }
     setLoading(false);
   }, [connected, publicKey]);
+
+  useEffect(() => {
+    if (!isAdmin || !connected || !publicKey || !signMessage || adminToken) return;
+    let cancelled = false;
+    ensureAdminToken(publicKey.toBase58(), signMessage)
+      .then((token) => { if (!cancelled) { setAdminToken(token); setAdminTokenError(null); } })
+      .catch((e) => { if (!cancelled) setAdminTokenError(e?.message || 'Admin sign-in failed'); });
+    return () => { cancelled = true; };
+  }, [isAdmin, connected, publicKey, signMessage, adminToken]);
 
   // Loading
   if (loading) {
@@ -211,11 +252,21 @@ export default function AdminPage() {
 
       {/* Tab Content */}
       <div className="max-w-6xl mx-auto px-4 md:px-8 py-6">
+        {!adminToken && !adminTokenError && (
+          <div className="mb-4 text-xs text-[var(--text-muted)] font-mono">
+            Signing in as admin… approve the signature request in your wallet to enable editing.
+          </div>
+        )}
+        {adminTokenError && (
+          <div className="mb-4 text-xs text-[var(--red)] font-mono">
+            Admin sign-in failed: {adminTokenError}. Editing is disabled until you retry (reconnect wallet).
+          </div>
+        )}
         {activeTab === 'dashboard' && <DashboardTab />}
-        {activeTab === 'settings' && <SettingsTab />}
-        {activeTab === 'zones' && <ZonesTab />}
-        {activeTab === 'bestiary' && <BestiaryTab />}
-        {activeTab === 'content' && <ContentTab />}
+        {activeTab === 'settings' && <SettingsTab adminToken={adminToken} />}
+        {activeTab === 'zones' && <ZonesTab adminToken={adminToken} />}
+        {activeTab === 'bestiary' && <BestiaryTab adminToken={adminToken} />}
+        {activeTab === 'content' && <ContentTab adminToken={adminToken} />}
         {activeTab === 'music' && <MusicTab />}
         {activeTab === 'deaths' && <DeathsTab />}
         {activeTab === 'corpses' && <CorpsesTab />}
@@ -275,15 +326,15 @@ function DashboardTab() {
 // ═══════════════════════════════════════════════════════════════════════════════
 // ⚙️ SETTINGS TAB
 // ═══════════════════════════════════════════════════════════════════════════════
-function SettingsTab() {
+function SettingsTab({ adminToken }: { adminToken: string | null }) {
   const { data: settingsData } = db.useQuery({ gameSettings: {} });
   const settings = settingsData?.gameSettings?.[0] || null;
 
   const saveSettings = async (newSettings: Partial<GameSettings>) => {
-    if (!settings) {
-      await db.transact([tx.gameSettings[id()].update({ ...DEFAULT_SETTINGS, ...newSettings })]);
-    } else {
-      await db.transact([tx.gameSettings[settings.id].update(newSettings)]);
+    try {
+      await postAdminSettings(adminToken, newSettings);
+    } catch (e) {
+      console.error('[Admin] saveSettings failed:', e);
     }
   };
 
@@ -295,10 +346,10 @@ function SettingsTab() {
     : 'ritual';
 
   const saveStakingPosture = async (v: StakingPosture) => {
-    if (!settings) {
-      await db.transact([tx.gameSettings[id()].update({ ...DEFAULT_SETTINGS, stakingPosture: v })]);
-    } else {
-      await db.transact([tx.gameSettings[settings.id].update({ stakingPosture: v })]);
+    try {
+      await postAdminSettings(adminToken, { stakingPosture: v });
+    } catch (e) {
+      console.error('[Admin] saveStakingPosture failed:', e);
     }
   };
 
@@ -502,7 +553,7 @@ const ZONE_META = [
   },
 ];
 
-function ZonesTab() {
+function ZonesTab({ adminToken }: { adminToken: string | null }) {
   const { data: settingsData } = db.useQuery({ gameSettings: {} });
   const settings = settingsData?.gameSettings?.[0] as any;
 
@@ -520,19 +571,19 @@ function ZonesTab() {
     // Always keep sunken-crypt enabled
     if (!next.includes('sunken-crypt')) next.unshift('sunken-crypt');
     const value = next.join(',');
-    if (!settings) {
-      await db.transact([tx.gameSettings[id()].update({ ...DEFAULT_SETTINGS, enabledZones: value })]);
-    } else {
-      await db.transact([tx.gameSettings[settings.id].update({ enabledZones: value })]);
+    try {
+      await postAdminSettings(adminToken, { enabledZones: value });
+    } catch (e) {
+      console.error('[Admin] toggleZone failed:', e);
     }
   };
 
   const saveAmbientTrack = async (zoneId: string, trackUrl: string) => {
     const key = `ambientTrack_${zoneId.replace(/-/g, '_')}`;
-    if (!settings) {
-      await db.transact([tx.gameSettings[id()].update({ ...DEFAULT_SETTINGS, [key]: trackUrl })]);
-    } else {
-      await db.transact([tx.gameSettings[settings.id].update({ [key]: trackUrl })]);
+    try {
+      await postAdminSettings(adminToken, { [key]: trackUrl });
+    } catch (e) {
+      console.error('[Admin] saveAmbientTrack failed:', e);
     }
     setEditingTrack(null);
   };
@@ -673,7 +724,7 @@ const EMPTY_CREATURE = {
   artUrl: '',
 };
 
-function BestiaryTab() {
+function BestiaryTab({ adminToken }: { adminToken: string | null }) {
   const [selectedZone, setSelectedZone] = useState('sunken-crypt');
   const [creatures, setCreatures] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -701,11 +752,12 @@ function BestiaryTab() {
   };
 
   const saveAll = async (updated: any[]) => {
+    if (!adminToken) { flash('Not signed in as admin yet — retry in a moment', true); return; }
     setSaving(true);
     try {
       const res = await fetch('/api/admin/bestiary', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
         body: JSON.stringify({ zone: selectedZone, creatures: updated }),
       });
       if (!res.ok) throw new Error(await res.text());
@@ -887,7 +939,7 @@ function BestiaryTab() {
 const FRAG_CATEGORIES = ['explore', 'combat', 'corpse', 'cache', 'exit', 'options'] as const;
 type FragCategory = typeof FRAG_CATEGORIES[number];
 
-function ContentTab() {
+function ContentTab({ adminToken }: { adminToken: string | null }) {
   const [selectedZone, setSelectedZone] = useState('sunken-crypt');
   const [category, setCategory] = useState<FragCategory>('explore');
   const [fragments, setFragments] = useState<Record<string, any>>({});
@@ -909,6 +961,7 @@ function ContentTab() {
   const flash = (msg: string) => { setSaveMsg(msg); setTimeout(() => setSaveMsg(''), 3000); };
 
   const saveEdit = async (section: string, idx: number, value: string) => {
+    if (!adminToken) { flash('Error: Not signed in as admin yet — retry in a moment'); return; }
     setSaving(true);
     try {
       const updated = { ...fragments };
@@ -916,7 +969,7 @@ function ContentTab() {
       updated[section][idx] = value;
       const res = await fetch('/api/admin/content', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
         body: JSON.stringify({ zone: selectedZone, category, fragments: updated }),
       });
       if (!res.ok) throw new Error(await res.text());
@@ -931,6 +984,7 @@ function ContentTab() {
   };
 
   const addFragment = async (section: string) => {
+    if (!adminToken) { flash('Error: Not signed in as admin yet — retry in a moment'); return; }
     const updated = { ...fragments };
     if (!updated[section]) updated[section] = [];
     updated[section] = [...updated[section], '[New fragment — click to edit]'];
@@ -938,7 +992,7 @@ function ContentTab() {
     try {
       const res = await fetch('/api/admin/content', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
         body: JSON.stringify({ zone: selectedZone, category, fragments: updated }),
       });
       if (!res.ok) throw new Error(await res.text());
@@ -949,13 +1003,14 @@ function ContentTab() {
   };
 
   const deleteFragment = async (section: string, idx: number) => {
+    if (!adminToken) { flash('Error: Not signed in as admin yet — retry in a moment'); return; }
     const updated = { ...fragments };
     updated[section] = updated[section].filter((_: any, i: number) => i !== idx);
     setSaving(true);
     try {
       const res = await fetch('/api/admin/content', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
         body: JSON.stringify({ zone: selectedZone, category, fragments: updated }),
       });
       if (!res.ok) throw new Error(await res.text());
