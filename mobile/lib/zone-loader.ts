@@ -163,6 +163,11 @@ export interface ZoneStructureRoom {
   boss?: boolean;
 }
 
+export interface ZoneGate {
+  item: string;      // exact ITEM_DETAILS key
+  consumes: boolean;
+}
+
 export interface ZoneNode {
   id: string;                       // unique within zone, e.g. "n01-descent"
   type: 'explore' | 'combat' | 'corpse' | 'cache' | 'exit';
@@ -170,6 +175,8 @@ export interface ZoneNode {
   depth: number;                    // 1-based canonical depth
   next: string[];                   // node ids; empty ONLY on the exit node
   boss?: boolean;
+  side?: boolean;                   // same-depth annex; entered from a sibling-depth node
+  gate?: ZoneGate;                  // only valid on side nodes
 }
 
 export interface ZoneGraphLayout {
@@ -240,7 +247,9 @@ export function validateZoneGraph(g: ZoneGraphLayout): string[] {
     }
   }
 
-  // Rule: all edge targets exist; every edge target.depth === source.depth + 1
+  // Rule: all edge targets exist; every edge target.depth === source.depth + 1,
+  // OR the target is a same-depth side node (target.side && target.depth === source.depth).
+  // A side node's OWN outgoing edges must all be depth+1 (no side->side chaining).
   for (const node of g.nodes) {
     for (const targetId of node.next) {
       const target = nodesById.get(targetId);
@@ -248,11 +257,39 @@ export function validateZoneGraph(g: ZoneGraphLayout): string[] {
         errors.push(`node "${node.id}" has edge to nonexistent node "${targetId}"`);
         continue;
       }
-      if (target.depth !== node.depth + 1) {
+      const isDescentEdge = target.depth === node.depth + 1;
+      const isSideEdge = target.side === true && target.depth === node.depth;
+      if (node.side === true && isSideEdge) {
+        errors.push(
+          `edge "${node.id}" -> "${targetId}": side node chains into another side node`
+        );
+      } else if (!isDescentEdge && !isSideEdge) {
         errors.push(
           `edge "${node.id}" -> "${targetId}" skips a depth (source depth ${node.depth}, target depth ${target.depth})`
         );
       }
+    }
+  }
+
+  // Rule: side nodes are never exit/boss/start
+  for (const node of g.nodes) {
+    if (node.side === true) {
+      if (node.type === 'exit') {
+        errors.push(`side node "${node.id}" must not be an exit node`);
+      }
+      if (node.boss === true) {
+        errors.push(`side node "${node.id}" must not be a boss node`);
+      }
+      if (node.id === g.start) {
+        errors.push(`side node "${node.id}" must not be the start node`);
+      }
+    }
+  }
+
+  // Rule: gate only allowed on side nodes
+  for (const node of g.nodes) {
+    if (node.gate && node.side !== true) {
+      errors.push(`node "${node.id}" has a gate but is not a side node`);
     }
   }
 
@@ -313,6 +350,67 @@ export function validateZoneGraph(g: ZoneGraphLayout): string[] {
   const bossNodes = g.nodes.filter(n => n.boss === true);
   if (bossNodes.length !== 1) {
     errors.push(`expected exactly one boss node, found ${bossNodes.length}`);
+  }
+
+  // Rule: a side node must not be the only route to the exit. Re-run the
+  // reachability BFS pair (rules 6/7) on the descent-only subgraph (all side
+  // nodes removed). Errors are prefixed "descent-only: " to distinguish them.
+  const descentNodes = g.nodes.filter(n => n.side !== true);
+  const descentNodesById = new Map<string, ZoneNode>();
+  for (const node of descentNodes) descentNodesById.set(node.id, node);
+  const descentStart = descentNodesById.get(g.start);
+  const descentExitNodes = descentNodes.filter(n => n.type === 'exit');
+
+  if (descentStart) {
+    const reachable = new Set<string>();
+    const queue: string[] = [descentStart.id];
+    reachable.add(descentStart.id);
+    while (queue.length > 0) {
+      const current = queue.shift()!;
+      const currentNode = descentNodesById.get(current);
+      if (!currentNode) continue;
+      for (const nextId of currentNode.next) {
+        if (!reachable.has(nextId) && descentNodesById.has(nextId)) {
+          reachable.add(nextId);
+          queue.push(nextId);
+        }
+      }
+    }
+    for (const node of descentNodes) {
+      if (!reachable.has(node.id)) {
+        errors.push(`descent-only: node "${node.id}" is unreachable from start`);
+      }
+    }
+  }
+
+  if (descentExitNodes.length === 1) {
+    const exitId = descentExitNodes[0].id;
+    const reverseEdges = new Map<string, string[]>();
+    for (const node of descentNodes) {
+      for (const targetId of node.next) {
+        if (!descentNodesById.has(targetId)) continue;
+        if (!reverseEdges.has(targetId)) reverseEdges.set(targetId, []);
+        reverseEdges.get(targetId)!.push(node.id);
+      }
+    }
+    const canReachExit = new Set<string>();
+    const queue: string[] = [exitId];
+    canReachExit.add(exitId);
+    while (queue.length > 0) {
+      const current = queue.shift()!;
+      const predecessors = reverseEdges.get(current) ?? [];
+      for (const predId of predecessors) {
+        if (!canReachExit.has(predId)) {
+          canReachExit.add(predId);
+          queue.push(predId);
+        }
+      }
+    }
+    for (const node of descentNodes) {
+      if (!canReachExit.has(node.id)) {
+        errors.push(`descent-only: exit is not reachable from node "${node.id}"`);
+      }
+    }
   }
 
   return errors;

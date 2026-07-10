@@ -33,6 +33,47 @@ describe('validateZoneGraph', () => {
   });
 });
 
+const withSide = (): ZoneGraphLayout => ({
+  start: 'a',
+  nodes: [
+    { id: 'a', type: 'explore', template: 'descent', depth: 1, next: ['b', 's'] },
+    { id: 's', type: 'cache', template: 'alcove', depth: 1, next: ['b'], side: true, gate: { item: 'Pale Coin', consumes: true } },
+    { id: 'b', type: 'combat', template: 'ambush', depth: 2, next: ['c'], boss: true },
+    { id: 'c', type: 'exit', template: 'zone-exit', depth: 3, next: [] },
+  ],
+});
+
+describe('validateZoneGraph: side nodes and gates', () => {
+  it('accepts a gated same-depth side node', () => {
+    expect(validateZoneGraph(withSide())).toEqual([]);
+  });
+
+  it('rejects a same-depth edge into a non-side node', () => {
+    const g = withSide();
+    delete g.nodes[1].side;
+    expect(validateZoneGraph(g).length).toBeGreaterThan(0);
+  });
+
+  it('rejects side node chaining into another side node', () => {
+    const g = withSide();
+    g.nodes.push({ id: 's2', type: 'cache', template: 'alcove', depth: 1, next: ['b'], side: true });
+    g.nodes[1].next = ['s2'];
+    expect(validateZoneGraph(g).some(e => e.includes('side node chains'))).toBe(true);
+  });
+
+  it('rejects gate on a non-side node', () => {
+    const g = withSide();
+    g.nodes[0].gate = { item: 'Pale Coin', consumes: true };
+    expect(validateZoneGraph(g).length).toBeGreaterThan(0);
+  });
+
+  it('rejects a graph whose only path to exit runs through a side node', () => {
+    const g = withSide();
+    g.nodes[0].next = ['s'];
+    expect(validateZoneGraph(g).length).toBeGreaterThan(0);
+  });
+});
+
 describe('sunken-crypt graph', () => {
   it('ships a valid graph using only existing templates', () => {
     const zone = loadZone('sunken-crypt');
