@@ -26,6 +26,15 @@ const ADMIN_WALLETS = (process.env.NEXT_PUBLIC_ADMIN_WALLETS || '')
   .concat(['D7NdNbJTL7s6Z7Wu8nGe5SBc64FiFQAH3iPvRZw15qSL']);
 
 // ─── Types ───────────────────────────────────────────────────────────────────
+
+// The Shift (Phase 3b, Task 6): admin-controlled staking posture. Mirrors
+// the type in mobile/lib/stake-posture.ts — kept local since src/ and
+// mobile/ don't share a module boundary.
+type StakingPosture = 'hidden' | 'ritual' | 'open';
+function isStakingPosture(value: unknown): value is StakingPosture {
+  return value === 'hidden' || value === 'ritual' || value === 'open';
+}
+
 interface GameSettings {
   id: string;
   lootChanceBase: number;
@@ -276,6 +285,21 @@ function SettingsTab() {
     }
   };
 
+  // stakingPosture lives outside the GameSettings (numeric/toggle) interface —
+  // same pattern as enabledZones (ZonesTab below): a raw string column on the
+  // gameSettings row, defaulted client-side rather than in DEFAULT_SETTINGS.
+  const stakingPosture: StakingPosture = isStakingPosture(settings?.stakingPosture)
+    ? settings.stakingPosture
+    : 'ritual';
+
+  const saveStakingPosture = async (v: StakingPosture) => {
+    if (!settings) {
+      await db.transact([tx.gameSettings[id()].update({ ...DEFAULT_SETTINGS, stakingPosture: v })]);
+    } else {
+      await db.transact([tx.gameSettings[settings.id].update({ stakingPosture: v })]);
+    }
+  };
+
   const cs: GameSettings = {
     id: settings?.id || '',
     lootChanceBase: settings?.lootChanceBase ?? DEFAULT_SETTINGS.lootChanceBase,
@@ -380,6 +404,17 @@ function SettingsTab() {
           description="Apply the daily seeded shift (modifier pool, side-door seals, edge mask) to runs. Deterministic per zone/UTC day. Off falls back to the unshifted map/modifier pool everywhere."
           value={cs.dailyShiftEnabled}
           onChange={(v) => saveSettings({ dailyShiftEnabled: v })}
+        />
+        <SettingSelect
+          label="Staking Posture"
+          description="Controls when the SOL staking UI appears on the stake screen. Hidden: never shown (Coin-Bound + free only). Ritual: revealed once a player has 3+ deaths. Open: always shown."
+          value={stakingPosture}
+          options={[
+            { value: 'hidden', label: 'Hidden' },
+            { value: 'ritual', label: 'Ritual (3+ deaths)' },
+            { value: 'open', label: 'Open' },
+          ]}
+          onChange={saveStakingPosture}
         />
       </SettingsSection>
     </div>
@@ -1578,6 +1613,30 @@ function SettingSlider({ label, value, min, max, step, format = (v) => v.toStrin
         onChange={(e) => onChange(parseFloat(e.target.value))}
         className="flex-1 accent-[var(--amber)]" />
       <span className="text-[var(--amber)] text-sm w-16 text-right">{format(value)}</span>
+    </div>
+  );
+}
+
+function SettingSelect<T extends string>({ label, description, value, options, onChange }: {
+  label: string; description?: string; value: T; options: { value: T; label: string }[]; onChange: (v: T) => void;
+}) {
+  const id = `select-${label.replace(/\s+/g, '-').toLowerCase()}`;
+  return (
+    <div className="flex items-center justify-between gap-4">
+      <div>
+        <label htmlFor={id} className="text-[var(--text-dim)] text-sm cursor-pointer">{label}</label>
+        {description && <p className="text-[var(--text-muted)] text-xs mt-0.5 max-w-md">{description}</p>}
+      </div>
+      <select
+        id={id}
+        value={value}
+        onChange={(e) => onChange(e.target.value as T)}
+        className="bg-[var(--bg-surface)] border border-[var(--border)] text-[var(--amber)] text-sm rounded px-2 py-1"
+      >
+        {options.map((opt) => (
+          <option key={opt.value} value={opt.value}>{opt.label}</option>
+        ))}
+      </select>
     </div>
   );
 }

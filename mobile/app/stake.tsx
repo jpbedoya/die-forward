@@ -16,6 +16,8 @@ import { isWalletCancellation } from '../lib/wallet-utils';
 import { t } from '../lib/i18n';
 import { getDailyShift, utcDayKey } from '../lib/world-shift';
 import { RUN_MODIFIERS } from '../lib/modifiers';
+import { API_BASE } from '../lib/api';
+import { resolveStakeUi, isStakingPosture, DEFAULT_STAKING_POSTURE, type StakingPosture } from '../lib/stake-posture';
 
 const STAKE_OPTIONS = [0.01, 0.05, 0.1, 0.25];
 
@@ -53,6 +55,28 @@ export default function StakeScreen() {
   const [showLinkWallet, setShowLinkWallet] = useState(false);
   const [pendingRun, setPendingRun] = useState<{ stake: number; emptyHanded: boolean; zoneId: string; chosenModifierId?: string } | null>(null);
   const [freeRunStatus, setFreeRunStatus] = useState<'idle' | 'error'>('idle');
+
+  // The Shift (Task 6): admin-controlled staking posture — gates whether the
+  // SOL section renders at all. Defaults to 'ritual' while the fetch is in
+  // flight or fails, matching the API route's own fallback.
+  const [stakingPosture, setStakingPosture] = useState<StakingPosture>(DEFAULT_STAKING_POSTURE);
+  useEffect(() => {
+    fetch(`${API_BASE}/api/game/settings`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (isStakingPosture(data?.stakingPosture)) {
+          setStakingPosture(data.stakingPosture);
+        }
+      })
+      .catch(() => {
+        // fallback: DEFAULT_STAKING_POSTURE (already the default state)
+      });
+  }, []);
+  const { showSol, showRitualIntro } = resolveStakeUi({
+    posture: stakingPosture,
+    totalDeaths: player?.totalDeaths ?? 0,
+    walletConnected: game.walletConnected,
+  });
 
   // Today's modifier pool for this zone (The Toll's offer). Empty when the
   // daily shift is disabled — in that case no chooser renders and startGame
@@ -259,55 +283,68 @@ export default function StakeScreen() {
           ) : null}
         </View>
 
-        {/* Warning */}
-        <View className="bg-blood/10 border border-blood-dark p-4 mb-6">
-          <Text className="text-blood-light text-sm font-mono leading-5">
+        {/* SOL staking section — gated by admin staking posture (Task 6). Hidden
+            entirely in 'hidden' posture, and in 'ritual' posture below the
+            death threshold; the ritual intro line renders once unlocked. */}
+        {showSol && (
+          <>
+            {showRitualIntro && (
+              <Text className="text-bone-muted text-xs font-mono italic mb-4 leading-4">
+                {t('stake.ritual.intro')}
+              </Text>
+            )}
+
+            {/* Warning */}
+            <View className="bg-blood/10 border border-blood-dark p-4 mb-6">
+              <Text className="text-blood-light text-sm font-mono leading-5">
 {t('stake.warning')}
-          </Text>
-        </View>
+              </Text>
+            </View>
 
-        {/* Stake options */}
-        <View className="mb-6">
-          <Text className="text-bone-dark text-xs font-mono tracking-widest mb-3">{t('stake.choose_offering')}</Text>
-          <View className="flex-row gap-2">
-            {STAKE_OPTIONS.map((amount) => (
-              <Pressable
-                key={amount}
-                className={`flex-1 py-3 items-center border ${
-                  selectedStake === amount
-                    ? 'border-amber bg-amber/10'
-                    : 'border-crypt-border-light bg-crypt-surface'
-                }`}
-                onPress={() => {
-                  playSFX('ui-click');
-                  setSelectedStake(amount);
-                }}
-              >
-                <Text className={`font-mono text-base ${
-                  selectedStake === amount ? 'text-amber-light' : 'text-bone-muted'
-                }`}>
-                  {amount}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
-        </View>
+            {/* Stake options */}
+            <View className="mb-6">
+              <Text className="text-bone-dark text-xs font-mono tracking-widest mb-3">{t('stake.choose_offering')}</Text>
+              <View className="flex-row gap-2">
+                {STAKE_OPTIONS.map((amount) => (
+                  <Pressable
+                    key={amount}
+                    className={`flex-1 py-3 items-center border ${
+                      selectedStake === amount
+                        ? 'border-amber bg-amber/10'
+                        : 'border-crypt-border-light bg-crypt-surface'
+                    }`}
+                    onPress={() => {
+                      playSFX('ui-click');
+                      setSelectedStake(amount);
+                    }}
+                  >
+                    <Text className={`font-mono text-base ${
+                      selectedStake === amount ? 'text-amber-light' : 'text-bone-muted'
+                    }`}>
+                      {amount}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+            </View>
 
-        {/* Summary */}
-        <View className="bg-crypt-surface border border-crypt-border p-4 mb-6">
-          <View className="flex-row justify-between mb-2">
-            <Text className="text-bone-dark text-sm font-mono">{t('stake.summary.offering_label')}</Text>
-            <Text className="text-bone-muted text-sm font-mono">{selectedStake}</Text>
-          </View>
-          <View className="flex-row justify-between mb-2">
-            <Text className="text-bone-dark text-sm font-mono">{t('stake.summary.escape_bonus_label', { percent: settings.victoryBonusPercent })}</Text>
-            <Text className="text-victory text-sm font-mono">+{(selectedStake * settings.victoryBonusPercent / 100).toFixed(3)}</Text>
-          </View>
-          <View className="flex-row justify-between border-t border-crypt-border pt-3 mt-1">
-            <Text className="text-bone-muted text-sm font-mono font-bold">{t('stake.summary.survive_label')}</Text>
-            <Text className="text-amber-light text-base font-mono font-bold">{t('stake.sol_amount', { amount: (selectedStake * (1 + settings.victoryBonusPercent / 100)).toFixed(3) })}</Text>
-          </View>
-        </View>
+            {/* Summary */}
+            <View className="bg-crypt-surface border border-crypt-border p-4 mb-6">
+              <View className="flex-row justify-between mb-2">
+                <Text className="text-bone-dark text-sm font-mono">{t('stake.summary.offering_label')}</Text>
+                <Text className="text-bone-muted text-sm font-mono">{selectedStake}</Text>
+              </View>
+              <View className="flex-row justify-between mb-2">
+                <Text className="text-bone-dark text-sm font-mono">{t('stake.summary.escape_bonus_label', { percent: settings.victoryBonusPercent })}</Text>
+                <Text className="text-victory text-sm font-mono">+{(selectedStake * settings.victoryBonusPercent / 100).toFixed(3)}</Text>
+              </View>
+              <View className="flex-row justify-between border-t border-crypt-border pt-3 mt-1">
+                <Text className="text-bone-muted text-sm font-mono font-bold">{t('stake.summary.survive_label')}</Text>
+                <Text className="text-amber-light text-base font-mono font-bold">{t('stake.sol_amount', { amount: (selectedStake * (1 + settings.victoryBonusPercent / 100)).toFixed(3) })}</Text>
+              </View>
+            </View>
+          </>
+        )}
 
         {/* The Toll's offer: today's modifier pool for this zone */}
         {settings.dailyShiftEnabled && modifierPool.length > 0 && (
@@ -381,49 +418,37 @@ export default function StakeScreen() {
           )}
         </View>
 
-        {/* Action buttons */}
+        {/* Action buttons. SOL binding (BIND WALLET / SEAL FATE) only renders
+            when showSol is true (Task 6) — the empty-handed/free-run path
+            stays available in every posture. */}
         <View className="gap-3 mb-4">
-          {!game.walletConnected ? (
-            <>
-              <Pressable
-                className={`py-2.5 items-center ${
-                  walletStatus === 'cancelled' ? 'bg-stone-700' :
-                  walletStatus === 'error' ? 'bg-blood/60' :
-                  walletStatus === 'connecting' ? 'bg-purple-900' :
-                  'bg-purple-700 active:bg-purple-800'
-                }`}
-                onPress={handleConnect}
-                disabled={game.loading || staking || walletStatus === 'connecting'}
-              >
-                {walletStatus === 'connecting' ? (
-                  <AsciiLoader variant="pulse" color="#ffffff" />
-                ) : walletStatus === 'cancelled' ? (
-                  <Text className="text-bone-muted font-mono font-bold tracking-wider">{t('stake.rejected')}</Text>
-                ) : walletStatus === 'error' ? (
-                  <Text className="text-blood-light font-mono font-bold tracking-wider">{t('stake.failed_retry')}</Text>
-                ) : (
-                  <View className="items-center">
-                    <Text className="text-white font-mono font-bold tracking-wider leading-tight">{t('stake.bind_wallet')}</Text>
-                    <Text className="text-white/80 text-[9px] font-mono mt-0.5 leading-none">[DEVNET]</Text>
-                  </View>
-                )}
-              </Pressable>
+          {showSol && !game.walletConnected && (
+            <Pressable
+              className={`py-2.5 items-center ${
+                walletStatus === 'cancelled' ? 'bg-stone-700' :
+                walletStatus === 'error' ? 'bg-blood/60' :
+                walletStatus === 'connecting' ? 'bg-purple-900' :
+                'bg-purple-700 active:bg-purple-800'
+              }`}
+              onPress={handleConnect}
+              disabled={game.loading || staking || walletStatus === 'connecting'}
+            >
+              {walletStatus === 'connecting' ? (
+                <AsciiLoader variant="pulse" color="#ffffff" />
+              ) : walletStatus === 'cancelled' ? (
+                <Text className="text-bone-muted font-mono font-bold tracking-wider">{t('stake.rejected')}</Text>
+              ) : walletStatus === 'error' ? (
+                <Text className="text-blood-light font-mono font-bold tracking-wider">{t('stake.failed_retry')}</Text>
+              ) : (
+                <View className="items-center">
+                  <Text className="text-white font-mono font-bold tracking-wider leading-tight">{t('stake.bind_wallet')}</Text>
+                  <Text className="text-white/80 text-[9px] font-mono mt-0.5 leading-none">[DEVNET]</Text>
+                </View>
+              )}
+            </Pressable>
+          )}
 
-              <Pressable
-                className={`border py-4 items-center ${freeRunStatus === 'error' ? 'border-blood' : 'border-crypt-border-light active:border-amber'}`}
-                onPress={() => handleStake(true)}
-                disabled={staking}
-              >
-                {staking ? (
-                  <AsciiLoader variant="pulse" color="#a8a29e" />
-                ) : freeRunStatus === 'error' ? (
-                  <Text className="text-blood font-mono">{t('stake.failed_retry')}</Text>
-                ) : (
-                  <Text className="text-bone-muted font-mono">{t('stake.empty_handed')}</Text>
-                )}
-              </Pressable>
-            </>
-          ) : (
+          {showSol && game.walletConnected && (
             <>
               <Pressable
                 className={`py-2.5 items-center ${
@@ -456,22 +481,22 @@ export default function StakeScreen() {
                   {t('stake.insufficient_balance', { amount: game.balance.toFixed(3) })}
                 </Text>
               )}
-
-              <Pressable
-                className={`border py-4 items-center ${freeRunStatus === 'error' ? 'border-blood' : 'border-crypt-border-light active:border-amber'}`}
-                onPress={() => handleStake(true)}
-                disabled={staking}
-              >
-                {stakingMode === 'free' ? (
-                  <AsciiLoader variant="pulse" color="#a8a29e" />
-                ) : freeRunStatus === 'error' ? (
-                  <Text className="text-blood font-mono">{t('stake.failed_retry')}</Text>
-                ) : (
-                  <Text className="text-bone-muted font-mono">{t('stake.empty_handed')}</Text>
-                )}
-              </Pressable>
             </>
           )}
+
+          <Pressable
+            className={`border py-4 items-center ${freeRunStatus === 'error' ? 'border-blood' : 'border-crypt-border-light active:border-amber'}`}
+            onPress={() => handleStake(true)}
+            disabled={staking}
+          >
+            {stakingMode === 'free' ? (
+              <AsciiLoader variant="pulse" color="#a8a29e" />
+            ) : freeRunStatus === 'error' ? (
+              <Text className="text-blood font-mono">{t('stake.failed_retry')}</Text>
+            ) : (
+              <Text className="text-bone-muted font-mono">{t('stake.empty_handed')}</Text>
+            )}
+          </Pressable>
         </View>
       </ScrollView>
 

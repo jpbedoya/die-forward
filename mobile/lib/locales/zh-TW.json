@@ -525,6 +525,7 @@
   "stake.logout": "[logout]",
   "stake.nav.zones": "[ ZONES ]",
   "stake.rejected": "REJECTED",
+  "stake.ritual.intro": "You have died enough to be noticed. The depths will accept a deeper binding.",
   "stake.seal_fate": "SEAL YOUR FATE",
   "stake.select_wallet": "SELECT WALLET",
   "stake.sol_amount": "{amount} SOL",
