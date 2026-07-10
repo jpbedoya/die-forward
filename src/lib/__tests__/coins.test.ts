@@ -3,7 +3,9 @@ import {
   computeCoinEarn,
   computeCoinStakeSettlement,
   nextStreak,
+  resolveStakeMode,
   sealTier,
+  validateCoinStakeRequest,
 } from '@/lib/coins';
 
 describe('COIN_STAKE_OPTIONS', () => {
@@ -279,5 +281,90 @@ describe('sealTier', () => {
   it('guards a non-integer streak by flooring', () => {
     expect(sealTier(6.9)).toBe(1); // floor -> 6, still tier 1
     expect(sealTier(7.0001)).toBe(2);
+  });
+});
+
+describe('resolveStakeMode', () => {
+  it('honours an explicit valid mode regardless of stakeAmount', () => {
+    expect(resolveStakeMode('sol', 0)).toEqual({ ok: true, mode: 'sol' });
+    expect(resolveStakeMode('coins', 0)).toEqual({ ok: true, mode: 'coins' });
+    expect(resolveStakeMode('free', 0.5)).toEqual({ ok: true, mode: 'free' });
+  });
+
+  it('infers sol when omitted and stakeAmount > 0', () => {
+    expect(resolveStakeMode(undefined, 0.25)).toEqual({ ok: true, mode: 'sol' });
+    expect(resolveStakeMode(null, 0.01)).toEqual({ ok: true, mode: 'sol' });
+  });
+
+  it('infers free when omitted and stakeAmount is 0', () => {
+    expect(resolveStakeMode(undefined, 0)).toEqual({ ok: true, mode: 'free' });
+    expect(resolveStakeMode(null, 0)).toEqual({ ok: true, mode: 'free' });
+  });
+
+  it('rejects an unknown mode string', () => {
+    expect(resolveStakeMode('gold', 0)).toEqual({ ok: false, error: 'Invalid stakeMode' });
+    expect(resolveStakeMode('', 0)).toEqual({ ok: false, error: 'Invalid stakeMode' });
+  });
+
+  it('rejects a non-string non-nullish mode', () => {
+    const r = resolveStakeMode(42, 0);
+    expect(r.ok).toBe(false);
+  });
+});
+
+describe('validateCoinStakeRequest', () => {
+  it('passes through non-coins modes without validation', () => {
+    expect(
+      validateCoinStakeRequest({ stakeMode: 'sol', stakeAmount: 0.5, coinStake: 0, balance: 0 }),
+    ).toEqual({ ok: true });
+    expect(
+      validateCoinStakeRequest({ stakeMode: 'free', stakeAmount: 0, coinStake: 999, balance: 0 }),
+    ).toEqual({ ok: true });
+  });
+
+  it('accepts a well-formed coins request', () => {
+    expect(
+      validateCoinStakeRequest({ stakeMode: 'coins', stakeAmount: 0, coinStake: 120, balance: 120 }),
+    ).toEqual({ ok: true });
+    expect(
+      validateCoinStakeRequest({ stakeMode: 'coins', stakeAmount: 0, coinStake: 60, balance: 500 }),
+    ).toEqual({ ok: true });
+  });
+
+  it('rejects a coins run that also stakes SOL', () => {
+    expect(
+      validateCoinStakeRequest({ stakeMode: 'coins', stakeAmount: 0.1, coinStake: 60, balance: 999 }),
+    ).toEqual({ ok: false, error: 'Coin-stake runs cannot also stake SOL' });
+  });
+
+  it('rejects a coinStake not on the ladder', () => {
+    expect(
+      validateCoinStakeRequest({ stakeMode: 'coins', stakeAmount: 0, coinStake: 100, balance: 999 }),
+    ).toEqual({ ok: false, error: 'Invalid coin stake amount' });
+    expect(
+      validateCoinStakeRequest({ stakeMode: 'coins', stakeAmount: 0, coinStake: 0, balance: 999 }),
+    ).toEqual({ ok: false, error: 'Invalid coin stake amount' });
+  });
+
+  it('rejects when the balance is below the stake', () => {
+    expect(
+      validateCoinStakeRequest({ stakeMode: 'coins', stakeAmount: 0, coinStake: 240, balance: 239 }),
+    ).toEqual({ ok: false, error: 'Insufficient pale coins' });
+  });
+
+  it('checks stakeAmount before coinStake before balance (distinct messages, ordered)', () => {
+    // SOL staked AND bad coinStake AND low balance -> SOL error wins.
+    expect(
+      validateCoinStakeRequest({ stakeMode: 'coins', stakeAmount: 1, coinStake: 7, balance: 0 }).ok,
+    ).toBe(false);
+    expect(
+      (validateCoinStakeRequest({ stakeMode: 'coins', stakeAmount: 1, coinStake: 7, balance: 0 }) as { error: string }).error,
+    ).toBe('Coin-stake runs cannot also stake SOL');
+  });
+
+  it('accepts exact-balance stakes (>= boundary)', () => {
+    expect(
+      validateCoinStakeRequest({ stakeMode: 'coins', stakeAmount: 0, coinStake: 240, balance: 240 }),
+    ).toEqual({ ok: true });
   });
 });

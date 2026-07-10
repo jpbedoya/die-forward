@@ -17,6 +17,70 @@
 /** Fixed coin-stake ladder offered to players before a run. */
 export const COIN_STAKE_OPTIONS = [60, 120, 240] as const;
 
+/** The three stake modes a run can be started in. */
+export type StakeMode = 'sol' | 'coins' | 'free';
+
+const STAKE_MODES: readonly string[] = ['sol', 'coins', 'free'];
+
+/**
+ * Resolve the effective stake mode for a run-start request.
+ *
+ * An explicit `stakeMode` is honoured only if it is one of the three known
+ * strings; any other non-nullish value is rejected (caller returns 400). When
+ * omitted (undefined/null), the mode is inferred from the SOL amount:
+ * `stakeAmount > 0 -> 'sol'`, otherwise `'free'`. Pure so the route's mode
+ * decision is unit-testable in isolation from InstantDB.
+ */
+export function resolveStakeMode(
+  explicit: unknown,
+  stakeAmount: number,
+): { ok: true; mode: StakeMode } | { ok: false; error: string } {
+  if (explicit === undefined || explicit === null) {
+    const inferred: StakeMode = stakeAmount > 0 ? 'sol' : 'free';
+    return { ok: true, mode: inferred };
+  }
+  if (typeof explicit === 'string' && STAKE_MODES.includes(explicit)) {
+    return { ok: true, mode: explicit as StakeMode };
+  }
+  return { ok: false, error: 'Invalid stakeMode' };
+}
+
+export interface CoinStakeRequest {
+  stakeMode: StakeMode;
+  stakeAmount: number;
+  coinStake: number;
+  /** Player's current pale-coin balance (player.paleCoins ?? 0). */
+  balance: number;
+}
+
+/**
+ * Validate the numeric/enum portion of a coins-mode run-start request.
+ *
+ * Non-coins modes are a pass-through (nothing to validate here — SOL/free
+ * flows are unchanged). For coins mode the chain rejects, with a distinct
+ * message per failure, when: SOL was also staked (`stakeAmount !== 0`), the
+ * `coinStake` is not one of {@link COIN_STAKE_OPTIONS}, or the player's
+ * `balance` is below the stake. Identity/Player-row existence are I/O concerns
+ * and stay in the route; this function is pure so the money-gating logic is
+ * unit-testable in isolation.
+ */
+export function validateCoinStakeRequest(
+  req: CoinStakeRequest,
+): { ok: true } | { ok: false; error: string } {
+  if (req.stakeMode !== 'coins') return { ok: true };
+
+  if (req.stakeAmount !== 0) {
+    return { ok: false, error: 'Coin-stake runs cannot also stake SOL' };
+  }
+  if (!(COIN_STAKE_OPTIONS as readonly number[]).includes(req.coinStake)) {
+    return { ok: false, error: 'Invalid coin stake amount' };
+  }
+  if ((req.balance ?? 0) < req.coinStake) {
+    return { ok: false, error: 'Insufficient pale coins' };
+  }
+  return { ok: true };
+}
+
 export interface CoinEarnInput {
   finalDepth: number;
   cleared: boolean;
