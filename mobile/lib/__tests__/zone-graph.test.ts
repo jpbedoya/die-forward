@@ -85,6 +85,33 @@ describe('sunken-crypt graph', () => {
     expect(Math.max(...zone.graph!.nodes.map(n => n.depth))).toBe(13);
   });
 
+  it('has exactly 23 nodes: 21 descent nodes plus 2 gated side chambers', () => {
+    const zone = loadZone('sunken-crypt');
+    expect(zone.graph!.nodes.length).toBe(23);
+    const sideNodes = zone.graph!.nodes.filter(n => n.side === true);
+    expect(sideNodes.length).toBe(2);
+    const byId = new Map(sideNodes.map(n => [n.id, n]));
+
+    const ferry = byId.get('s01-ferry');
+    expect(ferry).toBeDefined();
+    expect(ferry!.type).toBe('cache');
+    expect(ferry!.template).toBe('alcove');
+    expect(ferry!.depth).toBe(4);
+    expect(ferry!.gate).toEqual({ item: 'Pale Coin', consumes: true });
+
+    const inscription = byId.get('s02-inscription');
+    expect(inscription).toBeDefined();
+    expect(inscription!.type).toBe('explore');
+    expect(inscription!.template).toBe('chamber');
+    expect(inscription!.depth).toBe(8);
+    expect(inscription!.gate).toEqual({ item: 'Ancient Scroll', consumes: false });
+
+    // Full graph (including validateZoneGraph's internal descent-only pass,
+    // exercised above in "ships a valid graph") confirms both lanes remain
+    // fully traversable without the side chambers.
+    expect(validateZoneGraph(zone.graph!)).toEqual([]);
+  });
+
   // Documents why combat.tsx's resolved-flow (markNodeResolved) exists: a
   // combat node that forks (>1 next edge) must NOT auto-advance to next[0] on
   // win/flee, or half the map's branch choices would never reach the player.

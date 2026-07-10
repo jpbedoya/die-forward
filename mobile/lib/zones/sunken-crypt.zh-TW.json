@@ -1945,8 +1945,23 @@
         "depth": 4,
         "next": [
           "n08",
-          "n09"
+          "n09",
+          "s01-ferry"
         ]
+      },
+      {
+        "id": "s01-ferry",
+        "type": "cache",
+        "template": "alcove",
+        "depth": 4,
+        "next": [
+          "n08"
+        ],
+        "side": true,
+        "gate": {
+          "item": "Pale Coin",
+          "consumes": true
+        }
       },
       {
         "id": "n07",
@@ -2011,8 +2026,23 @@
         "depth": 8,
         "next": [
           "n15",
-          "n16"
+          "n16",
+          "s02-inscription"
         ]
+      },
+      {
+        "id": "s02-inscription",
+        "type": "explore",
+        "template": "chamber",
+        "depth": 8,
+        "next": [
+          "n15"
+        ],
+        "side": true,
+        "gate": {
+          "item": "Ancient Scroll",
+          "consumes": false
+        }
       },
       {
         "id": "n14",
