@@ -226,12 +226,14 @@ export async function POST(request: NextRequest) {
         poolAvailable: 0,
       });
       const settingsRow = settingsResult?.gameSettings?.[0] as Record<string, unknown> | undefined;
-      const settingsRowId = (settingsRow?.id as string) || id();
-      settlementWrites.push(
-        tx.gameSettings[settingsRowId].update({
-          coinPool: ((settingsRow?.coinPool as number) ?? 0) + poolDelta,
-        }),
-      );
+      // pool burn is best-effort: skip rather than orphan the settings row if the read failed
+      if (settingsRow?.id) {
+        settlementWrites.push(
+          tx.gameSettings[settingsRow.id as string].update({
+            coinPool: ((settingsRow.coinPool as number) ?? 0) + poolDelta,
+          }),
+        );
+      }
     }
 
     if (player) {
