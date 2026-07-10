@@ -16,6 +16,7 @@ import { processVictoryPayout } from '@/lib/onchain';
 import { computeVictoryReward } from '@/lib/payout';
 import {
   buildRunReceipt,
+  classifyVictorySettlement,
   computeCoinEarn,
   computeCoinStakeSettlement,
   nextStreak,
@@ -85,6 +86,8 @@ export async function POST(request: NextRequest) {
 
     // Calculate reward (stake back + bonus from pool)
     const stakeAmount = session.stakeAmount || 0;
+    const stakeMode: StakeMode = ((session as Record<string, unknown>).stakeMode as StakeMode) ?? 'sol';
+    const coinStake: number = ((session as Record<string, unknown>).coinStake as number) ?? 0;
     const victoryBonusPercent = (gameSettings?.victoryBonusPercent as number) ?? 50;
     const { totalReward } = computeVictoryReward(stakeAmount, victoryBonusPercent);
 
@@ -111,9 +114,24 @@ export async function POST(request: NextRequest) {
     }
     // ─────────────────────────────────────────────────────────────────────────
 
-    // DEMO MODE or FREE AGENT MODE: Skip actual payout
-    const isFreeMode = session.demoMode || (session.isAgent && session.stakeMode === 'free') || stakeAmount === 0;
-    if (isFreeMode) {
+    // ── Settlement routing (pure, unit-tested — see classifyVictorySettlement) ──
+    // ROUTE-LEVEL GUARD: a Coin-Bound run has stakeAmount === 0. It MUST NOT be
+    // treated as free mode (the CRITICAL dead-code bug) — a coins victory has no
+    // SOL to pay but MUST still reach the coin settlement + player/receipt writes
+    // below. 'free_mode' early-returns (demo/agent-free/legacy zero SOL);
+    // 'coins_settle' skips the on-chain payout but FALLS THROUGH to settlement;
+    // 'sol_payout' does a real on-chain transfer, then settlement. A coins
+    // victory must NEVER attempt an on-chain transfer (stakeAmount 0).
+    const settlementPath = classifyVictorySettlement({
+      stakeAmount,
+      stakeMode,
+      demoMode: session.demoMode,
+      isAgent: session.isAgent,
+    });
+
+    // DEMO MODE or FREE AGENT MODE (or legacy zero-SOL non-coins): skip payout AND
+    // coin settlement — unchanged behaviour, early return.
+    if (settlementPath === 'free_mode') {
       await db.transact([
         tx.sessions[session.id].update({
           status: 'completed',
@@ -130,89 +148,113 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Get pool wallet
-    const poolKeypair = getPoolKeypair();
-    const playerWallet = new PublicKey(session.walletAddress);
+    // Past here: 'sol_payout' or 'coins_settle' — BOTH reach the coin settlement.
+    let signature: string | undefined;
+    let payoutStatus: string;
+    let responseReward: number;
 
-    let signature: string;
-    
-    // Use escrow program if session was created with it
-    if (session.useEscrow && session.escrowSessionId) {
-      console.log('Processing victory via escrow program...');
-      const escrowSig = await processVictoryPayout(session.walletAddress, session.escrowSessionId);
-      
-      if (!escrowSig) {
-        // Escrow payout failed
-        await db.transact([
-          tx.sessions[session.id].update({
-            status: 'completed',
-            endedAt: Date.now(),
-            reward: totalReward,
-            payoutStatus: 'escrow_failed',
-          }),
-        ]);
-        return NextResponse.json({ 
-          success: true, 
-          reward: totalReward,
-          payoutStatus: 'pending',
-          message: 'Victory recorded! Escrow payout failed - manual intervention needed.',
-        });
-      }
-      
-      signature = escrowSig;
+    if (settlementPath === 'coins_settle') {
+      // Coin-Bound victory: no SOL payout (stakeAmount 0 — nothing to transfer,
+      // and we must not touch the pool wallet). Mark the session completed and
+      // FALL THROUGH to the coin settlement block below (stake return + bonus +
+      // streak + receipt). This is the whole point of the fix.
+      payoutStatus = 'coins_settled';
+      responseReward = 0;
+      await db.transact([
+        tx.sessions[session.id].update({
+          status: 'completed',
+          endedAt: Date.now(),
+          reward: 0,
+          payoutStatus,
+        }),
+      ]);
     } else {
-      // Legacy: Direct pool wallet transfer
-      console.log('Processing victory via pool wallet...');
-      
-      // Check pool balance
-      const poolBalance = await connection.getBalance(poolKeypair.publicKey);
-      const rewardLamports = Math.floor(totalReward * LAMPORTS_PER_SOL);
+      // ── Real SOL payout (escrow or pool wallet) ──
+      payoutStatus = 'paid';
+      responseReward = totalReward;
 
-      if (poolBalance < rewardLamports + 5000) { // 5000 lamports for fees
-        console.error('Pool balance too low:', poolBalance, 'needed:', rewardLamports);
-        // Still mark session as completed, but note payout failed
-        await db.transact([
-          tx.sessions[session.id].update({
-            status: 'completed',
-            endedAt: Date.now(),
+      // Get pool wallet
+      const poolKeypair = getPoolKeypair();
+      const playerWallet = new PublicKey(session.walletAddress);
+
+      // Use escrow program if session was created with it
+      if (session.useEscrow && session.escrowSessionId) {
+        console.log('Processing victory via escrow program...');
+        const escrowSig = await processVictoryPayout(session.walletAddress, session.escrowSessionId);
+
+        if (!escrowSig) {
+          // Escrow payout failed
+          await db.transact([
+            tx.sessions[session.id].update({
+              status: 'completed',
+              endedAt: Date.now(),
+              reward: totalReward,
+              payoutStatus: 'escrow_failed',
+            }),
+          ]);
+          return NextResponse.json({
+            success: true,
             reward: totalReward,
-            payoutStatus: 'insufficient_funds',
-          }),
-        ]);
-        return NextResponse.json({ 
-          success: true, 
-          reward: totalReward,
-          payoutStatus: 'pending', // Will need manual payout
-          message: 'Victory recorded! Payout pending (pool needs funding).',
-        });
+            payoutStatus: 'pending',
+            message: 'Victory recorded! Escrow payout failed - manual intervention needed.',
+          });
+        }
+
+        signature = escrowSig;
+      } else {
+        // Legacy: Direct pool wallet transfer
+        console.log('Processing victory via pool wallet...');
+
+        // Check pool balance
+        const poolBalance = await connection.getBalance(poolKeypair.publicKey);
+        const rewardLamports = Math.floor(totalReward * LAMPORTS_PER_SOL);
+
+        if (poolBalance < rewardLamports + 5000) { // 5000 lamports for fees
+          console.error('Pool balance too low:', poolBalance, 'needed:', rewardLamports);
+          // Still mark session as completed, but note payout failed
+          await db.transact([
+            tx.sessions[session.id].update({
+              status: 'completed',
+              endedAt: Date.now(),
+              reward: totalReward,
+              payoutStatus: 'insufficient_funds',
+            }),
+          ]);
+          return NextResponse.json({
+            success: true,
+            reward: totalReward,
+            payoutStatus: 'pending', // Will need manual payout
+            message: 'Victory recorded! Payout pending (pool needs funding).',
+          });
+        }
+
+        // Create and send payout transaction
+        const transaction = new Transaction().add(
+          SystemProgram.transfer({
+            fromPubkey: poolKeypair.publicKey,
+            toPubkey: playerWallet,
+            lamports: rewardLamports,
+          })
+        );
+
+        signature = await sendAndConfirmTransaction(
+          connection,
+          transaction,
+          [poolKeypair]
+        );
       }
 
-      // Create and send payout transaction
-      const transaction = new Transaction().add(
-        SystemProgram.transfer({
-          fromPubkey: poolKeypair.publicKey,
-          toPubkey: playerWallet,
-          lamports: rewardLamports,
-        })
-      );
-
-      signature = await sendAndConfirmTransaction(
-        connection,
-        transaction,
-        [poolKeypair]
-      );
+      // Mark session as completed with payout info
+      await db.transact([
+        tx.sessions[session.id].update({
+          status: 'completed',
+          endedAt: Date.now(),
+          reward: totalReward,
+          payoutStatus: 'paid',
+          payoutTx: signature,
+        }),
+      ]);
     }
-
-    // Mark session as completed with payout info
-    await db.transact([
-      tx.sessions[session.id].update({
-        status: 'completed',
-        endedAt: Date.now(),
-        reward: totalReward,
-        payoutStatus: 'paid',
-        payoutTx: signature,
-      }),
-    ]);
 
     // ── Coin economy settlement (grant, stake return + pool bonus, streak, receipt) ──
     // Mirrors the death route: everything below lands in ONE transact so the
@@ -241,8 +283,8 @@ export async function POST(request: NextRequest) {
 
       const clearedRoom = session.currentRoom || (session.maxRooms || 13); // Full dungeon clear = reached max depth
       const zoneId = (session as Record<string, unknown>).zoneId as string || 'sunken-crypt';
-      const stakeMode: StakeMode = ((session as Record<string, unknown>).stakeMode as StakeMode) ?? 'sol';
-      const coinStake: number = ((session as Record<string, unknown>).coinStake as number) ?? 0;
+      // stakeMode / coinStake are hoisted to the top of the handler (used by the
+      // settlement-path routing above); reused here verbatim.
 
       // Existing clearedZones (stored as array, matching mobile schema).
       const existingCleared = player ? player.clearedZones : undefined;
@@ -289,6 +331,10 @@ export async function POST(request: NextRequest) {
 
       // Pool decrement (bonus payout) — ONLY against a real existing settings row,
       // floored at 0 defensively. Never invent a gameSettings row (would orphan the pool).
+      // KNOWN LIMITATION (accepted on devnet): pool decrement is read-then-write, not
+      // atomic — concurrent coin victories can lost-update this toward an OVER-reported
+      // pool (phantom bonus). Unsafe direction; tracked under the launch-blocking A1
+      // auth/atomicity gate in the spec.
       if (stakeMode === 'coins' && coinPoolDelta !== 0 && settingsRow?.id) {
         writes.push(
           tx.gameSettings[settingsRow.id as string].update({
@@ -369,8 +415,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      reward: totalReward,
-      payoutStatus: 'paid',
+      reward: responseReward,
+      payoutStatus,
       txSignature: signature,
     });
 

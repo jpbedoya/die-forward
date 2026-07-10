@@ -81,6 +81,47 @@ export function validateCoinStakeRequest(
   return { ok: true };
 }
 
+export interface VictorySettlementInput {
+  /** SOL staked on the run (lamports-agnostic; 0 for coins/free/demo). */
+  stakeAmount: number;
+  /** Resolved stake mode of the run. */
+  stakeMode: StakeMode;
+  /** Session demo flag. */
+  demoMode?: boolean;
+  /** Session agent flag. */
+  isAgent?: boolean;
+}
+
+/**
+ * Which settlement path a *victory* takes. Extracted from the victory route so
+ * the SOL-vs-coins-vs-free branch is pure and unit-testable (this class of
+ * routing bug — a coins victory being swallowed by the free-mode early return —
+ * is invisible to the money-math tests otherwise).
+ *
+ *  - `'coins_settle'`: Coin-Bound run. No SOL payout, but the coin economy
+ *    settlement (stake return + pool bonus + streak + receipt) MUST still run.
+ *    Checked FIRST so a coins run (stakeAmount 0) is never misrouted to
+ *    `'free_mode'` and starved of its settlement.
+ *  - `'free_mode'`: demo / agent-free / legacy zero-SOL non-coins run. No SOL
+ *    payout and no coin settlement (early return in the route).
+ *  - `'sol_payout'`: genuine SOL-staked run. Real on-chain payout, then coin
+ *    settlement.
+ */
+export type VictorySettlementPath = 'sol_payout' | 'coins_settle' | 'free_mode';
+
+export function classifyVictorySettlement(
+  input: VictorySettlementInput,
+): VictorySettlementPath {
+  // Coins first: a Coin-Bound run has stakeAmount === 0, so it must be matched
+  // before any zero-SOL / free-mode test or it gets misrouted to 'free_mode'
+  // (the CRITICAL dead-code bug this guards against).
+  if (input.stakeMode === 'coins') return 'coins_settle';
+  if (input.demoMode) return 'free_mode';
+  if (input.isAgent && input.stakeMode === 'free') return 'free_mode';
+  if (input.stakeAmount === 0) return 'free_mode';
+  return 'sol_payout';
+}
+
 export interface CoinEarnInput {
   finalDepth: number;
   cleared: boolean;

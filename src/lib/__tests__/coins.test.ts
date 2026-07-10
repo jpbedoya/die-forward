@@ -1,6 +1,7 @@
 import {
   COIN_STAKE_OPTIONS,
   buildRunReceipt,
+  classifyVictorySettlement,
   computeCoinEarn,
   computeCoinStakeSettlement,
   nextStreak,
@@ -8,6 +9,43 @@ import {
   sealTier,
   validateCoinStakeRequest,
 } from '@/lib/coins';
+
+describe('classifyVictorySettlement', () => {
+  it('routes a Coin-Bound victory (stakeAmount 0) to coins_settle, NOT free_mode — the dead-code regression', () => {
+    // The exact bug: a coins run has stakeAmount === 0, so a naive free-mode
+    // check swallows it. Coins MUST reach its settlement.
+    expect(
+      classifyVictorySettlement({ stakeAmount: 0, stakeMode: 'coins' }),
+    ).toBe('coins_settle');
+  });
+
+  it('routes coins to coins_settle even if demo/agent flags are set', () => {
+    expect(
+      classifyVictorySettlement({ stakeAmount: 0, stakeMode: 'coins', demoMode: true }),
+    ).toBe('coins_settle');
+    expect(
+      classifyVictorySettlement({ stakeAmount: 0, stakeMode: 'coins', isAgent: true }),
+    ).toBe('coins_settle');
+  });
+
+  it('routes a genuine SOL-staked run to sol_payout', () => {
+    expect(
+      classifyVictorySettlement({ stakeAmount: 0.5, stakeMode: 'sol' }),
+    ).toBe('sol_payout');
+  });
+
+  it('routes demo, agent-free, and legacy zero-SOL non-coins runs to free_mode', () => {
+    expect(
+      classifyVictorySettlement({ stakeAmount: 0.5, stakeMode: 'sol', demoMode: true }),
+    ).toBe('free_mode');
+    expect(
+      classifyVictorySettlement({ stakeAmount: 0, stakeMode: 'free', isAgent: true }),
+    ).toBe('free_mode');
+    expect(
+      classifyVictorySettlement({ stakeAmount: 0, stakeMode: 'sol' }),
+    ).toBe('free_mode');
+  });
+});
 
 describe('COIN_STAKE_OPTIONS', () => {
   it('is the fixed [60, 120, 240] ladder', () => {

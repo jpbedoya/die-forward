@@ -72,9 +72,20 @@ export async function POST(_request: NextRequest) {
     // Abandoned COIN-BOUND runs: the stake was deducted at start, so burn it into
     // the pool (like a death) and stamp an immutable 'abandoned' receipt. Streak is
     // left untouched — abandonment is treated generously, not as a loss.
-    const coinBoundSessions = staleSessions.filter(
-      (s: any) => s.stakeMode === 'coins' && (Number(s.coinStake) || 0) > 0,
-    );
+    //
+    // GUARD (mirrors victoryCandidates/deathCandidates): only burn runs that did NOT
+    // reach the exit (currentRoom < maxRooms). A stale coin run AT maxRooms is a
+    // cleared-but-unclaimed WIN, not an abandonment — it belongs to the victory-
+    // candidate side and must not have its stake burned.
+    const coinBoundSessions = staleSessions.filter((s: any) => {
+      const currentRoom = s.currentRoom || 1;
+      const maxRooms = s.maxRooms || 13;
+      return (
+        s.stakeMode === 'coins' &&
+        (Number(s.coinStake) || 0) > 0 &&
+        currentRoom < maxRooms
+      );
+    });
     const totalCoinBurn = coinBoundSessions.reduce(
       (sum: number, s: any) => sum + (Number(s.coinStake) || 0),
       0,
