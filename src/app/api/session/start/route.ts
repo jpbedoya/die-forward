@@ -91,6 +91,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: check.error }, { status: 400 });
       }
 
+      // KNOWN LIMITATION (accepted on devnet): balance is read-then-written, not an atomic decrement — concurrent coins-mode starts by the same player could double-spend within the read window. Fix requires atomic decrement / request auth (tracked as the launch-blocking A1 auth gate in the spec).
       coinDeductTx = tx.players[player.id].update({ paleCoins: balance - coinStake });
     }
 
@@ -160,7 +161,7 @@ export async function POST(request: NextRequest) {
         authId: authId || walletAddress, // Unique player ID for stats tracking
         stakeAmount,
         stakeMode,
-        coinStake: coinStake ?? 0,
+        coinStake: stakeMode === 'coins' ? coinStake : 0,
         serverDayKey: serverDayKey(),
         chosenModifierId: chosenModifierId ?? null,
         dailyShiftEnabled: dailyShiftEnabled ?? true,
