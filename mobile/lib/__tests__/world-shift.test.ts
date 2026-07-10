@@ -1,4 +1,4 @@
-import { utcDayKey, getDailyShift } from '../world-shift';
+import { utcDayKey, getDailyShift, type DailyShift } from '../world-shift';
 import { RUN_MODIFIERS } from '../modifiers';
 import { loadZone, validateZoneGraph, type ZoneGraphLayout } from '../zone-loader';
 
@@ -53,17 +53,20 @@ describe('getDailyShift', () => {
   });
 
   it('masked graph always validates across 30 days x 5 zones', () => {
+    const allShifts: DailyShift[] = [];
     for (let i = 1; i <= 30; i++) {
       const dayKey = `2026-08-${String(i).padStart(2, '0')}`;
       for (const zoneId of ZONE_IDS) {
         const zone = loadZone(zoneId);
         if (!zone.graph) continue;
         const shift = getDailyShift(zoneId, dayKey);
+        allShifts.push(shift);
         const masked = applyShiftMask(zone.graph, shift.closedEdges, shift.sealedSideNodes);
         const errors = validateZoneGraph(masked);
         expect(errors).toEqual([]);
       }
     }
+    expect(allShifts.some(s => s.closedEdges.length > 0)).toBe(true);
   });
 
   it('never seals all side nodes of a zone', () => {

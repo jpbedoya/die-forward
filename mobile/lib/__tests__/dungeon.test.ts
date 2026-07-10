@@ -2,6 +2,7 @@ import { generateDungeon, generateDungeonGraph, getTierForRoom } from '../conten
 import { loadZone, listZoneIds, getZoneDepth } from '../zone-loader';
 import * as zoneLoader from '../zone-loader';
 import { createRunRng } from '../seeded-random';
+import { getDailyShift, type DailyShift } from '../world-shift';
 
 describe('generateDungeon (legacy flat API)', () => {
   it('is deterministic — the same zone + seed produces an identical dungeon', () => {
@@ -115,6 +116,63 @@ describe('generateDungeonGraph', () => {
         }
       }
     }
+  });
+
+  describe('daily shift mask', () => {
+    // 2026-09-07 deterministically produces both a sealed side node
+    // (s02-inscription) and a closed edge (n06->n08) for sunken-crypt.
+    const shift: DailyShift = getDailyShift('sunken-crypt', '2026-09-07');
+
+    it('unshifted call is byte-identical to a no-arg call', () => {
+      const withUndefined = generateDungeonGraph('sunken-crypt', createRunRng('s1'), undefined);
+      const noArg = generateDungeonGraph('sunken-crypt', createRunRng('s1'));
+      expect(withUndefined).toEqual(noArg);
+    });
+
+    it('a shift for a different zone than the one being generated is a no-op', () => {
+      const otherZoneShift: DailyShift = { ...shift, zoneId: 'ashen-crypts' };
+      const masked = generateDungeonGraph('sunken-crypt', createRunRng('s1'), otherZoneShift);
+      const unmasked = generateDungeonGraph('sunken-crypt', createRunRng('s1'));
+      expect(masked).toEqual(unmasked);
+    });
+
+    it('drops the sealed side node and leaves no dangling edges to it', () => {
+      const g = generateDungeonGraph('sunken-crypt', createRunRng('s1'), shift);
+      for (const sealedId of shift.sealedSideNodes) {
+        expect(g.nodes[sealedId]).toBeUndefined();
+      }
+      for (const node of Object.values(g.nodes)) {
+        for (const nextId of node.next) {
+          expect(shift.sealedSideNodes).not.toContain(nextId);
+        }
+      }
+    });
+
+    it('removes closed edges from the masked graph', () => {
+      const g = generateDungeonGraph('sunken-crypt', createRunRng('s1'), shift);
+      for (const edge of shift.closedEdges) {
+        const fromNode = g.nodes[edge.from];
+        expect(fromNode).toBeTruthy();
+        expect(fromNode.next).not.toContain(edge.to);
+      }
+    });
+
+    it('masked graph is still walkable start → exit', () => {
+      const g = generateDungeonGraph('sunken-crypt', createRunRng('s1'), shift);
+      const visited = new Set<string>();
+      const queue = [g.startId];
+      while (queue.length > 0) {
+        const id = queue.shift() as string;
+        if (visited.has(id)) continue;
+        visited.add(id);
+        const node = g.nodes[id];
+        expect(node).toBeTruthy();
+        for (const nextId of node.next) queue.push(nextId);
+      }
+      const exitNode = Object.values(g.nodes).find(n => n.type === 'exit');
+      expect(exitNode).toBeTruthy();
+      expect(visited.has((exitNode as (typeof exitNode & {}))!.id)).toBe(true);
+    });
   });
 });
 

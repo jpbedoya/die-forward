@@ -1,7 +1,8 @@
 // Content loader - pulls from pre-generated JSON content
 
-import { loadZone, getZoneRoom, getZoneCreatureSeeded, getZoneBoss, getZoneDepth, type ZoneData } from './zone-loader';
+import { loadZone, getZoneRoom, getZoneCreatureSeeded, getZoneBoss, getZoneDepth, type ZoneData, type ZoneNode } from './zone-loader';
 import { createRunRng, generateRandomSeed, type SeededRng } from './seeded-random';
+import type { DailyShift } from './world-shift';
 import type { SignatureRule } from './creature-rules';
 
 import exploreRooms from '../content/explore-rooms.json';
@@ -1213,14 +1214,40 @@ export interface DungeonGraph {
  *
  * All random choices go through the seeded RNG for full reproducibility.
  */
-export function generateDungeonGraph(zoneId: string, rng: SeededRng): DungeonGraph {
+
+/**
+ * Drops sealed side nodes and closed edges from a zone's node list before
+ * content rolls. Mirrors world-shift.ts's `applyMask` copy pattern: filter
+ * + map into fresh arrays, never mutating the cached zone data.
+ */
+function maskGraphNodes(
+  nodes: ZoneNode[],
+  closedEdges: Array<{ from: string; to: string }>,
+  sealedSideNodes: string[]
+): ZoneNode[] {
+  const sealed = new Set(sealedSideNodes);
+  const closed = new Set(closedEdges.map(e => `${e.from}->${e.to}`));
+  return nodes
+    .filter(n => !sealed.has(n.id))
+    .map(n => ({
+      ...n,
+      next: n.next.filter(t => !sealed.has(t) && !closed.has(`${n.id}->${t}`)),
+    }));
+}
+
+export function generateDungeonGraph(zoneId: string, rng: SeededRng, shift?: DailyShift): DungeonGraph {
   const zone = loadZone(zoneId);
 
   if (zone.graph) {
     const nodes: Record<string, DungeonNode> = {};
     let maxDepth = 0;
 
-    zone.graph.nodes.forEach((node, index) => {
+    const graphNodes: ZoneNode[] =
+      shift && shift.zoneId === zoneId
+        ? maskGraphNodes(zone.graph.nodes, shift.closedEdges, shift.sealedSideNodes)
+        : zone.graph.nodes;
+
+    graphNodes.forEach((node, index) => {
       const content = rollNodeContent(zone, node.type, node.template, node.depth, !!node.boss, rng, index);
       nodes[node.id] = {
         type: node.type,
