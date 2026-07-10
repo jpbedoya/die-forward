@@ -386,6 +386,202 @@
       }
     ]
   },
+  "graph": {
+    "start": "n01",
+    "nodes": [
+      {
+        "id": "n01",
+        "type": "explore",
+        "template": "entrance",
+        "depth": 1,
+        "next": [
+          "n02",
+          "n03"
+        ]
+      },
+      {
+        "id": "n02",
+        "type": "corpse",
+        "template": "preserved",
+        "depth": 2,
+        "next": [
+          "n04"
+        ]
+      },
+      {
+        "id": "n03",
+        "type": "combat",
+        "template": "thawing",
+        "depth": 2,
+        "next": [
+          "n05"
+        ]
+      },
+      {
+        "id": "n04",
+        "type": "corpse",
+        "template": "mid-action",
+        "depth": 3,
+        "next": [
+          "n06"
+        ]
+      },
+      {
+        "id": "n05",
+        "type": "combat",
+        "template": "wraith",
+        "depth": 3,
+        "next": [
+          "n07"
+        ]
+      },
+      {
+        "id": "n06",
+        "type": "corpse",
+        "template": "composed",
+        "depth": 4,
+        "next": [
+          "n08",
+          "n09",
+          "s01-reliquary"
+        ]
+      },
+      {
+        "id": "n07",
+        "type": "combat",
+        "template": "thawing",
+        "depth": 4,
+        "next": [
+          "n09",
+          "n08"
+        ]
+      },
+      {
+        "id": "s01-reliquary",
+        "type": "corpse",
+        "template": "preserved",
+        "depth": 4,
+        "next": [
+          "n08"
+        ],
+        "side": true,
+        "gate": {
+          "item": "Ancient Scroll",
+          "consumes": false
+        }
+      },
+      {
+        "id": "n08",
+        "type": "explore",
+        "template": "gallery",
+        "depth": 5,
+        "next": [
+          "n10"
+        ]
+      },
+      {
+        "id": "n09",
+        "type": "combat",
+        "template": "sentinel",
+        "depth": 5,
+        "next": [
+          "n10"
+        ]
+      },
+      {
+        "id": "n10",
+        "type": "corpse",
+        "template": "mid-action",
+        "depth": 6,
+        "next": [
+          "n11",
+          "n12"
+        ]
+      },
+      {
+        "id": "n11",
+        "type": "corpse",
+        "template": "preserved",
+        "depth": 7,
+        "next": [
+          "n13",
+          "n14"
+        ]
+      },
+      {
+        "id": "n12",
+        "type": "combat",
+        "template": "thawing",
+        "depth": 7,
+        "next": [
+          "n13",
+          "n14"
+        ]
+      },
+      {
+        "id": "n13",
+        "type": "combat",
+        "template": "wraith",
+        "depth": 8,
+        "next": [
+          "n15"
+        ]
+      },
+      {
+        "id": "n14",
+        "type": "corpse",
+        "template": "composed",
+        "depth": 8,
+        "next": [
+          "n15"
+        ]
+      },
+      {
+        "id": "n15",
+        "type": "explore",
+        "template": "deep-gallery",
+        "depth": 9,
+        "next": [
+          "n16"
+        ]
+      },
+      {
+        "id": "n16",
+        "type": "combat",
+        "template": "sentinel",
+        "depth": 10,
+        "next": [
+          "n17"
+        ]
+      },
+      {
+        "id": "n17",
+        "type": "corpse",
+        "template": "long-preserved",
+        "depth": 11,
+        "next": [
+          "n18"
+        ]
+      },
+      {
+        "id": "n18",
+        "type": "combat",
+        "template": "sovereign",
+        "depth": 12,
+        "next": [
+          "n19"
+        ],
+        "boss": true
+      },
+      {
+        "id": "n19",
+        "type": "exit",
+        "template": "zone-exit",
+        "depth": 13,
+        "next": []
+      }
+    ]
+  },
   "boss": "The Glacial Sovereign",
   "audio": {
     "ambient": {

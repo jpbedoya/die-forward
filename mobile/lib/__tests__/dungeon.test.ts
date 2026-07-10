@@ -1,5 +1,6 @@
 import { generateDungeon, generateDungeonGraph, getTierForRoom } from '../content';
 import { loadZone, listZoneIds, getZoneDepth } from '../zone-loader';
+import * as zoneLoader from '../zone-loader';
 import { createRunRng } from '../seeded-random';
 
 describe('generateDungeon (legacy flat API)', () => {
@@ -62,11 +63,25 @@ describe('generateDungeonGraph', () => {
     expect(a).not.toEqual(b);
   });
 
+  // Fixture choice: every shipped zone now ships a `graph`, so there is no
+  // real legacy (dungeonLayout-only) zone left to exercise this path against.
+  // We spy on loadZone and hand generateDungeonGraph a synthetic zone that
+  // reuses real sunken-crypt content (so rollNodeContent has real rooms to
+  // roll from) but strips the graph field, forcing the legacy linearization
+  // branch in generateDungeonGraph. See traversal.test.ts for the same
+  // spy/mockRestore pattern.
   it('legacy zones synthesize a linear graph', () => {
-    const g = generateDungeonGraph('frozen-gallery', createRunRng('s1'));
-    const n = Object.values(g.nodes);
-    expect(n.every(x => x.next.length <= 1)).toBe(true);
-    expect(n.filter(x => x.type === 'exit')).toHaveLength(1);
+    const real = loadZone('sunken-crypt');
+    const synthetic = { ...real, graph: undefined } as unknown as ReturnType<typeof loadZone>;
+    const spy = jest.spyOn(zoneLoader, 'loadZone').mockReturnValue(synthetic);
+    try {
+      const g = generateDungeonGraph('sunken-crypt', createRunRng('s1'));
+      const n = Object.values(g.nodes);
+      expect(n.every(x => x.next.length <= 1)).toBe(true);
+      expect(n.filter(x => x.type === 'exit')).toHaveLength(1);
+    } finally {
+      spy.mockRestore();
+    }
   });
 
   it('graph zones: every combat node has an enemy; exactly one boss; maxDepth 13', () => {
