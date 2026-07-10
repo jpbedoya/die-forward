@@ -41,19 +41,87 @@ The world exists above a vast underworld — not hell, not heaven, but something
 
 ---
 
-## The Hackathon Zone: THRESHOLD OF THE UNNAMED
+## The Five Zones
 
-The first descent. A place between the world above and the true depths below. Ancient stairs carved by forgotten hands lead down into flooded halls where the boundary between life and death grows thin.
+The underworld is not one place. It is five, so far — five wounds in the world, each with its own element, its own dead, its own way of ending you. The Sunken Crypt is the first descent. The others open to those who survive it.
 
-### Zone Identity
+Canonical zone data (names, taglines, lore, depth tiers) lives in `mobile/lib/zones/*.json` — those files are the source of truth for what ships.
+
+---
+
+### THE SUNKEN CRYPT
+*The first descent. Nothing here is alive.*
+
 - **Element:** Water and stone
-- **Color palette:** Black, deep blue, pale bone-white, sickly green
+- **Palette:** Deep blue, black water, pale drowned light
 - **Sounds:** Dripping water, distant echoes, wet footsteps, silence
-- **Smell:** Brine, rot, wet stone, copper
 - **Temperature:** Cold. Always cold.
 
-### Zone Lore
-This was once a temple — or a tomb. The distinction no longer matters. Water seeped in centuries ago, and with it came things that should not exist. The walls remember prayers in dead languages. The water remembers everyone who drowned.
+Ancient stairs carved by forgotten hands lead down into flooded halls where the boundary between life and death grows thin. This was a temple once — or a tomb. The distinction no longer matters. The water remembers everyone who drowned.
+
+**Depths:** THE UPPER CRYPT → THE FLOODED HALLS → THE ABYSS
+
+---
+
+### THE ASHEN CRYPTS
+*A civilization that chose fire over surrender.*
+
+- **Element:** Fire
+- **Palette:** Charred black, ember orange, ash gray
+- **Sounds:** Crackling, settling cinders, heat ticking in stone
+- **Temperature:** Heat that rises with every stair
+
+The stairs descend into heat. Below, a city burns — not in catastrophe, but in ritual, in deliberate continuation. They looked at what climbed from below and made a choice: burn all of it. The fire worked. The fire never stopped.
+
+**Depths:** THE OUTER RUINS → THE BURNING HEART → THE PYRE
+
+---
+
+### THE FROZEN GALLERY
+*Time stopped here. The dead are preserved perfectly.*
+
+- **Element:** Ice
+- **Palette:** Midnight blue, pale glacier light, white frost
+- **Sounds:** Creaking ice, held breath, a stillness that presses on the ears
+- **Temperature:** Cold beyond weather. Cold as a held moment.
+
+Something exhaled once, deep beneath the named places, and everything stopped. The flames are still burning inside the walls. The dead are still wearing their expressions. Whatever exhaled has not inhaled yet.
+
+**Depths:** THE OUTER GALLERY → THE COLLECTION → THE VAULT
+
+---
+
+### THE LIVING TOMB
+*Something grew in the dark. Now everything is part of it.*
+
+- **Element:** Flesh and growth
+- **Palette:** Dark red, raw tissue, wet shadow
+- **Sounds:** Slow pulse, wet shifting, breathing that is not yours
+- **Temperature:** Warm. That is the worst part.
+
+The tomb has no beginning anyone can trace. It grew while no one was watching, and by the time anyone understood what it was growing toward, the growth had become the answer to that question. Every body here became part of what keeps it warm.
+
+**Depths:** THE OUTER GROWTH → THE DEEP FLESH → THE CORE
+
+---
+
+### THE VOID BEYOND
+*Where the underworld forgot to finish building.*
+
+- **Element:** Void
+- **Palette:** Near-black, bruised violet, static
+- **Sounds:** Shaped static, sounds that arrive before their source, silence with edges
+- **Temperature:** None. The absence of the question.
+
+Past the last passage the underworld bothered to finish, something waits that was assembled from everything you chose not to be. The static here is shaped — almost a pattern. Nothing confirms what it is trying to say.
+
+**Depths:** THE EDGE → THE UNFINISHED → THE NOTHING
+
+---
+
+### Zone Structure
+
+Every zone is a branching node graph: two parallel lanes joined by cross-links, roughly twenty nodes deep. A run traverses about thirteen to sixteen of them — the path chosen decides which rooms are ever seen. Side chambers, gated by offerings, are coming. Each zone's three depth tiers scale the danger: the deeper the tier, the harder the creatures, the fewer who return.
 
 ---
 
@@ -110,7 +178,7 @@ Once human. Now waterlogged husks animated by the underworld's hunger. They move
 
 > It rises from the water. Bloated. Pale. Its eyes are gone but it sees you anyway.
 
-#### Pale Crawlers
+#### Pale Crawler
 Things that skitter in the dark. Too many limbs. They cling to walls and ceilings, dropping when you pass beneath. Were they ever human? You can't tell anymore.
 
 **Behavior:** STALKING (following from shadows), AMBUSH (dropping from above), SWARMING (they're never alone)
@@ -124,14 +192,14 @@ Empty shells. No face, no features — just the outline of a person carved from 
 
 > It stands where you stood a moment ago. Facing where you faced. It has no eyes but you feel it watching.
 
-#### Bloated Ones
+#### Bloated One
 Corpses swollen with dark water. They burst when struck, releasing something worse — a cloud of choking memory, visions of how they died.
 
 **Behavior:** SHAMBLING (slow approach), RUPTURING (explosive death), LEAKING (trail of corruption)
 
 > The body blocks the passage. Distended. Taut. Something moves beneath its skin.
 
-#### Flickering Shades
+#### Flickering Shade
 Afterimages of the dead. They exist in stutters — here, then there, then gone. They don't attack so much as *coincide* with you.
 
 **Behavior:** BLINKING (teleporting short distances), PHASING (passing through walls), OVERLAPPING (occupying your space)
@@ -145,7 +213,7 @@ Skeletal hands that emerge from walls and floors, grasping. There is no body —
 
 > The wall has fingers. They're reaching for you.
 
-#### Throat Singers
+#### Throat Singers *(not yet in game)*
 Mouths without bodies. They float in the dark, humming frequencies that loosen your grip on reality. The sound is almost beautiful.
 
 **Behavior:** DRONING (disorienting hum), SCREAMING (sonic burst), HARMONIZING (calling others)
@@ -180,7 +248,7 @@ They repeat the last words of the dead. Over and over. The same plea, the same s
 
 > "Help me," it says. "Help me. Help me. Help me." The voice isn't its own.
 
-#### The Unfinished
+#### The Unfinished *(not yet in game)*
 Bodies that stopped mid-transformation. Half-formed. Asymmetrical. One arm too long, one eye too many. They move like they're still learning how.
 
 **Behavior:** LURCHING (unbalanced movement), ADAPTING (learning from damage), GROWING (adding mass from surroundings)
@@ -207,7 +275,7 @@ Souls that refused to pass on, now wrapped in chains of their own regret. They d
 
 > Chains rattle in the dark. Something whispers your name. How does it know your name?
 
-#### Forgotten Guardians
+#### Forgotten Guardian
 Stone sentinels animated by old magic. They protected something once — a tomb, a treasure, a secret. They no longer remember what, but they remember *how*.
 
 **Behavior:** DORMANT (statue-still until triggered), AWAKENING (slow, grinding), RELENTLESS (feels no pain)
@@ -221,7 +289,7 @@ Spirits of grief given form. They drift, wailing silently, and their touch bring
 
 > Tears run down a face with no eyes. It reaches for you like a lost child.
 
-#### Undertow Wyrms
+#### Undertow Wyrms *(not yet in game)*
 Serpentine things that swim through stone as easily as water. They surface only to feed, pulling victims down into the floor itself.
 
 **Behavior:** CIRCLING (ripples in solid stone), BREACHING (sudden emergence), DRAGGING (pulling under)
@@ -235,19 +303,26 @@ They were pilgrims once. Now they move as one — a crowd of bodies fused at the
 
 > They move together. Speak together. They want you to be together too.
 
-#### Pale Oracles
+#### Pale Oracle
 Eyeless seers who float above the water. They speak truths you don't want to hear — when you'll die, how you'll fail, what you've already lost.
 
 **Behavior:** PROPHESYING (demoralizing truths), REVEALING (showing hidden things), CURSING (words that wound)
 
 > "You will die here," it says. It sounds like a fact, not a threat.
 
-#### Carrion Knights
+#### Carrion Knight
 Warriors who fell in some ancient battle and refused to stop fighting. Their armor is rusted, their weapons notched, but their skill remains. They salute before they kill you.
 
 **Behavior:** CHALLENGING (honorable combat), STRIKING (precise attacks), SALUTING (respecting worthy foes)
 
 > It raises a rusted blade in salute. It expects you to fight well. It will be disappointed.
+
+#### Pale Crawler Swarm
+One wouldn't be a threat. But there isn't one. They pour from cracks in the walls, gaps in the floor, moving as a single hunger with many mouths.
+
+**Behavior:** POURING (emerging from everywhere), ENGULFING (surrounding), CONSUMING (many small wounds)
+
+> The clicking becomes a roar. The walls themselves seem to move. They were never hiding. They were waiting.
 
 ---
 
@@ -262,28 +337,35 @@ You cannot see it clearly. Your mind refuses. It exists in the corner of your vi
 
 > Something is here. You can't see it. You can't describe it. But you know. You *know*.
 
-#### The Throne Keeper
+#### The Keeper
+Guardian of the exit. It has stood before the final door since before the door had anything behind it. None have passed. It does not hate you. It simply does not move.
+
+**Behavior:** BLOCKING (it is the door now), CHARGING (building to overwhelm), RELENTLESS (it does not tire)
+
+> It fills the passage. It was waiting before you arrived. It will be waiting after.
+
+#### The Throne Keeper *(not yet in game)*
 It sits where no throne exists, in a hall you can't remember entering. It was a king once, or a god. Now it is just *waiting*. It has been waiting for you specifically. It knew you would come.
 
 **Behavior:** JUDGING (weighing your worth), COMMANDING (compelling obedience), RISING (when judgment is passed)
 
 > "Approach." You don't want to. Your legs move anyway.
 
-#### The Memory
+#### The Memory *(not yet in game)*
 Not a creature — an event. A moment that keeps happening. You see yourself dying, over and over, in ways that haven't happened yet. Is it a warning? A threat? A promise?
 
 **Behavior:** SHOWING (visions of death), LOOPING (time stutters), BECOMING (it starts to look like you)
 
 > You see yourself fall. You see yourself drown. You see yourself standing exactly where you stand now. The other you waves.
 
-#### The Choir of Endings
+#### The Choir of Endings *(not yet in game)*
 A mass of voices given form. Every death cry ever uttered in the underworld, woven into a single screaming entity. It doesn't attack — it *remembers* you to death.
 
 **Behavior:** RESONATING (building sonic pressure), REMEMBERING (speaking your fears), CRESCENDO (overwhelming release)
 
 > A thousand voices speak at once. One of them is yours. It's saying something you haven't said yet.
 
-#### The First Pilgrim
+#### The First Pilgrim *(not yet in game)*
 The very first to descend. They found what lies at the bottom. It changed them. Now they guard the path, not to keep others out — but to keep something in.
 
 **Behavior:** WARNING (trying to make you leave), BLOCKING (reluctant combat), SACRIFICING (letting you pass at a cost)
@@ -303,7 +385,7 @@ The water itself, given will. She was here before the temple, before the prayers
 
 **Appears randomly. Extremely rare. Not meant to be defeated — meant to be survived.**
 
-#### The Architect
+#### The Architect *(not yet in game)*
 It built this place. Not the temple — the underworld itself. It is still building. It looks at you and sees raw material. Rooms shift when it moves. Walls become doors. Doors become mouths.
 
 **Behavior:** 
@@ -358,8 +440,10 @@ Enemies telegraph their next action through visible intent. Players read the int
 | **Strike** | Attack the enemy | Success (damage), Mutual (trade), Weak (miss/glance) |
 | **Dodge** | Evade the attack | Success (clean), Close (grazed), Fail (hit) |
 | **Brace** | Reduce incoming damage | Success (reduced), Broken (partial), Fail (full hit) |
-| **Herbs** | Heal during combat | Heal (success), Interrupted (heal + damage) |
+| **Use Item** | Consume an item mid-fight (herbs, flasks, shards) | Effect applies; the enemy may strike while you're occupied |
 | **Flee** | Escape the fight | Success (clean), Hurt (escape + damage), Fail (trapped) |
+
+**Signature rules:** creatures that carry a mechanical signature (rupture, reform, multiply, blink, pounce, absorb, honor, dormant, drain, chant) telegraph it at the start of combat — one line, in voice, that states the rule without naming it. `mobile/lib/locales/en.json` holds the canonical telegraph lines (`rule.*.telegraph`). Some signatures constrain your options — a woken Forgotten Guardian will not let you leave, and The Hunched punishes the moment you reach for your pack.
 
 ### Combat Narration Philosophy
 
@@ -372,57 +456,99 @@ Enemies telegraph their next action through visible intent. Players read the int
 
 ## Items
 
+`mobile/lib/content.ts` (`ITEM_DETAILS`) is canonical for item names, effects, and rarities. The entries below mirror it; items marked *(not yet in game)* are future content.
+
 ### Consumables
 
 #### Herbs
 > Bitter leaves that numb pain and slow bleeding. They taste like regret.
-**Effect:** Restore health. Common.
+**Effect:** Restores health when used. Common.
 
 #### Pale Rations
 > Food from below. It sustains, but you try not to think about what it was.
-**Effect:** Restore stamina. Common.
+**Effect:** Restores stamina. Common.
 
 #### Bone Dust
 > Ground remains of something old. Inhale it to see what it saw.
-**Effect:** Reveal hidden paths. Uncommon.
-
-#### Tears of the Drowned
-> Collected grief, bottled. Drinking it lets you breathe underwater — but the sadness lingers.
-**Effect:** Water breathing for one room. Uncommon.
+**Effect:** Reveals hidden paths. Common.
 
 #### Void Salt
 > Black crystals that burn on contact. Creatures of water fear it.
-**Effect:** Damage boost vs. aquatic enemies. Uncommon.
+**Effect:** +40% damage vs aquatic enemies. Uncommon.
 
-#### Pilgrim's Last Breath
+#### Poison Vial
+> Something extracted from something else. The smell alone is a weapon.
+**Effect:** +40% damage bonus. Rare.
+
+#### Ember Flask
+> A vial of black water from before the fires. It drinks heat.
+**Effect:** Clears all burn stacks. Uncommon.
+
+#### Thermal Flask
+> Still warm, somehow, after all this time. Warmth is mercy down here.
+**Effect:** Clears all chill stacks. Uncommon.
+
+#### Frost Shard
+> A splinter of eternal ice. Hurl it, and the cold does the rest.
+**Effect:** Freezes an enemy — it skips its next turn. Uncommon.
+
+#### Cleansing Salts
+> Coarse white grains that draw the rot out through the skin. It is not painless.
+**Effect:** Clears all infection stacks. Uncommon.
+
+#### Clarity Shard
+> A fragment that remembers what is real. Hold it, and so do you.
+**Effect:** Restores 1 clarity. Uncommon.
+
+#### Tears of the Drowned *(not yet in game)*
+> Collected grief, bottled. Drinking it lets you breathe underwater — but the sadness lingers.
+**Effect:** Water breathing for one room.
+
+#### Pilgrim's Last Breath *(not yet in game)*
 > A vial of air from the surface. Precious beyond measure down here.
-**Effect:** Full heal. Very rare.
+**Effect:** Full heal.
 
 ---
 
 ### Weapons
 
-#### Rusted Blade
+#### Rusty Blade
 > Pitted with age and old blood. Still sharp enough.
-**Type:** Basic melee. Reliable.
+**Effect:** +20% damage bonus. Common.
+
+#### Dagger
+> Small, ceremonial. It was meant for offerings, not combat. It works anyway.
+**Effect:** +35% damage bonus. Uncommon.
 
 #### Bone Hook
 > Carved from a rib. Meant for pulling things closer. Or keeping them away.
-**Type:** Reach weapon. Can create distance.
+**Effect:** Creates distance in combat. Uncommon.
 
-#### Drowned Man's Anchor
+#### Shield
+> Dented, scarred, still standing. Like whoever carried it.
+**Effect:** +25% defense bonus. Uncommon.
+
+#### Tattered Shield
+> More holes than metal. But it still catches blows that would kill you.
+**Effect:** +25% defense bonus. Common.
+
+#### Cloak
+> Wrapped around your shoulders, things have trouble finding you.
+**Effect:** +15% flee, +10% defense. Uncommon.
+
+#### Voidblade
+> A blade that hungers. It cuts through anything — including you.
+**Effect:** +50% damage, take 5 damage per turn. Legendary.
+
+#### Drowned Man's Anchor *(not yet in game)*
 > Heavy. Brutal. Slow. When it hits, things stay down.
 **Type:** Heavy melee. High damage, costs stamina.
 
-#### Pilgrim's Knife
-> Small, ceremonial. It was meant for offerings, not combat. It works anyway.
-**Type:** Fast melee. Low damage, low cost.
-
-#### Tooth of the Deep
+#### Tooth of the Deep *(not yet in game)*
 > A fang from something vast. It pulses in your hand like a heartbeat.
 **Type:** Rare melee. Heals on hit.
 
-#### Chain of the Bound
+#### Chain of the Bound *(not yet in game)*
 > Taken from one of them. It still tries to wrap around things.
 **Type:** Whip/chain. Area control.
 
@@ -432,41 +558,53 @@ Enemies telegraph their next action through visible intent. Players read the int
 
 #### Torch
 > A flickering flame. It pushes back the dark, but the dark pushes back.
-**Effect:** Light source. Creatures avoid direct light.
+**Effect:** +25% damage, light source. Uncommon.
 
 #### Bone Charm
 > Carved from something's finger. It hums when danger is near. It never stops humming.
-**Effect:** Warning of nearby enemies.
+**Effect:** +15% defense bonus. Uncommon.
 
-#### Pale Coin
-> Currency of the dead. Worth nothing above. Worth everything below.
-**Effect:** Can be offered to certain entities for passage.
-
-#### Drowned Scripture
+#### Ancient Scroll
 > Waterlogged pages in a language you almost understand. Reading it feels like remembering something you never knew.
-**Effect:** Can decipher ancient inscriptions.
+**Effect:** +20% defense, +10% flee. Rare.
 
 #### Eye of the Hollow
 > It blinks when you're not looking. But it shows you things you'd otherwise miss.
-**Effect:** Reveals hidden corpses and caches.
+**Effect:** Reveals hidden corpses and caches. Rare.
 
 #### Heartstone
 > Cold to the touch. Warm when death is near. Yours or someone else's.
-**Effect:** Shows when you're close to dying.
+**Effect:** Shows when you're near death. Legendary.
 
-#### Choir Fragment
+#### Pale Coin
+> Currency of the dead. Worth nothing above. Worth everything below.
+**Effect:** Can be offered for passage. Common.
+
+#### Soulstone
+> Crystallized from the residue of a hundred deaths. It pulses faintly — something is still inside.
+**Effect:** +10% to all stats. Rare.
+
+#### Death's Mantle
+> Woven from shadow and last breaths. It remembers what it means to die.
+**Effect:** Survive one lethal hit with 1 HP (consumed). Legendary.
+
+#### Ash Veil
+> Cloth woven from cooled cinders. The flames hesitate to touch their own.
+**Effect:** Incoming burn is capped to 1 stack per hit. Rare.
+
+#### Choir Fragment *(not yet in game)*
 > A sliver of crystallized sound. Holding it, you hear whispers of the recently dead.
 **Effect:** Can hear echoes of player deaths in the area.
 
-#### Veil of Forgetting
+#### Veil of Forgetting *(not yet in game)*
 > Wrapped around your face, things have trouble remembering you exist.
 **Effect:** Reduced enemy aggression.
 
-#### First Pilgrim's Mark
+#### First Pilgrim's Mark *(not yet in game)*
 > A brand that never healed. It burns when you stray from the path.
 **Effect:** Guidance toward the exit.
 
-#### Architect's Nail
+#### Architect's Nail *(not yet in game)*
 > Black iron, impossibly heavy for its size. The walls lean away from it.
 **Effect:** Prevents room-shifting when The Architect appears.
 
@@ -493,10 +631,12 @@ Item and tag combinations that click into place mid-run — a quiet confirmation
 
 | Tier | Drop Rate | Examples |
 |------|-----------|----------|
-| Common | 55% | Herbs, Pale Rations, Rusted Blade |
-| Uncommon | 30% | Bone Dust, Void Salt, Bone Hook |
-| Rare | 12% | Tooth of the Deep, Eye of the Hollow |
-| Legendary | 3% | Pilgrim's Last Breath, Architect's Nail |
+| Common | 55% | Herbs, Pale Rations, Rusty Blade, Bone Dust |
+| Uncommon | 30% | Void Salt, Bone Hook, Frost Shard |
+| Rare | 12% | Soulstone, Eye of the Hollow, Ancient Scroll |
+| Legendary | 3% | Heartstone, Death's Mantle, Voidblade |
+
+Rates live in `rollRandomItem` (`mobile/lib/content.ts`). In mechanic zones, the zone's cure item is biased to drop locally so mitigation stays reachable.
 
 ---
 
@@ -986,7 +1126,7 @@ The soundscape is as important as the words. Audio should feel **ancient, wet, a
 - **Less is more** — Silence builds tension. Don't fill every moment.
 - **Diegetic first** — Sounds that exist in the world (drips, echoes) over "soundtrack"
 - **Unease over shock** — No jump scares. Slow creeping dread.
-- **Water is ever-present** — It's the zone's element. You should always sense it.
+- **The zone's element is ever-present** — In the Sunken Crypt, water. You should always sense it. Other zones lead with fire, ice, flesh, or static.
 
 ---
 
@@ -1171,17 +1311,25 @@ When generating room descriptions, combat narration, or death text:
 
 ---
 
-## Sample Room Sequence (Hackathon Zone)
+## Sample Descent (Sunken Crypt)
 
-1. **EXPLORE** — The descent begins. Stairs into darkness.
-2. **EXPLORE** — Flooded corridor. Water rises.
-3. **COMBAT** — The Drowned emerge.
-4. **CORPSE** — Find a fallen player.
-5. **CACHE** — Alcove above waterline. Brief rest.
-6. **COMBAT** — Hollow Clergy blocks the path.
-7. **EXPLORE** — The threshold. Almost through.
-8. **COMBAT** — The Unnamed notices you.
-9. **EXIT** — Light. Escape. For now.
+One walk down the real graph (`mobile/lib/zones/sunken-crypt.json`, 21 nodes, two lanes). Forks show both hints; the player reads them and chooses. This run leans left.
+
+1. **EXPLORE** (n01, descent) — The stairs end at black water. Two passages. Left: "You hear breathing that is not your own" `[DANGER]`. Right: "The path continues, plain and unlit" `[PASSAGE]`. *The player chooses left.*
+2. **COMBAT** (n02, ambush) — The still water was never still. The Drowned rise.
+3. **CORPSE** (n04, fresh) — A fallen player. The blood hasn't dried. Their final words remain.
+4. **COMBAT** (n06, confrontation) — Something waits in the path. Beyond it, a fork: a flooded passage `[PASSAGE]`, or a nest that smells of old kills `[DANGER]`. *Left again.*
+5. **EXPLORE** (n08, flooded) — Water to your waist. Something brushes your leg.
+6. **COMBAT** (n10, guardian) — It stands before the way down. It has always stood here. Past it, the lanes split: an alcove above the waterline `[RESPITE]`, or a heroic corpse `[THE FALLEN]`.
+7. **CACHE** (n11, alcove) — Dry stone. Supplies someone left behind. Brief rest.
+8. **COMBAT** (n13, territorial) — You've woken what nests here. Then the fork: an empty chamber `[PASSAGE]` or pursuit in the dark `[DANGER]`.
+9. **EXPLORE** (n15, chamber) — Pillars rising into shadow. At the far end, something glints.
+10. **CORPSE** (n17, heroic) — They killed it. It killed them. Their blade is still in its skull.
+11. **COMBAT** (n19, pursuit) — It has been behind you for three rooms. Time to stop running.
+12. **COMBAT** (n20, arena, boss) — The chamber is round. Smooth. Designed for this. The Keeper fills it.
+13. **EXIT** (n21) — Light. Actual light. Escape. For now.
+
+Thirteen nodes walked of twenty-one. The right-hand lane — the ambush at n18, the second cache, the other corpses — stays dark. Someone else will walk it.
 
 ---
 
