@@ -66,6 +66,7 @@ interface GameSettings {
   enableRoomTextStreaming: boolean;
   roomTextStreamSpeedMs: number;
   dailyShiftEnabled: boolean;
+  coinBonusPercent: number;
 }
 
 interface Playlist {
@@ -109,6 +110,7 @@ const DEFAULT_SETTINGS: Omit<GameSettings, 'id'> = {
   enableRoomTextStreaming: false,
   roomTextStreamSpeedMs: 28,
   dailyShiftEnabled: true,
+  coinBonusPercent: 50,
 };
 
 type Tab = 'dashboard' | 'settings' | 'zones' | 'bestiary' | 'content' | 'music' | 'deaths' | 'corpses';
@@ -331,7 +333,13 @@ function SettingsTab() {
     enableRoomTextStreaming: settings?.enableRoomTextStreaming ?? DEFAULT_SETTINGS.enableRoomTextStreaming,
     roomTextStreamSpeedMs: settings?.roomTextStreamSpeedMs ?? DEFAULT_SETTINGS.roomTextStreamSpeedMs,
     dailyShiftEnabled: settings?.dailyShiftEnabled ?? DEFAULT_SETTINGS.dailyShiftEnabled,
+    coinBonusPercent: settings?.coinBonusPercent ?? DEFAULT_SETTINGS.coinBonusPercent,
   } as GameSettings;
+
+  // coinPool lives outside GameSettings — same pattern as stakingPosture: a raw
+  // counter column incremented/decremented server-side (death burns, victory
+  // pool-funded bonus payouts). Read-only here; not writable via saveSettings.
+  const coinPool: number = typeof settings?.coinPool === 'number' ? settings.coinPool : 0;
 
   return (
     <div className="bg-[var(--bg-surface)] border border-[var(--border)] p-6 rounded-lg">
@@ -415,6 +423,22 @@ function SettingsTab() {
             { value: 'open', label: 'Open' },
           ]}
           onChange={saveStakingPosture}
+        />
+        <div className="flex justify-between items-center py-2 border-b border-[var(--border)] last:border-b-0">
+          <div>
+            <div className="text-sm font-medium">Pale Coin Pool</div>
+            <div className="text-xs text-[var(--text-muted)]">Coins burned on Coin-Bound deaths, minus pool-funded victory bonuses. Read-only — server-managed.</div>
+          </div>
+          <div className="text-sm font-mono tabular-nums">{coinPool.toLocaleString()}</div>
+        </div>
+        <SettingSlider
+          label="Coin-Bound Victory Bonus"
+          value={cs.coinBonusPercent}
+          min={0}
+          max={100}
+          step={5}
+          format={(v) => `${v}%`}
+          onChange={(v) => saveSettings({ coinBonusPercent: v })}
         />
       </SettingsSection>
     </div>
