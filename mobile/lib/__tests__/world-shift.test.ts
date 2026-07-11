@@ -1,4 +1,4 @@
-import { utcDayKey, getDailyShift, mergeShift, type DailyShift, type CommunityShift, type WorldShift } from '../world-shift';
+import { utcDayKey, getDailyShift, mergeShift, isApexCreature, type DailyShift, type CommunityShift, type WorldShift } from '../world-shift';
 import { RUN_MODIFIERS } from '../modifiers';
 import { loadZone, validateZoneGraph, type ZoneGraphLayout } from '../zone-loader';
 
@@ -105,5 +105,20 @@ describe('mergeShift', () => {
     const w = mergeShift(daily, community);
     expect(w.community?.apexCreatureId).toBe('bog-lurker');
     expect(daily).not.toHaveProperty('community'); // daily untouched
+  });
+});
+
+describe('isApexCreature', () => {
+  const community = {
+    dayKey: '2026-07-10', zoneId: 'sunken-crypt', apexCreatureId: 'Bog Lurker',
+    apexKills: 5, curseNodes: [], architectNodeId: null, architectDeaths: 0,
+  };
+  it('true only for the exact apex display name', () => {
+    expect(isApexCreature('Bog Lurker', community)).toBe(true);
+    expect(isApexCreature('Ghoul', community)).toBe(false);
+  });
+  it('false when community is null or apex unset', () => {
+    expect(isApexCreature('Bog Lurker', null)).toBe(false);
+    expect(isApexCreature('Bog Lurker', { ...community, apexCreatureId: null })).toBe(false);
   });
 });

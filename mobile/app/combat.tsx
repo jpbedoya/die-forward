@@ -32,6 +32,7 @@ import {
   getItemEffects,
   getTagDamageBonus,
   getItemDetails,
+  rollRandomItem,
   getStrikeNarration,
   getDodgeNarration,
   getBraceNarration,
@@ -42,6 +43,7 @@ import {
   CreatureInfo,
 } from '../lib/content';
 import { getZoneDepth, loadZone } from '../lib/zone-loader';
+import { isApexCreature } from '../lib/world-shift';
 import { calculateCombatDamage, heartstoneWarning } from '../lib/combat-math';
 import {
   getZoneMechanic,
@@ -222,7 +224,10 @@ export default function CombatScreen() {
     }
     
     // Fix 1 (Revy): use seeded RNG for deterministic creature HP per seed
-    const hp = game.rng ? getCreatureHealthSeeded(roomCreature.name, game.rng) : getCreatureHealth(roomCreature.name);
+    const baseHp = game.rng ? getCreatureHealthSeeded(roomCreature.name, game.rng) : getCreatureHealth(roomCreature.name);
+    // Apex buff — the community's crowned apex creature comes to combat with
+    // +15% HP (a fixed multiplier, not an RNG draw). Non-apex is untouched.
+    const hp = isApexCreature(roomCreature.name, game.communityShift) ? Math.round(baseHp * 1.15) : baseHp;
     setEnemyHealth(hp);
     setEnemyMaxHealth(hp);
     
@@ -363,6 +368,11 @@ export default function CombatScreen() {
     // Signature rule: chant's bonus was computed by the PREVIOUS turn's
     // onTurnEnd and feeds this turn's enemy base damage, before calculateDamage.
     const chantBonus = pendingChantBonusRef.current;
+
+    // Apex buff — the community's crowned apex creature hits 15% harder. A fixed
+    // multiplier (not RNG) applied to the enemy's landed blow below. Non-apex
+    // fights are byte-identical (the multiplier is never computed/applied).
+    const isApex = isApexCreature(creature?.name ?? '', game.communityShift);
 
     switch (action) {
       case 'strike': {
@@ -526,6 +536,12 @@ export default function CombatScreen() {
       actionNarrative += t('combat.ui.frozenStrain');
     }
     if (enemyFrozen) setEnemyFrozen(false);
+
+    // Apex buff — +15% to the enemy's per-hit damage that actually lands on the
+    // player this turn. Gated so non-apex fights are unchanged.
+    if (isApex && playerDmg > 0) {
+      playerDmg = Math.round(playerDmg * 1.15);
+    }
 
     // Heartstone's warning is scoped to a blow that actually lands — if the
     // hit was zeroed above (dormant turn-1 skip, frozen creature), the stone
@@ -717,10 +733,25 @@ export default function CombatScreen() {
       // recordCreatureUpdate diffs unlocks against the TRUE stored prev
       // (not a caller-side pre-bumped snapshot, which would silently drop
       // any threshold crossed by the pre-bump itself).
+      // Apex bounty — killing the community's crowned apex creature pays out a
+      // bonus seeded loot roll and extra bestiary-mastery credit (which
+      // supersedes the honor/base increment).
+      const apexKill = !!creature && isApexCreature(creature.name, game.communityShift);
       if (player && creature) {
         const honorBonus = creature.signature?.id === 'honor' && !fleeAttemptedRef.current;
-        recordCreatureUpdate(player, creature.name, 'defeat', ALL_CREATURE_NAMES, honorBonus ? 2 : 1)
+        const masteryIncrement = apexKill ? 3 : (honorBonus ? 2 : 1);
+        recordCreatureUpdate(player, creature.name, 'defeat', ALL_CREATURE_NAMES, masteryIncrement)
           .catch(err => console.warn('[combat] mastery defeat write failed:', err));
+      }
+      // Bounty loot — floors at 'uncommon' (a real reward). Consumes the run's
+      // seeded stream (never Math.random); skipped entirely if rng is absent.
+      // Dup-guarded and INVENTORY_MAX-aware via addToInventory's pendingItem path.
+      if (apexKill && game.rng) {
+        const excludes = game.inventory.map((i) => i.name);
+        const bounty = rollRandomItem(() => game.rng!.random(), 'uncommon', excludes, game.zoneId);
+        if (bounty && !game.inventory.some((i) => i.name === bounty)) {
+          game.addToInventory({ id: `bounty-${Date.now()}`, name: bounty, emoji: getItemDetails(bounty)?.emoji ?? '❓' });
+        }
       }
       setPhase('victory');
       setTimeout(() => {

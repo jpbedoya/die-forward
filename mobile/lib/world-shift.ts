@@ -35,6 +35,11 @@ export interface CommunityShift {
 
 export type WorldShift = DailyShift & { community: CommunityShift | null };
 
+/** Exact display-name match — apexCreatureId holds a creature DISPLAY NAME. */
+export function isApexCreature(creatureName: string, community: CommunityShift | null): boolean {
+  return !!community && community.apexCreatureId !== null && community.apexCreatureId === creatureName;
+}
+
 /** Additive merge — never mutates `daily`; degrades to seeded layer when community is null. */
 export function mergeShift(daily: DailyShift, community: CommunityShift | null): WorldShift {
   return { ...daily, community };
