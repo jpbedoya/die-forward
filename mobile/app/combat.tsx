@@ -44,7 +44,7 @@ import {
 } from '../lib/content';
 import { getZoneDepth, loadZone } from '../lib/zone-loader';
 import { isApexCreature } from '../lib/world-shift';
-import { calculateCombatDamage, heartstoneWarning } from '../lib/combat-math';
+import { applyApexBuff, calculateCombatDamage, heartstoneWarning } from '../lib/combat-math';
 import {
   getZoneMechanic,
   resolveTurnStart,
@@ -227,7 +227,8 @@ export default function CombatScreen() {
     const baseHp = game.rng ? getCreatureHealthSeeded(roomCreature.name, game.rng) : getCreatureHealth(roomCreature.name);
     // Apex buff — the community's crowned apex creature comes to combat with
     // +15% HP (a fixed multiplier, not an RNG draw). Non-apex is untouched.
-    const hp = isApexCreature(roomCreature.name, game.communityShift) ? Math.round(baseHp * 1.15) : baseHp;
+    const isApex = isApexCreature(roomCreature.name, game.communityShift);
+    const hp = applyApexBuff(baseHp, isApex);
     setEnemyHealth(hp);
     setEnemyMaxHealth(hp);
     
@@ -539,9 +540,7 @@ export default function CombatScreen() {
 
     // Apex buff — +15% to the enemy's per-hit damage that actually lands on the
     // player this turn. Gated so non-apex fights are unchanged.
-    if (isApex && playerDmg > 0) {
-      playerDmg = Math.round(playerDmg * 1.15);
-    }
+    if (playerDmg > 0) playerDmg = applyApexBuff(playerDmg, isApex);
 
     // Heartstone's warning is scoped to a blow that actually lands — if the
     // hit was zeroed above (dormant turn-1 skip, frozen creature), the stone
