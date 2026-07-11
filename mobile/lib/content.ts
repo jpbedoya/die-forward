@@ -22,6 +22,16 @@ export interface RoomVariation {
   enemyEmoji?: string;
   player_name?: string;
   final_message?: string;
+  // Community-layer marks (applied post-generation by applyCommunityMarks;
+  // absent on a plain seeded run). See MarkableNode / applyCommunityMarks.
+  isApex?: boolean;
+  isCursed?: boolean;
+  isArchitect?: boolean;
+  // Optional enemy stat fields — NOT populated at generation time (enemy stats
+  // live in BESTIARY and are resolved in combat). Declared so the apex buff
+  // channel is typed if/when a node ever carries materialized stats.
+  enemyHp?: number;
+  enemyDamage?: number;
 }
 
 export interface RoomTemplate {
@@ -1220,6 +1230,49 @@ export interface DungeonGraph {
  * content rolls. Mirrors world-shift.ts's `applyMask` copy pattern: filter
  * + map into fresh arrays, never mutating the cached zone data.
  */
+export interface MarkableNode {
+  id: string;
+  content: {
+    enemy?: string;
+    enemyHp?: number;
+    enemyDamage?: number;
+    isApex?: boolean;
+    isCursed?: boolean;
+    isArchitect?: boolean;
+    [k: string]: unknown;
+  };
+}
+
+const APEX_BUFF = 1.15;
+
+/**
+ * Additive community marks. Pure: returns new node objects with isApex/isCursed/
+ * isArchitect flags and (for the apex creature's node) a 15% HP/damage buff.
+ * No-op when community is null. Applied AFTER seeded generation and consumes no
+ * run RNG, so the seeded graph stays deterministic.
+ *
+ * NOTE: apexCreatureId / content.enemy are creature DISPLAY NAMES (same value
+ * space as killedBy and BESTIARY keys), not slugs — matched by strict equality.
+ */
+export function applyCommunityMarks<T extends MarkableNode>(
+  nodes: T[],
+  community: import('./world-shift').CommunityShift | null,
+): T[] {
+  if (!community) return nodes;
+  const cursed = new Set(community.curseNodes);
+  return nodes.map((n) => {
+    const content = { ...n.content };
+    if (cursed.has(n.id)) content.isCursed = true;
+    if (community.architectNodeId === n.id) content.isArchitect = true;
+    if (community.apexCreatureId && content.enemy === community.apexCreatureId) {
+      content.isApex = true;
+      if (typeof content.enemyHp === 'number') content.enemyHp = Math.round(content.enemyHp * APEX_BUFF);
+      if (typeof content.enemyDamage === 'number') content.enemyDamage = Math.round(content.enemyDamage * APEX_BUFF);
+    }
+    return { ...n, content };
+  });
+}
+
 function maskGraphNodes(
   nodes: ZoneNode[],
   closedEdges: Array<{ from: string; to: string }>,
@@ -1235,8 +1288,24 @@ function maskGraphNodes(
     }));
 }
 
-export function generateDungeonGraph(zoneId: string, rng: SeededRng, shift?: DailyShift): DungeonGraph {
+export function generateDungeonGraph(
+  zoneId: string,
+  rng: SeededRng,
+  shift?: DailyShift,
+  community?: import('./world-shift').CommunityShift | null,
+): DungeonGraph {
   const zone = loadZone(zoneId);
+  const communityLayer = community ?? null;
+
+  // Applies additive community marks to a fully-rolled node map in place.
+  // Pure/RNG-free (see applyCommunityMarks), so determinism is preserved.
+  const markNodes = (nodes: Record<string, DungeonNode>) => {
+    if (!communityLayer) return;
+    const marked = applyCommunityMarks(Object.values(nodes) as unknown as MarkableNode[], communityLayer);
+    marked.forEach((m) => {
+      if (nodes[m.id]) nodes[m.id].content = m.content as unknown as RoomVariation;
+    });
+  };
 
   if (zone.graph) {
     const nodes: Record<string, DungeonNode> = {};
@@ -1263,6 +1332,7 @@ export function generateDungeonGraph(zoneId: string, rng: SeededRng, shift?: Dai
       if (node.depth > maxDepth) maxDepth = node.depth;
     });
 
+    markNodes(nodes);
     return { startId: zone.graph.start, nodes, maxDepth };
   }
 
@@ -1300,6 +1370,7 @@ export function generateDungeonGraph(zoneId: string, rng: SeededRng, shift?: Dai
     next: [],
   };
 
+  markNodes(nodes);
   return { startId: 'lin-1', nodes, maxDepth: exitDepth };
 }
 
