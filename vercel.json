@@ -3,6 +3,7 @@
     {
       "path": "/api/session/cleanup",
       "schedule": "0 6 * * *"
-    }
+    },
+    { "path": "/api/game/shift", "schedule": "30 0 * * *" }
   ]
 }
