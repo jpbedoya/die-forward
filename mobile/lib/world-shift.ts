@@ -23,6 +23,64 @@ export interface DailyShift {
   sealedSideNodes: string[];
 }
 
+export interface CommunityShift {
+  dayKey: string;
+  zoneId: string;
+  apexCreatureId: string | null;
+  apexKills: number;
+  curseNodes: string[];
+  architectNodeId: string | null;
+  architectDeaths: number;
+}
+
+export type WorldShift = DailyShift & { community: CommunityShift | null };
+
+/** Exact display-name match — apexCreatureId holds a creature DISPLAY NAME. */
+export function isApexCreature(creatureName: string, community: CommunityShift | null): boolean {
+  return !!community && community.apexCreatureId !== null && community.apexCreatureId === creatureName;
+}
+
+/** Additive merge — never mutates `daily`; degrades to seeded layer when community is null. */
+export function mergeShift(daily: DailyShift, community: CommunityShift | null): WorldShift {
+  return { ...daily, community };
+}
+
+/**
+ * Fetch today's community layer for a zone. Returns null on ANY failure
+ * (offline, non-200, parse error, zone/day mismatch) so callers degrade to the
+ * seeded layer with no disruption. Never throws.
+ */
+export async function fetchCommunityShift(
+  zoneId: string,
+  dayKey: string,
+  apiBase: string = process.env.EXPO_PUBLIC_API_URL || '',
+): Promise<CommunityShift | null> {
+  // Never let a slow/captive-portal server stall startGame: abort after 3s.
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 3000);
+  try {
+    const url = `${apiBase}/api/game/shift?zoneId=${encodeURIComponent(zoneId)}&dayKey=${encodeURIComponent(dayKey)}`;
+    const res = await fetch(url, { signal: controller.signal });
+    if (!res.ok) return null;
+    const json = await res.json();
+    const s = json?.shift;
+    if (!s || s.zoneId !== zoneId || s.dayKey !== dayKey) return null;
+    return {
+      dayKey: s.dayKey,
+      zoneId: s.zoneId,
+      apexCreatureId: s.apexCreatureId ?? null,
+      apexKills: s.apexKills ?? 0,
+      curseNodes: Array.isArray(s.curseNodes) ? s.curseNodes : [],
+      architectNodeId: s.architectNodeId ?? null,
+      architectDeaths: s.architectDeaths ?? 0,
+    };
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 /** Formats a Date as 'YYYY-MM-DD' using its UTC calendar date. */
 export function utcDayKey(date: Date = new Date()): string {
   const y = date.getUTCFullYear();

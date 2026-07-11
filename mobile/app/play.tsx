@@ -670,6 +670,17 @@ export default function PlayScreen() {
         {/* Narrative */}
         {renderNarrative()}
 
+        {/* Community markers — passive, non-UGC lines surfaced from the
+            world-shift aggregation layer (Phase 4a). Cursed/architect marks
+            live near the node header/narration; the apex mark sits with the
+            enemy card below. */}
+        {room.content?.isCursed && (
+          <Text className="text-bone-dark text-xs font-mono italic mb-2">{t('community.cursed')}</Text>
+        )}
+        {room.content?.isArchitect && (
+          <Text className="text-bone-dark text-xs font-mono italic mb-2">{t('community.architect')}</Text>
+        )}
+
         {/* Corpse discovery - show fallen player in purple BEFORE looting.
             Gated on optionsVisible so the fallen player and their final words
             are revealed only once the room narrative finishes streaming. */}
@@ -728,6 +739,9 @@ export default function PlayScreen() {
                 <View className="flex-1">
                   <Text className="text-blood-light text-sm font-mono font-bold mb-1">{room.content.enemy}</Text>
                   <Text className="text-blood-dark text-xs font-mono">{t('play.blocksPath')}</Text>
+                  {room.content?.isApex && (
+                    <Text className="text-blood-dark text-xs font-mono italic mt-1">{t('community.apex')}</Text>
+                  )}
                   <Text className="text-bone-muted text-xs font-mono mt-1">{t('play.tapToInspect')}</Text>
                 </View>
               </View>

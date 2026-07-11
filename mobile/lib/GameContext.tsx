@@ -30,7 +30,7 @@ import { getOrCreatePlayerByAuth, updatePlayerNicknameByAuth, useGameSettings, u
 import { signInWithWallet, signInAsGuest, signInAsGuestLocal, signOut, linkWalletToGuest, getStoredAuthState, restoreInstantDBSession, type AuthState } from './auth';
 import { createRunRng, generateRandomSeed, type SeededRng } from './seeded-random';
 import { rollModifier, resolveModifier, type RunModifier } from './modifiers';
-import { utcDayKey, getDailyShift, type DailyShift } from './world-shift';
+import { utcDayKey, getDailyShift, fetchCommunityShift, type DailyShift, type CommunityShift } from './world-shift';
 
 const INVENTORY_MAX = 4;
 
@@ -110,6 +110,7 @@ interface GameState {
   seed: string | null;  // RNG seed for verifiable randomness
   currentModifier: RunModifier | null;  // Run modifier rolled at game start
   dailyShift: DailyShift | null;        // Active daily world shift for this run (null if disabled)
+  communityShift: CommunityShift | null; // Best-effort community layer for this run (null if disabled/offline)
   zoneStatus: ZoneStatusState;          // Per-zone combat status effects (burn/chill/infection/clarity)
   
   // UI state
@@ -191,6 +192,8 @@ interface GameContextType extends GameState {
   currentModifier: RunModifier | null;
   // Active daily world shift for this run (null when disabled or before a run starts)
   dailyShift: DailyShift | null;
+  // Best-effort community layer for this run (null when disabled, offline, or before a run starts)
+  communityShift: CommunityShift | null;
 
   // Modifier effect helpers — call these instead of raw values in combat/play screens
   /** Additional damage multiplier from the run modifier (e.g. 0.25 = +25%) */
@@ -251,6 +254,7 @@ const initialState: GameState = {
   seed: null,
   currentModifier: null,
   dailyShift: null,
+  communityShift: null,
   zoneStatus: initZoneStatus(),
   loading: false,
   error: null,
@@ -871,6 +875,15 @@ export function GameProvider({
       const dayKey = utcDayKey();
       const shift = settings.dailyShiftEnabled ? getDailyShift(resolvedZoneId, dayKey) : undefined;
 
+      // Community layer is additive and best-effort — never block or break run
+      // setup on it. startGame is already async, so we await it here (guarded to
+      // null on any failure) before graph generation so the seeded graph is
+      // marked in one pass. Degrades to the pure seeded layer when null.
+      let community: CommunityShift | null = null;
+      if (settings.dailyShiftEnabled) {
+        community = await fetchCommunityShift(resolvedZoneId, dayKey).catch(() => null);
+      }
+
       // Roll run modifier deterministically from seed.
       // Use a dedicated RNG instance so the modifier roll is always the first
       // value consumed from the sequence — this keeps other rng calls stable.
@@ -909,7 +922,7 @@ export function GameProvider({
       // Use a separate RNG instance from the same seed so the modifier roll
       // doesn't offset the dungeon generation sequence.
       const mainRng = createRunRng(seed);
-      const graph = generateDungeonGraph(resolvedZoneId, mainRng, shift);
+      const graph = generateDungeonGraph(resolvedZoneId, mainRng, shift, community);
       // Compat projection for legacy consumers: nodes flattened by ascending
       // depth. Tasks 5-6 remove this once screens traverse the graph directly.
       const dungeon: DungeonRoom[] = Object.values(graph.nodes).sort((a, b) => a.depth - b.depth);
@@ -932,6 +945,7 @@ export function GameProvider({
         seed,
         currentModifier: modifier,
         dailyShift: shift ?? null,
+        communityShift: community,
         zoneStatus: initZoneStatus(),
         loading: false,
       });

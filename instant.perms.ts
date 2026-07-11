@@ -90,4 +90,16 @@ export default {
       delete: "false",
     },
   },
+
+  // worldShifts: nightly community-aggregation output (apex/curse/architect ids
+  // and counts — NO UGC). Clients READ today's row; only the server cron writes
+  // (admin client bypasses perms). Deny all client writes.
+  worldShifts: {
+    allow: {
+      view: "true",
+      create: "false",
+      update: "false",
+      delete: "false",
+    },
+  },
 };

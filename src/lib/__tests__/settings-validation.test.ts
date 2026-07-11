@@ -11,6 +11,10 @@ describe('validateSettingsPatch', () => {
     }
   });
 
+  it('accepts the aggregation-threshold keys (curseNodeThreshold, apexMinKills)', () => {
+    expect(validateSettingsPatch({ curseNodeThreshold: 12, apexMinKills: 4 })).toEqual({ ok: true });
+  });
+
   it('rejects a patch containing an unknown key', () => {
     const result = validateSettingsPatch({ lootChanceBase: 0.6, coinPool: 999999 });
     expect(result.ok).toBe(false);

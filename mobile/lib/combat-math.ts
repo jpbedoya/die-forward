@@ -121,6 +121,12 @@ export function deathSaveOutcome(
     : { saved: true, mantleIndex, healTo: effects.mantleHealTo ?? 1 };
 }
 
+export const APEX_BUFF_MULTIPLIER = 1.15;
+/** Apex community buff: +15% HP/damage, rounded. Identity pass-through when not apex. */
+export function applyApexBuff(value: number, isApex: boolean): number {
+  return isApex ? Math.round(value * APEX_BUFF_MULTIPLIER) : value;
+}
+
 /** Per-turn self-damage from carrying a Voidblade (5 HP), else 0 (hungering-edge zeroes it). */
 export function voidbladeDamage(inventory: { name: string }[], effects: ItemEffects): number {
   if (effects.voidbladeSelfDamageZero) return 0;

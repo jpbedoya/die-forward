@@ -259,7 +259,7 @@ export async function recordCreatureUpdate(
   creature: string,
   kind: 'encounter' | 'defeat' | 'killedBy',
   allCreatureNames: string[],
-  defeatIncrement: 1 | 2 = 1,
+  defeatIncrement: number = 1,
 ): Promise<void> {
   const prev = player.creatureMastery;
   const next =

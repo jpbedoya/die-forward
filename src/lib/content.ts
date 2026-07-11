@@ -746,6 +746,21 @@ function getZoneBestiaryRecord(zoneId: string = 'sunken-crypt'): Record<string, 
   return result;
 }
 
+/**
+ * All creature display names that can appear in a zone: shared-bestiary
+ * references + zone-local creatures + the zone boss. Used to filter community
+ * aggregation's apex candidates to REAL creatures (excludes environmental
+ * killers like "The darkness"). Async because it merges InstantDB zone overrides.
+ */
+export async function getZoneCreatureNames(zoneId: string): Promise<string[]> {
+  const zone = await loadZone(zoneId);
+  const names = new Set<string>();
+  for (const name of zone.bestiary.shared) names.add(name);
+  for (const creature of zone.bestiary.local) names.add(creature.name);
+  if (zone.boss) names.add(zone.boss);
+  return [...names];
+}
+
 // Get creature info by name (zone-aware)
 export function getCreatureInfo(name: string, zoneId: string = 'sunken-crypt'): CreatureInfo | null {
   const zoneBestiary = getZoneBestiaryRecord(zoneId);

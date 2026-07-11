@@ -6,6 +6,8 @@ import {
   deathSaveOutcome,
   voidbladeDamage,
   heartstoneWarning,
+  applyApexBuff,
+  APEX_BUFF_MULTIPLIER,
   type CombatDamageInput,
 } from '../combat-math';
 import { RUN_MODIFIERS } from '../modifiers';
@@ -244,5 +246,20 @@ describe('heartstoneWarning', () => {
   it('does not warn when the hit lands exactly on the 20% boundary (not below)', () => {
     const inv = [{ name: 'Heartstone' }];
     expect(heartstoneWarning(25, 5, 100, inv)).toBe(false); // 25 -> 20, not below 20
+  });
+});
+
+describe('applyApexBuff', () => {
+  it('has a +15% multiplier constant', () => {
+    expect(APEX_BUFF_MULTIPLIER).toBe(1.15);
+  });
+
+  it('applies +15% (rounded) when apex', () => {
+    expect(applyApexBuff(100, true)).toBe(115);
+    expect(applyApexBuff(10, true)).toBe(12); // 10 * 1.15 = 11.5 -> round = 12
+  });
+
+  it('is an identity pass-through when not apex', () => {
+    expect(applyApexBuff(50, false)).toBe(50);
   });
 });
