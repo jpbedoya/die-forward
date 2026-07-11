@@ -17,6 +17,7 @@
 - **Determinism preserved:** the seeded layer stays pure/offline; community data is separate and optional. No `Math.random()` in gameplay paths (existing project rule).
 - **Bible voice** for any new player-facing string (second person, present tense, no exclamation marks, no modern words), routed through `t()` + `mobile/lib/locales/en.json`.
 - **Tunables live on `gameSettings`** (like `victoryBonusPercent`): `curseNodeThreshold` (default 10), `apexMinKills` (default 3). Read with `?? default` so a missing settings row never breaks aggregation.
+- **Creature identifier space (CRITICAL — verify before wiring any match):** the apex creature is tracked by the creature **display name** — the same value carried by the death route's `killedBy` body field, `content.enemy`, `CreatureInfo.name`, and the `BESTIARY` keys (`ALL_CREATURE_NAMES = Object.keys(BESTIARY)`). `apexCreatureId` (despite the field name) therefore holds this display-name string (e.g. `"Bog Lurker"`, not `"bog-lurker"`). ALL downstream matching — the apex buff (Task 6) and the apex bounty (Task 7) — MUST compare against `creature.name` / `content.enemy`, never a slugified id. The implementer verifies this chain end-to-end against the code (`death/route.ts` `killedBy`, `content.ts` `rollNodeContent` writing `content.enemy`, `combat.tsx` `getCreatureInfo(enemyName)`) before wiring, and uses real display-name values in tests.
 - **Extra-caution files** (do not casually refactor): `GameContext.tsx`, `instant.ts`, `db.ts`. This plan touches `GameContext.tsx` (run setup) minimally and additively.
 
 ---
@@ -38,8 +39,9 @@
 - **Modify `mobile/lib/locales/en.json`** — marker strings.
 - **Docs:** `docs/superpowers/specs/2026-07-04-the-shift-design.md` (§3.2/§3.3 done-notes), `CLAUDE.md`.
 
+**In scope for 4a (per user decision, July 2026):** the **apex bounty** — on killing the apex creature, a bonus seeded loot roll + extra bestiary-mastery credit (Task 7). Uses the existing `rollRandomItem` (loot) and `recordCreatureUpdate` (mastery, `defeatIncrement` widened) at the `combat.tsx:696` kill hook.
+
 **Deferred within the 4-series (write down, do not silently trim):**
-- **Apex bounty** (bonus loot roll + bestiary-mastery credit) — touches the loot-roll + mastery systems; 4a ships the apex **stat buff + marker** only. Tracked for a later 4-series task.
 - **Architect corpse-wall UGC** (real fallen names/final words) — Phase 4b, behind A2 moderation. 4a marks the architect node with a non-UGC marker only.
 - **Account-age trust-weighting** — 4a uses trailing-window + per-account cap + min-distinct-accounts; full account-age/stake trust-weighting is A2/4b.
 
@@ -823,25 +825,27 @@ Create `mobile/lib/__tests__/content-community.test.ts`. Extract a pure helper `
 import { applyCommunityMarks, type MarkableNode } from '../content';
 import type { CommunityShift } from '../world-shift';
 
+// NOTE: apexCreatureId is a creature DISPLAY NAME (see Global Constraints —
+// same space as content.enemy / killedBy / BESTIARY keys), NOT a slug.
 const community: CommunityShift = {
   dayKey: '2026-07-10', zoneId: 'sunken-crypt',
-  apexCreatureId: 'bog-lurker', apexKills: 5,
+  apexCreatureId: 'Bog Lurker', apexKills: 5,
   curseNodes: ['n-3'], architectNodeId: 'n-3', architectDeaths: 12,
 };
 
-function node(id: string, enemyId?: string): MarkableNode {
-  return { id, content: enemyId ? { enemy: enemyId, enemyHp: 100, enemyDamage: 10 } : {} } as MarkableNode;
+function node(id: string, enemyName?: string): MarkableNode {
+  return { id, content: enemyName ? { enemy: enemyName, enemyHp: 100, enemyDamage: 10 } : {} } as MarkableNode;
 }
 
 describe('applyCommunityMarks', () => {
   it('marks the cursed and architect node', () => {
-    const out = applyCommunityMarks([node('n-3', 'ghoul'), node('n-1')], community);
+    const out = applyCommunityMarks([node('n-3', 'Ghoul'), node('n-1')], community);
     const n3 = out.find((n) => n.id === 'n-3')!;
     expect(n3.content.isCursed).toBe(true);
     expect(n3.content.isArchitect).toBe(true);
   });
   it('marks the apex creature node and buffs its stats by 15%', () => {
-    const out = applyCommunityMarks([node('n-5', 'bog-lurker')], community);
+    const out = applyCommunityMarks([node('n-5', 'Bog Lurker')], community);
     const n5 = out.find((n) => n.id === 'n-5')!;
     expect(n5.content.isApex).toBe(true);
     expect(n5.content.enemyHp).toBe(115);
@@ -927,7 +931,7 @@ if (settings.dailyShiftEnabled) {
 const graph = generateDungeonGraph(resolvedZoneId, rng, shift, community);
 ```
 
-Store `community` on state (add `communityShift: CommunityShift | null` beside the existing `dailyShift` field at ~112,193) so UI (Task 7) can read it. If run setup is not already `async` at this point, wrap the community fetch so it does not make the whole setup blocking — prefer fetching community BEFORE graph generation only if setup is already async; otherwise fetch it and set state, then regenerate marks. **Confirm the setup function's async-ness before choosing;** if synchronous, set `community` to null for graph-gen and instead fetch-then-`applyCommunityMarks` in an effect — record which path you took in the report.
+Store `community` on state (add `communityShift: CommunityShift | null` beside the existing `dailyShift` field at ~112,193) so the bounty (Task 7) and the marker UI (Task 8) can read it. If run setup is not already `async` at this point, wrap the community fetch so it does not make the whole setup blocking — prefer fetching community BEFORE graph generation only if setup is already async; otherwise fetch it and set state, then regenerate marks. **Confirm the setup function's async-ness before choosing;** if synchronous, set `community` to null for graph-gen and instead fetch-then-`applyCommunityMarks` in an effect — record which path you took in the report.
 
 - [ ] **Step 5: Run tests and verify pass**
 
@@ -943,7 +947,97 @@ git commit -m "feat(4a): apply community apex buff + curse/architect node marks 
 
 ---
 
-### Task 7: Surface markers in play.tsx + i18n + docs
+### Task 7: Apex bounty — bonus loot roll + extra mastery credit on killing the apex
+
+**Files:**
+- Modify: `mobile/lib/world-shift.ts` (add pure `isApexCreature` helper)
+- Modify: `mobile/lib/instant.ts` (widen `recordCreatureUpdate`'s `defeatIncrement` type ~line 262)
+- Modify: `mobile/app/combat.tsx` (kill block ~696-724: bonus loot + apex mastery increment)
+- Test: `mobile/lib/__tests__/world-shift.test.ts` (`isApexCreature`)
+
+**Interfaces:**
+- Consumes: `CommunityShift` (Task 5), `game.communityShift` state (Task 6), `rollRandomItem` (`content.ts:1001`, signature `rollRandomItem(rng: () => number, minRarity?, excludeItems?: string[], zoneId?): string`), `game.addToInventory({id,name,emoji})` (`GameContext.tsx:1110`), `getItemDetails(name)` (for emoji), `recordCreatureUpdate(player, creature.name, 'defeat', ALL_CREATURE_NAMES, increment)` (`instant.ts:257`), `game.rng.random`.
+- Produces: `isApexCreature(creatureName: string, community: CommunityShift | null): boolean` — pure, exact display-name match against `community.apexCreatureId`.
+
+**Bounty rule:** on confirming a kill (`combat.tsx:696` `if (newEnemyHealth <= 0)`), if `isApexCreature(creature.name, game.communityShift)`:
+1. **Bonus loot roll:** `rollRandomItem(() => game.rng!.random(), 'uncommon', <existing inventory names as excludes>, game.zoneId)` → add via `game.addToInventory({ id: <unique>, name, emoji: getItemDetails(name)?.emoji ?? '❓' })`, guarded by the dup-name convention (`!game.inventory.some(i => i.name === name)`), respecting `INVENTORY_MAX`→`pendingItem` (addToInventory already handles it). Bounty loot floors at `'uncommon'` (a real reward, not a common).
+2. **Extra mastery credit:** call `recordCreatureUpdate(player, creature.name, 'defeat', ALL_CREATURE_NAMES, APEX_MASTERY_CREDIT)` INSTEAD OF the existing `honorBonus ? 2 : 1` increment when it's an apex kill — apex credit takes precedence. `APEX_MASTERY_CREDIT = 3`.
+
+**Widen the type:** `recordCreatureUpdate`'s `defeatIncrement: 1 | 2 = 1` → `defeatIncrement: number = 1` (the pure `recordDefeat` already accepts `increment: number`).
+
+- [ ] **Step 1: Write the failing test** — append to `mobile/lib/__tests__/world-shift.test.ts`:
+
+```ts
+import { isApexCreature } from '../world-shift';
+
+describe('isApexCreature', () => {
+  const community = {
+    dayKey: '2026-07-10', zoneId: 'sunken-crypt', apexCreatureId: 'Bog Lurker',
+    apexKills: 5, curseNodes: [], architectNodeId: null, architectDeaths: 0,
+  };
+  it('true only for the exact apex display name', () => {
+    expect(isApexCreature('Bog Lurker', community)).toBe(true);
+    expect(isApexCreature('Ghoul', community)).toBe(false);
+  });
+  it('false when community is null or apex unset', () => {
+    expect(isApexCreature('Bog Lurker', null)).toBe(false);
+    expect(isApexCreature('Bog Lurker', { ...community, apexCreatureId: null })).toBe(false);
+  });
+});
+```
+
+- [ ] **Step 2: Run and verify fail**
+
+Run: `cd /Volumes/FP80/code/dieforward/mobile && npx jest world-shift -t "isApexCreature"`
+Expected: FAIL — not exported.
+
+- [ ] **Step 3: Implement**
+
+In `mobile/lib/world-shift.ts`:
+```ts
+/** Exact display-name match — apexCreatureId holds a creature DISPLAY NAME. */
+export function isApexCreature(creatureName: string, community: CommunityShift | null): boolean {
+  return !!community && community.apexCreatureId !== null && community.apexCreatureId === creatureName;
+}
+```
+
+In `mobile/lib/instant.ts`, change `defeatIncrement: 1 | 2 = 1` to `defeatIncrement: number = 1` (signature only; body unchanged — `recordDefeat` already takes `increment: number`).
+
+In `mobile/app/combat.tsx`, inside the `if (newEnemyHealth <= 0)` block, at the existing mastery-write site (~720-724): compute `const apexKill = !!creature && isApexCreature(creature.name, game.communityShift);` then:
+- Replace the mastery increment: `const masteryIncrement = apexKill ? 3 : (honorBonus ? 2 : 1);` and pass `masteryIncrement` to `recordCreatureUpdate`.
+- Add the bonus loot roll when `apexKill`:
+```ts
+if (apexKill && game.rng) {
+  const excludes = game.inventory.map((i) => i.name);
+  const bounty = rollRandomItem(() => game.rng!.random(), 'uncommon', excludes, game.zoneId);
+  if (bounty && !game.inventory.some((i) => i.name === bounty)) {
+    game.addToInventory({ id: `bounty-${Date.now()}`, name: bounty, emoji: getItemDetails(bounty)?.emoji ?? '❓' });
+  }
+}
+```
+Add imports to `combat.tsx` as needed: `isApexCreature` from `../lib/world-shift` (match the file's existing import style/paths), `rollRandomItem` and `getItemDetails` from `../lib/content` (verify these are exported and the path prefix combat.tsx uses). Confirm `game.communityShift`, `game.rng`, `game.inventory`, `game.zoneId`, `game.addToInventory` are all on the context object combat.tsx already reads (it uses `game`/GameContext — verify the exact accessor).
+
+**Determinism note:** the bounty loot roll consumes from `game.rng` (the run's seeded stream) — NOT `Math.random()`. If `game.rng` is unavailable, skip the bounty (do not fall back to `Math.random` for a reward).
+
+- [ ] **Step 4: Run tests and verify pass**
+
+Run: `cd /Volumes/FP80/code/dieforward/mobile && npx jest world-shift && npx tsc --noEmit`
+Expected: `isApexCreature` tests PASS, tsc exit 0.
+
+- [ ] **Step 5: Manual trace (record in report)**
+
+Confirm: (a) apex identity compared as `creature.name === community.apexCreatureId` (display-name space, verified against `killedBy`/`content.enemy`); (b) loot roll uses `game.rng`, dup-guarded, respects inventory cap; (c) apex mastery increment (3) supersedes honor/base; (d) non-apex kills are byte-unchanged.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add mobile/lib/world-shift.ts mobile/lib/instant.ts mobile/app/combat.tsx mobile/lib/__tests__/world-shift.test.ts
+git commit -m "feat(4a): apex bounty — seeded bonus loot + extra mastery on apex kill"
+```
+
+---
+
+### Task 8: Surface markers in play.tsx + i18n + docs
 
 **Files:**
 - Modify: `mobile/app/play.tsx` (enemy/node card ~704-733; narration ~200-208)
@@ -992,8 +1086,8 @@ git commit -m "feat(4a): surface apex/curse/architect markers + docs (phase 4a d
 **Spec coverage (§3.2 / §3.3 / A5):**
 - Nightly aggregation cron + `worldShifts` namespace → Tasks 3, 4. ✅
 - A5 (server-receipted only, distinct accounts, medians/thresholds not sums, per-account caps) → Task 2 (aggregator), Task 1 (receipt enrichment enabling receipts-only). ✅ (Note: "medians" in the spec is satisfied by distinct-account **thresholds** rather than sums; no per-run continuous quantity needs a median in 4a — recorded as an intentional reading, not a gap.)
-- Apex threat (buff + marker) → Task 6 (buff), Task 7 (marker). Bounty (loot/mastery) explicitly DEFERRED. ✅ with noted deferral.
-- Mass-death curse statues (visible warning) → Tasks 6/7 marker. Ambient effect (+1 corpse spawn) folded into the marker for 4a; deeper ambient deferred — noted.
+- Apex threat (buff + bounty + marker) → Task 6 (buff), Task 7 (bounty: seeded bonus loot + extra mastery credit), Task 8 (marker). ✅ Bounty now IN SCOPE per user decision.
+- Mass-death curse statues (visible warning) → Tasks 6/8 marker. Ambient effect (+1 corpse spawn) folded into the marker for 4a; deeper ambient deferred — noted.
 - Architect visitation → 4a marks the node (non-UGC); corpse-wall names/final words DEFERRED to 4b behind A2. ✅ with noted deferral.
 - Echo Husk material → DEFERRED to 4b (UGC). ✅ (scope boundary respected — no UGC in `worldShifts`).
 - Client fetch/merge, additive, degrade-gracefully → Task 5 (`fetchCommunityShift` returns null on any failure; `mergeShift` additive). ✅
