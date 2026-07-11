@@ -23,6 +23,12 @@ export interface AggOptions {
   perAccountCap?: number;
   curseNodeThreshold?: number;
   apexMinKills?: number;
+  /**
+   * Allowlist of REAL creature display names for this zone. When provided,
+   * apex candidates whose killedBy is not in the set (environmental killers
+   * like "The darkness") are skipped. Omitted/null => no filter (unchanged).
+   */
+  validCreatures?: Set<string> | null;
 }
 
 export interface ZoneDayAggregate {
@@ -103,7 +109,11 @@ export function aggregateZoneDay(
   }
 
   // Apex creature (distinct-account, capped).
-  const creatureCounts = cappedDistinctCounts(eligible, (r) => r.killedBy, perAccountCap);
+  const creatureCounts = cappedDistinctCounts(
+    eligible,
+    (r) => (r.killedBy && (!opts.validCreatures || opts.validCreatures.has(r.killedBy)) ? r.killedBy : null),
+    perAccountCap,
+  );
   let apexCreatureId: string | null = null;
   let apexKills = 0;
   for (const [creature, n] of creatureCounts) {

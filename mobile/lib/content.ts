@@ -1243,13 +1243,12 @@ export interface MarkableNode {
   };
 }
 
-const APEX_BUFF = 1.15;
-
 /**
  * Additive community marks. Pure: returns new node objects with isApex/isCursed/
- * isArchitect flags and (for the apex creature's node) a 15% HP/damage buff.
- * No-op when community is null. Applied AFTER seeded generation and consumes no
- * run RNG, so the seeded graph stays deterministic.
+ * isArchitect flags. No-op when community is null. Applied AFTER seeded
+ * generation and consumes no run RNG, so the seeded graph stays deterministic.
+ * The apex node's actual stat buff is applied later in combat (applyApexBuff);
+ * node content never carries materialized enemy stats at this stage.
  *
  * NOTE: apexCreatureId / content.enemy are creature DISPLAY NAMES (same value
  * space as killedBy and BESTIARY keys), not slugs — matched by strict equality.
@@ -1266,8 +1265,6 @@ export function applyCommunityMarks<T extends MarkableNode>(
     if (community.architectNodeId === n.id) content.isArchitect = true;
     if (community.apexCreatureId && content.enemy === community.apexCreatureId) {
       content.isApex = true;
-      if (typeof content.enemyHp === 'number') content.enemyHp = Math.round(content.enemyHp * APEX_BUFF);
-      if (typeof content.enemyDamage === 'number') content.enemyDamage = Math.round(content.enemyDamage * APEX_BUFF);
     }
     return { ...n, content };
   });

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { tx, id } from '@instantdb/admin';
 import { db } from '@/lib/db';
+import { getZoneCreatureNames } from '@/lib/content';
 import {
   aggregateZoneDay,
   buildWorldShiftWrites,
@@ -90,8 +91,13 @@ export async function POST(request: NextRequest) {
 
     const aggregatesByZone: Record<string, ZoneDayAggregate> = {};
     for (const zoneId of ZONE_IDS) {
+      // Build the per-zone real-creature allowlist so environmental killers
+      // ("The darkness", "Voidblade") can never occupy the apex slot. Degrade
+      // to no-filter if the zone fails to load, rather than nulling the apex.
+      const validCreatures = new Set(await getZoneCreatureNames(zoneId).catch(() => []));
       aggregatesByZone[zoneId] = aggregateZoneDay(zoneId, receipts, {
         nowMs, windowMs: WINDOW_MS, curseNodeThreshold, apexMinKills,
+        validCreatures: validCreatures.size > 0 ? validCreatures : null,
       });
     }
 

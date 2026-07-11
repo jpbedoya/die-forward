@@ -47,6 +47,8 @@ const GAME_SETTINGS_FIELD_KEYS = [
   'roomTextStreamSpeedMs',
   'dailyShiftEnabled',
   'coinBonusPercent',
+  'curseNodeThreshold',
+  'apexMinKills',
 ] as const;
 
 // Raw columns that live outside the GameSettings interface but are still

@@ -10,7 +10,7 @@ const community: CommunityShift = {
 };
 
 function node(id: string, enemyName?: string): MarkableNode {
-  return { id, content: enemyName ? { enemy: enemyName, enemyHp: 100, enemyDamage: 10 } : {} } as MarkableNode;
+  return { id, content: enemyName ? { enemy: enemyName } : {} } as MarkableNode;
 }
 
 describe('applyCommunityMarks', () => {
@@ -20,12 +20,10 @@ describe('applyCommunityMarks', () => {
     expect(n3.content.isCursed).toBe(true);
     expect(n3.content.isArchitect).toBe(true);
   });
-  it('marks the apex creature node and buffs its stats by 15%', () => {
+  it('marks the apex creature node (stat buff is applied later in combat)', () => {
     const out = applyCommunityMarks([node('n-5', 'Bog Lurker')], community);
     const n5 = out.find((n) => n.id === 'n-5')!;
     expect(n5.content.isApex).toBe(true);
-    expect(n5.content.enemyHp).toBe(115);
-    expect(n5.content.enemyDamage).toBe(12); // round(11.5)
   });
   it('is a no-op when community is null', () => {
     const nodes = [node('n-3', 'ghoul')];

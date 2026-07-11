@@ -67,6 +67,27 @@ describe('aggregateZoneDay — A5 integrity', () => {
     expect(r.apexKills).toBe(3);
   });
 
+  it('excludes non-creature killers from apex when validCreatures is provided', () => {
+    const rows = [
+      death({ killedBy: 'The darkness', authId: 'a', walletAddress: 'a' }),
+      death({ killedBy: 'The darkness', authId: 'b', walletAddress: 'b' }),
+      death({ killedBy: 'The darkness', authId: 'c', walletAddress: 'c' }),
+      death({ killedBy: 'Bog Lurker', authId: 'd', walletAddress: 'd' }),
+      death({ killedBy: 'Bog Lurker', authId: 'e', walletAddress: 'e' }),
+      death({ killedBy: 'Bog Lurker', authId: 'f', walletAddress: 'f' }),
+    ];
+    const r = aggregateZoneDay('sunken-crypt', rows, {
+      nowMs: NOW, apexMinKills: 3, validCreatures: new Set(['Bog Lurker']),
+    });
+    expect(r.apexCreatureId).toBe('Bog Lurker'); // 'The darkness' filtered despite equal count
+  });
+
+  it('does not filter apex candidates when validCreatures is omitted (backward compat)', () => {
+    const rows = Array.from({ length: 3 }, (_, i) => death({ killedBy: 'The darkness', authId: `z${i}`, walletAddress: `z${i}` }));
+    const r = aggregateZoneDay('sunken-crypt', rows, { nowMs: NOW, apexMinKills: 3 });
+    expect(r.apexCreatureId).toBe('The darkness');
+  });
+
   it('returns null apex below apexMinKills', () => {
     const r = aggregateZoneDay('sunken-crypt', [death(), death({ authId: 'b', walletAddress: 'b' })], { nowMs: NOW, apexMinKills: 3 });
     expect(r.apexCreatureId).toBeNull();

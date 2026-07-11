@@ -55,9 +55,12 @@ export async function fetchCommunityShift(
   dayKey: string,
   apiBase: string = process.env.EXPO_PUBLIC_API_URL || '',
 ): Promise<CommunityShift | null> {
+  // Never let a slow/captive-portal server stall startGame: abort after 3s.
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 3000);
   try {
     const url = `${apiBase}/api/game/shift?zoneId=${encodeURIComponent(zoneId)}&dayKey=${encodeURIComponent(dayKey)}`;
-    const res = await fetch(url);
+    const res = await fetch(url, { signal: controller.signal });
     if (!res.ok) return null;
     const json = await res.json();
     const s = json?.shift;
@@ -73,6 +76,8 @@ export async function fetchCommunityShift(
     };
   } catch {
     return null;
+  } finally {
+    clearTimeout(timer);
   }
 }
 
