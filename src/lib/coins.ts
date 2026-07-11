@@ -344,6 +344,8 @@ export interface RunReceiptInput {
   coinDelta: number;
   streakAfter: number;
   createdAt: number;
+  killedBy?: string | null;
+  nodeId?: string | null;
 }
 
 export interface RunReceipt {
@@ -361,6 +363,8 @@ export interface RunReceipt {
   coinStake: number;
   outcome: RunOutcome;
   finalDepth: number;
+  killedBy: string | null;
+  nodeId: string | null;
   coinDelta: number;
   streakAfter: number;
   createdAt: number;
@@ -395,6 +399,8 @@ export function buildRunReceipt(input: RunReceiptInput): RunReceipt {
     coinStake: input.coinStake ?? 0,
     outcome: input.outcome,
     finalDepth: input.finalDepth,
+    killedBy: input.killedBy ?? null,
+    nodeId: input.nodeId ?? null,
     coinDelta: input.coinDelta,
     streakAfter: input.streakAfter,
     createdAt: input.createdAt,

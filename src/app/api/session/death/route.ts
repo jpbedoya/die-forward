@@ -332,6 +332,8 @@ export async function POST(request: NextRequest) {
           coinStake,
           outcome: 'dead',
           finalDepth: room,
+          killedBy: killedBy || null,
+          nodeId: validNodeId ?? null,
           coinDelta: grantedCoinDelta,
           streakAfter: grantedStreakAfter,
           createdAt: Date.now(),

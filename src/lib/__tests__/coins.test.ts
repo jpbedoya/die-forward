@@ -387,6 +387,8 @@ describe('buildRunReceipt', () => {
     coinStake: 120,
     outcome: 'dead' as const,
     finalDepth: 7,
+    killedBy: 'bog-lurker',
+    nodeId: 'n-4',
     coinDelta: 34,
     streakAfter: 0,
     createdAt: 1_700_000_000_000,
@@ -476,6 +478,25 @@ describe('buildRunReceipt', () => {
     expect(receipt.outcome).toBe('abandoned');
     expect(receipt.coinStake).toBe(120);
     expect(receipt.coinDelta).toBe(0);
+  });
+});
+
+describe('buildRunReceipt killedBy/nodeId', () => {
+  const base = {
+    sessionId: 's1', sessionToken: 't1', authId: 'wallet-abc', walletAddress: 'wallet-abc',
+    zoneId: 'sunken-crypt', runSeed: 'seed', seedSource: 'legacy', serverDayKey: '2026-07-10',
+    dailyShiftEnabled: true, chosenModifierId: null, stakeMode: 'free' as const, coinStake: 0,
+    outcome: 'dead' as const, finalDepth: 7, coinDelta: 0, streakAfter: 0, createdAt: 1,
+  };
+  it('records killedBy and nodeId when provided', () => {
+    const r = buildRunReceipt({ ...base, killedBy: 'bog-lurker', nodeId: 'n-4' });
+    expect(r.killedBy).toBe('bog-lurker');
+    expect(r.nodeId).toBe('n-4');
+  });
+  it('defaults killedBy and nodeId to null when omitted', () => {
+    const r = buildRunReceipt(base);
+    expect(r.killedBy).toBeNull();
+    expect(r.nodeId).toBeNull();
   });
 });
 
