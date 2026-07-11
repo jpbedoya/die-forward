@@ -108,3 +108,22 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to aggregate world shift' }, { status: 500 });
   }
 }
+
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const zoneId = searchParams.get('zoneId');
+    const dayKey = searchParams.get('dayKey');
+    if (!zoneId || !dayKey) {
+      return NextResponse.json({ error: 'zoneId and dayKey are required' }, { status: 400 });
+    }
+    const result = await db
+      .query({ worldShifts: { $: { where: { dayKey, zoneId }, limit: 1 } } })
+      .catch(() => null);
+    const shift = (result?.worldShifts?.[0] as Record<string, unknown>) ?? null;
+    return NextResponse.json({ shift });
+  } catch (error) {
+    console.error('Failed to read world shift:', error);
+    return NextResponse.json({ shift: null });
+  }
+}

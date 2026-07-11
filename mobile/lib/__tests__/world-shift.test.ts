@@ -1,4 +1,4 @@
-import { utcDayKey, getDailyShift, type DailyShift } from '../world-shift';
+import { utcDayKey, getDailyShift, mergeShift, type DailyShift, type CommunityShift, type WorldShift } from '../world-shift';
 import { RUN_MODIFIERS } from '../modifiers';
 import { loadZone, validateZoneGraph, type ZoneGraphLayout } from '../zone-loader';
 
@@ -86,5 +86,24 @@ describe('getDailyShift', () => {
     const s = getDailyShift('sunken-crypt', '2026-07-09');
     expect(Array.isArray(s.closedEdges)).toBe(true);
     expect(Array.isArray(s.sealedSideNodes)).toBe(true);
+  });
+});
+
+describe('mergeShift', () => {
+  const daily = { dayKey: '2026-07-10', zoneId: 'sunken-crypt', modifierPool: [], closedEdges: [], sealedSideNodes: [] };
+  it('degrades to the seeded layer when community is null', () => {
+    const w: WorldShift = mergeShift(daily, null);
+    expect(w.community).toBeNull();
+    expect(w.zoneId).toBe('sunken-crypt');
+    expect(w.closedEdges).toEqual([]);
+  });
+  it('attaches the community layer additively without mutating daily', () => {
+    const community: CommunityShift = {
+      dayKey: '2026-07-10', zoneId: 'sunken-crypt', apexCreatureId: 'bog-lurker',
+      apexKills: 5, curseNodes: ['n-3'], architectNodeId: 'n-3', architectDeaths: 12,
+    };
+    const w = mergeShift(daily, community);
+    expect(w.community?.apexCreatureId).toBe('bog-lurker');
+    expect(daily).not.toHaveProperty('community'); // daily untouched
   });
 });
