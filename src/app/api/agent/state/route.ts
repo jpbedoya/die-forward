@@ -15,6 +15,14 @@ const db = init({
   adminToken: process.env.INSTANT_ADMIN_KEY!,
 });
 
+// AUTH CONTRACT (INTENTIONALLY UNCHANGED — external harness dependency):
+// Read-only agent state, keyed off the raw `sessionId` (Session row id), NOT
+// the secret session token used by /api/session/*. This weaker gate is kept
+// deliberately: the external agent harness this repo does not control depends
+// on the raw-sessionId contract. Exposure is GRIEF/READ-ONLY only — agent runs
+// grant no coins/stats (phase 3b Task 8), so a leaked sessionId reveals only an
+// agent run's transient state, never a real player's money or record. Accepted
+// residual documented in Task 6.
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);

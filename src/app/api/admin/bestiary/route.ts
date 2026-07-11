@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getZoneOverride, setZoneOverride } from '@/lib/zone-overrides';
+import { verifyAuthToken, isAdminAuthId } from '@/lib/auth-server';
 
 const VALID_ZONES = ['sunken-crypt', 'ashen-crypts', 'frozen-gallery', 'living-tomb', 'void-beyond'];
 
@@ -46,6 +47,11 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const identity = await verifyAuthToken(req);
+  if (!identity || !isAdminAuthId(identity.authId)) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+
   try {
     const { zone, creatures } = await req.json();
     if (!VALID_ZONES.includes(zone)) {

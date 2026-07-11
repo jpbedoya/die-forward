@@ -22,6 +22,7 @@ import {
   nextStreak,
   type StakeMode,
 } from '@/lib/coins';
+import { verifyAuthToken, sessionAuthMismatch } from '@/lib/auth-server';
 
 // Pool wallet keypair (loaded from env)
 function getPoolKeypair(): Keypair {
@@ -40,6 +41,10 @@ const connection = new Connection(
 
 export async function POST(request: NextRequest) {
   try {
+    // Cross-account defense-in-depth: read any bearer token BEFORE the body is
+    // consumed. Identity/money below still come from session.authId, never this.
+    const identity = await verifyAuthToken(request);
+
     const body = await request.json();
     const { sessionToken } = body;
 
@@ -67,6 +72,13 @@ export async function POST(request: NextRequest) {
 
     const session = sessions[0];
 
+    // Cross-account guard: a VALID token for a different account cannot claim
+    // this session's payout/coins (both settle to session.authId). No token →
+    // unchanged; legacy sessions without an authId are unaffected.
+    if (sessionAuthMismatch(identity, session.authId as string | null | undefined)) {
+      return NextResponse.json({ error: 'Session does not belong to this account' }, { status: 403 });
+    }
+
     // Validate room progress - must have reached final room
     // 'room' = canonical 1-based node depth (spec §4.1); graph edges always descend one depth, so linear validation holds
     const currentRoom = session.currentRoom || 1;
@@ -88,6 +100,12 @@ export async function POST(request: NextRequest) {
     const stakeAmount = session.stakeAmount || 0;
     const stakeMode: StakeMode = ((session as Record<string, unknown>).stakeMode as StakeMode) ?? 'sol';
     const coinStake: number = ((session as Record<string, unknown>).coinStake as number) ?? 0;
+
+    // A run may only mutate paleCoins/stats when its identity was token-verified at
+    // start. Coins-mode runs were provably verified (start 403s coins without a
+    // verified identity), so treat stakeMode==='coins' as verified too — this also
+    // covers in-flight coins sessions created before authVerified existed.
+    const authVerified = (session as Record<string, unknown>).authVerified === true || stakeMode === 'coins';
     const victoryBonusPercent = (gameSettings?.victoryBonusPercent as number) ?? 50;
     const { totalReward } = computeVictoryReward(stakeAmount, victoryBonusPercent);
 
@@ -323,8 +341,8 @@ export async function POST(request: NextRequest) {
       const { streak } = nextStreak({ current: prevStreak, stakeMode, cleared: true });
 
       // What was actually granted (0 / unchanged for guests) — the receipt records this.
-      const grantedCoinDelta = player ? earn + (stakeMode === 'coins' ? coinPlayerDelta : 0) : 0;
-      const grantedStreakAfter = player ? streak : prevStreak;
+      const grantedCoinDelta = (player && authVerified) ? earn + (stakeMode === 'coins' ? coinPlayerDelta : 0) : 0;
+      const grantedStreakAfter = (player && authVerified) ? streak : prevStreak;
 
       const writes: Parameters<typeof db.transact>[0] = [];
 
@@ -363,7 +381,7 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      if (player) {
+      if (player && authVerified) {
         const currentHighest = (player.highestRoom as number) || 0;
         writes.push(
           tx.players[player.id as string].update({

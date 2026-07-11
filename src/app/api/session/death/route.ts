@@ -12,12 +12,19 @@ import {
   sealTier,
   type StakeMode,
 } from '@/lib/coins';
+import { verifyAuthToken, sessionAuthMismatch } from '@/lib/auth-server';
 
 // Demo mode flag - skip on-chain recording
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
 
 export async function POST(request: NextRequest) {
   try {
+    // Cross-account defense-in-depth: read any bearer token BEFORE the body is
+    // consumed (header path never touches the body; the mobile client always
+    // sends `Authorization: Bearer`). Identity/money below still come from
+    // session.authId, never this — see the sessionAuthMismatch gate after lookup.
+    const identity = await verifyAuthToken(request);
+
     const body = await request.json();
     const { sessionToken, room, finalMessage, inventory, playerName, killedBy, nowPlayingTitle, nowPlayingArtist, nodeId } = body;
 
@@ -53,6 +60,14 @@ export async function POST(request: NextRequest) {
     }
 
     const session = sessions[0];
+
+    // Cross-account guard: a VALID token for a different account cannot drive
+    // this session (money/stats settle to session.authId). No token → unchanged
+    // (the unguessable session token remains the sole gate); legacy sessions
+    // without an authId are unaffected. See sessionAuthMismatch.
+    if (sessionAuthMismatch(identity, session.authId as string | null | undefined)) {
+      return NextResponse.json({ error: 'Session does not belong to this account' }, { status: 403 });
+    }
 
     // Validate room upper bound against session's actual maxRooms
     const maxRooms = (session as Record<string, unknown>).maxRooms as number || 13;
@@ -184,6 +199,12 @@ export async function POST(request: NextRequest) {
     const stakeMode: StakeMode = (session.stakeMode as StakeMode) ?? 'sol';
     const coinStake: number = (session.coinStake as number) ?? 0;
 
+    // A run may only mutate paleCoins/stats when its identity was token-verified at
+    // start. Coins-mode runs were provably verified (start 403s coins without a
+    // verified identity), so treat stakeMode==='coins' as verified too — this also
+    // covers in-flight coins sessions created before authVerified existed.
+    const authVerified = (session as Record<string, unknown>).authVerified === true || stakeMode === 'coins';
+
     const earn = computeCoinEarn({
       finalDepth: room,
       cleared: false,
@@ -210,8 +231,8 @@ export async function POST(request: NextRequest) {
 
     // Grants only apply when a player row exists; the receipt records what was
     // actually granted (0 / unchanged for guests).
-    const grantedCoinDelta = player ? earn : 0;
-    const grantedStreakAfter = player ? streak : prevStreak;
+    const grantedCoinDelta = (player && authVerified) ? earn : 0;
+    const grantedStreakAfter = (player && authVerified) ? streak : prevStreak;
 
     // Coin-Bound burn → pool. Gate on stakeMode === 'coins' (belt-and-suspenders;
     // coinStake is already 0 for non-coins runs). On death playerDelta is 0 —
@@ -236,7 +257,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    if (player) {
+    if (player && authVerified) {
       const currentHighest = (player.highestRoom as number) || 0;
       settlementWrites.push(
         tx.players[player.id as string].update({

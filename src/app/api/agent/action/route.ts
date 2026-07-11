@@ -282,6 +282,16 @@ async function presentNextRoom(p: NextRoomParams): Promise<NextResponse> {
   });
 }
 
+// AUTH CONTRACT (INTENTIONALLY UNCHANGED — external harness dependency):
+// This route is keyed off the raw `sessionId` (a Session row id), NOT the
+// unguessable secret session token that /api/session/* uses. A row id is a
+// weaker gate (guessable/enumerable relative to a 256-bit token). It is left
+// as-is on purpose: this endpoint is driven by an EXTERNAL agent harness this
+// repo does not control, so adding a token/auth requirement would break it.
+// Residual risk is bounded to GRIEF ONLY: agent runs grant no coins and no
+// player stats (see phase 3b Task 8 — receipt-only, authId:null, coinDelta:0),
+// so a leaked/guessed sessionId can perturb an agent run but cannot move money
+// or corrupt a real player's record. Accepted residual documented in Task 6.
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();

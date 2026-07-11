@@ -7,6 +7,43 @@ import { buildRunReceipt, classifyStaleCoinCleanup } from '@/lib/coins';
 // Stale session threshold: 1 hour
 const STALE_THRESHOLD_MS = 60 * 60 * 1000;
 
+// One-time warning latch so an unguarded (no CRON_SECRET) deployment logs the
+// warning once per server process, not on every sweep.
+let unguardedCleanupWarned = false;
+
+/**
+ * Cron-only access guard. This route settles money (returns/burns coin stakes,
+ * flips sessions), so it must not be publicly invocable in production.
+ *
+ * If `CRON_SECRET` is set, require it via `Authorization: Bearer <secret>` OR
+ * an `x-cron-secret: <secret>` header — 401 otherwise. Vercel Cron must be
+ * configured to send this header (see vercel.json cron + the CRON_SECRET env).
+ * If `CRON_SECRET` is unset, access is allowed (dev convenience) but a warning
+ * is logged once so the unguarded state is visible.
+ *
+ * Returns a 401 NextResponse when access is denied, else null (proceed).
+ */
+function checkCronAuth(request: NextRequest): NextResponse | null {
+  const secret = process.env.CRON_SECRET;
+  if (!secret) {
+    if (!unguardedCleanupWarned) {
+      console.warn(
+        '[Cleanup] CRON_SECRET is not set — the cleanup endpoint is UNGUARDED. ' +
+        'Set CRON_SECRET and have the cron send it (Authorization: Bearer / x-cron-secret) to lock it down.',
+      );
+      unguardedCleanupWarned = true;
+    }
+    return null;
+  }
+
+  const authHeader = request.headers.get('authorization');
+  const bearerOk = authHeader === `Bearer ${secret}`;
+  const headerOk = request.headers.get('x-cron-secret') === secret;
+  if (bearerOk || headerOk) return null;
+
+  return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+}
+
 /**
  * Cleanup stale active sessions
  *
@@ -14,8 +51,13 @@ const STALE_THRESHOLD_MS = 60 * 60 * 1000;
  * - Victory candidates (currentRoom >= maxRooms): mark completed, pending payout claim
  * - Others: mark dead with default epitaph
  */
-export async function POST(_request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
+    // Cron-only guard (money-settling endpoint). 401 if CRON_SECRET is set and
+    // the request doesn't carry it; allowed-but-warned when the secret is unset.
+    const denied = checkCronAuth(request);
+    if (denied) return denied;
+
     const now = Date.now();
     const threshold = now - STALE_THRESHOLD_MS;
 

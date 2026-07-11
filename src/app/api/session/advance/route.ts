@@ -2,9 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { tx } from '@instantdb/admin';
 import { db } from '@/lib/db';
 import { recordErEvent } from '@/lib/magicblock';
+import { verifyAuthToken, sessionAuthMismatch } from '@/lib/auth-server';
 
 export async function POST(request: NextRequest) {
   try {
+    // Cross-account defense-in-depth: read any bearer token BEFORE the body is
+    // consumed. Room progression below is keyed off session.authId's session,
+    // never this token.
+    const identity = await verifyAuthToken(request);
+
     const body = await request.json();
     const { sessionToken, fromRoom } = body;
 
@@ -46,6 +52,15 @@ export async function POST(request: NextRequest) {
     }
 
     const session = sessions[0];
+
+    // Cross-account guard: a VALID token for a different account cannot advance
+    // this session. No token → unchanged; legacy sessions without an authId are
+    // unaffected.
+    if (sessionAuthMismatch(identity, session.authId as string | null | undefined)) {
+      console.log('[advance] FAIL: cross-account token');
+      return NextResponse.json({ error: 'Session does not belong to this account' }, { status: 403 });
+    }
+
     const serverRoom = session.currentRoom || 1;
 
     console.log('[advance] Session found:', { id: session.id, serverRoom, clientRoom: fromRoom });
