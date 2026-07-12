@@ -301,3 +301,10 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+// Vercel Cron Jobs invoke the path with a GET request; external schedulers may
+// POST. Accept both (both guarded by checkCronAuth) so cleanup fires regardless
+// of how it is triggered. GET delegates to the POST handler.
+export async function GET(request: NextRequest) {
+  return POST(request);
+}

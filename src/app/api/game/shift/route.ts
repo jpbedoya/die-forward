@@ -48,7 +48,13 @@ function checkCronAuth(request: NextRequest): NextResponse | null {
   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 }
 
-export async function POST(request: NextRequest) {
+/**
+ * Nightly community aggregation. Reachable two ways so it fires regardless of
+ * scheduler: an external scheduler that POSTs, or a Vercel Cron Job that GETs
+ * `/api/game/shift` with no query params (see GET below). Both are guarded by
+ * checkCronAuth (CRON_SECRET).
+ */
+async function runAggregation(request: NextRequest) {
   const denied = checkCronAuth(request);
   if (denied) return denied;
 
@@ -115,13 +121,21 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// External schedulers POST to trigger aggregation.
+export async function POST(request: NextRequest) {
+  return runAggregation(request);
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const zoneId = searchParams.get('zoneId');
     const dayKey = searchParams.get('dayKey');
     if (!dayKey) {
-      return NextResponse.json({ error: 'zoneId and dayKey are required' }, { status: 400 });
+      // A Vercel Cron Job invokes this path with a GET and no query params —
+      // that's the aggregation trigger (checkCronAuth-guarded inside). A real
+      // client read ALWAYS carries dayKey, so this branch never shadows a read.
+      return runAggregation(request);
     }
     if (!zoneId) {
       const result = await db.query({ worldShifts: { $: { where: { dayKey } } } }).catch(() => null);
