@@ -1,4 +1,4 @@
-import { utcDayKey, getDailyShift, mergeShift, isApexCreature, type DailyShift, type CommunityShift, type WorldShift } from '../world-shift';
+import { utcDayKey, getDailyShift, mergeShift, isApexCreature, fetchCommunityShiftsForDay, type DailyShift, type CommunityShift, type WorldShift } from '../world-shift';
 import { RUN_MODIFIERS } from '../modifiers';
 import { loadZone, validateZoneGraph, type ZoneGraphLayout } from '../zone-loader';
 
@@ -120,5 +120,24 @@ describe('isApexCreature', () => {
   it('false when community is null or apex unset', () => {
     expect(isApexCreature('Bog Lurker', null)).toBe(false);
     expect(isApexCreature('Bog Lurker', { ...community, apexCreatureId: null })).toBe(false);
+  });
+});
+
+describe('fetchCommunityShiftsForDay', () => {
+  const originalFetch = global.fetch;
+  afterEach(() => {
+    global.fetch = originalFetch;
+  });
+
+  it('never throws — degrades to {} when fetch is unavailable', async () => {
+    global.fetch = jest.fn().mockRejectedValue(new Error('network down')) as unknown as typeof fetch;
+    const result = await fetchCommunityShiftsForDay('2026-07-10');
+    expect(result).toEqual({});
+  });
+
+  it('degrades to {} on non-200 response', async () => {
+    global.fetch = jest.fn().mockResolvedValue({ ok: false }) as unknown as typeof fetch;
+    const result = await fetchCommunityShiftsForDay('2026-07-10');
+    expect(result).toEqual({});
   });
 });
