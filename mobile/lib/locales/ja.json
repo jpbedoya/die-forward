@@ -647,5 +647,11 @@
   "dispatch.apex": "Something grows fat on wanderers: the {creature}.",
   "dispatch.cursed": "There are places below where many ended.",
   "dispatch.doors": "The way has changed. {n} passage(s) will not answer today.",
-  "dispatch.quiet": "The depths are still. For now."
+  "dispatch.quiet": "The depths are still. For now.",
+  "notif.ask.title": "THE CARTOGRAPHER",
+  "notif.ask.body": "The passages move. I can send word when they do — if you wish.",
+  "notif.ask.accept": "Send word",
+  "notif.ask.decline": "Let them move unseen",
+  "notif.settings.label": "DISPATCHES",
+  "notif.settings.hint": "Word when the passages move"
 }
