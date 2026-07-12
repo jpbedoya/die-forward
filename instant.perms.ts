@@ -102,4 +102,16 @@ export default {
       delete: "false",
     },
   },
+
+  // reports: UGC abuse reports (A2). Any authenticated client may create one;
+  // nobody may read/edit/delete them from the client (server aggregation reads
+  // via the admin bypass). Prevents report tampering + reporter enumeration.
+  reports: {
+    allow: {
+      view: "false",
+      create: "auth.id != null",
+      update: "false",
+      delete: "false",
+    },
+  },
 };
