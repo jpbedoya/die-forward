@@ -48,7 +48,8 @@ A zone is a single JSON file in `zones/`. The full schema:
   "fragments": { ... },      // OPTION B: modular narrative pieces
   "bestiary": { ... },       // local creatures + shared references
   "depths": [ ... ],         // dungeon depth layers
-  "dungeonLayout": { ... },  // ordered room sequence
+  "dungeonLayout": { ... },  // legacy linear room sequence (only used if "graph" is absent)
+  "graph": { ... },          // OPTION B (current): branching DAG node graph — see Section on Dungeon Structure
   "boss": "Boss Name",       // references a bestiary creature
   "audio": { ... }           // ambient + sfx paths
 }
@@ -164,7 +165,52 @@ See Section 5 for full details.
 
 Defines the dungeon's named layers. Each depth has a tier that affects enemy damage scaling (Tier 1 = 1×, Tier 2 = 1.5×, Tier 3 = 2×). The `roomRange` maps rooms to a depth — rooms 1–4 encounter tier 1 enemies, 5–8 encounter tier 2, etc. Three depths is standard; adjust ranges to suit your zone's pacing.
 
-### `dungeonLayout`
+### `graph` (current model — branching DAG)
+
+All 5 shipped zones (sunken-crypt, ashen-crypts, frozen-gallery, living-tomb, void-beyond) use `graph`, not a linear `dungeonLayout`. A dungeon is a **branching DAG node graph** — `ZoneGraphLayout` / `ZoneNode`, defined in `mobile/lib/zone-loader.ts` — read at runtime by `generateDungeonGraph` in `mobile/lib/content.ts`. Verified against `mobile/lib/zones/sunken-crypt.json`, which ships 23 nodes across depths 1–13.
+
+```jsonc
+"graph": {
+  "start": "n01",
+  "nodes": [
+    { "id": "n01", "type": "explore", "template": "descent", "depth": 1, "next": ["n02", "n03"] },
+    { "id": "n02", "type": "combat",  "template": "ambush",  "depth": 2, "next": ["n04"] },
+    { "id": "n03", "type": "explore", "template": "flooded", "depth": 2, "next": ["n05"] },
+    {
+      "id": "s01-ferry", "type": "cache", "template": "alcove", "depth": 4,
+      "next": ["n08"], "side": true,
+      "gate": { "item": "Pale Coin", "consumes": true }
+    },
+    { "id": "n20", "type": "combat", "template": "arena", "depth": 12, "next": ["n21"], "boss": true },
+    { "id": "n21", "type": "exit",   "template": "zone-exit", "depth": 13, "next": [] }
+  ]
+}
+```
+
+**`ZoneNode` shape** (`mobile/lib/zone-loader.ts`):
+
+| Field | Type | Notes |
+|---|---|---|
+| `id` | string | Unique within the zone (e.g. `n01-descent`). |
+| `type` | `explore \| combat \| corpse \| cache \| exit` | Same room-type pools as before — draws from `rooms` or `fragments`. |
+| `template` | string | Template/fragment-category name, same meaning as the legacy `dungeonLayout`. |
+| `depth` | number | **1-based canonical depth.** This is the same value projected as `currentRoom` through `GameContext`, the session API routes, and the on-chain `u8` — depth *is* the room number. |
+| `next` | string[] | Node ids this node descends to. Empty **only** on the exit node. |
+| `boss` | boolean? | Exactly one node per zone must set `boss: true` (enforced by `validateZoneGraph`). |
+| `side` | boolean? | Marks a same-depth annex reached from a sibling node at the same depth rather than a descent — a branch, not a floor. Never the start, exit, or boss node. |
+| `gate` | `{ item: string; consumes: boolean }`? | Only valid on `side` nodes. `item` must be an exact `ITEM_DETAILS` key; if `consumes` is true, entering the side node consumes the item. Bone Dust reveals branch types (what a side node holds) before the player commits an item to it. |
+
+**Edge rules** — every edge from a node must be one of:
+- A **descent edge**: target's `depth === source.depth + 1`.
+- A **side edge**: target has `side: true` and `target.depth === source.depth` (same-depth branch). A side node's own outgoing edges must always be descent edges — no side-to-side chaining.
+
+**`validateZoneGraph(graph)`** (`mobile/lib/zone-loader.ts`) is the authority on graph correctness. It returns an array of human-readable error strings (empty = valid) and enforces: unique node ids; the start node exists and sits at depth 1; exactly one `exit`-type node with `next: []`; every non-exit node has ≥1 outgoing edge (no dead ends); every edge is a valid descent or side edge (no depth skips, no side→side chaining); side nodes are never `exit`/`boss`/`start`; `gate` only appears on side nodes; every node is reachable from `start` (BFS) and the exit is reachable from every node (reverse BFS); exactly one `boss: true` node; and — re-run on the side-node-stripped subgraph — a side node is never the *only* route to the exit (descent-only reachability must still hold with all side nodes removed).
+
+**Loading & masking:** `zone-loader.ts`'s `loadZone()` is locale-aware — it returns the localized zone pack for the current locale (`ZONE_LOCALE_MAP`), falling back to the English pack per-zone if no localized pack exists for that zone. At runtime, `generateDungeonGraph` (`content.ts`) walks `zone.graph.nodes` in order, rolls content per node via the same room-type pools as before, and — when a daily world shift applies to that zone — first masks the graph (`maskGraphNodes`): closed edges and sealed side nodes are filtered out of `next`/the node list before content rolls, so a masked-out side chamber or edge simply isn't traversable that day.
+
+**Legacy fallback:** zones that define only `dungeonLayout` (no `graph`) still work — `generateDungeonGraph` synthesizes a single linear chain from `dungeonLayout.structure` with an appended exit node (ids `lin-1..lin-N`). None of the 5 shipped zones currently rely on this path; it exists purely for backward compatibility. See "Legacy: `dungeonLayout` (linear)" below for that format.
+
+### `dungeonLayout` (legacy — linear, superseded by `graph`)
 
 ```jsonc
 "dungeonLayout": {
@@ -186,9 +232,9 @@ Defines the dungeon's named layers. Each depth has a tier that affects enemy dam
 }
 ```
 
-Defines the exact order of rooms the player encounters. `type` determines which room pool to draw from. `template` specifies which template within that pool to use (must match a template name defined in `rooms`). The final room should be `"boss": true` — this triggers boss encounter logic and intro audio.
+Defines a strict linear order of rooms. `type` determines which room pool to draw from. `template` specifies which template within that pool to use (must match a template name defined in `rooms`). The final room should be `"boss": true`.
 
-When using fragments, `template` is still used to select the fragment category, but narratives are assembled from fragment pieces rather than full variations.
+**New zones should use `graph`, not `dungeonLayout`.** This format is kept only so older zone files without a `graph` key keep working; do not author new zones against it.
 
 ### `boss`
 
@@ -230,7 +276,7 @@ See Section 6 for full audio details.
 Each room type (`explore`, `combat`, `corpse`, `cache`, `exit`) contains a list of **templates**. Each template has a list of **variations** — complete, authored narratives. At runtime, the engine picks a template from the dungeon layout, then randomly selects one variation from that template's pool to display.
 
 ```
-dungeonLayout → picks template type
+graph node (or legacy dungeonLayout slot) → picks type + template
      ↓
 rooms[type] → finds template by name
      ↓
@@ -239,7 +285,7 @@ variations[] → random pick
 Player sees narrative
 ```
 
-The template name in `dungeonLayout` must exactly match the `template` field in `rooms`. If the zone is using OPTION A exclusively, every template referenced in the layout must have a corresponding entry with variations.
+The `template` name on a graph node (or a legacy `dungeonLayout` slot) must exactly match the `template` field in `rooms`. If the zone is using OPTION A exclusively, every template referenced anywhere in the graph must have a corresponding entry with variations.
 
 ### Room Types and Required Fields
 
@@ -550,6 +596,8 @@ Every zone has a `bestiary` object with two arrays:
 
 **`local`** — Zone-specific creatures defined inline in the zone file. These are creatures that belong to this zone and shouldn't appear elsewhere (or haven't been promoted to the global bestiary yet).
 
+**Signature rules are a global-bestiary-only feature.** The zone-local `ZoneCreatureDef` schema (below) has no `signature` field — only creatures defined in the global bestiary (`content.ts`) can carry one. `content.ts` defines 11 signature rules in `creature-rules.ts`: `rupture`, `reform`, `multiply`, `blink`, `absorb`, `drain`, `chant`, `pounce`, `honor`, `dormant`, and `repeating`. **Echo Husks** are a global-bestiary creature with `signature: { id: 'repeating' }` — display-only behavior where the creature recites a moderated community "echo phrase" (sourced from `runReceipts.finalMessage`, filtered through UGC moderation) during combat. A zone can only get signature-rule creatures by referencing them via `bestiary.shared`, not by defining an equivalent locally.
+
 ### Creature Schema
 
 ```jsonc
@@ -836,29 +884,31 @@ Write templates in the order they appear in your planned dungeon layout. Start w
 
 Fragments handle the majority of rooms. Write full variations only for rooms that require precise narrative control (boss intro room, specific corpse scenario, unique cache).
 
-### Step 5: Define Dungeon Layout
+### Step 5: Define the Dungeon Graph
 
 ```jsonc
-"dungeonLayout": {
-  "totalRooms": 12,
-  "structure": [
-    // Room 1: Ease in — explore or simple combat
-    // Room 2-4: Tier 1 encounters, first corpse opportunity
-    // Room 5-8: Difficulty ramps, tier 2 enemies appear
-    // Room 9-11: Tier 3 enemies, second corpse opportunity
-    // Room 12: Boss (always "boss": true)
+"graph": {
+  "start": "n01",
+  "nodes": [
+    // Depth 1: Ease in — explore or simple combat, single start node
+    // Depths 2-4: Tier 1 encounters, first corpse opportunity, first branch points
+    // Depths 5-8: Difficulty ramps, tier 2 enemies appear
+    // Depths 9-11: Tier 3 enemies, second corpse opportunity
+    // Depth 12: Boss (exactly one node with "boss": true)
+    // Depth 13: Exit ("type": "exit", "next": [])
   ]
 }
 ```
 
-Standard pacing for a 12-room zone:
-- 3 explore rooms
-- 5–6 combat rooms (1 boss)
-- 1–2 corpse rooms
-- 1 cache room
-- 1 exit room (appended automatically, or placed explicitly in layout)
+Standard pacing for a 20–23 node zone (matches the 5 shipped zones):
+- ~20-23 nodes total across 12-13 depths
+- Branch points (nodes with 2 `next` targets) at several early/mid depths so runs diverge
+- A handful of `side: true` chambers off the main descent, each `gate`d behind an item (e.g. `{ "item": "Pale Coin", "consumes": true }`), reachable from a sibling node at the same depth
+- 1–2 corpse-room opportunities
+- Exactly one boss node (deepest combat node before the exit)
+- Exactly one exit node with `next: []`
 
-Every `template` value in the structure must match a template defined in `rooms` (OPTION A) or a fragment category in `fragments` (OPTION B).
+Every `template` value on a node must match a template defined in `rooms` (OPTION A) or a fragment category in `fragments` (OPTION B). Run `validateZoneGraph()` against the finished graph before considering it done — see the `graph` section above for the full rule set.
 
 ### Step 6: Set `boss` and Audio
 
@@ -883,7 +933,8 @@ Every `template` value in the structure must match a template defined in `rooms`
 
 Before submitting, check:
 
-- [ ] All template names in `dungeonLayout.structure` exist in `rooms` or `fragments`
+- [ ] All template names in `graph.nodes` (or legacy `dungeonLayout.structure`) exist in `rooms` or `fragments`
+- [ ] `validateZoneGraph()` returns no errors
 - [ ] All enemy names in `rooms.combat[*].variations[*].enemy` exist in `bestiary.local` or `bestiary.shared`
 - [ ] `boss` name matches a Tier 3 creature in the bestiary
 - [ ] Fragment combos pass the random-combo test (5+ combos per category)

@@ -4,9 +4,15 @@ All game mechanics are configurable via InstantDB. Settings sync in real-time ac
 
 ## How to Access
 
-Settings are stored in the `gameSettings` table in InstantDB. You can modify them via:
-- InstantDB Dashboard: https://instantdb.com/dash
-- Direct API calls
+Settings are stored in the `gameSettings` table in InstantDB. As of Phase 3b (The Shift), `instant.perms.ts` denies direct client writes to `gameSettings` by default — settings are edited through the authenticated `POST /api/admin/settings` route (`src/app/api/admin/settings/route.ts`):
+
+- Requires a valid `Authorization: Bearer <customToken>`, checked via `verifyAuthToken`, for a wallet in the admin allowlist (`isAdminAuthId`, both in `src/lib/auth-server.ts`). Non-admin/unauthenticated callers get `403`.
+- Body is `{ settings: Partial<GameSettings> }`. Every key in the patch must be in the `KNOWN_SETTINGS_KEYS` whitelist (`src/lib/settings-validation.ts`) or the request is rejected with `400 Unknown settings key(s)` — this stops a caller from forging arbitrary fields.
+- `coinPool` is deliberately **excluded** from the whitelist: it's server-managed (death burns, victory/escape payouts settle it) and read-only in the admin UI.
+- The write itself goes through the admin InstantDB client (`src/lib/db.ts`), which bypasses the perms-deny; if no `gameSettings` row exists yet, the route creates one seeded with `DEFAULT_GAME_SETTINGS` merged with the patch.
+- Reads are public via `GET /api/game/settings` (and the InstantDB Dashboard, https://instantdb.com/dash, for inspection).
+
+Not every setting the game *reads* from `gameSettings` is in the writable whitelist yet — see the note on `baitCost`/`ugcMinAccountAgeDays`/`ugcReportThreshold` below.
 
 ## Available Settings
 
@@ -77,6 +83,44 @@ Flee has 3 outcomes:
 |---------|---------|-------------|
 | `victoryBonusPercent` | 50 | Bonus percentage added to stake on victory |
 
+### The Shift — Offering Ladder / Pale Coins Settings
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `dailyShiftEnabled` | true | Toggles the daily seeded world shift (`world-shift.ts`) that drives the modifier-choice pool and masks map edges/side doors per zone, keyed on UTC day + zone. |
+| `coinBonusPercent` | 50 | Pool-funded bonus percentage added to a Coin-Bound stake on escape (paid from `coinPool`; capped so it stays population-net-negative, never minted). |
+| `stakingPosture` | (raw column, no `GameSettings` default — admin-set) | `hidden` / `ritual` / `open`. Controls whether Blood-Bound (SOL) staking is shown at all; Coin-Bound (Pale Coins) staking is unaffected. |
+| `coinPool` | — (server-managed) | The pool that funds `coinBonusPercent` payouts; grown by death-burned Coin-Bound stakes. Read-only in the admin UI, **not** in the writable whitelist — only settlement logic (death/victory) may change it. |
+
+### Community Layer Settings (4a — server-side aggregation)
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `curseNodeThreshold` | 10 | Minimum distinct-account deaths at a node (trailing 24h) before the nightly `/api/game/shift` aggregation marks it a mass-death **curse node**. |
+| `apexMinKills` | 3 | Minimum kill count for a creature to qualify as the zone's **apex creature** (gets the +15% HP/damage buff + bounty). |
+
+### UGC Moderation Settings (A2/4b)
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `ugcMinAccountAgeDays` | 3 | Minimum account age (days) for trust-weighting in `src/lib/moderation.ts`'s report-suppression logic; read by `/api/game/shift`. |
+| `ugcReportThreshold` | 2 | Distinct-reporter count needed to suppress a piece of rebroadcast UGC text (Echo Husk recitals, Architect wall inscriptions). |
+
+> **Not yet admin-writable:** `ugcMinAccountAgeDays`, `ugcReportThreshold`, and `baitCost` (below) are read live from `gameSettings` by their respective code paths but are **not** in the `KNOWN_SETTINGS_KEYS` whitelist in `src/lib/settings-validation.ts`, so `POST /api/admin/settings` will reject a patch containing them. They can currently only be changed by writing directly to the `gameSettings` row via the admin InstantDB client/dashboard, bypassing the route.
+
+### On-Chain / VRF Settings
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `enableMagicBlock` | false | Toggles MagicBlock ephemeral rollup execution (`src/lib/magicblock.ts`). |
+| `enableVRF` | false | Toggles on-chain VRF randomness (via MagicBlock) for run seeding. |
+
+### Bait Action Setting
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `baitCost` | 1 | Stamina cost for the Bait action (`onBait` in `creature-rules.ts`), which forces the enemy's next intent to AGGRESSIVE for a one-shot crit window. See the "not yet admin-writable" note above. |
+
 ### UI Settings
 
 | Setting | Default | Description |
@@ -88,6 +132,8 @@ The leaderboard link navigates to the RANKS screen. Toggle it on/off from the ad
 Example: 0.05 SOL stake with 50% bonus = 0.075 SOL reward on escape.
 
 ## Example: Updating Settings
+
+The snippet below is what `POST /api/admin/settings` does server-side using the admin InstantDB client (`src/lib/db.ts`) — it's shown for reference, not as something a client should call directly. Since `instant.perms.ts` denies anonymous/non-admin writes to `gameSettings`, calling this from a browser/mobile client (without the admin token + admin SDK) will be rejected; use the authenticated route instead.
 
 ```typescript
 import { init, tx, id } from '@instantdb/admin';

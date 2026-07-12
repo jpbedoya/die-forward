@@ -1,6 +1,6 @@
 # Die Forward — Roadmap
 
-*Updated: 2026-03-13*
+*Updated: 2026-07-11*
 
 ---
 
@@ -69,41 +69,56 @@ Wired up the existing content engine and added progression systems. All items sh
 
 ---
 
-## 🔄 Phase 2 — Retention Systems (Target: Weeks 5-8)
+## ✅ Phase 2 — Branching Dungeons + Pale Coins (Shipped July 2026)
 
-### 2.1 Ashen Crypts
-First new active zone. BURN mechanic: enemies apply a damage-over-time status. Zone-specific creatures and narrative.
+### 2a — Branching Zone Graphs ✅
+All 5 zones (Sunken Crypt, Ashen Crypts, Frozen Gallery, Living Tomb, Void Beyond) now ship full branching DAG graphs (`generateDungeonGraph`, 20-23 nodes each) with client-only, item-gated side chambers (Bone Dust reveals branch types); `zone-loader.ts` validates and loads them locale-aware.
 
-### 2.2 Daily Challenges
-Seeded daily runs with a fixed modifier and zone. Shared leaderboard for the day's challenge. Replayable but only one daily score.
-
-### 2.3 Bestiary Mastery
-Track encounters per creature type. Unlock flavor text, stat hints, and counter tips after enough encounters. "Knowledge persists" from ROADMAP v1.
-
-### 2.4 Essence Currency
-Dungeon-specific currency earned through play. Spendable on cosmetics or run perks. Distinct from SOL staking.
-
-### 2.5 Run Streaks
-Track consecutive successful runs (or depth milestones). Streak bonuses and streak-specific leaderboard.
+### 2b — Pale Coins ✅
+Earned-only in-game currency (`lib/coins.ts` / `mobile/lib/coins.ts`) supersedes the earlier Essence proposal — never purchasable, concave depth income (`computeCoinEarn`) plus clear/first-clear bonuses.
 
 ---
 
-## Phase 3 — Polish + Expansion (Target: Weeks 9-12)
+## ✅ Phase 3 — The Shift: Daily World + Offering Ladder (Shipped July 2026)
 
-### 3.1 Frozen Gallery + Living Tomb
-Two of the unlockable fragment zones get full authored room content and zone-specific mechanics (cold/ice for Frozen Gallery, organic horror/infection for Living Tomb).
+### 3a — Daily Seeded World Shift ✅
+`world-shift.ts` deterministically drives the daily modifier-choice pool and masks map edges/side doors per zone, keyed on UTC day; toggled via the `dailyShiftEnabled` admin setting.
 
-### 3.2 Cosmetics Shop
-Spend Essence on death card borders, run titles, and UI themes. No pay-to-win — cosmetics only.
+### 3b — Coin-Bound Staking + Binding Streak ✅
+Three-rung Offering Ladder (Unbound free play / Coin-Bound Pale Coin staking at the Toll / Blood-Bound SOL escrow) shipped alongside a public Binding Streak with seal tiers; death burns the Coin-Bound stake into the pool-funded `coinPool`, escape returns stake + bonus; `stakingPosture` setting controls whether Blood-Bound (SOL) staking is shown at all.
 
-### 3.3 Difficulty Scaling
-Optional harder modes. Increased enemy scaling or reduced player resources with higher potential rewards.
+---
 
-### 3.4 Live Run Spectating
-Watch an active run in progress. Spectators see room-by-room updates via InstantDB real-time.
+## ✅ Security — Auth Hardening (Shipped July 2026)
+Session/game requests now carry a verified InstantDB customToken (`Authorization: Bearer <customToken>`, checked server-side via `verifyAuthToken`); the acting identity is derived server-side from that token rather than trusted from the request body (coin-mode `session/start` requires a verified token; death/victory/advance reject a token whose authId mismatches the session). Admin writes (`/api/admin/settings`, admin/bestiary, admin/content) are authenticated and admin-gated, and `instant.perms.ts` is deny-by-default for `gameSettings`/`runReceipts`/`sessions`/`worldShifts`.
 
-### 3.5 Void Beyond
-Void Beyond zone gets full authored content and its reality-warping mechanics. Requires 3 zone clears to unlock.
+---
+
+## ✅ Phase 4a — Community Layer (Shipped July 2026)
+A nightly server-receipted aggregation cron (`/api/game/shift`) writes the deny-by-default `worldShifts` namespace: an apex creature (HP/damage buff + bounty), mass-death curse nodes, and a single deadliest Architect node per zone/day — computed from distinct-account, per-account-capped, trailing-24h receipts only (never forgeable client-reported deaths).
+
+---
+
+## ✅ Phase 4c — Dispatch + Push Notifications (Shipped July 2026)
+A shared `renderDispatch` pipeline (`mobile/lib/dispatch.ts`) surfaces the day's world state on the home panel and zone-select with F7 scarcity (rotating warning/lament/invitation registers, ≤1 dispatch shown per day). An hourly fan-out cron (`/api/game/dispatch`) sends the day's dispatch as a push notification at each user's local morning via `expo-server-sdk`, gated on diegetic opt-in.
+
+---
+
+## ✅ Phase 4b — UGC Moderation (Shipped July 2026)
+A server-authoritative moderation core (`src/lib/moderation.ts`) filters rebroadcast player text — sourced only from the trusted `runReceipts.finalMessage` field — before it surfaces as an Echo Husk *Repeating* recital or an Architect wall inscription; trust-weighted by account age/staked history/wallet-auth, fail-closed on unknown authors, with report-count suppression and client-side mirror filtering on every surface that displays another player's message.
+
+---
+
+## 🔄 Launch Hardening (Remaining)
+
+The Shift (Phases 2a/2b, 3a/3b, Security, 4a, 4c, 4b) is fully shipped on `main`. What's left before mainnet/production launch:
+
+- **Push credentials**: production push cert/keys still needed before the 4c fan-out cron sends live notifications in prod.
+- **iOS local build**: only an Android local build script exists (`build:android:local`); no local iOS build script yet, and `eas-cli` is not installed.
+- **`CRON_SECRET`**: must be set in prod — `session/cleanup` and the crons (`/api/game/shift`, `/api/game/dispatch`) currently open-and-warn if it's unset.
+- **Pre-mainnet security residuals** (grief-only on devnet today, must close before coins carry real value):
+  - **A5 `walletAddress`-sybil keying** — coin-mode identity keying needs a stronger anti-sybil binding than raw wallet address.
+  - **`players`-perms ownership check** — `instant.perms.ts` for the `players` namespace doesn't yet verify write ownership, so any authenticated client can write another player's `paleCoins`.
 
 ---
 
@@ -131,6 +146,9 @@ Void Beyond zone gets full authored content and its reality-warping mechanics. R
 | **AI Dungeon Master** | Claude generates unique encounters per run |
 | **On-Chain Tip System** | Trustless tipping for corpse finds |
 | **Formal Audit** | Sec3/OtterSec review of escrow program |
+| **Difficulty Scaling** | Optional harder modes — increased enemy scaling or reduced player resources with higher potential rewards |
+| **Live Run Spectating** | Watch an active run in progress; spectators see room-by-room updates via InstantDB real-time |
+| **Cosmetics Shop** | Additional death card borders / run titles / UI themes beyond the milestone- and streak-tier unlocks already shipped |
 
 ---
 

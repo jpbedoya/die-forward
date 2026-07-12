@@ -2,17 +2,22 @@
 
 ## Security
 
-### Client-Side HP/Inventory (Hackathon Limitation)
-**Status:** Known, deferred
+### Client-Side HP/Inventory (Hackathon-era Limitation)
+**Status:** ⚠️ Partly resolved — request auth shipped; combat state itself is still client-authoritative
 
-Players can edit localStorage to:
-- Set HP to arbitrary values (never die)
-- Add items to inventory
-- Modify stamina
+The original gap ("players can edit localStorage to set HP to arbitrary values, add items, modify stamina") is **narrowed but not eliminated** by the security phase (see `docs/superpowers/specs/2026-07-04-the-shift-design.md`):
 
-**Impact:** Makes game trivially easy, but doesn't increase payout (fixed multiplier).
+- ✅ **Fixed:** every session/game request now carries a verified InstantDB `customToken` (`Authorization: Bearer`, checked server-side via `verifyAuthToken` in `src/lib/auth-server.ts`, fail-closed). Session routes derive the acting identity from that token — a body-supplied `authId`/`walletAddress` can never touch a balance-affecting op (`death`/`victory`/`advance` reject a token whose `authId` mismatches the session's — `sessionAuthMismatch`).
+- ✅ **Fixed:** Coin-Bound (Pale Coins) earn/spend is gated on token-verified provenance (`session.authVerified`) in `src/app/api/session/death/route.ts` and `.../victory/route.ts` — an unverified session grants **zero** coin delta even if the client reports a win.
+- ✅ **Fixed:** `instant.perms.ts` denies direct client writes to `gameSettings`/`runReceipts`/`sessions`/`worldShifts` by default (view-only); `reports` is create-only. Admin writes go through authenticated + admin-gated `/api/admin/settings` (+ `/admin/bestiary`, `/admin/content`).
+- ❌ **Still open:** in-run combat math (HP, stamina, inventory contents) is still computed and held client-side during a run; nothing server-side re-derives or signs individual combat turns. A modified client can still fake HP/inventory state for the run's duration — the fix above stops that state from being *laundered into money or coins* server-side, but doesn't stop the client from lying about it to itself.
 
-**Fix (post-hackathon):** Move combat/HP tracking server-side, or implement signed state transitions.
+**Remaining KNOWN residuals (grief-only on devnet, must close before coins/stakes carry real value):**
+- **A5:** `walletAddress`-based sybil keying — nothing yet stops one person operating many wallets to farm coin earn.
+- **`players` perms:** no ownership check — any authenticated client can currently write another player's `paleCoins` row directly (perms allow authed writes to `players`, not scoped to the caller's own row).
+- **`CRON_SECRET`:** the `/api/session/cleanup`, `/api/game/shift`, and `/api/game/dispatch` cron routes accept requests unguarded (with a console warning) when `CRON_SECRET` is unset. **Must be set before prod launch.**
+- **Admin settings whitelist gap:** several `gameSettings` fields are read at runtime but are **not** in `KNOWN_SETTINGS_KEYS` (`src/lib/settings-validation.ts`), so they can't be edited via the authenticated `/api/admin/settings` route at all (only fixable by direct DB edit): `ugcMinAccountAgeDays` and `ugcReportThreshold` (read in `src/app/api/game/shift/route.ts`), and `baitCost` (read in `mobile/app/combat.tsx` / defaulted in `mobile/lib/instant.ts`). (`curseNodeThreshold` and `apexMinKills` ARE already in the whitelist — verified present.)
+- SOL payout address is still body-supplied on `session/start` (bound on-chain by the stake tx itself, so this is not an independent risk).
 
 ### What IS Protected
 - ✅ Room progression (server-tracked)
@@ -20,24 +25,28 @@ Players can edit localStorage to:
 - ✅ Double-claim prevention (session status check)
 - ✅ Stake amounts validated server-side
 - ✅ Death hash verified on-chain (browser wallet flow)
+- ✅ Request identity (verified InstantDB token, fail-closed) — see above
+- ✅ Coin earn/spend gated on verified auth — see above
+- ✅ `gameSettings`/`runReceipts`/`sessions`/`worldShifts` deny-by-default via `instant.perms.ts`
 
 ---
 
 ## Staking Flows
 
 ### AgentWallet Stakes Are Custodial
-**Status:** Known limitation, architectural
+**Status:** Known limitation, architectural — narrower in scope now that Pale Coins exist as a non-custodial alternative
 
-AI agents using AgentWallet cannot sign arbitrary Solana transactions. This means:
-- ❌ Can't use on-chain escrow program
-- ❌ Stakes go to game pool wallet (custodial)
+AI agents using AgentWallet cannot sign arbitrary Solana transactions. `src/app/api/agent/start/route.ts` still only supports `stakeMode: 'agentwallet'` (custodial SOL transfer via the AgentWallet API) or `'free'` — it does **not** yet support Coin-Bound (Pale Coins) mode:
+- ❌ Can't use on-chain escrow program for SOL stakes
+- ❌ SOL stakes go to game pool wallet (custodial)
 - ❌ Payouts issued by server, not smart contract
+- ❌ Agent routes are session-id-gated but currently **grant no Pale Coins** either (no `verifyAuthToken`/`authVerified` path wired into `agent/start` — coin earn requires a verified InstantDB token per the security-phase model, which API-token-based agent clients don't present)
 
-**Impact:** Agent players must trust the game operator. Browser wallet users get full trustless escrow.
+**Impact:** Agent players choosing a real SOL stake must trust the game operator for that stake. Browser wallet users get full trustless escrow. Since The Shift, this is no longer the *only* staking-related gap for agents — the bigger practical limitation is that agents can't participate in the Coin-Bound rung (Pale Coins) at all, custodial or not, because it's gated on the browser-wallet/InstantDB auth flow.
 
-**Why:** AgentWallet API only supports simple transfers, not complex transaction signing.
+**Why:** AgentWallet API only supports simple transfers, not complex transaction signing; Pale Coins earn is intentionally gated on verified auth to prevent balance forgery, and agent sessions don't carry that token today.
 
-**Future Fix:** If AgentWallet adds `signTransaction()` support, agents could use the same escrow flow as browser wallets.
+**Future Fix:** If AgentWallet adds `signTransaction()` support, agents could use the same escrow flow as browser wallets. Separately, wiring a token-verified auth path for agent sessions (or an equivalent server-trusted identity check) would let agents earn Pale Coins without custodial SOL at all — likely the more valuable fix given the Offering Ladder's Unbound/Coin-Bound/Blood-Bound design.
 
 **See:** `docs/STAKING_FLOWS.md` for full comparison of staking modes.
 
@@ -73,53 +82,32 @@ Some enemy + intent combinations may be too punishing or too easy. Combat balanc
 
 Later depths (Flooded Halls, Bone Gardens) are significantly harder. This is intentional — clear rate should be ~10-15%.
 
-### Void Salt Damage Bonus Not Wired
-**Status:** Known gap (Phase 1)
-
-`voidSaltBonus` flag is correctly set in `getItemEffects` when the player carries Void Salt, but the +40% damage multiplier is **not** applied in `calculateDamage`. Additionally, the BESTIARY creatures that Void Salt should affect (aquatic types) don't yet have a `type: 'aquatic'` field.
-
-**Impact:** Void Salt has no effect on combat damage. Players carrying it get no mechanical benefit.
-
-**Fix:** Add `type: 'aquatic'` to relevant creatures in BESTIARY data; wire `voidSaltBonus` into `calculateDamage` multiplier chain.
-
-### activeTitle / activeBorder Not Rendered
-**Status:** Known gap (Phase 1)
-
-`activeTitle` (e.g., "The Persistent", "The Undying") and `activeBorder` (e.g., bone frame) are stored on the player record when death milestones are unlocked, but they are not rendered anywhere:
-- ❌ Not shown on share/death cards
-- ❌ Not shown on death card borders
-- ❌ Not shown on play screen
-
-**Impact:** Death milestone cosmetics are effectively invisible to the player.
-
-**Fix:** Read `activeTitle` and `activeBorder` from player record on death screen, victory screen, and share card generation.
-
 ### Sunken Crypt Explore Options Incomplete
-**Status:** Known gap (Phase 1)
+**Status:** Known gap (Phase 1) — still open; content gap, not a code gap
 
-Sunken Crypt explore room variations only have 2 authored options. The tertiary option (intel peek) always falls back to the generic "Observe carefully" text because no authored tertiary exists in the zone JSON.
+Sunken Crypt explore room variations (`mobile/lib/zones/sunken-crypt.json`) still only have 2 authored options each (only `crossroads_1` has a genuine 3rd). The rendering side was hardened (`mobile/app/play.tsx`, "Fix 11: always include tertiary (intel scout) even if zone only has 2 authored options") so a tertiary option always appears, but it still falls back to the generic `play.observeCarefully` text whenever no authored 3rd option exists — i.e. for nearly all Sunken Crypt explore variations.
 
 **Impact:** Slightly repetitive tertiary option text across Sunken Crypt explore rooms.
 
-**Fix:** Author tertiary options for Sunken Crypt room variations in zone JSON.
+**Fix:** Author tertiary options for Sunken Crypt room variations in the zone JSON (all locales).
 
-### Zone-Aware Depth Names Not Surfaced
-**Status:** Known gap (Phase 1)
+### activeTitle / activeBorder Not Rendered
+**Status:** Known gap (Phase 1) — still open, verified July 2026
 
-Each zone defines zone-specific depth names, but the play screen always displays the Sunken Crypt depth names ("Shallow Graves", "Bone Warren", "The Abyss") regardless of which zone is active.
+`activeTitle` (e.g., "The Persistent", "The Undying") and `activeBorder` (e.g., bone frame) are still stored on the player record when death milestones are unlocked (`mobile/lib/instant.ts`), but no `.tsx` screen reads either field — checked `mobile/app/death.tsx`, `mobile/app/victory.tsx`, `mobile/lib/shareCard.tsx`, and the play screen; none render `activeTitle`/`activeBorder`.
 
-**Impact:** Players in Ashen Crypts, Frozen Gallery, etc. still see Sunken Crypt UI labels.
+**Impact:** Death milestone cosmetics are still effectively invisible to the player.
 
-**Fix:** Pull active zone's depth name array and display on play screen header.
+**Fix:** Read `activeTitle` and `activeBorder` from the player record on death screen, victory screen, and share card generation.
 
 ### Modifier Badge Missing from Combat Screen
-**Status:** Known gap (Phase 1)
+**Status:** Known gap (Phase 1) — still open, verified July 2026
 
-The run modifier badge (e.g., 🩸 Blood Pact) is shown on the play screen room header but does not appear on the combat screen. Players may forget their active modifier during fights.
+The run modifier badge/row is present on the play screen (`mobile/app/play.tsx`, "Zone name + modifier row", `game.currentModifier` + `modifierExpanded`), but `mobile/app/combat.tsx` has no equivalent — it applies modifier *effects* (e.g. `modifierBraceNegatesAll`, `modifierHidesFirstIntent`, `getModifiedDamageBonus`) but never renders a badge. Players may still forget their active modifier during fights.
 
-**Impact:** Minor UX issue — modifier effects still apply correctly, just not labeled on screen.
+**Impact:** Minor UX issue — modifier effects still apply correctly, just not labeled on the combat screen.
 
-**Fix:** Add modifier badge to combat screen header alongside enemy tier/intent display.
+**Fix:** Add a modifier badge to the combat screen header alongside enemy tier/intent display.
 
 ---
 
@@ -148,6 +136,24 @@ Works with Phantom mobile browser. Deep-link flow may have issues with some wall
 | Stake is locked until run ends | Prevents gaming the system |
 | Death's Mantle consumed on save | Intentional — legendary items shouldn't be indefinitely reusable |
 | Voidblade deals -5 HP/turn | Intentional tradeoff — high risk/reward legendary |
+
+---
+
+## Recently Resolved (The Shift, verified July 2026)
+
+### Void Salt Damage Bonus Not Wired (Phase 1)
+**Status:** ✅ Fixed
+
+`voidSaltBonus` was set on item effects but never applied to damage, and no BESTIARY creatures had an `aquatic` tag.
+
+Fix: `getTagDamageBonus` in `mobile/lib/content.ts` (`if (effects.voidSaltBonus && creatureTags.includes('aquatic')) bonus += 0.4;`) is now called from `mobile/app/combat.tsx` (`tagDamageBonus: isPlayerAttacking ? getTagDamageBonus(itemEffects, creatureTags) : 0`), and multiple BESTIARY creatures carry `tags: ['aquatic', ...]` in `content.ts`.
+
+### Zone-Aware Depth Names Not Surfaced (Phase 1)
+**Status:** ✅ Fixed
+
+The play screen always showed Sunken Crypt depth names regardless of active zone.
+
+Fix: `mobile/app/play.tsx` now computes `const depth = getZoneDepth(loadZone(game.zoneId), roomNumber);` (comment in source: "Zone-aware depth display — bug fix: getDepthForRoom used hardcoded sunken-crypt values for every zone, mislabeling non-sunken depths"), backed by `getZoneDepth`/`loadZone` in `mobile/lib/zone-loader.ts`.
 
 ---
 

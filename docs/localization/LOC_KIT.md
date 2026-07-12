@@ -2,6 +2,12 @@
 
 Target locales: **ja, ko, zh-TW, vi, pt-BR, es**
 
+> The 7 locale catalogs (en + the 6 above) in `mobile/lib/locales/*.json` are
+> key-identical — same 660 keys in every file, per-key English fallback if a
+> translation is ever missing. This includes the 4b/4c player-facing key groups
+> `dispatch.*`, `community.*`, `notif.*`, `moderation.report`/`moderation.reported`,
+> `corpse.redacted`, and `combat.echo.recite`.
+
 Source of truth for English: `docs/CONTENT_BIBLE.md` (voice), `mobile/lib/content.ts`
 (BESTIARY / ITEM_DETAILS / SYNERGIES keys), `mobile/lib/locales/en.json` (synergy
 names, flavor, rule telegraphs), `mobile/lib/zones/*.json` (zone meta, lore, prose).
@@ -258,7 +264,9 @@ custodio · guardian = 守護者 / 수호자 / 守衛 / hộ vệ / guardião / 
 Rule-telegraph lines (`rule.*.telegraph` in `en.json`) are prose: translate them in
 full voice, keeping the two-beat cadence and second person where present. The
 signature ids (`rupture`, `reform`, `multiply`, `blink`, `pounce`, `absorb`,
-`honor`, `dormant`, `drain`, `chant`) are identifiers and never appear translated.
+`honor`, `dormant`, `drain`, `chant`, `repeating`) are identifiers and never appear
+translated. `repeating` (Echo Husk recital — recites a moderated `finalMessage`
+phrase, `combat.echo.recite` in `en.json`) was added in phase 4b.
 
 ---
 

@@ -5,14 +5,29 @@
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
 │    Frontend     │────▶│   API Routes    │────▶│     Solana      │
-│   (Next.js)     │     │   (Next.js)     │     │    (Devnet)     │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
-         │                      │
-         │               ┌──────▼──────┐
-         └──────────────▶│  InstantDB  │
-                         │ (Real-time) │
-                         └─────────────┘
+│ (Next.js / Expo)│     │   (Next.js)     │     │    (Devnet)     │
+└─────────────────┘     └────────┬────────┘     └─────────────────┘
+         │                       │
+         │              ┌────────▼────────┐
+         │              │  Auth layer     │
+         │              │  verifyAuthToken │
+         │              │ (auth-server.ts) │
+         │              └────────┬────────┘
+         │                       │
+         │               ┌───────▼──────┐
+         └──────────────▶│  InstantDB   │
+                         │ (Real-time)   │
+                         └───────┬───────┘
+                                 │
+                    ┌────────────▼────────────┐
+                    │ Vercel Cron (server-only)│
+                    │ /api/game/shift          │
+                    │ /api/game/dispatch       │
+                    │ → expo-server-sdk push   │
+                    └──────────────────────────┘
 ```
+
+Session/game requests carry a verified InstantDB customToken (`Authorization: Bearer <customToken>`); server routes derive the acting identity from that token via `verifyAuthToken` (`src/lib/auth-server.ts`) rather than trusting body-supplied `authId`/`walletAddress` for money ops. Admin writes (`/api/admin/settings`, `/admin/bestiary`, `/admin/content`) are additionally gated by `isAdminAuthId`. InstantDB permissions (`instant.perms.ts`) are deny-by-default (view-only) for `gameSettings`/`runReceipts`/`sessions`/`worldShifts`; `reports` is create-only.
 
 ## Stack Components
 
@@ -26,6 +41,9 @@
 | **@solana-mobile/wallet-adapter-mobile** | Mobile Wallet Adapter | ✅ |
 | **@instantdb/react** | Real-time data binding | ✅ |
 | **Howler.js** | Audio playback | 🚧 |
+| **expo-notifications** | Mobile push notifications (dispatch opt-in) | ✅ |
+| **expo-device** | Device info for push registration | ✅ |
+| **expo-localization** | Locale/timezone detection for dispatch delivery | ✅ |
 
 ### Backend
 
@@ -34,6 +52,7 @@
 | **Next.js API Routes** | Game session management | ✅ |
 | **@instantdb/admin** | Server-side DB writes | ✅ |
 | **@solana/web3.js** | Transaction handling | ✅ |
+| **expo-server-sdk** | Server-side push fan-out (`/api/game/dispatch`) | ✅ |
 | **Claude API** | Content generation | 🚧 |
 
 ### Infrastructure
@@ -106,15 +125,118 @@ interface Corpse {
 }
 ```
 
+### Players (additions — The Shift)
+
+The Offering Ladder (Unbound / Coin-Bound / Blood-Bound) and community/notification layer added fields to `Player` (see `mobile/lib/instant.ts`):
+
+```typescript
+interface Player {
+  // ...existing identity/wallet fields
+  paleCoins?: number;          // earned-only currency, never purchasable
+  bindingStreak?: number;      // consecutive Coin-Bound clears (public seal tier)
+  bestBindingStreak?: number;
+  clearedZones?: string[];
+  creatureMastery?: Record<string, number>;
+  activeTitle?: string;
+  activeBorder?: string;
+  unlockedTitles?: string[];
+  unlockedBorders?: string[];
+  pushToken?: string;          // Expo push token, present only after opt-in
+  timezone?: string;           // IANA tz, for local-morning dispatch delivery
+  notifLocale?: string;
+  notifOptIn?: boolean;
+  notifPrompted?: boolean;
+  lastDispatchDayKey?: string;
+}
+```
+
+### Run Receipts
+
+Immutable, server-written record of every run's coin settlement, written on every death/victory:
+
+```typescript
+interface RunReceipt {
+  id: string;
+  runSeed: string;
+  dayKey: string;
+  dailyShiftEnabled: boolean;
+  chosenModifierId: string | null;
+  killedBy?: string;
+  nodeId?: string;
+  finalMessage?: string;
+  outcome: 'death' | 'victory';
+  coinDelta?: number;
+  streakAfter?: number;
+  // ...additional fields, see src/lib/coins.ts
+}
+```
+
+### World Shifts
+
+Nightly community-aggregation output (server-only writer), keyed by UTC day + zone — apex creature (buff + bounty), mass-death curse nodes, single deadliest Architect node, plus moderated `echoPhrases`/`architectEntries`:
+
+```typescript
+interface WorldShift {
+  id: string;
+  dayKey: string;
+  zone: string;
+  apexCreatureId?: string;
+  curseNodeIds?: string[];
+  architectNodeId?: string;
+  echoPhrases?: string[];
+  architectEntries?: string[];
+  // ...see src/lib/world-shift-agg.ts
+}
+```
+
+### Reports (UGC moderation)
+
+Abuse reports against another player's `finalMessage`/UGC text; create-only from clients, server-authoritative target lookup in `/api/moderation/report`:
+
+```typescript
+interface Report {
+  id: string;
+  targetType: string;
+  targetId: string;
+  reporterAuthId: string;
+  createdAt: number;
+  // ...see src/lib/moderation.ts
+}
+```
+
+Full permission rules for all namespaces live in `instant.perms.ts` (deny-by-default for `gameSettings`/`runReceipts`/`sessions`/`worldShifts`; `reports` is create-only).
+
 ## API Routes
 
 ### Session Management
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/api/session/start` | POST | Start game, create session token |
-| `/api/session/death` | POST | Record death (validates token) |
+| `/api/session/start` | POST | Start game, create session token (Coin-Bound requires a verified auth token) |
+| `/api/session/death` | POST | Record death (validates token; rejects authId ≠ session's) |
 | `/api/session/victory` | POST | Process victory payout |
+| `/api/session/advance` | POST | Advance to next node/depth |
+| `/api/session/cleanup` | GET/POST | Cron: expire stale sessions (requires `CRON_SECRET`) |
+| `/api/session/backfill-status` | GET | Backfill/status check |
+
+### The Shift — Game & Community Routes
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/game/settings` | GET | Read current `gameSettings` |
+| `/api/game/shift` | GET (read) / GET-no-param or POST (cron) | Nightly community aggregation → writes `worldShifts` (apex/curse/architect); GET with params reads today's shift |
+| `/api/game/dispatch` | GET/POST | Hourly fan-out cron; sends the day's dispatch at each user's local morning via `expo-server-sdk`, gated by `selectFanoutRecipients` (`src/lib/dispatch-fanout.ts`) |
+
+### Moderation & Admin
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/moderation/report` | POST | Authenticated; report UGC (server-authoritative target lookup, never trusts client text) |
+| `/api/admin/settings` | POST | Authenticated + admin-gated; writes `gameSettings` (`coinPool` excluded from the writable whitelist) |
+| `/api/admin/bestiary` | POST | Authenticated + admin-gated |
+| `/api/admin/content` | POST | Authenticated + admin-gated |
+
+Session/game/moderation/admin routes that touch money or player identity require `Authorization: Bearer <customToken>`, verified server-side via `verifyAuthToken` (`src/lib/auth-server.ts`, fail-closed). Cron routes (`session/cleanup`, `game/shift`, `game/dispatch`) additionally require `CRON_SECRET` (Bearer or `x-cron-secret`; open-and-warn if unset) and accept both GET (Vercel Cron) and POST.
 
 ### Request/Response Examples
 
@@ -240,9 +362,11 @@ MWA uses session-based connections (not persistent like browser extensions). Eac
 
 ### Client-Side (localStorage)
 
+`currentRoom` is a canonical **1-based depth projection** through the branching dungeon DAG (`generateDungeonGraph`/`ZoneNode`), consistent across `GameContext`, server routes, and the on-chain `u8` (not a client-side 0-indexed room counter).
+
 ```typescript
 interface GameState {
-  currentRoom: number;
+  currentRoom: number;        // 1-based depth, see note above
   health: number;
   stamina: number;
   inventory: Item[];

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Die Forward supports three staking modes with different levels of on-chain integration.
+Die Forward's economy is a three-rung **Offering Ladder** ("The Shift", phase 3b): Unbound (no stake), Coin-Bound (Pale Coins, earned-only in-game currency), and Blood-Bound (SOL, on-chain escrow). Within Blood-Bound, players stake through one of the flows below depending on their wallet type.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -21,9 +21,37 @@ Die Forward supports three staking modes with different levels of on-chain integ
 
 ---
 
+## The Offering Ladder (three rungs)
+
+The Toll offers players a choice of what to put at stake before a run:
+
+| Rung | Stake | Notes |
+|------|-------|-------|
+| **Unbound** | Nothing | Free play, offline-capable, firewalled from leaderboard/currency. No escrow, no coins, no on-chain interaction. |
+| **Coin-Bound** | Pale Coins | Earned-only in-game currency (never purchasable). Off-chain, settled server-side. See below. |
+| **Blood-Bound** | SOL | The on-chain escrow flows documented in this file (Flow 1/2 below). Shown only when the `stakingPosture` admin setting allows it (see below). |
+
+### Pale Coins (Coin-Bound)
+
+Pale Coins (`src/lib/coins.ts` / `mobile/lib/coins.ts`) are an **earned-only, never-purchasable** currency — there is no path to buy them.
+
+- **Earning:** every run (any stake mode) earns coins via `computeCoinEarn`: a concave depth-income curve, `floor(4 * sqrt(min(finalDepth, 13)))`, plus a flat +40 on a cleared run and a further flat +60 on a first clear of a zone.
+- **Staking at the Toll:** players choose a coin stake from a fixed ladder, `COIN_STAKE_OPTIONS = [60, 120, 240]`, gated by their current `paleCoins` balance.
+- **Death:** the stake was already deducted at run start; it burns into a pool-funded `coinPool` (`poolDelta = +coinStake`).
+- **Escape/Victory:** the stake is returned to the player plus a bonus drawn from the `coinPool`, sized by the admin-tunable `coinBonusPercent` (default 50%) and capped by what the pool actually holds (`bonus = min(floor(coinStake * bonusPercent / 100), poolAvailable)`) — the mechanic is population-net-negative and coins are never minted out of thin air.
+- **Binding Streak:** consecutive Coin-Bound clears build a public streak (`bindingStreak`/`nextStreak`); a Coin-Bound **death** resets it to 0. The streak maps to a public **seal tier** (`sealTier`): tier 0 below 3, tier 1 at 3-6, tier 2 at 7-14, tier 3 at 15+.
+- **Run receipts:** every run (any mode) writes an immutable `runReceipts` row capturing `(runSeed, dayKey, dailyShiftEnabled, chosenModifierId, outcome, coinDelta, streakAfter, ...)`.
+- **Auth requirement:** Coin-Bound runs require a verified InstantDB token — `session/start` in coins mode is rejected without one, and the acting player is looked up solely by the token-verified `authId` (a body-supplied `authId`/`walletAddress` can never touch a coin balance op). See `src/lib/auth-server.ts` (`verifyAuthToken`).
+
+### `stakingPosture` (admin setting)
+
+An admin-tunable `gameSettings.stakingPosture` value (`hidden` / `ritual` / `open`) controls whether Blood-Bound (SOL) staking is shown to players at all. Unbound and Coin-Bound are unaffected by this setting.
+
+---
+
 ## Flow 1: Browser Wallet (On-Chain Escrow)
 
-**For:** Human players using Phantom, Solflare, etc.
+**For:** Human players using Phantom, Solflare, etc., choosing the **Blood-Bound** rung of the Offering Ladder.
 
 ### How It Works
 
@@ -47,7 +75,7 @@ Die Forward supports three staking modes with different levels of on-chain integ
 ### On-Chain Program
 
 ```
-Program ID: 3KLgtdRvfJuLK1t9mKCe2soJbx4LgZfP6LQWVW9TQ7yN
+Program ID: 34NSi8ShkixLt8Eg8XahXaRnaNuiFV63xdtC3ZfdTAt6
 Game Pool:  E4LRRyeFXDbFg1WaS1pjKm5DAJzJDWbAs1v5qvqe5xYM
 Network:    Devnet
 ```
@@ -117,7 +145,7 @@ Future improvement: AgentWallet could add support for signing arbitrary transact
 
 ## Flow 3: Free Play (Demo Mode)
 
-**For:** Testing, onboarding, no-stake gameplay
+**For:** Testing, onboarding, no-stake gameplay — the **Unbound** rung of the Offering Ladder.
 
 ### How It Works
 
