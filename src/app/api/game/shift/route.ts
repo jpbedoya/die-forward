@@ -9,6 +9,7 @@ import {
   type ZoneDayAggregate,
   type WorldShiftRow,
 } from '@/lib/world-shift-agg';
+import { selectModeratedUGC, buildSuppressedSet, type AuthorTrust, type PhraseCandidate } from '@/lib/moderation';
 
 const ZONE_IDS = ['sunken-crypt', 'ashen-crypts', 'frozen-gallery', 'living-tomb', 'void-beyond'];
 const WINDOW_MS = 24 * 60 * 60 * 1000;
@@ -95,7 +96,62 @@ async function runAggregation(request: NextRequest) {
     const curseNodeThreshold = (settings.curseNodeThreshold as number) ?? 10;
     const apexMinKills = (settings.apexMinKills as number) ?? 3;
 
+    // ── A2 moderated UGC channel (Phase 4b) ──────────────────────────────────────
+    // Rebroadcast text comes ONLY from receipts (trusted) + is moderated server-side.
+    const ugcMinAccountAgeDays = (settings.ugcMinAccountAgeDays as number) ?? 3;
+    const ugcReportThreshold = (settings.ugcReportThreshold as number) ?? 2;
+    const minAccountAgeMs = ugcMinAccountAgeDays * 24 * 60 * 60 * 1000;
+
+    // reports → suppressed set
+    const reportsRes = await db.query({ reports: {} }).catch(() => null);
+    const reportRows = (reportsRes?.reports ?? []) as Record<string, unknown>[];
+    const suppressed = buildSuppressedSet(
+      reportRows.map((r) => ({
+        reportedWallet: (r.reportedWallet as string) ?? null,
+        reportedText: (r.reportedText as string) ?? '',
+        reporterAuthId: (r.reporterAuthId as string) ?? '',
+      })),
+      ugcReportThreshold,
+    );
+
+    // players → author trust + nickname, keyed by authId AND walletAddress
+    const playersRes = await db.query({ players: {} }).catch(() => null);
+    const playerRows = (playersRes?.players ?? []) as Record<string, unknown>[];
+    const authorByKey = new Map<string, { trust: AuthorTrust; nickname: string | null }>();
+    for (const p of playerRows) {
+      const entry = {
+        trust: {
+          createdAt: (p.createdAt as number) ?? 0,
+          authType: (p.authType as string) ?? undefined,
+          totalLost: (p.totalLost as number) ?? 0,
+          totalEarned: (p.totalEarned as number) ?? 0,
+          totalClears: (p.totalClears as number) ?? 0,
+        } as AuthorTrust,
+        nickname: (p.nickname as string) ?? null,
+      };
+      if (p.authId) authorByKey.set(`auth:${p.authId as string}`, entry);
+      if (p.walletAddress) authorByKey.set(`wallet:${p.walletAddress as string}`, entry);
+    }
+
+    // per-zone candidates from RAW receipts (deduped-death text lives on the receipt now)
+    function candidatesForZone(zoneId: string): PhraseCandidate[] {
+      return rows
+        .filter((r) => r.zoneId === zoneId && r.outcome === 'dead' && typeof r.finalMessage === 'string' && (r.finalMessage as string).trim())
+        .map((r) => {
+          const author =
+            authorByKey.get(`auth:${(r.authId as string) ?? ''}`) ??
+            authorByKey.get(`wallet:${(r.walletAddress as string) ?? ''}`) ?? null;
+          return {
+            text: (r.finalMessage as string) ?? null,
+            nickname: author?.nickname ?? null,
+            walletAddress: (r.walletAddress as string) ?? null,
+            author: author?.trust ?? null,
+          };
+        });
+    }
+
     const aggregatesByZone: Record<string, ZoneDayAggregate> = {};
+    const ugcByZone: Record<string, { echoPhrases: string[]; architectEntries: { name: string; words: string }[] }> = {};
     for (const zoneId of ZONE_IDS) {
       // Build the per-zone real-creature allowlist so environmental killers
       // ("The darkness", "Voidblade") can never occupy the apex slot. Degrade
@@ -105,13 +161,19 @@ async function runAggregation(request: NextRequest) {
         nowMs, windowMs: WINDOW_MS, curseNodeThreshold, apexMinKills,
         validCreatures: validCreatures.size > 0 ? validCreatures : null,
       });
+      ugcByZone[zoneId] = selectModeratedUGC(candidatesForZone(zoneId), {
+        nowMs, minAccountAgeMs, suppressed,
+      });
     }
 
     const existingResult = await db.query({ worldShifts: { $: { where: { dayKey } } } }).catch(() => null);
     const existingRows = ((existingResult?.worldShifts ?? []) as unknown[]).map((r) => r as WorldShiftRow);
 
     const plans = buildWorldShiftWrites(dayKey, aggregatesByZone, existingRows, () => id(), nowMs);
-    const writes = plans.map((p) => tx.worldShifts[p.rowId].update(p.fields));
+    const writes = plans.map((p) => {
+      const ugc = ugcByZone[p.fields.zoneId as string] ?? { echoPhrases: [], architectEntries: [] };
+      return tx.worldShifts[p.rowId].update({ ...p.fields, echoPhrases: ugc.echoPhrases, architectEntries: ugc.architectEntries });
+    });
     if (writes.length > 0) await db.transact(writes);
 
     return NextResponse.json({ success: true, dayKey, zones: plans.length, receiptedDeaths: receipts.length });
