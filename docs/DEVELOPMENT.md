@@ -146,19 +146,10 @@ const response = await fetch(`${API_BASE}/api/session/start`, {
 });
 ```
 
-### Index Conversion
+### Room Indexing
 
-- **Client**: 0-indexed (`currentRoom` starts at 0)
-- **Server**: 1-indexed (`currentRoom` starts at 1)
-- **Display**: 1-indexed (Room 1, Room 2, etc.)
-
-```tsx
-// When sending to server
-const serverRoom = clientRoom + 1;
-
-// When displaying
-const displayRoom = clientRoom + 1;
-```
+- `currentRoom` is a canonical **1-based depth projection**, used consistently across GameContext, server routes, and the on-chain `u8` — no client/server index conversion.
+- **Display**: 1-indexed (Room 1, Room 2, etc.), matching `currentRoom` directly.
 
 ## Git Workflow
 
@@ -217,6 +208,11 @@ npm run dev                 # localhost:3000
 - **Android**: Emulator or direct APK install
 - **Seeker**: Test MWA wallet connection
 
+### Local Builds
+
+- **Android APK** (no EAS): `cd mobile && npm run build:android:local` — flags `--prod` (release/signed, R8), `--metro` (live-reload), `--publish` (GitHub prerelease). Output in `mobile/dist/`. See `mobile/BUILD_NOTES.md` and `mobile/docs/signing-secrets.md`.
+- **iOS**: No local build script yet. `eas-cli` is not installed; the intended path is a local Xcode build like Android (`npx expo prebuild --platform ios --clean` then a Release build in Xcode).
+
 ## Documentation
 
 | Doc | Purpose |
@@ -228,7 +224,7 @@ npm run dev                 # localhost:3000
 | `AUDIO.md` | Sound files and generation workflow |
 | `ADMIN_SETTINGS.md` | InstantDB admin configuration |
 | `STAKING_FLOWS.md` | Wallet and escrow flows |
-| `AUTH_PLAN.md` | Auth architecture, status, and remaining work |
+| `AUTH_SYSTEM.md` | Auth architecture, status, and remaining work |
 
 ## Voice & Tone
 

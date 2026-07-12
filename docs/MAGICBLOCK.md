@@ -74,7 +74,7 @@ pub struct RunRecord {
     pub authority: Pubkey,     // Backend authority (signs updates)
     pub session_id: [u8; 32],  // InstantDB session ID (padded)
     pub started_at: i64,       // Unix timestamp
-    pub current_room: u8,      // 1-7
+    pub current_room: u8,      // 1-13 (1-based depth projection into the zone DAG)
     pub status: RunStatus,     // Active(0), Dead(1), Cleared(2)
     pub event_count: u16,      // Number of game events
     pub stake_amount: u64,     // Lamports staked
@@ -224,7 +224,7 @@ The VRF integration is **fully deployed** on devnet:
 
 > **Note:** Existing runs created before the VRF deploy are 125 bytes (no VRF fields). New runs will be 158 bytes with VRF support.
 
-### How It Will Work
+### How It Works
 
 1. **Run starts** → Create RunRecord on L1, delegate to ER
 2. **Request VRF** → Call `request_vrf` instruction on ER
@@ -232,7 +232,7 @@ The VRF integration is **fully deployed** on devnet:
 4. **Use seed** → Game uses VRF seed for deterministic room generation
 5. **Commit** → Final state (including VRF seed) committed to L1
 
-### RunRecord with VRF (Future)
+### RunRecord with VRF (Current)
 
 ```rust
 #[account]

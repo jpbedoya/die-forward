@@ -385,7 +385,7 @@ The water itself, given will. She was here before the temple, before the prayers
 
 **Appears randomly. Extremely rare. Not meant to be defeated — meant to be survived.**
 
-#### The Architect *(not yet in game)*
+#### The Architect *(node-marking + wall inscriptions shipped in the community layer 4a/4b — `isArchitect`/`architectEntries`, see `world-shift.ts`/`content.ts`/`play.tsx`; the full reshaping boss encounter below is not yet in game)*
 It built this place. Not the temple — the underworld itself. It is still building. It looks at you and sees raw material. Rooms shift when it moves. Walls become doors. Doors become mouths.
 
 **Behavior:** 
