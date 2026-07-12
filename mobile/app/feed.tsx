@@ -7,6 +7,7 @@ import { getDepthForRoom } from '../lib/content';
 import { getZoneDepth, loadZone, listZoneIds } from '../lib/zone-loader';
 import { useState } from 'react';
 import { t } from '../lib/i18n';
+import { containsBlockedContent } from '../lib/moderation';
 
 // Format timestamp as relative time
 function formatTimeAgo(timestamp: number): string {
@@ -80,7 +81,7 @@ function DeathEntry({ death }: { death: Death }) {
 
       {/* Final message */}
       <View className="bg-black/30 border-l-2 border-blood p-2">
-        <Text className="text-bone text-sm font-mono italic">"{death.finalMessage}"</Text>
+        <Text className="text-bone text-sm font-mono italic">"{containsBlockedContent(death.finalMessage) ? t('corpse.redacted') : death.finalMessage}"</Text>
       </View>
     </View>
   );

@@ -11,6 +11,7 @@ import { dlog, exportDebugLogs } from '../lib/debug-log';
 import { t } from '../lib/i18n';
 import { getDailyShift, utcDayKey, fetchCommunityShift, mergeShift, type CommunityShift } from '../lib/world-shift';
 import { renderDispatch } from '../lib/dispatch';
+import { containsBlockedContent } from '../lib/moderation';
 
 // Animated gradient button decoration - constantly flows inward
 function AnimatedDescendButton() {
@@ -204,7 +205,7 @@ function EchoSheet({
                 lineHeight: 19,
                 textAlign: 'center',
               }} numberOfLines={2}>
-                "{death.finalMessage}"
+                "{containsBlockedContent(death.finalMessage) ? t('corpse.redacted') : death.finalMessage}"
               </Text>
             ) : null}
             {/* 🕯️ Light a candle */}
