@@ -470,6 +470,7 @@
   "play.continueEllipsis": "Continue...",
   "play.corpseFlavor": "They fell here. Their belongings remain...",
   "play.corpseNothing": "The corpse has nothing you need.",
+  "corpse.redacted": "The words are lost to rot.",
   "play.enterCombat": "Enter combat",
   "play.escapedDamage": "Escaped! -{dmg} HP",
   "play.fallenLabel": "FALLEN",

@@ -27,6 +27,7 @@ import { createRunRng } from '../lib/seeded-random';
 import { useUnifiedWallet, type Address } from '../lib/wallet/unified';
 import { ItemModal, CreatureModal } from '../components/CryptModal';
 import { palette } from '../lib/theme';
+import { containsBlockedContent } from '../lib/moderation';
 
 function HealthBar({ current, max }: { current: number; max: number }) {
   const filled = Math.round((current / max) * 8);
@@ -723,7 +724,9 @@ export default function PlayScreen() {
             </Text>
             <View className="bg-black/30 p-3 mb-2">
               <Text className="text-bone-muted text-sm font-mono italic">
-                "{realCorpse.finalMessage}"
+                {containsBlockedContent(realCorpse.finalMessage)
+                  ? t('corpse.redacted')
+                  : `"${realCorpse.finalMessage}"`}
               </Text>
             </View>
             <View className="flex-row items-center justify-between">
@@ -857,7 +860,11 @@ export default function PlayScreen() {
               )}
             </View>
             <View className="bg-black/30 border-l-2 border-ethereal p-3 mb-3">
-              <Text className="text-bone text-sm font-mono italic">"{lootedCorpse.finalMessage}"</Text>
+              <Text className="text-bone text-sm font-mono italic">
+                {containsBlockedContent(lootedCorpse.finalMessage)
+                  ? t('corpse.redacted')
+                  : `"${lootedCorpse.finalMessage}"`}
+              </Text>
             </View>
             <View className="flex-row justify-between">
               <Text className="text-bone-dark text-xs font-mono">{t('play.theyCarried')}</Text>
