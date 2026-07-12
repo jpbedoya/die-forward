@@ -15,7 +15,8 @@ import { useAudius } from '../lib/AudiusContext';
 import { AudioSettingsModal } from '../components/AudioSettingsModal';
 import { AudioToggle } from '../components/AudioToggle';
 import { CRTOverlay } from '../components/CRTOverlay';
-import { useCurrentPlayer, applyMilestoneCosmetics, useGameSettings, recordCreatureUpdate } from '../lib/instant';
+import { useCurrentPlayer, applyMilestoneCosmetics, useGameSettings, recordCreatureUpdate, saveNotifRegistration, markNotifPrompted } from '../lib/instant';
+import { requestPushPermission, getExpoPushToken, getDeviceTimezone, getDeviceLocale } from '../lib/notifications';
 import { getNewMilestone, getMilestoneTypeLabel, type Milestone } from '../lib/milestones';
 import { trailRows } from '../lib/traversal';
 import { t } from '../lib/i18n';
@@ -33,6 +34,13 @@ export default function DeathScreen() {
   // Milestone unlock check — computed once when player data arrives
   const [newMilestone, setNewMilestone] = useState<Milestone | null>(null);
   const [milestoneChecked, setMilestoneChecked] = useState(false);
+
+  // First-death diegetic notification opt-in (Phase 4c, Task 6). Additive and
+  // dismissible — NOTHING about gameplay/navigation is gated on the outcome.
+  // Its own run-once ref guarantees the prompt can't double-fire even though
+  // the milestone effect below is already latched.
+  const [showNotifPrompt, setShowNotifPrompt] = useState(false);
+  const notifPromptFired = useRef(false);
 
   // Coin economy (Task 7): snapshot the player's pale-coin balance and
   // binding streak the moment they're available on this screen — i.e.
@@ -88,6 +96,13 @@ export default function DeathScreen() {
     setRunStartCoins(player.paleCoins ?? 0);
     setRunStartStreak(player.bindingStreak ?? 0);
 
+    // First death only, and only if we've never asked. Behind its own ref so
+    // it fires exactly once regardless of re-renders.
+    if (!notifPromptFired.current && prevDeaths === 0 && !player.notifPrompted) {
+      notifPromptFired.current = true;
+      setShowNotifPrompt(true);
+    }
+
     // Persist title/border unlocks immediately when crossed.
     if (milestone) {
       applyMilestoneCosmetics(player, milestone).catch((err) => {
@@ -95,6 +110,40 @@ export default function DeathScreen() {
       });
     }
   }, [player, milestoneChecked]);
+
+  // Notification opt-in outcome. All branches merely close the prompt and
+  // persist state fire-and-forget; a native failure never blocks the screen.
+  const handleNotifAccept = async () => {
+    setShowNotifPrompt(false);
+    if (!player) return;
+    try {
+      const granted = await requestPushPermission();
+      if (granted) {
+        const token = await getExpoPushToken();
+        if (token) {
+          await saveNotifRegistration(player, {
+            pushToken: token,
+            timezone: getDeviceTimezone(),
+            notifLocale: getDeviceLocale(),
+          });
+          return;
+        }
+      }
+      await markNotifPrompted(player);
+    } catch (e) {
+      console.warn('[Notif] opt-in failed:', e);
+    }
+  };
+
+  const handleNotifDecline = async () => {
+    setShowNotifPrompt(false);
+    if (!player) return;
+    try {
+      await markNotifPrompted(player);
+    } catch (e) {
+      console.warn('[Notif] decline failed:', e);
+    }
+  };
 
   const handleShare = async () => {
     setSharing(true);
@@ -621,6 +670,37 @@ export default function DeathScreen() {
           </View>
         </View>
       </Modal>
+      {/* First-death notification opt-in — diegetic, dismissible, nothing gated on outcome */}
+      <Modal
+        visible={showNotifPrompt}
+        transparent
+        animationType="fade"
+        onRequestClose={handleNotifDecline}
+      >
+        <View className="flex-1 bg-black/80 justify-center items-center p-4">
+          <View className="bg-crypt-surface border border-crypt-border p-5 w-full max-w-[340px]">
+            <Text className="text-amber text-sm font-mono font-bold tracking-widest text-center mb-4">
+              {t('notif.ask.title')}
+            </Text>
+            <Text className="text-bone text-base font-mono italic leading-6 text-center mb-6">
+              {t('notif.ask.body')}
+            </Text>
+            <Pressable
+              className="bg-amber py-4 items-center active:bg-amber-dark mb-3"
+              onPress={handleNotifAccept}
+            >
+              <Text className="text-crypt-bg font-mono font-bold tracking-widest">{t('notif.ask.accept')}</Text>
+            </Pressable>
+            <Pressable
+              className="border border-crypt-border-light py-3 items-center active:border-amber"
+              onPress={handleNotifDecline}
+            >
+              <Text className="text-bone-muted font-mono">{t('notif.ask.decline')}</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+
       <AudioSettingsModal visible={audioSettingsOpen} onClose={() => setAudioSettingsOpen(false)} />
     </SafeAreaView>
     <CRTOverlay />

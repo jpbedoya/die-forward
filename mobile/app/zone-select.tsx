@@ -13,8 +13,8 @@ import { useCurrentPlayer, usePlayer, useGameSettings, Player } from '../lib/ins
 import { API_BASE } from '../lib/api';
 import { palette } from '../lib/theme';
 import { t } from '../lib/i18n';
-import { getDailyShift, utcDayKey, type DailyShift } from '../lib/world-shift';
-import { RUN_MODIFIERS } from '../lib/modifiers';
+import { getDailyShift, utcDayKey, mergeShift, fetchCommunityShiftsForDay, type DailyShift, type CommunityShift } from '../lib/world-shift';
+import { renderDispatch } from '../lib/dispatch';
 
 // Determine if a player has unlocked a zone through progression
 function isZoneUnlocked(zoneId: string, player: Player | undefined): boolean {
@@ -109,18 +109,16 @@ function DifficultyDots({ difficulty, accentColor }: { difficulty: number; accen
   );
 }
 
-// Subtle "today's shift" line for an unlocked zone card — sealed side doors
-// (if any) else "all passages stand open", plus the day's modifier emojis.
-function ShiftLine({ shift }: { shift: DailyShift }) {
-  const emojis = shift.modifierPool
-    .map((modId) => RUN_MODIFIERS.find((m) => m.id === modId)?.emoji ?? '')
-    .join(' ');
-  const line = shift.sealedSideNodes.length > 0
-    ? t('shift.zone.sealed', { n: shift.sealedSideNodes.length })
-    : t('shift.zone.open');
+// Subtle "today's shift" line for an unlocked zone card — one Cartographer
+// dispatch line through renderDispatch, degrading to the seeded-only layer
+// when community data hasn't loaded yet (or failed to).
+function ShiftLine({ shift, community }: { shift: DailyShift; community: CommunityShift | null }) {
+  const d = renderDispatch(mergeShift(shift, community));
+  // Prefer an apex/cursed/doors signal line over the register intro when present.
+  const line = d.lines.find(l => l.key !== `dispatch.register.${d.register}`) ?? d.lines[0];
   return (
     <Text style={{ fontFamily: 'monospace', fontSize: 9, color: palette.bone.dark, marginTop: 6, letterSpacing: 0.3 }}>
-      {line} {emojis}
+      {t(line.key, line.params)}
     </Text>
   );
 }
@@ -132,6 +130,7 @@ function GridZoneCard({
   enabled: enabledProp,
   playerLocked,
   shift,
+  community,
 }: {
   zone: Zone;
   isSelected: boolean;
@@ -139,6 +138,7 @@ function GridZoneCard({
   enabled?: boolean;
   playerLocked?: boolean;
   shift?: DailyShift;
+  community?: CommunityShift | null;
 }) {
   const enabled = enabledProp ?? zone.enabled;
   const borderColor = isSelected ? zone.accentColor : palette.crypt.border;
@@ -233,7 +233,7 @@ function GridZoneCard({
           {t(zone.tagline)}
         </Text>
         <DifficultyDots difficulty={zone.difficulty} accentColor={zone.accentColor} />
-        {shift && <ShiftLine shift={shift} />}
+        {shift && <ShiftLine shift={shift} community={community ?? null} />}
       </View>
     </Pressable>
   );
@@ -246,6 +246,7 @@ function VoidBeyondCard({
   enabled: enabledProp,
   playerLocked,
   shift,
+  community,
 }: {
   zone: Zone;
   isSelected: boolean;
@@ -253,6 +254,7 @@ function VoidBeyondCard({
   enabled?: boolean;
   playerLocked?: boolean;
   shift?: DailyShift;
+  community?: CommunityShift | null;
 }) {
   const enabled = enabledProp ?? zone.enabled;
   const borderColor = isSelected ? zone.accentColor : palette.crypt.border;
@@ -304,7 +306,7 @@ function VoidBeyondCard({
       >
         "{t(zone.tagline)}"
       </Text>
-      {enabled && !playerLocked && shift && <ShiftLine shift={shift} />}
+      {enabled && !playerLocked && shift && <ShiftLine shift={shift} community={community ?? null} />}
       <DifficultyDots difficulty={zone.difficulty} accentColor={zone.accentColor} />
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
         {enabled && playerLocked ? (
@@ -394,6 +396,17 @@ export default function ZoneSelectScreen() {
     return map;
   }, [dayKey, settings.dailyShiftEnabled]);
 
+  // Community layer for all 5 zones, fetched in ONE batch call (not 5) and
+  // threaded per-zone into each card's ShiftLine. Degrades to seeded-only
+  // ({}) on any failure — fetchCommunityShiftsForDay never throws.
+  const [communityByZone, setCommunityByZone] = useState<Record<string, CommunityShift>>({});
+  useEffect(() => {
+    if (!settings.dailyShiftEnabled) return;
+    let alive = true;
+    fetchCommunityShiftsForDay(dayKey).then((m) => { if (alive) setCommunityByZone(m); });
+    return () => { alive = false; };
+  }, [dayKey, settings.dailyShiftEnabled]);
+
   const selectedZone = ZONES.find((z) => z.id === selectedZoneId) ?? ZONES[0];
 
   const handleConfirm = () => {
@@ -448,6 +461,7 @@ export default function ZoneSelectScreen() {
                     enabled={isZoneEnabled(zone.id)}
                     playerLocked={isPlayerLocked(zone.id)}
                     shift={shiftsByZone[zone.id]}
+                    community={communityByZone[zone.id] ?? null}
                   />
                 ))}
               </View>
@@ -462,6 +476,7 @@ export default function ZoneSelectScreen() {
             enabled={isZoneEnabled(voidZone.id)}
             playerLocked={isPlayerLocked(voidZone.id)}
             shift={shiftsByZone[voidZone.id]}
+            community={communityByZone[voidZone.id] ?? null}
           />
 
           <View style={{ height: 16 }} />

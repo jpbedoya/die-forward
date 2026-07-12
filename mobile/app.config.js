@@ -53,6 +53,8 @@ module.exports = {
       "expo-router",
       "expo-asset",
       "expo-audio",
+      "expo-notifications",
+      "expo-localization",
       "./plugins/with-mwa-android",
       "./plugins/with-android-hardening",
       "./plugins/with-arm64-only",

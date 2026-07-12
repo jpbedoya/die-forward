@@ -9,8 +9,8 @@ import { router, useFocusEffect } from 'expo-router';
 import { useAudio } from '../lib/audio';
 import { dlog, exportDebugLogs } from '../lib/debug-log';
 import { t } from '../lib/i18n';
-import { getDailyShift, utcDayKey } from '../lib/world-shift';
-import { RUN_MODIFIERS } from '../lib/modifiers';
+import { getDailyShift, utcDayKey, fetchCommunityShift, mergeShift, type CommunityShift } from '../lib/world-shift';
+import { renderDispatch } from '../lib/dispatch';
 
 // Animated gradient button decoration - constantly flows inward
 function AnimatedDescendButton() {
@@ -253,10 +253,20 @@ export default function HomeScreen() {
   // from day one. Per-zone shift detail (sealed doors, etc.) lives on zone
   // select where a concrete zoneId exists.
   const dayKey = utcDayKey();
-  const shiftModifierPool = useMemo(
-    () => (settings.dailyShiftEnabled ? getDailyShift('sunken-crypt', dayKey).modifierPool : []),
-    [dayKey, settings.dailyShiftEnabled]
-  );
+  const HOME_ZONE = 'sunken-crypt';
+  const [homeCommunity, setHomeCommunity] = useState<CommunityShift | null>(null);
+  useEffect(() => {
+    if (!settings.dailyShiftEnabled) return;
+    let alive = true;
+    fetchCommunityShift(HOME_ZONE, dayKey).then((c) => { if (alive) setHomeCommunity(c); }).catch(() => {});
+    return () => { alive = false; };
+  }, [dayKey, settings.dailyShiftEnabled]);
+
+  const dispatch = useMemo(() => {
+    if (!settings.dailyShiftEnabled) return null;
+    const world = mergeShift(getDailyShift(HOME_ZONE, dayKey), homeCommunity);
+    return renderDispatch(world);
+  }, [dayKey, settings.dailyShiftEnabled, homeCommunity]);
 
   useEffect(() => {
     dlog('Home', 'HomeScreen mounted');
@@ -442,22 +452,20 @@ export default function HomeScreen() {
 
         <View className="flex-[2]" />
 
-        {/* Daily World Shift — compact bible-voice callout, hidden when disabled */}
-        {settings.dailyShiftEnabled && shiftModifierPool.length > 0 && (
+        {/* Daily World Shift — Cartographer-voice dispatch, hidden when disabled */}
+        {settings.dailyShiftEnabled && dispatch && (
           <View className="items-center mb-4">
             <Text className="text-amber-dark font-mono text-xs tracking-widest">
               {t('shift.header')}
             </Text>
-            <Text className="text-bone-dark font-mono text-xs italic text-center mt-1">
-              {t('shift.line')}
-            </Text>
-            <Text className="text-bone-muted font-mono text-xs text-center mt-1">
-              {t('shift.offers', {
-                mods: shiftModifierPool
-                  .map((modId) => RUN_MODIFIERS.find((m) => m.id === modId)?.emoji ?? '')
-                  .join(' '),
-              })}
-            </Text>
+            {dispatch.lines.map((line, i) => (
+              <Text
+                key={i}
+                className={`font-mono text-xs text-center mt-1 ${dispatch.level === 'banner' ? 'text-bone-dark italic' : 'text-bone-muted'}`}
+              >
+                {t(line.key, line.params)}
+              </Text>
+            ))}
           </View>
         )}
 

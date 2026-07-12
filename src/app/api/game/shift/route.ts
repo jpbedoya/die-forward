@@ -120,8 +120,13 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const zoneId = searchParams.get('zoneId');
     const dayKey = searchParams.get('dayKey');
-    if (!zoneId || !dayKey) {
+    if (!dayKey) {
       return NextResponse.json({ error: 'zoneId and dayKey are required' }, { status: 400 });
+    }
+    if (!zoneId) {
+      const result = await db.query({ worldShifts: { $: { where: { dayKey } } } }).catch(() => null);
+      const shifts = (result?.worldShifts ?? []) as Record<string, unknown>[];
+      return NextResponse.json({ shifts });
     }
     const result = await db
       .query({ worldShifts: { $: { where: { dayKey, zoneId }, limit: 1 } } })

@@ -81,6 +81,45 @@ export async function fetchCommunityShift(
   }
 }
 
+/**
+ * Fetch today's community layer for ALL zones in one call. Returns a map
+ * keyed by zoneId, `{}` on ANY failure (offline, non-200, parse error,
+ * abort) so callers degrade to the seeded layer with no disruption. Never
+ * throws. Mirrors fetchCommunityShift's contract but batched — used by
+ * zone-select so 5 cards cost one request instead of 5.
+ */
+export async function fetchCommunityShiftsForDay(
+  dayKey: string,
+  apiBase: string = process.env.EXPO_PUBLIC_API_URL || '',
+): Promise<Record<string, CommunityShift>> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 3000);
+  try {
+    const res = await fetch(`${apiBase}/api/game/shift?dayKey=${encodeURIComponent(dayKey)}`, { signal: controller.signal });
+    if (!res.ok) return {};
+    const json = await res.json();
+    const out: Record<string, CommunityShift> = {};
+    for (const s of (Array.isArray(json?.shifts) ? json.shifts : [])) {
+      if (s?.zoneId && s?.dayKey === dayKey) {
+        out[s.zoneId] = {
+          dayKey: s.dayKey,
+          zoneId: s.zoneId,
+          apexCreatureId: s.apexCreatureId ?? null,
+          apexKills: s.apexKills ?? 0,
+          curseNodes: Array.isArray(s.curseNodes) ? s.curseNodes : [],
+          architectNodeId: s.architectNodeId ?? null,
+          architectDeaths: s.architectDeaths ?? 0,
+        };
+      }
+    }
+    return out;
+  } catch {
+    return {};
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 /** Formats a Date as 'YYYY-MM-DD' using its UTC calendar date. */
 export function utcDayKey(date: Date = new Date()): string {
   const y = date.getUTCFullYear();

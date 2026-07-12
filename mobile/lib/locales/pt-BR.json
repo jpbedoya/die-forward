@@ -640,5 +640,18 @@
   "victory.coin.balance": "Pale Coins",
   "victory.coin.gained": "+{amount} gathered from the depths",
   "victory.coin.returned": "The stake of {amount} coins returns, and the depths add their due.",
-  "victory.coin.streak": "{n} runs bound without breaking."
+  "victory.coin.streak": "{n} runs bound without breaking.",
+  "dispatch.register.warning": "The depths stir with appetite.",
+  "dispatch.register.lament": "The depths keep their dead close.",
+  "dispatch.register.invitation": "The passages have opened for the willing.",
+  "dispatch.apex": "Something grows fat on wanderers: the {creature}.",
+  "dispatch.cursed": "There are places below where many ended.",
+  "dispatch.doors": "The way has changed. {n} passage(s) will not answer today.",
+  "dispatch.quiet": "The depths are still. For now.",
+  "notif.ask.title": "THE CARTOGRAPHER",
+  "notif.ask.body": "The passages move. I can send word when they do — if you wish.",
+  "notif.ask.accept": "Send word",
+  "notif.ask.decline": "Let them move unseen",
+  "notif.settings.label": "DISPATCHES",
+  "notif.settings.hint": "Word when the passages move"
 }
