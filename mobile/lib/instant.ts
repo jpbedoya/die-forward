@@ -97,6 +97,13 @@ export interface Player {
   // Stored natively by InstantDB (same pattern as clearedZones). See
   // mobile/lib/bestiary-mastery.ts for the shape + helpers + thresholds.
   creatureMastery?: CreatureMastery;
+  // Push notification opt-in (Phase 4c daily dispatch)
+  pushToken?: string;        // Expo push token (present only after opt-in on a native build)
+  timezone?: string;         // IANA tz, e.g. "America/New_York" — for local-morning delivery
+  notifLocale?: string;      // locale at opt-in time, for future per-locale push
+  notifOptIn?: boolean;      // true = wants the daily dispatch push
+  notifPrompted?: boolean;   // true once the diegetic ask has fired (ask-once)
+  lastDispatchDayKey?: string; // last UTC day a push was sent (server dedupe, ≤1/day)
 }
 
 // Persist title/border milestone unlocks in player profile (idempotent).
@@ -129,6 +136,23 @@ export async function applyMilestoneCosmetics(
   await db.transact([
     tx.players[player.id].update(updates),
   ]);
+}
+
+// Push notification opt-in writes (Phase 4c daily dispatch)
+export async function saveNotifRegistration(
+  player: Pick<Player, 'id'>,
+  reg: { pushToken: string; timezone: string; notifLocale: string },
+): Promise<void> {
+  await db.transact([tx.players[player.id].update({
+    pushToken: reg.pushToken, timezone: reg.timezone, notifLocale: reg.notifLocale,
+    notifOptIn: true, notifPrompted: true,
+  })]);
+}
+export async function setNotifOptIn(player: Pick<Player, 'id'>, optIn: boolean): Promise<void> {
+  await db.transact([tx.players[player.id].update({ notifOptIn: optIn, notifPrompted: true })]);
+}
+export async function markNotifPrompted(player: Pick<Player, 'id'>): Promise<void> {
+  await db.transact([tx.players[player.id].update({ notifPrompted: true })]);
 }
 
 // Initialize the database
