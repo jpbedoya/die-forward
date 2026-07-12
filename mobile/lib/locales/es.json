@@ -3,6 +3,7 @@
   "combat.synergy.discovered": "Un {name} es golpeado.",
   "combat.resolved": "It is done. The way forward opens.",
   "combat.bait": "You give it what it wants. It commits.",
+  "combat.echo.recite": "It repeats the words of the dead: \"{words}\"",
   "community.apex": "It has grown fat on wanderers.",
   "community.cursed": "Many ended here.",
   "community.architect": "The walls are thick with the fallen.",

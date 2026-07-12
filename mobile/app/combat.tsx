@@ -43,6 +43,7 @@ import {
   CreatureInfo,
 } from '../lib/content';
 import { getZoneDepth, loadZone } from '../lib/zone-loader';
+import { pickEchoPhrase } from '../lib/creature-rules';
 import { isApexCreature } from '../lib/world-shift';
 import { applyApexBuff, calculateCombatDamage, heartstoneWarning } from '../lib/combat-math';
 import {
@@ -835,6 +836,17 @@ export default function CombatScreen() {
     );
   }
 
+  // Echo Husk "Repeating" — recite one moderated community phrase per
+  // encounter. Display-only; seeded from the encounter's node id (a stable,
+  // non-RNG value), NOT game.rng, so reciting an echo never advances the
+  // run's deterministic seeded RNG stream.
+  const isEchoHusk = creature.name === 'Echo Husks' || creature.signature?.id === 'repeating';
+  const echoPhrases = game.communityShift?.echoPhrases ?? [];
+  const echoNodeSeed = (params.nodeId ?? '')
+    .split('')
+    .reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+  const echoPhrase = isEchoHusk ? pickEchoPhrase(echoPhrases, echoNodeSeed) : null;
+
   // Use dvh for mobile web, fallback to 100% for native
   const containerStyle = (Platform.OS === 'web'
     ? { height: '100dvh', maxHeight: '100dvh', display: 'flex', flexDirection: 'column' as const, overflow: 'hidden' as const }
@@ -895,6 +907,15 @@ export default function CombatScreen() {
             <View className={`p-2 border-l-2 ${intentEffects.isCharging ? 'border-amber bg-amber/10' : 'border-ethereal bg-ethereal/10'}`}>
               <Text className={`text-xs font-mono ${intentEffects.isCharging ? 'text-amber' : 'text-ethereal'}`}>
                 {intentEffects.description}
+              </Text>
+            </View>
+          )}
+
+          {/* Echo Husk Repeating — recites a moderated community phrase, raw UGC */}
+          {isEchoHusk && echoPhrase != null && (
+            <View className="p-2 mt-2 border-l-2 border-bone-dark bg-bone-dark/10">
+              <Text className="text-bone-dark text-xs font-mono italic">
+                {t('combat.echo.recite', { words: echoPhrase })}
               </Text>
             </View>
           )}
