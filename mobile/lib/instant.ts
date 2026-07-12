@@ -103,7 +103,7 @@ export interface Player {
   notifLocale?: string;      // locale at opt-in time, for future per-locale push
   notifOptIn?: boolean;      // true = wants the daily dispatch push
   notifPrompted?: boolean;   // true once the diegetic ask has fired (ask-once)
-  lastDispatchDayKey?: string; // last UTC day a push was sent (server dedupe, ≤1/day)
+  lastDispatchDayKey?: string; // recipient's local day a push was last sent (server dedupe, ≤1/day)
 }
 
 // Persist title/border milestone unlocks in player profile (idempotent).

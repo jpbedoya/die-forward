@@ -89,3 +89,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to fan out dispatch' }, { status: 500 });
   }
 }
+
+// Vercel Cron Jobs invoke the path with a GET request; external schedulers may
+// POST. Accept both (each guarded by checkCronAuth) so the fan-out fires
+// regardless of how it is triggered. GET delegates to the POST handler.
+export async function GET(request: NextRequest) {
+  return POST(request);
+}
