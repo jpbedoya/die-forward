@@ -389,6 +389,7 @@ describe('buildRunReceipt', () => {
     finalDepth: 7,
     killedBy: 'bog-lurker',
     nodeId: 'n-4',
+    finalMessage: 'i should not have come here',
     coinDelta: 34,
     streakAfter: 0,
     createdAt: 1_700_000_000_000,
@@ -497,6 +498,22 @@ describe('buildRunReceipt killedBy/nodeId', () => {
     const r = buildRunReceipt(base);
     expect(r.killedBy).toBeNull();
     expect(r.nodeId).toBeNull();
+  });
+});
+
+describe('buildRunReceipt finalMessage', () => {
+  const base = {
+    sessionId: 's1', sessionToken: 't1', authId: 'wallet-abc', walletAddress: 'wallet-abc',
+    zoneId: 'sunken-crypt', runSeed: 'seed', seedSource: 'legacy', serverDayKey: '2026-07-11',
+    dailyShiftEnabled: true, chosenModifierId: null, stakeMode: 'free' as const, coinStake: 0,
+    outcome: 'dead' as const, finalDepth: 7, coinDelta: 0, streakAfter: 0, createdAt: 1,
+  };
+  it('records finalMessage when provided', () => {
+    expect(buildRunReceipt({ ...base, finalMessage: 'i should not have come here' }).finalMessage)
+      .toBe('i should not have come here');
+  });
+  it('defaults finalMessage to null when omitted', () => {
+    expect(buildRunReceipt(base).finalMessage).toBeNull();
   });
 });
 
