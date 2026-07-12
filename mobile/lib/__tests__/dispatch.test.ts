@@ -5,7 +5,7 @@ function daily(over: Partial<DailyShift> = {}): DailyShift {
   return { dayKey: '2026-07-11', zoneId: 'sunken-crypt', modifierPool: [], closedEdges: [], sealedSideNodes: [], ...over };
 }
 function community(over: Partial<CommunityShift> = {}): CommunityShift {
-  return { dayKey: '2026-07-11', zoneId: 'sunken-crypt', apexCreatureId: null, apexKills: 0, curseNodes: [], architectNodeId: null, architectDeaths: 0, ...over };
+  return { dayKey: '2026-07-11', zoneId: 'sunken-crypt', apexCreatureId: null, apexKills: 0, curseNodes: [], architectNodeId: null, architectDeaths: 0, echoPhrases: [], architectEntries: [], ...over };
 }
 function world(d = daily(), c: CommunityShift | null = null): WorldShift { return { ...d, community: c }; }
 

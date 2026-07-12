@@ -31,6 +31,8 @@ export interface CommunityShift {
   curseNodes: string[];
   architectNodeId: string | null;
   architectDeaths: number;
+  echoPhrases: string[];
+  architectEntries: { name: string; words: string }[];
 }
 
 export type WorldShift = DailyShift & { community: CommunityShift | null };
@@ -73,6 +75,8 @@ export async function fetchCommunityShift(
       curseNodes: Array.isArray(s.curseNodes) ? s.curseNodes : [],
       architectNodeId: s.architectNodeId ?? null,
       architectDeaths: s.architectDeaths ?? 0,
+      echoPhrases: Array.isArray(s.echoPhrases) ? s.echoPhrases : [],
+      architectEntries: Array.isArray(s.architectEntries) ? s.architectEntries : [],
     };
   } catch {
     return null;
@@ -109,6 +113,8 @@ export async function fetchCommunityShiftsForDay(
           curseNodes: Array.isArray(s.curseNodes) ? s.curseNodes : [],
           architectNodeId: s.architectNodeId ?? null,
           architectDeaths: s.architectDeaths ?? 0,
+          echoPhrases: Array.isArray(s.echoPhrases) ? s.echoPhrases : [],
+          architectEntries: Array.isArray(s.architectEntries) ? s.architectEntries : [],
         };
       }
     }

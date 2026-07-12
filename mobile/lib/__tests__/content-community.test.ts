@@ -7,6 +7,7 @@ const community: CommunityShift = {
   dayKey: '2026-07-10', zoneId: 'sunken-crypt',
   apexCreatureId: 'Bog Lurker', apexKills: 5,
   curseNodes: ['n-3'], architectNodeId: 'n-3', architectDeaths: 12,
+  echoPhrases: [], architectEntries: [],
 };
 
 function node(id: string, enemyName?: string): MarkableNode {
