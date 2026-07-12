@@ -21,6 +21,20 @@ describe('containsBlockedContent', () => {
   it('passes clean bible-voice final words', () => {
     expect(containsBlockedContent('the water took me at last')).toBe(false);
   });
+  it('blocks exotic-TLD spam domains (generic TLD, not a fixed allowlist)', () => {
+    expect(containsBlockedContent('meet at scam.ru')).toBe(true);
+    expect(containsBlockedContent('free coins scam.biz')).toBe(true);
+  });
+  it('blocks cross-script homoglyph profanity (Cyrillic/Greek → Latin fold)', () => {
+    // Greek upsilon (υ) + kappa (κ) spelling "fuck"
+    expect(containsBlockedContent('fυcκ')).toBe(true);
+    // Cyrillic homoglyphs spelling "chink": с(U+0441) h i n к(U+043A)
+    expect(containsBlockedContent('сhinк')).toBe(true);
+  });
+  it('does NOT falsely block legit non-Latin (CJK) final words — i18n safety', () => {
+    expect(containsBlockedContent('水が私を連れ去った')).toBe(false); // Japanese
+    expect(containsBlockedContent('깊은 물이 나를 데려갔다')).toBe(false); // Korean
+  });
 });
 
 describe('isTrustedAuthor', () => {
