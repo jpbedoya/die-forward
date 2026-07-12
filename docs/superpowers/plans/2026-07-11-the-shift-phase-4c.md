@@ -751,11 +751,18 @@ export async function POST(request: NextRequest) {
     const utcDay = localTimeOf('UTC', nowUtcMs).dayKey;
     const shiftRes = await db.query({ worldShifts: { $: { where: { dayKey: utcDay, zoneId: HOME_ZONE }, limit: 1 } } }).catch(() => null);
     const row = (shiftRes?.worldShifts?.[0] as Record<string, unknown>) ?? {};
-    const pushText = renderPushText({
-      apexCreatureId: (row.apexCreatureId as string) ?? null,
-      curseNodes: Array.isArray(row.curseNodes) ? (row.curseNodes as string[]) : [],
-      hasMask: true, // seeded masks exist every day; fine as the fallback signal
-    });
+    const apex = (row.apexCreatureId as string) ?? null;
+    const cursed = Array.isArray(row.curseNodes) ? (row.curseNodes as string[]) : [];
+
+    // STRICT F7 (user decision, July 2026): send ONLY on consequential days — an
+    // apex threat or a mass-death curse. Quiet/mask-only days send NO push (the
+    // in-app panel still shows the day's dispatch). Seeded map masks are NOT
+    // computed web-side, so they do not trigger a push — a deliberately conservative,
+    // high-signal reading that matches "most days silent".
+    if (!apex && cursed.length === 0) {
+      return NextResponse.json({ success: true, sent: 0, reason: 'quiet day — no push' });
+    }
+    const pushText = renderPushText({ apexCreatureId: apex, curseNodes: cursed, hasMask: false });
 
     const playersRes = await db.query({ players: {} }).catch(() => null);
     const players = (playersRes?.players ?? []) as Record<string, unknown>[];
@@ -819,7 +826,7 @@ git commit -m "feat(4c): hourly local-morning dispatch fan-out cron + docs (phas
 **Spec coverage (§8):**
 - One pipeline, three surfaces → `renderDispatch` (Task 1) feeding home (Task 2), zone-select (Task 3), push (Tasks 7-8). ✅
 - `renderDispatch(shift)` bible voice ≤140, i18n → Task 1 (+ `renderPushText` English for the push body). ✅
-- F7 scarcity (1/day cap, consequential-only, 3 registers) → Task 1 (level/register) + Task 7/8 (push sent only on banner-worthy signal, deduped ≤1/day via `lastDispatchDayKey`). ✅ Note: the CRON sends the flagship dispatch to local-morning recipients; the ≤1/day cap is enforced by `lastDispatchDayKey`. The "banner only" gate applies to the PANEL prominence; the push always carries the day's non-quiet dispatch — acceptable, and silent/quiet days still yield a short line. Recorded as an intentional reading (a strict "no push on silent days" refinement would gate the send on `renderDispatch(...).level !== 'silent'` — cheap to add later; noted).
+- F7 scarcity (1/day cap, consequential-only, 3 registers) → Task 1 (level/register) + Task 7/8. **User decision (July 2026): NO push on quiet days.** The cron sends ONLY when the flagship zone's day has an apex OR cursed nodes; quiet/mask-only days send zero pushes (early return). The ≤1/day cap is additionally enforced by `lastDispatchDayKey`. Mask-only days are treated as quiet for the PUSH (seeded masks aren't computed web-side) — a conservative, high-signal reading; the in-app panel still shows mask days. ✅
 - Local-morning delivery, UTC shift boundary → Task 7 `localTimeOf` + Task 8 real Intl impl. ✅
 - Diegetic optional permission, nothing gated → Task 6. ✅
 - `Player.pushToken`/`timezone` + hourly fan-out cron (greenfield) → Tasks 4, 8. ✅
@@ -832,4 +839,4 @@ git commit -m "feat(4c): hourly local-morning dispatch fan-out cron + docs (phas
 **Known ⚠️ for the controller (surface to reviewers):**
 1. **Task 2/3 `t()` signature + component idiom** — the implementer must match the real `t(key, params)` usage and the file's existing Text/View/className tokens.
 2. **Task 5 native** — `expo-notifications` cannot be jest-verified; only the pure timezone fallback is tested. The whole push path needs an **EAS build + device + Expo push credentials** to verify end-to-end. This is a phase-level external dependency, not a code defect.
-3. **Silent-day push** — decide whether to gate the send on `level !== 'silent'` (see F7 note above); defaulted to "send the day's non-quiet line, deduped ≤1/day".
+3. **Silent-day push** — DECIDED (user, July 2026): NO push on quiet days. The cron early-returns unless the flagship day has an apex or cursed nodes (Task 8 Step 2). Mask-only days do not push.
