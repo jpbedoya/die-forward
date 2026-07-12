@@ -41,9 +41,9 @@
 
 When you die:
 - Your **corpse persists** in the dungeon
-- Your **final words** become someone else's discovery  
-- Your **staked SOL** joins the Memorial Pool
-- Your **run record** is written on-chain via MagicBlock
+- Your **final words** become someone else's discovery — moderated and, if the death was notable, rebroadcast as an Echo Husk recital or inscribed on the Architect's walls
+- Your **stake** (Pale Coins or staked SOL) joins the pool that funds other players' bonuses
+- Your **run record** is written on-chain via MagicBlock (staked SOL runs) or as a signed InstantDB receipt (Coin-Bound runs)
 
 *Lonely but not alone. Shared suffering, shared rewards.*
 
@@ -70,7 +70,7 @@ When you die:
 ```
 ┌─────────────┐   ┌─────────────┐   ┌─────────────┐   ┌─────────────┐
 │   CONNECT   │ → │    STAKE    │ → │    PLAY     │ → │  DIE / WIN  │
-│   Wallet    │   │  0.01+ SOL  │   │  Navigate   │   │             │
+│   Wallet    │   │ Coins or SOL│   │  Navigate   │   │             │
 └─────────────┘   └─────────────┘   └─────────────┘   └─────────────┘
                                                               │
                          ┌────────────────────────────────────┴─────┐
@@ -89,33 +89,41 @@ When you die:
 
 ### The Core Loop
 
-1. **Connect** your Solana wallet (Phantom, Solflare, or Mobile Wallet Adapter)
-2. **Stake** SOL to enter the dungeon (0.01 - 0.25 SOL)
-3. **Roll your modifier** — each run gets one: Blood Pact, Glass Cannon, Iron Will, and more
-4. **Navigate** procedurally generated rooms; explore rooms give you real choices (advance safely, risk it for loot, or spend 1⚡ for an intel peek)
-5. **Fight** enemies using an intent-reading combat system; manage a 4-slot inventory with Common to Legendary items
-6. **Die** → Leave final words, become content for others; cross a death milestone to unlock titles and perks
-7. **...or Win** → Claim your stake + 50% bonus from the Memorial Pool
+Die Forward runs on a three-rung **Offering Ladder**: play **Unbound** (free, no stake), stake earned-only **Pale Coins** to go **Coin-Bound** at the Toll, or — where enabled — stake **SOL** to go **Blood-Bound** on-chain.
+
+1. **Connect** your Solana wallet (Phantom, Solflare, or Mobile Wallet Adapter) — or play as a guest
+2. **Choose your rung**: free Unbound play, Coin-Bound (stake 60/120/240 Pale Coins), or Blood-Bound (stake 0.01-0.25 SOL, when the admin-controlled staking posture allows it)
+3. **Roll your modifier** — each run gets one: Blood Pact, Glass Cannon, Iron Will, and more; a daily **world shift** can add its own modifier pool and mask map edges for the day
+4. **Navigate** a branching dungeon graph (not a straight line — 20-23 nodes per zone with client-only side chambers); explore nodes give you real choices (advance safely, risk it for loot, or spend 1⚡ for an intel peek)
+5. **Fight** enemies using an intent-reading combat system with 11 signature rules (rupture, reform, multiply, blink, absorb, drain, chant, pounce, honor, dormant, repeating) and a **Bait** verb that forces a one-shot crit window; the current community-elected **apex creature** hits harder and drops bonus loot; manage a 4-slot inventory with Common to Legendary items
+6. **Die** → Leave final words (moderated before anyone sees them), become content for others; cross a death milestone to unlock titles and perks; a Coin-Bound death burns your stake into the pool and resets your Binding Streak
+7. **...or Win** → Claim your stake back plus a pool-funded bonus, and — if Coin-Bound — extend your public Binding Streak toward its next seal tier
 
 ### Game Features
 
 | Feature | Description |
 |---------|-------------|
-| **🏔️ Three Depths** | The dungeon gets harder as you descend through Shallow Graves → Bone Warren → The Abyss |
+| **🪙 The Offering Ladder** | Three staking rungs: free Unbound play, Coin-Bound (earned-only Pale Coins, never purchasable), and Blood-Bound (on-chain SOL, gated by an admin `stakingPosture` setting) |
+| **🔥 Binding Streak** | Consecutive Coin-Bound clears build a public seal tier; a Coin-Bound death resets the streak |
 | **⚔️ Intent-Based Combat** | Read enemy telegraphs, exploit weaknesses — no HP trading ping-pong |
-| **🗺️ Zone System** | 5 zones with unique creatures and content — Sunken Crypt, Ashen Crypts, Frozen Gallery, Living Tomb, Void Beyond |
-| **🎲 Explore Choices** | Every explore room presents 2-3 options: safe advance, [RISK] loot gamble, or [1⚡] intel peek |
-| **🔮 Run Modifiers** | Each run rolls a unique modifier (Blood Pact, Glass Cannon, Iron Will, and more) |
+| **🩸 Signature Rules & Bait** | 11 creature signature rules (rupture, reform, multiply, blink, absorb, drain, chant, pounce, honor, dormant, repeating) plus a Bait verb that forces a one-shot crit window |
+| **👑 Apex Creatures** | A community-elected apex per zone carries a +15% HP/damage buff and a bounty payout on kill |
+| **🗺️ Branching Dungeons** | Each zone is a 20-23 node branching graph (not a straight line), with client-only side chambers revealed by Bone Dust — Sunken Crypt, Ashen Crypts, Frozen Gallery, Living Tomb, Void Beyond |
+| **🌒 Daily World Shift** | A seeded daily shift changes each zone's modifier pool and masks map edges/side doors |
+| **🕸️ Community Layer** | Nightly aggregation across all runs surfaces the apex creature, mass-death curse nodes, and a single deadliest Architect node per zone |
+| **📯 Dispatches & Push** | A shared dispatch pipeline surfaces the day's threats on the home screen and zone select, with opt-in push notifications at your local morning |
+| **🛡️ Moderated UGC** | Final words and other player-authored text are server-moderated (homoglyph/leet-aware filter, trust-weighted, report-suppressed) before they're rebroadcast |
+| **🎲 Explore Choices** | Every explore node presents 2-3 options: safe advance, [RISK] loot gamble, or [1⚡] intel peek |
+| **🔮 Run Modifiers** | Each run rolls a unique modifier (Blood Pact, Glass Cannon, Iron Will, and more), plus a shift-day modifier pool |
 | **💀 Death Milestones** | 6 death thresholds unlock titles, cosmetics, items, and HP boosts |
 | **🎒 Inventory Limit** | 4-item cap with rarity tiers (Common → Legendary) and a swap modal when full |
 | **🌑 Legendary Items** | Death's Mantle (death save) and Voidblade (+50% dmg, -5 HP/turn) |
-| **👁️ Boss Fight** | The Keeper awaits at Room 12 |
 | **💀 Persistent Deaths** | Your corpse, final words, and loot persist for other players to discover |
 | **🎴 Death Cards** | Share your death as a stylized card on social media |
 | **💸 Corpse Tipping** | Tip SOL to fallen players whose corpses you find |
 | **🏆 Leaderboards** | Compete on depth reached, total deaths, and earnings |
-| **🎮 Free Play** | Try empty-handed without staking — deaths still count toward milestones |
-| **⛓️ On-Chain Records** | Staked runs recorded via MagicBlock ephemeral rollups |
+| **🎮 Free Play** | Try empty-handed (Unbound) without staking, including fully offline — deaths still count toward milestones |
+| **⛓️ On-Chain Records** | Blood-Bound runs recorded via MagicBlock ephemeral rollups, with VRF-verified run seeds |
 | **🎵 Decentralized Soundtrack** | Music streamed from Audius — your death track goes on the leaderboard |
 | **🤖 Agent API** | AI agents can play via REST API — their deaths appear in the feed |
 | **📱 Mobile Native** | Full Mobile Wallet Adapter support (Phantom, Solflare) |
@@ -160,19 +168,24 @@ START                    PLAY                      END
 
 | Type | Stake | On-Chain | Use Case |
 |------|-------|----------|----------|
-| **Staked Run** | 0.01-0.25 SOL | ✅ Full ER lifecycle | Core gameplay, leaderboards |
-| **Empty-Handed** | 0 | ❌ InstantDB only | Practice, wallet users trying it out |
-| **Guest Run** | 0 | ❌ InstantDB only | Onboarding, no wallet needed |
+| **Blood-Bound (Staked SOL)** | 0.01-0.25 SOL | ✅ Full ER lifecycle | Core gameplay, leaderboards (when `stakingPosture` allows) |
+| **Coin-Bound** | 60/120/240 Pale Coins | ❌ InstantDB only (receipted) | Core gameplay, Binding Streak, no wallet needed |
+| **Unbound / Empty-Handed** | 0 | ❌ InstantDB only | Practice, wallet users trying it out |
+| **Guest Run** | 0 | ❌ InstantDB only, offline-capable | Onboarding, no wallet needed |
 
 All run types:
 - Create corpses for other players to discover
 - Appear in the death feed
 - Track player stats (deaths, highest room)
+- Write a signed run receipt (`runReceipts`) capturing the run seed, day key, shift state, and chosen modifier
 
-Staked runs additionally:
+Blood-Bound runs additionally:
 - Record on-chain via MagicBlock ephemeral rollups
-- Contribute to/draw from the Memorial Pool
-- Eligible for victory payouts (+50% bonus)
+- Eligible for victory payouts (+50% bonus) from the on-chain pool
+
+Coin-Bound runs additionally:
+- Draw from / contribute to the pool-funded `coinPool`
+- Build (or reset) a public Binding Streak toward its next seal tier
 
 See [MAGICBLOCK.md](docs/MAGICBLOCK.md) for technical details on ephemeral rollups.
 
@@ -189,7 +202,7 @@ Game logic runs on **ephemeral rollups** powered by [MagicBlock](https://magicbl
 - **100% on-chain logic** — Game state lives on the rollup
 - **Gasless gameplay** — Players don't pay per action
 - **Automatic settlement** — Final state settles to Solana mainnet
-- **VRF randomness** — Provably fair game seeds via on-chain oracle (coming soon)
+- **VRF randomness** — Provably fair game seeds via on-chain oracle (✅ deployed, see below)
 
 ```
 Mobile Client → Ephemeral Rollup (MagicBlock) → Solana
@@ -241,10 +254,17 @@ Enemy intent **matters**:
 - **⚔️ Strike** — Trade blows (+50% vs AGGRESSIVE/HUNTING)
 - **🛡️ Brace** — Tank hit, negates charge (Iron Will modifier: zero damage)
 - **💨 Dodge** — Avoid damage, counter-attack on CHARGING
+- **🩸 Bait** — Forces the enemy's next intent to AGGRESSIVE, opening a one-shot crit window (costs a resource set by `baitCost`)
 - **🏃 Flee** — Try to escape (Bone Hook / Pale Coin boost odds)
 
+### Signature Rules
+Creatures carry one of 11 signature rules that change how a fight actually plays: rupture, reform, multiply, blink, absorb, drain, chant, pounce, honor, dormant, and repeating (an Echo Husk that recites a moderated line from a past run's final words). All 11 live in `creature-rules.ts`, wired against pure combat math in `combat-math.ts`.
+
+### Apex Creatures
+Each zone has a community-elected **apex creature** (the one racking up the most kills across all players that day) carrying a **+15% HP/damage buff**; killing it pays a bounty — a bonus loot roll plus bestiary-mastery credit.
+
 ### Run Modifiers
-Each run rolls one modifier from six: 🩸 Blood Pact (+25% dmg, -30% healing), 🌑 Blind Descent (intent hidden turn 1), 💀 Death's Echo (+30% corpse chance), 🧊 Numbing Cold (+1 stamina regen/turn), 🛡️ Iron Will (Brace negates all damage), ⚡ Glass Cannon (60 HP start, +50% dmg).
+Each run rolls one modifier from six: 🩸 Blood Pact (+25% dmg, -30% healing), 🌑 Blind Descent (intent hidden turn 1), 💀 Death's Echo (+30% corpse chance), 🧊 Numbing Cold (+1 stamina regen/turn), 🛡️ Iron Will (Brace negates all damage), ⚡ Glass Cannon (60 HP start, +50% dmg) — plus a daily **world shift** that can swap in its own modifier pool for the zone.
 
 ---
 
@@ -341,14 +361,35 @@ Die Forward is a **mobile-first** experience:
 - Combat determinism: seeded RNG for creature HP and intent
 - Healing centralized through applyHealing (Blood Pact applies consistently)
 
-### Coming Soon 🚧
+**Phase 2 — Branching Maps + Pale Coins (2a/2b)**
+- All 5 zones converted to branching DAG dungeons (20-23 nodes each) with client-only, item-gated side chambers
+- Pale Coins introduced: earned-only in-game currency (never purchasable) with concave depth income + clear bonuses
+- Content bible and zone-aware creature/item generation via `zone-loader.ts`
 
-| Phase | Features |
-|-------|----------|
-| **Phase 2 (Weeks 5-8)** | Ashen Crypts zone, daily challenges, bestiary mastery, Essence currency, run streaks |
-| **Phase 3 (Weeks 9-12)** | Frozen Gallery + Living Tomb, cosmetics shop, difficulty scaling, live spectating |
+**Phase 3 — The Offering Ladder (3a/3b)**
+- Daily seeded world shift: per-zone modifier pool + masked map edges, admin-toggleable
+- Coin-Bound staking at the Toll (60/120/240 Pale Coins), pool-funded escape bonus, Binding Streak with seal tiers
+- `stakingPosture` setting to hide/ritualize/open Blood-Bound (SOL) staking independently of Coin-Bound
+
+**Security Hardening**
+- Server-verified InstantDB auth (`verifyAuthToken`) required for all money-affecting session/game routes
+- Closed coin-mode IDOR on both client and server; admin routes gated by `verifyAuthToken` + admin allowlist; deny-by-default InstantDB perms
+
+**Phase 4 — Community Layer, Dispatches & Moderation (4a/4b/4c)**
+- Nightly aggregation surfaces a community-elected apex creature (+15% HP/dmg buff + bounty), mass-death curse nodes, and a deadliest Architect node per zone
+- Shared dispatch pipeline (home panel + zone select) with opt-in push notifications sent at each player's local morning, capped to respect quiet days
+- Server-authoritative UGC moderation (homoglyph/leet-aware filter, trust-weighted, report-suppressed) gates every rebroadcast of a player's final words — Echo Husk recitals and Architect wall inscriptions included
+- 11 creature signature rules (rupture, reform, multiply, blink, absorb, drain, chant, pounce, honor, dormant, repeating) and the Bait combat verb
+
+### Remaining — Launch Hardening 🚧
+
+| Item | Status |
+|------|--------|
+| **Push notification credentials** | Pipeline built (`expo-server-sdk`); production credentials still needed |
+| **iOS local build script** | Android has a local build path (`build:android:local`); no iOS equivalent yet — EAS/App Store distribution still pending |
+| **`CRON_SECRET` in prod** | Cron routes (`/api/game/shift`, `/api/game/dispatch`, `session/cleanup`) run open-and-warn without it — must be set before mainnet |
+| **Pre-mainnet security residuals** | Known non-money-affecting gaps: A5 wallet-sybil keying, missing ownership check on `players` writes — must close before real value is at stake |
 | **Mainnet Launch** | Deploy to Solana mainnet, real stakes |
-| **App Distribution** | Solana dApp Store, Google Play, iOS App Store |
 
 ### Future 🔮
 

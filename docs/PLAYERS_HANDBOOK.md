@@ -2,40 +2,44 @@
 
 *A complete guide to surviving (and dying well in) the dungeons of Die Forward.*
 
-*Last updated: 2026-03-22*
+*Last updated: 2026-07-03*
 
 ---
 
 ## What Is Die Forward?
 
-A mobile roguelite on Solana where **death is not the end — it's content.** When you die, your corpse, inventory, and final words persist for future players to discover. Stake SOL for real stakes, or play empty-handed for free. Every run is different. Every death matters.
+A mobile roguelite on Solana where **death is not the end — it's content.** When you die, your corpse, inventory, and final words persist for future players to discover. Play empty-handed for free, bind **Pale Coins** you've earned in the dungeon, or stake SOL for the deepest kind of risk. Every run is a fresh branching descent. The world shifts every day. Every death matters — and feeds the next player's run.
 
 ---
 
 ## How a Run Works
 
 1. **Choose a zone** — Start with the Sunken Crypt; unlock more as you progress
-2. **Stake or go empty-handed** — Risk SOL for a payout, or play free
-3. **Descend 13 rooms** — Navigate explore rooms, fight creatures, find loot, discover corpses
-4. **Survive to the boss** — Defeat the zone boss in room 13
-5. **Escape or die** — Victory pays out your stake + bonus; death leaves your corpse behind
+2. **Choose your offering** — Go empty-handed for free, bind Pale Coins at the Toll, or stake SOL (see **Staking & Economy**)
+3. **Pick a modifier** — Before you drop, choose from a small pool of run modifiers offered that day
+4. **Descend the map** — The dungeon is a branching map, not a straight line. At each depth you choose which path to take deeper; some doors are gated side chambers holding extra loot
+5. **Survive to the boss** — The zone boss waits at the bottom of the descent
+6. **Escape or die** — Victory returns your offering plus a bonus; death leaves your corpse behind for others to find
 
-Each run takes roughly 8–15 minutes. A random **run modifier** changes the rules each time.
+Each run takes roughly 8–15 minutes. Your chosen **run modifier** changes the rules for that descent, and a daily **world shift** reshapes the map and the modifier pool (see **The Daily World Shift**).
 
 ---
 
 ## Room Types
 
-Your dungeon is 13 rooms across 3 depths. Each room is one of these types:
+Your dungeon is a **branching map** you pick your way down — a web of connected rooms descending toward the boss, not a fixed corridor. At each room you choose which path to take deeper, so no two runs trace the same line. Each room is one of these types:
 
 ### Explore Rooms
 Three choices per room:
 
 | Option | Risk | Effect |
 |--------|------|--------|
-| **Primary** (safe path) | None | Advance to next room |
+| **Primary** (safe path) | None | Advance to the next room |
 | **Secondary** (risk path) | Medium | 55% find item, 30% nothing, 15% take 8–15 damage |
 | **Tertiary** (intel path) | 1 stamina | Peek at what's in the next room |
+
+### Side Chambers
+Off the main descent are **gated side chambers** — optional detours holding extra loot. Some are sealed behind a required item (spend the right key and the door opens). **Bone Dust** reveals what kind of branch lies ahead before you commit, so you can scout before spending. The daily world shift can hide or reveal these doors, so what's open changes day to day.
 
 ### Combat Rooms
 Turn-based fights against zone creatures. See **Combat** below.
@@ -46,13 +50,13 @@ Discover real corpses left by other players. Options:
 - **Pay respects** — Honor the fallen
 - **Tip** — Send 0.01 SOL to the dead player (wallet users only)
 
-Discovery chance scales by depth: 50% (rooms 1–4), 65% (rooms 5–8), 80% (rooms 9–13).
+Discovery chance scales with depth: shallow rooms ~50%, mid-depth ~65%, the deepest rooms ~80%.
 
 ### Cache Rooms
 Supply rooms. Heal **+30 HP** (subject to modifier penalties and HP cap).
 
-### Boss Room (Room 13)
-Guaranteed boss fight. Defeat the boss to reach the exit.
+### Boss Room
+At the bottom of the descent, a guaranteed boss fight. Defeat the boss to reach the exit.
 
 ### Exit Room
 After the boss, choose **"Ascend to victory!"** to claim your reward.
@@ -68,6 +72,7 @@ After the boss, choose **"Ascend to victory!"** to claim your reward.
 | **Strike** | 2 | Deal 15–25 base damage (+ item/modifier bonuses). Take enemy counter-attack. 15% critical hit chance (1.75x damage) |
 | **Dodge** | 1 | 65% success: negate all damage. 35% fail: take 5–9 damage. If enemy is CHARGING: deal 8–14 counter damage |
 | **Brace** | 0 | Reduce incoming damage by 50%. Still take 6–12 base damage |
+| **Bait** | — | *"You give it what it wants. It commits."* Provoke the enemy into an all-out attack — you force its next move to be AGGRESSIVE, opening a one-shot window for a big counter-strike |
 | **Flee** | 1 | 50% base escape chance. Success: leave combat (60% clean, 40% take 5–12 damage). Fail: take 8–19 damage |
 
 ### Stamina
@@ -95,6 +100,9 @@ Choosing the right action against an intent gives **+50% damage bonus**:
 
 ### Charge Mechanic
 When an enemy shows CHARGING, they deal half damage that turn but **double damage next turn** if you don't dodge. Dodging a charging enemy also deals counter damage to them.
+
+### Signature Behaviors
+Intents tell you what an enemy will do this turn. Its **signature** tells you what kind of creature it is. Many creatures have a trick all their own — some split apart when struck, some reform after they seem to fall, some blink away, drain your strength, chant to buff themselves, or lie dormant until provoked. The Echo Husks are the strangest: **they recite the real last words of players who died before you.** Watch how a creature behaves across a couple of turns, learn its tell, and you'll know when to strike, when to wait, and when to Bait it into overcommitting.
 
 ---
 
@@ -175,20 +183,20 @@ When you find a 5th item, choose which slot to swap — or leave it behind.
 
 ### Dungeon Structure (All Zones)
 
-| Rooms | Depth | Creature Tier |
-|-------|-------|---------------|
-| 1–4 | Upper | Tier 1 (easiest) |
-| 5–8 | Middle | Tier 2 (moderate) |
-| 9–12 | Deep | Tier 3 (hardest) |
-| 13 | Boss | Zone boss |
+| Depth | Band | Creature Tier |
+|-------|------|---------------|
+| Shallow | Upper | Tier 1 (easiest) |
+| Mid | Middle | Tier 2 (moderate) |
+| Deep | Deep | Tier 3 (hardest) |
+| Bottom | Boss | Zone boss |
 
-Each zone has its own bestiary of local creatures plus shared creatures from the global pool. Zones also have unique narrative text assembled from fragment pools, creating thousands of possible room descriptions.
+However you route through the branching map, danger scales with how deep you've pushed: the further down you go, the tougher the creatures, until the zone boss at the bottom. Each zone has its own bestiary of local creatures plus shared creatures from the global pool, and unique narrative text assembled from fragment pools, creating thousands of possible room descriptions.
 
 ---
 
 ## Creatures
 
-### Tier 1 (Rooms 1–4)
+### Tier 1 (Shallow Depths)
 
 | Creature | HP | Behaviors |
 |----------|----|-----------|
@@ -200,7 +208,7 @@ Each zone has its own bestiary of local creatures plus shared creatures from the
 | The Hunched 🐺 | 50–70 | Hunting, Aggressive, Stalking |
 | Tideborn 🌊 | 60–80 | Charging, Aggressive, Defensive |
 
-### Tier 2 (Rooms 5–8)
+### Tier 2 (Mid Depths)
 
 | Creature | HP | Behaviors |
 |----------|----|-----------|
@@ -211,7 +219,7 @@ Each zone has its own bestiary of local creatures plus shared creatures from the
 | Carrion Knight ⚔️ | 85–105 | Aggressive, Defensive, Charging |
 | The Congregation 👥 | 100–130 | Aggressive, Charging, Stalking |
 
-### Tier 3 / Bosses (Rooms 9–13)
+### Tier 3 / Bosses (Deep Depths)
 
 | Creature | HP | Behaviors |
 |----------|----|-----------|
@@ -236,6 +244,26 @@ Every run rolls one random modifier that changes the rules for that descent.
 | 🛡️ **Iron Will** | Brace negates ALL damage, but costs 1 stamina |
 | ⚡ **Glass Cannon** | Start at 60 HP, deal +50% damage |
 
+Instead of one random modifier being forced on you, you now **choose** from the day's pool before you descend.
+
+---
+
+## The Daily World Shift
+
+The dungeons are not the same today as they were yesterday. Every day the world **shifts**: the map is redrawn — passages and side doors open and close — and the pool of modifiers you can choose from changes too. The shift is the same for everyone, so on any given day the whole community is exploring the same reshaped world. Play a zone across several days and you'll see it breathe.
+
+---
+
+## The Community Layer
+
+Everyone's deaths bleed into everyone's dungeon. Overnight, the depths take stock of where players fell, and the next day's world carries the marks:
+
+- **Apex threats** — When one creature has claimed enough wanderers, it grows into an **apex**: bigger, meaner, tougher (more HP and harder hits). *"It has grown fat on wanderers."* Bring it down and you're rewarded with bonus loot and mastery credit for the kill.
+- **Cursed rooms** — Rooms where many players died become marked. *"Many ended here."* Step carefully.
+- **The Architect's wall** — The single deadliest place in the world becomes the Architect's, its walls built from the fallen. *"The walls are thick with the fallen."* The names and last words of players who died there are inscribed into it for you to read.
+
+Offline, the world still shifts on a daily rhythm — you just won't see the live community marks until you reconnect.
+
 ---
 
 ## Death Milestones
@@ -257,34 +285,39 @@ Titles and borders are cosmetic — displayed on your death cards and profile.
 
 ## Staking & Economy
 
-### Stake Options
-Choose your risk before each run:
+Before each run you decide how much of yourself to offer to the depths. There are three ways to play — a ladder of rising risk. Every offering you leave behind feeds the pool that pays out the next survivor.
 
-| Stake | Victory Payout | Loss |
-|-------|---------------|------|
-| Empty-handed | 0 SOL | Nothing |
-| 0.01 SOL | 0.015 SOL | 0.01 SOL |
-| 0.05 SOL | 0.075 SOL | 0.05 SOL |
-| 0.10 SOL | 0.15 SOL | 0.10 SOL |
-| 0.25 SOL | 0.375 SOL | 0.25 SOL |
+### The Toll — Choose Your Offering
 
-Victory bonus is **50%** of your stake (configurable by admin).
-
-### Empty-Handed Mode
-- Free to play — no wallet required
+**Empty-handed (Unbound)**
+- Free to play, no wallet required — you can even play fully offline
 - Full gameplay, full progression, full milestones
-- Guest accounts can link a wallet later to start staking
+- Kept separate from the leaderboards and the currency economy — nothing you do here is at risk, and nothing here earns Pale Coins
+
+**Pale Coins (Coin-Bound)**
+- **Pale Coins are earned, never bought.** You earn them by descending — the deeper you go, the more you bank — plus bonuses for clearing a zone (and a first-clear bonus the first time)
+- At the Toll you can **bind** your Pale Coins into a run. Escape alive and you get your coins back **plus a bonus** paid from the shared coin pool; **die and the depths keep them**, burning your stake into the pool
+- The bonus is funded entirely by coins other players lost, so it's never minted out of nothing — the pool only pays what it holds
+
+**SOL (Blood-Bound)**
+- Stake real SOL through an on-chain escrow for the highest stakes. Escape and you get your stake back plus a bonus; die and it goes to the pool
+- Blood-Bound staking isn't always offered — it appears only when the depths are set to accept it
+
+### The Binding Streak
+Coin-Bound clears stack into a public **Binding Streak** — each run you escape without breaking the pact adds to it, and your streak is shown to everyone as a growing seal (⟐ → ⟐⟐ → ⟐⟐⟐). Build a long enough streak and your seal climbs. But **a Coin-Bound death breaks the pact and resets the streak to zero.** The deeper your streak, the more you have to lose.
 
 ### What Happens When You Die
-- Your stake goes to the **Memorial Pool** (funds future victory payouts)
+- Your offering feeds the depths — Pale Coins or SOL go to the shared pool that funds future payouts
 - Your corpse appears in-game for other players to find
 - Your death is recorded in the global death feed
+- A coin-bound death **breaks your Binding Streak**
 - Your death count advances your milestones
 
 ### What Happens When You Win
-- You receive your stake back + 50% bonus from the Memorial Pool
+- You get your offering back plus a bonus from the pool
+- A coin-bound escape **extends your Binding Streak**
 - Your zone clear is recorded (counts toward unlocking Void Beyond)
-- Your stats are updated (totalClears, totalEarned, highestRoom)
+- Your stats are updated (clears, earnings, deepest depth)
 
 ---
 
@@ -302,6 +335,12 @@ Wallet users can tip **0.01 SOL** directly to the wallet of a fallen player. Tip
 ### Death Feed
 A real-time feed of recent deaths across all players. See who died, where, and their final words.
 
+### Echo Husks
+Some creatures — the **Echo Husks** — don't speak for themselves. They recite the **real final words of players who died before you**, over and over. The dungeon remembers what the dying said.
+
+### The Cartographer
+Because the passages move every day, **the Cartographer** can send you word when they do. *"The passages move. I can send word when they do — if you wish."* It's entirely opt-in: agree to receive **Dispatches** and you'll get a quiet notification — a warning about an apex on the prowl, a note that many ended somewhere, or word that the doors have moved — timed to your morning. Decline and the passages simply move unseen. Nothing in the game is ever locked behind turning notifications on, and you'll never get more than one dispatch a day.
+
 ---
 
 ## Tips for Survival
@@ -315,6 +354,9 @@ A real-time feed of recent deaths across all players. See who died, where, and t
 - **Flee from Tier 3 enemies** if you're low on HP. Living to fight the boss matters more than killing every creature
 - **Don't flee from STALKING enemies** — their −30% flee penalty makes escape unlikely
 - **Counter-play bonus matters.** Striking an AGGRESSIVE enemy or dodging a CHARGING one gives +50% damage — learn the matchups
+- **Bait sets up your big hits.** Forcing an enemy to commit to an attack opens a clean counter — use it when you need to end a fight fast
+- **Scout before you spend.** Bone Dust reveals what a branch holds; don't burn a gate key on a side chamber blind
+- **Mind your streak.** The deeper your Binding Streak, the more a single coin-bound death costs you — bind conservatively when your seal is high
 
 ---
 

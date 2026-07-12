@@ -1,6 +1,6 @@
 # Die Forward — Game Design
 
-*Last updated: 2026-03-13*
+*Last updated: 2026-07-11*
 
 ## Overview
 
@@ -71,15 +71,15 @@ Each run rolls exactly one modifier, determined deterministically from the run s
 
 ---
 
-### The 5-Minute Loop (Per-Run Arc)
+### The Dungeon Graph (Per-Run Arc)
 
-Each run spans 10-15 rooms across 3 depths:
+Dungeons are no longer a fixed linear sequence — each zone is authored as a branching **DAG node graph** (`generateDungeonGraph`, `mobile/lib/zone-loader.ts`), built from `ZoneNode`/`ZoneGraphLayout` types. All 5 zones ship full branching graphs of **20-23 nodes** each, validated by `validateZoneGraph`. Edges always descend exactly one depth — you can branch sideways within a depth, but never skip or go back up.
 
-- **Depth 1 — Shallow Graves**: Tier 1 enemies, introductory rooms. Establishes zone flavor.
-- **Depth 2 — Bone Warren**: Tier 2 enemies appear. Stamina management tightens.
-- **Depth 3 — The Abyss**: Tier 3 enemies and the boss. Clear rate is intentionally low (~10-15%).
+- **`currentRoom`** is a canonical **1-based depth projection** carried through `GameContext`, the server session routes, and the on-chain `u8` run-record field — so "depth" stays a stable, comparable number even though the underlying graph is branching, not linear.
+- **Side chambers** (`side: true` nodes) are client-only optional detours, gated by an item (`gate: { item, consumes }`) — you need the right item to unlock them, and it's consumed on entry. **Bone Dust** reveals a branch's type before you commit to it.
+- Enemy tier still scales with depth, and Tier 3 enemies (bosses) cluster at the deepest reachable nodes. Clear rate at the deepest nodes is intentionally low.
 
-Room composition per depth is determined by the active zone. Each run includes explore, combat, corpse, and cache rooms — the exact mix is generated from the zone's room pool.
+Room composition along the graph is determined by the active zone. Each run includes explore, combat, corpse, and cache rooms — the exact mix is generated from the zone's room pool and the daily **world shift** (see **World Shift & Community Layer** below), which masks certain edges/side doors per zone per day.
 
 ---
 
@@ -232,6 +232,7 @@ Intent is rolled deterministically via `getCreatureIntentSeeded` each turn.
 | 💨 Dodge | 1 ⚡ | 65% avoid all damage. Negates CHARGING. Counter-attacks CHARGING enemies. |
 | 🌿 Herbs | 0 ⚡ | Heal 20-29, but take a hit (consumes item). Healing reduced by Blood Pact. |
 | 🏃 Flee | 1 ⚡ | Base 50% escape (modified by intent/items). |
+| 🎯 Bait | `baitCost` ⚡ | Forces the enemy's next intent to AGGRESSIVE — a one-shot crit setup (`onBait` in `creature-rules.ts`). |
 
 ### Modifier Interactions in Combat
 
@@ -259,6 +260,8 @@ Intent is rolled deterministically via `getCreatureIntentSeeded` each turn.
 
 ### Damage Calculation
 
+All damage math lives in one place: **`mobile/lib/combat-math.ts`** — pure, unit-tested functions. `combat.tsx` only wires the outputs into UI/state; it does not compute damage itself.
+
 Final damage = `Base × TierMult × IntentMult × ItemMods × ChargeMult × ModifierMult`
 
 Example: Tier 2 enemy (1.5x) with HUNTING intent (1.3x) vs player with Shield (-25%) and Glass Cannon (+50% damage dealt):
@@ -268,6 +271,14 @@ Example: Tier 2 enemy (1.5x) with HUNTING intent (1.3x) vs player with Shield (-
 - After tier: 15 × 1.5 = 22.5
 - After intent: 22.5 × 1.3 = 29.25
 - After shield: 29.25 × 0.75 = **22 damage**
+
+**Apex creatures** get a **+15% HP/damage buff** (`applyApexBuff` in `combat-math.ts`) on top of the above, plus a bounty (bonus loot roll + bestiary-mastery credit) on kill. Apex status is assigned by the community layer (see below), not rolled per-run.
+
+### Signature Rules & Bait
+
+Beyond tier/intent, individual creatures carry **signature rules** — special-cased behavior defined in `creature-rules.ts`. There are 11: **rupture, reform, multiply, blink, absorb, drain, chant, pounce, honor, dormant,** and **repeating** (added with the Echo Husk in phase 4b — recites a moderated player phrase mid-fight; see **UGC Moderation** below).
+
+Players have a **Bait** verb (`onBait`) available in combat: it forces the enemy's next intent to AGGRESSIVE, opening a one-shot crit window at the cost of `baitCost` stamina (admin-tunable via `/api/admin/settings`).
 
 ### The Charge Mindgame
 
@@ -286,9 +297,27 @@ When you see **CHARGING**:
 
 ---
 
-## Economy
+## Economy — The Offering Ladder
 
-### SOL Staking
+Staking is now a three-rung ladder ("The Shift", phase 3b). Each rung trades risk for reward differently:
+
+| Rung | Stake | Notes |
+|------|-------|-------|
+| **Unbound** | None | Free play, offline-capable, firewalled from the leaderboard and any currency. |
+| **Coin-Bound** | Pale Coins (`COIN_STAKE_OPTIONS = [60, 120, 240]`) | Earned-only in-game currency; staked at the Toll. |
+| **Blood-Bound** | SOL (on-chain escrow) | Only shown when the `stakingPosture` admin setting (hidden / ritual / open) allows it. |
+
+### Pale Coins (replaces the old "Essence" plan)
+
+An earlier design called for a Phase 2 currency named **Essence** — that plan was superseded. The currency that actually shipped is **Pale Coins** (`src/lib/coins.ts` / `mobile/lib/coins.ts`): earned only through play, never purchasable.
+
+- **Earning:** `computeCoinEarn` pays out a concave depth income — `floor(4·√min(depth, 13))` — plus flat clear and first-clear bonuses.
+- **Coin-Bound stake:** at the Toll, players stake Pale Coins from `COIN_STAKE_OPTIONS`.
+  - **Death** burns the stake into a pool-funded `coinPool`.
+  - **Escape** returns the stake plus a pool-funded bonus (`coinBonusPercent`, default 50%), capped by the pool so payouts are population-net-negative — coins are never minted out of nowhere.
+- **Binding Streak:** consecutive Coin-Bound clears build a public **seal tier** (`nextStreak`/`sealTier`, tiers 0/1/2/3 at streak 3/7/15). A Coin-Bound death resets the streak.
+
+### SOL Staking (Blood-Bound)
 
 | Stake | Outcome |
 |-------|---------|
@@ -296,21 +325,45 @@ When you see **CHARGING**:
 | **Death** | 95% to Memorial Pool (5% fee), death hash written to Solana Memo Program |
 | **Victory** | Stake returned + 50% bonus from pool |
 
-Browser wallet users (Phantom, Solflare) get fully trustless escrow via the on-chain Anchor program. AgentWallet users use a custodial pool wallet — same mechanics, different trust model.
+Browser wallet users (Phantom, Solflare) get fully trustless escrow via the on-chain Anchor program. AgentWallet users use a custodial pool wallet — same mechanics, different trust model. Blood-Bound staking only appears when `stakingPosture` allows it; it's not the default entry point anymore.
 
-**Free Play** mode is available with no stake required. Deaths still count toward milestones and appear in the live feed.
+**Unbound / Free Play** is available with no stake required. Deaths still count toward milestones and appear in the live feed.
 
-### Essence Currency (Phase 2)
+---
 
-A dungeon-specific currency earned through play. Details planned for Phase 2.
+## World Shift & Community Layer
+
+### Daily World Shift
+
+A daily seeded world shift (`mobile/lib/world-shift.ts`, keyed on UTC day + zone) drives each day's modifier-choice pool and masks map edges/side doors, deterministically per zone. Toggle via the `dailyShiftEnabled` game setting in `/admin`.
+
+### Community Layer
+
+A nightly server-receipted aggregation cron (`/api/game/shift`) rolls up the previous 24h of runs and writes the deny-by-default `worldShifts` InstantDB namespace with three community-driven features:
+
+- **Apex creature** — a buffed (+15% HP/damage, see **Damage Calculation**) creature with a kill bounty.
+- **Curse nodes** — nodes with a mass-death rate above `curseNodeThreshold` (default 10) get marked as dangerous.
+- **Architect node** — the single deadliest node network-wide gets a special inscription (see **UGC Moderation** below).
+
+Integrity is receipts-only — aggregation counts distinct accounts, applies per-account caps, and only trusts `runReceipts` (server-written on every death/victory), never forgeable client data. Clients merge the community layer additively on top of the seeded daily shift (`fetchCommunityShift`/`mergeShift`), degrading gracefully to the seeded-only layer when offline.
+
+### Dispatch & Notifications
+
+A shared `renderDispatch` pipeline (`mobile/lib/dispatch.ts`) surfaces the day's shift on the home panel and zone-select screen, in three rotating registers (warning / lament / invitation) with a scarcity rule of at most one per day.
+
+Push notifications (`expo-notifications`) are opt-in and diegetic — the prompt appears after a player's first death, nothing is gated on granting permission. An hourly fan-out cron (`/api/game/dispatch`, `selectFanoutRecipients` in `src/lib/dispatch-fanout.ts`) sends each player their day's dispatch at their local morning, respecting the same one-per-day scarcity rule. Push body text is English-only for now; the personal "Architect built your corpse into the walls" push is deferred to a later pass.
+
+### UGC Moderation
+
+Anything written by one player that another player will see — a death's final message, an Echo Husk's recital, an Architect wall inscription — passes through a server-authoritative moderation core (`src/lib/moderation.ts`): NFKC normalization, Cyrillic/Greek homoglyph folding, leet-speak folding, and generic-TLD/handle URL blocking, with trust-weighting by account age/staked history/wallet-auth and fail-closed handling for unknown authors. Players can report content via the authenticated `/api/moderation/report` endpoint; repeated distinct reports suppress a phrase. Display surfaces (corpse, home feed, feed screen) also run a client-side mirror filter as a second layer.
 
 ---
 
 ## What's Coming
 
-**Phase 2** focuses on retention: Ashen Crypts zone with BURN mechanic, daily challenges, bestiary mastery tracking, Essence currency, and run streaks.
+All originally-planned phases have shipped as of "The Shift": tags/synergies/enemy signature rules/stamina (Phase 1), branching DAG maps + side chambers + Pale Coin earn (2a/2b), daily world shift + modifier choice + Coin-Bound staking + staking posture (3a/3b), a dedicated security pass (coin IDOR fixes, admin/cron/perms hardening), the community aggregation layer (apex buff+bounty, curse/Architect nodes), the dispatch/push pipeline, and A2 UGC moderation (Echo Husks, Architect walls).
 
-**Phase 3** covers polish and expansion: Frozen Gallery and Living Tomb zones, cosmetics shop, difficulty scaling, and live run spectating.
+What remains is **launch hardening**, not new features: push notification credentials, an iOS local build script (currently Android-only), setting `CRON_SECRET` in production, and closing the remaining pre-mainnet security residuals (see `CLAUDE.md` for the current list).
 
 See `ROADMAP.md` for the full plan.
 
