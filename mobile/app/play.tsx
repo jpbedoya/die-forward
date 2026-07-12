@@ -11,6 +11,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useGame } from '../lib/GameContext';
 import { useAudio, getZoneAmbient, useAtmosphericTriggers } from '../lib/audio';
 import { useCorpsesForRoom, discoverCorpse, recordTip, useGameSettings, useCurrentPlayer, Corpse } from '../lib/instant';
+import { reportUGC } from '../lib/api';
 import { ProgressBar } from '../components/ProgressBar';
 import { GameMenu, MenuButton } from '../components/GameMenu';
 import { MiniPlayer } from '../components/MiniPlayer';
@@ -26,6 +27,7 @@ import { createRunRng } from '../lib/seeded-random';
 import { useUnifiedWallet, type Address } from '../lib/wallet/unified';
 import { ItemModal, CreatureModal } from '../components/CryptModal';
 import { palette } from '../lib/theme';
+import { containsBlockedContent } from '../lib/moderation';
 
 function HealthBar({ current, max }: { current: number; max: number }) {
   const filled = Math.round((current / max) * 8);
@@ -92,6 +94,15 @@ export default function PlayScreen() {
     } finally {
       setTipping(false);
     }
+  };
+
+  // Report a corpse's UGC (final words) for moderation. Best-effort and
+  // never throws (reportUGC swallows its own errors) — the confirmation
+  // is shown optimistically since there's nothing meaningful to fail on
+  // from the player's perspective.
+  const handleReport = async (deathId: string) => {
+    await reportUGC(deathId);
+    setMessage(t('moderation.reported'));
   };
 
   // Safe access to game state — traverse the run graph directly. `game.dungeon`
@@ -678,7 +689,29 @@ export default function PlayScreen() {
           <Text className="text-bone-dark text-xs font-mono italic mb-2">{t('community.cursed')}</Text>
         )}
         {room.content?.isArchitect && (
-          <Text className="text-bone-dark text-xs font-mono italic mb-2">{t('community.architect')}</Text>
+          <View className="mb-2">
+            <Text className="text-bone-dark text-xs font-mono italic mb-2">{t('community.architect')}</Text>
+            {!!game.communityShift?.architectEntries?.length && (
+              <View>
+                <Text className="text-bone-dark text-xs font-mono italic mb-1">
+                  {t('community.architect.wall')}
+                </Text>
+                {game.communityShift.architectEntries.slice(0, 3).map((entry, idx) => (
+                  <View
+                    key={`${entry.name}-${idx}`}
+                    className="bg-crypt-surface border-l-2 border-ethereal p-3 mb-2"
+                  >
+                    <Text className="text-ethereal text-sm font-mono font-bold mb-1">
+                      @{entry.name}
+                    </Text>
+                    <Text className="text-bone-muted text-sm font-mono italic">
+                      "{entry.words}"
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            )}
+          </View>
         )}
 
         {/* Corpse discovery - show fallen player in purple BEFORE looting.
@@ -691,12 +724,24 @@ export default function PlayScreen() {
             </Text>
             <View className="bg-black/30 p-3 mb-2">
               <Text className="text-bone-muted text-sm font-mono italic">
-                "{realCorpse.finalMessage}"
+                {containsBlockedContent(realCorpse.finalMessage)
+                  ? t('corpse.redacted')
+                  : `"${realCorpse.finalMessage}"`}
               </Text>
             </View>
-            <Text className="text-bone-dark text-xs font-mono">
-              {t('play.corpseFlavor')}
-            </Text>
+            <View className="flex-row items-center justify-between">
+              <Text className="text-bone-dark text-xs font-mono">
+                {t('play.corpseFlavor')}
+              </Text>
+              <Pressable
+                onPress={() => handleReport(realCorpse.id)}
+                hitSlop={8}
+              >
+                <Text className="text-bone-dark text-xs font-mono underline">
+                  {t('moderation.report')}
+                </Text>
+              </Pressable>
+            </View>
           </View>
         )}
 
@@ -815,7 +860,11 @@ export default function PlayScreen() {
               )}
             </View>
             <View className="bg-black/30 border-l-2 border-ethereal p-3 mb-3">
-              <Text className="text-bone text-sm font-mono italic">"{lootedCorpse.finalMessage}"</Text>
+              <Text className="text-bone text-sm font-mono italic">
+                {containsBlockedContent(lootedCorpse.finalMessage)
+                  ? t('corpse.redacted')
+                  : `"${lootedCorpse.finalMessage}"`}
+              </Text>
             </View>
             <View className="flex-row justify-between">
               <Text className="text-bone-dark text-xs font-mono">{t('play.theyCarried')}</Text>

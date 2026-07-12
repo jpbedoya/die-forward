@@ -307,6 +307,7 @@ export const BESTIARY: Record<string, CreatureInfo> = {
     emoji: '🗣️',
     artUrl: '/creatures/echo-husks.webp',
     tags: ['spectral', 'flesh'],
+    signature: { id: 'repeating' },
   },
 
   // Tier 2 - Uncommon Threats

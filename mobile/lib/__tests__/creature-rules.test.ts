@@ -8,6 +8,7 @@ import {
   itemUseTriggersAttack,
   honorFilteredIntent,
   onBait,
+  pickEchoPhrase,
   CombatRuleState,
 } from '../creature-rules';
 
@@ -291,5 +292,16 @@ describe('onBait', () => {
     expect(r.state.reformUsed).toBe(false);
     expect(r.consumedSignature).toBe(false);
     expect(r.forcedIntent).toBe('AGGRESSIVE');
+  });
+});
+
+describe('pickEchoPhrase', () => {
+  it('returns null for an empty list', () => {
+    expect(pickEchoPhrase([], 5)).toBeNull();
+  });
+  it('is deterministic for a given seed', () => {
+    const p = ['a', 'b', 'c'];
+    expect(pickEchoPhrase(p, 7)).toBe(pickEchoPhrase(p, 7));
+    expect(p).toContain(pickEchoPhrase(p, 7));
   });
 });

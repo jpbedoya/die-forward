@@ -294,3 +294,17 @@ export async function likeDeath(
 
   return response.json();
 }
+
+// Report a death/corpse's UGC (final words) for moderation review. Best-effort:
+// never throws — a failed report should never interrupt the run or the UI.
+export async function reportUGC(deathId: string): Promise<void> {
+  try {
+    await fetch(`${API_BASE}/api/moderation/report`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
+      body: JSON.stringify({ deathId }),
+    });
+  } catch {
+    /* best-effort */
+  }
+}

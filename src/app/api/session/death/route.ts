@@ -334,6 +334,7 @@ export async function POST(request: NextRequest) {
           finalDepth: room,
           killedBy: killedBy || null,
           nodeId: validNodeId ?? null,
+          finalMessage: finalMessage.trim() || null,
           coinDelta: grantedCoinDelta,
           streakAfter: grantedStreakAfter,
           createdAt: Date.now(),

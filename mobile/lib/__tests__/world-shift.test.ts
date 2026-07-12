@@ -101,6 +101,7 @@ describe('mergeShift', () => {
     const community: CommunityShift = {
       dayKey: '2026-07-10', zoneId: 'sunken-crypt', apexCreatureId: 'bog-lurker',
       apexKills: 5, curseNodes: ['n-3'], architectNodeId: 'n-3', architectDeaths: 12,
+      echoPhrases: [], architectEntries: [],
     };
     const w = mergeShift(daily, community);
     expect(w.community?.apexCreatureId).toBe('bog-lurker');
@@ -109,9 +110,10 @@ describe('mergeShift', () => {
 });
 
 describe('isApexCreature', () => {
-  const community = {
+  const community: CommunityShift = {
     dayKey: '2026-07-10', zoneId: 'sunken-crypt', apexCreatureId: 'Bog Lurker',
     apexKills: 5, curseNodes: [], architectNodeId: null, architectDeaths: 0,
+    echoPhrases: [], architectEntries: [],
   };
   it('true only for the exact apex display name', () => {
     expect(isApexCreature('Bog Lurker', community)).toBe(true);
@@ -139,5 +141,20 @@ describe('fetchCommunityShiftsForDay', () => {
     global.fetch = jest.fn().mockResolvedValue({ ok: false }) as unknown as typeof fetch;
     const result = await fetchCommunityShiftsForDay('2026-07-10');
     expect(result).toEqual({});
+  });
+
+  it('defaults echoPhrases/architectEntries to [] when absent from the response', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        shifts: [{
+          dayKey: '2026-07-10', zoneId: 'sunken-crypt', apexCreatureId: null,
+          apexKills: 0, curseNodes: [], architectNodeId: null, architectDeaths: 0,
+        }],
+      }),
+    }) as unknown as typeof fetch;
+    const result = await fetchCommunityShiftsForDay('2026-07-10');
+    expect(result['sunken-crypt'].echoPhrases).toEqual([]);
+    expect(result['sunken-crypt'].architectEntries).toEqual([]);
   });
 });

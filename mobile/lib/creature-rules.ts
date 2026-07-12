@@ -24,7 +24,8 @@ export type SignatureRuleId =
   | 'chant'        // +param.ramp damage per turn it was not struck
   | 'pounce'       // using an item in combat triggers an immediate free attack
   | 'honor'        // never ERRATIC; winning without fleeing grants bonus mastery
-  | 'dormant';     // skips turn 1; flee is blocked from turn 2 on
+  | 'dormant'      // skips turn 1; flee is blocked from turn 2 on
+  | 'repeating';   // display-only: recites a moderated community echo phrase
 
 export interface SignatureRule {
   id: SignatureRuleId;
@@ -196,4 +197,17 @@ export function honorFilteredIntent<T extends { type: string }>(
     return reroll();
   }
   return intent;
+}
+
+/**
+ * `repeating` (Echo Husks) — deterministic pick from a moderated, server-
+ * filtered phrase list. `null` when the list is empty. Pure — takes no RNG
+ * and must NOT be seeded from the run's seeded RNG stream (combat.tsx passes
+ * a stable, non-RNG seed such as a hash of the current node id, so reciting
+ * an echo never advances the deterministic run seed).
+ */
+export function pickEchoPhrase(phrases: string[], seed: number): string | null {
+  if (!phrases.length) return null;
+  const idx = Math.abs(Math.floor(seed)) % phrases.length;
+  return phrases[idx];
 }

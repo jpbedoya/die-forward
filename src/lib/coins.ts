@@ -346,6 +346,7 @@ export interface RunReceiptInput {
   createdAt: number;
   killedBy?: string | null;
   nodeId?: string | null;
+  finalMessage?: string | null;
 }
 
 export interface RunReceipt {
@@ -365,6 +366,7 @@ export interface RunReceipt {
   finalDepth: number;
   killedBy: string | null;
   nodeId: string | null;
+  finalMessage: string | null;
   coinDelta: number;
   streakAfter: number;
   createdAt: number;
@@ -401,6 +403,7 @@ export function buildRunReceipt(input: RunReceiptInput): RunReceipt {
     finalDepth: input.finalDepth,
     killedBy: input.killedBy ?? null,
     nodeId: input.nodeId ?? null,
+    finalMessage: input.finalMessage ?? null,
     coinDelta: input.coinDelta,
     streakAfter: input.streakAfter,
     createdAt: input.createdAt,
