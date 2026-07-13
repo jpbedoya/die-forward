@@ -49,6 +49,9 @@ const GAME_SETTINGS_FIELD_KEYS = [
   'coinBonusPercent',
   'curseNodeThreshold',
   'apexMinKills',
+  'ugcMinAccountAgeDays',
+  'ugcReportThreshold',
+  'baitCost',
 ] as const;
 
 // Raw columns that live outside the GameSettings interface but are still
