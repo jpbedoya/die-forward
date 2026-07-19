@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLeaderboard, usePlayer, useDeathSoundtrack } from '../lib/instant';
 import { useGame } from '../lib/GameContext';
 import { AudioToggle } from '../components/AudioToggle';
-import { AudioSettingsModal } from '../components/AudioSettingsModal';
+import { SettingsModal } from '../components/SettingsModal';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { t } from '../lib/i18n';
 
@@ -15,17 +15,17 @@ export default function LeaderboardScreen() {
   const { player } = usePlayer(game.walletAddress);
   const { soundtrack, isLoading: soundtrackLoading } = useDeathSoundtrack(20);
   const [activeTab, setActiveTab] = useState<'wanderers' | 'soundtrack'>('wanderers');
-  const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   return (
     <SafeAreaView className="flex-1 bg-crypt-bg" edges={['left', 'right', 'bottom']}>
       <ScreenHeader
         showHome
         title={t('leaderboard.title')}
-        right={<AudioToggle inline onSettingsPress={() => setAudioSettingsOpen(true)} />}
+        right={<AudioToggle inline onSettingsPress={() => setSettingsOpen(true)} />}
       />
       
-      <AudioSettingsModal visible={audioSettingsOpen} onClose={() => setAudioSettingsOpen(false)} />
+      <SettingsModal visible={settingsOpen} onClose={() => setSettingsOpen(false)} />
 
       {/* Tabs */}
       <View className="flex-row border-b border-crypt-border">

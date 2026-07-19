@@ -16,6 +16,7 @@ import { View, Text, ScrollView, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import { GameProvider } from '../lib/GameContext';
+import { LocaleProvider, useLocale } from '../lib/LocaleContext';
 import { UnifiedWalletProvider } from '../lib/wallet/unified';
 import { WebFrame } from '../components/WebFrame';
 import { AudiusProvider } from '../lib/AudiusContext';
@@ -41,6 +42,7 @@ const PROTECTED_KEYS = [
   'audio-master-enabled',
   'audio-sfx-enabled',
   'audio-ambient-volume',
+  'die-forward-locale',
   APP_VERSION_KEY,
   'die-forward-debug-logs',
 ];
@@ -216,6 +218,54 @@ class ErrorBoundary extends React.Component<
 // Track splash shown across remounts (module-level so survives navigation)
 let splashShownThisSession = false;
 
+interface AppShellProps {
+  showSplash: boolean;
+  migrationDone: boolean;
+  startupClearedStorage: boolean;
+  handleSplashComplete: () => void;
+  handleSplashTap: () => void;
+}
+
+// Consumes useLocale() so this component (and everything it renders below)
+// re-renders whenever the active language changes — without this, a locale
+// change made deep inside a settings modal would only update that modal,
+// since LocaleProvider's own re-render alone doesn't cascade into a `children`
+// prop it received from a parent that hasn't re-rendered.
+function AppShell({ showSplash, migrationDone, startupClearedStorage, handleSplashComplete, handleSplashTap }: AppShellProps) {
+  useLocale();
+
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider initialMetrics={initialWindowMetrics} style={{ backgroundColor: '#0d0d0d' }}>
+        <WebFrame>
+          <StatusBar style="light" />
+          {!migrationDone || showSplash ? (
+            // Keep splash visible until migration completes and user dismisses it.
+            // Never render `null` here — blank frame causes visible black flicker.
+            <SplashScreen onComplete={handleSplashComplete} onTap={handleSplashTap} />
+          ) : (
+            <ErrorBoundary>
+              <UnifiedWalletProvider>
+                <GameProvider migrationClearedStorage={startupClearedStorage}>
+                  <AudiusProvider>
+                    <Stack
+                      screenOptions={{
+                        headerShown: false,
+                        contentStyle: { backgroundColor: '#0d0d0d' },
+                        animation: 'none',
+                      }}
+                    />
+                  </AudiusProvider>
+                </GameProvider>
+              </UnifiedWalletProvider>
+            </ErrorBoundary>
+          )}
+        </WebFrame>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
+  );
+}
+
 export default function RootLayout() {
   useWebSafeAreaCSS();
   const [showSplash, setShowSplash] = useState(!splashShownThisSession);
@@ -255,33 +305,15 @@ export default function RootLayout() {
   // vertically-centered home screen content to jump on first render.
   // UnifiedWalletProvider stays inside the main branch (splash must stay outside it for MWA stability).
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider initialMetrics={initialWindowMetrics} style={{ backgroundColor: '#0d0d0d' }}>
-        <WebFrame>
-          <StatusBar style="light" />
-          {!migrationDone || showSplash ? (
-            // Keep splash visible until migration completes and user dismisses it.
-            // Never render `null` here — blank frame causes visible black flicker.
-            <SplashScreen onComplete={handleSplashComplete} onTap={handleSplashTap} />
-          ) : (
-            <ErrorBoundary>
-              <UnifiedWalletProvider>
-                <GameProvider migrationClearedStorage={startupClearedStorage}>
-                  <AudiusProvider>
-                    <Stack
-                      screenOptions={{
-                        headerShown: false,
-                        contentStyle: { backgroundColor: '#0d0d0d' },
-                        animation: 'none',
-                      }}
-                    />
-                  </AudiusProvider>
-                </GameProvider>
-              </UnifiedWalletProvider>
-            </ErrorBoundary>
-          )}
-        </WebFrame>
-      </SafeAreaProvider>
-    </GestureHandlerRootView>
+    <LocaleProvider>
+      <AppShell
+        showSplash={showSplash}
+        migrationDone={migrationDone}
+        startupClearedStorage={startupClearedStorage}
+        handleSplashComplete={handleSplashComplete}
+        handleSplashTap={handleSplashTap}
+      />
+    </LocaleProvider>
   );
 }
+

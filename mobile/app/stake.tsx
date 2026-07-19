@@ -7,7 +7,7 @@ import { useGame } from '../lib/GameContext';
 import { useAudio } from '../lib/audio';
 import { useGameSettings, useCurrentPlayer } from '../lib/instant';
 import { AudioToggle } from '../components/AudioToggle';
-import { AudioSettingsModal } from '../components/AudioSettingsModal';
+import { SettingsModal } from '../components/SettingsModal';
 import { CRTOverlay } from '../components/CRTOverlay';
 import { NicknameModal } from '../components/NicknameModal';
 import { LinkWalletModal } from '../components/LinkWalletModal';
@@ -45,7 +45,7 @@ export default function StakeScreen() {
   const zoneElement = t(`stake.zone.${zoneMetaId}.element`);
   const zoneTagline = t(`stake.zone.${zoneMetaId}.tagline`);
 
-  const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [selectedStake, setSelectedStake] = useState(0.05);
   const [staking, setStaking] = useState(false);
   const [stakingMode, setStakingMode] = useState<'stake' | 'free' | 'coin' | null>(null);
@@ -291,7 +291,7 @@ export default function StakeScreen() {
           <Text className="text-amber text-base font-mono font-bold tracking-widest">{t('stake.title')}</Text>
         </View>
 
-        <AudioToggle ambientTrack="ambient-title" inline onSettingsPress={() => setAudioSettingsOpen(true)} />
+        <AudioToggle ambientTrack="ambient-title" inline onSettingsPress={() => setSettingsOpen(true)} />
       </View>
 
       <ScrollView className="flex-1" contentContainerClassName="p-5" style={{ backgroundColor: 'transparent' }}>
@@ -666,7 +666,7 @@ export default function StakeScreen() {
         onClose={() => setShowLinkWallet(false)}
       />
 
-      <AudioSettingsModal visible={audioSettingsOpen} onClose={() => setAudioSettingsOpen(false)} />
+      <SettingsModal visible={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </SafeAreaView>
     <CRTOverlay />
     </CryptBackground>

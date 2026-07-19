@@ -5,7 +5,7 @@ import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAudio } from '../lib/audio';
 import { AudioToggle } from '../components/AudioToggle';
-import { AudioSettingsModal } from '../components/AudioSettingsModal';
+import { SettingsModal } from '../components/SettingsModal';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { CRTOverlay } from '../components/CRTOverlay';
 import { useGame } from '../lib/GameContext';
@@ -351,7 +351,7 @@ export default function ZoneSelectScreen() {
     ? walletPlayer ?? authPlayer
     : authPlayer ?? walletPlayer;
   const { settings } = useGameSettings();
-  const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [selectedZoneId, setSelectedZoneId] = useState('sunken-crypt');
   const { width: screenWidth } = useWindowDimensions();
   // enabledZones = admin-controlled zone availability (from gameSettings)
@@ -435,7 +435,7 @@ export default function ZoneSelectScreen() {
         <ScreenHeader
           showHome
           title={t('zoneSelect.title')}
-          right={<AudioToggle ambientTrack="ambient-title" inline onSettingsPress={() => setAudioSettingsOpen(true)} />}
+          right={<AudioToggle ambientTrack="ambient-title" inline onSettingsPress={() => setSettingsOpen(true)} />}
         />
 
         {/* Subheader */}
@@ -516,7 +516,7 @@ export default function ZoneSelectScreen() {
         </View>
       </SafeAreaView>
       <CRTOverlay />
-      <AudioSettingsModal visible={audioSettingsOpen} onClose={() => setAudioSettingsOpen(false)} />
+      <SettingsModal visible={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </CryptBackground>
   );
 }
