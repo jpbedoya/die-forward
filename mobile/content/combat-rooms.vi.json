@@ -1,0 +1,276 @@
+{
+  "type": "combat",
+  "zone": "THRESHOLD OF THE UNNAMED",
+  "rooms": [
+    {
+      "template": "ambush",
+      "variations": [
+        {
+          "id": "ambush_1",
+          "narrative": "Căn phòng có vẻ trống rỗng. Nước lặng, không khí lặng. Rồi ngươi thấy nó — mặt nước gợn sóng ở nơi chẳng có gì chuyển động. Đang trồi lên. Nó vẫn chờ bên dưới.",
+          "enemy": "The Drowned"
+        },
+        {
+          "id": "ambush_2",
+          "narrative": "Ngươi nghe thấy nó nửa giây trước khi nhìn thấy. Những tiếng lách cách ướt át trên đá. Phía trên ngươi. Bám trên trần. Đang rơi xuống. Ngay bây giờ.",
+          "enemy": "Pale Crawler"
+        },
+        {
+          "id": "ambush_3",
+          "narrative": "Cái bóng của ngươi cử động sai lệch. Ngươi nhận ra quá muộn — Kẻ Rỗng đã ở trong hình bóng ngươi, vươn xuyên qua nó, vươn về phía ngươi.",
+          "enemy": "The Hollow"
+        },
+        {
+          "id": "ambush_4",
+          "narrative": "Cái xác ngươi vừa bước qua chưa chết. Nó tóm lấy cổ chân ngươi. Cú siết mạnh hơn bất cứ thứ gì mục rữa đáng lẽ có thể. Miệng nó há ra. Không một âm thanh nào thoát ra.",
+          "enemy": "Bloated One"
+        },
+        {
+          "id": "ambush_5",
+          "narrative": "Một chớp động ở rìa tầm mắt. Ngươi quay lại. Không có gì. Quay về. Nó ở đó. Ngay đó. Nó vẫn luôn ở ngay đó.",
+          "enemy": "Flickering Shade"
+        }
+      ]
+    },
+    {
+      "template": "confrontation",
+      "variations": [
+        {
+          "id": "confrontation_1",
+          "narrative": "Nó đứng chắn lối đi của ngươi. Chờ đợi. Cái đầu dõi theo từng cử động của ngươi với cơn đói kiên nhẫn. Không có đường vòng. Chỉ có đường xuyên qua.",
+          "enemy": "The Drowned"
+        },
+        {
+          "id": "confrontation_2",
+          "narrative": "Cái thứ ấy chặn cánh cửa. Nó chưa tấn công. Nó chưa cử động. Nó chỉ... ở đó. Cân nhắc. Dù nó quyết định gì, ngươi cũng sẽ không thích đâu.",
+          "enemy": "Forgotten Guardian"
+        },
+        {
+          "id": "confrontation_3",
+          "narrative": "Nó quỳ trước một bàn thờ, tụng niệm ở những tần số làm đau đớn cả suy nghĩ của ngươi. Nó biết ngươi ở đây. Bài tụng ấy dành cho ngươi. Một lời mời, hoặc một án tử.",
+          "enemy": "Hollow Clergy"
+        },
+        {
+          "id": "confrontation_4",
+          "narrative": "Gã hiệp sĩ nâng lưỡi kiếm hoen gỉ lên chào. Giao đấu danh dự. Đến chết. Nó mong ngươi chiến đấu cho xứng. Đằng nào nó cũng sẽ thất vọng.",
+          "enemy": "Carrion Knight"
+        },
+        {
+          "id": "confrontation_5",
+          "narrative": "Nó trồi lên khỏi mặt nước, cao gấp đôi ngươi, nhỏ giọt bóng tối. Trong một khoảnh khắc, nó gần như trông giống con người. Rồi nó há miệng. Rồi nó có quá nhiều cái miệng.",
+          "enemy": "Mother of Tides"
+        }
+      ]
+    },
+    {
+      "template": "territorial",
+      "variations": [
+        {
+          "id": "territorial_1",
+          "narrative": "Xương chất đống nơi đây. Được sắp xếp. Đây là một cái tổ. Và ngươi vừa đánh thức thứ sống trong đó. Nó không muốn giết ngươi. Nó muốn ngươi rời đi. Đã quá muộn cho điều đó.",
+          "enemy": "Pale Crawler"
+        },
+        {
+          "id": "territorial_2",
+          "narrative": "Nước ở đây ấm hơn. Thứ gì đó to lớn đã nằm nghỉ bên dưới. Thứ ấy giờ đang trồi lên, giận dữ vì bị quấy rầy. Đây là hồ của nó. Ngươi đang xâm phạm.",
+          "enemy": "Tideborn"
+        },
+        {
+          "id": "territorial_3",
+          "narrative": "Tường phủ đầy vết cào. Lãnh thổ. Sinh vật trườn ra từ một khe nứt ngươi không hề để ý, bảo vệ mảnh đất nó đã chiếm. Từng tấc đất đều khiến nó trả giá.",
+          "enemy": "The Hunched"
+        },
+        {
+          "id": "territorial_4",
+          "narrative": "Nơi này từng là một điện thờ. Giờ là một hang ổ. Cái thứ chiếm lấy nó không thờ phụng ở đây — nó cai trị. Và ngươi vừa bước vào triều đình của nó mà không được mời.",
+          "enemy": "Hollow Clergy"
+        },
+        {
+          "id": "territorial_5",
+          "narrative": "Xiềng xích khua vang trong bóng tối. Kẻ Bị Trói đã chiếm lối đi này. Nó không cho ngươi qua. Nó không cho bất kỳ ai qua. Nỗi cô độc của nó đầy hung hãn.",
+          "enemy": "The Bound"
+        }
+      ]
+    },
+    {
+      "template": "pursuit",
+      "variations": [
+        {
+          "id": "pursuit_1",
+          "narrative": "Ngươi đã nghe thấy nó suốt ba căn phòng rồi. Mỗi lần một gần hơn. Mỗi lần một nhanh hơn. Bỏ chạy không ăn thua. Đã đến lúc ngừng chạy.",
+          "enemy": "The Hunched"
+        },
+        {
+          "id": "pursuit_2",
+          "narrative": "Nó bám theo từ chỗ cầu thang. Kiên nhẫn. Không ngơi nghỉ. Ngươi không thể chạy nhanh hơn nó — nó thuộc những đường hầm này. Nó tạo ra những đường hầm này. Hãy đứng lại mà đối mặt.",
+          "enemy": "The Bound"
+        },
+        {
+          "id": "pursuit_3",
+          "narrative": "Tiếng nước quẫy sau lưng ngươi ngừng bặt. Thế còn tệ hơn. Nghĩa là nó không còn đuổi theo nữa. Nghĩa là nó đã ở đây rồi.",
+          "enemy": "The Drowned"
+        },
+        {
+          "id": "pursuit_4",
+          "narrative": "Tiếng lách cách giờ đã ngay sau lưng. Ngươi cảm nhận được nó đang thở — nếu đó là thở — trên gáy mình. Quay lại đi. Ngươi phải quay lại. Ngươi không muốn đâu.",
+          "enemy": "Pale Crawler"
+        },
+        {
+          "id": "pursuit_5",
+          "narrative": "Mỗi lần ngươi ngoái nhìn, nó lại gần hơn. Nó không bao giờ di chuyển khi ngươi đang nhìn. Ngươi không thể nhìn mãi. Mắt ngươi bỏng rát. Chớp mắt, và mọi chuyện kết thúc.",
+          "enemy": "The Hollow"
+        }
+      ]
+    },
+    {
+      "template": "swarm",
+      "variations": [
+        {
+          "id": "swarm_1",
+          "narrative": "Một con thì chẳng đáng ngại. Nhưng đâu chỉ có một. Chúng tuôn ra từ những khe nứt trên tường, những kẽ hở dưới sàn. Hàng chục. Còn nữa đang đến. Luôn còn nữa.",
+          "enemy": "Pale Crawler Swarm"
+        },
+        {
+          "id": "swarm_2",
+          "narrative": "Mặt nước đầy ắp chúng. Những thứ nhỏ bé, quờ quạng. Riêng lẻ, chúng chẳng là gì. Hợp lại, chúng là một dòng chảy của răng và cơn đói. Mực nước dâng lên theo khối lượng của chúng.",
+          "enemy": "Tideborn"
+        },
+        {
+          "id": "swarm_3",
+          "narrative": "Những bàn tay. Chỉ toàn bàn tay. Chúng trồi ra từ khắp nơi — sàn, tường, trần. Quờ quạng, níu kéo, lôi tuột. Chẳng có thân thể nào để đánh. Chỉ có những bàn tay.",
+          "enemy": "Bone Weavers"
+        },
+        {
+          "id": "swarm_4",
+          "narrative": "Lũ Trẻ Tro đã tụ họp. Trước kia, quan sát là đủ với chúng. Giờ chúng muốn nhiều hơn. Chúng ép sát lại. Không khí loãng dần. Chúng không tấn công — chúng đang bóp nghẹt.",
+          "enemy": "Ash Children"
+        },
+        {
+          "id": "swarm_5",
+          "narrative": "Lũ Vỏ Vọng đã tìm thấy nhau. Một dàn đồng ca của những lời trăng trối bị đánh cắp, lê bước như một, vươn tay như một. 'Cứu tôi cứu tôi cứu tôi' — cùng một lời van xin từ hàng chục cổ họng tàn phế.",
+          "enemy": "Echo Husks"
+        }
+      ]
+    },
+    {
+      "template": "feeding",
+      "variations": [
+        {
+          "id": "feeding_1",
+          "narrative": "Nó đang ăn thứ gì đó. Những âm thanh ướt át, đều đặn. Nó chưa thấy ngươi. Ngươi có thể lẻn qua. Ngươi có thể ra tay trước. Đằng nào nó cũng sắp ăn xong.",
+          "enemy": "The Hunched"
+        },
+        {
+          "id": "feeding_2",
+          "narrative": "Kẻ Chết Đuối đã tìm thấy một cái xác. Nó không ăn — nó đang... hấp thụ. Lớn dần. Mạnh dần. Mỗi khoảnh khắc ngươi chần chừ, nó lại nguy hiểm hơn.",
+          "enemy": "Bloated One"
+        },
+        {
+          "id": "feeding_3",
+          "narrative": "Sinh vật lom khom trên thứ từng là một con người. Nó ngẩng lên. Miệng nó đầy ắp. Nó không có vẻ khó chịu vì bị gián đoạn. Nó có vẻ biết ơn. Thêm thức ăn.",
+          "enemy": "Pale Crawler"
+        },
+        {
+          "id": "feeding_4",
+          "narrative": "Kẻ Than Khóc đã tìm thấy nỗi đau để hút lấy. Xác của một người chơi khác, những lời trăng trối còn tươi mới. Nó uống lấy nỗi buồn của họ. Nó quay sang ngươi. Nỗi buồn của ngươi thơm hơn.",
+          "enemy": "The Weeping"
+        },
+        {
+          "id": "feeding_5",
+          "narrative": "Nó ngồi giữa đống xương, bẻ vụn từng khúc, uống lấy thứ bên trong. Xương cũ. Cổ xưa. Nó đã ăn ở đây hàng thế kỷ. Ngươi là thứ tươi sống đầu tiên sau một thời gian rất dài.",
+          "enemy": "The Hunched"
+        }
+      ]
+    },
+    {
+      "template": "guardian",
+      "variations": [
+        {
+          "id": "guardian_1",
+          "narrative": "Nó đứng trước cánh cửa. Nó vẫn luôn đứng trước cánh cửa này. Nó sẽ chết trước cánh cửa này. Ngươi cũng vậy, nếu ngươi muốn thứ nằm phía sau.",
+          "enemy": "Forgotten Guardian"
+        },
+        {
+          "id": "guardian_2",
+          "narrative": "Lối đi phía sau cất giữ điều gì đó quan trọng. Ngươi cảm nhận được. Cái thứ chặn đường ngươi cũng vậy. Nó được đặt ở đây. Nó có mục đích. Mục đích đó là ngươi.",
+          "enemy": "Carrion Knight"
+        },
+        {
+          "id": "guardian_3",
+          "narrative": "Lối ra ngay kia. Sáu mét. Giữa ngươi và nó là một thứ đã chờ đợi chính xác khoảnh khắc này. Khoảnh khắc của ngươi. Mục đích của nó.",
+          "enemy": "Hollow Clergy"
+        },
+        {
+          "id": "guardian_4",
+          "narrative": "Kho báu ngay phía sau. Đồ tiếp tế, vũ khí, hy vọng. Cái thứ canh giữ chúng chẳng dùng đến thứ nào trong số đó. Nó chỉ đơn giản không muốn ngươi có được chúng.",
+          "enemy": "The Bound"
+        },
+        {
+          "id": "guardian_5",
+          "narrative": "Nó bảo vệ điện thờ. Không phải vị thần — vị thần đã chết. Không phải lễ vật — chúng đã mục rữa. Nó bảo vệ ý niệm. Ký ức. Nó sẽ bảo vệ chúng khỏi ngươi.",
+          "enemy": "Forgotten Guardian"
+        }
+      ]
+    },
+    {
+      "template": "arena",
+      "variations": [
+        {
+          "id": "arena_1",
+          "narrative": "Gian phòng hình tròn. Nhẵn nhụi. Được thiết kế cho việc này. Ngươi cảm thấy những ánh mắt — từ đâu? Cái thứ đối diện ngươi chẳng bận tâm đến khán giả. Chỉ bận tâm đến ngươi.",
+          "enemy": "Carrion Knight"
+        },
+        {
+          "id": "arena_2",
+          "narrative": "Những bậc khán đài vây quanh một hố đấu trung tâm. Ghế trống, nhưng sự hiện diện thì không trống. Thứ gì đó đang quan sát. Thứ gì đó đang phán xét. Sinh vật dưới hố chờ ngươi bước xuống.",
+          "enemy": "The Bound"
+        },
+        {
+          "id": "arena_3",
+          "narrative": "Một nhà hát vòng bằng xương. Âm thanh hoàn hảo — từng tiếng thở dốc, từng tiếng rên, từng tiếng nấc hấp hối sẽ vọng lại thật mỹ miều. Giáo Đoàn chờ xem màn trình diễn.",
+          "enemy": "The Congregation"
+        },
+        {
+          "id": "arena_4",
+          "narrative": "Một vòng tròn vẽ trên sàn. Cổ xưa. Trói buộc. Một khi bước vào, ngươi không thể rời đi cho đến khi một trong hai ngừng cử động. Cái thứ trong vòng tròn không bao giờ ngừng cử động.",
+          "enemy": "Flickering Shade"
+        },
+        {
+          "id": "arena_5",
+          "narrative": "Căn phòng tự sắp xếp lại khi ngươi bước vào. Tường dựng lên. Lối ra bịt kín. Một không gian được tạo ra. Một sân khấu. Một đấu trường. Ở đâu đó, thứ gì đó đang vô cùng hứng thú.",
+          "enemy": "The Unnamed"
+        }
+      ]
+    },
+    {
+      "template": "wounded",
+      "variations": [
+        {
+          "id": "wounded_1",
+          "narrative": "Nó đang chảy máu. Lết từng chút. Những vết thương không phải do ngươi — ai đó khác đã thử. Ai đó khác đã thất bại. Nó thấy ngươi. Nhe nanh. Sợ hãi và cuồng nộ ngang nhau.",
+          "enemy": "The Drowned"
+        },
+        {
+          "id": "wounded_2",
+          "narrative": "Một nửa của nó đã mất. Nửa còn lại vẫn hoạt động. Vẫn săn mồi. Suy yếu nhưng chưa tàn. Nó chẳng còn gì để mất. Điều đó khiến nó nguy hiểm hơn.",
+          "enemy": "Pale Crawler"
+        },
+        {
+          "id": "wounded_3",
+          "narrative": "Kẻ Hộ Vệ đã nứt vỡ. Nhiều mảnh đã mất. Một kẻ phiêu lưu khác đã làm điều này. Kẻ phiêu lưu ấy đâu rồi? Chết, có lẽ. Nhưng họ đã làm nó suy yếu. Hãy hoàn thành điều họ bỏ dở.",
+          "enemy": "Forgotten Guardian"
+        },
+        {
+          "id": "wounded_4",
+          "narrative": "Nó khập khiễng tiến về phía ngươi. Tàn tạ, nhưng chưa khuất phục. Mỗi vết thương khiến nó giận dữ hơn. Mỗi cơn đau khiến nó căm ghét ngươi hơn. Lòng thương xót không phải khái niệm nó hiểu được.",
+          "enemy": "The Hunched"
+        },
+        {
+          "id": "wounded_5",
+          "narrative": "Xiềng xích đứt gãy lủng lẳng trên cổ tay nó. Nó đã trốn thoát khỏi thứ gì đó. Hoặc đã cố. Giờ nó tự do, đau đớn, hoang mang, và ngươi là thứ đầu tiên nó nhìn thấy. Ngươi may thật đấy.",
+          "enemy": "The Bound"
+        }
+      ]
+    }
+  ]
+}

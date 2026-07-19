@@ -2,6 +2,7 @@
 
 import { loadZone, getZoneRoom, getZoneCreatureSeeded, getZoneBoss, getZoneDepth, type ZoneData, type ZoneNode } from './zone-loader';
 import { createRunRng, generateRandomSeed, type SeededRng } from './seeded-random';
+import { getLocale } from './i18n';
 import type { DailyShift } from './world-shift';
 import type { SignatureRule } from './creature-rules';
 
@@ -12,6 +13,90 @@ import cacheRooms from '../content/cache-rooms.json';
 import exitRooms from '../content/exit-rooms.json';
 import combatActions from '../content/combat-actions.json';
 import deathEpitaphs from '../content/death-epitaphs.json';
+
+import exploreRoomsEs from '../content/explore-rooms.es.json';
+import combatRoomsEs from '../content/combat-rooms.es.json';
+import corpseRoomsEs from '../content/corpse-rooms.es.json';
+import cacheRoomsEs from '../content/cache-rooms.es.json';
+import exitRoomsEs from '../content/exit-rooms.es.json';
+import combatActionsEs from '../content/combat-actions.es.json';
+import deathEpitaphsEs from '../content/death-epitaphs.es.json';
+
+import exploreRoomsJa from '../content/explore-rooms.ja.json';
+import combatRoomsJa from '../content/combat-rooms.ja.json';
+import corpseRoomsJa from '../content/corpse-rooms.ja.json';
+import cacheRoomsJa from '../content/cache-rooms.ja.json';
+import exitRoomsJa from '../content/exit-rooms.ja.json';
+import combatActionsJa from '../content/combat-actions.ja.json';
+import deathEpitaphsJa from '../content/death-epitaphs.ja.json';
+
+import exploreRoomsKo from '../content/explore-rooms.ko.json';
+import combatRoomsKo from '../content/combat-rooms.ko.json';
+import corpseRoomsKo from '../content/corpse-rooms.ko.json';
+import cacheRoomsKo from '../content/cache-rooms.ko.json';
+import exitRoomsKo from '../content/exit-rooms.ko.json';
+import combatActionsKo from '../content/combat-actions.ko.json';
+import deathEpitaphsKo from '../content/death-epitaphs.ko.json';
+
+import exploreRoomsPtBR from '../content/explore-rooms.pt-BR.json';
+import combatRoomsPtBR from '../content/combat-rooms.pt-BR.json';
+import corpseRoomsPtBR from '../content/corpse-rooms.pt-BR.json';
+import cacheRoomsPtBR from '../content/cache-rooms.pt-BR.json';
+import exitRoomsPtBR from '../content/exit-rooms.pt-BR.json';
+import combatActionsPtBR from '../content/combat-actions.pt-BR.json';
+import deathEpitaphsPtBR from '../content/death-epitaphs.pt-BR.json';
+
+import exploreRoomsZhTW from '../content/explore-rooms.zh-TW.json';
+import combatRoomsZhTW from '../content/combat-rooms.zh-TW.json';
+import corpseRoomsZhTW from '../content/corpse-rooms.zh-TW.json';
+import cacheRoomsZhTW from '../content/cache-rooms.zh-TW.json';
+import exitRoomsZhTW from '../content/exit-rooms.zh-TW.json';
+import combatActionsZhTW from '../content/combat-actions.zh-TW.json';
+import deathEpitaphsZhTW from '../content/death-epitaphs.zh-TW.json';
+
+import exploreRoomsVi from '../content/explore-rooms.vi.json';
+import combatRoomsVi from '../content/combat-rooms.vi.json';
+import corpseRoomsVi from '../content/corpse-rooms.vi.json';
+import cacheRoomsVi from '../content/cache-rooms.vi.json';
+import exitRoomsVi from '../content/exit-rooms.vi.json';
+import combatActionsVi from '../content/combat-actions.vi.json';
+import deathEpitaphsVi from '../content/death-epitaphs.vi.json';
+
+// ── Locale-aware content packs ────────────────────────────────────────────────
+// Mirrors zone-loader.ts's ZONE_LOCALE_MAP pattern: fall back to the English
+// pack for any locale/category combination that has no translated file.
+const EXPLORE_ROOMS_LOCALE_MAP: Record<string, typeof exploreRooms> = {
+  es: exploreRoomsEs, ja: exploreRoomsJa, ko: exploreRoomsKo,
+  'pt-BR': exploreRoomsPtBR, 'zh-TW': exploreRoomsZhTW, vi: exploreRoomsVi,
+};
+const COMBAT_ROOMS_LOCALE_MAP: Record<string, typeof combatRooms> = {
+  es: combatRoomsEs, ja: combatRoomsJa, ko: combatRoomsKo,
+  'pt-BR': combatRoomsPtBR, 'zh-TW': combatRoomsZhTW, vi: combatRoomsVi,
+};
+const CORPSE_ROOMS_LOCALE_MAP: Record<string, typeof corpseRooms> = {
+  es: corpseRoomsEs, ja: corpseRoomsJa, ko: corpseRoomsKo,
+  'pt-BR': corpseRoomsPtBR, 'zh-TW': corpseRoomsZhTW, vi: corpseRoomsVi,
+};
+const CACHE_ROOMS_LOCALE_MAP: Record<string, typeof cacheRooms> = {
+  es: cacheRoomsEs, ja: cacheRoomsJa, ko: cacheRoomsKo,
+  'pt-BR': cacheRoomsPtBR, 'zh-TW': cacheRoomsZhTW, vi: cacheRoomsVi,
+};
+const EXIT_ROOMS_LOCALE_MAP: Record<string, typeof exitRooms> = {
+  es: exitRoomsEs, ja: exitRoomsJa, ko: exitRoomsKo,
+  'pt-BR': exitRoomsPtBR, 'zh-TW': exitRoomsZhTW, vi: exitRoomsVi,
+};
+const COMBAT_ACTIONS_LOCALE_MAP: Record<string, typeof combatActions> = {
+  es: combatActionsEs, ja: combatActionsJa, ko: combatActionsKo,
+  'pt-BR': combatActionsPtBR, 'zh-TW': combatActionsZhTW, vi: combatActionsVi,
+};
+const DEATH_EPITAPHS_LOCALE_MAP: Record<string, typeof deathEpitaphs> = {
+  es: deathEpitaphsEs, ja: deathEpitaphsJa, ko: deathEpitaphsKo,
+  'pt-BR': deathEpitaphsPtBR, 'zh-TW': deathEpitaphsZhTW, vi: deathEpitaphsVi,
+};
+
+function localized<T>(map: Record<string, T>, base: T): T {
+  return map[getLocale()] ?? base;
+}
 
 // Types
 export interface RoomVariation {
@@ -51,7 +136,7 @@ export function pickSeeded<T>(arr: T[], rng: SeededRng): T {
 
 // Get random explore room by template type
 export function getExploreRoom(template?: string): RoomVariation {
-  const rooms = exploreRooms.rooms as RoomTemplate[];
+  const rooms = localized(EXPLORE_ROOMS_LOCALE_MAP, exploreRooms).rooms as RoomTemplate[];
   if (template) {
     const found = rooms.find(r => r.template === template);
     if (found) return pick(found.variations);
@@ -62,7 +147,7 @@ export function getExploreRoom(template?: string): RoomVariation {
 
 // Get random combat room by template type
 export function getCombatRoom(template?: string): RoomVariation {
-  const rooms = combatRooms.rooms as RoomTemplate[];
+  const rooms = localized(COMBAT_ROOMS_LOCALE_MAP, combatRooms).rooms as RoomTemplate[];
   if (template) {
     const found = rooms.find(r => r.template === template);
     if (found) return pick(found.variations);
@@ -73,7 +158,7 @@ export function getCombatRoom(template?: string): RoomVariation {
 
 // Get random corpse discovery by template type
 export function getCorpseRoom(template?: string): RoomVariation {
-  const rooms = corpseRooms.rooms as RoomTemplate[];
+  const rooms = localized(CORPSE_ROOMS_LOCALE_MAP, corpseRooms).rooms as RoomTemplate[];
   if (template) {
     const found = rooms.find(r => r.template === template);
     if (found) return pick(found.variations);
@@ -84,7 +169,7 @@ export function getCorpseRoom(template?: string): RoomVariation {
 
 // Get random cache room by template type
 export function getCacheRoom(template?: string): RoomVariation {
-  const rooms = cacheRooms.rooms as RoomTemplate[];
+  const rooms = localized(CACHE_ROOMS_LOCALE_MAP, cacheRooms).rooms as RoomTemplate[];
   if (template) {
     const found = rooms.find(r => r.template === template);
     if (found) return pick(found.variations);
@@ -95,7 +180,7 @@ export function getCacheRoom(template?: string): RoomVariation {
 
 // Get random exit room by template type
 export function getExitRoom(template?: string): RoomVariation {
-  const rooms = exitRooms.rooms as RoomTemplate[];
+  const rooms = localized(EXIT_ROOMS_LOCALE_MAP, exitRooms).rooms as RoomTemplate[];
   if (template) {
     const found = rooms.find(r => r.template === template);
     if (found) return pick(found.variations);
@@ -106,27 +191,27 @@ export function getExitRoom(template?: string): RoomVariation {
 
 // Combat actions
 export function getStrikeNarration(outcome: 'success' | 'mutual' | 'weak'): string {
-  const actions = combatActions.actions.strike as Record<string, string[]>;
+  const actions = localized(COMBAT_ACTIONS_LOCALE_MAP, combatActions).actions.strike as Record<string, string[]>;
   return pick(actions[outcome]);
 }
 
 export function getDodgeNarration(outcome: 'success' | 'close' | 'fail' | 'counter'): string {
-  const actions = combatActions.actions.dodge as Record<string, string[]>;
+  const actions = localized(COMBAT_ACTIONS_LOCALE_MAP, combatActions).actions.dodge as Record<string, string[]>;
   return pick(actions[outcome]);
 }
 
 export function getBraceNarration(outcome: 'success' | 'broken' | 'fail'): string {
-  const actions = combatActions.actions.brace as Record<string, string[]>;
+  const actions = localized(COMBAT_ACTIONS_LOCALE_MAP, combatActions).actions.brace as Record<string, string[]>;
   return pick(actions[outcome]);
 }
 
 export function getHerbsNarration(outcome: 'heal' | 'interrupted'): string {
-  const actions = combatActions.actions.herbs as Record<string, string[]>;
+  const actions = localized(COMBAT_ACTIONS_LOCALE_MAP, combatActions).actions.herbs as Record<string, string[]>;
   return pick(actions[outcome]);
 }
 
 export function getFleeNarration(outcome: 'success' | 'hurt' | 'fail'): string {
-  const actions = combatActions.actions.flee as Record<string, string[]>;
+  const actions = localized(COMBAT_ACTIONS_LOCALE_MAP, combatActions).actions.flee as Record<string, string[]>;
   return pick(actions[outcome]);
 }
 
@@ -134,7 +219,7 @@ export function getFleeNarration(outcome: 'success' | 'hurt' | 'fail'): string {
 export type IntentType = 'AGGRESSIVE' | 'DEFENSIVE' | 'CHARGING' | 'ERRATIC' | 'HUNTING' | 'STALKING' | 'RETREATING';
 
 export function getEnemyIntent(type?: IntentType): { type: IntentType; description: string } {
-  const intents = combatActions.enemy_intents as Record<IntentType, string[]>;
+  const intents = localized(COMBAT_ACTIONS_LOCALE_MAP, combatActions).enemy_intents as Record<IntentType, string[]>;
   const intentType = type || pick(Object.keys(intents) as IntentType[]);
   return {
     type: intentType,
@@ -147,7 +232,7 @@ export function getEnemyIntent(type?: IntentType): { type: IntentType; descripti
 // read) stay reproducible from the same seed, matching every other combat
 // roll. Math.random() in a gameplay path is a defect (determinism hard rule).
 export function getEnemyIntentSeeded(type: IntentType, rng: SeededRng): { type: IntentType; description: string } {
-  const intents = combatActions.enemy_intents as Record<IntentType, string[]>;
+  const intents = localized(COMBAT_ACTIONS_LOCALE_MAP, combatActions).enemy_intents as Record<IntentType, string[]>;
   return {
     type,
     description: pickSeeded(intents[type], rng),
@@ -156,15 +241,15 @@ export function getEnemyIntentSeeded(type: IntentType, rng: SeededRng): { type: 
 
 // Death content
 export function getDeathMoment(): string {
-  return pick(deathEpitaphs.death_moments);
+  return pick(localized(DEATH_EPITAPHS_LOCALE_MAP, deathEpitaphs).death_moments);
 }
 
 export function getFinalWordsIntro(): string {
-  return pick(deathEpitaphs.final_words_intros);
+  return pick(localized(DEATH_EPITAPHS_LOCALE_MAP, deathEpitaphs).final_words_intros);
 }
 
 export function getCorpseOutro(): string {
-  return pick(deathEpitaphs.corpse_discovery_outros);
+  return pick(localized(DEATH_EPITAPHS_LOCALE_MAP, deathEpitaphs).corpse_discovery_outros);
 }
 
 // Format corpse text with player data
@@ -515,7 +600,7 @@ export function getCreatureIntent(name: string): { type: IntentType; description
 
 // Seeded variant — uses provided RNG so intent sequence is reproducible from the same seed
 export function getCreatureIntentSeeded(name: string, rng: SeededRng): { type: IntentType; description: string } {
-  const intents = combatActions.enemy_intents as Record<IntentType, string[]>;
+  const intents = localized(COMBAT_ACTIONS_LOCALE_MAP, combatActions).enemy_intents as Record<IntentType, string[]>;
   const info = BESTIARY[name];
   const preferredType = info ? pickSeeded(info.behaviors, rng) : pickSeeded(Object.keys(intents) as IntentType[], rng);
   return {

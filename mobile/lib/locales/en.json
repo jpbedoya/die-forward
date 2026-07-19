@@ -658,5 +658,7 @@
   "notif.ask.accept": "Send word",
   "notif.ask.decline": "Let them move unseen",
   "notif.settings.label": "DISPATCHES",
-  "notif.settings.hint": "Word when the passages move"
+  "notif.settings.hint": "Word when the passages move",
+  "settings.title": "SETTINGS",
+  "settings.language": "LANGUAGE"
 }

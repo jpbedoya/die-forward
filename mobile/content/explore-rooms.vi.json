@@ -1,0 +1,306 @@
+{
+  "type": "explore",
+  "zone": "THRESHOLD OF THE UNNAMED",
+  "rooms": [
+    {
+      "template": "corridor",
+      "variations": [
+        {
+          "id": "corridor_1",
+          "narrative": "Nước nhỏ giọt đâu đó phía trước. Lối đi hẹp dần, những bức tường trơn nhớt một thứ gì đó không hẳn là nước. Ngọn đuốc của ngươi đẩy lùi bóng tối. Bóng tối đẩy ngược lại.",
+          "options": ["Tiến lên phía trước", "Xem xét những bức tường"]
+        },
+        {
+          "id": "corridor_2",
+          "narrative": "Hành lang ngoặt khúc. Ngươi không thấy được thứ gì sau góc rẽ, nhưng ngươi nghe thấy nó — một âm thanh ướt át, nhịp nhàng. Tiếng thở? Tiếng nhỏ giọt? Hay một thứ hoàn toàn khác.",
+          "options": ["Rẽ qua góc", "Lắng nghe kỹ trước đã"]
+        },
+        {
+          "id": "corridor_3",
+          "narrative": "Vết cào chạy dọc hai bên tường. Thứ gì đó đã bị kéo lê qua đây. Mới đây thôi. Những vết ấy dẫn xuống sâu hơn. Con đường duy nhất cũng vậy.",
+          "options": ["Lần theo vết cào", "Di chuyển thận trọng"]
+        },
+        {
+          "id": "corridor_4",
+          "narrative": "Đá ở đây cổ hơn. Mòn nhẵn bởi vô số bàn chân qua vô số năm tháng. Ngươi không phải kẻ đầu tiên đi trên con đường này. Đống xương ở góc kia gợi ý rằng ngươi có thể nằm trong số những kẻ cuối cùng.",
+          "options": ["Đi tiếp", "Xem xét đống xương"]
+        },
+        {
+          "id": "corridor_5",
+          "narrative": "Tiếng bước chân ngươi vọng lại sai lệch. Quá nhiều tiếng vọng. Như thể ai đó bước bên cạnh ngươi, chậm hơn nửa nhịp. Ngươi không ngoảnh lại. Ngươi biết rõ hơn thế.",
+          "options": ["Tiếp tục di chuyển", "Dừng lại và quay người"]
+        }
+      ]
+    },
+    {
+      "template": "chamber",
+      "variations": [
+        {
+          "id": "chamber_1",
+          "narrative": "Một khoảng không mênh mông mở ra trước mắt. Những cây cột vươn vào màn tối, đỉnh cột mất hút trong bóng đêm. Nơi này được xây cho những cuộc tụ họp. Giờ nó chỉ tụ họp sự im lặng. Và ngươi.",
+          "options": ["Băng qua gian phòng", "Bám sát các bức tường"]
+        },
+        {
+          "id": "chamber_2",
+          "narrative": "Trần nhà tan biến vào màu đen. Những bức tường cách nhau quá xa. Căn phòng này lớn hơn mức nó đáng lẽ phải thế — lớn hơn cả những gì ngôi đền bên trên có thể chứa. Hình học nói dối ở dưới này.",
+          "options": ["Băng qua thật nhanh", "Lục soát vành ngoài"]
+        },
+        {
+          "id": "chamber_3",
+          "narrative": "Nước phủ kín sàn, lặng như tấm kính đen. Gian phòng trải dài về mọi hướng. Ở chính giữa, có thứ gì đó nhô lên khỏi mặt nước. Một bàn thờ? Một ngai vàng? Từ đây ngươi không thể biết.",
+          "options": ["Lội về phía trung tâm", "Vòng theo mép ngoài"]
+        },
+        {
+          "id": "chamber_4",
+          "narrative": "Những hàng ghế gãy nát xếp dọc đại sảnh. Một giáo đoàn từng ngồi đây, lắng nghe những bài giảng bằng những thứ tiếng có trước cả ngôn từ. Bục giảng bỏ trống. Có thứ gì đó quan sát từ phía sau nó.",
+          "options": ["Tiến lại bục giảng", "Rời đi thật nhanh"]
+        },
+        {
+          "id": "chamber_5",
+          "narrative": "Gian phòng ngân rung. Một tần số ngươi cảm nhận trong răng, trong xương, trong suy nghĩ. Những bức tường khắc đầy hoa văn mà dõi theo chỉ chuốc lấy đau đớn. Đừng dõi theo chúng.",
+          "options": ["Xuyên qua", "Nhắm mắt và dò đường bằng tay"]
+        }
+      ]
+    },
+    {
+      "template": "descent",
+      "variations": [
+        {
+          "id": "descent_1",
+          "narrative": "Bậc thang xoắn ốc đi xuống. Và xuống. Và xuống nữa. Ngươi mất đếm sau trăm bậc đầu tiên. Không khí nặng dần theo từng bước. Ấm hơn. Sai lệch hơn.",
+          "options": ["Tiếp tục đi xuống", "Nghỉ trên bậc thang"]
+        },
+        {
+          "id": "descent_2",
+          "narrative": "Một giếng đứng rơi thẳng vào bóng tối. Những chỗ bám tay được khắc vào đá — mòn nhẵn bởi vô số bàn tay trước ngươi. Vài chỗ bám hoen ố vết bẩn. Đừng nghĩ về lý do.",
+          "options": ["Trèo xuống", "Tìm đường khác"]
+        },
+        {
+          "id": "descent_3",
+          "narrative": "Sàn đá chuyển thành một con dốc thoai thoải. Ướt. Trơn trượt. Ngươi đang đi xuống dù muốn hay không. Độ dốc gắt dần. Sự kiểm soát chỉ là ảo tưởng.",
+          "options": ["Trượt xuống cẩn thận", "Cố tìm điểm bám"]
+        },
+        {
+          "id": "descent_4",
+          "narrative": "Bậc thang đá, mỗi bậc thấp hơn bậc trước. Tỷ lệ sai lệch — xây cho thứ gì đó chân dài hơn, hoặc có lẽ cho những con người được định sẵn phải sảy chân. Ngươi sảy chân.",
+          "options": ["Lấy lại thăng bằng và đi tiếp", "Đi thật chậm rãi"]
+        },
+        {
+          "id": "descent_5",
+          "narrative": "Con đường tụt xuống qua một khe nứt trên sàn. Bên dưới, nước lấp loáng. Sâu bao nhiêu? Ánh đuốc không chạm tới đáy. Chẳng thứ gì chạm tới.",
+          "options": ["Hạ mình chui qua", "Thả thứ gì đó xuống để dò độ sâu"]
+        }
+      ]
+    },
+    {
+      "template": "flooded",
+      "variations": [
+        {
+          "id": "flooded_1",
+          "narrative": "Nước ngập đến đầu gối. Đen ngòm. Lạnh buốt. Chân ngươi dò được những bậc thang chìm mà mắt không thấy. Thứ gì đó lướt qua chân ngươi. Chắc là rác trôi. Chắc vậy.",
+          "options": ["Lội tới", "Men theo bức tường"]
+        },
+        {
+          "id": "flooded_2",
+          "narrative": "Lối đi ngập một nửa. Nước lên tới ngực nếu ngươi đi bộ, tới cổ nếu lội qua giữa dòng. Cả hai lựa chọn đều tồi tệ.",
+          "options": ["Bám chỗ nông gần tường", "Bơi qua vùng sâu ở giữa"]
+        },
+        {
+          "id": "flooded_3",
+          "narrative": "Nước dâng lên khi ngươi bước vào. Mắt cá. Đầu gối. Bắp đùi. Nó không chảy vào — nó chỉ... dâng lên. Như thể chính căn phòng đang nuốt chửng. Di chuyển nhanh lên.",
+          "options": ["Lao qua thật nhanh", "Tìm chỗ đất cao hơn"]
+        },
+        {
+          "id": "flooded_4",
+          "narrative": "Những cái xác trôi nổi ở đây. Úp mặt xuống. Dập dềnh khe khẽ. Chúng không còn mới, nhưng cũng chưa cũ. Dòng nước bảo quản chúng. Dòng nước bảo quản mọi thứ.",
+          "options": ["Bơi qua chúng", "Kiểm tra xem có ai là người chơi gần đây không"]
+        },
+        {
+          "id": "flooded_5",
+          "narrative": "Mặt nước phát sáng. Yếu ớt. Một thứ lân quang bệnh hoạn chẳng soi rọi gì ngoài chính nó. Những thứ gì đó chuyển động dưới bề mặt. Ngươi cố không nhìn thẳng vào chúng.",
+          "options": ["Lội qua thật nhanh", "Đứng chờ và quan sát những chuyển động"]
+        }
+      ]
+    },
+    {
+      "template": "shrine",
+      "variations": [
+        {
+          "id": "shrine_1",
+          "narrative": "Một bàn thờ dâng lên thứ gì đó đã bị lãng quên. Gương mặt bức tượng đã bị cào xóa, nhưng ngươi vẫn cảm thấy nó đang nhìn. Lễ vật mục rữa dưới chân tượng. Vài món còn tươi mới.",
+          "options": ["Dâng một lễ vật", "Đi qua không đoái hoài"]
+        },
+        {
+          "id": "shrine_2",
+          "narrative": "Nến cháy nơi đây. Ai thắp chúng? Sáp nến đọng thành những hình thù — gương mặt, bàn tay, những thứ có thể là chữ trong một ngôn ngữ của các vệt chảy. Ngọn lửa không hề lay động.",
+          "options": ["Xem xét những ngọn nến", "Đừng chạm vào bất cứ thứ gì"]
+        },
+        {
+          "id": "shrine_3",
+          "narrative": "Một bánh xe cầu nguyện, hoen gỉ chết cứng. Những lời nguyện khắc trên đó đã mòn nhẵn, không đọc nổi. Có lẽ thế lại hay. Ai đó vừa cố xoay nó gần đây — lớp gỉ có vết trầy.",
+          "options": ["Thử xoay nó", "Để yên nó đó"]
+        },
+        {
+          "id": "shrine_4",
+          "narrative": "Miếu thờ dâng lên chính dòng nước. Một hồ nước, tròn hoàn hảo, lặng hoàn hảo. Hình phản chiếu của ngươi nhìn ngược lại ngươi. Nó chớp mắt khi ngươi không chớp.",
+          "options": ["Nhìn đi chỗ khác", "Trừng mắt nhìn lại nó"]
+        },
+        {
+          "id": "shrine_5",
+          "narrative": "Những cái tên phủ kín mọi bề mặt. Khắc, cào, đốt vào đá. Hàng ngàn cái tên. Những kẻ hành hương đến trước. Một khoảng trống đang chờ, như thể mong đợi tên của ngươi.",
+          "options": ["Thêm tên của ngươi", "Không để lại dấu vết"]
+        }
+      ]
+    },
+    {
+      "template": "crossroads",
+      "variations": [
+        {
+          "id": "crossroads_1",
+          "narrative": "Ba lối rẽ tách ra. Bên trái thở ra khí lạnh và tiếng thì thầm. Bên phải vọng tiếng nước xa xăm. Chính giữa in vết kéo lê dẫn vào trong. Không lối nào dẫn ra ngoài.",
+          "options": ["Đi lối bên trái", "Đi lối bên phải", "Theo lối chính giữa"]
+        },
+        {
+          "id": "crossroads_2",
+          "narrative": "Lối đi tách đôi. Ai đó đã đánh dấu lên tường — những mũi tên cào vội, những chỉ dẫn tuyệt vọng. Các mũi tên mâu thuẫn nhau. Ai đó đã lạc ở đây. Rất nhiều ai đó.",
+          "options": ["Theo con đường mòn nhất", "Chọn lối không có dấu"]
+        },
+        {
+          "id": "crossroads_3",
+          "narrative": "Một đầu mối hành lang, tổng cộng năm ngả. Ánh đuốc của ngươi bắt được chuyển động trong hai ngả. Ba ngả còn lại không có gì — nhưng không có gì có khi còn tệ hơn.",
+          "options": ["Hướng về phía chuyển động", "Tránh xa khỏi nó"]
+        },
+        {
+          "id": "crossroads_4",
+          "narrative": "Lên hoặc xuống. Chỉ có hai lựa chọn. Lên thì khó hơn — bậc thang gãy vỡ, lở dần. Xuống thì dễ hơn. Xuống lúc nào cũng dễ hơn ở nơi này.",
+          "options": ["Trèo lên", "Xuống sâu hơn nữa"]
+        },
+        {
+          "id": "crossroads_5",
+          "narrative": "Hai lối đi giống hệt nhau. Cùng kích thước. Cùng bóng tối. Cùng cảm giác sai lệch. Một lối dẫn xuống sâu hơn. Một lối dẫn đến cái chết. Có khi chúng là cùng một thứ.",
+          "options": ["Đi lối bên trái", "Đi lối bên phải"]
+        }
+      ]
+    },
+    {
+      "template": "collapse",
+      "variations": [
+        {
+          "id": "collapse_1",
+          "narrative": "Vết nứt giăng mạng trên trần. Bụi rơi thành dòng. Nơi này muốn sụp xuống. Ngươi có thể nghe nó đang bàn tính — rên rỉ, lún dần, quyết định. Di chuyển. Ngay.",
+          "options": ["Chạy xuyên qua", "Di chuyển cẩn thận"]
+        },
+        {
+          "id": "collapse_2",
+          "narrative": "Nửa lối đi là gạch vụn. Nửa còn lại là sự nhẫn nại — đang chờ để trở thành gạch vụn. Ngươi có thể nhìn xuyên sang phía bên kia. Khe hở thì hẹp. Thời gian còn hẹp hơn.",
+          "options": ["Lách qua thật nhanh", "Thử độ vững chắc trước"]
+        },
+        {
+          "id": "collapse_3",
+          "narrative": "Sàn nhà nghiêng đi. Không nhiều, nhưng đủ. Nước đọng về một phía. Vết nứt lan ra từ chỗ ngươi đang đứng. Mỗi bước chân là một cuộc mặc cả với trọng lực.",
+          "options": ["Di chuyển đến chỗ đất vững", "Đứng thật yên"]
+        },
+        {
+          "id": "collapse_4",
+          "narrative": "Ai đó đã kích hoạt một vụ sập ở đây. Ngươi có thể thấy chỗ họ đứng khi nó đổ xuống. Ngươi có thể thấy chỗ họ ngừng đứng. Đừng đứng vào chỗ đó.",
+          "options": ["Tìm lộ trình khác", "Trèo qua đống đổ nát"]
+        },
+        {
+          "id": "collapse_5",
+          "narrative": "Những bức tường oằn vào trong. Sức ép từ đâu đó. Ngôi đền bên trên? Sức nặng của nước? Cái nghiền chậm rãi của âm phủ đang tự tiêu hóa chính mình? Có quan trọng không? Đi mau.",
+          "options": ["Vội vã băng qua", "Tìm cách chống đỡ những bức tường"]
+        }
+      ]
+    },
+    {
+      "template": "graveyard",
+      "variations": [
+        {
+          "id": "graveyard_1",
+          "narrative": "Xương. Phân loại theo từng thứ — sọ ở đây, xương sườn ở kia, xương đùi chất chồng như củi đốt. Ai đó đã sắp xếp thứ này. Mới đây. Có những chỗ trống trong cách bài trí. Những khoảng chờ đợi.",
+          "options": ["Lục tìm giữa đống xương", "Băng qua thật nhanh"]
+        },
+        {
+          "id": "graveyard_2",
+          "narrative": "Những nấm mộ xếp dọc hai bên tường, chồng ba tầng. Vài mộ được niêm phong. Vài mộ mở toang. Vài mộ đang mở ra, chậm rãi, từ bên trong. Ngươi không có thời gian đứng nhìn.",
+          "options": ["Đi xuyên chính giữa", "Chạy"]
+        },
+        {
+          "id": "graveyard_3",
+          "narrative": "Một hố đầy xác. Xác cũ, ở dưới đáy. Xác mới hơn, gần miệng hố. Cái hố vẫn chưa đầy. Nó kiên nhẫn. Nó biết còn nhiều kẻ nữa sẽ đến.",
+          "options": ["Đi vòng quanh hố", "Tìm những gương mặt quen"]
+        },
+        {
+          "id": "graveyard_4",
+          "narrative": "Những bia tưởng niệm, nứt vỡ và bào mòn. Những cái tên bằng thứ tiếng ngươi không nhận ra. Những niên đại có trước cả lịch. Những người chết này già hơn cả lịch sử. Họ vẫn nhớ, dẫu vậy.",
+          "options": ["Đọc những tấm bia", "Đừng nấn ná"]
+        },
+        {
+          "id": "graveyard_5",
+          "narrative": "Người chết được tạo dáng ở đây. Đứng. Ngồi. Quỳ. Đông cứng trong khoảnh khắc cuối cùng, được bóng tối bảo quản. Một phòng triển lãm của những kết thúc. Vào cửa miễn phí. Ra về thì đắt hơn.",
+          "options": ["Ngắm nghía những tư thế", "Giữ mắt nhìn thẳng phía trước"]
+        }
+      ]
+    },
+    {
+      "template": "witness",
+      "variations": [
+        {
+          "id": "witness_1",
+          "narrative": "Những bức tường cháy sém theo một hoa văn. Hình tròn. Chính xác. Ở tâm, phiến đá đã nóng chảy rồi đông lại. Thứ từng ở đây đã đi mất. Ngươi hy vọng nó đã đi mất.",
+          "options": ["Xem xét những vết cháy", "Rời đi lập tức"]
+        },
+        {
+          "id": "witness_2",
+          "narrative": "Vết móng vuốt phủ kín mọi bề mặt — sàn, tường, trần. Những rãnh sâu hoắm trên đá đặc. Thứ gì đó đã cố thoát ra. Hoặc thứ gì đó đã cố chui vào.",
+          "options": ["Nghiên cứu những vết cào", "Đừng nghĩ về nó"]
+        },
+        {
+          "id": "witness_3",
+          "narrative": "Một vòng tròn đá nguyên vẹn hoàn hảo giữa căn phòng hỗn loạn. Vòng tròn sạch sẽ. Mọi thứ bên ngoài nó đều bị hủy hoại. Ngươi đang đứng bên ngoài vòng tròn.",
+          "options": ["Bước vào vòng tròn", "Đứng ngoài"]
+        },
+        {
+          "id": "witness_4",
+          "narrative": "Điều gì đó đã xảy ra ở đây. Không khí vẫn còn vị của tiếng gào thét. Những phiến đá còn ấm — ấm hơn mức đáng lẽ phải thế. Ngươi đang đứng giữa tàn dư của một điều khủng khiếp.",
+          "options": ["Tìm kiếm manh mối", "Rời khỏi thật nhanh"]
+        },
+        {
+          "id": "witness_5",
+          "narrative": "Dấu bàn tay. Hàng trăm cái. Ấn hằn vào tường, vào sàn, vào trần. Tất cả đều vươn về cùng một hướng. Về phía cánh cửa ngươi vừa bước qua.",
+          "options": ["Đi theo hướng chúng chỉ", "Đi hướng ngược lại"]
+        }
+      ]
+    },
+    {
+      "template": "threshold",
+      "variations": [
+        {
+          "id": "threshold_1",
+          "narrative": "Khung cửa phía trước cổ hơn cả những bức tường quanh nó. Bên kia, không khí có vị khác — đồng và muối. Những vết cào trên khung cửa chỉ ngược ra sau. Ai đó đã cố cào đường thoát ra.",
+          "options": ["Bước qua ngưỡng cửa", "Chần chừ"]
+        },
+        {
+          "id": "threshold_2",
+          "narrative": "Một ranh giới. Ngươi có thể cảm nhận nó — áp suất không khí thay đổi, âm thanh dịch chuyển, suy nghĩ của ngươi tán loạn trong thoáng chốc. Ngươi sắp bước vào một nơi khác. Một nơi sâu hơn.",
+          "options": ["Bước qua", "Trấn tĩnh bản thân trước đã"]
+        },
+        {
+          "id": "threshold_3",
+          "narrative": "Lối đi kết thúc trước một bức màn nước, đổ xuống từ đâu đó trên cao. Bên kia màn nước, bóng tối. Nước thì lạnh. Bóng tối còn lạnh hơn. Xuyên qua là con đường duy nhất.",
+          "options": ["Xuyên qua màn nước", "Tìm lối khác"]
+        },
+        {
+          "id": "threshold_4",
+          "narrative": "Một cánh cổng bằng xương. Xương thật — những lồng ngực đan vào nhau, những hộp sọ làm bản lề. Nó tự mở ra khi ngươi lại gần. Nó vẫn chờ đợi đích thân ngươi.",
+          "options": ["Bước vào", "Từ chối lời mời"]
+        },
+        {
+          "id": "threshold_5",
+          "narrative": "Ánh sáng từ ngọn đuốc dừng lại ở điểm này. Nó không soi rọi được thứ bên kia — bóng tối nơi ấy tuyệt đối, đói khát. Ngươi sẽ phải bước đi mù lòa một quãng.",
+          "options": ["Bước vào bóng tối", "Tìm một nguồn sáng khác"]
+        }
+      ]
+    }
+  ]
+}
