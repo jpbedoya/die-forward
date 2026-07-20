@@ -439,7 +439,7 @@
   "index.tagline": "お前の死が深みを養う",
   "index.tapToOpen": "タップで開く",
   "index.unknownPlayer": "名無し",
-  "index.versionBadge": "v{version} [logs]",
+  "index.versionBadge": "v{version}",
   "leaderboard.col.clears": "生還",
   "leaderboard.col.deaths": "死",
   "leaderboard.col.room": "部屋",
@@ -660,5 +660,6 @@
   "notif.settings.label": "報せ",
   "notif.settings.hint": "通路が動いたときの報せ",
   "settings.title": "設定",
-  "settings.language": "言語"
+  "settings.language": "言語",
+  "index.logsButton": "[logs]"
 }

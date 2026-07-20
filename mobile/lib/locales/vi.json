@@ -439,7 +439,7 @@
   "index.tagline": "Cái chết của ngươi nuôi vực sâu",
   "index.tapToOpen": "chạm để mở",
   "index.unknownPlayer": "Vô danh",
-  "index.versionBadge": "v{version} [nhật ký]",
+  "index.versionBadge": "v{version}",
   "leaderboard.col.clears": "LƯỢT THOÁT",
   "leaderboard.col.deaths": "CÁI CHẾT",
   "leaderboard.col.room": "PHÒNG",
@@ -660,5 +660,6 @@
   "notif.settings.label": "TIN BÁO",
   "notif.settings.hint": "Tin báo khi các lối đi dịch chuyển",
   "settings.title": "CÀI ĐẶT",
-  "settings.language": "NGÔN NGỮ"
+  "settings.language": "NGÔN NGỮ",
+  "index.logsButton": "[nhật ký]"
 }

@@ -517,19 +517,32 @@ export default function HomeScreen() {
         </Pressable>
       </View>
 
-      {/* Version badge */}
+      {/* Logs button — separate, larger tap target above the version label
+          (previously the whole "v1.2.3 [logs]" string was one tiny Pressable,
+          making the actual [logs] hit area hard to land a tap on). */}
       <Pressable
-        style={{ position: 'absolute', bottom: 6, right: 28 }}
+        style={{ position: 'absolute', bottom: 20, right: 8 }}
+        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         onPress={() => exportDebugLogs()}
       >
         <Text
           style={{
-            fontSize: 9, fontFamily: 'monospace', color: '#6b6460', letterSpacing: 0.5,
+            fontSize: 11, fontFamily: 'monospace', color: '#6b6460', letterSpacing: 0.5,
           }}
         >
-          {t('index.versionBadge', { version: Constants.expoConfig?.version ?? '' })}
+          {t('index.logsButton')}
         </Text>
       </Pressable>
+
+      {/* Version label — plain text, not tappable, shifted toward the edge */}
+      <Text
+        style={{
+          position: 'absolute', bottom: 6, right: 8,
+          fontSize: 9, fontFamily: 'monospace', color: '#6b6460', letterSpacing: 0.5,
+        }}
+      >
+        {t('index.versionBadge', { version: Constants.expoConfig?.version ?? '' })}
+      </Text>
 
       {/* Echo Sheet */}
       <EchoSheet

@@ -439,7 +439,7 @@
   "index.tagline": "네 죽음이 심연을 먹인다",
   "index.tapToOpen": "눌러서 열기",
   "index.unknownPlayer": "무명",
-  "index.versionBadge": "v{version} [기록]",
+  "index.versionBadge": "v{version}",
   "leaderboard.col.clears": "탈출",
   "leaderboard.col.deaths": "죽음",
   "leaderboard.col.room": "방",
@@ -660,5 +660,6 @@
   "notif.settings.label": "기별",
   "notif.settings.hint": "통로가 움직일 때의 기별",
   "settings.title": "설정",
-  "settings.language": "언어"
+  "settings.language": "언어",
+  "index.logsButton": "[기록]"
 }

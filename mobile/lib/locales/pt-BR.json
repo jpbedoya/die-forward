@@ -439,7 +439,7 @@
   "index.tagline": "Sua morte alimenta as profundezas",
   "index.tapToOpen": "toque para abrir",
   "index.unknownPlayer": "Desconhecido",
-  "index.versionBadge": "v{version} [logs]",
+  "index.versionBadge": "v{version}",
   "leaderboard.col.clears": "VITÓRIAS",
   "leaderboard.col.deaths": "MORTES",
   "leaderboard.col.room": "SALA",
@@ -660,5 +660,6 @@
   "notif.settings.label": "DESPACHOS",
   "notif.settings.hint": "Aviso quando as passagens se moverem",
   "settings.title": "CONFIGURAÇÕES",
-  "settings.language": "IDIOMA"
+  "settings.language": "IDIOMA",
+  "index.logsButton": "[logs]"
 }

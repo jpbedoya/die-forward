@@ -439,7 +439,7 @@
   "index.tagline": "Tu muerte alimenta las profundidades",
   "index.tapToOpen": "toca para abrir",
   "index.unknownPlayer": "Desconocido",
-  "index.versionBadge": "v{version} [registros]",
+  "index.versionBadge": "v{version}",
   "leaderboard.col.clears": "ESCAPES",
   "leaderboard.col.deaths": "MUERTES",
   "leaderboard.col.room": "SALA",
@@ -660,5 +660,6 @@
   "notif.settings.label": "DESPACHOS",
   "notif.settings.hint": "Aviso cuando los pasajes se muevan",
   "settings.title": "AJUSTES",
-  "settings.language": "IDIOMA"
+  "settings.language": "IDIOMA",
+  "index.logsButton": "[registros]"
 }

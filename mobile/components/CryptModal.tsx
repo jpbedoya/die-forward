@@ -1,6 +1,6 @@
 // CryptModal - Reusable modal component with consistent dark theme styling
 import React from 'react';
-import { View, Text, Pressable, Modal, ScrollView, Platform, Image } from 'react-native';
+import { View, Text, Pressable, Modal, ScrollView, Image, useWindowDimensions } from 'react-native';
 import { getCreatureAsset, getCreatureAssetByName } from '../lib/creatureAssets';
 import { getItemAsset, getItemAssetByName } from '../lib/itemAssets';
 
@@ -23,6 +23,13 @@ export function CryptModal({
   closeButtonText = 'Close',
   maxWidth = 300,
 }: CryptModalProps) {
+  // Percentage maxHeight ('80%') doesn't reliably resolve against the real
+  // screen height inside RN's native Modal on Android — it can cap the card
+  // well below what the device actually has room for. Compute a pixel value
+  // from the real window height instead, on every platform.
+  const { height: windowHeight } = useWindowDimensions();
+  const cardMaxHeight = windowHeight * 0.8;
+
   return (
     <Modal
       visible={visible}
@@ -32,18 +39,19 @@ export function CryptModal({
     >
       <View className="flex-1 justify-center items-center">
         {/* Backdrop */}
-        <Pressable 
+        <Pressable
           className="absolute inset-0 bg-black/80"
           onPress={onClose}
         />
-        
+
         {/* Modal card */}
-        <View 
+        <View
           className="bg-crypt-surface border border-crypt-border p-4"
-          style={{ 
-            width: '85%', 
+          style={{
+            width: '85%',
             maxWidth,
-            maxHeight: '80%',
+            maxHeight: cardMaxHeight,
+            overflow: 'hidden',
           }}
         >
           {/* Header */}
@@ -56,9 +64,11 @@ export function CryptModal({
             </View>
           )}
 
-          {/* Content */}
-          <ScrollView 
-            style={{ maxHeight: Platform.OS === 'web' ? 500 : undefined }}
+          {/* Content — flexShrink lets this bound itself to whatever space the
+              card's maxHeight leaves, on every platform, so it actually scrolls
+              when content overflows instead of silently getting clipped. */}
+          <ScrollView
+            style={{ flexShrink: 1 }}
             showsVerticalScrollIndicator={true}
             contentContainerStyle={{ flexGrow: 0 }}
           >

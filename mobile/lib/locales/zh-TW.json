@@ -439,7 +439,7 @@
   "index.tagline": "你的死亡餵養著深淵",
   "index.tapToOpen": "點按開啟",
   "index.unknownPlayer": "無名氏",
-  "index.versionBadge": "v{version} [日誌]",
+  "index.versionBadge": "v{version}",
   "leaderboard.col.clears": "通關",
   "leaderboard.col.deaths": "死亡",
   "leaderboard.col.room": "房間",
@@ -661,5 +661,6 @@
   "notif.settings.hint": "通道移動時捎信予你",
   "corpse.words.label": "遺言",
   "settings.title": "設定",
-  "settings.language": "語言"
+  "settings.language": "語言",
+  "index.logsButton": "[日誌]"
 }

@@ -23,7 +23,7 @@ import { AudiusProvider } from '../lib/AudiusContext';
 import { SplashScreen } from '../components/SplashScreen';
 import { getAudioManager } from '../lib/audio';
 import { db } from '../lib/instant';
-import { dlog, scheduleAutoExport } from '../lib/debug-log';
+import { dlog, clearDebugLogs, scheduleAutoExport } from '../lib/debug-log';
 import { palette } from '../lib/theme';
 
 const APP_VERSION_KEY = 'APP_BUILD_VERSION';
@@ -275,11 +275,17 @@ export default function RootLayout() {
   // Clear stale state on version change — must complete before providers mount
   // to avoid racing with GameProvider.restoreAuth and InstantDB queries.
   useEffect(() => {
-    dlog('Layout', 'RootLayout mounted');
-    checkVersionAndMigrate().then((clearedStorage) => {
-      dlog('Layout', `migration done, mounting providers (clearedStorage=${clearedStorage})`);
-      setStartupClearedStorage(clearedStorage);
-      setMigrationDone(true);
+    // Debug logs are wiped at the start of every launch so an export is
+    // always scoped to "since I opened the app," not a mixed multi-day
+    // history — await this before the first dlog call so nothing from this
+    // session lands in a buffer that's about to be cleared out from under it.
+    clearDebugLogs().then(() => {
+      dlog('Layout', 'RootLayout mounted');
+      checkVersionAndMigrate().then((clearedStorage) => {
+        dlog('Layout', `migration done, mounting providers (clearedStorage=${clearedStorage})`);
+        setStartupClearedStorage(clearedStorage);
+        setMigrationDone(true);
+      });
     });
     // Auto-export disabled — was used for debugging frozen-UI glitch
     // scheduleAutoExport(8000);

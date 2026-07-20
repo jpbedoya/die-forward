@@ -1,7 +1,9 @@
 /**
  * On-device debug logger — stores timestamped entries in AsyncStorage
- * and auto-saves to filesystem. Auto-exports via share sheet on startup
- * so logs are accessible even when the UI is frozen.
+ * (capped, rolling window) and cleared at the start of every app launch
+ * (see clearDebugLogs() call in app/_layout.tsx) so an export is always
+ * scoped to "since I opened the app," not a mixed multi-day history.
+ * Exports via the system share sheet, which also works on a frozen UI.
  *
  * Usage:
  *   import { dlog } from './debug-log';
@@ -12,14 +14,9 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform, Share, Alert } from 'react-native';
-// Use the legacy entrypoint: Expo SDK 54's expo-file-system replaced this API
-// with File/Directory/Paths. The main export drops `documentDirectory` and the
-// remaining functions throw at runtime — `expo-file-system/legacy` still works.
-import * as FileSystem from 'expo-file-system/legacy';
 
 const STORAGE_KEY = 'die-forward-debug-logs';
 const MAX_ENTRIES = 500;
-const LOG_FILE = `${FileSystem.documentDirectory}debug.log`;
 
 // In-memory buffer — flushed periodically
 let buffer: string[] = [];
@@ -65,7 +62,6 @@ async function flush() {
   const toWrite = [...buffer];
   buffer = [];
 
-  // Write to AsyncStorage (for in-app access)
   try {
     const existing = await AsyncStorage.getItem(STORAGE_KEY);
     const lines: string[] = existing ? JSON.parse(existing) : [];
@@ -73,20 +69,6 @@ async function flush() {
     const trimmed = lines.length > MAX_ENTRIES ? lines.slice(-MAX_ENTRIES) : lines;
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
   } catch {}
-
-  // Also append to filesystem log file (for adb extraction)
-  if (Platform.OS !== 'web') {
-    try {
-      const chunk = toWrite.join('\n') + '\n';
-      const exists = await FileSystem.getInfoAsync(LOG_FILE);
-      if (exists.exists) {
-        const current = await FileSystem.readAsStringAsync(LOG_FILE);
-        await FileSystem.writeAsStringAsync(LOG_FILE, current + chunk);
-      } else {
-        await FileSystem.writeAsStringAsync(LOG_FILE, chunk);
-      }
-    } catch {}
-  }
 }
 
 /** Read all stored log entries */
@@ -157,9 +139,6 @@ export function scheduleAutoExport(delayMs = 8000) {
 export async function clearDebugLogs(): Promise<void> {
   buffer = [];
   await AsyncStorage.removeItem(STORAGE_KEY);
-  if (Platform.OS !== 'web') {
-    try { await FileSystem.deleteAsync(LOG_FILE, { idempotent: true }); } catch {}
-  }
 }
 
 // Main log function + level variants
