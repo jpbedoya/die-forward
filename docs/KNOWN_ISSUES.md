@@ -139,6 +139,15 @@ Works with Phantom mobile browser. Deep-link flow may have issues with some wall
 
 Fix: indexed `players.authId` and gave it an enforced `string` type in the live InstantDB schema (`src/instant.schema.ts`, pushed via `instant-cli push schema`) so `useCurrentPlayer()` can use a case-insensitive `$ilike` match instead of exact-match. No data migration — `walletAddress` and the original-case `authId` values are untouched; only the schema's index/type metadata changed.
 
+### LIKE-Wildcard IDOR via `/api/auth/guest`'s `existingGuestId` (same-day fix)
+**Status:** ✅ Fixed (2026-07-19) — caught by automated post-commit security review
+
+Introducing `$ilike` above (to fix the case-mismatch bug) briefly created an authorization bypass: `src/app/api/auth/guest/route.ts`'s guest-reauth path only checked `existingGuestId.startsWith('guest-')` before embedding it verbatim in an InstantDB auth token's email. A caller could supply e.g. `guest-%` to mint a valid token whose derived `authId` — fed straight into `useCurrentPlayer()`'s new `$ilike` query — would match *any* row starting with `guest-`, i.e. an arbitrary other player, instead of just their own.
+
+Fix (both same-day):
+- Server: `existingGuestId` must now match a strict UUID-shape regex (`GUEST_ID_PATTERN`, matching the exact format `@instantdb/admin`'s `id()` produces) before being trusted; anything else falls through to minting a fresh guest session instead.
+- Client: `useCurrentPlayer()` additionally refuses to run the `$ilike` query unless the email-derived `authId` matches a safe charset (`/^[0-9A-Za-z-]+$/`, covering both guest UUIDs and base58 wallet addresses) — defense-in-depth against any other path that might someday feed it an unsanitized value.
+
 ### Sunken Crypt Explore Rooms — Tertiary Option Fallback Text
 **Status:** ✅ Fixed
 

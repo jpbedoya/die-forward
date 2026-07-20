@@ -180,9 +180,17 @@ export function useCurrentPlayer() {
   // Requires `players.authId` to be indexed with an enforced string type —
   // both are now set in the live schema (see instant.schema.ts), which is
   // why this can safely use $ilike instead of an exact match.
-  const authId = user?.email
+  const rawAuthId = user?.email
     ? user.email.replace(/@(wallet|guest)\.dieforward\.com$/, '')
     : null;
+
+  // Defense-in-depth: legitimate authIds are always a guest UUID (hex +
+  // hyphens) or a base58 wallet address (alphanumeric) — never containing
+  // '%'/'_'. Refuse to run the $ilike query on anything outside that shape
+  // so a malformed/malicious authId (e.g. from a value that slipped past
+  // server-side validation elsewhere) can't be used as a SQL-LIKE wildcard
+  // pattern to match other players' rows instead of just this session's own.
+  const authId = rawAuthId && /^[0-9A-Za-z-]+$/.test(rawAuthId) ? rawAuthId : null;
 
   const { data, isLoading: playerLoading, error } = db.useQuery(
     authId
