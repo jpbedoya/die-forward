@@ -171,16 +171,25 @@ export function useCurrentPlayer() {
   // Tokens are created with email = "<authId>@wallet.dieforward.com" or
   // "<guestId>@guest.dieforward.com", so strip the domain suffix to get
   // the original authId that getOrCreatePlayerByAuth stored.
+  //
+  // InstantDB lowercases the email on its own account record, so for wallet
+  // auth (authId = a case-sensitive base58 Solana address) the derived value
+  // here can differ in case from the mixed-case authId that was written to
+  // the player row at link-wallet time (e.g. "gdqj32h8..." vs "GdQJ32H8...").
+  // $ilike does a case-insensitive match so this still finds the right row.
+  // Requires `players.authId` to be indexed with an enforced string type —
+  // both are now set in the live schema (see instant.schema.ts), which is
+  // why this can safely use $ilike instead of an exact match.
   const authId = user?.email
     ? user.email.replace(/@(wallet|guest)\.dieforward\.com$/, '')
     : null;
-  
+
   const { data, isLoading: playerLoading, error } = db.useQuery(
     authId
       ? {
           players: {
             $: {
-              where: { authId },
+              where: { authId: { $ilike: authId } },
               limit: 1,
             },
           },

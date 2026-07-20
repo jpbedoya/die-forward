@@ -82,15 +82,6 @@ Some enemy + intent combinations may be too punishing or too easy. Combat balanc
 
 Later depths (Flooded Halls, Bone Gardens) are significantly harder. This is intentional — clear rate should be ~10-15%.
 
-### Sunken Crypt Explore Options Incomplete
-**Status:** Known gap (Phase 1) — still open; content gap, not a code gap
-
-Sunken Crypt explore room variations (`mobile/lib/zones/sunken-crypt.json`) still only have 2 authored options each (only `crossroads_1` has a genuine 3rd). The rendering side was hardened (`mobile/app/play.tsx`, "Fix 11: always include tertiary (intel scout) even if zone only has 2 authored options") so a tertiary option always appears, but it still falls back to the generic `play.observeCarefully` text whenever no authored 3rd option exists — i.e. for nearly all Sunken Crypt explore variations.
-
-**Impact:** Slightly repetitive tertiary option text across Sunken Crypt explore rooms.
-
-**Fix:** Author tertiary options for Sunken Crypt room variations in the zone JSON (all locales).
-
 ### activeTitle / activeBorder Not Rendered
 **Status:** Known gap (Phase 1) — still open, verified July 2026
 
@@ -140,6 +131,20 @@ Works with Phantom mobile browser. Deep-link flow may have issues with some wall
 ---
 
 ## Recently Resolved (The Shift, verified July 2026)
+
+### Wallet-Auth Player Lookup Silently Broken for Mixed-Case Addresses
+**Status:** ✅ Fixed (2026-07-19)
+
+`useCurrentPlayer()` (`mobile/lib/instant.ts`) derives the player-lookup `authId` by stripping the domain off the InstantDB auth session's `user.email` (e.g. `<address>@wallet.dieforward.com`). InstantDB lowercases that email, but Solana wallet addresses are case-sensitive base58, so the derived `authId` never matched the mixed-case `authId` written to the player row at link-wallet time. An exact-match `where: { authId }` query silently returned no player for any wallet address containing an uppercase letter — a DB audit found **15 of 19 wallet-type player rows (79%)** affected. This had existed since the email-derivation logic was added (2026-03-23) but only became user-visible once two independent recent changes started depending on `player` actually resolving: the stake screen's `stakingPosture: 'ritual'` gating (`totalDeaths >= 3` threshold, reads `player?.totalDeaths ?? 0`) and the new Settings modal's DISPATCHES (notification opt-in) section.
+
+Fix: indexed `players.authId` and gave it an enforced `string` type in the live InstantDB schema (`src/instant.schema.ts`, pushed via `instant-cli push schema`) so `useCurrentPlayer()` can use a case-insensitive `$ilike` match instead of exact-match. No data migration — `walletAddress` and the original-case `authId` values are untouched; only the schema's index/type metadata changed.
+
+### Sunken Crypt Explore Rooms — Tertiary Option Fallback Text
+**Status:** ✅ Fixed
+
+49 of 50 Sunken Crypt explore room variations (`mobile/lib/zones/sunken-crypt.json` and all 6 locale variants) had only 2 authored options; the UI's always-present 3rd "observe carefully" choice fell back to a generic `play.observeCarefully` string for all of them.
+
+Fix: authored a bespoke 3rd option for every variation, each tied to a concrete detail in that variation's own narrative text, in English and translated across all 6 locales (es/ja/ko/pt-BR/vi/zh-TW) — the generic fallback is no longer reachable from Sunken Crypt.
 
 ### Void Salt Damage Bonus Not Wired (Phase 1)
 **Status:** ✅ Fixed
