@@ -98,8 +98,10 @@
       margin-bottom: clamp(8px, 1vh, 15px);
       /* No border/frame — fade the art into the background and let a faint
          glow lift it off the page instead. */
-      -webkit-mask-image: radial-gradient(circle, #000 52%, transparent 71%);
-      mask-image: radial-gradient(circle, #000 52%, transparent 71%);
+      -webkit-mask-image: linear-gradient(to right, transparent, #000 18%, #000 82%, transparent), linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+      -webkit-mask-composite: source-in;
+      mask-image: linear-gradient(to right, transparent, #000 18%, #000 82%, transparent), linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+      mask-composite: intersect;
       filter: drop-shadow(0 0 26px rgba(245, 158, 11, 0.22));
     }
     .detail-text {

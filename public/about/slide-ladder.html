@@ -76,8 +76,10 @@
       width: clamp(44px, 4.8vw, 72px);
       height: clamp(44px, 4.8vw, 72px);
       object-fit: cover;
-      -webkit-mask-image: radial-gradient(circle, #000 52%, transparent 71%);
-      mask-image: radial-gradient(circle, #000 52%, transparent 71%);
+      -webkit-mask-image: linear-gradient(to right, transparent, #000 18%, #000 82%, transparent), linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+      -webkit-mask-composite: source-in;
+      mask-image: linear-gradient(to right, transparent, #000 18%, #000 82%, transparent), linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+      mask-composite: intersect;
       filter: drop-shadow(0 0 16px rgba(245, 158, 11, 0.25));
       float: right;
       margin-left: 8px;
