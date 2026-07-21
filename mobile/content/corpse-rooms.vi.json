@@ -1,0 +1,321 @@
+{
+  "type": "corpse",
+  "zone": "THRESHOLD OF THE UNNAMED",
+  "rooms": [
+    {
+      "template": "fresh",
+      "variations": [
+        {
+          "id": "fresh_1",
+          "narrative": "Máu vẫn chưa khô. Họ ngã xuống đây mới đó — hay đã hàng năm trời. Thời gian dối trá ở dưới này. Bàn tay họ vẫn vươn về phía bức tường, nơi những con chữ được cào lên:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "fresh_2",
+          "narrative": "Vẫn còn ấm. Ngươi có thể thấy hơi thở cuối cùng vẫn đọng thành làn khói trong không khí lạnh. Họ suýt nữa đã thoát. Suýt nữa. Những lời sau cuối của họ, khắc vội vàng:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "fresh_3",
+          "narrative": "Ngươi biết chuyện chưa xảy ra lâu vì vẫn còn ngửi thấy mùi sợ hãi. Sắc lạnh. Tanh kim loại. Lời nhắn của họ còn mới, bụi đá vẫn rơi khỏi những con chữ:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "fresh_4",
+          "narrative": "Ngọn đuốc của họ vẫn cháy. Mới đến thế đấy. Ngọn lửa chao đảo khi ngươi lại gần, như thể nhận ra ngươi. Ngôn từ của họ rực lên trong ánh sáng đang tàn:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "fresh_5",
+          "narrative": "Những gợn nước còn chưa lặng. Họ vừa mới ngã xuống. Ngươi vừa lỡ mất họ — hoặc họ vừa lỡ mất ngươi. Dù thế nào, lời nhắn của họ dành cho kẻ đến sau:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "old",
+      "variations": [
+        {
+          "id": "old_1",
+          "narrative": "Giờ đã gần như hòa vào bức tường. Dòng nước đã lấy đi gần hết. Nhưng những con chữ khắc trong đá vẫn còn, nhẫn nại như nỗi tiếc thương:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "old_2",
+          "narrative": "Xương. Giờ chỉ còn xương. Được thời gian và dòng nước sắp đặt thành thứ gì đó gần như bình yên. Lời nhắn của họ đã phai mòn, nhưng vẫn còn đó:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "old_3",
+          "narrative": "Âm phủ đã tiêu hóa họ được một thời gian rồi. Thứ còn lại là ký ức nhiều hơn là thân xác. Nhưng ký ức tồn tại dai dẳng ở nơi này. Ngôn từ của họ bền bỉ:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "old_4",
+          "narrative": "Rêu đã mọc trên người họ. Âm phủ đã chấp nhận thân xác này như một phần của chính nó. Chỉ có lời nhắn được khắc là kháng cự lại sự nuốt chửng:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "old_5",
+          "narrative": "Họ đã ở đây bao lâu rồi? Đủ lâu để trở thành vật cố định. Một cột mốc. Rõ ràng những kẻ sống sót khác đã đi ngang qua, nhưng không ai dịch chuyển họ. Lời cảnh báo của họ vẫn đứng vững:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "peaceful",
+      "variations": [
+        {
+          "id": "peaceful_1",
+          "narrative": "Họ đã tự thu xếp cho mình thật thoải mái. Sắp đặt đồ đạc gọn gàng. Quay mặt về hướng lối ra mà họ sẽ không bao giờ đến được. Lời nhắn của họ cẩn trọng, chín chắn:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "peaceful_2",
+          "narrative": "Không vật lộn. Không bạo lực. Họ chỉ đơn giản ngồi xuống và quyết định rằng đến đây là đủ xa rồi. Sự chấp nhận của họ gần như đáng ganh tị. Ngôn từ của họ điềm tĩnh:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "peaceful_3",
+          "narrative": "Họ chết với đôi tay đan vào nhau. Mắt nhắm. Bình thản với một kết thúc do chính họ chọn. Lời nhắn của họ đọc như lời từ biệt, không phải lời cảnh báo:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "peaceful_4",
+          "narrative": "Một đống lửa nhỏ, nguội từ lâu. Một bữa ăn, dở dang. Họ nghỉ lại nơi đây. Họ không bao giờ tỉnh dậy nữa. Đôi khi âm phủ cũng biết nhân từ. Ý nghĩ cuối cùng của họ:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "peaceful_5",
+          "narrative": "Họ đang mỉm cười. Bằng cách nào đó. Sau tất cả. Thân xác họ là một bài học về sự buông bỏ. Lời nhắn của họ dành cho chính họ cũng nhiều như dành cho ngươi:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "heroic",
+      "variations": [
+        {
+          "id": "heroic_1",
+          "narrative": "Con quái vật nằm cạnh họ. Họ đã giết nó. Nó đã giết họ. Một cuộc trao đổi sòng phẳng? Lưỡi kiếm của họ vẫn cắm trong sọ nó. Lời nhắn của họ ngắn gọn, mãn nguyện:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "heroic_2",
+          "narrative": "Họ đã giữ vững phòng tuyến. Ngay tại đây. Ngươi có thể thấy dấu tích trận chiến — những vết sẹo trên tường, thứ dịch đen, xác của những thứ họ đã giết. Văn bia của họ là thứ giành được:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "heroic_3",
+          "narrative": "Ba con quái vật chết quanh họ. Họ không ra đi lặng lẽ. Họ không ra đi dễ dàng. Họ ra đi trong chiến đấu, giữa vòng vây, kéo theo nhiều nhất có thể. Lời khoe của họ:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "heroic_4",
+          "narrative": "Họ chết để cứu một người. Ngươi có thể thấy dấu chân thứ hai, dẫn ra xa. Ai đó đã sống sót nhờ người này. Di sản của họ:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "heroic_5",
+          "narrative": "Đứng thẳng. Họ chết trong tư thế đứng thẳng. Vũ khí giơ cao. Đối mặt với thứ họ biết mình không thể thắng. Họ vẫn đối mặt. Sự thách thức của họ khắc vào đá:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "disturbing",
+      "variations": [
+        {
+          "id": "disturbing_1",
+          "narrative": "Họ không chết trong chiến đấu. Họ chết trong chờ đợi. Ngồi tựa vào tường, đôi tay đan lại, nhẫn nại. Như thể họ đã biết trước. Lời nhắn bên cạnh họ:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "disturbing_2",
+          "narrative": "Có gì đó sai lệch với cái xác này. Tỷ lệ cơ thể. Tư thế. Nụ cười. Trông như họ bị tạo dáng. Bị sắp đặt. Bởi thứ gì đó không hiểu hình hài con người. Ngôn từ của họ:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "disturbing_3",
+          "narrative": "Họ quay mặt vào tường. Trán áp vào đá. Cào cấu nó đến khi những ngón tay không còn nữa. Lời nhắn được khắc vào đá, không phải cào. Khắc rất sâu. Nó viết:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "disturbing_4",
+          "narrative": "Không vết thương. Không dấu vết. Không nguyên nhân rõ ràng. Họ chỉ... dừng lại. Nét mặt họ hoang mang, như vẫn đang cố giải bài toán ấy. Lời nhắn của họ đứt quãng giữa chừng:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "disturbing_5",
+          "narrative": "Họ đang đứng. Đã chết, nhưng vẫn đứng. Mắt mở. Dõi về lối đi ngươi vừa băng qua. Họ đã quan sát suốt từ đầu đến giờ chăng? Lời nhắn của họ trừng trừng nhìn cùng họ:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "group",
+      "variations": [
+        {
+          "id": "group_1",
+          "narrative": "Ba người. Co cụm vào nhau lúc cuối cùng. Dù thứ gì đã đến, họ đối mặt với nó như một. Chỉ một người kịp viết. Những con chữ dành cho tất cả:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "group_2",
+          "narrative": "Một vòng tròn thi thể. Mặt hướng ra ngoài. Lưng tựa lưng đến phút cuối. Họ tin tưởng nhau. Họ chết cùng nhau. Một giọng nói thay cho tất cả:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "group_3",
+          "narrative": "Hai người. Tay nắm chặt tay. Đến tận bây giờ. Thứ đã giết họ không chia lìa được họ. Lời nhắn chung của họ:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "group_4",
+          "narrative": "Một đống. Chỉ có từ đó thôi. Ai đó chết trước, và những người còn lại không rời đi. Họ tự thêm mình vào đống ấy. Người dưới cùng đã viết gì đó:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "group_5",
+          "narrative": "Họ chết trong đội hình. Như những người lính. Như những tín đồ. Như những kẻ biết điều gì đang đến và quyết định cùng nhau đối mặt. Lời cuối chung của họ:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "trapped",
+      "variations": [
+        {
+          "id": "trapped_1",
+          "narrative": "Vụ sập đá đã nhốt kín họ bên trong. Vết cào phủ đầy đống đổ nát. Họ đã cố gắng rất lâu. Rồi họ dừng lại. Lời nhắn của họ, viết trong bóng tối:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "trapped_2",
+          "narrative": "Bị khóa bên trong. Cánh cửa không mở được từ phía này. Họ không biết điều đó khi đóng nó lại. Những vết cào trên cửa kể lại câu chuyện. Ngôn từ của họ cào ở phía dưới cùng:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "trapped_3",
+          "narrative": "Nước đã dâng lên. Ngươi có thể thấy vệt nước nơi nó dừng lại — ngay trên đầu họ. Họ đã trèo cao hết mức có thể. Vẫn chưa đủ cao. Lời nhắn của họ nằm ngang mực nước:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "trapped_4",
+          "narrative": "Xiềng xích. Họ bị xiềng ở đây. Ai đã xiềng họ? Thứ gì đó muốn họ chờ đợi. Suy nghĩ. Viết một điều sau cuối:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "trapped_5",
+          "narrative": "Một cái hố. Vách trơn nhẵn. Không lối thoát. Họ sống sót dưới này lâu hơn ngươi tưởng. Đủ lâu để khắc những con chữ này:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "posed",
+      "variations": [
+        {
+          "id": "posed_1",
+          "narrative": "Ai đó đã sắp đặt cái xác này. Dựng nó lên. Xoay mặt nó về phía lối vào. Về phía ngươi. Lời nhắn không phải của họ — thứ gì khác đã viết nó:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "posed_2",
+          "narrative": "Họ đang quỳ. Đầu cúi. Hai tay chắp lại. Một sự nhại báng lời cầu nguyện, dàn dựng bởi thứ gì đó từng quan sát con người thờ phụng. Ngôn từ bên cạnh họ không phải lời thờ phụng:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "posed_3",
+          "narrative": "Bị xây vào tường. Theo đúng nghĩa đen. Thân xác họ giờ là một phần của kiến trúc. Kẻ Kiến Trúc đã ở đây. Chỉ có bàn tay họ còn tự do, chỉ về những con chữ được khắc:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "posed_4",
+          "narrative": "Họ đang ngồi ở một cái bàn. Với một bữa ăn. Với bạn đồng bàn — những cái xác khác, sắp xếp như khách dự tiệc. Một trò nhại kinh khủng. Tấm thiệp ghi chỗ ngồi của họ viết:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "posed_5",
+          "narrative": "Bị trưng bày. Như một tác phẩm. Gắn lên tường một cách kỹ lưỡng, có chủ đích. Một phòng triển lãm chỉ một hiện vật. Tấm biển bên dưới họ ghi:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    },
+    {
+      "template": "legendary",
+      "variations": [
+        {
+          "id": "legendary_1",
+          "narrative": "Ngươi từng nghe về người này. Ai cũng từng nghe. Họ đã đi xa hơn bất kỳ ai trước đó. Cái xác của họ đã trở thành một cột mốc. Ngôn từ của họ, được chép lại và truyền tay:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "legendary_2",
+          "narrative": "Người nổi danh ấy. Lễ vật vây quanh họ — quà từ những lữ khách khác, những lời kính viếng. Họ suýt nữa đã thoát. Lời nhắn của họ đã trở thành một lời nguyện cầu:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "legendary_3",
+          "narrative": "Ngươi nhận ra họ từ những câu chuyện kể. Nhỏ bé hơn ngươi hình dung. Con người hơn. Huyền thoại của họ lớn hơn thân xác họ. Ngôn từ của họ giản dị đến bất ngờ:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "legendary_4",
+          "narrative": "Một chốn hành hương. Nhiều kẻ đã đến chỉ để nhìn nơi này, nơi bậc vĩ nhân gục ngã. Hoa mục rữa dưới chân họ. Lời nhắn của họ mòn nhẵn vì bao ngón tay lần theo:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        },
+        {
+          "id": "legendary_5",
+          "narrative": "Lượt cược lớn nhất trong lịch sử. Mất mát lớn nhất. Nỗ lực can trường nhất. Thất bại của họ dạy kẻ khác cách thành công. Di sản của họ không chỉ là ngôn từ:",
+          "player_name": "{PLAYER}",
+          "final_message": "{MESSAGE}"
+        }
+      ]
+    }
+  ]
+}

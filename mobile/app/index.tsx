@@ -58,7 +58,7 @@ import { useGame } from '../lib/GameContext';
 import { usePlayer } from '../lib/instant';
 import { DieForwardLogoImage } from '../components/DieForwardLogoImage';
 import { AudioToggle } from '../components/AudioToggle';
-import { AudioSettingsModal } from '../components/AudioSettingsModal';
+import { SettingsModal } from '../components/SettingsModal';
 import { NicknameModal } from '../components/NicknameModal';
 import { AudiusLogo } from '../components/AudiusLogo';
 import { CRTOverlay } from '../components/CRTOverlay';
@@ -239,7 +239,7 @@ function EchoSheet({
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const [showAllSheet, setShowAllSheet] = useState(false);
-  const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [cachedPreviewDeaths, setCachedPreviewDeaths] = useState<any[]>([]);
 
   const game = useGame();
@@ -394,7 +394,7 @@ export default function HomeScreen() {
           )}
         </View>
         <View style={{ alignItems: 'flex-end', flexShrink: 0 }}>
-          <AudioToggle ambientTrack="ambient-title" inline onSettingsPress={() => setAudioSettingsOpen(true)} />
+          <AudioToggle ambientTrack="ambient-title" inline onSettingsPress={() => setSettingsOpen(true)} />
         </View>
       </View>
 
@@ -421,7 +421,7 @@ export default function HomeScreen() {
         </View>
       </View>
 
-      <AudioSettingsModal visible={audioSettingsOpen} onClose={() => setAudioSettingsOpen(false)} />
+      <SettingsModal visible={settingsOpen} onClose={() => setSettingsOpen(false)} />
       <NicknameModal
         visible={game.showNicknameModal}
         onSubmit={(name) => game.setNickname(name)}
@@ -432,7 +432,7 @@ export default function HomeScreen() {
 
         {/* PROMO AREA — top-right, below header. Swap content here for promotions/partnerships. */}
         <View style={{ alignItems: 'flex-end', marginBottom: 4 }}>
-          <Pressable onPress={() => setAudioSettingsOpen(true)} hitSlop={4}>
+          <Pressable onPress={() => setSettingsOpen(true)} hitSlop={4}>
             <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 999, gap: 4, backgroundColor: 'rgba(168, 85, 247, 0.15)', borderWidth: 1, borderColor: 'rgba(168, 85, 247, 0.3)' }}>
               <AudiusLogo width={60} height={12} color="#a855f7" />
               <Text style={{ fontFamily: 'monospace', fontSize: 10, fontWeight: '700', color: '#a855f7', letterSpacing: 0.5 }}>{t('index.soundtrack')}</Text>
@@ -517,19 +517,32 @@ export default function HomeScreen() {
         </Pressable>
       </View>
 
-      {/* Version badge */}
+      {/* Logs button — separate, larger tap target above the version label
+          (previously the whole "v1.2.3 [logs]" string was one tiny Pressable,
+          making the actual [logs] hit area hard to land a tap on). */}
       <Pressable
-        style={{ position: 'absolute', bottom: 6, right: 28 }}
+        style={{ position: 'absolute', bottom: 20, right: 8 }}
+        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         onPress={() => exportDebugLogs()}
       >
         <Text
           style={{
-            fontSize: 9, fontFamily: 'monospace', color: '#6b6460', letterSpacing: 0.5,
+            fontSize: 11, fontFamily: 'monospace', color: '#6b6460', letterSpacing: 0.5,
           }}
         >
-          {t('index.versionBadge', { version: Constants.expoConfig?.version ?? '' })}
+          {t('index.logsButton')}
         </Text>
       </Pressable>
+
+      {/* Version label — plain text, not tappable, shifted toward the edge */}
+      <Text
+        style={{
+          position: 'absolute', bottom: 6, right: 8,
+          fontSize: 9, fontFamily: 'monospace', color: '#6b6460', letterSpacing: 0.5,
+        }}
+      >
+        {t('index.versionBadge', { version: Constants.expoConfig?.version ?? '' })}
+      </Text>
 
       {/* Echo Sheet */}
       <EchoSheet

@@ -1,0 +1,184 @@
+{
+  "type": "combat_actions",
+  "actions": {
+    "strike": {
+      "success": [
+        "Lưỡi dao của ngươi chạm vào da thịt. Chấn động chạy dọc cánh tay. Nó loạng choạng lùi lại, bị thương nhưng chưa gục.",
+        "Thép gặp sự mục ruỗng. Sinh vật lảo đảo, dịch đen phun tung tóe. Ngươi đã làm nó bị thương. Giờ nó biết đến đau đớn.",
+        "Ngươi vung chuẩn xác. Đòn đánh giáng xuống chắc nịch, đẩy con quái lùi một bước. Máu — hoặc thứ gì đó giống máu — chảy ra.",
+        "Một cú trúng gọn ghẽ. Sinh vật gào rú — hoặc cố gào, với những gì còn lại của cổ họng nó. Ngươi đã làm nó trọng thương.",
+        "Vũ khí của ngươi cắm sâu. Đôi mắt sinh vật mở to với thứ gì đó như kinh ngạc. Nó không ngờ ngươi dám đánh trả."
+      ],
+      "mutual": [
+        "Ngươi vung đòn. Nó vung đòn. Cả hai đều trúng. Cơn đau bùng lên bên hông khi sinh vật loạng choạng. Đổi chác sòng phẳng. Vừa vặn.",
+        "Thép gặp móng vuốt. Hai bên xé vào nhau. Không ai lùi bước. Máu hòa lẫn — máu ngươi và thứ gì đó tạm gọi là máu của nó.",
+        "Một màn trao đổi tàn khốc. Ngươi làm nó đau. Nó làm ngươi đau. Phép toán của bạo lực: cả hai con số cùng giảm.",
+        "Lưỡi dao của ngươi cắm ngập trong lúc móng vuốt nó cào rách ngươi. Đớn đau và thỏa mãn, quấn chặt vào nhau.",
+        "Ngươi chém sâu. Răng nó tìm thấy cánh tay ngươi. Hủy diệt lẫn nhau. Quyết tâm lẫn nhau. Không ai trong hai kẻ chịu dừng lại."
+      ],
+      "weak": [
+        "Đòn đánh trượt đi. Không đủ. Nó gần như chẳng để ý, đã lao về phía ngươi.",
+        "Ngươi ra đòn, nhưng góc đánh sai lệch. Nó hứng trọn cú đánh và tiếp tục tiến tới. Sẽ cần nhiều hơn thế.",
+        "Vũ khí của ngươi chạm trúng, nhưng yếu ớt. Sinh vật cười — hoặc phát ra âm thanh ở nơi lẽ ra là tiếng cười.",
+        "Cú vung của ngươi chệch hướng. Mệt mỏi? Sợ hãi? Sinh vật không quan tâm đến lý do. Nó quan tâm đến sơ hở.",
+        "Đòn đánh trúng đích, nhưng vào lớp da chai cứng. Như chém vào đá. Cánh tay ngươi tê dại. Nó thậm chí không nao núng.",
+        "Ngươi đánh trượt. Hoàn toàn. Đà vung kéo ngươi mất thăng bằng. Cái giá phải trả sẽ không rẻ."
+      ]
+    },
+    "dodge": {
+      "success": [
+        "Ngươi xoay mình né tránh vào khoảnh khắc cuối. Móng vuốt xé qua khoảng không. Sinh vật loạng choạng lướt qua, lộ sơ hở.",
+        "Bản năng thuần túy. Cơ thể ngươi chuyển động trước khi tâm trí kịp quyết định. Đòn tấn công trượt trong gang tấc. Ngươi cảm nhận được luồng gió của nó.",
+        "Ngươi không ở nơi nó tưởng. Đòn đánh của nó chạm vào hư không. Trong một nhịp tim, nó bối rối. Hãy tận dụng điều đó.",
+        "Quá chậm. Nó quá chậm. Ngươi lượn quanh cú lao của nó, không hề hấn, đã vào thế phản đòn.",
+        "Đòn tấn công xuyên qua nơi ngươi vừa đứng. Giờ ngươi đã ở chỗ khác. Nơi an toàn. Nơi sẵn sàng."
+      ],
+      "close": [
+        "Suýt nữa. Ngươi suýt né được trọn vẹn. Một móng vuốt sượt qua vai — cào xước, không moi ruột. Vẫn nhói buốt.",
+        "Ngươi di chuyển, nhưng chưa đủ nhanh. Rìa của đòn tấn công tìm thấy ngươi. Đau, nhưng sống được.",
+        "Gần đến mức cảm nhận được áp lực không khí. Gần đến mức nó xé rách vải nhưng không rách thịt. Lần sau, hãy nhanh hơn.",
+        "Ngươi né vào tường. Đá rắn chặn đường thoát của ngươi. Đòn đánh của sinh vật tìm thấy ngươi, sượt qua nhưng có thật.",
+        "Quá chậm. Chậm hơn lần trước. Sự kiệt sức đang lộ ra. Sinh vật nhận thấy. Nó quệt trúng ngươi khi lướt qua.",
+        "Ngươi trượt chân trên đá ướt. Cú né trở thành cú vấp. Không phải một đòn trúng gọn, nhưng vẫn là một đòn trúng."
+      ],
+      "fail": [
+        "Ngươi di chuyển sai hướng. Vào thẳng đòn tấn công. Toàn lực. Ngươi cảm thấy có thứ gì đó gãy vụn.",
+        "Cú né từng hiệu quả giờ không còn hiệu quả nữa. Nó đã học. Nó đã thích nghi. Ngươi thì không.",
+        "Đôi chân phản bội ngươi. Đông cứng. Đòn tấn công giáng xuống với tất cả những gì nó có."
+      ],
+      "counter": [
+        "Ngươi đọc được cú lao tới. Ngươi bước sang bên. Có thứ gì đó gãy rắc.",
+        "Nó lao vào ngươi rất mạnh. Ngươi để nó lướt qua. Đòn phản công giáng xuống gọn ghẽ.",
+        "Cú lao khiến nó hở sườn. Ngươi bắt nó trả giá cho điều đó.",
+        "Ngươi né vào khoảng trống. Chính chúng đã dâng nó cho ngươi.",
+        "Một bước sang trái và một cú thúc chỏ sắc lẹm. Ngươi biết nó sẽ đến."
+      ]
+    },
+    "brace": {
+      "success": [
+        "Ngươi dựng thế thủ. Chấn động làm xương cốt rung chuyển, nhưng ngươi trụ vững. Giảm nhẹ, không triệt tiêu.",
+        "Ngươi trồng chân xuống và hứng chịu. Đòn đánh giáng xuống, nhưng thế đứng của ngươi hấp thụ phần lớn lực. Ngươi vẫn đứng vững.",
+        "Gồng mình. Hấp thụ. Chịu đựng. Đòn tấn công của sinh vật đập vào tuyến phòng thủ của ngươi. Đau đớn. Sống được.",
+        "Chấn động chạy khắp người ngươi, nhưng ngươi đã biến một đòn chí mạng thành một vết bầm. Bầm dập thì vẫn xoay xở được.",
+        "Ngươi nghiến răng chống chịu. Cơn đau có thật nhưng xa xăm. Ngươi vẫn ở đây. Vẫn chiến đấu."
+      ],
+      "broken": [
+        "Ngươi gồng mình, nhưng nó mạnh hơn ngươi tưởng. Thế thủ của ngươi vỡ tan. Không phải toàn bộ sát thương lọt qua. Nhưng đủ.",
+        "Sức mạnh áp đảo. Thế đứng của ngươi trụ được, sát sao, nhưng có gì đó trong cánh tay ngươi kêu rắc. Vẫn tốt hơn phương án còn lại.",
+        "Thế thủ của ngươi sụp đổ. Đòn đánh vẫn tìm đến ngươi, suy giảm nhưng không bị đánh bại. Mọi thứ đều đau.",
+        "Ngươi gồng mình với tất cả những gì mình có. Không đủ. Chấn động hất ngươi văng ra, thở dốc."
+      ],
+      "fail": [
+        "Ngươi gồng mình quá muộn. Đòn tấn công đã lọt vào trong thế thủ. Toàn bộ sát thương. Toàn bộ hối tiếc.",
+        "Đôi tay không chịu nghe lời. Quá chậm. Quá mỏi. Cú đánh giáng xuống như thể ngươi chưa từng cố gắng.",
+        "Ngươi co rúm thay vì gồng mình. Phản ứng tồi tệ nhất. Nó lập tức khai thác điểm yếu của ngươi."
+      ]
+    },
+    "herbs": {
+      "heal": [
+        "Lá đắng. Thuốc đắng. Hơi ấm lan tỏa khắp người khi vết thương khép lại, cơn đau lùi xa. Dư vị còn vương mãi.",
+        "Ngươi vò nát thảo dược và ép lên vết thương. Sự chữa lành đến nhanh dưới nơi này — sinh tồn đòi hỏi thế.",
+        "Thảo dược bỏng rát khi nuốt xuống, nhưng cái bỏng rát ấy là tốt. Thanh tẩy. Ngươi cảm thấy sức lực quay về.",
+        "Những phương thuốc cổ xưa. Chúng hiệu nghiệm ở đây, trong bóng tối, nơi y học hiện đại không dám bén mảng. Ngươi đang lành lại.",
+        "Ngươi ăn thứ trông như đồ mục rữa và có vị như hy vọng. Cơ thể ngươi nhớ lại sự khỏe mạnh. Vết thương của ngươi nhớ cách khép miệng."
+      ],
+      "interrupted": [
+        "Ngươi với tay lấy thảo dược. Nó với tay lấy ngươi. Sự chữa lành diễn ra, nhưng sự tổn thương cũng vậy.",
+        "Không kịp tận hưởng liều thuốc. Nó tấn công trong lúc ngươi phân tâm. Đáng không? Vết thương lành nói có. Cơn đau nói có lẽ."
+      ]
+    },
+    "flee": {
+      "success": [
+        "ĐÃ THOÁT — Ngươi quay lưng bỏ chạy. Sinh tồn trên cả sĩ diện. Bóng tối nuốt chửng ngươi trước khi nó kịp đuổi theo.",
+        "ĐÃ THOÁT — Tháo chạy. Không phải hèn nhát — là chiến thuật. Ngươi thoát khỏi giao chiến, chạy nước rút về phía lối đi. Sau lưng, những âm thanh cay cú.",
+        "ĐÃ THOÁT — Ngươi bứt ra, chân guồng, phổi bỏng rát. Nó không đuổi theo. Nó không cần. Luôn có con đường khác.",
+        "ĐÃ THOÁT — Bỏ chạy không phải là thua. Bỏ chạy là chọn chiến đấu sau, ở nơi khác, theo cách của ngươi. Ngươi chạy.",
+        "ĐÃ THOÁT — Ngươi tháo chạy. Từ ấy có vị đắng, nhưng ngươi còn sống để nếm nó. Đó mới là điều quan trọng."
+      ],
+      "hurt": [
+        "THOÁT TRONG ĐAU ĐỚN — Ngươi chạy. Một móng vuốt quệt trúng lưng — món quà chia tay. Máu chảy, nhưng đôi chân vẫn chạy. Khoảng cách lớn dần.",
+        "THOÁT TRONG ĐAU ĐỚN — Trốn thoát không miễn phí. Nó lấy đi một mảnh của ngươi khi ngươi rời đi. Cái giá của sự tháo chạy. Vẫn rẻ hơn thất bại.",
+        "THOÁT TRONG ĐAU ĐỚN — Ngươi tháo chạy, nhưng không đủ nhanh. Không đủ gọn. Nó đánh dấu ngươi trước khi ngươi biến mất. Một lời nhắc nhở.",
+        "THOÁT TRONG ĐAU ĐỚN — Bỏ chạy thật đau đớn. Mỗi bước đều phải trả giá. Nhưng ở lại còn đắt hơn. Ngươi trả giá và rời đi.",
+        "THOÁT TRONG ĐAU ĐỚN — Nó lấy được một mảnh của ngươi. Một vết rạch sâu, một chiến lợi phẩm. Nhưng ngươi còn sống. Sống và đang di chuyển. Đó mới là điều quan trọng."
+      ],
+      "fail": [
+        "THOÁT THẤT BẠI — Ngươi quay người bỏ chạy và đâm vào tường. Sai hướng. Chẳng còn hướng nào. Nó đã ở trên người ngươi trước khi ngươi kịp sửa sai.",
+        "THOÁT THẤT BẠI — Đôi chân ngươi khuỵu xuống. Quá sức. Quá nhanh. Ngươi gục ngã trước khi kịp tháo chạy. Sinh vật sừng sững phía trên.",
+        "THOÁT THẤT BẠI — Chẳng còn nơi nào để chạy. Ngươi nhận ra điều đó khi đang cố. Đường cụt. Đời cụt."
+      ]
+    }
+  },
+  "enemy_intents": {
+    "AGGRESSIVE": [
+      "Lao về phía trước, móng vuốt vươn dài",
+      "Chuẩn bị ra đòn với toàn bộ sức lực",
+      "Cơ bắp căng lên cho một đòn tấn công tàn bạo",
+      "Ánh mắt khóa chặt vào cổ họng ngươi",
+      "Ngả người lấy đà cho một cú đánh hủy diệt",
+      "Thu mình chuẩn bị vồ tới",
+      "Gầm gừ, sẵn sàng xé xác",
+      "Cuộn mình như lò xo sắp bung"
+    ],
+    "DEFENSIVE": [
+      "Lượn vòng dè chừng, rình tìm sơ hở",
+      "Giơ tay che chắn những điểm hiểm yếu",
+      "Lùi dần, đánh giá lại tình thế",
+      "Đã bị thương và giờ đầy cảnh giác",
+      "Nhìn vũ khí của ngươi, không nhìn mắt ngươi",
+      "Di chuyển để giữ khoảng cách",
+      "Rít lên cảnh cáo, chưa tấn công",
+      "Thăm dò thế đứng của ngươi bằng những đòn nhử"
+    ],
+    "CHARGING": [
+      "Đang tích tụ năng lượng hắc ám",
+      "Gom sức mạnh cho điều gì đó khủng khiếp",
+      "Không khí quanh nó nổ lách tách",
+      "Có thứ gì đó đang dồn lên, áp suất tăng dần",
+      "Lầm rầm tụng niệm dưới hơi thở",
+      "Kéo bóng tối về phía mình",
+      "Ngày càng tối hơn, đặc hơn",
+      "Chuẩn bị thứ gì đó ngươi không muốn thấy"
+    ],
+    "ERRATIC": [
+      "Co giật khôn lường",
+      "Di chuyển theo những nhịp điệu đứt gãy",
+      "Giật sang trái, rồi phải, rồi lao tới",
+      "Không thể đọc, không thể đoán",
+      "Chuyển động đứt gãy, tâm trí đứt gãy",
+      "Co giật, quằn quại, tấn công",
+      "Không quy luật, không báo trước",
+      "Hỗn mang khoác lấy một hình hài"
+    ],
+    "HUNTING": [
+      "Hít ngửi không khí, lần theo dấu ngươi",
+      "Lượn vòng tìm góc tấn công hoàn hảo",
+      "Kiên nhẫn, săn mồi, chuẩn xác",
+      "Chờ ngươi phạm sai lầm",
+      "Đôi mắt bám theo từng cử động của ngươi",
+      "Vào vị trí cho cú kết liễu",
+      "Rình rập, từng bước một thận trọng",
+      "Quan sát. Học hỏi. Chờ đợi."
+    ],
+    "STALKING": [
+      "Nương theo từng cử động của ngươi từ trong bóng tối",
+      "Giữ khoảng cách hoàn hảo, không gần hơn, không xa hơn",
+      "Bám theo mà không truy đuổi",
+      "Sự kiên nhẫn của nó thật đáng sợ",
+      "Luôn ở rìa ánh đuốc của ngươi",
+      "Ngươi cảm nhận được sự chú ý của nó như một sức nặng",
+      "Di chuyển khi ngươi di chuyển, dừng khi ngươi dừng",
+      "Nó đang học thuộc thói quen của ngươi"
+    ],
+    "RETREATING": [
+      "Lùi dần, bị thương nhưng vẫn quan sát",
+      "Tạo khoảng cách, mưu tính điều gì đó",
+      "Tan vào bóng tối, không tháo chạy — mà đổi vị trí",
+      "Cú rút lui của nó như một cái bẫy",
+      "Rút về phía thứ gì đó",
+      "Khập khiễng rời đi nhưng chưa bị đánh bại",
+      "Dụ ngươi đến một nơi cụ thể",
+      "Đây không phải đầu hàng — đây là chiến lược"
+    ]
+  }
+}

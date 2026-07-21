@@ -11,7 +11,7 @@ import { useGameSettings, useCurrentPlayer } from '../lib/instant';
 import { sealTier } from '../lib/coins';
 import { VictoryCard, ShareCardCapture, useShareCard } from '../lib/shareCard';
 import { useAudius } from '../lib/AudiusContext';
-import { AudioSettingsModal } from '../components/AudioSettingsModal';
+import { SettingsModal } from '../components/SettingsModal';
 import { AudioToggle } from '../components/AudioToggle';
 import { CRTOverlay } from '../components/CRTOverlay';
 import { trailRows } from '../lib/traversal';
@@ -85,7 +85,7 @@ export default function VictoryScreen() {
   const [signature, setSignature] = useState<string | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
   const [sharing, setSharing] = useState(false);
-  const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   // Coin economy (Task 7): snapshot the player's pale-coin balance and
   // binding streak on arrival, BEFORE finalizeVictoryIfNeeded's claimVictory
@@ -292,7 +292,7 @@ export default function VictoryScreen() {
     <SafeAreaView className="flex-1" edges={['left', 'right', 'bottom']}>
       {/* Header with audio toggle */}
       <View className="flex-row items-center justify-end px-3" style={{ paddingTop: insets.top + 10, paddingBottom: 10 }}>
-        <AudioToggle ambientTrack="ambient-victory" inline onSettingsPress={() => setAudioSettingsOpen(true)} />
+        <AudioToggle ambientTrack="ambient-victory" inline onSettingsPress={() => setSettingsOpen(true)} />
       </View>
 
       <Animated.View style={{ flex: 1, opacity: contentFade }}>
@@ -521,7 +521,7 @@ export default function VictoryScreen() {
           </View>
         </View>
       </Modal>
-      <AudioSettingsModal visible={audioSettingsOpen} onClose={() => setAudioSettingsOpen(false)} />
+      <SettingsModal visible={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </SafeAreaView>
     <CRTOverlay />
     </CryptBackground>

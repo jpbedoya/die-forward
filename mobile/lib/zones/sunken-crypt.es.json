@@ -26,7 +26,8 @@
             "narrative": "El agua gotea en algún punto más adelante. El pasaje se estrecha, las paredes resbalan con algo que no es del todo agua. Tu antorcha empuja la oscuridad. La oscuridad empuja de vuelta.",
             "options": [
               "Sigue adelante",
-              "Examina las paredes"
+              "Examina las paredes",
+              "Escucha el goteo más adelante"
             ]
           },
           {
@@ -34,7 +35,8 @@
             "narrative": "El corredor se curva. No puedes ver lo que hay tras la esquina, pero lo oyes — un sonido húmedo, rítmico. ¿Respiración? ¿Goteo? Algo distinto por completo.",
             "options": [
               "Dobla la esquina",
-              "Escucha con atención primero"
+              "Escucha con atención primero",
+              "Ubica primero el sonido húmedo"
             ]
           },
           {
@@ -42,7 +44,8 @@
             "narrative": "Marcas de arañazos recorren ambas paredes. Algo fue arrastrado por aquí. Hace poco. Las marcas llevan hacia lo hondo. El único camino también.",
             "options": [
               "Sigue las marcas",
-              "Avanza con cautela"
+              "Avanza con cautela",
+              "Descifra adónde llevan las marcas"
             ]
           },
           {
@@ -50,7 +53,8 @@
             "narrative": "La piedra aquí es más vieja. Pulida por incontables pies a lo largo de incontables años. No eres el primero en recorrer este camino. Los huesos del rincón sugieren que podrías estar entre los últimos.",
             "options": [
               "Continúa",
-              "Examina los huesos"
+              "Examina los huesos",
+              "Estudia el sendero desgastado"
             ]
           },
           {
@@ -58,7 +62,8 @@
             "narrative": "Tus pasos resuenan mal. Demasiados ecos. Como si alguien caminara a tu lado, medio paso atrás. No miras hacia atrás. Sabes que no debes.",
             "options": [
               "Sigue avanzando",
-              "Detente y voltea"
+              "Detente y voltea",
+              "Cuenta los ecos de más"
             ]
           }
         ]
@@ -71,7 +76,8 @@
             "narrative": "Un espacio inmenso se abre ante ti. Los pilares suben hacia la sombra, sus remates perdidos en la oscuridad. Esto se construyó para congregaciones. Ahora solo congrega silencio. Y a ti.",
             "options": [
               "Cruza la cámara",
-              "Mantente cerca de las paredes"
+              "Mantente cerca de las paredes",
+              "Escruta los pilares buscando movimiento"
             ]
           },
           {
@@ -79,7 +85,8 @@
             "narrative": "El techo se desvanece en lo negro. Las paredes están demasiado separadas. Esta sala es más grande de lo que debería — más grande de lo que el templo de arriba podría contener. Aquí abajo la geometría miente.",
             "options": [
               "Cruza deprisa",
-              "Registra el perímetro"
+              "Registra el perímetro",
+              "Recorre las paredes con la antorcha"
             ]
           },
           {
@@ -87,7 +94,8 @@
             "narrative": "El agua cubre el suelo, quieta como vidrio negro. La cámara se extiende en todas direcciones. En su centro, algo se alza del agua. ¿Un altar? ¿Un trono? Desde aquí no puedes saberlo.",
             "options": [
               "Vadea hacia el centro",
-              "Rodea por el borde"
+              "Rodea por el borde",
+              "Vigila el agua en busca de ondas"
             ]
           },
           {
@@ -95,7 +103,8 @@
             "narrative": "Bancas rotas recorren la sala. Una congregación se sentó aquí una vez, escuchando sermones en lenguas anteriores a las palabras. El púlpito está vacío. Algo observa desde detrás de él.",
             "options": [
               "Acércate al púlpito",
-              "Vete deprisa"
+              "Vete deprisa",
+              "Vigila detrás del púlpito"
             ]
           },
           {
@@ -103,7 +112,8 @@
             "narrative": "La cámara zumba. Una frecuencia que sientes en los dientes, en los huesos, en los pensamientos. Las paredes están talladas con patrones que duele seguir. No los sigas.",
             "options": [
               "Atraviesa como puedas",
-              "Cierra los ojos y avanza al tacto"
+              "Cierra los ojos y avanza al tacto",
+              "Rastrea el origen del zumbido"
             ]
           }
         ]
@@ -116,7 +126,8 @@
             "narrative": "Las escaleras bajan en espiral. Y bajan. Y bajan. Pierdes la cuenta después de los primeros cien peldaños. El aire se vuelve más pesado con cada paso. Más cálido. Equivocado.",
             "options": [
               "Sigue descendiendo",
-              "Descansa en las escaleras"
+              "Descansa en las escaleras",
+              "Asómate por la espiral"
             ]
           },
           {
@@ -124,7 +135,8 @@
             "narrative": "Un pozo cae hacia la oscuridad. Hay asideros tallados en la piedra — pulidos por incontables manos antes que las tuyas. Algunos están manchados. No pienses en por qué.",
             "options": [
               "Baja escalando",
-              "Busca otro camino"
+              "Busca otro camino",
+              "Estudia los asideros manchados"
             ]
           },
           {
@@ -132,7 +144,8 @@
             "narrative": "El suelo cede en una pendiente suave. Húmeda. Resbalosa. Desciendes, lo elijas o no. La inclinación se acentúa. El control es una ilusión.",
             "options": [
               "Deslízate con cuidado",
-              "Intenta afirmarte"
+              "Intenta afirmarte",
+              "Calcula la inclinación de la pendiente"
             ]
           },
           {
@@ -140,7 +153,8 @@
             "narrative": "Peldaños de piedra, cada uno más bajo que el anterior. Las proporciones están mal — hechas para algo de piernas más largas, o quizá para que los humanos tropiecen. Tropiezas.",
             "options": [
               "Recupera el equilibrio y continúa",
-              "Ve despacio"
+              "Ve despacio",
+              "Memoriza los peldaños deformes"
             ]
           },
           {
@@ -148,7 +162,8 @@
             "narrative": "El camino cae por una grieta en el suelo. Abajo, el agua reluce. ¿Qué tan profunda? La luz de la antorcha no alcanza el fondo. Nada lo alcanza.",
             "options": [
               "Desciende por la grieta",
-              "Suelta algo para medir la profundidad"
+              "Suelta algo para medir la profundidad",
+              "Escucha el agua allá abajo"
             ]
           }
         ]
@@ -161,7 +176,8 @@
             "narrative": "Agua hasta las rodillas. Negra. Fría. Tus pies encuentran escalones sumergidos que no puedes ver. Algo roza tu pierna. Escombros, probablemente. Probablemente.",
             "options": [
               "Vadea hacia adelante",
-              "Avanza pegado a la pared"
+              "Avanza pegado a la pared",
+              "Tantea los escalones sumergidos"
             ]
           },
           {
@@ -169,7 +185,8 @@
             "narrative": "El pasaje está medio ahogado. El agua te llega al pecho si caminas, al cuello si vadeas por el centro. Ambas opciones son terribles.",
             "options": [
               "Mantente en lo bajo, junto a las paredes",
-              "Nada por el centro profundo"
+              "Nada por el centro profundo",
+              "Sondea el centro profundo"
             ]
           },
           {
@@ -177,7 +194,8 @@
             "narrative": "El agua sube cuando entras. Tobillo. Rodilla. Muslo. No está entrando — solo... sube. Como si la sala misma estuviera tragando. Muévete rápido.",
             "options": [
               "Cruza a toda prisa",
-              "Busca terreno más alto"
+              "Busca terreno más alto",
+              "Observa qué tan rápido sube"
             ]
           },
           {
@@ -185,7 +203,8 @@
             "narrative": "Aquí flotan cuerpos. Boca abajo. Meciéndose apenas. No son frescos, pero tampoco viejos. El agua los conserva. El agua lo conserva todo.",
             "options": [
               "Nada más allá de ellos",
-              "Revisa si alguno es un jugador reciente"
+              "Revisa si alguno es un jugador reciente",
+              "Estudia los cuerpos a la deriva"
             ]
           },
           {
@@ -193,7 +212,8 @@
             "narrative": "El agua brilla. Apenas. Una fosforescencia enfermiza que no ilumina nada salvo a sí misma. Cosas se mueven bajo la superficie. Intentas no mirarlas directamente.",
             "options": [
               "Vadea deprisa",
-              "Espera y observa los movimientos"
+              "Espera y observa los movimientos",
+              "Sigue las formas bajo el resplandor"
             ]
           }
         ]
@@ -206,7 +226,8 @@
             "narrative": "Un altar a algo olvidado. El rostro del ídolo fue raspado, pero sientes que observa de todos modos. Las ofrendas se pudren a su base. Algunas son frescas.",
             "options": [
               "Haz una ofrenda",
-              "Pasa sin reconocerlo"
+              "Pasa sin reconocerlo",
+              "Inspecciona las ofrendas frescas"
             ]
           },
           {
@@ -214,7 +235,8 @@
             "narrative": "Aquí arden velas. ¿Quién las enciende? La cera se ha encharcado en formas — rostros, manos, cosas que podrían ser palabras en un idioma de goteos. Las llamas no titilan.",
             "options": [
               "Examina las velas",
-              "No toques nada"
+              "No toques nada",
+              "Observa las llamas que no titilan"
             ]
           },
           {
@@ -222,7 +244,8 @@
             "narrative": "Una rueda de oraciones, trabada por el óxido. Las plegarias talladas en ella están gastadas, ilegibles. Mejor así, quizá. Alguien intentó girarla hace poco — el óxido está raspado.",
             "options": [
               "Intenta girarla",
-              "Déjala en paz"
+              "Déjala en paz",
+              "Examina el óxido raspado"
             ]
           },
           {
@@ -230,7 +253,8 @@
             "narrative": "El santuario es al agua misma. Un estanque, perfectamente circular, perfectamente quieto. Tu reflejo te devuelve la mirada. Parpadea cuando tú no lo haces.",
             "options": [
               "Aparta la vista",
-              "Sostenle la mirada"
+              "Sostenle la mirada",
+              "Vigila los bordes del reflejo"
             ]
           },
           {
@@ -238,7 +262,8 @@
             "narrative": "Los nombres cubren cada superficie. Tallados, rayados, quemados en la piedra. Miles de nombres. Peregrinos que vinieron antes. Un espacio en blanco espera, como aguardando el tuyo.",
             "options": [
               "Añade tu nombre",
-              "No dejes rastro"
+              "No dejes rastro",
+              "Busca nombres que conozcas"
             ]
           }
         ]
@@ -260,7 +285,8 @@
             "narrative": "El pasaje se divide. Alguien marcó las paredes — flechas rayadas, direcciones desesperadas. Las flechas se contradicen entre sí. Alguien se perdió aquí. Muchos álguienes.",
             "options": [
               "Sigue el camino más gastado",
-              "Elige la vía sin marcar"
+              "Elige la vía sin marcar",
+              "Estudia las flechas más recientes"
             ]
           },
           {
@@ -268,7 +294,8 @@
             "narrative": "Un nudo de corredores, cinco en total. Tu antorcha capta movimiento en dos de ellos. Nada en los otros tres — pero la nada podría ser peor.",
             "options": [
               "Hacia el movimiento",
-              "Lejos de él"
+              "Lejos de él",
+              "Vigila primero los corredores con movimiento"
             ]
           },
           {
@@ -276,7 +303,8 @@
             "narrative": "Arriba o abajo. Las únicas opciones. Subir es más duro — las escaleras están rotas, desmoronándose. Bajar es más fácil. Bajar siempre es más fácil aquí.",
             "options": [
               "Sube",
-              "Desciende más"
+              "Desciende más",
+              "Escucha escaleras abajo"
             ]
           },
           {
@@ -284,7 +312,8 @@
             "narrative": "Dos pasajes idénticos. Mismas dimensiones. Misma oscuridad. Misma sensación de algo mal. Uno lleva más hondo. Otro lleva a la muerte. Podrían ser lo mismo.",
             "options": [
               "Toma el pasaje de la izquierda",
-              "Toma el pasaje de la derecha"
+              "Toma el pasaje de la derecha",
+              "Compara las dos oscuridades"
             ]
           }
         ]
@@ -297,7 +326,8 @@
             "narrative": "Las grietas tejen el techo. El polvo cae en hilos. Este lugar quiere venirse abajo. Lo oyes deliberar — gimiendo, asentándose, decidiendo. Muévete. Ahora.",
             "options": [
               "Corre a través",
-              "Avanza con cuidado"
+              "Avanza con cuidado",
+              "Sigue el polvo que cae"
             ]
           },
           {
@@ -305,7 +335,8 @@
             "narrative": "La mitad del pasaje es escombro. La otra mitad es paciencia — esperando volverse escombro. Puedes ver hasta el otro lado. El hueco es estrecho. El tiempo, más estrecho aún.",
             "options": [
               "Escúrrete rápido",
-              "Prueba la estabilidad primero"
+              "Prueba la estabilidad primero",
+              "Asómate por el hueco primero"
             ]
           },
           {
@@ -313,7 +344,8 @@
             "narrative": "El suelo se inclina. No mucho, pero lo suficiente. El agua se acumula en un lado. Las grietas se extienden desde donde estás parado. Cada paso es una negociación con la gravedad.",
             "options": [
               "Muévete a terreno estable",
-              "Quédate muy quieto"
+              "Quédate muy quieto",
+              "Rastrea las grietas que se extienden"
             ]
           },
           {
@@ -321,7 +353,8 @@
             "narrative": "Alguien provocó un derrumbe aquí. Puedes ver dónde estaba parado cuando cayó todo. Puedes ver dónde dejó de estar parado. No te pares ahí.",
             "options": [
               "Busca otra ruta",
-              "Trepa sobre los escombros"
+              "Trepa sobre los escombros",
+              "Estudia dónde cayó"
             ]
           },
           {
@@ -329,7 +362,8 @@
             "narrative": "Las paredes están combadas hacia adentro. Presión desde alguna parte. ¿El templo de arriba? ¿El peso del agua? ¿La lenta compresión del inframundo digiriéndose a sí mismo? ¿Importa? Muévete.",
             "options": [
               "Apresúrate a cruzar",
-              "Apuntala las paredes como puedas"
+              "Apuntala las paredes como puedas",
+              "Escucha el quejido de la piedra"
             ]
           }
         ]
@@ -342,7 +376,8 @@
             "narrative": "Huesos. Ordenados por tipo — cráneos aquí, costillas allá, fémures apilados como leña. Alguien organizó esto. Hace poco. Hay huecos en el arreglo. Espacios que esperan.",
             "options": [
               "Busca entre los huesos",
-              "Pasa deprisa"
+              "Pasa deprisa",
+              "Cuenta los huecos que esperan"
             ]
           },
           {
@@ -350,7 +385,8 @@
             "narrative": "Tumbas recorren ambas paredes, apiladas de a tres. Algunas están selladas. Algunas, abiertas. Algunas se están abriendo, despacio, desde adentro. No tienes tiempo de mirar.",
             "options": [
               "Camina por el centro",
-              "Corre"
+              "Corre",
+              "Observa qué tumbas se abren"
             ]
           },
           {
@@ -358,7 +394,8 @@
             "narrative": "Una fosa de cuerpos. Los viejos, al fondo. Los más frescos, hacia arriba. La fosa aún no está llena. Es paciente. Sabe que vienen más.",
             "options": [
               "Rodea la fosa",
-              "Busca rostros conocidos"
+              "Busca rostros conocidos",
+              "Examina el borde de la fosa"
             ]
           },
           {
@@ -366,7 +403,8 @@
             "narrative": "Lápidas conmemorativas, agrietadas y gastadas. Nombres en lenguas que no reconoces. Fechas anteriores a los calendarios. Estos muertos son más viejos que la historia. Recuerdan de todos modos.",
             "options": [
               "Lee las lápidas",
-              "No te demores"
+              "No te demores",
+              "Estudia las fechas más antiguas"
             ]
           },
           {
@@ -374,7 +412,8 @@
             "narrative": "Aquí los muertos están posados. De pie. Sentados. Arrodillados. Congelados en sus últimos momentos, conservados por la oscuridad. Una galería de finales. La entrada es gratis. Salir cuesta más.",
             "options": [
               "Estudia las poses",
-              "Mantén la vista al frente"
+              "Mantén la vista al frente",
+              "Fíjate hacia dónde miran los muertos"
             ]
           }
         ]
@@ -387,7 +426,8 @@
             "narrative": "Las paredes están chamuscadas en un patrón. Circular. Preciso. En el centro, la piedra se fundió y volvió a formarse. Lo que estuvo aquí ya no está. Esperas que ya no esté.",
             "options": [
               "Examina las marcas de quemadura",
-              "Vete de inmediato"
+              "Vete de inmediato",
+              "Estudia el centro fundido"
             ]
           },
           {
@@ -395,7 +435,8 @@
             "narrative": "Marcas de garras cubren cada superficie — suelo, paredes, techo. Surcos profundos en piedra sólida. Algo intentaba escapar. O algo intentaba entrar.",
             "options": [
               "Estudia las marcas",
-              "No pienses en ello"
+              "No pienses en ello",
+              "Rastrea la dirección de los surcos"
             ]
           },
           {
@@ -403,7 +444,8 @@
             "narrative": "Un círculo perfecto de piedra intacta en una sala de caos. El círculo está limpio. Todo lo que queda fuera está destruido. Tú estás parado fuera del círculo.",
             "options": [
               "Entra al círculo",
-              "Quédate fuera"
+              "Quédate fuera",
+              "Observa el límite del círculo"
             ]
           },
           {
@@ -411,7 +453,8 @@
             "narrative": "Algo ocurrió aquí. El aire aún sabe a gritos. Las piedras están tibias — más de lo que deberían. Estás parado en las secuelas de algo terrible.",
             "options": [
               "Busca pistas",
-              "Sal rápido"
+              "Sal rápido",
+              "Palpa dónde están más tibias las piedras"
             ]
           },
           {
@@ -419,7 +462,8 @@
             "narrative": "Huellas de manos. Cientos. Impresas en las paredes, el suelo, el techo. Todas se estiran en la misma dirección. Hacia la puerta por la que acabas de entrar.",
             "options": [
               "Sigue hacia donde apuntan",
-              "Ve en la dirección contraria"
+              "Ve en la dirección contraria",
+              "Cuenta las huellas que se estiran"
             ]
           }
         ]
@@ -432,7 +476,8 @@
             "narrative": "El umbral que tienes delante es más viejo que las paredes que lo rodean. Más allá, el aire sabe distinto — cobre y sal. Los arañazos del marco apuntan hacia atrás. Alguien intentó salir arañando.",
             "options": [
               "Cruza el umbral",
-              "Duda"
+              "Duda",
+              "Inspecciona el marco arañado"
             ]
           },
           {
@@ -440,7 +485,8 @@
             "narrative": "Una frontera. Puedes sentirla — la presión del aire cambia, los sonidos se desplazan, tus pensamientos se dispersan un instante. Estás por entrar a otro lugar. Un lugar más hondo.",
             "options": [
               "Atraviesa",
-              "Ármate de valor primero"
+              "Ármate de valor primero",
+              "Prueba el aire en la frontera"
             ]
           },
           {
@@ -448,7 +494,8 @@
             "narrative": "El pasaje termina en una cortina de agua que cae desde algún punto arriba. Más allá, oscuridad. El agua es fría. La oscuridad, más fría. Atravesar es el único camino.",
             "options": [
               "Empuja a través del agua",
-              "Busca otro camino"
+              "Busca otro camino",
+              "Asómate a través del agua que cae"
             ]
           },
           {
@@ -456,7 +503,8 @@
             "narrative": "Una puerta de hueso. Hueso de verdad — costillares entretejidos, cráneos por bisagras. Se abre cuando te acercas. Te estaba esperando a ti, específicamente.",
             "options": [
               "Entra",
-              "Rechaza la invitación"
+              "Rechaza la invitación",
+              "Estudia las bisagras de cráneo"
             ]
           },
           {
@@ -464,7 +512,8 @@
             "narrative": "La luz de tu antorcha se detiene en este punto. No ilumina lo que hay más allá — la oscuridad ahí es absoluta, hambrienta. Tendrás que caminar a ciegas por un rato.",
             "options": [
               "Entra en la oscuridad",
-              "Busca otra fuente de luz"
+              "Busca otra fuente de luz",
+              "Escucha hacia la oscuridad absoluta"
             ]
           }
         ]

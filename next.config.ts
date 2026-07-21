@@ -31,6 +31,11 @@ const nextConfig: NextConfig = {
         destination: '/graveyard-slides/index.html',
         permanent: false,
       },
+      {
+        source: '/about',
+        destination: '/about/index.html',
+        permanent: false,
+      },
     ];
   },
 };

@@ -439,7 +439,7 @@
   "index.tagline": "Your death feeds the depths",
   "index.tapToOpen": "tap to open",
   "index.unknownPlayer": "Unknown",
-  "index.versionBadge": "v{version} [logs]",
+  "index.versionBadge": "v{version}",
   "leaderboard.col.clears": "CLEARS",
   "leaderboard.col.deaths": "DEATHS",
   "leaderboard.col.room": "ROOM",
@@ -658,5 +658,8 @@
   "notif.ask.accept": "Send word",
   "notif.ask.decline": "Let them move unseen",
   "notif.settings.label": "DISPATCHES",
-  "notif.settings.hint": "Word when the passages move"
+  "notif.settings.hint": "Word when the passages move",
+  "settings.title": "SETTINGS",
+  "settings.language": "LANGUAGE",
+  "index.logsButton": "[logs]"
 }

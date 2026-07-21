@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, #0a0a0a 0%, #140a0a 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', monospace;
+      color: #e5e5e5;
+      padding: clamp(24px, 4vw, 54px);
+    }
+    .content {
+      width: 100%;
+      max-width: 1250px;
+      text-align: center;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #ef4444;
+      padding: clamp(5px, 0.6vw, 10px) clamp(12px, 1.4vw, 20px);
+      border-radius: 999px;
+      letter-spacing: 2px;
+      font-size: clamp(10px, 1vw, 15px);
+      margin-bottom: clamp(14px, 2.2vh, 28px);
+    }
+    .title {
+      font-size: clamp(28px, 3.5vw, 56px);
+      color: #ef4444;
+      margin-bottom: clamp(10px, 1.8vh, 18px);
+      text-shadow: 0 0 40px rgba(239, 68, 68, 0.35);
+    }
+    .subtitle {
+      font-size: clamp(13px, 1.4vw, 22px);
+      color: #9ca3af;
+      margin-bottom: clamp(24px, 4vh, 44px);
+    }
+    .rungs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(14px, 2vw, 28px);
+      text-align: left;
+      margin-bottom: clamp(20px, 3.5vh, 36px);
+    }
+    .rung {
+      background: rgba(13, 13, 13, 0.9);
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: clamp(16px, 2vw, 28px);
+    }
+    .rung-unbound { border-color: #3f3f46; }
+    .rung-coin { border-color: rgba(245, 158, 11, 0.4); }
+    .rung-blood { border-color: rgba(239, 68, 68, 0.4); }
+    .rung-name {
+      font-size: clamp(15px, 1.7vw, 26px);
+      font-weight: bold;
+      margin-bottom: clamp(4px, 0.6vh, 8px);
+    }
+    .rung-unbound .rung-name { color: #a1a1aa; }
+    .rung-coin .rung-name { color: #f59e0b; }
+    .rung-blood .rung-name { color: #ef4444; }
+    .rung-offering {
+      font-size: clamp(11px, 1.1vw, 17px);
+      color: #71717a;
+      margin-bottom: clamp(10px, 1.4vh, 16px);
+      letter-spacing: 1px;
+    }
+    .rung-desc {
+      font-size: clamp(11px, 1.1vw, 16px);
+      color: #9ca3af;
+      line-height: 1.6;
+    }
+    .rung-desc strong { color: #d1d5db; }
+    .footer {
+      font-size: clamp(13px, 1.4vw, 22px);
+      color: #71717a;
+      font-style: italic;
+    }
+    .footer strong { color: #f59e0b; font-style: normal; }
+    @media (max-width: 800px) {
+      .rungs { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="content">
+    <div class="badge">THE OFFERING LADDER</div>
+    <div class="title">Stakes for Everyone. Crypto for Some.</div>
+    <div class="subtitle">The risk-it-all tension is the game's heartbeat — so every player gets to feel it, wallet or not.</div>
+    <div class="rungs">
+      <div class="rung rung-unbound">
+        <div class="rung-name">UNBOUND</div>
+        <div class="rung-offering">OFFER NOTHING</div>
+        <div class="rung-desc">
+          The full game, free, offline-capable, <strong>no wallet ever required</strong>.
+          Shift, milestones, feed, and leaderboard all included.
+        </div>
+      </div>
+      <div class="rung rung-coin">
+        <div class="rung-name">COIN-BOUND</div>
+        <div class="rung-offering">OFFER PALE COINS</div>
+        <div class="rung-desc">
+          An in-game currency that is <strong>earned only — never sold</strong>.
+          Death burns your stake into the pool; escape returns it with a bonus.
+          Consecutive clears build a public <strong>Binding Streak</strong> — one coin-bound death resets it.
+        </div>
+      </div>
+      <div class="rung rung-blood">
+        <div class="rung-name">BLOOD-BOUND</div>
+        <div class="rung-offering">OFFER SOL</div>
+        <div class="rung-desc">
+          Real stakes in trustless escrow, <strong>revealed progressively</strong> after the game
+          has proven itself — and switchable off entirely per market or store build.
+        </div>
+      </div>
+    </div>
+    <div class="footer">"The underworld accepts lesser offerings. <strong>It prefers souls.</strong>"</div>
+  </div>
+</body>
+</html>

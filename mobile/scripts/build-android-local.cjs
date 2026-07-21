@@ -11,6 +11,12 @@
  *   --prod           → RELEASE APK (release-signed via mobile/android/keystores, JS
  *                      bundled, R8-minified). Smaller, production-quality.
  *                      Requires mobile/android/keystores/release.keystore + .env.
+ *   --aab            → RELEASE Android App Bundle (.aab) for Google Play Console.
+ *                      Runs gradle `bundleRelease` instead of `assembleRelease`,
+ *                      reusing the same release-signing setup as --prod (implies
+ *                      release). Unlike the arm64-only APK, the AAB ships ALL ABIs
+ *                      so Play can serve per-device splits (see note below). Upload
+ *                      the resulting .aab to Play Console.
  *
  * Optional, combinable:
  *   --publish        → after the build, publish a GitHub prerelease at
@@ -26,9 +32,19 @@
  * Usage (from `mobile/`):
  *   npm run build:android:local                          # standalone debug
  *   npm run build:android:local -- --metro               # live-reload (dev)
- *   npm run build:android:local -- --prod                # release APK
+ *   npm run build:android:local -- --prod                # release APK (sideload)
+ *   npm run build:android:local -- --prod --aab          # release AAB (Play Store)
  *   npm run build:android:local -- --prod --publish      # release + GH publish
  *   npm run build:android:local -- --prod --telegram     # release + Telegram
+ *
+ * ── arm64 / AAB caveat ────────────────────────────────────────────────────────
+ * The sideload APK path is arm64-only via the `splits { abi { include 'arm64-v8a'
+ * } }` block (~44MB smaller). That `splits.abi` block is IGNORED by gradle's
+ * `bundleRelease` task — AGP does not apply ABI splits to app bundles. Instead the
+ * .aab carries every ABI built per `reactNativeArchitectures` (all four by default)
+ * and Google Play generates optimized per-device downloads from it. The --aab path
+ * additionally passes `-PreactNativeArchitectures=...` explicitly (all four) so the
+ * bundle is never accidentally narrowed. Result: universal AAB, Play-side splitting.
  *
  * Pipeline:
  *   1. Read version + name from app.config.js.
@@ -59,7 +75,8 @@ const repoRoot = resolve(mobileRoot, '..');
 
 // ── Flags ────────────────────────────────────────────────────────────────────
 const args = new Set(process.argv.slice(2));
-const PROD = args.has('--prod');
+const AAB = args.has('--aab');              // Play Store app bundle (implies release)
+const PROD = args.has('--prod') || AAB;     // --aab reuses the release-signing path
 const METRO = args.has('--metro') && !PROD; // --prod always bundles
 const STANDALONE = !METRO;                  // self-contained APK is the default
 const PUBLISH = args.has('--publish');
@@ -297,11 +314,19 @@ if (STANDALONE || PROD) {
   }
 }
 
-const mode = PROD ? 'release (signed, minified)' : (STANDALONE ? 'debug standalone' : 'debug Metro-served');
+const mode = AAB
+  ? 'release AAB (signed, minified, all ABIs — Play Store)'
+  : PROD ? 'release (signed, minified)' : (STANDALONE ? 'debug standalone' : 'debug Metro-served');
 console.log(`\n▶ Building ${appName} ${version} — ${mode}\n`);
-const gradleTask = PROD ? 'assembleRelease' : 'assembleDebug';
+const gradleTask = AAB ? 'bundleRelease' : (PROD ? 'assembleRelease' : 'assembleDebug');
 const gradleArgs = [gradleTask];
 if (STANDALONE && !PROD) gradleArgs.push('-PstandaloneBuild=true');
+if (AAB) {
+  // `splits.abi` is ignored for bundleRelease, but pass the full ABI list
+  // explicitly so the .aab can never be narrowed to arm64-only. Play serves
+  // per-device splits from this universal bundle.
+  gradleArgs.push('-PreactNativeArchitectures=armeabi-v7a,arm64-v8a,x86,x86_64');
+}
 if (PROD) {
   // R8 minification + resource shrinking together cut release APK size
   // substantially. Resource shrinking strips drawables/strings R8 proves
@@ -320,20 +345,37 @@ execFileSync('./gradlew', gradleArgs, {
   env: buildEnv,
 });
 
-// The arm64-only splits config produces a single APK per variant; copy it
-// under a versioned, mode-tagged name so debug + release APKs can coexist.
-const apkSrc = join(mobileRoot,
-  `android/app/build/outputs/apk/${buildVariant}/app-arm64-v8a-${buildVariant}.apk`);
+// Locate the gradle artifact and copy it under a versioned, mode-tagged name.
+//   --aab  → bundleRelease emits a single universal .aab (no flavor dimension).
+//   APK    → arm64-only splits emit one APK per variant.
 const distDir = join(mobileRoot, 'dist');
 mkdirSync(distDir, { recursive: true });
-const apkDest = join(distDir, PROD ? `${appName}-${version}-release.apk` : `${appName}-${version}.apk`);
-copyFileSync(apkSrc, apkDest);
+
+const artifactSrc = AAB
+  ? join(mobileRoot, 'android/app/build/outputs/bundle/release/app-release.aab')
+  : join(mobileRoot, `android/app/build/outputs/apk/${buildVariant}/app-arm64-v8a-${buildVariant}.apk`);
+
+if (!existsSync(artifactSrc)) {
+  console.error(`✗ Expected build artifact not found: ${artifactSrc}`);
+  process.exit(1);
+}
+
+const apkDest = join(distDir,
+  AAB  ? `${appName}-${version}-release.aab`
+  : PROD ? `${appName}-${version}-release.apk`
+  : `${appName}-${version}.apk`);
+copyFileSync(artifactSrc, apkDest);
 
 const apkBytes = statSync(apkDest).size;
 const apkMB = (apkBytes / (1024 * 1024)).toFixed(1);
 const apkSha = createHash('sha256').update(readFileSync(apkDest)).digest('hex');
 
 console.log(`\n✓ ${apkDest}  (${apkMB} MB, sha256 ${apkSha.slice(0, 12)}…)\n`);
+if (AAB) {
+  console.log(`  ↪ This is an Android App Bundle for the Google Play Console.`);
+  console.log(`    Upload it at: Play Console → your app → Production/Testing → Create release.`);
+  console.log(`    (Play re-signs with the App Signing key and serves per-device APKs.)\n`);
+}
 
 // ── Telegram (--telegram) ─────────────────────────────────────────────────────
 if (TELEGRAM) {
@@ -379,10 +421,11 @@ if (PUBLISH) {
     catch { return 'main'; }
   })();
   const flavor = PROD ? 'RELEASE — signed + R8-minified' : 'DEBUG — JS bundled, no Metro required';
+  const artifactDesc = AAB ? `universal AAB (all ABIs), ${apkMB} MB` : `arm64-v8a APK, ${apkMB} MB`;
   const notes =
     `Local build off \`${branch}\` @ ${version.split('.').pop()}.\n` +
     `\n` +
-    `- arm64-v8a APK, ${apkMB} MB — ${flavor}\n` +
+    `- ${artifactDesc} — ${flavor}\n` +
     `- versionName \`${version}\`\n` +
     `- SHA-256: \`${apkSha}\`\n` +
     `\n` +

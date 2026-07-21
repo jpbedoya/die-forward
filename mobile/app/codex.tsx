@@ -5,7 +5,7 @@ import { ScreenHeader } from '../components/ScreenHeader';
 import { CryptBackground } from '../components/CryptBackground';
 import { CRTOverlay } from '../components/CRTOverlay';
 import { AudioToggle } from '../components/AudioToggle';
-import { AudioSettingsModal } from '../components/AudioSettingsModal';
+import { SettingsModal } from '../components/SettingsModal';
 import { ItemModal, CreatureModal } from '../components/CryptModal';
 import { getItemDetails, getCreatureInfo, ItemDetails, CreatureInfo } from '../lib/content';
 import { useAudio } from '../lib/audio';
@@ -537,7 +537,7 @@ const SECTION_MAP: Record<TabId, () => React.ReactElement> = {
 
 export default function CodexScreen() {
   const [activeTab, setActiveTab] = useState<TabId>('combat');
-  const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const { playSFX } = useAudio();
 
   const handleTabPress = useCallback((tabId: TabId) => {
@@ -557,10 +557,10 @@ export default function CodexScreen() {
         <ScreenHeader
           showHome
           title={t('codex.title')}
-          right={<AudioToggle inline onSettingsPress={() => setAudioSettingsOpen(true)} />}
+          right={<AudioToggle inline onSettingsPress={() => setSettingsOpen(true)} />}
         />
 
-        <AudioSettingsModal visible={audioSettingsOpen} onClose={() => setAudioSettingsOpen(false)} />
+        <SettingsModal visible={settingsOpen} onClose={() => setSettingsOpen(false)} />
 
         {/* Tab bar */}
         <View>

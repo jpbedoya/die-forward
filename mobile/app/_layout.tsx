@@ -16,13 +16,14 @@ import { View, Text, ScrollView, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import { GameProvider } from '../lib/GameContext';
+import { LocaleProvider, useLocale } from '../lib/LocaleContext';
 import { UnifiedWalletProvider } from '../lib/wallet/unified';
 import { WebFrame } from '../components/WebFrame';
 import { AudiusProvider } from '../lib/AudiusContext';
 import { SplashScreen } from '../components/SplashScreen';
 import { getAudioManager } from '../lib/audio';
 import { db } from '../lib/instant';
-import { dlog, scheduleAutoExport } from '../lib/debug-log';
+import { dlog, clearDebugLogs, scheduleAutoExport } from '../lib/debug-log';
 import { palette } from '../lib/theme';
 
 const APP_VERSION_KEY = 'APP_BUILD_VERSION';
@@ -41,6 +42,7 @@ const PROTECTED_KEYS = [
   'audio-master-enabled',
   'audio-sfx-enabled',
   'audio-ambient-volume',
+  'die-forward-locale',
   APP_VERSION_KEY,
   'die-forward-debug-logs',
 ];
@@ -216,44 +218,22 @@ class ErrorBoundary extends React.Component<
 // Track splash shown across remounts (module-level so survives navigation)
 let splashShownThisSession = false;
 
-export default function RootLayout() {
-  useWebSafeAreaCSS();
-  const [showSplash, setShowSplash] = useState(!splashShownThisSession);
-  const [migrationDone, setMigrationDone] = useState(false);
-  const [startupClearedStorage, setStartupClearedStorage] = useState(false);
+interface AppShellProps {
+  showSplash: boolean;
+  migrationDone: boolean;
+  startupClearedStorage: boolean;
+  handleSplashComplete: () => void;
+  handleSplashTap: () => void;
+}
 
-  // Clear stale state on version change — must complete before providers mount
-  // to avoid racing with GameProvider.restoreAuth and InstantDB queries.
-  useEffect(() => {
-    dlog('Layout', 'RootLayout mounted');
-    checkVersionAndMigrate().then((clearedStorage) => {
-      dlog('Layout', `migration done, mounting providers (clearedStorage=${clearedStorage})`);
-      setStartupClearedStorage(clearedStorage);
-      setMigrationDone(true);
-    });
-    // Auto-export disabled — was used for debugging frozen-UI glitch
-    // scheduleAutoExport(8000);
-  }, []);
+// Consumes useLocale() so this component (and everything it renders below)
+// re-renders whenever the active language changes — without this, a locale
+// change made deep inside a settings modal would only update that modal,
+// since LocaleProvider's own re-render alone doesn't cascade into a `children`
+// prop it received from a parent that hasn't re-rendered.
+function AppShell({ showSplash, migrationDone, startupClearedStorage, handleSplashComplete, handleSplashTap }: AppShellProps) {
+  useLocale();
 
-  // Unlock audio on splash tap
-  const handleSplashTap = useCallback(() => {
-    getAudioManager().unlock();
-  }, []);
-
-  // Splash complete — transition to main app
-  const handleSplashComplete = useCallback(() => {
-    dlog('Layout', 'splash complete, showing main app');
-    splashShownThisSession = true;
-    setShowSplash(false);
-  }, []);
-
-  dlog('Layout', `render: migrationDone=${migrationDone}, showSplash=${showSplash}`);
-
-  // GestureHandlerRootView + SafeAreaProvider are ALWAYS mounted (never torn down).
-  // Previously they were split across the splash/main branches, which meant SafeAreaProvider
-  // remounted on the splash→home transition and briefly reported zero insets — causing the
-  // vertically-centered home screen content to jump on first render.
-  // UnifiedWalletProvider stays inside the main branch (splash must stay outside it for MWA stability).
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider initialMetrics={initialWindowMetrics} style={{ backgroundColor: '#0d0d0d' }}>
@@ -285,3 +265,61 @@ export default function RootLayout() {
     </GestureHandlerRootView>
   );
 }
+
+export default function RootLayout() {
+  useWebSafeAreaCSS();
+  const [showSplash, setShowSplash] = useState(!splashShownThisSession);
+  const [migrationDone, setMigrationDone] = useState(false);
+  const [startupClearedStorage, setStartupClearedStorage] = useState(false);
+
+  // Clear stale state on version change — must complete before providers mount
+  // to avoid racing with GameProvider.restoreAuth and InstantDB queries.
+  useEffect(() => {
+    // Debug logs are wiped at the start of every launch so an export is
+    // always scoped to "since I opened the app," not a mixed multi-day
+    // history — await this before the first dlog call so nothing from this
+    // session lands in a buffer that's about to be cleared out from under it.
+    clearDebugLogs().then(() => {
+      dlog('Layout', 'RootLayout mounted');
+      checkVersionAndMigrate().then((clearedStorage) => {
+        dlog('Layout', `migration done, mounting providers (clearedStorage=${clearedStorage})`);
+        setStartupClearedStorage(clearedStorage);
+        setMigrationDone(true);
+      });
+    });
+    // Auto-export disabled — was used for debugging frozen-UI glitch
+    // scheduleAutoExport(8000);
+  }, []);
+
+  // Unlock audio on splash tap
+  const handleSplashTap = useCallback(() => {
+    getAudioManager().unlock();
+  }, []);
+
+  // Splash complete — transition to main app
+  const handleSplashComplete = useCallback(() => {
+    dlog('Layout', 'splash complete, showing main app');
+    splashShownThisSession = true;
+    setShowSplash(false);
+  }, []);
+
+  dlog('Layout', `render: migrationDone=${migrationDone}, showSplash=${showSplash}`);
+
+  // GestureHandlerRootView + SafeAreaProvider are ALWAYS mounted (never torn down).
+  // Previously they were split across the splash/main branches, which meant SafeAreaProvider
+  // remounted on the splash→home transition and briefly reported zero insets — causing the
+  // vertically-centered home screen content to jump on first render.
+  // UnifiedWalletProvider stays inside the main branch (splash must stay outside it for MWA stability).
+  return (
+    <LocaleProvider>
+      <AppShell
+        showSplash={showSplash}
+        migrationDone={migrationDone}
+        startupClearedStorage={startupClearedStorage}
+        handleSplashComplete={handleSplashComplete}
+        handleSplashTap={handleSplashTap}
+      />
+    </LocaleProvider>
+  );
+}
+

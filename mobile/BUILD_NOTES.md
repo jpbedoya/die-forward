@@ -66,26 +66,46 @@ Three mutually exclusive build modes:
 |------|------|-------------|
 | _(none)_ | **Standalone debug** — JS bundled, debug-signed, no Metro needed | Ad-hoc sharing, quick iteration on a phone |
 | `--metro` | **Metro-served debug** — live-reload (needs `expo start` running) | Local dev iteration |
-| `--prod` | **Release** — `assembleRelease`, R8-minified, release-keystore signed | Production-quality APK to share or ship |
+| `--prod` | **Release APK** — `assembleRelease`, arm64-only, R8-minified, release-keystore signed | Production-quality **sideload** APK to share directly |
+| `--aab` | **Release AAB** — `bundleRelease`, all ABIs, R8-minified, release-keystore signed (implies release) | **Google Play Console** upload |
 
 And an independent, combinable flag:
 
 | Flag | Effect |
 |------|--------|
-| `--publish` | After the build, publish a GitHub prerelease at `dev-<version>` with the APK attached (uses `gh release create`, or `upload --clobber` if the tag exists) |
+| `--publish` | After the build, publish a GitHub prerelease at `dev-<version>` with the artifact attached (uses `gh release create`, or `upload --clobber` if the tag exists) |
 
 ```bash
 npm run build:android:local                        # debug standalone (default)
 npm run build:android:local -- --metro             # live-reload dev build
-npm run build:android:local -- --prod              # release APK
+npm run build:android:local -- --prod              # release APK (sideload)
+npm run build:android:local -- --prod --aab        # release AAB (Play Store)  ← store build
 npm run build:android:local -- --prod --publish    # release + GH release
 ```
 
 **Output:**
 - Debug: `mobile/dist/<name>-<version>.apk` (~78 MB)
-- Release: `mobile/dist/<name>-<version>-release.apk` (~40 MB — half the size, R8 stripped debug symbols + minified dex)
-- Gradle's raw output is at `android/app/build/outputs/apk/{debug,release}/app-arm64-v8a-{debug,release}.apk` (arm64-only via the `with-arm64-only` config plugin).
+- Release APK: `mobile/dist/<name>-<version>-release.apk` (~40 MB — half the size, R8 stripped debug symbols + minified dex; arm64-only)
+- Release AAB: `mobile/dist/<name>-<version>-release.aab` (for Play Console; all ABIs)
+- Gradle's raw output: APK at `android/app/build/outputs/apk/{debug,release}/app-arm64-v8a-{debug,release}.apk` (arm64-only via `with-arm64-only`); AAB at `android/app/build/outputs/bundle/release/app-release.aab`.
 - Cached debug build: ~30s; warm release build: ~30s; cold/clean build: ~6–7 min.
+
+#### arm64-only APK vs all-ABI AAB (important)
+
+The **sideload APK** path is arm64-only (`splits { abi { include 'arm64-v8a' } }`, `universalApk false`) — it drops ~44 MB of x86/armeabi-v7a libs and installs fine on modern phones.
+
+The **`--aab` path is NOT arm64-only, by design.** AGP ignores the `splits.abi` block when running `bundleRelease` — ABI splitting for app bundles is done by Google Play, not Gradle. The script additionally passes `-PreactNativeArchitectures=armeabi-v7a,arm64-v8a,x86,x86_64` so the bundle can never be narrowed. The result is a **universal AAB containing all ABIs**, from which Play generates optimized per-device downloads. This is what Play Console expects; do not try to force an arm64-only AAB.
+
+#### Google Play Store upload workflow (Android)
+
+```bash
+cd mobile
+# Bump android.versionCode in app.config.js if this is a new store release (Play rejects duplicates)
+npm run build:android:local -- --prod --aab
+# → mobile/dist/die-forward-<version>-release.aab
+```
+
+Then in the **Play Console**: your app → Testing/Production track → **Create release** → upload the `.aab` → roll out. Play re-signs the delivered APKs with the **App Signing key** it holds; your upload is signed with the release keystore (the "upload key"). Prerequisite: the existing **release keystore** at `mobile/android/keystores/release.keystore` + `mobile/android/keystores/.env` (see *Release signing* above).
 
 ### Release signing (one-time setup)
 
@@ -109,7 +129,7 @@ ANDROID_KEY_ALIAS=die-forward
 
 > **Back up `release.keystore` + `.env` outside the repo** (1Password, secure cloud storage, etc.). Losing them means you can't ship updates to already-installed users without forcing an uninstall first, and you can't re-sign with the same identity if/when this hits the Play Store.
 
-For cloud/CI release signing via EAS, see [`mobile/docs/signing-secrets.md`](docs/signing-secrets.md).
+For the full keystore setup and backup guidance, see [`mobile/docs/signing-secrets.md`](docs/signing-secrets.md). (That doc also documents an EAS path, but **this project does not use EAS** — all builds are local and artifacts are uploaded to the stores manually.)
 
 ### Web deploy → `play.dieforward.com`
 
@@ -132,6 +152,61 @@ Practical implication: a JSX change in `mobile/app/play.tsx` ships to both surfa
 ```bash
 cd mobile && npm run android   # expo run:android — requires a device/emulator
 ```
+
+---
+
+## Local iOS Build (App Store)
+
+> **We do not use EAS.** iOS store builds are produced locally with Xcode and the
+> artifact is uploaded manually to App Store Connect, exactly like the Android AAB
+> is uploaded manually to Play. `eas-cli` is not installed.
+
+Driven by `mobile/scripts/build-ios-local.cjs` (mirrors the Android script). It
+regenerates `ios/` via prebuild, archives a Release build, and exports a signed
+`.ipa` using `mobile/scripts/ExportOptions.plist`.
+
+```bash
+cd mobile
+npm run build:ios:local
+# → mobile/dist/die-forward-<version>.ipa
+```
+
+The script fails fast (before touching Xcode) if signing isn't configured:
+- not on macOS / `xcodebuild` missing,
+- `ExportOptions.plist` `teamID` still the placeholder,
+- no **Apple Distribution** certificate in the login keychain.
+
+**Scheme name:** the script does **not** hardcode it — after prebuild it finds
+`ios/*.xcworkspace` and uses its basename as the scheme. Expo names both after the
+sanitized `expo.name` ("Die Forward" → `DieForward`), so a rename of the app can't
+silently break the build.
+
+### One-time Apple setup (only you can do this — creds are not in the repo)
+
+1. **Apple Developer Program** membership. Note your **10-character Team ID**
+   (developer.apple.com/account → Membership).
+2. **Apple Distribution certificate** + private key in the login keychain:
+   Xcode → Settings → Accounts → your Apple ID → Manage Certificates → **+** →
+   *Apple Distribution* (or import your team's `.p12`).
+3. **App Store provisioning profile** for bundle id **`com.dieforward.app`**
+   (App Store Connect → Certificates, Identifiers & Profiles). With automatic
+   signing + `-allowProvisioningUpdates` (both set by the script) Xcode can
+   create/refresh it once you're signed into the account in Xcode.
+4. **App record** in App Store Connect for `com.dieforward.app` (first upload).
+5. Put your **Team ID** into `mobile/scripts/ExportOptions.plist` (`:teamID`).
+
+### Upload the .ipa to App Store Connect
+
+Any one of:
+- **Xcode → Organizer → Distribute App** (also lets you archive from Xcode directly),
+- **Transporter.app** (drag the `.ipa` in),
+- CLI: `xcrun altool --upload-app -f dist/<name>-<version>.ipa -t ios --apiKey <KEY_ID> --apiIssuer <ISSUER_ID>`
+  (or `xcrun notarytool` / an App Store Connect API key).
+
+> **Signing prerequisites summary** — Android: existing release keystore
+> (`android/keystores/release.keystore` + `.env`). iOS: Apple Distribution cert +
+> App Store provisioning profile for `com.dieforward.app` + Team ID in
+> `scripts/ExportOptions.plist`.
 
 ## Environment Variables
 

@@ -26,7 +26,8 @@
             "narrative": "Nước nhỏ giọt đâu đó phía trước. Lối đi hẹp dần, vách tường trơn nhớt một thứ không hẳn là nước. Ngọn đuốc của ngươi đẩy lùi bóng tối. Bóng tối đẩy lại.",
             "options": [
               "Tiến lên phía trước",
-              "Xem xét vách tường"
+              "Xem xét vách tường",
+              "Lắng nghe tiếng nước nhỏ giọt phía trước"
             ]
           },
           {
@@ -34,7 +35,8 @@
             "narrative": "Hành lang uốn khúc. Ngươi không thấy được thứ gì sau khúc quanh, nhưng nghe được nó — một âm thanh ướt át, đều nhịp. Hơi thở? Nước nhỏ giọt? Hay một thứ hoàn toàn khác.",
             "options": [
               "Vòng qua khúc quanh",
-              "Lắng nghe kỹ trước đã"
+              "Lắng nghe kỹ trước đã",
+              "Định vị âm thanh ướt át trước đã"
             ]
           },
           {
@@ -42,7 +44,8 @@
             "narrative": "Vết cào xé hằn dọc hai bên tường. Có thứ gì đó đã bị kéo lê qua đây. Mới thôi. Những vết ấy dẫn xuống sâu hơn. Lối đi duy nhất cũng vậy.",
             "options": [
               "Lần theo dấu vết",
-              "Di chuyển thận trọng"
+              "Di chuyển thận trọng",
+              "Xem những vết kéo lê dẫn về đâu"
             ]
           },
           {
@@ -50,7 +53,8 @@
             "narrative": "Đá ở đây cổ hơn. Bị mài nhẵn bởi vô số bàn chân qua vô số năm tháng. Ngươi không phải kẻ đầu tiên bước trên con đường này. Đống xương trong góc gợi ý rằng ngươi có thể nằm trong số những kẻ cuối cùng.",
             "options": [
               "Đi tiếp",
-              "Xem xét đống xương"
+              "Xem xét đống xương",
+              "Xem xét lối đi mòn nhẵn"
             ]
           },
           {
@@ -58,7 +62,8 @@
             "narrative": "Tiếng bước chân của ngươi vọng lại sai lệch. Quá nhiều tiếng vọng. Như thể có ai đó bước bên cạnh, chậm hơn nửa nhịp. Ngươi không ngoái lại. Ngươi biết rõ hơn thế.",
             "options": [
               "Cứ đi tiếp",
-              "Dừng lại và quay đầu"
+              "Dừng lại và quay đầu",
+              "Đếm những tiếng vọng thừa"
             ]
           }
         ]
@@ -71,7 +76,8 @@
             "narrative": "Một khoảng không mênh mông mở ra trước mặt. Những cột đá vươn vào bóng tối, đỉnh cột chìm khuất trong màn đêm. Nơi này được dựng cho những cuộc tụ hội. Giờ nó chỉ tụ hội sự im lặng. Và ngươi.",
             "options": [
               "Băng qua gian sảnh",
-              "Men theo vách tường"
+              "Men theo vách tường",
+              "Dò tìm chuyển động giữa các cột đá"
             ]
           },
           {
@@ -79,7 +85,8 @@
             "narrative": "Trần nhà tan biến vào màn đen. Các vách tường cách nhau quá xa. Căn phòng này lớn hơn mức nó nên có — lớn hơn cả ngôi đền phía trên có thể chứa đựng. Hình học dối trá dưới này.",
             "options": [
               "Băng qua thật nhanh",
-              "Lục soát vòng ngoài"
+              "Lục soát vòng ngoài",
+              "Rọi đuốc lần theo vách tường"
             ]
           },
           {
@@ -87,7 +94,8 @@
             "narrative": "Nước phủ kín mặt sàn, tĩnh lặng như mặt kính đen. Gian sảnh trải rộng về mọi phía. Ở chính giữa, một thứ gì đó nhô lên khỏi mặt nước. Bàn thờ? Ngai vàng? Từ đây ngươi không thể nhận ra.",
             "options": [
               "Lội về phía trung tâm",
-              "Đi vòng theo mép nước"
+              "Đi vòng theo mép nước",
+              "Quan sát mặt nước tìm gợn sóng"
             ]
           },
           {
@@ -95,7 +103,8 @@
             "narrative": "Những hàng ghế gãy nát xếp dọc gian sảnh. Một hội chúng từng ngồi đây, lắng nghe những bài giảng bằng thứ ngôn ngữ có trước cả lời nói. Bục giảng đứng trống. Có thứ gì đó đang quan sát từ phía sau nó.",
             "options": [
               "Tiến lại gần bục giảng",
-              "Rời đi thật nhanh"
+              "Rời đi thật nhanh",
+              "Quan sát phía sau bục giảng"
             ]
           },
           {
@@ -103,7 +112,8 @@
             "narrative": "Gian sảnh ngân rung. Một tần số ngươi cảm nhận trong răng, trong xương, trong tâm trí. Vách tường chạm khắc những hoa văn khiến mắt đau nhức khi lần theo. Đừng lần theo chúng.",
             "options": [
               "Xuyên qua",
-              "Nhắm mắt và lần đường bằng tay"
+              "Nhắm mắt và lần đường bằng tay",
+              "Lắng nghe nguồn của tiếng ngân"
             ]
           }
         ]
@@ -116,7 +126,8 @@
             "narrative": "Cầu thang xoắn ốc dẫn xuống. Xuống nữa. Xuống mãi. Ngươi mất đếm sau trăm bậc đầu tiên. Không khí nặng dần theo từng bước. Ấm hơn. Sai lệch hơn.",
             "options": [
               "Tiếp tục xuống sâu",
-              "Nghỉ chân trên bậc thang"
+              "Nghỉ chân trên bậc thang",
+              "Nhìn xuống vòng xoắn ốc"
             ]
           },
           {
@@ -124,7 +135,8 @@
             "narrative": "Một giếng đứng rơi thẳng vào bóng tối. Những hốc bám tay được đục vào đá — mòn nhẵn bởi vô số bàn tay trước ngươi. Vài hốc bám loang vết ố. Đừng nghĩ vì sao.",
             "options": [
               "Trèo xuống",
-              "Tìm lối khác"
+              "Tìm lối khác",
+              "Xem xét những hốc bám loang vết ố"
             ]
           },
           {
@@ -132,7 +144,8 @@
             "narrative": "Mặt sàn hóa thành con dốc thoai thoải. Ướt. Trơn trượt. Ngươi đang xuống sâu, dù muốn hay không. Độ dốc gắt dần. Sự kiểm soát chỉ là ảo tưởng.",
             "options": [
               "Trượt xuống cẩn thận",
-              "Cố tìm chỗ bám"
+              "Cố tìm chỗ bám",
+              "Ước lượng độ dốc"
             ]
           },
           {
@@ -140,7 +153,8 @@
             "narrative": "Bậc đá, bậc sau thấp hơn bậc trước. Tỷ lệ sai lệch — được xây cho thứ gì đó chân dài hơn, hoặc cho con người vốn dĩ phải vấp ngã. Ngươi vấp ngã.",
             "options": [
               "Gượng dậy và đi tiếp",
-              "Bước thật chậm rãi"
+              "Bước thật chậm rãi",
+              "Dò xét những bậc thang sai tỷ lệ"
             ]
           },
           {
@@ -148,7 +162,8 @@
             "narrative": "Lối đi tụt xuống qua một khe nứt trên sàn. Bên dưới, nước lấp lánh. Sâu bao nhiêu? Ánh đuốc không chạm tới đáy. Không gì chạm tới.",
             "options": [
               "Hạ mình chui qua",
-              "Thả thứ gì đó xuống dò độ sâu"
+              "Thả thứ gì đó xuống dò độ sâu",
+              "Lắng nghe tiếng nước bên dưới"
             ]
           }
         ]
@@ -161,7 +176,8 @@
             "narrative": "Nước ngập tới gối. Đen ngòm. Lạnh buốt. Bàn chân ngươi dò thấy những bậc thang chìm mà mắt không thấy. Có thứ gì đó lướt qua chân. Rác rưởi, có lẽ. Có lẽ.",
             "options": [
               "Lội tới trước",
-              "Men theo vách tường"
+              "Men theo vách tường",
+              "Dò những bậc thang chìm dưới nước"
             ]
           },
           {
@@ -169,7 +185,8 @@
             "narrative": "Lối đi chìm một nửa trong nước. Nước dâng tới ngực nếu ngươi bước, tới cổ nếu ngươi lội qua giữa dòng. Cả hai lựa chọn đều tệ hại.",
             "options": [
               "Bám chỗ nông sát tường",
-              "Bơi qua khoảng sâu ở giữa"
+              "Bơi qua khoảng sâu ở giữa",
+              "Ước lượng độ sâu giữa dòng"
             ]
           },
           {
@@ -177,7 +194,8 @@
             "narrative": "Nước dâng lên khi ngươi bước vào. Mắt cá. Đầu gối. Bắp đùi. Nước không chảy vào — nó chỉ... dâng lên. Như thể chính căn phòng đang nuốt chửng. Đi nhanh lên.",
             "options": [
               "Lao qua thật nhanh",
-              "Tìm chỗ đất cao hơn"
+              "Tìm chỗ đất cao hơn",
+              "Quan sát tốc độ nước dâng"
             ]
           },
           {
@@ -185,7 +203,8 @@
             "narrative": "Xác người trôi nổi nơi đây. Úp mặt xuống. Dập dềnh khe khẽ. Không còn tươi, nhưng cũng chưa cũ. Làn nước lưu giữ họ. Làn nước lưu giữ tất cả.",
             "options": [
               "Bơi lướt qua họ",
-              "Xem có thi hài nào là người chơi mới không"
+              "Xem có thi hài nào là người chơi mới không",
+              "Xem xét những cái xác trôi nổi"
             ]
           },
           {
@@ -193,7 +212,8 @@
             "narrative": "Nước phát sáng. Mờ nhạt. Một thứ lân quang bệnh hoạn chẳng soi tỏ gì ngoài chính nó. Những thứ gì đó chuyển động dưới mặt nước. Ngươi cố không nhìn thẳng vào chúng.",
             "options": [
               "Lội qua thật nhanh",
-              "Đứng chờ và quan sát chuyển động"
+              "Đứng chờ và quan sát chuyển động",
+              "Dõi theo những hình thù dưới ánh lân quang"
             ]
           }
         ]
@@ -206,7 +226,8 @@
             "narrative": "Một bàn thờ dâng lên thứ gì đó đã bị lãng quên. Gương mặt pho tượng bị cào xóa, nhưng ngươi vẫn cảm thấy nó đang nhìn. Lễ vật mục rữa dưới chân tượng. Vài thứ còn tươi.",
             "options": [
               "Dâng một lễ vật",
-              "Đi qua không thèm để mắt"
+              "Đi qua không thèm để mắt",
+              "Xem xét những lễ vật còn tươi"
             ]
           },
           {
@@ -214,7 +235,8 @@
             "narrative": "Nến cháy nơi đây. Ai thắp chúng? Sáp nến đọng thành hình thù — gương mặt, bàn tay, những thứ có thể là chữ trong thứ ngôn ngữ của giọt chảy. Ngọn lửa không hề lay động.",
             "options": [
               "Xem xét những cây nến",
-              "Đừng chạm vào bất cứ thứ gì"
+              "Đừng chạm vào bất cứ thứ gì",
+              "Quan sát những ngọn lửa bất động"
             ]
           },
           {
@@ -222,7 +244,8 @@
             "narrative": "Một bánh xe cầu nguyện, gỉ sét chết cứng. Những lời nguyện khắc trên đó đã mòn nhẵn, không đọc nổi. Có lẽ thế lại hay. Ai đó vừa thử xoay nó — vết gỉ còn trầy xước.",
             "options": [
               "Thử xoay bánh xe",
-              "Để yên nó"
+              "Để yên nó",
+              "Xem xét vết gỉ bị trầy xước"
             ]
           },
           {
@@ -230,7 +253,8 @@
             "narrative": "Điện thờ này thờ chính nước. Một hồ nước tròn trịa hoàn hảo, tĩnh lặng hoàn hảo. Hình phản chiếu của ngươi nhìn ngược lại ngươi. Nó chớp mắt khi ngươi không chớp.",
             "options": [
               "Quay mặt đi",
-              "Nhìn trừng lại nó"
+              "Nhìn trừng lại nó",
+              "Quan sát rìa của hình phản chiếu"
             ]
           },
           {
@@ -238,7 +262,8 @@
             "narrative": "Những cái tên phủ kín mọi bề mặt. Được khắc, được cào, được đốt vào đá. Hàng ngàn cái tên. Những người hành hương đến trước. Một khoảng trống chờ sẵn, như thể đang đợi tên ngươi.",
             "options": [
               "Thêm tên mình vào",
-              "Không để lại dấu vết"
+              "Không để lại dấu vết",
+              "Tìm những cái tên quen thuộc"
             ]
           }
         ]
@@ -260,7 +285,8 @@
             "narrative": "Lối đi tách đôi. Ai đó đã đánh dấu lên tường — những mũi tên cào vội, những chỉ dẫn tuyệt vọng. Các mũi tên mâu thuẫn nhau. Ai đó đã lạc lối nơi đây. Rất nhiều ai đó.",
             "options": [
               "Theo lối mòn nhất",
-              "Chọn lối không dấu vết"
+              "Chọn lối không dấu vết",
+              "Xem xét những mũi tên mới nhất"
             ]
           },
           {
@@ -268,7 +294,8 @@
             "narrative": "Một đầu mối hành lang, cả thảy năm ngả. Ánh đuốc bắt được chuyển động trong hai ngả. Ba ngả còn lại không có gì — nhưng không có gì có thể còn tệ hơn.",
             "options": [
               "Hướng về phía chuyển động",
-              "Tránh xa nó"
+              "Tránh xa nó",
+              "Quan sát hai ngả có chuyển động trước đã"
             ]
           },
           {
@@ -276,7 +303,8 @@
             "narrative": "Lên hoặc xuống. Chỉ có thế. Lên khó hơn — bậc thang gãy vỡ, lở dần. Xuống dễ hơn. Xuống bao giờ cũng dễ hơn ở nơi này.",
             "options": [
               "Trèo lên",
-              "Xuống sâu hơn nữa"
+              "Xuống sâu hơn nữa",
+              "Lắng nghe xuống lòng cầu thang"
             ]
           },
           {
@@ -284,7 +312,8 @@
             "narrative": "Hai lối đi giống hệt nhau. Cùng kích thước. Cùng bóng tối. Cùng cảm giác sai lệch. Một lối dẫn xuống sâu. Một lối dẫn tới cái chết. Có khi chúng là một.",
             "options": [
               "Đi lối bên trái",
-              "Đi lối bên phải"
+              "Đi lối bên phải",
+              "So sánh hai vùng bóng tối"
             ]
           }
         ]
@@ -297,7 +326,8 @@
             "narrative": "Vết nứt giăng mạng trên trần. Bụi rơi thành dòng. Nơi này muốn sụp xuống. Ngươi nghe được nó đang cân nhắc — rên rỉ, lún dần, quyết định. Đi. Ngay.",
             "options": [
               "Chạy xuyên qua",
-              "Di chuyển cẩn trọng"
+              "Di chuyển cẩn trọng",
+              "Dõi theo những dòng bụi rơi"
             ]
           },
           {
@@ -305,7 +335,8 @@
             "narrative": "Nửa lối đi là gạch vụn. Nửa còn lại là sự kiên nhẫn — đang chờ để hóa thành gạch vụn. Ngươi nhìn thấu được sang phía bên kia. Khe hở thì hẹp. Thời gian còn hẹp hơn.",
             "options": [
               "Lách qua thật nhanh",
-              "Thử độ vững trước đã"
+              "Thử độ vững trước đã",
+              "Nhìn xuyên khe hở trước đã"
             ]
           },
           {
@@ -313,7 +344,8 @@
             "narrative": "Mặt sàn nghiêng đi. Không nhiều, nhưng đủ. Nước đọng về một phía. Vết nứt lan ra từ chỗ ngươi đứng. Mỗi bước chân là một cuộc mặc cả với trọng lực.",
             "options": [
               "Di chuyển tới chỗ vững",
-              "Đứng yên bất động"
+              "Đứng yên bất động",
+              "Lần theo những vết nứt đang lan"
             ]
           },
           {
@@ -321,7 +353,8 @@
             "narrative": "Ai đó đã kích hoạt một vụ sập nơi đây. Ngươi thấy được chỗ họ đứng khi mọi thứ đổ xuống. Ngươi thấy được chỗ họ ngừng đứng. Đừng đứng vào đó.",
             "options": [
               "Tìm lối khác",
-              "Trèo qua đống đổ nát"
+              "Trèo qua đống đổ nát",
+              "Xem xét nơi họ gục xuống"
             ]
           },
           {
@@ -329,7 +362,8 @@
             "narrative": "Vách tường oằn vào trong. Sức ép từ đâu đó. Ngôi đền bên trên? Sức nặng của nước? Cú nghiền chậm rãi của âm phủ đang tiêu hóa chính nó? Có quan trọng không? Đi thôi.",
             "options": [
               "Vượt qua gấp",
-              "Tìm cách chống đỡ vách tường"
+              "Tìm cách chống đỡ vách tường",
+              "Lắng nghe tiếng đá oằn mình"
             ]
           }
         ]
@@ -342,7 +376,8 @@
             "narrative": "Xương. Được phân loại — sọ chỗ này, xương sườn chỗ kia, xương đùi chất chồng như củi đốt. Ai đó đã sắp xếp chỗ này. Mới thôi. Trong cách bài trí còn những khoảng trống. Những chỗ đang chờ.",
             "options": [
               "Tìm kiếm giữa đống xương",
-              "Đi qua thật nhanh"
+              "Đi qua thật nhanh",
+              "Đếm những khoảng trống đang chờ"
             ]
           },
           {
@@ -350,7 +385,8 @@
             "narrative": "Mộ huyệt xếp dọc hai vách, chồng ba tầng. Có ngôi niêm kín. Có ngôi mở toang. Có ngôi đang mở ra, chầm chậm, từ bên trong. Ngươi không có thời gian đứng xem.",
             "options": [
               "Đi qua chính giữa",
-              "Chạy"
+              "Chạy",
+              "Quan sát những ngôi mộ đang mở"
             ]
           },
           {
@@ -358,7 +394,8 @@
             "narrative": "Một hố đầy xác người. Xác cũ, nằm dưới đáy. Xác mới hơn, gần trên miệng. Cái hố chưa đầy. Nó kiên nhẫn. Nó biết còn nhiều kẻ nữa sẽ đến.",
             "options": [
               "Đi vòng quanh hố",
-              "Tìm những gương mặt quen"
+              "Tìm những gương mặt quen",
+              "Quan sát miệng hố"
             ]
           },
           {
@@ -366,7 +403,8 @@
             "narrative": "Bia tưởng niệm, nứt vỡ và mòn vẹt. Những cái tên bằng ngôn ngữ ngươi không nhận ra. Những niên đại có trước cả lịch. Những người chết này già hơn lịch sử. Họ vẫn cứ nhớ.",
             "options": [
               "Đọc các bia đá",
-              "Đừng nấn ná"
+              "Đừng nấn ná",
+              "Xem xét những niên đại cổ nhất"
             ]
           },
           {
@@ -374,7 +412,8 @@
             "narrative": "Người chết được tạo dáng nơi đây. Đứng. Ngồi. Quỳ. Đông cứng trong khoảnh khắc cuối cùng, được bóng tối lưu giữ. Một phòng trưng bày những kết cục. Vào cửa miễn phí. Ra về đắt hơn.",
             "options": [
               "Ngắm nghía các tư thế",
-              "Nhìn thẳng mà đi"
+              "Nhìn thẳng mà đi",
+              "Để ý hướng nhìn của người chết"
             ]
           }
         ]
@@ -387,7 +426,8 @@
             "narrative": "Vách tường cháy sém theo một hoa văn. Hình tròn. Chuẩn xác. Ở tâm điểm, đá đã nóng chảy rồi đông lại. Thứ gì từng ở đây đã đi rồi. Ngươi mong là nó đi rồi.",
             "options": [
               "Xem xét vết cháy sém",
-              "Rời đi ngay lập tức"
+              "Rời đi ngay lập tức",
+              "Xem xét tâm điểm nóng chảy"
             ]
           },
           {
@@ -395,7 +435,8 @@
             "narrative": "Vết móng vuốt phủ kín mọi bề mặt — sàn, tường, trần. Những rãnh khoét sâu vào đá đặc. Có thứ gì đó đã cố thoát ra. Hoặc có thứ gì đó đã cố chui vào.",
             "options": [
               "Nghiên cứu các vết cào",
-              "Đừng nghĩ về nó"
+              "Đừng nghĩ về nó",
+              "Lần theo hướng của những rãnh khoét"
             ]
           },
           {
@@ -403,7 +444,8 @@
             "narrative": "Một vòng tròn đá nguyên vẹn hoàn hảo giữa căn phòng hỗn loạn. Vòng tròn sạch sẽ. Mọi thứ bên ngoài nó tan hoang. Ngươi đang đứng ngoài vòng tròn.",
             "options": [
               "Bước vào vòng tròn",
-              "Đứng ngoài"
+              "Đứng ngoài",
+              "Quan sát ranh giới vòng tròn"
             ]
           },
           {
@@ -411,7 +453,8 @@
             "narrative": "Điều gì đó đã xảy ra ở đây. Không khí vẫn còn vị của tiếng thét. Đá vẫn ấm — ấm hơn mức nên có. Ngươi đang đứng giữa tàn dư của một điều khủng khiếp.",
             "options": [
               "Tìm kiếm manh mối",
-              "Thoát ra thật nhanh"
+              "Thoát ra thật nhanh",
+              "Sờ tìm nơi đá ấm nhất"
             ]
           },
           {
@@ -419,7 +462,8 @@
             "narrative": "Dấu bàn tay. Hàng trăm dấu. In hằn lên tường, lên sàn, lên trần. Tất cả đều vươn về cùng một hướng. Về phía cánh cửa ngươi vừa bước qua.",
             "options": [
               "Đi theo hướng chúng chỉ",
-              "Đi hướng ngược lại"
+              "Đi hướng ngược lại",
+              "Đếm những dấu tay đang vươn"
             ]
           }
         ]
@@ -432,7 +476,8 @@
             "narrative": "Khung cửa phía trước cổ hơn cả những bức tường quanh nó. Bên kia, không khí mang vị khác — đồng và muối. Những vết cào trên khung cửa hướng ngược ra sau. Ai đó đã cố cào đường thoát ra.",
             "options": [
               "Bước qua ngưỡng cửa",
-              "Chần chừ"
+              "Chần chừ",
+              "Xem xét khung cửa đầy vết cào"
             ]
           },
           {
@@ -440,7 +485,8 @@
             "narrative": "Một ranh giới. Ngươi cảm nhận được — áp suất không khí đổi thay, âm thanh dịch chuyển, tâm trí thoáng tán loạn. Ngươi sắp bước vào một nơi khác. Một nơi sâu hơn.",
             "options": [
               "Bước qua",
-              "Trấn tĩnh trước đã"
+              "Trấn tĩnh trước đã",
+              "Thử không khí nơi ranh giới"
             ]
           },
           {
@@ -448,7 +494,8 @@
             "narrative": "Lối đi kết thúc trước một bức màn nước, đổ xuống từ đâu đó trên cao. Bên kia màn nước, bóng tối. Nước thì lạnh. Bóng tối còn lạnh hơn. Xuyên qua là lối duy nhất.",
             "options": [
               "Xuyên qua màn nước",
-              "Tìm lối khác"
+              "Tìm lối khác",
+              "Nhìn xuyên màn nước đổ"
             ]
           },
           {
@@ -456,7 +503,8 @@
             "narrative": "Một cánh cổng bằng xương. Xương thật — những lồng ngực đan vào nhau, những hộp sọ làm bản lề. Nó mở ra khi ngươi lại gần. Nó đã chờ đích danh ngươi.",
             "options": [
               "Bước vào",
-              "Khước từ lời mời"
+              "Khước từ lời mời",
+              "Xem xét những bản lề hộp sọ"
             ]
           },
           {
@@ -464,7 +512,8 @@
             "narrative": "Ánh đuốc của ngươi dừng lại ở điểm này. Nó không soi tỏ những gì bên kia — bóng tối nơi ấy tuyệt đối, đói khát. Ngươi sẽ phải bước đi mù lòa một quãng.",
             "options": [
               "Bước vào bóng tối",
-              "Tìm nguồn sáng khác"
+              "Tìm nguồn sáng khác",
+              "Lắng nghe vào bóng tối tuyệt đối"
             ]
           }
         ]

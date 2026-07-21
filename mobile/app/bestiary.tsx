@@ -10,7 +10,7 @@ import { GestureDetector, Gesture, GestureHandlerRootView } from 'react-native-g
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AudioToggle } from '../components/AudioToggle';
-import { AudioSettingsModal } from '../components/AudioSettingsModal';
+import { SettingsModal } from '../components/SettingsModal';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { getAllCreatures, CreatureInfo } from '../lib/content';
 import { listZoneIds, loadZone } from '../lib/zone-loader';
@@ -482,7 +482,7 @@ function CreatureDetailModal({ creature, onClose, mastery, onPrev, onNext }: {
 export default function BestiaryScreen() {
   const { width } = useWindowDimensions();
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [filterTier, setFilterTier] = useState<1 | 2 | 3 | null>(null);
   const [filterZone, setFilterZone] = useState<string | null>(null);
   const [filterMastery, setFilterMastery] = useState<'encountered' | 'undefeated' | null>(null);
@@ -648,10 +648,10 @@ export default function BestiaryScreen() {
         <ScreenHeader
           showHome
           title={t('bestiary.title')}
-          right={<AudioToggle inline onSettingsPress={() => setAudioSettingsOpen(true)} />}
+          right={<AudioToggle inline onSettingsPress={() => setSettingsOpen(true)} />}
         />
 
-        <AudioSettingsModal visible={audioSettingsOpen} onClose={() => setAudioSettingsOpen(false)} />
+        <SettingsModal visible={settingsOpen} onClose={() => setSettingsOpen(false)} />
 
         {/* Grid */}
         <FlatList

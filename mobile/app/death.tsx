@@ -12,7 +12,7 @@ import { BESTIARY, getDeathMoment, getFinalWordsIntro } from '../lib/content';
 import { getZoneDepth, loadZone } from '../lib/zone-loader';
 import { DeathCard, ShareCardCapture, useShareCard } from '../lib/shareCard';
 import { useAudius } from '../lib/AudiusContext';
-import { AudioSettingsModal } from '../components/AudioSettingsModal';
+import { SettingsModal } from '../components/SettingsModal';
 import { AudioToggle } from '../components/AudioToggle';
 import { CRTOverlay } from '../components/CRTOverlay';
 import { useCurrentPlayer, applyMilestoneCosmetics, useGameSettings, recordCreatureUpdate, saveNotifRegistration, markNotifPrompted } from '../lib/instant';
@@ -67,7 +67,7 @@ export default function DeathScreen() {
   const [submitting, setSubmitting] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [sharing, setSharing] = useState(false);
-  const [audioSettingsOpen, setAudioSettingsOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [deathMoment] = useState(() => getDeathMoment());
   const [finalWordsIntro] = useState(() => getFinalWordsIntro());
 
@@ -382,7 +382,7 @@ export default function DeathScreen() {
     <SafeAreaView className="flex-1" edges={['left', 'right', 'bottom']}>
       {/* Header with audio toggle */}
       <View className="flex-row items-center justify-end px-3" style={{ paddingTop: insets.top + 10, paddingBottom: 10 }}>
-        <AudioToggle ambientTrack="ambient-death" inline onSettingsPress={() => setAudioSettingsOpen(true)} />
+        <AudioToggle ambientTrack="ambient-death" inline onSettingsPress={() => setSettingsOpen(true)} />
       </View>
 
       <Animated.View style={{ flex: 1, opacity: contentFade }}>
@@ -701,7 +701,7 @@ export default function DeathScreen() {
         </View>
       </Modal>
 
-      <AudioSettingsModal visible={audioSettingsOpen} onClose={() => setAudioSettingsOpen(false)} />
+      <SettingsModal visible={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </SafeAreaView>
     <CRTOverlay />
     </CryptBackground>

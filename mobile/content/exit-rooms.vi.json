@@ -1,0 +1,181 @@
+{
+  "type": "exit",
+  "zone": "THRESHOLD OF THE UNNAMED",
+  "rooms": [
+    {
+      "template": "threshold",
+      "variations": [
+        {
+          "id": "exit_threshold_1",
+          "narrative": "Ánh sáng. Ánh sáng thật sự, không phải ánh đuốc — ánh ngày, len qua một khe nứt trên cao. Bậc thang đá dẫn lên trên. Không khí mang mùi của thế giới mà ngươi còn nhớ. Ngươi đã thoát được. Lần này."
+        },
+        {
+          "id": "exit_threshold_2",
+          "narrative": "Lối ra. Có thật. Chạm vào được. Sau tất cả, nó đây rồi — một cánh cửa trở về thế giới bên trên. Bóng tối sau lưng ngươi như nghiêng mình sát lại, chẳng nỡ buông tay."
+        },
+        {
+          "id": "exit_threshold_3",
+          "narrative": "Nắng chạm lên gương mặt ngươi. Hơi ấm sau cái lạnh bất tận. Bậc thang ngay kia. Mặt đất ngay kia. Mỗi bước chân như một lời thách thức. Ngươi đang thách thức một thứ gì đó rất xưa cũ."
+        },
+        {
+          "id": "exit_threshold_4",
+          "narrative": "Lối đi dâng cao dần. Nước rút xuống. Phía trước: ánh sáng, không khí, sự sống. Phía sau: tất cả những thứ còn lại. Đừng ngoảnh lại. Ngươi đã xứng đáng với điều này. Hãy nhận lấy."
+        },
+        {
+          "id": "exit_threshold_5",
+          "narrative": "Một cánh cửa, cổ xưa nhưng vẫn dùng được. Bên kia: âm thanh. Gió. Tiếng chim? Những thanh âm của một thế giới vẫn tiếp tục xoay vần trong lúc ngươi ở dưới này. Mở nó ra. Về nhà thôi."
+        }
+      ]
+    },
+    {
+      "template": "release",
+      "variations": [
+        {
+          "id": "exit_release_1",
+          "narrative": "Bóng tối lùi lại sau lưng ngươi. Dòng nước không theo qua khỏi điểm này. Âm phủ thả ngươi ra — không phải vì thua cuộc, chỉ là... đã thỏa mãn. Tạm thời."
+        },
+        {
+          "id": "exit_release_2",
+          "narrative": "Ngươi cảm thấy nó buông tay. Một sức ép mà ngươi không hề hay mình đang gánh chợt nhẹ bẫng khi ngươi bước qua ranh giới. Âm phủ từng nắm giữ ngươi. Giờ thì không. Đơn giản vậy thôi. Kinh hoàng vậy thôi."
+        },
+        {
+          "id": "exit_release_3",
+          "narrative": "Cái lạnh dừng lại ở một lằn ranh vô hình. Ngươi bước qua nó và cảm nhận hơi ấm lần đầu tiên sau quãng thời gian tưởng như hàng năm trời. Vực sâu dõi theo ngươi rời đi. Chúng sẽ nhớ."
+        },
+        {
+          "id": "exit_release_4",
+          "narrative": "Có thứ gì đó nới lỏng ra. Một thứ mênh mông, với vô số ngón tay, đang buông dần cái siết của nó. Ngươi tự do rồi. Ngươi từng bị nắm giữ, và giờ ngươi tự do. Đừng nghĩ về thứ đã nắm giữ ngươi."
+        },
+        {
+          "id": "exit_release_5",
+          "narrative": "Tiếng thì thầm nhạt dần. Sức ép dịu đi. Âm phủ bong khỏi tâm trí ngươi như một cơn ác mộng đang rời bước. Ngươi đang lên cao. Ngươi đang rời đi. Ngươi lại là chính mình."
+        }
+      ]
+    },
+    {
+      "template": "earned",
+      "variations": [
+        {
+          "id": "exit_earned_1",
+          "narrative": "Cánh cửa cuối cùng. Nó từng bị phong kín. Giờ nó mở ra. Ngươi đã xứng đáng với điều này. Thứ gì đó phán xét trong bóng tối đã cân đo ngươi và thấy ngươi vừa đủ. Bước qua đi, kẻ sống sót."
+        },
+        {
+          "id": "exit_earned_2",
+          "narrative": "Ánh sáng tràn ngập gian phòng. Một phần thưởng cho việc đi được xa đến thế. Con đường lên mặt đất mở ra như một món quà — hay một sự thừa nhận. Ngươi đã chiến đấu vì điều này. Nó là của ngươi."
+        },
+        {
+          "id": "exit_earned_3",
+          "narrative": "Cổng lớn tách ra. Những cỗ máy cổ xưa nghiến rít. Ai đó — thứ gì đó — đã bị ấn tượng. Ngươi đã vượt qua những bài kiểm tra. Ngươi đã sống sót qua những thử thách. Lối ra là phần thưởng của ngươi. Nhận lấy đi."
+        },
+        {
+          "id": "exit_earned_4",
+          "narrative": "Một dàn đồng ca của im lặng. Sự kính trọng của người chết. Ngươi đã đi xa hơn phần lớn kẻ khác, sống sót qua thứ giết chết phần lớn kẻ khác. Lối ra vinh danh ngươi bằng chính sự tồn tại của nó. Bằng việc để ngươi đi qua."
+        },
+        {
+          "id": "exit_earned_5",
+          "narrative": "Con đường mở ra. Không phải được ban cho — mà giành được. Mỗi cái xác ngươi đi qua, mỗi con quái vật ngươi sống sót, mỗi lựa chọn ngươi đưa ra đều dẫn về đây. Đến cánh cửa này. Đến ánh sáng này. Đến sự sống."
+        }
+      ]
+    },
+    {
+      "template": "reluctant",
+      "variations": [
+        {
+          "id": "exit_reluctant_1",
+          "narrative": "Lối ra ở đây. Sự an toàn ở đây. Nhưng vẫn còn điều gì đó dang dở. Ai đó vẫn chưa được tìm thấy. Ngươi rời đi, nhưng không trọn vẹn. Một phần của ngươi ở lại. Ngươi sẽ quay lại vì nó."
+        },
+        {
+          "id": "exit_reluctant_2",
+          "narrative": "Ánh sáng phía trên. Bóng tối phía sau. Đáng lẽ ngươi phải thấy nhẹ nhõm. Thay vào đó ngươi thấy... chưa xong. Âm phủ còn nhiều điều để phô bày. Nhiều điều để dạy. Ngươi không chắc mình đã xong với nó."
+        },
+        {
+          "id": "exit_reluctant_3",
+          "narrative": "Ngươi có thể rời đi. Ngươi sẽ rời đi. Nhưng ngươi chần chừ nơi ngưỡng cửa. Có thứ gì đó gọi vọng từ vực sâu — không phải đe dọa, mà là lời mời. Lần sau, nó thì thầm. Lần sau, hãy xuống sâu hơn."
+        },
+        {
+          "id": "exit_reluctant_4",
+          "narrative": "Chiến thắng nghe rỗng tuếch. Ngươi đã trốn thoát, nhưng ngươi bỏ lại nhiều thứ. Những cái xác mang lời nhắn ngươi chưa đọc. Những lối đi ngươi chưa bước. Lối ra phán xét ngươi vì đã rời đi quá sớm."
+        },
+        {
+          "id": "exit_reluctant_5",
+          "narrative": "Mặt đất chờ đợi. Vực sâu vẫy gọi. Ngươi giằng xé giữa sinh tồn và tò mò, giữa ánh sáng và những bí mật còn ẩn trong bóng tối. Ngươi rời đi. Tạm thời."
+        }
+      ]
+    },
+    {
+      "template": "changed",
+      "variations": [
+        {
+          "id": "exit_changed_1",
+          "narrative": "Mặt đất chờ trên kia. Nhưng ngươi có thể trở về với nó không? Ngươi đã thấy thứ nằm bên dưới. Ngươi đã trở thành kẻ biết. Thế giới bên trên giờ trông nhỏ bé hơn. Kém thật hơn."
+        },
+        {
+          "id": "exit_changed_2",
+          "narrative": "Ngươi leo về phía ánh sáng. Mỗi bước lại lạ lẫm hơn bước trước. Kẻ đã đi xuống không phải là kẻ đang đi lên. Có thứ được thêm vào. Có thứ bị lấy đi. Chào mừng trở lại."
+        },
+        {
+          "id": "exit_changed_3",
+          "narrative": "Nhà ở trên kia. An toàn. Bình thường. Nhưng giờ ngươi đã biết. Ngươi đã thấy nền móng của thế giới. Làm sao còn thứ gì có thể bình thường được nữa? Làm sao còn thứ gì có thể thật được nữa?"
+        },
+        {
+          "id": "exit_changed_4",
+          "narrative": "Lối ra không mang cảm giác chiến thắng. Nó mang cảm giác giờ nghỉ giữa hồi. Âm phủ đã đánh dấu ngươi. Thay đổi ngươi. Ngươi sẽ mang nó mãi mãi. Kể cả dưới ánh mặt trời. Nhất là dưới ánh mặt trời."
+        },
+        {
+          "id": "exit_changed_5",
+          "narrative": "Trồi lên mặt đất như một lần sinh nở. Đau đớn. Hoang mang. Thế giới quá sáng, quá ồn, quá nhiều. Ngươi từng thích nghi với bóng tối. Giờ ngươi phải thích nghi ngược lại. Ngươi làm được không?"
+        }
+      ]
+    },
+    {
+      "template": "invitation",
+      "variations": [
+        {
+          "id": "exit_invitation_1",
+          "narrative": "Cánh cửa mở toang. Nắng tràn qua. Không kẻ canh giữ, không thử thách, không cái giá nào. Chỉ là... sự cho phép. Nó muốn ngươi rời đi. Nó biết ngươi sẽ quay lại. Chúng luôn quay lại."
+        },
+        {
+          "id": "exit_invitation_2",
+          "narrative": "'Sớm quay lại nhé,' có thứ gì đó không nói ra nhưng truyền đạt rõ ràng. Lối ra quá dễ dàng. Quá niềm nở. Ngươi không phải đang trốn thoát — ngươi đang được thả đi. Hai điều đó khác nhau."
+        },
+        {
+          "id": "exit_invitation_3",
+          "narrative": "Âm phủ giữ cửa cho ngươi. Lịch thiệp. Kiên nhẫn. Nó đã chuẩn bị sẵn cho lần ghé thăm kế tiếp của ngươi. Nó biết một điều ngươi chưa biết: ngươi đã nghiện cuộc đi xuống rồi."
+        },
+        {
+          "id": "exit_invitation_4",
+          "narrative": "Không chướng ngại nào chắn lối ngươi. Lạ lùng, sau tất cả những chuyện đã qua. Đáng ngờ. Lối ra như một miếng mồi, một cái bẫy nhử. Nhưng để làm gì? Để chờ khi nào? Đi đi, kẻ sống sót. Quay lại với túi đầy vàng. Quay lại thường xuyên."
+        },
+        {
+          "id": "exit_invitation_5",
+          "narrative": "Ánh sáng phía trước. Tự do phía trước. Bóng tối sau lưng ngươi không đuổi theo — nó vẫy tay tạm biệt. Hẹn sớm gặp lại, nó như muốn nói. Bọn ta sẽ để cửa không khóa."
+        }
+      ]
+    },
+    {
+      "template": "false",
+      "variations": [
+        {
+          "id": "exit_false_1",
+          "narrative": "Ánh sáng phía trước. Bậc thang dẫn lên. Sự nhẹ nhõm tràn qua ngươi. Rồi ngươi nhận ra — bậc thang đang đi xuống. Chúng vẫn luôn đi xuống. Thứ 'ánh sáng' ấy nhe ra quá nhiều răng."
+        },
+        {
+          "id": "exit_false_2",
+          "narrative": "Lối ra. Cuối cùng cũng thấy. Ngươi với tay về cánh cửa và bàn tay xuyên thẳng qua. Ảo ảnh. Tàn nhẫn. Con đường thật vẫn tiếp tục sau lưng ngươi, sâu hơn. Âm phủ cười không thành tiếng."
+        },
+        {
+          "id": "exit_false_3",
+          "narrative": "Ngươi leo về phía nắng. Không khí lạnh dần. Ánh sáng tối dần. Bằng cách nào đó, bậc thang dẫn lên lại đưa ngươi xuống. Hình học nói dối ở đây. Hy vọng nói dối ở đây."
+        },
+        {
+          "id": "exit_false_4",
+          "narrative": "'LỐI RA' khắc trên khung cửa. Bên kia: một gian phòng khác. Một lựa chọn khác. Một lời dối trá khác. Âm phủ đang thử thách hy vọng của ngươi. Tra tấn nó. Lối ra thật vẫn ở phía trước. Có lẽ vậy."
+        },
+        {
+          "id": "exit_false_5",
+          "narrative": "Đường ra. Ngươi chắc chắn. Ngươi sai rồi. Ngươi bước qua và thấy mình lại ở nơi khởi đầu. Vòng tròn. Lặp lại. Cạm bẫy. Âm phủ chưa xong với ngươi đâu."
+        }
+      ]
+    }
+  ]
+}

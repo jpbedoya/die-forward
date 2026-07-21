@@ -15,10 +15,20 @@ function getDb() {
   return db;
 }
 
+// guestId is always "guest-" + the UUID shape returned by @instantdb/admin's
+// id() (see the "create a new guest session" branch below) — anything else
+// is untrusted client input. This value round-trips into an InstantDB auth
+// token's email and is later used in a $ilike query (mobile's
+// useCurrentPlayer()), so accepting an unvalidated string here would let a
+// caller mint a token containing SQL-LIKE wildcards ('%', '_') and use it to
+// match other players' rows instead of just their own — validate strictly
+// before ever using this in an email/token.
+const GUEST_ID_PATTERN = /^guest-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+
 // Handle preflight requests
 /**
  * POST /api/auth/guest
- * 
+ *
  * Create a guest (empty handed) session with a unique ID.
  * Returns InstantDB token for anonymous play.
  */
@@ -29,7 +39,7 @@ export async function POST(req: NextRequest) {
     const { existingGuestId } = body;
 
     // Re-authenticate an existing guest session
-    if (existingGuestId && typeof existingGuestId === 'string' && existingGuestId.startsWith('guest-')) {
+    if (existingGuestId && typeof existingGuestId === 'string' && GUEST_ID_PATTERN.test(existingGuestId)) {
       console.log('[Auth] Re-authenticating existing guest:', existingGuestId);
       const token = await db.auth.createToken({ email: `${existingGuestId}@guest.dieforward.com` });
       return NextResponse.json({

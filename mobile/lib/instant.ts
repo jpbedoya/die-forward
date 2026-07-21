@@ -171,16 +171,33 @@ export function useCurrentPlayer() {
   // Tokens are created with email = "<authId>@wallet.dieforward.com" or
   // "<guestId>@guest.dieforward.com", so strip the domain suffix to get
   // the original authId that getOrCreatePlayerByAuth stored.
-  const authId = user?.email
+  //
+  // InstantDB lowercases the email on its own account record, so for wallet
+  // auth (authId = a case-sensitive base58 Solana address) the derived value
+  // here can differ in case from the mixed-case authId that was written to
+  // the player row at link-wallet time (e.g. "gdqj32h8..." vs "GdQJ32H8...").
+  // $ilike does a case-insensitive match so this still finds the right row.
+  // Requires `players.authId` to be indexed with an enforced string type —
+  // both are now set in the live schema (see instant.schema.ts), which is
+  // why this can safely use $ilike instead of an exact match.
+  const rawAuthId = user?.email
     ? user.email.replace(/@(wallet|guest)\.dieforward\.com$/, '')
     : null;
-  
+
+  // Defense-in-depth: legitimate authIds are always a guest UUID (hex +
+  // hyphens) or a base58 wallet address (alphanumeric) — never containing
+  // '%'/'_'. Refuse to run the $ilike query on anything outside that shape
+  // so a malformed/malicious authId (e.g. from a value that slipped past
+  // server-side validation elsewhere) can't be used as a SQL-LIKE wildcard
+  // pattern to match other players' rows instead of just this session's own.
+  const authId = rawAuthId && /^[0-9A-Za-z-]+$/.test(rawAuthId) ? rawAuthId : null;
+
   const { data, isLoading: playerLoading, error } = db.useQuery(
     authId
       ? {
           players: {
             $: {
-              where: { authId },
+              where: { authId: { $ilike: authId } },
               limit: 1,
             },
           },

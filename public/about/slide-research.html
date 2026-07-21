@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, #0a0a0a 0%, #0a0f1a 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', monospace;
+      color: #e5e5e5;
+      padding: clamp(24px, 4vw, 54px);
+    }
+    .content {
+      width: 100%;
+      max-width: 1250px;
+      text-align: center;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(96, 165, 250, 0.12);
+      border: 1px solid rgba(96, 165, 250, 0.35);
+      color: #60a5fa;
+      padding: clamp(5px, 0.6vw, 10px) clamp(12px, 1.4vw, 20px);
+      border-radius: 999px;
+      letter-spacing: 2px;
+      font-size: clamp(10px, 1vw, 15px);
+      margin-bottom: clamp(14px, 2.2vh, 28px);
+    }
+    .title {
+      font-size: clamp(26px, 3.2vw, 52px);
+      color: #d1d5db;
+      margin-bottom: clamp(24px, 4vh, 44px);
+      text-shadow: 0 0 28px rgba(96, 165, 250, 0.2);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(14px, 1.8vw, 24px);
+      text-align: left;
+      margin-bottom: clamp(20px, 3vh, 34px);
+    }
+    .card {
+      background: rgba(13, 13, 13, 0.9);
+      border: 1px solid #1e2530;
+      border-radius: 12px;
+      padding: clamp(14px, 1.6vw, 22px);
+    }
+    .card-title {
+      color: #60a5fa;
+      font-size: clamp(13px, 1.3vw, 20px);
+      margin-bottom: clamp(8px, 1vh, 12px);
+    }
+    .card-copy {
+      color: #9ca3af;
+      font-size: clamp(11px, 1.02vw, 15px);
+      line-height: 1.6;
+    }
+    .card-copy strong { color: #e5e5e5; }
+    .tiers {
+      display: flex;
+      justify-content: center;
+      gap: clamp(14px, 2vw, 30px);
+      flex-wrap: wrap;
+      margin-bottom: clamp(18px, 2.6vh, 30px);
+    }
+    .tier {
+      background: rgba(13, 13, 13, 0.85);
+      border: 1px solid #2a2a2a;
+      border-radius: 999px;
+      padding: clamp(7px, 0.9vw, 12px) clamp(14px, 1.8vw, 26px);
+      font-size: clamp(10px, 1vw, 15px);
+      color: #a1a1aa;
+    }
+    .tier strong { color: #f59e0b; }
+    .footer {
+      color: #6b7280;
+      font-size: clamp(12px, 1.2vw, 18px);
+    }
+    .footer strong { color: #d1d5db; }
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="content">
+    <div class="badge">WHY THIS SHAPE — THE RESEARCH</div>
+    <div class="title">Every Design Choice Has a Precedent</div>
+    <div class="grid">
+      <div class="card">
+        <div class="card-title">Roguelite money lives in East Asia</div>
+        <div class="card-copy">
+          Archero 2's #1 market: <strong>South Korea, 23% of spend</strong>; Survivor.io takes
+          <strong>75%+ of revenue from TW/CN/KR</strong>; Japan's ARPU runs ~4× global.
+          That's why Die Forward ships <strong>fully localized in 7 languages</strong> — JP, KR and
+          Traditional Chinese first.
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Death-as-content is a proven playbook</div>
+        <div class="card-copy">
+          NetHack bones files, Dark Souls bloodstains and curse statues, Shiren's rescue system —
+          <strong>30 years of async-death design</strong>, native to Japan. The Shift's apex threats,
+          curse statues, and Architect walls lift directly from this lineage.
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Web3 gaming's one working playbook</div>
+        <div class="card-copy">
+          93% of GameFi projects are dead; ~$15B burned. The survivor pattern is
+          <strong>game-first</strong> (Off The Grid). So: stake as <strong>thrill, never yield</strong>,
+          no token, free game excellent standalone, chain revealed progressively.
+        </div>
+      </div>
+    </div>
+    <div class="tiers">
+      <div class="tier"><strong>TIER A</strong> — JP · KR · TW (revenue)</div>
+      <div class="tier"><strong>TIER B</strong> — US · EU (identity &amp; discovery)</div>
+      <div class="tier"><strong>TIER C</strong> — VN · PH · BR (crypto-native scale)</div>
+    </div>
+    <div class="footer"><strong>The fiction is the moat</strong> — Archero has the loop but no soul; Dark Souls has the mystique but no mobile presence; web3 had stakes but no game.</div>
+  </div>
+</body>
+</html>
