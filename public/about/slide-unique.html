@@ -68,14 +68,13 @@
     }
     .points {
       display: flex; flex-direction: column;
-      gap: clamp(9px, 1.3vh, 15px);
       margin-bottom: clamp(16px, 2.5vh, 28px);
     }
     .point {
-      background: rgba(13, 13, 13, 0.9);
-      border: 1px solid #2a1a1f;
-      border-radius: 12px;
-      padding: clamp(10px, 1.3vw, 18px) clamp(14px, 1.8vw, 26px);
+      padding: clamp(9px, 1.3vh, 16px) 0;
+    }
+    .point + .point {
+      border-top: 1px solid rgba(42, 42, 46, 0.55);
     }
     .point-title {
       font-size: clamp(12px, 1.3vw, 20px);

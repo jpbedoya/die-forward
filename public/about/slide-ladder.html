@@ -73,10 +73,12 @@
     .rung-coin::before { background: #f59e0b; box-shadow: 0 0 12px rgba(245, 158, 11, 0.5); }
     .rung-blood::before { background: #ef4444; box-shadow: 0 0 12px rgba(239, 68, 68, 0.5); }
     .rung-art {
-      width: clamp(36px, 4vw, 60px);
-      height: clamp(36px, 4vw, 60px);
-      object-fit: contain;
-      border-radius: 8px;
+      width: clamp(44px, 4.8vw, 72px);
+      height: clamp(44px, 4.8vw, 72px);
+      object-fit: cover;
+      -webkit-mask-image: radial-gradient(circle, #000 52%, transparent 71%);
+      mask-image: radial-gradient(circle, #000 52%, transparent 71%);
+      filter: drop-shadow(0 0 16px rgba(245, 158, 11, 0.25));
       float: right;
       margin-left: 8px;
     }
