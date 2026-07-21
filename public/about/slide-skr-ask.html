@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, #0a0a0a 0%, #12100a 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', monospace;
+      color: #e5e5e5;
+      padding: clamp(24px, 4vw, 54px);
+      /* extra bottom clearance for the deck viewer's floating pager */
+      padding-bottom: clamp(70px, 11vh, 110px);
+      position: relative;
+      overflow: hidden;
+    }
+    .bg-texture {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: url('bg-crypt.webp') center/cover;
+      opacity: 0.1; z-index: 0;
+    }
+    .content {
+      width: 100%;
+      max-width: 1250px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+    .badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(10px, 1.2vw, 18px);
+      color: #f59e0b;
+      font-size: clamp(10px, 1vw, 15px);
+      letter-spacing: 2px;
+      margin-bottom: clamp(14px, 2.2vh, 28px);
+    }
+    .badge::before, .badge::after {
+      content: '';
+      width: clamp(24px, 2.6vw, 44px);
+      height: 2px;
+      background: #f59e0b;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+    }
+    .title {
+      font-size: clamp(30px, 3.7vw, 58px);
+      color: #f59e0b;
+      margin-bottom: clamp(10px, 1.8vh, 18px);
+      text-shadow: 0 0 40px rgba(245, 158, 11, 0.4);
+    }
+    .subtitle {
+      font-size: clamp(13px, 1.45vw, 23px);
+      color: #9ca3af;
+      margin-bottom: clamp(24px, 4vh, 44px);
+      letter-spacing: 0.5px;
+    }
+    .grid {
+      display: flex;
+      align-items: stretch;
+      text-align: left;
+      margin-bottom: clamp(20px, 3vh, 34px);
+    }
+    .card {
+      flex: 1;
+      padding: clamp(4px, 0.6vh, 10px) clamp(12px, 1.6vw, 26px);
+    }
+    .card + .card {
+      border-left: 1px solid #2a2a2e;
+    }
+    .card::before {
+      content: '';
+      display: block;
+      width: clamp(28px, 3vw, 48px);
+      height: 2px;
+      background: #f59e0b;
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
+      margin-bottom: clamp(12px, 2vh, 20px);
+    }
+    .card-title {
+      color: #f59e0b;
+      font-size: clamp(13px, 1.35vw, 21px);
+      margin-bottom: clamp(8px, 1vh, 12px);
+      line-height: 1.3;
+    }
+    .card-copy {
+      color: #9ca3af;
+      font-size: clamp(10px, 1vw, 15px);
+      line-height: 1.55;
+    }
+    .card-copy strong { color: #d1d5db; }
+    .stats {
+      display: flex;
+      align-items: stretch;
+      margin-bottom: clamp(18px, 2.8vh, 32px);
+      padding: clamp(10px, 1.6vh, 20px) 0;
+      border-top: 1px solid #2a2a2e;
+      border-bottom: 1px solid #2a2a2e;
+    }
+    .stat {
+      flex: 1;
+      padding: 0 clamp(10px, 1.4vw, 22px);
+    }
+    .stat + .stat {
+      border-left: 1px solid #2a2a2e;
+    }
+    .stat-num {
+      font-size: clamp(22px, 2.7vw, 44px);
+      color: #f59e0b;
+      font-weight: bold;
+      text-shadow: 0 0 30px rgba(245, 158, 11, 0.35);
+      margin-bottom: clamp(4px, 0.7vh, 9px);
+      white-space: nowrap;
+    }
+    .stat-label {
+      font-size: clamp(9px, 0.95vw, 14px);
+      color: #9ca3af;
+      line-height: 1.45;
+    }
+    .footer {
+      color: #6b7280;
+      font-size: clamp(12px, 1.2vw, 18px);
+      letter-spacing: 0.5px;
+    }
+    .footer strong { color: #f59e0b; }
+    @media (max-width: 800px) {
+      .grid { flex-direction: column; gap: clamp(16px, 3vh, 28px); }
+      .card + .card { border-left: none; border-top: 1px solid #2a2a2e; padding-top: clamp(14px, 2.5vh, 24px); }
+      .stats { flex-wrap: wrap; row-gap: clamp(14px, 2.5vh, 24px); }
+      .stat { flex: 1 1 40%; }
+      .stat:nth-child(3) { border-left: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-texture"></div>
+  <div class="content">
+    <div class="badge">THE ASK — SOLANA MOBILE</div>
+    <div class="title">Make $SKR the Stake</div>
+    <div class="subtitle">Seed a $SKR pool for runs. We ship escrow v2 with native $SKR staking — held by the program, no exchange hop.</div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="card-title">$SKR gets a verb</div>
+        <div class="card-copy">Held tokens don't build habits — risked ones do. Stake it, lose it to the depths, win it back with a bonus. Escrow v2 holds $SKR <strong>natively in the program</strong> — a first-class stake asset, not a swap widget.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Daily opens, provable on-chain</div>
+        <div class="card-copy">5–10 minute runs, a world that shifts nightly, at most one push a day — a <strong>daily-open habit loop built for Seeker</strong>. Every run writes an on-chain receipt: pool activity, distinct wallets, $SKR circulated — all auditable.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">The anti-GameFi flagship</div>
+        <div class="card-copy">A game people play because it's fun — stakes as tension, not yield. Shareable death cards carrying $SKR stakes, and <strong>AI agents staking in the same world</strong>. The store-front story Seeker's catalog needs.</div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-num">150,000 SKR</div>
+        <div class="stat-label">seeds the pool</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">90 days</div>
+        <div class="stat-label">of victory bonuses covered — assuming zero deaths ever refill it</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">&gt;66%</div>
+        <div class="stat-label">clear rate before the pool even bleeds — roguelites run ~30%</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">Escrow v2</div>
+        <div class="stat-label">native SPL staking, built and shipped by us</div>
+      </div>
+    </div>
+
+    <div class="footer">Deaths refill the pool. Your seed <strong>underwrites the tension</strong> — it doesn't get spent.</div>
+  </div>
+</body>
+</html>
