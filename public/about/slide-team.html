@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(ellipse at center, #12100a 0%, #0a0a0a 70%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', monospace;
+      color: #e5e5e5;
+      padding: clamp(24px, 4vw, 54px);
+      text-align: center;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: #f59e0b;
+      padding: clamp(5px, 0.6vw, 10px) clamp(12px, 1.4vw, 20px);
+      border-radius: 999px;
+      letter-spacing: 2px;
+      font-size: clamp(10px, 1vw, 15px);
+      margin-bottom: clamp(16px, 2.6vh, 30px);
+    }
+    .name {
+      font-size: clamp(30px, 3.8vw, 60px);
+      color: #f59e0b;
+      font-weight: bold;
+      text-shadow: 0 0 40px rgba(245, 158, 11, 0.4);
+      margin-bottom: clamp(10px, 1.6vh, 18px);
+    }
+    .role {
+      font-size: clamp(13px, 1.4vw, 22px);
+      color: #a1a1aa;
+      margin-bottom: clamp(20px, 3.2vh, 36px);
+      letter-spacing: 1px;
+    }
+    .blurb {
+      font-size: clamp(12px, 1.25vw, 19px);
+      color: #9ca3af;
+      line-height: 1.8;
+      max-width: 860px;
+    }
+    .blurb strong { color: #d1d5db; }
+  </style>
+</head>
+<body>
+  <div class="badge">WHO'S BUILDING THIS</div>
+  <div class="name">JP Bedoya</div>
+  <div class="role">FOUNDER · DESIGN · ENGINEERING</div>
+  <div class="blurb">
+    A solo founder shipping at studio pace with an <strong>AI-augmented pipeline</strong> —
+    game design, a five-zone content bible, on-chain programs, and localization into
+    <strong>7 languages</strong>, built and live in months, not years.
+  </div>
+</body>
+</html>

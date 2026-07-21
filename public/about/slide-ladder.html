@@ -58,6 +58,14 @@
     .rung-unbound { border-color: #3f3f46; }
     .rung-coin { border-color: rgba(245, 158, 11, 0.4); }
     .rung-blood { border-color: rgba(239, 68, 68, 0.4); }
+    .rung-art {
+      width: clamp(36px, 4vw, 60px);
+      height: clamp(36px, 4vw, 60px);
+      object-fit: contain;
+      border-radius: 8px;
+      float: right;
+      margin-left: 8px;
+    }
     .rung-name {
       font-size: clamp(15px, 1.7vw, 26px);
       font-weight: bold;
@@ -104,6 +112,7 @@
         </div>
       </div>
       <div class="rung rung-coin">
+        <img src="/items/pale-coin.webp" class="rung-art" alt="Pale Coin">
         <div class="rung-name">COIN-BOUND</div>
         <div class="rung-offering">OFFER PALE COINS</div>
         <div class="rung-desc">

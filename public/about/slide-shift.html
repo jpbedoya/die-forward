@@ -75,6 +75,19 @@
       font-style: italic;
       line-height: 1.6;
     }
+    .apex-row {
+      display: flex;
+      gap: clamp(10px, 1.4vw, 20px);
+      margin-top: clamp(16px, 2.6vh, 30px);
+    }
+    .apex-art {
+      width: clamp(60px, 7vw, 110px);
+      height: clamp(60px, 7vw, 110px);
+      object-fit: cover;
+      border-radius: 12px;
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    }
     .feature-box {
       background: #0d0d0d;
       border: 1px solid #2a2415;
@@ -111,6 +124,11 @@
       <div class="dispatch-text">
         "Room seven connects to room three now. The water has receded in the Sunken Crypt. Something grows fat at depth 9."
       </div>
+    </div>
+    <div class="apex-row">
+      <img src="/creatures/echo-husks.webp" class="apex-art" alt="Echo Husks">
+      <img src="/creatures/the-hunched.webp" class="apex-art" alt="The Hunched">
+      <img src="/creatures/mother-of-tides.webp" class="apex-art" alt="Mother of Tides">
     </div>
   </div>
   <div class="right">
