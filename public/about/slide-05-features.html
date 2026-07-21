@@ -30,15 +30,21 @@
       z-index: 1;
     }
     .badge {
-      display: inline-block;
-      background: rgba(245, 158, 11, 0.15);
-      border: 1px solid rgba(245, 158, 11, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(10px, 1.2vw, 18px);
       color: #f59e0b;
-      padding: clamp(4px, 0.5vw, 8px) clamp(12px, 1.5vw, 20px);
-      border-radius: 20px;
-      font-size: clamp(10px, 1vw, 16px);
+      font-size: clamp(10px, 1vw, 15px);
       letter-spacing: 2px;
       margin-bottom: clamp(12px, 2vh, 22px);
+    }
+    .badge::before, .badge::after {
+      content: '';
+      width: clamp(24px, 2.6vw, 44px);
+      height: 2px;
+      background: #f59e0b;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
     }
     .title {
       font-size: clamp(24px, 3vw, 46px);
