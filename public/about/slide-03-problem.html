@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -14,10 +15,20 @@
       font-family: 'Courier New', monospace;
       color: #e5e5e5;
       padding: clamp(30px, 5vw, 60px);
+      position: relative;
+      overflow: hidden;
+    }
+    .bg-texture {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: url('bg-crypt.webp') center/cover;
+      opacity: 0.1; z-index: 0;
     }
     .content {
       max-width: 1200px;
+      width: 100%;
       text-align: center;
+      position: relative;
+      z-index: 1;
     }
     .badge {
       display: flex;
@@ -37,14 +48,16 @@
       box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
     }
     .problem {
-      font-size: clamp(20px, 2.5vw, 42px);
-      color: #71717a;
+      font-size: clamp(18px, 2.2vw, 36px);
+      color: #6b7280;
       margin-bottom: clamp(30px, 5vh, 50px);
       line-height: 1.6;
     }
     .strike {
       text-decoration: line-through;
-      color: #4a4a4a;
+      text-decoration-color: rgba(239, 68, 68, 0.85);
+      text-decoration-thickness: 3px;
+      color: #52525b;
     }
     .solution-label {
       font-size: clamp(14px, 1.4vw, 24px);
@@ -53,28 +66,34 @@
       margin-bottom: clamp(15px, 2vh, 25px);
     }
     .solution {
-      font-size: clamp(28px, 3.5vw, 56px);
+      font-size: clamp(34px, 4.4vw, 72px);
       color: #f59e0b;
       font-weight: bold;
-      text-shadow: 0 0 40px rgba(245, 158, 11, 0.4);
-      margin-bottom: clamp(20px, 4vh, 40px);
+      text-shadow: 0 0 50px rgba(245, 158, 11, 0.45);
+      margin-bottom: clamp(24px, 4.5vh, 46px);
     }
     .details {
       display: flex;
-      justify-content: center;
-      gap: clamp(30px, 5vw, 80px);
-      flex-wrap: wrap;
+      align-items: stretch;
+      padding: clamp(14px, 2vh, 26px) 0;
+      border-top: 1px solid #2a2a2e;
+      border-bottom: 1px solid #2a2a2e;
     }
     .detail-item {
+      flex: 1;
       text-align: center;
+      padding: 0 clamp(10px, 1.4vw, 22px);
+    }
+    .detail-item + .detail-item {
+      border-left: 1px solid #2a2a2e;
     }
     .detail-icon {
       font-size: clamp(32px, 4vw, 56px);
       margin-bottom: clamp(8px, 1vh, 15px);
     }
     .detail-icon-img {
-      width: clamp(72px, 8vw, 110px);
-      height: clamp(72px, 8vw, 110px);
+      width: clamp(90px, 10vw, 140px);
+      height: clamp(90px, 10vw, 140px);
       object-fit: cover;
       margin-bottom: clamp(8px, 1vh, 15px);
       /* No border/frame — fade the art into the background and let a faint
