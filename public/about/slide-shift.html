@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -30,7 +31,7 @@
     .right {
       flex: 1.15;
       display: flex; flex-direction: column;
-      gap: clamp(10px, 1.5vh, 18px);
+      justify-content: center;
       min-width: 0; position: relative; z-index: 1;
     }
     .badge {
@@ -64,10 +65,8 @@
     }
     .dispatch {
       margin-top: clamp(18px, 3vh, 34px);
-      background: rgba(13, 13, 13, 0.9);
-      border: 1px solid rgba(245, 158, 11, 0.25);
-      border-radius: 12px;
-      padding: clamp(12px, 1.5vw, 22px);
+      border-left: 2px solid rgba(245, 158, 11, 0.5);
+      padding: clamp(4px, 0.6vh, 8px) 0 clamp(4px, 0.6vh, 8px) clamp(14px, 1.8vw, 26px);
     }
     .dispatch-label {
       font-size: clamp(10px, 1vw, 15px);
@@ -87,18 +86,20 @@
       margin-top: clamp(16px, 2.6vh, 30px);
     }
     .apex-art {
-      width: clamp(60px, 7vw, 110px);
-      height: clamp(60px, 7vw, 110px);
+      width: clamp(72px, 8.5vw, 130px);
+      height: clamp(72px, 8.5vw, 130px);
       object-fit: cover;
-      border-radius: 12px;
-      border: 1px solid rgba(245, 158, 11, 0.25);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      -webkit-mask-image: linear-gradient(to right, transparent, #000 18%, #000 82%, transparent), linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+      -webkit-mask-composite: source-in;
+      mask-image: linear-gradient(to right, transparent, #000 18%, #000 82%, transparent), linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+      mask-composite: intersect;
+      filter: drop-shadow(0 0 22px rgba(245, 158, 11, 0.22));
     }
     .feature-box {
-      background: #0d0d0d;
-      border: 1px solid #2a2415;
-      border-radius: 12px;
-      padding: clamp(10px, 1.4vw, 20px) clamp(14px, 1.8vw, 26px);
+      padding: clamp(10px, 1.5vh, 18px) 0;
+    }
+    .feature-box + .feature-box {
+      border-top: 1px solid rgba(42, 42, 46, 0.55);
     }
     .feature-title {
       font-size: clamp(12px, 1.3vw, 20px);

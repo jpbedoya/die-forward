@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -62,8 +63,10 @@
       width: clamp(84px, 10vw, 155px);
       height: clamp(84px, 10vw, 155px);
       object-fit: cover;
-      -webkit-mask-image: radial-gradient(circle, #000 52%, transparent 71%);
-      mask-image: radial-gradient(circle, #000 52%, transparent 71%);
+      -webkit-mask-image: linear-gradient(to right, transparent, #000 18%, #000 82%, transparent), linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+      -webkit-mask-composite: source-in;
+      mask-image: linear-gradient(to right, transparent, #000 18%, #000 82%, transparent), linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+      mask-composite: intersect;
       filter: drop-shadow(0 0 26px rgba(245, 158, 11, 0.22));
     }
     .stats {

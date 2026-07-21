@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -59,16 +60,21 @@
     .facts {
       display: flex;
       justify-content: center;
-      gap: clamp(10px, 1.5vw, 24px);
+      align-items: stretch;
       flex-wrap: wrap;
+      row-gap: clamp(8px, 1.2vh, 14px);
+      border-top: 1px solid #2a2a2e;
+      border-bottom: 1px solid #2a2a2e;
+      padding: clamp(10px, 1.6vh, 18px) 0;
     }
     .fact {
-      background: rgba(13, 13, 13, 0.9);
-      border: 1px solid #1a2a1f;
-      border-radius: 999px;
-      padding: clamp(8px, 1vw, 14px) clamp(16px, 2vw, 28px);
+      align-self: center;
+      padding: 0 clamp(14px, 1.8vw, 30px);
       font-size: clamp(11px, 1.1vw, 17px);
       color: #d1d5db;
+    }
+    .fact + .fact {
+      border-left: 1px solid #2a2a2e;
     }
     .fact strong { color: #22c55e; }
     @media (max-width: 800px) {
