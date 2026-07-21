@@ -208,10 +208,15 @@ npm run dev                 # localhost:3000
 - **Android**: Emulator or direct APK install
 - **Seeker**: Test MWA wallet connection
 
-### Local Builds
+### Local Builds & Store Uploads
 
-- **Android APK** (no EAS): `cd mobile && npm run build:android:local` — flags `--prod` (release/signed, R8), `--metro` (live-reload), `--publish` (GitHub prerelease). Output in `mobile/dist/`. See `mobile/BUILD_NOTES.md` and `mobile/docs/signing-secrets.md`.
-- **iOS**: No local build script yet. `eas-cli` is not installed; the intended path is a local Xcode build like Android (`npx expo prebuild --platform ios --clean` then a Release build in Xcode).
+**No EAS.** All builds are local; store artifacts are uploaded manually. `eas-cli` is not installed.
+
+- **Android sideload APK**: `cd mobile && npm run build:android:local` — flags `--prod` (release/signed, R8, arm64-only), `--metro` (live-reload), `--publish` (GitHub prerelease). Output in `mobile/dist/`.
+- **Android Play Store AAB**: `cd mobile && npm run build:android:local -- --prod --aab` → `mobile/dist/<name>-<version>-release.aab` (all ABIs — `bundleRelease` ignores the arm64-only splits by design), then upload the `.aab` in the Play Console. Requires the release keystore.
+- **iOS App Store IPA**: `cd mobile && npm run build:ios:local` → prebuild + `xcodebuild archive`/`-exportArchive` → `mobile/dist/<name>-<version>.ipa`, then upload via Xcode Organizer / Transporter / `xcrun altool`. Requires an Apple Distribution cert + an App Store provisioning profile for `com.dieforward.app` + Team ID in `mobile/scripts/ExportOptions.plist`. The script fails fast if signing isn't configured.
+
+See `mobile/BUILD_NOTES.md` (full workflow + one-time Apple setup) and `mobile/docs/signing-secrets.md`.
 
 ## Documentation
 

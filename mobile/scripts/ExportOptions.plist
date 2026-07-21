@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  ExportOptions.plist — drives `xcodebuild -exportArchive` for the App Store.
+  Consumed by scripts/build-ios-local.cjs.
+
+  REQUIRED: set <key>teamID</key> below to your 10-character Apple Developer Team ID
+  (developer.apple.com/account → Membership). The build script refuses to run while
+  it still reads "REPLACE_WITH_TEAM_ID".
+
+  Notes:
+    - method: "app-store-connect" is the Xcode 15+ value for App Store distribution.
+      On older Xcode use "app-store" instead.
+    - signingStyle "automatic" lets Xcode pick the Apple Distribution cert + an
+      App Store provisioning profile for com.dieforward.app (created/refreshed via
+      -allowProvisioningUpdates when you are signed into the account in Xcode).
+      For manual signing, set signingStyle to "manual" and add a
+      provisioningProfiles dict mapping com.dieforward.app → <profile name>.
+-->
+<plist version="1.0">
+<dict>
+	<key>method</key>
+	<string>app-store-connect</string>
+	<key>teamID</key>
+	<string>REPLACE_WITH_TEAM_ID</string>
+	<key>signingStyle</key>
+	<string>automatic</string>
+	<key>uploadSymbols</key>
+	<true/>
+	<key>stripSwiftSymbols</key>
+	<true/>
+	<key>destination</key>
+	<string>export</string>
+</dict>
+</plist>

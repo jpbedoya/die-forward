@@ -8,9 +8,8 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "build:web": "expo export --platform web",
-    "build:android": "eas build --platform android --profile preview",
     "build:android:local": "node scripts/build-android-local.cjs",
-    "build:ios": "eas build --platform ios --profile preview",
+    "build:ios:local": "node scripts/build-ios-local.cjs",
     "test": "jest",
     "test:watch": "jest --watch"
   },
