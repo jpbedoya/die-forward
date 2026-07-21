@@ -1,0 +1,33 @@
+name: Dispatch fan-out cron
+
+# Hourly trigger for /api/game/dispatch, replacing the Vercel cron (Hobby plan
+# only allows daily schedules). The endpoint matches users whose local clock
+# reads 08:00 at run time, so it must fire every hour to cover all timezones.
+# Auth: the CRON_SECRET repo secret must equal the CRON_SECRET env var in the
+# Vercel production project — the endpoint rejects the call otherwise (and runs
+# unguarded-but-warned if the Vercel env var is unset).
+#
+# Note: GitHub Actions schedules can fire a few minutes late; that's fine here —
+# recipient selection compares the local *hour* at run time, so anything within
+# the hour still matches.
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch: {}
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call dispatch endpoint
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "::error::CRON_SECRET repo secret is not set — refusing to call an unguarded endpoint."
+            exit 1
+          fi
+          curl -fsS -X POST "https://dieforward.com/api/game/dispatch" \
+            -H "x-cron-secret: $CRON_SECRET" \
+            --max-time 120
