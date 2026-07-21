@@ -73,12 +73,15 @@
       margin-bottom: clamp(8px, 1vh, 15px);
     }
     .detail-icon-img {
-      width: clamp(56px, 6vw, 80px);
-      height: clamp(56px, 6vw, 80px);
+      width: clamp(72px, 8vw, 110px);
+      height: clamp(72px, 8vw, 110px);
       object-fit: cover;
       margin-bottom: clamp(8px, 1vh, 15px);
-      border-radius: 12px;
-      border: 1px solid rgba(245, 158, 11, 0.3);
+      /* No border/frame — fade the art into the background and let a faint
+         glow lift it off the page instead. */
+      -webkit-mask-image: radial-gradient(circle, #000 52%, transparent 71%);
+      mask-image: radial-gradient(circle, #000 52%, transparent 71%);
+      filter: drop-shadow(0 0 26px rgba(245, 158, 11, 0.22));
     }
     .detail-text {
       font-size: clamp(14px, 1.4vw, 22px);
