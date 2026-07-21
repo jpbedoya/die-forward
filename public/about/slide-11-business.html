@@ -36,36 +36,39 @@
       margin-bottom: clamp(30px, 5vh, 50px);
       text-shadow: 0 0 30px rgba(34, 197, 94, 0.4);
     }
-    .model-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: clamp(20px, 3vw, 40px);
+    .pillars {
+      display: flex;
+      align-items: stretch;
       margin-bottom: clamp(30px, 5vh, 50px);
-    }
-    .model-item {
-      background: #0d0d0d;
-      border: 1px solid #1a2a1a;
-      border-radius: 12px;
-      padding: clamp(20px, 2.5vw, 35px);
       text-align: left;
     }
-    .model-header {
-      display: flex;
-      align-items: center;
-      gap: clamp(10px, 1vw, 15px);
-      margin-bottom: clamp(10px, 1.5vh, 20px);
+    .pillar {
+      flex: 1;
+      padding: clamp(4px, 0.6vh, 10px) clamp(16px, 2vw, 34px);
+      position: relative;
     }
-    .model-icon {
-      font-size: clamp(28px, 3vw, 44px);
+    .pillar + .pillar {
+      border-left: 1px solid #26332a;
+    }
+    .pillar::before {
+      content: '';
+      display: block;
+      width: clamp(28px, 3vw, 48px);
+      height: 2px;
+      background: #f59e0b;
+      margin-bottom: clamp(12px, 2vh, 22px);
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
     }
     .model-label {
-      font-size: clamp(18px, 2vw, 28px);
+      font-size: clamp(16px, 1.8vw, 26px);
       color: #f59e0b;
+      margin-bottom: clamp(8px, 1.2vh, 16px);
+      line-height: 1.25;
     }
     .model-value {
-      font-size: clamp(14px, 1.4vw, 22px);
+      font-size: clamp(11px, 1.15vw, 17px);
       color: #d1d5db;
-      line-height: 1.6;
+      line-height: 1.65;
     }
     .highlight {
       color: #22c55e;
@@ -79,7 +82,8 @@
       color: #f59e0b;
     }
     @media (max-width: 700px) {
-      .model-grid { grid-template-columns: 1fr; }
+      .pillars { flex-direction: column; gap: clamp(16px, 3vh, 28px); }
+      .pillar + .pillar { border-left: none; border-top: 1px solid #26332a; padding-top: clamp(14px, 2.5vh, 24px); }
     }
   </style>
 </head>
@@ -87,41 +91,33 @@
   <div class="content">
     <div class="badge">SUSTAINABLE</div>
     <div class="title">Business Model</div>
-    <div class="model-grid">
-      <div class="model-item">
-        <div class="model-header">
-          <div class="model-label">5% Stake Fee</div>
-        </div>
+    <div class="pillars">
+      <div class="pillar">
+        <div class="model-label">5% Stake Fee</div>
         <div class="model-value">
-          Every run (win or lose).<br>
+          Every run, win or lose.<br>
           <span class="highlight">Revenue without tokens.</span>
         </div>
       </div>
-      <div class="model-item">
-        <div class="model-header">
-          <div class="model-label">50% Victory Bonus</div>
-        </div>
+      <div class="pillar">
+        <div class="model-label">50% Victory Bonus</div>
         <div class="model-value">
-          Paid from accumulated pool.<br>
+          Paid from the accumulated pool.<br>
           <span class="highlight">Rewards skill, not grinding.</span>
         </div>
       </div>
-      <div class="model-item">
-        <div class="model-header">
-          <div class="model-label">Free Play</div>
-        </div>
+      <div class="pillar">
+        <div class="model-label">Free Play</div>
         <div class="model-value">
-          Zero friction onboarding.<br>
+          Zero-friction onboarding.<br>
           <span class="highlight">No wallet required to try.</span>
         </div>
       </div>
-      <div class="model-item">
-        <div class="model-header">
-          <div class="model-label">Pale Coins</div>
-        </div>
+      <div class="pillar">
+        <div class="model-label">Pale Coins</div>
         <div class="model-value">
           Earned in-game, never sold.<br>
-          <span class="highlight">Everyone feels the stake — no wallet needed.</span>
+          <span class="highlight">Everyone feels the stake.</span>
         </div>
       </div>
     </div>
