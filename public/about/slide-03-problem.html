@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a0808 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', monospace;
+      color: #e5e5e5;
+      padding: clamp(30px, 5vw, 60px);
+    }
+    .content {
+      max-width: 1200px;
+      text-align: center;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #ef4444;
+      padding: clamp(4px, 0.5vw, 8px) clamp(12px, 1.5vw, 20px);
+      border-radius: 20px;
+      font-size: clamp(10px, 1vw, 16px);
+      letter-spacing: 2px;
+      margin-bottom: clamp(20px, 4vh, 40px);
+    }
+    .problem {
+      font-size: clamp(20px, 2.5vw, 42px);
+      color: #71717a;
+      margin-bottom: clamp(30px, 5vh, 50px);
+      line-height: 1.6;
+    }
+    .strike {
+      text-decoration: line-through;
+      color: #4a4a4a;
+    }
+    .solution-label {
+      font-size: clamp(14px, 1.4vw, 24px);
+      color: #6b7280;
+      letter-spacing: 4px;
+      margin-bottom: clamp(15px, 2vh, 25px);
+    }
+    .solution {
+      font-size: clamp(28px, 3.5vw, 56px);
+      color: #f59e0b;
+      font-weight: bold;
+      text-shadow: 0 0 40px rgba(245, 158, 11, 0.4);
+      margin-bottom: clamp(20px, 4vh, 40px);
+    }
+    .details {
+      display: flex;
+      justify-content: center;
+      gap: clamp(30px, 5vw, 80px);
+      flex-wrap: wrap;
+    }
+    .detail-item {
+      text-align: center;
+    }
+    .detail-icon {
+      font-size: clamp(32px, 4vw, 56px);
+      margin-bottom: clamp(8px, 1vh, 15px);
+    }
+    .detail-icon-img {
+      width: clamp(56px, 6vw, 80px);
+      height: clamp(56px, 6vw, 80px);
+      object-fit: cover;
+      margin-bottom: clamp(8px, 1vh, 15px);
+      border-radius: 12px;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    .detail-text {
+      font-size: clamp(14px, 1.4vw, 22px);
+      color: #a1a1aa;
+    }
+    .detail-sub {
+      font-size: clamp(10px, 1vw, 16px);
+      color: #6b7280;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="content">
+    <div class="badge">THE PROBLEM</div>
+    <div class="problem">
+      Web3 gaming became <span class="strike">GameFi</span>:<br>
+      grinding, farming, yield speculation disguised as games.
+    </div>
+    <div class="solution-label">DIE FORWARD IS DIFFERENT</div>
+    <div class="solution">Entertainment first.</div>
+    <div class="details">
+      <div class="detail-item">
+        <img src="icon-fun-256.webp" class="detail-icon-img" alt="">
+        <div class="detail-text">Play because it's fun</div>
+        <div class="detail-sub">Not to farm rewards</div>
+      </div>
+      <div class="detail-item">
+        <img src="icon-tension-256.webp" class="detail-icon-img" alt="">
+        <div class="detail-text">Stakes add tension</div>
+        <div class="detail-sub">Not yield mechanics</div>
+      </div>
+      <div class="detail-item">
+        <img src="icon-permanent-256.webp" class="detail-icon-img" alt="">
+        <div class="detail-text">Deaths are permanent</div>
+        <div class="detail-sub">On-chain, discoverable</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
