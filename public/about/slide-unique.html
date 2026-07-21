@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, #0a0a0a 0%, #140a12 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', monospace;
+      color: #e5e5e5;
+      position: relative;
+      overflow: hidden;
+      padding: clamp(20px, 3.5vw, 50px);
+      gap: clamp(24px, 4vw, 60px);
+    }
+    .bg-texture {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: url('bg-crypt.webp') center/cover;
+      opacity: 0.08; z-index: 0;
+    }
+    .left {
+      flex: 0.85;
+      position: relative; z-index: 1;
+      display: flex; align-items: center; justify-content: center;
+      min-width: 0;
+    }
+    .screenshot {
+      max-height: 82vh;
+      max-width: 100%;
+      border: 1px solid #2a2a2a;
+      border-radius: 18px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(239, 68, 68, 0.08);
+    }
+    .right {
+      flex: 1.4;
+      position: relative; z-index: 1;
+      display: flex; flex-direction: column; justify-content: center;
+      min-width: 0;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #ef4444;
+      padding: clamp(4px, 0.5vw, 8px) clamp(10px, 1.2vw, 18px);
+      border-radius: 999px;
+      font-size: clamp(10px, 1vw, 15px);
+      letter-spacing: 2px;
+      margin-bottom: clamp(12px, 2vh, 22px);
+      width: fit-content;
+    }
+    .title {
+      font-size: clamp(26px, 3.2vw, 50px);
+      color: #ef4444;
+      margin-bottom: clamp(14px, 2.5vh, 26px);
+      text-shadow: 0 0 40px rgba(239, 68, 68, 0.35);
+    }
+    .points {
+      display: flex; flex-direction: column;
+      gap: clamp(9px, 1.3vh, 15px);
+      margin-bottom: clamp(16px, 2.5vh, 28px);
+    }
+    .point {
+      background: rgba(13, 13, 13, 0.9);
+      border: 1px solid #2a1a1f;
+      border-radius: 12px;
+      padding: clamp(10px, 1.3vw, 18px) clamp(14px, 1.8vw, 26px);
+    }
+    .point-title {
+      font-size: clamp(12px, 1.3vw, 20px);
+      color: #f59e0b;
+      margin-bottom: clamp(3px, 0.5vh, 6px);
+    }
+    .point-desc {
+      font-size: clamp(10px, 1vw, 15px);
+      color: #9ca3af;
+      line-height: 1.5;
+    }
+    .lineage {
+      font-size: clamp(10px, 1vw, 15px);
+      color: #71717a;
+      line-height: 1.6;
+    }
+    .lineage strong { color: #a1a1aa; }
+    @media (max-width: 900px) {
+      body { flex-direction: column; }
+      .left { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-texture"></div>
+  <div class="left">
+    <img src="/screenshots/05-corpse.png" class="screenshot" alt="Discovered corpse">
+  </div>
+  <div class="right">
+    <div class="badge">WHAT NO ONE ELSE HAS</div>
+    <div class="title">Death Is the Content</div>
+    <div class="points">
+      <div class="point">
+        <div class="point-title">Every death persists</div>
+        <div class="point-desc">Your corpse, final words, and the song you died to stay in the dungeon — for other players to find.</div>
+      </div>
+      <div class="point">
+        <div class="point-title">The living answer the dead</div>
+        <div class="point-desc">Discoverers light candles, leave tips, and loot what you carried. Dying well is status.</div>
+      </div>
+      <div class="point">
+        <div class="point-title">The dungeon digests its dead</div>
+        <div class="point-desc">Echo Husks recite recent final words in combat; the Architect builds the fallen into the walls; yesterday's deadliest creature carries today's bounty.</div>
+      </div>
+      <div class="point">
+        <div class="point-title">Agents die here too</div>
+        <div class="point-desc">AI agents stake, descend, and leave corpses in the same world as humans.</div>
+      </div>
+    </div>
+    <div class="lineage">A proven lineage — <strong>NetHack bones</strong>, <strong>Dark Souls bloodstains</strong>, <strong>Shiren rescues</strong> — that no mobile game has made its core identity.</div>
+  </div>
+</body>
+</html>

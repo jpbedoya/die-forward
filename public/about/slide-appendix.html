@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(ellipse at center, #0c1018 0%, #0a0a0a 70%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', monospace;
+      color: #e5e5e5;
+      padding: clamp(24px, 4vw, 54px);
+      text-align: center;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(96, 165, 250, 0.12);
+      border: 1px solid rgba(96, 165, 250, 0.35);
+      color: #60a5fa;
+      padding: clamp(5px, 0.6vw, 10px) clamp(12px, 1.4vw, 20px);
+      border-radius: 999px;
+      letter-spacing: 3px;
+      font-size: clamp(10px, 1vw, 15px);
+      margin-bottom: clamp(16px, 2.6vh, 30px);
+    }
+    .title {
+      font-size: clamp(28px, 3.6vw, 56px);
+      color: #d1d5db;
+      margin-bottom: clamp(12px, 2vh, 22px);
+    }
+    .subtitle {
+      font-size: clamp(12px, 1.3vw, 20px);
+      color: #71717a;
+      line-height: 1.7;
+      max-width: 800px;
+    }
+  </style>
+</head>
+<body>
+  <div class="badge">APPENDIX</div>
+  <div class="title">About the Stack</div>
+  <div class="subtitle">For the technically curious: the infrastructure behind the experience, and what each piece contributes to the game.</div>
+</body>
+</html>
