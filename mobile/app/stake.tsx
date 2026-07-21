@@ -286,8 +286,11 @@ export default function StakeScreen() {
           <Text className="text-bone-muted text-xs font-mono">{t('stake.nav.zones')}</Text>
         </Pressable>
 
-        {/* True center title across full header width */}
-        <View className="absolute inset-x-0 items-center" style={{ pointerEvents: 'none' }}>
+        {/* True center title across full header width — top must match the
+            row's own paddingTop, since absolute positioning here otherwise
+            ignores it and sits flush to the container's top edge instead of
+            aligning with the back button / audio toggle beside it. */}
+        <View className="absolute inset-x-0 items-center" style={{ top: insets.top + 12, pointerEvents: 'none' }}>
           <Text className="text-amber text-base font-mono font-bold tracking-widest">{t('stake.title')}</Text>
         </View>
 
