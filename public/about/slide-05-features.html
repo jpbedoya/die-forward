@@ -59,12 +59,12 @@
       margin-bottom: clamp(20px, 3.2vh, 36px);
     }
     .creature {
-      width: clamp(70px, 8.5vw, 130px);
-      height: clamp(70px, 8.5vw, 130px);
+      width: clamp(84px, 10vw, 155px);
+      height: clamp(84px, 10vw, 155px);
       object-fit: cover;
-      border-radius: 12px;
-      border: 1px solid rgba(245, 158, 11, 0.25);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      -webkit-mask-image: radial-gradient(circle, #000 52%, transparent 71%);
+      mask-image: radial-gradient(circle, #000 52%, transparent 71%);
+      filter: drop-shadow(0 0 26px rgba(245, 158, 11, 0.22));
     }
     .stats {
       display: grid;
