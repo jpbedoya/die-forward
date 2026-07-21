@@ -5,6 +5,6 @@
       "schedule": "0 6 * * *"
     },
     { "path": "/api/game/shift", "schedule": "30 0 * * *" },
-    { "path": "/api/game/dispatch", "schedule": "0 * * * *" }
+    { "path": "/api/game/dispatch", "schedule": "0 13 * * *" }
   ]
 }
