@@ -28,6 +28,8 @@ jobs:
             echo "::error::CRON_SECRET repo secret is not set — refusing to call an unguarded endpoint."
             exit 1
           fi
-          curl -fsS -X POST "https://dieforward.com/api/game/dispatch" \
+          # -L: the apex domain 307-redirects to www; follow it (307 preserves
+          # the POST method and headers). -f: fail the job on any 4xx/5xx.
+          curl -fsSL -X POST "https://www.dieforward.com/api/game/dispatch" \
             -H "x-cron-secret: $CRON_SECRET" \
             --max-time 120
