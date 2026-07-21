@@ -43,21 +43,28 @@
       margin-bottom: clamp(24px, 4vh, 44px);
     }
     .rungs {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: clamp(14px, 2vw, 28px);
+      display: flex;
+      align-items: stretch;
       text-align: left;
       margin-bottom: clamp(20px, 3.5vh, 36px);
     }
     .rung {
-      background: rgba(13, 13, 13, 0.9);
-      border: 1px solid #2a2a2a;
-      border-radius: 12px;
-      padding: clamp(16px, 2vw, 28px);
+      flex: 1;
+      padding: clamp(4px, 0.6vh, 10px) clamp(16px, 2vw, 32px);
     }
-    .rung-unbound { border-color: #3f3f46; }
-    .rung-coin { border-color: rgba(245, 158, 11, 0.4); }
-    .rung-blood { border-color: rgba(239, 68, 68, 0.4); }
+    .rung + .rung {
+      border-left: 1px solid #2a2a2e;
+    }
+    .rung::before {
+      content: '';
+      display: block;
+      width: clamp(28px, 3vw, 48px);
+      height: 2px;
+      margin-bottom: clamp(12px, 2vh, 22px);
+    }
+    .rung-unbound::before { background: #71717a; }
+    .rung-coin::before { background: #f59e0b; box-shadow: 0 0 12px rgba(245, 158, 11, 0.5); }
+    .rung-blood::before { background: #ef4444; box-shadow: 0 0 12px rgba(239, 68, 68, 0.5); }
     .rung-art {
       width: clamp(36px, 4vw, 60px);
       height: clamp(36px, 4vw, 60px);
@@ -93,7 +100,8 @@
     }
     .footer strong { color: #f59e0b; font-style: normal; }
     @media (max-width: 800px) {
-      .rungs { grid-template-columns: 1fr; }
+      .rungs { flex-direction: column; gap: clamp(16px, 3vh, 28px); }
+      .rung + .rung { border-left: none; border-top: 1px solid #2a2a2e; padding-top: clamp(14px, 2.5vh, 24px); }
     }
   </style>
 </head>

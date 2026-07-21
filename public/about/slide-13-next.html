@@ -44,26 +44,36 @@
       letter-spacing: 0.5px;
     }
     .grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: clamp(14px, 1.8vw, 24px);
+      display: flex;
+      align-items: stretch;
       text-align: left;
       margin-bottom: clamp(20px, 3vh, 34px);
     }
     .card {
-      background: rgba(13, 13, 13, 0.9);
-      border: 1px solid #252a33;
-      border-radius: 12px;
-      padding: clamp(14px, 1.6vw, 22px);
+      flex: 1;
+      padding: clamp(4px, 0.6vh, 10px) clamp(12px, 1.6vw, 26px);
+    }
+    .card + .card {
+      border-left: 1px solid #252a33;
+    }
+    .card::before {
+      content: '';
+      display: block;
+      width: clamp(28px, 3vw, 48px);
+      height: 2px;
+      background: #f59e0b;
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
+      margin-bottom: clamp(12px, 2vh, 20px);
     }
     .card-title {
       color: #f59e0b;
-      font-size: clamp(14px, 1.5vw, 24px);
+      font-size: clamp(13px, 1.35vw, 21px);
       margin-bottom: clamp(8px, 1vh, 12px);
+      line-height: 1.3;
     }
     .card-copy {
       color: #9ca3af;
-      font-size: clamp(11px, 1.05vw, 16px);
+      font-size: clamp(10px, 1vw, 15px);
       line-height: 1.55;
     }
     .footer {
@@ -73,7 +83,8 @@
     }
     .footer strong { color: #d1d5db; }
     @media (max-width: 800px) {
-      .grid { grid-template-columns: 1fr; }
+      .grid { flex-direction: column; gap: clamp(16px, 3vh, 28px); }
+      .card + .card { border-left: none; border-top: 1px solid #252a33; padding-top: clamp(14px, 2.5vh, 24px); }
     }
   </style>
 </head>

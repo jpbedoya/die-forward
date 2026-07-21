@@ -38,17 +38,26 @@
       text-shadow: 0 0 28px rgba(96, 165, 250, 0.2);
     }
     .grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: clamp(14px, 1.8vw, 24px);
+      display: flex;
+      align-items: stretch;
       text-align: left;
       margin-bottom: clamp(20px, 3vh, 34px);
     }
     .card {
-      background: rgba(13, 13, 13, 0.9);
-      border: 1px solid #1e2530;
-      border-radius: 12px;
-      padding: clamp(14px, 1.6vw, 22px);
+      flex: 1;
+      padding: clamp(4px, 0.6vh, 10px) clamp(14px, 1.8vw, 28px);
+    }
+    .card + .card {
+      border-left: 1px solid #1e2530;
+    }
+    .card::before {
+      content: '';
+      display: block;
+      width: clamp(28px, 3vw, 48px);
+      height: 2px;
+      background: #60a5fa;
+      box-shadow: 0 0 12px rgba(96, 165, 250, 0.5);
+      margin-bottom: clamp(12px, 2vh, 20px);
     }
     .card-title {
       color: #60a5fa;
@@ -64,17 +73,17 @@
     .tiers {
       display: flex;
       justify-content: center;
-      gap: clamp(14px, 2vw, 30px);
+      gap: clamp(14px, 2.5vw, 40px);
       flex-wrap: wrap;
       margin-bottom: clamp(18px, 2.6vh, 30px);
+      padding: clamp(10px, 1.4vh, 16px) 0;
+      border-top: 1px solid #1e2530;
+      border-bottom: 1px solid #1e2530;
     }
     .tier {
-      background: rgba(13, 13, 13, 0.85);
-      border: 1px solid #2a2a2a;
-      border-radius: 999px;
-      padding: clamp(7px, 0.9vw, 12px) clamp(14px, 1.8vw, 26px);
       font-size: clamp(10px, 1vw, 15px);
       color: #a1a1aa;
+      letter-spacing: 0.5px;
     }
     .tier strong { color: #f59e0b; }
     .footer {
@@ -83,7 +92,8 @@
     }
     .footer strong { color: #d1d5db; }
     @media (max-width: 900px) {
-      .grid { grid-template-columns: 1fr; }
+      .grid { flex-direction: column; gap: clamp(16px, 3vh, 28px); }
+      .card + .card { border-left: none; border-top: 1px solid #1e2530; padding-top: clamp(14px, 2.5vh, 24px); }
     }
   </style>
 </head>
